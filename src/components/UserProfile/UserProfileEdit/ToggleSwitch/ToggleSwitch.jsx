@@ -2,7 +2,7 @@ import React from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
-const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleClass, darkMode }) => {
+const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleClass, fontColor, darkMode }) => {
   switch (switchType) {
     case 'bluesquares':
       if (state) {
@@ -218,7 +218,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
     case 'bio':
       return (
         <div className="blueSqare">
-          <div className={style.switchSection} style={{fontSize:fontSize}}>
+          <div className={style.switchSection} style={{fontSize:fontSize, color: fontColor}}>
             <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}} className={style.switchContainer}>
             posted
             <TriStateToggleSwitch  

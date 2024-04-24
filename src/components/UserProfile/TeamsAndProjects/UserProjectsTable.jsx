@@ -98,7 +98,7 @@ const UserProjectsTable = React.memo(props => {
 
   return (
     <div>
-      <div className="desktop">
+      <div className="desktop" data-testid='userProjectTest'>
         <div className={`projecttable-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div className="container">
             <div className="row mr-auto">
@@ -216,7 +216,7 @@ const UserProjectsTable = React.memo(props => {
                 </div>
               </Col>
             </div>
-            <div className='table-container'>
+            <div className='table-container' data-testid='userProjectTaskTest'>
               <table className={`table table-bordered table-responsive-sm ${darkMode ?'text-light' : ''}`}>
                 <thead>
                   {props.role && (

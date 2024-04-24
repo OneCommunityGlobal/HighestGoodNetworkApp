@@ -2,7 +2,7 @@ import { useState } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
 import './PeopleTableDetails.css';
-import { NewModal } from '../common/NewModal';
+import NewModal from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 
 function PeopleTableDetails(props) {
@@ -94,11 +94,11 @@ function PeopleTableDetails(props) {
     }
     toggleMoreResourcesStatus = !toggleMoreResourcesStatus;
   };
-  const { taskData } = props;
+  const { taskData, darkMode } = props;
   const filteredTasks = filterTasks(taskData);
 
   const renderFilteredTask = value => (
-    <div key={value._id} className="people-table-row people-table-body-row">
+    <div key={value._id} className={`people-table-row people-table-body-row ${darkMode ? "people-table-row-dark people-table-body-row-dark" : ""}`}>
       <div>{value.taskName}</div>
       <div>{value.priority}</div>
       <div>{value.status}</div>
@@ -127,7 +127,7 @@ function PeopleTableDetails(props) {
               className="name resourceMoreToggle"
               onClick={() => toggleMoreResources(value._id)}
             >
-              <span className="dot">{res.length - 2}+</span>
+              <span className={`dot ${darkMode ? 'text-light' : ''}`}>{res.length - 2}+</span>
             </button>
           ) : null,
         )}
@@ -165,28 +165,30 @@ function PeopleTableDetails(props) {
   );
 
   return (
-    <Container fluid className="wrapper">
-      <TableFilter
-        onTaskNameSearch={onTaskNameSearch}
-        searchPriority={searchPriority}
-        searchResources={searchResources}
-        searchStatus={searchStatus}
-        searchActive={searchActive}
-        searchAssign={searchAssign}
-        searchEstimatedHours={searchEstimatedHours}
-        resetFilters={resetFilters}
-        name={name}
-        order={order}
-        priority={priority}
-        status={status}
-        resources={resources}
-        active={active}
-        assign={assign}
-        estimatedHours={estimatedHours}
-        startDate={startDate}
-        EndDate={endDate}
-      />
-      <div className="people-table-row reports-table-head">
+    <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>
+      {props.showFilter && (
+        <TableFilter
+          onTaskNameSearch={onTaskNameSearch}
+          searchPriority={searchPriority}
+          searchResources={searchResources}
+          searchStatus={searchStatus}
+          searchActive={searchActive}
+          searchAssign={searchAssign}
+          searchEstimatedHours={searchEstimatedHours}
+          resetFilters={resetFilters}
+          name={name}
+          order={order}
+          priority={priority}
+          status={status}
+          resources={resources}
+          active={active}
+          assign={assign}
+          estimatedHours={estimatedHours}
+          startDate={startDate}
+          EndDate={endDate}
+        />
+      )}
+      <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div>Task</div>
         <div>Priority</div>
         <div>Status</div>

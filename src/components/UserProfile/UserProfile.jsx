@@ -57,6 +57,7 @@ import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import { GiConsoleController } from 'react-icons/gi';
 import { setCurrentUser } from '../../actions/authActions'
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -123,6 +124,7 @@ function UserProfile(props) {
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
+    dispatch(getAllTimeOffRequests());
   }, []);
 
   useEffect(() => {
