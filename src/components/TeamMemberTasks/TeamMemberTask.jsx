@@ -1,23 +1,32 @@
-import React, { useState, useRef} from 'react';
+import React, { useState, useRef } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faBell, faCircle, faCheck, faTimes, faExpandArrowsAlt, faCompressArrowsAlt} from '@fortawesome/free-solid-svg-icons';
+import {
+  faBell,
+  faCircle,
+  faCheck,
+  faTimes,
+  faExpandArrowsAlt,
+  faCompressArrowsAlt,
+} from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { Table, Progress } from 'reactstrap';
 
 import { Link } from 'react-router-dom';
 import hasPermission from 'utils/permissions';
 import './style.css';
-import { boxStyle } from 'styles';
 
 import Warning from 'components/Warnings/Warnings';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
 
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
-import GoogleDocIcon from '../common/GoogleDocIcon'
+import GoogleDocIcon from '../common/GoogleDocIcon';
+import FollowupCheckButton from './FollowupCheckButton';
+import FollowUpInfoModal from './FollowUpInfoModal';
+import * as messages from '../../constants/followUpConstants'
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -35,9 +44,11 @@ const TeamMemberTask = React.memo(
     onTimeOff,
     goingOnTimeOff,
   }) => {
+    const darkMode = useSelector(state => state.theme.darkMode);
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
+    const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
       task.hoursLogged = task.hoursLogged || 0;
@@ -89,10 +100,23 @@ const TeamMemberTask = React.memo(
 
     const userGoogleDocLink = user.adminLinks?.reduce((targetLink, currentElement) => {
       if (currentElement.Name === 'Google Doc') {
-        targetLink = currentElement.Link
+        targetLink = currentElement.Link;
       }
       return targetLink;
     }, undefined);
+
+    const followUpMouseoverText = task => {
+      const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
+      if (progressPersantage < 50) {
+        return messages.MOUSE_OVER_TEXT_UNDER_50
+      } else if (progressPersantage >= 50 && progressPersantage < 75) {
+        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75
+      } else if (progressPersantage >= 75 && progressPersantage < 90) {
+        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90
+      } else if (progressPersantage >= 90) {
+        return messages.MOUSE_OVER_TEXT_OVER_90
+      }
+    };
 
     return (
       <>
@@ -114,7 +138,7 @@ const TeamMemberTask = React.memo(
                 <i
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', color: 'black' }}
+                  style={{ fontSize: 24, cursor: 'pointer', color: darkMode ? 'white' : 'black' }}
                   title="Click to see user's timelog"
                 />
               </Link>
@@ -137,7 +161,7 @@ const TeamMemberTask = React.memo(
                             : undefined,
                       }}
                     >{`${user.name}`}</Link>
-                    {canGetWeeklySummaries && (<GoogleDocIcon link={userGoogleDocLink}/>)}
+                    {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
 
                     <Warning
                       username={user.name}
@@ -148,8 +172,8 @@ const TeamMemberTask = React.memo(
                       personId={user.personId}
                     />
                   </td>
-                  <td data-label="Time" className="team-clocks">
-                    <u>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
+                  <td data-label="Time" className={"team-clocks " + (darkMode ? "text-light" : "")}>
+                    <u className={darkMode ? "text-azure" : ""}>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                     <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                   </td>
@@ -236,7 +260,6 @@ const TeamMemberTask = React.memo(
                               userId={userId}
                               task={task}
                               updateTask={updateTaskStatus}
-                              style={boxStyle}
                             />
                           </div>
                         </td>
@@ -251,12 +274,21 @@ const TeamMemberTask = React.memo(
                                 {task.deadlineCount === undefined ? 0 : task.deadlineCount}
                               </span>
                             )}
-                            <div>
-                              <span data-testid={`times-${task.taskName}`}>
+                            <div className="team-task-progress-container">
+                              <span
+                                data-testid={`times-${task.taskName}`} 
+                                className={darkMode ? 'text-light ' : '' + (canSeeFollowUpCheckButton ? "team-task-progress-time" : "team-task-progress-time-volunteers")}
+                              >
                                 {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
                                   task.estimatedHours.toFixed(2),
                                 )}`}
                               </span>
+                              {canSeeFollowUpCheckButton && (
+                                <>
+                                  <FollowupCheckButton moseoverText={followUpMouseoverText(task)} user={user} task={task}/>
+                                  <FollowUpInfoModal />
+                                </>
+                              )}
                               <Progress
                                 color={getProgressColor(
                                   task.hoursLogged,
@@ -264,6 +296,7 @@ const TeamMemberTask = React.memo(
                                   true,
                                 )}
                                 value={getProgressValue(task.hoursLogged, task.estimatedHours)}
+                                className="team-task-progress-bar"
                               />
                             </div>
                           </td>
@@ -294,37 +327,37 @@ const TeamMemberTask = React.memo(
                 >
                   <FontAwesomeIcon icon={faExpandArrowsAlt} data-testid="icon" />
                 </button>
-            ) : (
-              <div className="taking-time-off-content-div">
-                <button
-                  className="compress-time-off-detail-button"
-                  onClick={() => {
-                    setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
-                  }}
-                >
-                  <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
-                </button>
+              ) : (
+                <div className="taking-time-off-content-div">
+                  <button
+                    className="compress-time-off-detail-button"
+                    onClick={() => {
+                      setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                  </button>
 
-                <span className="taking-time-off-content-text">
-                  {onTimeOff
-                    ? `${user.name} Is Not Available this Week`
-                    : `${user.name} Is Not Available Next Week`}
-                </span>
-                <button
-                  type="button"
-                  className="taking-time-off-content-btn"
-                  onClick={() => {
-                    const request = onTimeOff
-                      ? { ...onTimeOff, onVacation: true, name: user.name }
-                      : { ...goingOnTimeOff, onVacation: false, name: user.name };
+                  <span className="taking-time-off-content-text">
+                    {onTimeOff
+                      ? `${user.name} Is Not Available this Week`
+                      : `${user.name} Is Not Available Next Week`}
+                  </span>
+                  <button
+                    type="button"
+                    className="taking-time-off-content-btn"
+                    onClick={() => {
+                      const request = onTimeOff
+                        ? { ...onTimeOff, onVacation: true, name: user.name }
+                        : { ...goingOnTimeOff, onVacation: false, name: user.name };
 
-                    openDetailModal(request);
-                  }}
-                >
-                  Details ?
-                </button>
-              </div>
-            ))}
+                      openDetailModal(request);
+                    }}
+                  >
+                    Details ?
+                  </button>
+                </div>
+              ))}
           </td>
         </tr>
       </>

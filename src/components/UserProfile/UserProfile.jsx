@@ -43,7 +43,7 @@ import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus } from '../../actions/userManagement';
+import { updateUserStatus, updateRehireableStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
@@ -55,6 +55,9 @@ import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import { setCurrentUser } from '../../actions/authActions';
+import { GiConsoleController } from 'react-icons/gi';
+import { setCurrentUser } from '../../actions/authActions'
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { ENDPOINTS } from '../../utils/URL';
 
 function UserProfile(props) {
@@ -100,6 +103,9 @@ function UserProfile(props) {
   const [saved, setSaved] = useState(false);
   const [isTeamSaved, setIsTeamSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
+  const [isRehireable, setIsRehireable] = useState(null); 
 
   const userProfileRef = useRef();
 
@@ -121,6 +127,7 @@ function UserProfile(props) {
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
     fetchTeamCodeAllUsers();
+    dispatch(getAllTimeOffRequests());
   }, []);
 
   const fetchTeamCodeAllUsers = async () => {
@@ -330,6 +337,8 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
+      // Assuming newUserProfile contains isRehireable attribute
+      setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
 
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
@@ -614,7 +623,28 @@ function UserProfile(props) {
     setActiveInactivePopupOpen(false);
   };
 
-  /* useEffect functions */
+  const handleRehireableChange = () => {
+    const newRehireableStatus = !isRehireable;
+    setPendingRehireableStatus(newRehireableStatus);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmChange = () => {
+    setShowConfirmDialog(false);
+    const updatedUserProfile = {
+      ...userProfile,
+      isRehireable: pendingRehireableStatus,
+    };
+    updateRehireableStatus(updatedUserProfile, pendingRehireableStatus)
+    setIsRehireable(pendingRehireableStatus);
+    setUserProfile(updatedUserProfile);
+    setOriginalUserProfile(updatedUserProfile);
+  };
+
+  const handleCancelChange = () => {
+    setShowConfirmDialog(false);
+  };
+
   useEffect(() => {
     getTeamMembersWeeklySummary();
     loadUserProfile();
@@ -703,6 +733,7 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus')
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
@@ -846,6 +877,17 @@ function UserProfile(props) {
                         props.history.push(`/timelog/${targetUserId}`);
                       }
                     }}
+                  />
+                </span>
+              )}
+              {canChangeRehireableStatus && (
+                <span className='mr-2'>
+                  <i 
+                    className={isRehireable ? "fa fa-check-square-o": "fa fa-square-o"}
+                    aria-hidden="true"
+                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }} 
+                    title="Click to change rehirable status" 
+                    onClick={handleRehireableChange}
                   />
                 </span>
               )}
@@ -1106,6 +1148,16 @@ function UserProfile(props) {
               >
                 Basic Information
               </Button>
+              <Modal isOpen={showConfirmDialog} toggle={handleCancelChange}>
+                <ModalHeader toggle={handleCancelChange}>Confirm Status Change</ModalHeader>
+                <ModalBody>
+                  {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'}?`}
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="primary" onClick={handleConfirmChange}>Confirm</Button>{' '}
+                  <Button color="secondary" onClick={handleCancelChange}>Cancel</Button>
+                </ModalFooter>
+              </Modal>
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
                 <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
                 <ModalBody>
