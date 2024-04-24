@@ -4,11 +4,13 @@ import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 const UserTeamsTable = props => {
+  const {darkMode} = props;
+
   const [tooltipOpen, setTooltip] = useState(false);
 
   const [showDropdown, setShowDropdown] = useState(false);
@@ -66,7 +68,7 @@ const UserTeamsTable = props => {
   return (
     <div>
       {innerWidth >= 1025 ? (
-        <div className="teamtable-container desktop">
+        <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
             {props.canEditVisibility || ['Owner', 'Administrator'].includes(props.role) && (
               <div className="row">
@@ -78,6 +80,7 @@ const UserTeamsTable = props => {
                     switchType="visible"
                     state={props.isVisible}
                     handleUserProfile={props.onUserVisibilitySwitch}
+                    darkMode={darkMode}
                   />
                 </Col>
               </div>
@@ -86,7 +89,7 @@ const UserTeamsTable = props => {
               <Col
                 md={canAssignTeamToUsers ? '7' : '10'}
                 style={{
-                  backgroundColor: ' #e9ecef',
+                  backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                   border: '1px solid #ced4da',
                   marginBottom: '10px',
                   height: '10%',
@@ -110,7 +113,7 @@ const UserTeamsTable = props => {
                         className="btn-addteam"
                         id="btn-assignteam"
                         color="primary"
-                        style={boxStyle}
+                        style={darkMode ? {} : boxStyle}
                         disabled
                       >
                         Assign Team
@@ -123,7 +126,7 @@ const UserTeamsTable = props => {
                       onClick={() => {
                         props.onButtonClick();
                       }}
-                      style={boxStyle}
+                      style={darkMode ? {} : boxStyle}
                     >
                       Assign Team
                     </Button>
@@ -152,7 +155,7 @@ const UserTeamsTable = props => {
             </div>
           </div>
           <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
-            <table className="table table-bordered table-responsive-sm">
+            <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 {props.role && (
                   <tr>
@@ -175,7 +178,7 @@ const UserTeamsTable = props => {
                             onClick={e => {
                               props.onDeleteClick(team._id);
                             }}
-                            style={boxStyle}
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             Delete
                           </Button>
@@ -191,14 +194,14 @@ const UserTeamsTable = props => {
           </div>
         </div>
       ) : (
-        <div className="teamtable-container tablet">
+        <div className={`teamtable-container tablet  ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {props.canEditVisibility && (
               <>
                 <Col
                   md="12"
                   style={{
-                    backgroundColor: ' #e9ecef',
+                    backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                     border: '1px solid #ced4da',
                     marginBottom: '10px',
                   }}
@@ -213,6 +216,7 @@ const UserTeamsTable = props => {
                     switchType="visible"
                     state={props.isVisible}
                     handleUserProfile={props.onUserVisibilitySwitch}
+                    darkMode={darkMode}
                   />
                 </Col>
               </>
@@ -222,7 +226,7 @@ const UserTeamsTable = props => {
                 md="9"
                 xs="12"
                 style={{
-                  backgroundColor: ' #e9ecef',
+                  backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                   border: '1px solid #ced4da',
                   marginBottom: '10px',
                   height: '10%',
@@ -278,17 +282,17 @@ const UserTeamsTable = props => {
             )}
           </div>
           <div style={{ maxHeight: '300px', overflow: 'auto' }}>
-            <table className="table table-bordered">
+            <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 {props.role && (
                   <tr>
-                    <th>#</th>
-                    <th>Team Name</th>
-                    {canAssignTeamToUsers ? <th style={{ flex: 2 }}>{}</th> : null}
+                    <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
+                    <th className={darkMode ? 'bg-space-cadet' : ''}>Team Name</th>
+                    {canAssignTeamToUsers ? <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>{}</th> : null}
                   </tr>
                 )}
               </thead>
-              <tbody>
+              <tbody className={darkMode ? 'text-light' : ''}>
                 {props.userTeamsById.length > 0 ? (
                   props.userTeamsById.map((team, index) => (
                     <tr key={index} className="tr">

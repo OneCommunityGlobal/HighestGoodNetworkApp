@@ -28,6 +28,7 @@ const TeamsTab = props => {
     inputAutoStatus,
     isLoading,
     fetchTeamCodeAllUsers,
+    darkMode,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -95,6 +96,7 @@ const TeamsTab = props => {
         inputAutoStatus={inputAutoStatus}
         isLoading={isLoading}
         fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
+        darkMode={darkMode}
       />
     </React.Fragment>
   );
