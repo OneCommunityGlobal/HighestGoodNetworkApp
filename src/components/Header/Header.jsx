@@ -265,6 +265,7 @@ export function Header(props) {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto nav-links" navbar>
+              <DarkModeButton />
               {canUpdateTask && (
                 <NavItem>
                   <NavLink tag={Link} to="/taskeditsuggestions">
@@ -404,8 +405,6 @@ export function Header(props) {
                   <DropdownItem onClick={openModal}>{LOGOUT}</DropdownItem>
                 </DropdownMenu>
               </UncontrolledDropdown>
-            <DarkModeButton />
-
             </Nav>
           </Collapse>
         )}

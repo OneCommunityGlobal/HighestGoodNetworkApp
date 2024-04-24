@@ -6,3 +6,7 @@
     display: none;
   }
 }
+
+.hover-effect-reports-page-dark-mode:hover{
+  background-color: #1C2541;
+}

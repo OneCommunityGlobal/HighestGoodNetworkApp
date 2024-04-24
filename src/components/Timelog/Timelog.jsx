@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -126,12 +127,12 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
-
+  const { userId = authUser.userid } = useParams();
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId : authUser.userid,
+    viewingUser ? viewingUser.userId : userId,
   );
 
   const isAuthUser = authUser.userid === displayUserId;
@@ -240,7 +241,8 @@ const Timelog = props => {
       setTimeout(() => {
         const elem = document.getElementById('weeklySum');
         if (elem) {
-          elem.scrollIntoView();
+          const yOffset = elem.getBoundingClientRect().top + window.pageYOffset;
+          window.scrollTo({ top: yOffset, behavior: 'smooth' });
         }
       }, 150);
     }
