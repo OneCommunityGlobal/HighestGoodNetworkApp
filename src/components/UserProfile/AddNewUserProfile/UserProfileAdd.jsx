@@ -551,6 +551,7 @@ class AddUserProfile extends Component {
                   color="primary"
                   block
                   size="lg"
+                  data-testid="create-userProfile"
                   onClick={() => this.createUserProfile(false)}
                   style={boxStyle}
                 >
