@@ -33,7 +33,7 @@ const ResetPasswordPopup = React.memo(props => {
     setError('');
   }, [props.open]);
 
-    const togglePasswordVisibility = (field) => {
+  const togglePasswordVisibility = (field) => {
     setShowPassword(prevState => ({
       ...prevState,
       [field]: !prevState[field]
@@ -63,13 +63,14 @@ const ResetPasswordPopup = React.memo(props => {
       <ModalBody>
         <Form>
           <div className="flex justify-between items-center mb-2">
-              <Label className="mr-2" for="newpassword">New Password</Label>
+            <Label className="mr-2" for="newpassword">New Password</Label>
           </div>
           <Input
             autoFocus
             type={showPassword.newPassword ? 'text' : 'password'}
             name="newpassword"
             id="newpassword"
+            label="New Password"
             value={newPassword.password}
             onChange={event => {
               const value = event.target.value;
@@ -84,14 +85,15 @@ const ResetPasswordPopup = React.memo(props => {
               }
             }}
           />
-          
+
           <div className="flex justify-between items-center mt-4 mb-2">
-              <Label className="mr-2" for="confirmpassword">Confirm Password</Label>
+            <Label className="mr-2" for="confirmpassword">Confirm Password</Label>
           </div>
           <Input
             type={showPassword.confirmPassword ? 'text' : 'password'}
             name="confirmpassword"
             id="confirmpassword"
+            label="Confirm Password"
             value={confirmPassword.password}
             onChange={event => {
               onConfirmPasswordChange({
@@ -117,7 +119,7 @@ const ResetPasswordPopup = React.memo(props => {
         </Button>
       </ModalFooter>
     </Modal>
-);
+  );
 });
 
 export default ResetPasswordPopup;

@@ -4,6 +4,7 @@ import { toast } from 'react-toastify';
 import './style.css';
 import { useSelector } from 'react-redux';
 
+// eslint-disable-next-line react/function-component-definition
 const CopyToClipboard = ({ writeText, message }) => {
   const darkMode = useSelector(state => state.theme.darkMode)
   const handleCopyToClipboard = () => {
