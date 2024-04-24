@@ -152,7 +152,6 @@ class Teams extends React.PureComponent {
             onEditTeam={this.onEidtTeam}
             onClickActive={this.onClickActive}
             team={team}
-            darkMode={darkMode}
           />
         ));
     }
