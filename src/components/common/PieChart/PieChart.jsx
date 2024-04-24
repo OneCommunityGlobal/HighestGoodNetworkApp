@@ -4,12 +4,13 @@ import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
 
-export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => {
+// eslint-disable-next-line import/prefer-default-export, react/function-component-definition
+export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkMode }) => {
   const [totalHours, setTotalHours] = useState(0);
 
   // create the pie chart
   const getCreateSvgPie = totalValue => {
-    var svg = d3
+    const svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
       .append('svg')
       .attr('id', `pie-chart-${pieChartId}`)
@@ -21,6 +22,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
     svg
       .append('text')
       .attr('text-anchor', 'middle')
+      .style('fill', darkMode ? 'white' : 'black')
       .text(totalValue.toFixed(2));
 
     return svg;
@@ -31,9 +33,10 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   const pie = d3.pie().value(d => d[1]);
 
   useEffect(() => {
+    // eslint-disable-next-line camelcase
     const data_ready = pie(Object.entries(data));
 
-    let totalValue = data_ready
+    const totalValue = data_ready
       .map(obj => obj.value)
       .reduce((a, c) => {
         return a + c;
@@ -60,7 +63,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   }, [data]);
 
   return (
-    <div className="pie-chart-wrapper">
+    <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
       <div>
         <div className="pie-chart-legend-header">
@@ -72,7 +75,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
             <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
             <div className="data-legend-info">
               {dataLegend[key].map((legendPart, index) => (
-                <div className="data-legend-info-part" key={index}>{legendPart}</div>
+                <div className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`} key={index}>{legendPart}</div>
               ))}
             </div>
           </div>

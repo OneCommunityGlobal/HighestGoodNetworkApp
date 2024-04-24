@@ -30,6 +30,7 @@ import { infoCollectionsReducer } from './informationReducer';
 import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer";
+import { followUpReducer } from "./followUpReducer";
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -41,6 +42,7 @@ import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
 import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
+import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer"
 
 
@@ -68,6 +70,7 @@ const localReducers = {
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients:weeklySummaryRecipientsReducer,
+  userFollowUp : followUpReducer,
 
   // bmdashboard
   materials: materialsReducer,
@@ -77,6 +80,7 @@ const localReducers = {
   lessons: lessonsReducer,
   project: bmProjectByIdReducer,
   bmTools: toolReducer,
+  bmEquipments: equipmentReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer
