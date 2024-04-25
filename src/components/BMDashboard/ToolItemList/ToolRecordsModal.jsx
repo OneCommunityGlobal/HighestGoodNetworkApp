@@ -36,18 +36,17 @@ export function Record({ record, recordType }) {
         <thead>
           <tr>
             <th>Date</th>
-            <th>Quantity Used</th>
-            <th>Quantity Wasted</th>
+            <th>Condition</th>
             <th>Creator</th>
           </tr>
         </thead>
         <tbody>
-          {record.updateRecord.map(data => {
+          {record.updateRecord.map((data, index) => {
             return (
-              <tr key={data._id}>
+              // eslint-disable-next-line react/no-array-index-key
+              <tr key={index}>
                 <td>{moment.utc(data.date).format('LL')}</td>
-                <td>{`${data.quantityUsed} ${record.itemType?.unit || 'Unit'}` || '-'}</td>
-                <td>{`${data.quantityWasted} ${record.itemType?.unit || 'Unit'}` || '-'}</td>
+                <td>{data.condition}</td>
                 <td>
                   <a href={`/userprofile/${data.createdBy._id}`}>
                     {`${data.createdBy?.firstName || 'Unknown'} 
@@ -72,25 +71,28 @@ export function Record({ record, recordType }) {
             <th>Requested By</th>
             <th>Date</th>
             <th>Status</th>
+            <th>Description</th>
           </tr>
         </thead>
         <tbody>
-          {record.map(({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
-            return (
-              <tr key={_id}>
-                <td>{priority}</td>
-                <td>{brandPref}</td>
-                <td>{quantity || '-'}</td>
-                <td>
-                  <a href={`/userprofile/${requestedBy?._id}`}>
-                    {`${requestedBy?.firstName || 'Unknown'} ${requestedBy?.lastName || 'User'}`}
-                  </a>
-                </td>
-                <td>{moment(date).format('MM/DD/YY')}</td>
-                <td>{status}</td>
-              </tr>
-            );
-          })}
+          {record.map(({ _id, date, status, makeModelPref, priority, quantity, requestedBy, usageDesc }) => {
+              return (
+                <tr key={_id}>
+                  <td>{priority}</td>
+                  <td>{makeModelPref}</td>
+                  <td>{quantity || '-'}</td>
+                  <td>
+                    <a href={`/userprofile/${requestedBy?._id}`}>
+                      {`${requestedBy?.firstName || 'Unknown'} ${requestedBy?.lastName || 'User'}`}
+                    </a>
+                  </td>
+                  <td>{moment(date).format('MM/DD/YY')}</td>
+                  <td>{status}</td>
+                  <td>{usageDesc}</td>
+                </tr>
+              );
+            },
+          )}
         </tbody>
       </>
     );

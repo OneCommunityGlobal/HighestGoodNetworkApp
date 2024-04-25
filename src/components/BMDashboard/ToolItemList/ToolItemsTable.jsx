@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSortDown, faSort, faSortUp, faCheck, faCheckCircle, faCheckSquare, faStop, faStopCircle, faSlash, faSignOutAlt, faMinus} from '@fortawesome/free-solid-svg-icons';
+import { faSortDown, faSort, faSortUp, faCheck, faTimes } from '@fortawesome/free-solid-svg-icons';
 import ToolRecordsModal from './ToolRecordsModal';
 
 export default function ToolItemsTable({
@@ -27,22 +27,6 @@ export default function ToolItemsTable({
     sortOrder: 'default',
   });
 
-
-
-  // 
-  // useEffect(() => {
-  //   console.log("ItemsTable. selectedProject: ", selectedProject, ", selectedItem: ", selectedItem, ", filteredItems: ", filteredItems, ", dynamicColumns: ", dynamicColumns)
-  // }, []);
-
-  // useEffect(() => {
-  //   console.log("projectNameCol: ", projectNameCol)
-  //   console.log("inventoryItemTypeCol: ",inventoryItemTypeCol);
-  // }, [projectNameCol, inventoryItemTypeCol]);
-
-    useEffect(() => {
-    console.log("sortedData changed: ", sortedData)
-  }, [sortedData]);
-  // // 
   useEffect(() => {
     setData(filteredItems);
   }, [filteredItems]);
@@ -67,9 +51,7 @@ export default function ToolItemsTable({
 
   const sortData = columnName => {
     const newSortedData = [...sortedData];
-    console.log("");
     if (columnName === 'ProjectName') {
-      console.log("columnName === 'ProjectName'");
       if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
         newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
         setProjectNameCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
@@ -79,7 +61,6 @@ export default function ToolItemsTable({
       }
       setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'InventoryItemType') {
-      console.log("columnName === 'InventoryItemType'");
       if (
         inventoryItemTypeCol.sortOrder === 'default' ||
         inventoryItemTypeCol.sortOrder === 'desc'
@@ -99,23 +80,6 @@ export default function ToolItemsTable({
 
     setData(newSortedData);
   };
-
-
-  // const dynamicColumns = [
-  //   { label: 'Unit', key: 'itemType.unit' },
-  //   { label: 'Bought', key: 'stockBought' },
-  //   { label: 'Used', key: 'stockUsed' },
-  //   { label: 'Available', key: 'stockAvailable' },
-  //   { label: 'Waste', key: 'stockWasted' },
-  // ];
-
-  // const getNestedValue = (obj, path) => {
-  //   console.log("obj: ", obj, ", path: ", path);
-  //   console.log("path: ", path.split('.'));//now it's an array
-  //   // console.log("return: ",path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj));
-  //   //{ label: 'Unit', key: 'itemType.unit' }, ["itemType", "unit"]
-  //   return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
-  // };
 
   return (
     <>
@@ -160,31 +124,31 @@ export default function ToolItemsTable({
                   <tr key={el._id}>
                     <td>{el.project?.name}</td>
                     <td>{el.itemType?.name}</td>
-                    {/* {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
-                    ))} */}
-                    <td>{el.purchaseStatus === 'Purchase' ? 'Yes' : 'No'}</td>
-                  
-                    {/* <td>{el.itemType.using.includes(el._id) ? 'Yes' : 'No'}</td> */}
-                    <td>{el.itemType.using.includes(el._id) ? (
-                      <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
-                    ) : (
-                      <FontAwesomeIcon icon={faMinus} size="lg" color="red" />
-                    )}</td>
-                     {/* <td>{el.itemType.available.includes(el._id) ? 'Yes' : 'No'}</td> */}
-                    <td>{el.itemType.available.includes(el._id) ? (
-                      <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
-                      ) : (
-                        <FontAwesomeIcon icon={faMinus} size="lg" color="red" />)
-                        
-                    }</td>
-                      
-                    
+                    <td>{el.purchaseStatus === 'Purchased' ? 'Yes' : 'No'}</td>
                     <td>
-                      <FontAwesomeIcon icon={faMinus} size="lg" color="red" />
-                      {/* No */}
+                      {el.itemType.using.includes(el._id) ? (
+                        <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
+                      ) : (
+                        <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
+                      )}
                     </td>
-                    <td>Like New</td>
+                    <td>
+                      {el.itemType.available.includes(el._id) ? (
+                        <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
+                      ) : (
+                        <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
+                      )}
+                    </td>
+                    <td>
+                      {el.condition === 'Lost' ||
+                      el.condition === 'Needs Replacing' ||
+                      el.condition === 'Needs Repair' ? (
+                        <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
+                      ) : (
+                        <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
+                      )}
+                    </td>
+                    <td>{el.condition}</td>
                     <td>{el.code}</td>
                     <td className="items_cell">
                       <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>

@@ -3,8 +3,6 @@ import PropTypes from 'prop-types';
 import BMError from '../shared/BMError';
 import SelectForm from '../ItemList/SelectForm';
 import SelectItem from '../ItemList/SelectItem';
-import ToolSelectForm from './ToolSelectForm';
-import ToolSelectItem from './ToolSelectItem';
 import ToolItemsTable from './ToolItemsTable';
 import './ToolItemListView.css';
 
@@ -14,29 +12,22 @@ export function ToolItemListView({ itemType, items, errors, UpdateItemModal, dyn
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
 
-
-
   useEffect(() => {
     if (items) setFilteredItems([...items]);
   }, [items]);
 
   useEffect(() => {
-    // console.log("useEff,  selectedProject, selectedItem or items changed")
     let filterItems;
     if (!items) return;
     if (selectedProject === 'all' && selectedItem === 'all') {
-      // console.log("selectedProject & selectedItem === all")
       setFilteredItems([...items]);
     } else if (selectedProject !== 'all' && selectedItem === 'all') {
-      console.log("selectedProject !== all & selectedItem === all")
       filterItems = items.filter(item => item.project?.name === selectedProject);
       setFilteredItems([...filterItems]);
     } else if (selectedProject === 'all' && selectedItem !== 'all') {
-      console.log("selectedProject === all & selectedItem !== all")
       filterItems = items.filter(item => item.itemType?.name === selectedItem);
       setFilteredItems([...filterItems]);
     } else {
-      console.log("ELSE block")
       filterItems = items.filter(
         item => item.project?.name === selectedProject && item.itemType?.name === selectedItem,
       );
@@ -56,7 +47,6 @@ export function ToolItemListView({ itemType, items, errors, UpdateItemModal, dyn
       </main>
     );
   }
-  // console.log("alles in ordnung...")
   return (
     <main className="items_list_container">
       <h3>{itemType}</h3>
@@ -64,17 +54,6 @@ export function ToolItemListView({ itemType, items, errors, UpdateItemModal, dyn
         <span style={{ display: 'flex', margin: '5px' }}>
           {items && (
             <>
-              {/* <ToolSelectForm
-                items={items}
-                setSelectedProject={setSelectedProject}
-                setSelectedItem={setSelectedItem}
-              />
-              <ToolSelectItem
-                items={items}
-                selectedProject={selectedProject}
-                selectedItem={selectedItem}
-                setSelectedItem={setSelectedItem}
-              /> */}
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
@@ -85,6 +64,7 @@ export function ToolItemListView({ itemType, items, errors, UpdateItemModal, dyn
                 selectedProject={selectedProject}
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
+                label="Tool"
               />
             </>
           )}
@@ -106,7 +86,7 @@ export function ToolItemListView({ itemType, items, errors, UpdateItemModal, dyn
 ToolItemListView.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
+      id: PropTypes.number,
       name: PropTypes.string,
     }),
   ).isRequired,
