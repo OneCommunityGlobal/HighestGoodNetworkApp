@@ -19,7 +19,8 @@ import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
 
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  // const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canManageAdminLinks = props.hasPermission('manageAdminLinks');
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
@@ -172,7 +173,8 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {canPutUserProfileImportantInfo && (
+            {/* {canPutUserProfileImportantInfo && ( */}
+            {canManageAdminLinks && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
