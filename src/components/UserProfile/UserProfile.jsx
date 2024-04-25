@@ -44,21 +44,25 @@ import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus } from '../../actions/userManagement';
+import { updateUserStatus, updateRehireableStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
-import QuickSetupModal from 'components/UserProfile/QuickSetupModal/QuickSetupModal';
-import { boxStyle } from 'styles';
-import { connect, useDispatch } from 'react-redux';
+import { boxStyle, boxStyleDark } from 'styles';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
-import { setCurrentUser } from '../../actions/authActions';
+import { GiConsoleController } from 'react-icons/gi';
+import { setCurrentUser } from '../../actions/authActions'
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
 
 function UserProfile(props) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -101,6 +105,9 @@ function UserProfile(props) {
   const [saved, setSaved] = useState(false);
   const [isTeamSaved, setIsTeamSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
+  const [isRehireable, setIsRehireable] = useState(null); 
 
   const userProfileRef = useRef();
 
@@ -111,12 +118,14 @@ function UserProfile(props) {
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
 
+
   /* useEffect functions */
   useEffect(() => {
     loadUserProfile();
     getCurretLoggedinUserEmail();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
+    dispatch(getAllTimeOffRequests());
   }, []);
 
   useEffect(() => {
@@ -304,7 +313,8 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const newUserProfile = response.data;
-
+      // Assuming newUserProfile contains isRehireable attribute
+      setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
 
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
@@ -456,6 +466,10 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+    if (targetIsDevAdminUneditable){
+      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      return;
+    }
     setType(type);
     setShowModal(status);
 
@@ -576,7 +590,28 @@ function UserProfile(props) {
     setActiveInactivePopupOpen(false);
   };
 
-  /* useEffect functions */
+  const handleRehireableChange = () => {
+    const newRehireableStatus = !isRehireable;
+    setPendingRehireableStatus(newRehireableStatus);
+    setShowConfirmDialog(true);
+  };
+
+  const handleConfirmChange = () => {
+    setShowConfirmDialog(false);
+    const updatedUserProfile = {
+      ...userProfile,
+      isRehireable: pendingRehireableStatus,
+    };
+    updateRehireableStatus(updatedUserProfile, pendingRehireableStatus)
+    setIsRehireable(pendingRehireableStatus);
+    setUserProfile(updatedUserProfile);
+    setOriginalUserProfile(updatedUserProfile);
+  };
+
+  const handleCancelChange = () => {
+    setShowConfirmDialog(false);
+  };
+
   useEffect(() => {
     getTeamMembersWeeklySummary(); 
     loadUserProfile();
@@ -587,7 +622,6 @@ function UserProfile(props) {
     setShouldRefresh(false);
     loadUserProfile();
   }, [shouldRefresh]);
-
 
   /**
    *
@@ -666,6 +700,7 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
   const canSeeQSC = props.hasPermission('seeQSC');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
@@ -706,7 +741,7 @@ function UserProfile(props) {
   };
 
   return (
-    <div>
+    <div className={darkMode ? 'bg-oxford-blue' : ''} style={{minHeight: "100%"}}>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
         fullName={`${userProfile.firstName} ${userProfile.lastName}`}
@@ -731,7 +766,7 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      <Container className="emp-profile">
+      <Container className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <Row>
           <Col md="4" id="profileContainer">
             <div className="profile-img">
@@ -739,13 +774,13 @@ function UserProfile(props) {
                 src={profilePic || '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
-                className="profilePicture"
+                className="profilePicture bg-white"
               />
               {canEdit ? (
-                <div className="image-button file btn btn-lg btn-primary" style={boxStyle}>
+                <div className="image-button file btn btn-lg btn-primary" style={darkMode ? boxStyleDark : boxStyle}>
                   Change Photo
                   <Input
-                    style={{ width: '100%', height: '100%', zIndex: '2' }}
+                    style={{ width: '100%', height: '100%', zIndex: '2', cursor: 'pointer' }}
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
@@ -756,18 +791,19 @@ function UserProfile(props) {
               ) : null}
             </div>
 
-            { canSeeQSC ? <QuickSetupModal
-              canAddTitle={props.hasPermission('addNewTitle')}
-              canAssignTitle={props.hasPermission('assignTitle')}
-              setSaved={setSaved}
-              handleSubmit={handleSubmit}
-              setUserProfile={setUserProfile}
-              userProfile={userProfile}
-              userTeams={teams || []}
-              teamsData={props?.allTeams?.allTeamsData || []}
-              projectsData={props?.allProjects?.projects || []}
-              /> : ''
-              }
+            {canSeeQSC && (
+              <QuickSetupModal
+                canAddTitle={props.hasPermission('addNewTitle')}
+                canAssignTitle={props.hasPermission('assignTitle')}
+                setSaved={setSaved}
+                handleSubmit={handleSubmit}
+                setUserProfile={setUserProfile}
+                userProfile={userProfile}
+                userTeams={teams || []}
+                teamsData={props?.allTeams?.allTeamsData || []}
+                projectsData={props?.allProjects?.projects || []}
+              />
+            )}
           </Col>
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || (!isTeamsEqual && !isTeamSaved) || !isProjectsEqual ? (
@@ -779,7 +815,7 @@ function UserProfile(props) {
               <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
             ) : null}
             <div className="profile-head">
-              <h5 className="mr-2">{`${firstName} ${lastName}`}</h5>
+              <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
               <div style={{marginTop: '6px'}} >
               <EditableInfoModal
                 areaName="UserProfileInfoModal"
@@ -823,6 +859,17 @@ function UserProfile(props) {
                 />
                 </span>
               )}
+              {canChangeRehireableStatus && (
+                <span className='mr-2'>
+                  <i 
+                    className={isRehireable ? "fa fa-check-square-o": "fa fa-square-o"}
+                    aria-hidden="true"
+                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }} 
+                    title="Click to change rehirable status" 
+                    onClick={handleRehireableChange}
+                  />
+                </span>
+              )}
               <Button
                 onClick={() => {
                   setShowSelect(!showSelect);
@@ -831,7 +878,7 @@ function UserProfile(props) {
                 }}
                 color="primary"
                 size="sm"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
@@ -844,7 +891,7 @@ function UserProfile(props) {
                   color="primary"
                   size="sm"
                   title="Generates the summary intro for your team and copies it to your clipboard for easy use."
-                  style={boxStyle}
+                  style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Generate Summary Intro
                 </Button>
@@ -852,16 +899,17 @@ function UserProfile(props) {
                 ''
               )}
             </div>
-            <h6 className="job-title">{jobTitle}</h6>
-            <p className="proile-rating">
-              From : <span>{formatDate(userProfile.createdDate)}</span>
+            <h6 className="text-azure">{jobTitle}</h6>
+            <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
+              From : <span className={darkMode ? 'text-light' : ''}>{formatDate(userProfile.createdDate)}</span>
               {'   '}
-              To: <span>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
+              To: <span className={darkMode ? 'text-light' : ''}>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
               <div>
                 <Select
+                  className={darkMode ? 'text-azure' : ''}
                   options={summaries}
                   styles={customStyles}
                   onChange={e => {
@@ -878,7 +926,7 @@ function UserProfile(props) {
               showSummary &&
               summarySelected.map((data, i) => {
                 return (
-                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} />
+                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} darkMode={darkMode}/>
                 );
               })}
             <Badges
@@ -889,7 +937,8 @@ function UserProfile(props) {
               role={requestorRole}
               canEdit={canEdit}
               handleSubmit={handleBadgeSubmit}
-              isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} //
+              isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable}
+              darkMode={darkMode}
             />
           </Col>
         </Row>
@@ -904,6 +953,7 @@ function UserProfile(props) {
                 handleSubmit={handleSubmit}
                 role={requestorRole}
                 canEdit={canEdit}
+                darkMode={darkMode}
               />
               <BlueSquareLayout
                 userProfile={userProfile}
@@ -913,6 +963,7 @@ function UserProfile(props) {
                 user={props.auth.user}
                 isUserSelf={isUserSelf}
                 canEdit={canEdit}
+                darkMode={darkMode}
               />
             </div>
           </Col>
@@ -921,7 +972,7 @@ function UserProfile(props) {
               <Nav tabs>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '1' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '1', }, 'nav-link', (darkMode && activeTab === '1' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
                   >
@@ -930,7 +981,7 @@ function UserProfile(props) {
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '2' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '2' }, 'nav-link', (darkMode && activeTab === '2' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
                   >
@@ -939,7 +990,7 @@ function UserProfile(props) {
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '3' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '3' }, 'nav-link', (darkMode && activeTab === '3' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
                   >
@@ -948,7 +999,7 @@ function UserProfile(props) {
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '4' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '4' }, 'nav-link', (darkMode && activeTab === '4' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
                   >
@@ -957,7 +1008,7 @@ function UserProfile(props) {
                 </NavItem>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '5' }, 'nav-link')}
+                    className={classnames({ active: activeTab === '5' }, 'nav-link', (darkMode && activeTab === '5' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={e => {
                       e.preventDefault();
                       toggleTab('5');
@@ -971,7 +1022,7 @@ function UserProfile(props) {
             </div>
             <TabContent
               activeTab={activeTab}
-              className="tab-content profile-tab"
+              className={`tab-content profile-tab ${darkMode ? 'bg-yinmn-blue' : ''}`}
               id="myTabContent"
               style={{ border: 0 }}
             >
@@ -988,6 +1039,7 @@ function UserProfile(props) {
                   canEdit={canEdit}
                   canEditRole={canEditUserProfile}
                   roles={roles}
+                  darkMode={darkMode}
                 />
               </TabPane>
               <TabPane tabId="2">
@@ -1001,6 +1053,7 @@ function UserProfile(props) {
                     loadUserProfile={loadUserProfile}
                     canEdit={canEditUserProfile}
                     onStartDate={handleStartDate}
+                    darkMode={darkMode}
                   />
                 }
               </TabPane>
@@ -1014,7 +1067,7 @@ function UserProfile(props) {
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(userProfile.role)}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
@@ -1030,6 +1083,7 @@ function UserProfile(props) {
                   setCodeValid={setCodeValid}
                   saved={saved}
                   isTeamSaved={(isSaved) => setIsTeamSaved(isSaved)}
+                  darkMode={darkMode}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -1050,6 +1104,7 @@ function UserProfile(props) {
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
+                  darkMode={darkMode}
                 />
               </TabPane>
               <TabPane tabId="5">
@@ -1057,7 +1112,8 @@ function UserProfile(props) {
                   userProfile={userProfile}
                   setUserProfile={setUserProfile}
                   role={requestorRole}
-                  isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable} // 
+                  isRecordBelongsToJaeAndUneditable = {targetIsDevAdminUneditable}
+                  darkMode={darkMode}
                 />
               </TabPane>
             </TabContent>
@@ -1068,13 +1124,23 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Basic Information')}
                 color="primary"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Basic Information
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Basic Information</ModalHeader>
+              <Modal isOpen={showConfirmDialog} toggle={handleCancelChange}>
+                <ModalHeader toggle={handleCancelChange}>Confirm Status Change</ModalHeader>
                 <ModalBody>
+                  {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'}?`}
+                </ModalBody>
+                <ModalFooter>
+                  <Button color="primary" onClick={handleConfirmChange}>Confirm</Button>{' '}
+                  <Button color="secondary" onClick={handleCancelChange}>Cancel</Button>
+                </ModalFooter>
+              </Modal>
+              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Basic Information</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <BasicInformationTab
                   role={requestorRole}
                   userProfile={userProfile}
@@ -1087,9 +1153,10 @@ function UserProfile(props) {
                   canEdit={canEdit}
                   canEditRole={canEditUserProfile}
                   roles={roles}
+                  darkMode={darkMode}
                 />
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canUpdatePassword && canEdit && !isUserSelf && (
@@ -1113,7 +1180,7 @@ function UserProfile(props) {
                             }
                           }}
                         >
-                          <Button className="mr-1 btn-bottom" color="primary">
+                          <Button className="mr-1 btn-bottom" color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                             {' '}
                             Update Password
                           </Button>
@@ -1133,6 +1200,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1141,13 +1209,14 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -1157,13 +1226,13 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Volunteering Times')}
                 color="secondary"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Volunteering Times
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Volunteering Times'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Volunteering Times</ModalHeader>
-                <ModalBody>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Volunteering Times</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <VolunteeringTimeTab
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
@@ -1172,9 +1241,10 @@ function UserProfile(props) {
                     onEndDate={handleEndDate}
                     canEdit={canEdit}
                     onStartDate={handleStartDate}
+                    darkMode={darkMode}
                   />
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
@@ -1191,6 +1261,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1199,24 +1270,25 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary" style={boxStyle}>
+              <Button className="list-button" onClick={() => toggle('Teams')} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
                 Teams
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Teams</ModalHeader>
-                <ModalBody>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Teams</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
                     teamsData={props?.allTeams?.allTeamsData || []}
@@ -1241,9 +1313,10 @@ function UserProfile(props) {
                     userProfile={userProfile}
                     codeValid={codeValid}
                     setCodeValid={setCodeValid}
+                    darkMode={darkMode}
                   />
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
@@ -1260,6 +1333,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1268,24 +1342,25 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
                 </ModalFooter>
               </Modal>
-              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary" style={boxStyle}>
+              <Button className="list-button" onClick={() => toggle('Projects')} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
                 Projects
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Projects</ModalHeader>
-                <ModalBody>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Projects</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <ProjectsTab
                     userProjects={userProfile.projects || []}
                     userTasks={tasks}
@@ -1303,9 +1378,10 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
+                    darkMode={darkMode}
                   />
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
@@ -1322,6 +1398,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1330,13 +1407,14 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -1346,16 +1424,16 @@ function UserProfile(props) {
                 className="list-button"
                 onClick={() => toggle('Edit History')}
                 color="secondary"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Edit History
               </Button>
               <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle}>
-                <ModalHeader toggle={toggle}>Edit History</ModalHeader>
-                <ModalBody>
-                  <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile} />
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Edit History</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile} darkMode={darkMode} tabletView={true}/>
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
                     <div className="profileEditButtonContainer">
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
@@ -1372,6 +1450,7 @@ function UserProfile(props) {
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
+                            darkMode={darkMode}
                           />
                           <span
                             onClick={() => {
@@ -1380,13 +1459,14 @@ function UserProfile(props) {
                               setProjects(resetProjects);
                             }}
                             className="btn btn-outline-danger mr-1 btn-bottom"
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
                           </span>
                         </>
                       )}
-                      <Button outline onClick={() => loadUserProfile()}>
-                        <i className="fa fa-refresh" aria-hidden="true"></i>
+                      <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
                       </Button>
                     </div>
                   </Row>
@@ -1420,7 +1500,7 @@ function UserProfile(props) {
                     }
                   }}
                 >
-                  <Button className="mr-1 btn-bottom" color="primary" style={boxStyle}>
+                  <Button className="mr-1 btn-bottom" color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                     {' '}
                     Update Password
                   </Button>
@@ -1442,6 +1522,7 @@ function UserProfile(props) {
                     }
                     userProfile={userProfile}
                     setSaved={() => setSaved(true)}
+                    darkMode={darkMode}
                   />
                   {activeTab !== '3' && (
                     <span
@@ -1452,7 +1533,7 @@ function UserProfile(props) {
                         setProjects(resetProjects);
                       }}
                       className="btn btn-outline-danger mr-1 btn-bottom"
-                      style={boxStyle}
+                      style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Cancel
                     </span>

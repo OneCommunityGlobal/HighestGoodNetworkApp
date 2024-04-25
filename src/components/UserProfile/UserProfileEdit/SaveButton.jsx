@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 /**
  *
@@ -31,7 +31,7 @@ const stillSavingMessage = 'Saving, will take just a second...';
  * @returns
  */
 const SaveButton = props => {
-  const { handleSubmit, disabled, userProfile, setSaved } = props;
+  const { handleSubmit, disabled, userProfile, setSaved, darkMode } = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
   const [isLoading,setIsLoading] = useState(false);
@@ -99,10 +99,10 @@ const SaveButton = props => {
         outline
         color='primary'
         // to={`/userprofile/${this.state.userProfile._id}`}
-        className='btn btn-outline-primary mr-1'
+        className='btn btn-outline-primary mr-1 bg-white'
         onClick={handleSave}
         disabled={disabled}
-        style={boxStyle}
+        style={darkMode ? boxStyleDark : boxStyle}
       >
         Save Changes
       </Button>
