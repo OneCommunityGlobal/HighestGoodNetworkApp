@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 const UserTeamsTable = props => {
-  const {darkMode} = props;
+  const { darkMode } = props;
 
   const [tooltipOpen, setTooltip] = useState(false);
 
@@ -53,7 +53,7 @@ const UserTeamsTable = props => {
   useEffect(() => {
     if (teamCode !== '' && !props.isLoading && autoComplete === undefined) {
       const isMatchingSearch = props.inputAutoComplete.filter(item =>
-        item.toLowerCase().includes(teamCode.toLowerCase()),
+        filterInputAutoComplete(item).includes(filterInputAutoComplete(teamCode)),
       );
       setArrayInputAutoComplete(isMatchingSearch);
     } else {
@@ -61,6 +61,12 @@ const UserTeamsTable = props => {
     }
   }, [teamCode, props.inputAutoComplete, autoComplete]);
 
+  const filterInputAutoComplete = result => {
+    return result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+  };
   useEffect(() => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
@@ -70,21 +76,22 @@ const UserTeamsTable = props => {
       {innerWidth >= 1025 ? (
         <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
-            {props.canEditVisibility || ['Owner', 'Administrator'].includes(props.role) && (
-              <div className="row">
-                <Col md="7">
-                  <span className="teams-span">Visibility</span>
-                </Col>
-                <Col md="5">
-                  <ToggleSwitch
-                    switchType="visible"
-                    state={props.isVisible}
-                    handleUserProfile={props.onUserVisibilitySwitch}
-                    darkMode={darkMode}
-                  />
-                </Col>
-              </div>
-            )}
+            {props.canEditVisibility ||
+              (['Owner', 'Administrator'].includes(props.role) && (
+                <div className="row">
+                  <Col md="7">
+                    <span className="teams-span">Visibility</span>
+                  </Col>
+                  <Col md="5">
+                    <ToggleSwitch
+                      switchType="visible"
+                      state={props.isVisible}
+                      handleUserProfile={props.onUserVisibilitySwitch}
+                      darkMode={darkMode}
+                    />
+                  </Col>
+                </div>
+              ))}
             <div className="row" style={{ margin: '0 auto' }}>
               <Col
                 md={canAssignTeamToUsers ? '7' : '10'}
@@ -145,6 +152,7 @@ const UserTeamsTable = props => {
                     inputAutoStatus={props.inputAutoStatus}
                     isLoading={props.isLoading}
                     fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                    darkMode={darkMode}
                   />
                 ) : (
                   <div style={{ paddingTop: '6px', textAlign: 'center' }}>
@@ -155,7 +163,9 @@ const UserTeamsTable = props => {
             </div>
           </div>
           <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
-            <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
+            <table
+              className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}
+            >
               <thead>
                 {props.role && (
                   <tr>
@@ -288,7 +298,11 @@ const UserTeamsTable = props => {
                   <tr>
                     <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
                     <th className={darkMode ? 'bg-space-cadet' : ''}>Team Name</th>
-                    {canAssignTeamToUsers ? <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>{}</th> : null}
+                    {canAssignTeamToUsers ? (
+                      <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
+                        {}
+                      </th>
+                    ) : null}
                   </tr>
                 )}
               </thead>

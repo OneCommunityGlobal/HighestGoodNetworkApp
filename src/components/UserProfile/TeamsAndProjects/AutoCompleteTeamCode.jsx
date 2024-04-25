@@ -13,6 +13,7 @@ export const AutoCompleteTeamCode = props => {
     inputAutoStatus,
     isLoading,
     fetchTeamCodeAllUsers,
+    darkMode,
   } = props;
 
   useEffect(() => {
@@ -30,6 +31,18 @@ export const AutoCompleteTeamCode = props => {
   const styleP = { border: '1px solid #ccc', backgroundColor: '#fff' };
   const borderBottomRadius = { borderBottomRightRadius: '10px', borderBottomLeftRadius: '10px' };
   const styleSection = { ...styleP, ...borderBottomRadius };
+  const styleReload = { fontSize: '1.5rem', color: '#0780eb', cursor: 'pointer' };
+  const colordarkWithBorder = {
+    backgroundColor: '#1c2541',
+    color: '#fff',
+    border: '2px solid #1c5b87',
+  };
+  const colordark = {
+    backgroundColor: '#1c2541',
+    color: '#fff',
+    outline: 'none',
+    border: 'none',
+  };
 
   let autoComplete = false;
 
@@ -39,6 +52,7 @@ export const AutoCompleteTeamCode = props => {
         id="teamCode"
         value={teamCode}
         onChange={handleCodeChange}
+        style={darkMode ? colordark : null}
         placeholder="X-XXX"
         onFocus={() => setShowDropdown(true)}
       />
@@ -54,7 +68,10 @@ export const AutoCompleteTeamCode = props => {
         >
           {!isLoading ? (
             arrayInputAutoComplete.length === 0 ? (
-              <p className={classNameStyleP} style={styleP}>
+              <p
+                className={classNameStyleP}
+                style={darkMode ? { ...styleP, ...colordarkWithBorder } : styleP}
+              >
                 No options
               </p>
             ) : inputAutoStatus != 200 ? (
@@ -62,8 +79,9 @@ export const AutoCompleteTeamCode = props => {
                 <ListGroupItem
                   className="d-flex justify-content-center  align-items-center  "
                   onClick={fetchTeamCodeAllUsers}
+                  style={darkMode ? colordarkWithBorder : null}
                 >
-                  <IoReload style={{ fontSize: '1.5rem', color: '#0780eb', cursor: 'pointer' }} />
+                  <IoReload style={darkMode ? styleReload : styleReload} />
                 </ListGroupItem>
               </ListGroup>
             ) : (
@@ -72,7 +90,11 @@ export const AutoCompleteTeamCode = props => {
                   <div key={item}>
                     <p
                       className={classNameStyleP}
-                      style={{ ...styleP, cursor: 'pointer' }}
+                      style={
+                        darkMode
+                          ? { ...styleP, ...colordarkWithBorder, cursor: 'pointer' }
+                          : { ...styleP, cursor: 'pointer' }
+                      }
                       onClick={() => handleCodeChange(item, (autoComplete = true))}
                     >
                       {item}
@@ -84,7 +106,7 @@ export const AutoCompleteTeamCode = props => {
           ) : (
             <section
               className="h-100 d-flex justify-content-center align-items-center "
-              style={styleSection}
+              style={darkMode ? { ...styleSection, ...colordarkWithBorder } : styleSection}
             >
               <Spinner color="primary"></Spinner>
             </section>
