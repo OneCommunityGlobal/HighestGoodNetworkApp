@@ -1051,7 +1051,7 @@ function UserProfile(props) {
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(userProfile.role)}
+                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
@@ -1282,7 +1282,7 @@ function UserProfile(props) {
                     role={requestorRole}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
-                    canEditVisibility={canEdit && userProfile.role != 'Volunteer'}
+                    canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
                     handleSubmit={handleSubmit}
                     disabled={
                       !formValid.firstName ||
