@@ -488,11 +488,12 @@ function AddTaskModal(props) {
                       id="bestCase"
                       className="w-50 ml-2"
                     />
-                    <div className="warning">
+                    
+                  </div>
+                  <div className="warning">
                       {hoursWarning
                         ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
                         : ''}
-                    </div>
                   </div>
                   <div className="py-2 flex-responsive">
                     <label htmlFor="worstCase" className={`text-nowrap mr-2 w-25 mr-auto ${fontColor}`} style={{ fontWeight: 'normal' }}>
@@ -507,12 +508,13 @@ function AddTaskModal(props) {
                       onBlur={() => calHoursEstimate('hoursWorst')}
                       className="w-50 ml-2"
                     />
-                    <div className="warning">
+                    
+                  </div>
+                  <div className="warning">
                       {hoursWarning
                         ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
                         : ''}
                     </div>
-                  </div>
                   <div className="py-2 flex-responsive">
                     <label htmlFor="mostCase" className={`text-nowrap mr-2 w-25 mr-auto ${fontColor}`} style={{ fontWeight: 'normal' }}>
                       Most-case
@@ -526,12 +528,13 @@ function AddTaskModal(props) {
                       onBlur={() => calHoursEstimate('hoursMost')}
                       className="w-50 ml-2"
                     />
-                    <div className="warning">
+                    
+                  </div>
+                  <div className="warning">
                       {hoursWarning
                         ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
                         : ''}
                     </div>
-                  </div>
                   <div className="py-2 flex-responsive">
                     <label htmlFor="Estimated" className={`text-nowrap mr-2 w-25 mr-auto ${fontColor}`} style={{ fontWeight: 'normal' }}>
                       Estimated
