@@ -16,7 +16,7 @@ const setupHistoryTooltip = (
  * The search panel stateless component for user management grid
  */
 
-const UserSearchPanel = ({handleNewUserSetupPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
+const UserSearchPanel = ({handleNewUserSetupPopup, handleSetupHistoryPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
   // console.log('UserSearchPanel props', props);
 
   return (
@@ -25,7 +25,7 @@ const UserSearchPanel = ({handleNewUserSetupPopup, onNewUserClick, searchText, o
         {SEND_SETUP_LINK}
       </button>
       <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
-        <button type="button" className="btn btn-info mr-2" onClick={props.handleSetupHistoryPopup}>
+        <button type="button" className="btn btn-info mr-2" onClick={handleSetupHistoryPopup}>
           <FontAwesomeIcon
             className="bell_icon"
             icon={faBell}

@@ -41,8 +41,13 @@ const TableFilter = ({
         <select
           id=" id='created-date'"
           value={sortByCreationDateDesc}
-          onChange={(e) => setSortByCreationDateDesc(e.target.value === 'true' ? true : false)}
+          onChange={(e) => { 
+            setSortByCreationDateDesc(e.target.value);
+            if(e.target.value !== 'default'){
+              setSortByExpiredDateDesc('default');    
+            }}}
         >
+          <option value={'default'}></option>
           <option value={true}>Latest First</option>
           <option value={false}>Oldest First</option>
         </select>
@@ -52,8 +57,13 @@ const TableFilter = ({
         <select
           id=" id='expired-date'"
           value={sortByExpiredDateDesc}
-          onChange={(e) => setSortByExpiredDateDesc(e.target.value === 'true' ? true : false)}
+          onChange={(e) =>{
+             setSortByExpiredDateDesc(e.target.value);
+             if(e.target.value !== 'default'){
+              setSortByCreationDateDesc('default');
+            }}}
         >
+          <option value={'default'}></option>
           <option value={true}>Latest First</option>
           <option value={false}>Oldest First</option>
         </select>
@@ -90,8 +100,8 @@ const SetupHistoryPopup = props => {
   const [filteredSetupInvitationData , setFilteredSetupInvitationData] = useState([]);
   const [emailFilter, setEmailFilter] = useState('');
   const [statusFilter, setStatusFilter] = useState('');
-  const [sortByCreationDateDesc, setSortByCreationDateDesc] = useState(true);
-  const [sortByExpiredDateDesc, setSortByExpiredDateDesc] = useState(true);
+  const [sortByCreationDateDesc, setSortByCreationDateDesc] = useState('default');
+  const [sortByExpiredDateDesc, setSortByExpiredDateDesc] = useState('default');
   const [ selectedPage, setSelectedPage ] = useState(1);
   const [ pageSize, setPageSize ] = useState(10);
   const [ loading, setLoading ] = useState(true);
@@ -174,45 +184,54 @@ const SetupHistoryPopup = props => {
       return (emailMatch && statusMatch);
     });
 
-    const compareByCreationDate = (a, b) => new Date(a.createdDate) - new Date(b.createdDate);
-    const compareByExpirationDate = (a, b) => new Date(a.expiration) - new Date(b.expiration);
+    const compareByCreationAndExpirationDate = (a, b) => {
+      const createdDateComparison = sortByCreationDateDesc === "true" ? new Date(b.createdDate) - new Date(a.createdDate) : new Date(a.createdDate) - new Date(b.createdDate);
+      if (createdDateComparison !== 0 && sortByCreationDateDesc !== 'default') {
+          return createdDateComparison;
+      }
+      
+      // If sortByExpiredDateDesc is true, sort in descending order, else sort in ascending order
+      const expiredDateComparison = sortByExpiredDateDesc === "true" ? new Date(b.expiration) - new Date(a.expiration) : new Date(a.expiration) - new Date(b.expiration);
+      return expiredDateComparison;
+    };
+    filteredList.sort(compareByCreationAndExpirationDate);
 
-    /**
-     * Sort data list by created date and expired date
-     */
-    if (sortByCreationDateDesc && sortByExpiredDateDesc) {
-      filteredList.sort((a, b) => {
-        const createdDateComparison = compareByCreationDate(b, a);
-        if (createdDateComparison !== 0) {
-          return createdDateComparison;
-        }
-        return compareByExpirationDate(a, b);
-      });
-    } else if (sortByCreationDateDesc && !sortByExpiredDateDesc) {
-      filteredList.sort((a, b) => {
-        const createdDateComparison = compareByCreationDate(b, a);
-        if (createdDateComparison !== 0) {
-          return createdDateComparison;
-        }
-        return compareByExpirationDate(b, a);
-      });
-    } else if (!sortByCreationDateDesc && sortByExpiredDateDesc) {
-      filteredList.sort((a, b) => {
-        const createdDateComparison = compareByCreationDate(a, b);
-        if (createdDateComparison !== 0) {
-          return createdDateComparison;
-        }
-        return compareByExpirationDate(a, b);
-      });
-    } else {
-      filteredList.sort((a, b) => {
-        const createdDateComparison = compareByCreationDate(a, b);
-        if (createdDateComparison !== 0) {
-          return createdDateComparison;
-        }
-        return compareByExpirationDate(b, a);
-      });
-    }
+    // /**
+    //  * Sort data list by created date and expired date
+    //  */
+    // if (sortByCreationDateDesc && sortByExpiredDateDesc) {
+    //   filteredList.sort((a, b) => {
+    //     const createdDateComparison = compareByCreationDate(b, a);
+    //     if (createdDateComparison !== 0) {
+    //       return createdDateComparison;
+    //     }
+    //     return compareByExpirationDate(a, b);
+    //   });
+    // } else if (sortByCreationDateDesc && !sortByExpiredDateDesc) {
+    //   filteredList.sort((a, b) => {
+    //     const createdDateComparison = compareByCreationDate(b, a);
+    //     if (createdDateComparison !== 0) {
+    //       return createdDateComparison;
+    //     }
+    //     return compareByExpirationDate(b, a);
+    //   });
+    // } else if (!sortByCreationDateDesc && sortByExpiredDateDesc) {
+    //   filteredList.sort((a, b) => {
+    //     const createdDateComparison = compareByCreationDate(a, b);
+    //     if (createdDateComparison !== 0) {
+    //       return createdDateComparison;
+    //     }
+    //     return compareByExpirationDate(a, b);
+    //   });
+    // } else if (!sortByCreationDateDesc && !sortByExpiredDateDesc)  {
+    //   filteredList.sort((a, b) => {
+    //     const createdDateComparison = compareByCreationDate(a, b);
+    //     if (createdDateComparison !== 0) {
+    //       return createdDateComparison;
+    //     }
+    //     return compareByExpirationDate(b, a);
+    //   });
+    // }
     setFilteredUserDataCount(filteredList.length);
     // pagination
     return filteredList.slice((selectedPage - 1) * pageSize, selectedPage * pageSize);
@@ -283,7 +302,7 @@ const SetupHistoryPopup = props => {
         Setup Invitation History
       </ModalHeader>
       <ModalBody style={{minHeight: (pageSize * 5) + 'vh'}}>
-        <div className="setup-new-user-popup-section">
+        <div className="setup-invitation-popup-section">
         {loading ? <div>Data Loading...</div> : 
         setupInvitationData && setupInvitationData.length > 0 ? (
           <>
