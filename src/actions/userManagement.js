@@ -9,6 +9,8 @@ import {
 } from '../constants/userManagement';
 import { ENDPOINTS } from '../utils/URL';
 import { UserStatus } from '../utils/enums';
+import { getTimeEndDateEntriesForPeriod } from './timeEntries';
+import { startOfDay } from 'date-fns';
 
 /**
  * fetching all user profiles
@@ -34,23 +36,43 @@ export const getAllUserProfile = () => {
  * @param {*} status  - Active/InActive
  */
 export const updateUserStatus = (user, status, reactivationDate) => {
-  const userProfile = { ...user};
+  const userProfile = { ...user };
   userProfile.isActive = status === UserStatus.Active;
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status, reactivationDate };
-  if (status === UserStatus.InActive) {
-    patchData.endDate = moment(new Date()).format('YYYY-MM-DD');
-    userProfile.endDate = moment(new Date()).format('YYYY-MM-DD');
-  } else {
-    patchData.endDate = undefined;
-    userProfile.endDate = undefined;
-  }
-
-  const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+  // Return a function that can be used with dispatch
   return async dispatch => {
-    updateProfilePromise.then(res => {
-      dispatch(userProfileUpdateAction(userProfile));
-    });
+    if (status === UserStatus.InActive) {
+      try {
+        // Await the result of the asynchronous function
+        const lastEnddate = await dispatch(getTimeEndDateEntriesForPeriod(user._id, user.createdDate, userProfile.toDate));
+        // If lastenddate is not "N/A", set endDate and userProfile.endDate
+        if (lastEnddate !== "N/A") {
+          patchData.endDate = moment(lastEnddate).format('YYYY-MM-DD');
+          userProfile.endDate = moment(lastEnddate).format('YYYY-MM-DD');
+        } else {
+          patchData.endDate = undefined;
+          userProfile.endDate = undefined;
+        }
+
+        // Update the user profile using axios.patch
+        const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+        updateProfilePromise.then(res => {
+          dispatch(userProfileUpdateAction(userProfile));
+        });
+      } catch (error) {
+        console.error("Error updating user status:", error);
+      }
+    } else {
+      patchData.endDate = undefined;
+      userProfile.endDate = undefined;
+
+      // Update the user profile using axios.patch
+      const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+      updateProfilePromise.then(res => {
+        dispatch(userProfileUpdateAction(userProfile));
+      });
+    }
   };
 };
 
@@ -63,7 +85,7 @@ export const updateRehireableStatus = (user, isRehireable) => {
   const userProfile = { ...user };
   userProfile.isRehireable = isRehireable
   const requestData = { isRehireable };
-  
+
   const updateProfilePromise = axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData)
   return async dispatch => {
     updateProfilePromise.then(res => {
@@ -152,7 +174,7 @@ export const userProfileDeleteAction = user => {
  * @param {*} finalDate  - the date to be inactive
  */
 export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
-  const userProfile = { ...user};
+  const userProfile = { ...user };
   userProfile.endDate = finalDayDate;
   userProfile.isActive = status === 'Active';
   const patchData = { status, endDate: finalDayDate };
@@ -173,7 +195,7 @@ export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
 };
 
 export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet) => {
-  const userProfile = { ...user};
+  const userProfile = { ...user };
   userProfile.endDate = finalDayDate;
   userProfile.isActive = status === 'Active';
   userProfile.isSet = isSet === 'FinalDay';

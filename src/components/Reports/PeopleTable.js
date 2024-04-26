@@ -1,6 +1,6 @@
 import '../Teams/Team.css';
 import { Link } from 'react-router-dom';
-import './reports.css';
+import './reports.css'
 import moment from 'moment';
 
 function PeopleTable({ userProfiles }) {
@@ -47,7 +47,7 @@ function PeopleTable({ userProfiles }) {
             {moment(person.createdDate).format('MM-DD-YY')}
           </td>
           <td className="hide-mobile-start-end" style={{ width: '110px' }}>
-            {moment(person.endDate).format('MM-DD-YY') || 'N/A'}
+            {person.isActive ? 'N/A' : moment(person.endDate).format('MM-DD-YY')}
           </td>
         </tr>
       ));

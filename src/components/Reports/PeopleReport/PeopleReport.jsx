@@ -17,7 +17,7 @@ import {
 import { getUserProjects } from '../../../actions/userProjects';
 import { getWeeklySummaries, updateWeeklySummaries } from '../../../actions/weeklySummaries';
 import 'react-input-range/lib/css/index.css';
-import { getTimeEntriesForPeriod } from '../../../actions/timeEntries';
+import { getTimeEntriesForPeriod, getTimeEndDateEntriesForPeriod } from '../../../actions/timeEntries';
 import InfringementsViz from '../InfringementsViz';
 import TimeEntriesViz from '../TimeEntriesViz';
 import BadgeSummaryViz from '../BadgeSummaryViz';
@@ -28,7 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import {updateRehireableStatus} from '../../../actions/userManagement'
+import { updateRehireableStatus } from '../../../actions/userManagement'
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -97,6 +97,7 @@ class PeopleReport extends Component {
       await this.props.getUserProjects(userId);
       await this.props.getWeeklySummaries(userId);
       await this.props.getTimeEntriesForPeriod(userId, fromDate, toDate);
+      await this.props.getTimeendDateEntriesForPeriod(userId, fromDate, toDate);
 
       const { userProfile, userTask, userProjects, timeEntries, auth } = this.props;
 
@@ -447,13 +448,13 @@ class PeopleReport extends Component {
             <p>Title: {jobTitle}</p>
 
             {/* {endDate ? ( */}
-              <div className="rehireable">
-                <Checkbox
-                  value={isRehireable}
-                  onChange={() => this.setRehireable(!isRehireable)}
-                  label="Rehireable"
-                />
-              </div>
+            <div className="rehireable">
+              <Checkbox
+                value={isRehireable}
+                onChange={() => this.setRehireable(!isRehireable)}
+                label="Rehireable"
+              />
+            </div>
             {/* ) : (
               ''
             )} */}
@@ -507,7 +508,7 @@ class PeopleReport extends Component {
     return (
       <div className="container-people-wrapper">
         <ReportPage renderProfile={renderProfileInfo}>
-          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper": ""}`}>
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -652,4 +653,6 @@ export default connect(getPeopleReportData, {
   getUserTasks,
   getUserProjects,
   getTimeEntriesForPeriod,
+  getTimeEndDateEntriesForPeriod,
+
 })(PeopleReport);
