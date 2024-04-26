@@ -493,6 +493,7 @@ function AddTaskModal(props) {
                     />
                     
                   </div>
+                        {/* Moved warning outside of the parent div so that the input field does not get affected , now the warnings should appear in a new line - Sucheta*/}
                   <div className="warning">
                       {hoursWarning
                         ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
