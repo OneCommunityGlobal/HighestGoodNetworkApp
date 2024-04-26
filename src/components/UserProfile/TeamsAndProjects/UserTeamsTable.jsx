@@ -90,7 +90,7 @@ const UserTeamsTable = props => {
                     />
                   </Col>
                 </div>
-              ))}
+              )}
             <div className="row" style={{ margin: '0 auto' }}>
               <Col
                 md={canAssignTeamToUsers ? '7' : '10'}
