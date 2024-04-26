@@ -7,25 +7,22 @@ import hasPermission from 'utils/permissions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faCalendarDay, faCheck, faClock } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
-// import { useHistory } from "react-router-dom";
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 /**
  * The body row of the user table
  */
 const UserTableData = React.memo(props => {
+  const darkMode = props.darkMode;
+
   const [isChanging, onReset] = useState(false);
-  // const history = useHistory();
-  // const canAddDeleteEditOwners = hasPermission('addDeleteEditOwners');
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
-  console.log("user table", props)
   /**
    * reset the changing state upon rerender with new isActive status
    */
-
   useEffect(() => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
@@ -40,14 +37,13 @@ const UserTableData = React.memo(props => {
   const checkPermissionsOnOwner = () => {
     const recordEmail = props.user.email;
     const loginUserEmail = props.authEmail;
-    
-    return (props.user.role === 'Owner' && !canAddDeleteEditOwners) 
-      || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
 
+    return (props.user.role === 'Owner' && !canAddDeleteEditOwners)
+      || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
 
   return (
-    <tr className="usermanagement__tr" id={`tr_user_${props.index}`}>
+    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : '' }`} id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
@@ -57,9 +53,8 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
       </td>
-
       <td className="email_cell">
-      <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
+      <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.firstName} </a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -70,7 +65,7 @@ const UserTableData = React.memo(props => {
         />
       </td>
        <td className="email_cell">
-       <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+       <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.lastName}</a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -79,7 +74,6 @@ const UserTableData = React.memo(props => {
             toast.success('Last Name Copied!');
           }}
         />
-
       </td>
       <td>{props.user.role}</td>
       <td className="email_cell">
@@ -109,7 +103,7 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={boxStyle}
+          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
@@ -121,7 +115,7 @@ const UserTableData = React.memo(props => {
           }`}
           onClick={e => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={boxStyle}
+          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -161,7 +155,7 @@ const UserTableData = React.memo(props => {
               props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
             );
           }}
-          style={boxStyle}
+          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
         >
           {props.isSet ? CANCEL : SET_FINAL_DAY}
         </button>
@@ -172,7 +166,7 @@ const UserTableData = React.memo(props => {
           : ''}
       </td>
       <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
-      
+
        <td className="email_cell">
       {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
         <FontAwesomeIcon
@@ -186,30 +180,30 @@ const UserTableData = React.memo(props => {
       </td>
       {checkPermissionsOnOwner() ? null : (
         <td>
-        {
-          props.auth?.user.userid === props.user._id ? '': 
-                  <><span className="usermanagement-actions-cell">
-                      <button
-                        type="button"
-                        className="btn btn-outline-danger btn-sm"
-                        onClick={e => {
-                          props.onDeleteClick(props.user, 'archive');
-                        }}
-                        style={boxStyle}
-                      >
-                        {DELETE}
-                      </button>
-                    </span>
-                    
-                    </>
-          }
           <span className="usermanagement-actions-cell">
-                      <ResetPasswordButton user={props.user} isSmallButton />
-                    </span>
+            <button
+              type="button"
+              className="btn btn-outline-danger btn-sm"
+              onClick={e => {
+                props.onDeleteClick(props.user, 'archive');
+              }}
+              style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"} : boxStyle}
+              disabled={props.auth?.user.userid === props.user._id}
+            >
+              {DELETE}
+            </button>
+          </span>
+          <span className="usermanagement-actions-cell">
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton />
+          </span>
         </td>
       )}
     </tr>
   );
 });
 
-export default connect(null, {hasPermission})(UserTableData);
+const mapStateToProps = state => ({
+  auth: state.auth,
+});
+
+export default connect(mapStateToProps, { hasPermission })(UserTableData);

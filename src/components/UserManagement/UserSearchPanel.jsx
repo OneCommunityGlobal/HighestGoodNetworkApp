@@ -4,9 +4,9 @@ import { boxStyle } from 'styles';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
 import { Tooltip, OverlayTrigger } from 'react-bootstrap';
-/**
- * The search panel stateless component for user management grid
- */
+
+import { boxStyle, boxStyleDark } from 'styles';
+
 
 const setupHistoryTooltip = (
   <Tooltip id="tooltip">
@@ -14,12 +14,16 @@ const setupHistoryTooltip = (
   </Tooltip>
 )
 
-const UserSearchPanel = props => {
+/**
+ * The search panel stateless component for user management grid
+ */
+
+const UserSearchPanel = ({handleNewUserSetupPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
   // console.log('UserSearchPanel props', props);
 
   return (
     <div className="input-group mt-3" id="new_usermanagement">
-      <button type="button" className="btn btn-info mr-2" onClick={props.handleNewUserSetupPopup}>
+      <button type="button" className="btn btn-info mr-2" onClick={handleNewUserSetupPopup} style={darkMode ? boxStyleDark : boxStyle}>
         {SEND_SETUP_LINK}
       </button>
       <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
@@ -37,9 +41,9 @@ const UserSearchPanel = props => {
         type="button"
         className="btn btn-info mr-2"
         onClick={e => {
-          props.onNewUserClick();
+          onNewUserClick();
         }}
-        style={boxStyle}
+        style={darkMode ? boxStyleDark : boxStyle}
       >
         {CREATE_NEW_USER}
       </button>
@@ -53,9 +57,9 @@ const UserSearchPanel = props => {
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
-        value={props.searchText}
+        value={searchText}
         onChange={e => {
-          props.onSearch(e.target.value);
+          onSearch(e.target.value);
         }}
       />
       <div className="input-group-prepend ml-2">
@@ -63,7 +67,7 @@ const UserSearchPanel = props => {
         <select
           id="active-filter-dropdown"
           onChange={e => {
-            props.onActiveFiter(e.target.value);
+            onActiveFiter(e.target.value);
           }}
         >
           <option value="all">All</option>

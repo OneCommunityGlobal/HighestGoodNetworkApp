@@ -27,7 +27,7 @@ function TotalTeamReport(props) {
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
   const [userNameList, setUserNameList] = useState({});
 
-  const { startDate, endDate, userProfiles, allTeamsData } = props;
+  const { startDate, endDate, userProfiles, allTeamsData, darkMode } = props;
 
   const fromDate = startDate.toLocaleDateString('en-CA');
   const toDate = endDate.toLocaleDateString('en-CA');
@@ -409,8 +409,8 @@ function TotalTeamReport(props) {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-container">
-        <div className="total-title">Total Team Report</div>
+      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Team Report</div>
         <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
@@ -458,7 +458,7 @@ function TotalTeamReport(props) {
     <div>
       {!dataReady ? (
         <div>
-          <Loading />
+          <Loading align="center" darkMode={darkMode}/>
         </div>
       ) : (
         <div>

@@ -48,6 +48,7 @@ function LeaderBoard({
   totalTimeMouseoverText,
   allRequests,
   showTimeOffRequestModal,
+  darkMode,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -166,7 +167,7 @@ function LeaderBoard({
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-        <Table className="leaderboard table-fixed">
+        <Table className={`leaderboard table-fixed ${darkMode ? 'text-light' : ''}`}>
           <thead>
             <tr>
               <th>Status</th>
