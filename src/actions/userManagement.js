@@ -48,8 +48,8 @@ export const updateUserStatus = (user, status, reactivationDate) => {
         const lastEnddate = await dispatch(getTimeEndDateEntriesForPeriod(user._id, user.createdDate, userProfile.toDate));
         // If lastenddate is not "N/A", set endDate and userProfile.endDate
         if (lastEnddate !== "N/A") {
-          patchData.endDate = moment(lastEnddate).format('YYYY-MM-DD');
-          userProfile.endDate = moment(lastEnddate).format('YYYY-MM-DD');
+          patchData.endDate = moment(lastEnddate).format('YYYY-MM-DDTHH:mm:ss');
+          userProfile.endDate = moment(lastEnddate).format('YYYY-MM-DDTHH:mm:ss');
         } else {
           patchData.endDate = undefined;
           userProfile.endDate = undefined;
