@@ -7,37 +7,41 @@ import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate } from 'utils/formatDate';
+import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY  } from 'utils/formatDate';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
 const startEndDateValidation = props => {
   return (
-    props.userProfile.createdDate > props.userProfile.endDate && props.userProfile.endDate !== ''
+    props.userProfile.startDate > props.userProfile.endDate && props.userProfile.endDate !== ''
   );
 };
+
 
 const StartDate = props => {
   const {darkMode} = props;
 
   if (!props.canEdit) {
-    return <p className={darkMode ? 'text-azure' : ''}>{formatDate(props.userProfile.createdDate)}</p>;
+    return <p className={darkMode ? 'text-azure' : ''}>{formatDateYYYYMMDD(props.userProfile.startDate)}</p>;
   }
+  
+  
   return (
     <Input
       type="date"
       name="StartDate"
       id="startDate"
       className={startEndDateValidation(props) ? 'border-error-validation' : null}
-      value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
+      value={props.userProfile.startDate}
+      min={formatDateYYYYMMDD(props.userProfile.createdDate)}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
+        props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
         props.onStartDateComponent(e.target.value);
       }}
       placeholder="Start Date"
       invalid={!props.canEdit}
-      max={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
+      max={props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : ''}
     />
   );
 };
@@ -49,7 +53,7 @@ const EndDate = props => {
     return (
       <p className={darkMode ? 'text-azure' : ''}>
         {props.userProfile.endDate
-          ? formatDate(props.userProfile.endDate)
+          ? formatDateYYYYMMDD(props.userProfile.endDate)
           : 'N/A'}
       </p>
     );
@@ -71,8 +75,8 @@ const EndDate = props => {
       placeholder="End Date"
       invalid={!props.canEdit}
       min={
-        props.userProfile.createdDate
-          ? moment(props.userProfile.createdDate).format('YYYY-MM-DD')
+        props.userProfile.startDate
+          ? formatDateYYYYMMDD(props.userProfile.startDate)
           : ''
       }
     />
@@ -245,6 +249,10 @@ const ViewTab = props => {
   const [historyModal, setHistoryModal] = useState(false);
 
   const handleStartDates = async startDate => {
+
+    if(!userProfile.isFirstTimelog) {
+      alert('This user has already logged time in the system. Are you sure you want to change the start date?');
+    }
     props.onStartDate(startDate);
   };
 
@@ -305,7 +313,7 @@ const ViewTab = props => {
       });
 
     //Get total tangible & intangible hours
-    const createdDate = moment(userProfile.createdDate).format('YYYY-MM-DD');
+    const createdDate = formatDateYYYYMMDD(userProfile.createdDate);
     const today = moment().format('YYYY-MM-DD');
 
     axios
@@ -337,6 +345,14 @@ const ViewTab = props => {
 
   return (
     <div data-testid="volunteering-time-tab">
+      <Row className="volunteering-time-row">
+        <Col md="6">
+          <Label className="hours-label">Account Created Date</Label>
+        </Col>
+        <Col md="6">
+        <p>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+        </Col>
+      </Row>
       <Row className="volunteering-time-row">
         <Col md="6">
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Start Date</Label>
