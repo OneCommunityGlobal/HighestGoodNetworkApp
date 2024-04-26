@@ -76,8 +76,7 @@ const UserTeamsTable = props => {
       {innerWidth >= 1025 ? (
         <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
-            {props.canEditVisibility ||
-              (['Owner', 'Administrator'].includes(props.role) && (
+            {props.canEditVisibility && (
                 <div className="row">
                   <Col md="7">
                     <span className="teams-span">Visibility</span>
