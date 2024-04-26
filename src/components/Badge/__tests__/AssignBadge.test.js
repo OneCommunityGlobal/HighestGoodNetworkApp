@@ -8,6 +8,7 @@ import Autosuggest from 'react-autosuggest';
 import { Provider } from 'react-redux';
 import { badgeReducer } from 'reducers/badgeReducer';
 import { GET_FIRST_NAME, GET_LAST_NAME } from 'constants/badge';
+import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
@@ -19,26 +20,20 @@ const mockallBadgeData = [
 const mockUserProfilesData = [
   {
     permissions: {
-      frontPermissions: [
-        'getWeeklySummaries',
-        'seeUserManagement'
-      ],
-      backPermissions: []
+      frontPermissions: ['getWeeklySummaries', 'seeUserManagement'],
+      backPermissions: [],
     },
     isActive: true,
     weeklycommittedHours: 50,
     role: 'Volunteer',
     firstName: 'jerry',
     lastName: 'volunteer1',
-    email: 'jerryvolunteer1@gmail.com'
+    email: 'jerryvolunteer1@gmail.com',
   },
   {
     permissions: {
-      frontPermissions: [
-        'editTimeEntry',
-        'toggleTangibleTime'
-      ],
-      backPermissions: []
+      frontPermissions: ['editTimeEntry', 'toggleTangibleTime'],
+      backPermissions: [],
     },
     isActive: true,
     weeklycommittedHours: 10,
@@ -46,7 +41,7 @@ const mockUserProfilesData = [
     firstName: 'jerry',
     lastName: 'volunteer2',
     email: 'jerryvolunteer2@gmail.com',
-  }
+  },
 ];
 
 const store = mockStore({
@@ -57,17 +52,16 @@ const store = mockStore({
   },
   allUserProfiles: {
     userProfiles: mockUserProfilesData,
-  }
+  },
+  theme: themeMock,
 });
 
 const renderComponent = () => {
   return render(
     <Provider store={store}>
-      <AssignBadge 
-        allBadgeData={mockallBadgeData}
-      />
-    </Provider>
-  )  
+      <AssignBadge allBadgeData={mockallBadgeData} />
+    </Provider>,
+  );
 };
 
 beforeEach(() => {
@@ -109,7 +103,7 @@ describe('AssignBadge component', () => {
     };
 
     render(
-      <div style={{ marginRight: '5px' }} id='this-div'>
+      <div style={{ marginRight: '5px' }} id="this-div">
         <Autosuggest
           suggestions={firstSuggestions}
           onSuggestionsFetchRequested={onFirstSuggestionsFetchRequested}
@@ -119,10 +113,10 @@ describe('AssignBadge component', () => {
           renderSuggestion={renderSuggestion}
           inputProps={FirstInputProps}
           style={{ marginLeft: '5px', marginRight: '5px' }}
-          aria-labelledby='searchByNameLabel'
+          aria-labelledby="searchByNameLabel"
         />
-      </div>
-    )
+      </div>,
+    );
 
     const suggestionList = screen.getAllByRole('listbox');
     const optionList = screen.getAllByRole('option');
@@ -134,9 +128,9 @@ describe('AssignBadge component', () => {
     const initialState = {
       firstName: '',
       lastName: '',
-    }
-    let newState = badgeReducer(initialState, { type: GET_FIRST_NAME, firstName: 'NewFirstName' })
-    newState = badgeReducer(newState, { type: GET_LAST_NAME, lastName: 'NewLastName' })
+    };
+    let newState = badgeReducer(initialState, { type: GET_FIRST_NAME, firstName: 'NewFirstName' });
+    newState = badgeReducer(newState, { type: GET_LAST_NAME, lastName: 'NewLastName' });
 
     expect(newState.firstName).toEqual('NewFirstName');
     expect(newState.lastName).toEqual('NewLastName');
@@ -144,7 +138,7 @@ describe('AssignBadge component', () => {
   it('Render the Assign Badge button', () => {
     renderComponent();
 
-    const buttonElement = screen.getByText('Assign Badge')
+    const buttonElement = screen.getByText('Assign Badge');
     expect(buttonElement).toBeInTheDocument();
   });
   it('Render the tool tip hover message', async () => {
@@ -153,8 +147,10 @@ describe('AssignBadge component', () => {
     const tooltip = screen.getByTestId('NameInfo');
     fireEvent.mouseEnter(tooltip);
 
-    const tip1 = "Really, you're not sure what \"name\" means? Start typing a first or last name and a list of the active members (matching what you type) will be auto generated. Then you........ CHOOSE ONE!"
-    const tip2 = "Yep, that's it. Next you click \"Assign Badge\" and.... choose one or multiple badges! Click \"confirm\" then \"submit\" and those badges will show up as part of that person's earned badges. You can even assign a person multiple of the same badge(s) by repeating this process and choosing the same badge as many times as you want them to earn it."
+    const tip1 =
+      'Really, you\'re not sure what "name" means? Start typing a first or last name and a list of the active members (matching what you type) will be auto generated. Then you........ CHOOSE ONE!';
+    const tip2 =
+      'Yep, that\'s it. Next you click "Assign Badge" and.... choose one or multiple badges! Click "confirm" then "submit" and those badges will show up as part of that person\'s earned badges. You can even assign a person multiple of the same badge(s) by repeating this process and choosing the same badge as many times as you want them to earn it.';
     const message1 = await screen.findByText(tip1);
     const message2 = await screen.findByText(tip2);
     expect(message1).toBeInTheDocument();
@@ -162,22 +158,22 @@ describe('AssignBadge component', () => {
   });
   it('Dispatches action when badges are assigned', async () => {
     renderComponent();
-    
-    const buttonElement = screen.getByText('Assign Badge')
+
+    const buttonElement = screen.getByText('Assign Badge');
     expect(buttonElement).toBeInTheDocument();
-    fireEvent.click(buttonElement)
-    
+    fireEvent.click(buttonElement);
+
     expect(store.getActions()).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          type: 'GET_MESSAGE'
-        })
-      ])
-    )
+          type: 'GET_MESSAGE',
+        }),
+      ]),
+    );
   });
   it('2 badges selected message appears', async () => {
     renderComponent();
-    const numOfBadges = screen.getByText("2 badges selected");
+    const numOfBadges = screen.getByText('2 badges selected');
     expect(numOfBadges).toBeInTheDocument();
   });
 });
