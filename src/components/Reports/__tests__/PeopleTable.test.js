@@ -7,6 +7,8 @@ import moment from 'moment';
 
 
 describe('PeopleTable component', () => {
+  // Shengwei/Peter: Update createdDate to startDate due to changes in the Report and UserProfile component
+  // Test case updated: renders the people details correctly
   const userProfiles = [
     { firstName: 'Jane', lastName: 'Doe', _id: 1, isActive: true, startDate: '2023-02-02T20:00:22.224Z', endDate: null },
     { firstName: 'John', lastName: 'Smith', _id: 2, isActive: false, startDate: '2023-03-02T20:00:22.224Z', endDate: '2024-03-02T20:00:22.224Z' },
