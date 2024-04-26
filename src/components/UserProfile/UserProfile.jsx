@@ -49,7 +49,7 @@ import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useDispatch, useSelector } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
+import { convertDateFormatToMMMDDYY } from 'utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
@@ -357,15 +357,15 @@ function UserProfile(props) {
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        createdDate: newUserProfile?.createdDate.split('T')[0],
+        startDate: newUserProfile?.startDate.split('T')[0],
       });
       setOriginalUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        createdDate: newUserProfile?.createdDate.split('T')[0],
+        startDate: newUserProfile?.startDate.split('T')[0],
       });
-      setUserStartDate(newUserProfile?.createdDate.split('T')[0]);
+      setUserStartDate(newUserProfile?.startDate.split('T')[0]);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -923,9 +923,10 @@ function UserProfile(props) {
             </div>
             <h6 className="text-azure">{jobTitle}</h6>
             <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
-              From : <span className={darkMode ? 'text-light' : ''}>{formatDate(userProfile.createdDate)}</span>
+              {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
+              From : <span className={darkMode ? 'text-light' : ''}>{convertDateFormatToMMMDDYY(userProfile.startDate)}</span>
               {'   '}
-              To: <span className={darkMode ? 'text-light' : ''}>{userProfile.endDate ? formatDate(userProfile.endDate) : 'N/A'}</span>
+              To: <span className={darkMode ? 'text-light' : ''}>{userProfile.endDate ? convertDateFormatToMMMDDYY(userProfile.endDate) : 'N/A'}</span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
@@ -1085,7 +1086,7 @@ function UserProfile(props) {
                   teamsData={props?.allTeams?.allTeamsData || []}
                   onAssignTeam={onAssignTeam}
                   onDeleteTeam={onDeleteTeam}
-                  edit={canEdit}
+                  edit={canEdit && !targetIsDevAdminUneditable}
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
@@ -1103,6 +1104,7 @@ function UserProfile(props) {
                     requestorRole == 'Owner' ||
                     targetIsDevAdminUneditable
                   }
+                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner' || !targetIsDevAdminUneditable}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
