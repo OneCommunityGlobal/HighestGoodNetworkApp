@@ -451,7 +451,7 @@ export function Header(props) {
           </Card>
         )}
       {/* Only render one unread message at a time */}
-      {props.auth.isAuthenticated && unreadNotifications.length > 0 ? 
+      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? 
        <NotificationCard notification={unreadNotifications[0]} /> : null} 
    
     </div>
