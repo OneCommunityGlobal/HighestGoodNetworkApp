@@ -185,53 +185,19 @@ const SetupHistoryPopup = props => {
     });
 
     const compareByCreationAndExpirationDate = (a, b) => {
-      const createdDateComparison = sortByCreationDateDesc === "true" ? new Date(b.createdDate) - new Date(a.createdDate) : new Date(a.createdDate) - new Date(b.createdDate);
+      const createdDateComparison = sortByCreationDateDesc === "true" ? 
+        new Date(b.createdDate) - new Date(a.createdDate) : new Date(a.createdDate) - new Date(b.createdDate);
       if (createdDateComparison !== 0 && sortByCreationDateDesc !== 'default') {
           return createdDateComparison;
       }
       
       // If sortByExpiredDateDesc is true, sort in descending order, else sort in ascending order
-      const expiredDateComparison = sortByExpiredDateDesc === "true" ? new Date(b.expiration) - new Date(a.expiration) : new Date(a.expiration) - new Date(b.expiration);
+      const expiredDateComparison = sortByExpiredDateDesc === "true" ? 
+        new Date(b.expiration) - new Date(a.expiration) : new Date(a.expiration) - new Date(b.expiration);
       return expiredDateComparison;
     };
     filteredList.sort(compareByCreationAndExpirationDate);
 
-    // /**
-    //  * Sort data list by created date and expired date
-    //  */
-    // if (sortByCreationDateDesc && sortByExpiredDateDesc) {
-    //   filteredList.sort((a, b) => {
-    //     const createdDateComparison = compareByCreationDate(b, a);
-    //     if (createdDateComparison !== 0) {
-    //       return createdDateComparison;
-    //     }
-    //     return compareByExpirationDate(a, b);
-    //   });
-    // } else if (sortByCreationDateDesc && !sortByExpiredDateDesc) {
-    //   filteredList.sort((a, b) => {
-    //     const createdDateComparison = compareByCreationDate(b, a);
-    //     if (createdDateComparison !== 0) {
-    //       return createdDateComparison;
-    //     }
-    //     return compareByExpirationDate(b, a);
-    //   });
-    // } else if (!sortByCreationDateDesc && sortByExpiredDateDesc) {
-    //   filteredList.sort((a, b) => {
-    //     const createdDateComparison = compareByCreationDate(a, b);
-    //     if (createdDateComparison !== 0) {
-    //       return createdDateComparison;
-    //     }
-    //     return compareByExpirationDate(a, b);
-    //   });
-    // } else if (!sortByCreationDateDesc && !sortByExpiredDateDesc)  {
-    //   filteredList.sort((a, b) => {
-    //     const createdDateComparison = compareByCreationDate(a, b);
-    //     if (createdDateComparison !== 0) {
-    //       return createdDateComparison;
-    //     }
-    //     return compareByExpirationDate(b, a);
-    //   });
-    // }
     setFilteredUserDataCount(filteredList.length);
     // pagination
     return filteredList.slice((selectedPage - 1) * pageSize, selectedPage * pageSize);
