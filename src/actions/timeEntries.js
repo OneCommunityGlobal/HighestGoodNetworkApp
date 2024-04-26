@@ -48,7 +48,6 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
     .endOf('day')
     .format('YYYY-MM-DDTHH:mm:ss');
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
-  console.log(url);
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
