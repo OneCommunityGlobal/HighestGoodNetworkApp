@@ -31,33 +31,6 @@ const sessionPersistReducer = persistReducer(
   combineReducers(sessionReducers),
 );
 
-// const filteredReducer = reducer => {
-//   let knownKeys = Object.keys(reducer(undefined, { type: '@@FILTER/INIT' }));
-//   return (state, action) => {
-//     let filteredState = state;
-
-//     if (knownKeys.length && state !== undefined) {
-//       filteredState = knownKeys.reduce(
-//         (current, key) => Object.assign(current, { [key]: state[key] }),
-//         {},
-//       );
-//     }
-
-//     console.log("FILTER : ", action);
-
-//     const newState = reducer(filteredState, action);
-//     let nextState = state;
-//     if (newState !== filteredState) {
-//       knownKeys = Object.keys(newState);
-//       nextState = {
-//         ...state,
-//         ...newState,
-//       };
-//     }
-//     return nextState;
-//   };
-// };
-
 const filteredReducer = reducer => {
   let knownKeys = Object.keys(reducer(undefined, { type: '@@FILTER/INIT' }));
   return (state, action) => {
