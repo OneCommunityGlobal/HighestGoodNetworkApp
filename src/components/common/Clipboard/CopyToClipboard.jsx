@@ -16,7 +16,7 @@ const CopyToClipboard = ({ writeText, message }) => {
     <FontAwesomeIcon 
       className="copy-to-clipboard" 
       icon={faCopy} onClick={handleCopyToClipboard} 
-      color={darkMode ? 'grey' : ''}
+      color={darkMode ? 'lightgray' : ''}
     />
   );
 };
