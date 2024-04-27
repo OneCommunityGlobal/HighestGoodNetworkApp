@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
+import _ from 'lodash';
 
 const SetupNewUserPopup = React.memo(props => {
   const [email, setEmail] = useState('');
@@ -29,6 +30,7 @@ const SetupNewUserPopup = React.memo(props => {
         });
       }
     } else {
+      
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER(), { baseUrl, email, weeklyCommittedHours })
         .then(res => {
@@ -38,10 +40,6 @@ const SetupNewUserPopup = React.memo(props => {
               message: 'The setup link has been successfully sent',
               state: 'success',
             });
-            // console.log(res.data)
-            setTimeout(()=>{
-              props.handleShouldRefreshInvitationHistory();
-            }, 800)
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
@@ -61,9 +59,12 @@ const SetupNewUserPopup = React.memo(props => {
           setTimeout(() => {
             setAlert({ visibility: 'hidden', message: '', state: 'success' });
             setEmail('');
-            props.handleShouldRefreshInvitationHistory();
             setWeeklyCommittedHours(0);
-          }, 2000);
+          }, 1500);
+          
+          _.debounce(() => {
+            props.handleShouldRefreshInvitationHistory();
+          }, 800);
         });
     }
   };
