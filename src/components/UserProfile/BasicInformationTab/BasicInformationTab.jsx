@@ -19,10 +19,9 @@ import { isString } from 'lodash';
 import { toast } from 'react-toastify';
 
 
-const Name = props => {
+export const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay } = props;
   const { firstName, lastName } = userProfile;
-
   if (canEdit) {
     return (
       <>
@@ -32,6 +31,7 @@ const Name = props => {
               type="text"
               name="firstName"
               id="firstName"
+              data-testid='firstName'
               value={firstName}
               // className={styleProfile.profileText}
               onChange={e => {
@@ -50,6 +50,7 @@ const Name = props => {
               type="text"
               name="lastName"
               id="lastName"
+              data-testid='lastName'
               value={lastName}
               // className={styleProfile.profileText}
               onChange={e => {
@@ -75,7 +76,7 @@ const Name = props => {
   );
 };
 
-const Title = props => {
+export const Title = props => {
   const { userProfile, setUserProfile, canEdit, desktopDisplay } = props;
   const { jobTitle } = userProfile;
 
@@ -88,6 +89,7 @@ const Title = props => {
               type="text"
               name="title"
               id="jobTitle"
+              data-testid="jobTitle"
               value={jobTitle}
               onChange={e => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
@@ -108,7 +110,7 @@ const Title = props => {
   );
 };
 
-const Email = props => {
+export const Email = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay } = props;
   const { email, privacySettings, emailSubscriptions } = userProfile;
 
@@ -121,12 +123,14 @@ const Email = props => {
           <FormGroup>
             <ToggleSwitch
               switchType="email"
+              id="emailPrivacy"
               state={privacySettings?.email}
               handleUserProfile={props.handleUserProfile}
             />
 
             <ToggleSwitch
               switchType="email-subcription"
+              id="emailSubscription"
               state={emailSubscriptions? emailSubscriptions : false}
               handleUserProfile={props.handleUserProfile}
             />
@@ -135,6 +139,7 @@ const Email = props => {
               type="email"
               name="email"
               id="email"
+              data-testid="email"
               value={email}
               onChange={e => {
                 setUserProfile({ ...userProfile, email: e.target.value });
@@ -160,7 +165,7 @@ const Email = props => {
   );
 };
 
-const formatPhoneNumber = str => {
+export const formatPhoneNumber = str => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
@@ -190,7 +195,7 @@ const formatPhoneNumber = str => {
   // Unconventional
   return str;
 };
-const Phone = props => {
+export const Phone = props => {
   const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay } = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
@@ -200,12 +205,15 @@ const Phone = props => {
           <FormGroup>
             <ToggleSwitch
               switchType="phone"
+              id="phone"
               state={privacySettings?.phoneNumber}
               handleUserProfile={handleUserProfile}
             />
             <PhoneInput
               inputClass="phone-input-style"
               country={'us'}
+              data-testid="ph-input-style"
+              id="ph-input-style"
               value={phoneNumber}
               onChange={phoneNumber => {
                 setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
@@ -227,7 +235,7 @@ const Phone = props => {
   );
 };
 
-const TimeZoneDifference = props => {
+export const TimeZoneDifference = props => {
   const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay } = props;
   const [signedOffset, setSignedOffset] = useState('');
   const viewingTimeZone = props.userProfile.timeZone;
@@ -285,6 +293,7 @@ const TimeZoneDifference = props => {
 };
 
 const BasicInformationTab = props => {
+  console.log("props:"+props.userProfile.collaborationPreference);
   const {
     userProfile,
     setUserProfile,
