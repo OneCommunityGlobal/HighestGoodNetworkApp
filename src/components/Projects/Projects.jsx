@@ -18,6 +18,7 @@ import {
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
+import SearchProjectByPerson from './SearchProject/SearchProjectByPerson';
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalDelete from './../common/Modal';
@@ -315,7 +316,7 @@ handleSort = (e)=>{
 
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
-
+          <SearchProjectByPerson/>
           <table className="table table-bordered table-responsive-sm">
             <thead>
             <ProjectTableHeader onChange={this.onChangeCategory} selectedValue= {categorySelectedForSort} showStatus={showStatus} selectStatus={this.onSelectStatus} handleSort = {this.handleSort}/>

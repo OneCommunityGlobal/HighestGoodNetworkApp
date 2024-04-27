@@ -155,6 +155,8 @@ export const ENDPOINTS = {
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
 
+  GET_PROJECT_BY_PERSON: (userId)=> `${APIEndpoint}/userProfile/projects` ,  // by Sucheta
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
