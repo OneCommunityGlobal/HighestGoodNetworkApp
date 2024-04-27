@@ -19,6 +19,7 @@ import { wbsReducer } from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { teamUsersReducer } from './teamsTeamMembersReducer';
+import { themeReducer } from './themeReducer';
 import { badgeReducer } from './badgeReducer';
 import { popupEditorReducer } from './popupEditorReducer';
 import { roleReducer } from './roleReducer';
@@ -28,7 +29,9 @@ import { warningsByUserIdReducer } from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
-import {weeklySummaryRecipientsReducer} from "./weeklySummaryRecipientsReducer";
+import notificationReducer from './notificationReducer';
+import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer";
+import { followUpReducer } from "./followUpReducer";
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -61,12 +64,15 @@ const localReducers = {
   badge: badgeReducer,
   popupEditor: popupEditorReducer,
   taskEditSuggestions: taskEditSuggestionsReducer,
+  theme: themeReducer,
   role: roleReducer,
   rolePreset: rolePresetReducer,
   ownerMessage: ownerMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients:weeklySummaryRecipientsReducer,
+  notification: notificationReducer,
+  userFollowUp : followUpReducer,
 
   // bmdashboard
   materials: materialsReducer,

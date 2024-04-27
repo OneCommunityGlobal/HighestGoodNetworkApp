@@ -6,6 +6,7 @@ export const ENDPOINTS = {
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
+  UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
@@ -156,12 +157,18 @@ export const ENDPOINTS = {
 
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
 
+  GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
+  SET_USER_FOLLOWUP: (userId,taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
   BM_MATERIAL_TYPE: `${APIEndpoint}/bm/invtypes/material`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
+  BM_UPDATE_CONSUMABLES: `${APIEndpoint}/bm/updateConsumablesRecord`,
+  BM_CONSUMABLE_TYPES: `${APIEndpoint}/bm/invtypes/consumables`,
+  BM_CONSUMABLES_PURCHASE: `${APIEndpoint}/bm/consumables/purchase`,
   BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
