@@ -1,72 +1,23 @@
-// import thunk from 'redux-thunk';
-// import mockAdminState from '__tests__/mockAdminState';
-// import configureStore from 'redux-mock-store';
-// import { Provider } from 'react-redux';
-// import hasPermission from 'utils/permissions';
+
 import {Name, Title, Email, formatPhoneNumber , Phone, TimeZoneDifference,   BasicInformationTab} from '../BasicInformationTab/BasicInformationTab';
-import { render, screen, fireEvent, getValue,  waitFor, act } from '@testing-library/react';
-import { getInputValue } from '@testing-library/jest-dom';
-
+import { render, screen, fireEvent,   waitFor, act } from '@testing-library/react';
+import { toast } from 'react-toastify';
+import thunk from 'redux-thunk';
+import mockAdminState from '__tests__/mockAdminState';
+import configureStore from 'redux-mock-store';
+import { Provider } from 'react-redux';
+// import hasPermission from 'utils/permissions';
 // import { propTypes } from 'react-bootstrap/esm/Image';
-// import  Name from '../BasicInformationTab/BasicInformationTab';
 
 
 
-// const mockStore = configureStore([thunk]);
-// const initialState = {
-//   auth: {
-//     user: {
-//       permissions: {
-//         frontPermissions: ['addDeleteEditOwners'],
-//         backPermissions: [],
-//       },
-//       role: 'Volunteer',
-//     },
-//   },
-//   userProfile: {
-//     userProfile: { firstName: 'John', lastName: 'Doe' , collaborationPreference: 'video'},
 
-//   },
-//   role: mockAdminState.role,
-// };
-
-// let store;
-
-// beforeEach(() => {
-//   store = mockStore(initialState);
-// });
-// afterEach(() => {
-//   store.clearActions();
-// });
-
-
-// const testProps = {
-//   userProfile: { firstName: 'John', lastName: 'Doe' , collaborationPreference: 'video'},
-//   setUserProfile: jest.fn(),
-//   formValid: { firstName: true, lastName: true },
-//   setFormValid: jest.fn(),
-//   canEdit: true,
-//   desktopDisplay: 3,
-// };
 
 
 jest.mock('../UserProfileEdit/ToggleSwitch', () => (props) => <div data-testid="toggleswitch">{props.id}</div>);
 jest.mock('react-phone-input-2', () => (props) => <div data-testid="phoneinput">{props.id}</div>);
 
-
-describe('BasicInformationTab component', () => {
-  // it('Basic Rendering', () => {
-  //   render(
-  //     <Provider store={store}>
-  //       <BasicInformationTab
-  //         props={props}
-  //       />
-  //      </Provider>,
-  //   );
-  
-  });
-
-/************************************************************************ */
+/*
 // describe('Test Suite for Name component', () => {
 //    let testProps= {
 //     userProfile: { firstName: 'John', lastName: 'Doe' },
@@ -315,7 +266,9 @@ describe('BasicInformationTab component', () => {
 //     jest.runOnlyPendingTimers();
 //     jest.useRealTimers();
 //   });
-//   const props = {
+
+
+//   let testProps = {
 //     isUserSelf: false,
 //     errorOccurred: false,
 //     setErrorOccurred: jest.fn(),
@@ -325,17 +278,105 @@ describe('BasicInformationTab component', () => {
 //     },
 //   };
 
-//   it('Test case 1 : renders "This is your own profile page" when user is self', () => {
-//     props.isUserSelf=true;
-//     render(<TimeZoneDifference {...props} />);
+ 
+
+//   it('Test case 1 : Renders "This is your own profile page" when user is self', () => {
+//     testProps.isUserSelf=true;
+//     render(<TimeZoneDifference {...testProps} />);
 //     expect(screen.getByText('This is your own profile page')).toBeInTheDocument();
 //   });
 
-//   it('Test case 2 : renders timezone offset when user is not self', () => {
-//     props.isUserSelf=false;
-//     render(<TimeZoneDifference {...props} />);
+//   it('Test case 2 : Renders timezone offset when user is not self', () => {
+//     testProps.isUserSelf=false;
+//     render(<TimeZoneDifference {...testProps} />);
 //     expect(screen.getByText(/[-+]\d+ hours/)).toBeInTheDocument(); 
 //   });
 
+//   it('Test case 3 : Renders error message if the component has encountered error for the first time ',()=>{
+//      testProps = {
+//       isUserSelf: false,
+//       errorOccurred: false,
+//       setErrorOccurred: jest.fn(),
+//       desktopDisplay: true,
+//       userProfile: {
+//         timeZone: 'Invalid/Timezone',
+//       },    };
+//     render(<TimeZoneDifference {...testProps} />);
+//     jest.runAllTimers(); 
+//     expect(toast.error).toHaveBeenCalledWith('Error occurred while trying to calculate offset between timezones');
+//   });
+
+
+//   it('Test case 4 : Does not render error message if the component has not encountered error for the first time ',()=>{
+//    testProps.errorOccurred=true;
+//     render(<TimeZoneDifference {...testProps} />);
+//     jest.runAllTimers(); 
+//     expect(toast.error).not.toHaveBeenCalledWith('Error occurred while trying to calculate offset between timezones');
+//   });
+
+//   it('Test case 5 : verify if the timezone difference calculation works correctly ',()=>{
+//     testProps.userProfile.timeZone='America/New_York';
+//     render(<TimeZoneDifference {...testProps} />);
+//     expect(screen.getByText(/[-+]3+ hours/)).toBeInTheDocument(); 
+//     testProps.userProfile.timeZone='Europe/London';
+//     render(<TimeZoneDifference {...testProps} />);
+//     expect(screen.getByText(/[-+]8+ hours/)).toBeInTheDocument(); 
+
+//   });
+
 // });
+/*********************************************************************** */
+const hasPermission = jest.fn();
+
+const mockStore = configureStore([thunk]);
+const initialState = {
+  auth: {
+    user: {
+      permissions: {
+        frontPermissions: ['addDeleteEditOwners'],
+        backPermissions: [],
+      },
+      role: 'Volunteer',
+    },
+  },
+  userProfile: {
+    userProfile: { firstName: 'John', lastName: 'Doe' , collaborationPreference: 'video'},
+
+  },
+  role: mockAdminState.role,
+};
+
+
+
+
+let testProps = {
+  userProfile: { firstName: 'John', lastName: 'Doe' , collaborationPreference: 'video'},
+  setUserProfile: jest.fn(),
+  formValid: { firstName: true, lastName: true },
+  setFormValid: jest.fn(),
+  canEdit: true,
+  desktopDisplay: 3,
+};
+
+let store;
+
+describe('BasicInformationTab component', () => {
+  beforeEach(() => {
+    store = mockStore(initialState);
+  });
+  afterEach(() => {
+    store.clearActions();
+  });
+  
+  it('Basic Rendering', () => {
+    render(
+      <Provider store={store}>
+        <BasicInformationTab
+          {...testProps} hasPermission={hasPermission}
+         />
+       </Provider>,
+    );
+  
+  });
+});
 
