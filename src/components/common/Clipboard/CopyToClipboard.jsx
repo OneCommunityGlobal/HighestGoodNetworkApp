@@ -17,7 +17,7 @@ const CopyToClipboard = ({ writeText, message }) => {
       className="copy-to-clipboard"
       icon={faCopy}
       onClick={handleCopyToClipboard}
-      color={darkMode ? 'grey' : ''}
+      color={darkMode ? 'lightgrey' : ''}
     />
   );
 };

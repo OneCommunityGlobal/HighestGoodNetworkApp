@@ -35,6 +35,7 @@ const PermissionList = (props) => {
             description={permission.description}
             editable={editable}
             depth={depth}
+            darkMode={props.darkMode}
 
             //functions
             setPermissions={setPermissions}
