@@ -27,7 +27,7 @@ const TeamMemberTaskInfo = React.memo(() => {
             icon={faInfoCircle}
             title="Click this icon to learn about the task icons"
             onClick={handleModalOpen}
-            color={darkMode ? 'grey' : ''}
+            color={darkMode ? 'lightgray' : ''}
         />
         <Modal backdropClassName="task-info-modal-backdrop" isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
             <ModalHeader toggle={toggleInfoTaskIconModal}>

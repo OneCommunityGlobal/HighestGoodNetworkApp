@@ -16,7 +16,7 @@ import {
   Input,
   FormText,
 } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
 import task_icon from './task_icon.png';
@@ -34,11 +34,10 @@ import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { toast } from 'react-toastify';
 
 const SummaryBar = props => {
-  const darkMode = useSelector(state => state.theme.darkMode);
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
-  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit } = props;
+  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit, darkMode } = props;
 
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;
@@ -285,8 +284,8 @@ const SummaryBar = props => {
                   {' '}
                   Activity for{' '}
                 </font>
-                <CardTitle className="align-middle" tag="h3">
-                  <div>
+                <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
+                  <div className='font-weight-bold'>
                     {displayUserProfile.firstName + ' '}
                     {displayUserProfile.lastName}
                   </div>
@@ -296,7 +295,7 @@ const SummaryBar = props => {
             <Col className="d-flex col-lg-3 col-12 no-gutters">
               <Row className="no-gutters w-100">
                 {totalEffort < weeklyCommittedHours && (
-                  <div className={"border border-danger col-4 " + (darkMode ? "bg-space-cadet" : "")}>
+                  <div className={`border border-danger col-4 ${darkMode ? "bg-yinmn-blue" : "bg-white"}`}>
                     <div className="py-1"> </div>
                     <p className="text-center large_text_summary text-danger">!</p>
                     <font className="text-center" size="3">
@@ -306,7 +305,7 @@ const SummaryBar = props => {
                   </div>
                 )}
                 {totalEffort >= weeklyCommittedHours && (
-                  <div className={"border-green col-4 " + (darkMode ? "bg-dark-green" : "bg--dark-green")}>
+                  <div className={`border-green col-4 bg--dark-green`}>
                     <div className="py-1"> </div>
                     <p className="text-center large_text_summary">✓</p>
                     <font className="text-center" size="3">
@@ -316,7 +315,8 @@ const SummaryBar = props => {
                   </div>
                 )}
 
-                <div className="col-8 d-flex justify-content-center align-items-center">
+                <div className={`col-8 d-flex justify-content-center align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`} 
+                     style={{border: "1px solid black"}}>
                   <div className="align-items-center" id="timelogweeklychart">
                     <div className="align-items-center med_text_summary">
                       Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
@@ -334,7 +334,7 @@ const SummaryBar = props => {
             <Col className="d-flex col-lg-3 col-12 no-gutters">
               <Row className="no-gutters w-100">
                 {!weeklySummary ? (
-                  <div className="border border-danger col-4 no-gutters">
+                  <div className={`border border-danger col-4 no-gutters ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}>
                     <div className="py-1"> </div>
                     { isAuthUser || canEditData()  ? (
                       <p
@@ -361,7 +361,7 @@ const SummaryBar = props => {
                     <div className="py-2"> </div>
                   </div>
                 ) : (
-                  <div className={"border-green col-4 " + (darkMode ? "bg-dark-green" : "bg--dark-green")}>
+                  <div className={`border-green col-4 bg--dark-green`}>
                     <div className="py-1"> </div>
                     <p onClick={props.toggleSubmitForm} className="text-center large_text_summary summary-toggle" >
                       ✓
@@ -374,8 +374,8 @@ const SummaryBar = props => {
                 )}
 
                 <div
-                  className="col-8 d-flex align-items-center"
-
+                  className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                  style={{border: "1px solid black"}}
                 >
                   <div className="m-auto p-2 text-center">
                     <font onClick={props.toggleSubmitForm} className="med_text_summary align-middle summary-toggle" size="3">
@@ -396,7 +396,7 @@ const SummaryBar = props => {
               </Row>
             </Col>
 
-            <Col className={"m-auto mt-2 col-lg-4 col-12 badge-list " + (darkMode ? "bg-space-cadet" : "")}>
+            <Col className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? "bg-space-cadet" : ""}`}>
               <div className={"d-flex justify-content-around no-gutters"}>
                 &nbsp;&nbsp;
                 <div className="image_frame">
@@ -741,6 +741,7 @@ const mapStateToProps = state => ({
   authUser: state.auth.user,
   displayUserProfile: state.userProfile,
   displayUserTask: state.userTask,
+  darkMode: state.theme.darkMode,
 })
 
 export default connect(mapStateToProps, { hasPermission })(SummaryBar);
