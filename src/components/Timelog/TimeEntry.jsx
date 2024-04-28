@@ -14,7 +14,7 @@ import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
 import { hrsFilterBtnColorMap } from 'constants/colors';
-
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { toast } from 'react-toastify';
 
 /**
@@ -54,9 +54,13 @@ const TimeEntry = (props) => {
 
   let projectName, projectCategory, taskName, taskClassification;
 
+<<<<<<< HEAD
    // Prevent update time entry if user has been removed from the project ONLY IN WeeklyTab.
    // Default to false. Will re-assign shouldPreventTimeEntryUpdateInWeeklyTab value if current tab is WeeklyTab
   let shouldPreventTimeEntryUpdateInWeeklyTab = false;
+=======
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
+>>>>>>> e06ade2bddcea0ac2ee59bad4de98e6dbef319c4
 
   if (from === 'TaskTab') {
     // Time Entry rendered under Tasks tab
@@ -88,16 +92,16 @@ const TimeEntry = (props) => {
 
   //permission to edit any time log entry (from other user's Dashboard
     // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-  const canEdit = dispatch(hasPermission('editTimelogInfo')) 
+  const canEdit = (dispatch(hasPermission('editTimelogInfo')) 
     //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission('editTimeEntry')) 
+    || dispatch(hasPermission('editTimeEntry'))) && !cantEditJaeRelatedRecord;
 
   //permission to Delete time entry from other user's Dashboard
-  const canDelete = dispatch(hasPermission('deleteTimeEntryOthers')) ||
+  const canDelete = (dispatch(hasPermission('deleteTimeEntryOthers')) ||
     //permission to delete any time entry on their own time logs tab
     (isAuthUser && dispatch(hasPermission('deleteTimeEntry'))) ||
     //default permission: delete own sameday tangible entry
-    isAuthUserAndSameDayEntry;
+    isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord;;
 
   const toggleTangibility = async () => {
     setIsProcessing(true);
@@ -191,7 +195,7 @@ const TimeEntry = (props) => {
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {((canEdit || isAuthUserAndSameDayEntry) && (from === 'WeeklyTab' ? !shouldPreventTimeEntryUpdateInWeeklyTab : true)) 
+              {((canEdit || isAuthUserAndSameDayEntry) && (from === 'WeeklyTab' ? !shouldPreventTimeEntryUpdateInWeeklyTab : true) && !cantEditJaeRelatedRecord) 
                 && from === 'WeeklyTab' 
                 && (
                   <button className="mr-3 text-primary">
