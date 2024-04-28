@@ -20,7 +20,7 @@ import { toast } from 'react-toastify';
 
 
 export const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
   const { firstName, lastName } = userProfile;
   if (canEdit) {
     return (
@@ -112,7 +112,7 @@ export const Title = props => {
 };
 
 export const Email = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
   const { email, privacySettings, emailSubscriptions } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
@@ -199,7 +199,7 @@ export const formatPhoneNumber = str => {
   return str;
 };
 export const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay ,darkMode} = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
     return (
@@ -240,7 +240,7 @@ export const Phone = props => {
 };
 
 export const TimeZoneDifference = props => {
-  const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay } = props;
+  const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay, darkMode } = props;
   const [signedOffset, setSignedOffset] = useState('');
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
