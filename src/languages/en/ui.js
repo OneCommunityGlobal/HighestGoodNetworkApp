@@ -17,6 +17,7 @@ export const EQUIPMENT_TOOL_LIST = 'Equipment/Tool List';
 export const ISSUE = 'Issue';
 export const LESSON = 'Lesson';
 export const DASHBOARD = 'Dashboard';
+export const EDIT_USER_INFO = 'Edit';
 export const DELETE = 'Delete';
 export const LOGO = 'Time Tracking Tool';
 export const LOGOUT = 'Logout';

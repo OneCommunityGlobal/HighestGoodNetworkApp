@@ -11,6 +11,7 @@ import {
   MANAGE_FINAL_DAY,
   USER_START_DATE,
   USER_END_DATE,
+  EDIT_USER_INFO,
   REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 import userTableDataPermissions from 'utils/userTableDataPermissions';
@@ -23,6 +24,9 @@ const UserTableHeader = React.memo(props => {
     <tr>
       <th scope="col" id="usermanagement_active">
         {ACTIVE}
+      </th>
+      <th scope="col" id="usermanagement_edit">
+        {EDIT_USER_INFO}
       </th>
       <th scope="col" id="usermanagement_first">
         {FIRST_NAME}

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ResetPasswordButton from './ResetPasswordButton';
-import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
+import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL, EDIT_USER_INFO } from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
 import hasPermission from 'utils/permissions';
@@ -16,6 +16,7 @@ import { cantUpdateDevAdminDetails } from 'utils/permissions';
  */
 const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
+  const [isEditing, setIsEditing] = useState(false); // Editing User Info
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
 
   /**
@@ -51,8 +52,27 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
       </td>
+      <td className="usermanagement__active--input"> 
+          <button
+              type="button"
+              className="btn btn-outline-success btn-sm"
+              onClick={() => setIsEditing(prev => !prev)} 
+              style={boxStyle}
+            >
+              {EDIT_USER_INFO}
+            </button>
+        </td>
       <td className="email_cell">
-      <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
+        {isEditing?(
+          <input
+            type = "text"
+            value = {props.user.firstName}
+            onChange={e => props.handleFirstNameChange(e.target.value, props.user._id)}
+            onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+          />
+          ) : (
+            <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
+          )}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -63,7 +83,16 @@ const UserTableData = React.memo(props => {
         />
       </td>
        <td className="email_cell">
-       <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+        {isEditing?(
+            <input
+              type = "text"
+              value = {props.user.lastName}
+              onChange={e => props.handleLastNameChange(e.target.value, props.user._id)}
+              onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+            />
+            ) : (
+              <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+          )}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -73,9 +102,25 @@ const UserTableData = React.memo(props => {
           }}
         />
       </td>
-      <td>{props.user.role}</td>
+      <td>
+      {isEditing?(
+        //这里需要一个下拉菜单
+             <>{props.user.role}</>
+            ) : (
+              <>{props.user.role}</>
+          )}
+      </td>
       <td className="email_cell">
-        {props.user.email}
+        {isEditing?(
+            <input
+              type = "text"
+              value = {props.user.email}
+              onChange={e => props.handleEmailChange(e.target.value, props.user._id)}
+              onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+            />
+            ) : (
+              <>{props.user.email}</>
+        )} 
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -85,7 +130,18 @@ const UserTableData = React.memo(props => {
           }}
         />
       </td>
-      <td>{props.user.weeklycommittedHours}</td>
+      <td>
+        {isEditing?(
+            <input
+              type = "text"
+              value = {props.user.weeklycommittedHours}
+              onChange={e => props.handleTimeChange(e.target.value, props.user._id)}
+              onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+            />
+            ) : (
+              <> {props.user.weeklycommittedHours}</>
+        )} 
+      </td>
       <td>
         <button
           type="button"
@@ -163,7 +219,18 @@ const UserTableData = React.memo(props => {
           ? formatDate(props.user.reactivationDate)
           : ''}
       </td>
-      <td>{props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</td>
+      <td>
+        {isEditing?(
+          <input
+            type = "text"
+            value = {props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}
+            onChange={e => props.handleTimeChange(e.target.value, props.user._id)}
+            onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+          />
+          ) : (
+            <> {props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</>
+        )} 
+      </td>
       
        <td className="email_cell">
       {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}

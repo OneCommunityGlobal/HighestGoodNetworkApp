@@ -218,6 +218,8 @@ class UserManagement extends React.PureComponent {
                 this.state.activationDateOpen &&
                 this.state.finalDayDateOpen
               }
+              // onEditClick={this.onEditClick}
+              // onSaveClick={this.onSaveClick}
               onPauseResumeClick={that.onPauseResumeClick}
               onLogTimeOffClick={that.onLogTimeOffClick}
               onFinalDayClick={that.onFinalDayClick}

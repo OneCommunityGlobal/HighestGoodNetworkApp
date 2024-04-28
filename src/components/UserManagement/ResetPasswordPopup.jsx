@@ -68,6 +68,7 @@ const ResetPasswordPopup = React.memo(props => {
           <Input
             autoFocus
             type={showPassword.newPassword ? 'text' : 'password'}
+            label=""
             name="newpassword"
             id="newpassword"
             value={newPassword.password}
@@ -91,6 +92,7 @@ const ResetPasswordPopup = React.memo(props => {
           <Input
             type={showPassword.confirmPassword ? 'text' : 'password'}
             name="confirmpassword"
+            label=""
             id="confirmpassword"
             value={confirmPassword.password}
             onChange={event => {

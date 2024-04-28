@@ -30,6 +30,7 @@ const UserTableSearchHeader = React.memo(props => {
   return (
     <tr>
       <td id="user_active"></td>
+      <td id="user_edit"></td> 
       <td id="user_first">
         <TextSearchBox id={'firts_name_search'} searchCallback={onFirstNameSearch} />
       </td>
