@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 export const TaskEditSuggestionRow = ({
   taskEditSuggestion,
   handleToggleTaskEditSuggestionModal,
+  darkMode,
 }) => {
   const handleButtonClick = (event) => {
     event.stopPropagation(); // This stops the click event from bubbling up to the parent <tr>
@@ -12,7 +13,7 @@ export const TaskEditSuggestionRow = ({
   };
 
   return (
-    <table>
+    <table className={darkMode ? 'text-light' : ''}>
       <tbody>
         <tr onClick={() => handleToggleTaskEditSuggestionModal(taskEditSuggestion)}>
           <td>{datetimeToDate(taskEditSuggestion.dateSuggested)}</td>

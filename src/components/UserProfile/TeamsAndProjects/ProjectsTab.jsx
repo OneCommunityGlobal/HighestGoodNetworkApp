@@ -15,6 +15,7 @@ const ProjectsTab = props => {
     updateTask,
     handleSubmit,
     disabled,
+    darkMode,
   } = props;
   const [postProjectPopupOpen, setPostProjectPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -57,6 +58,7 @@ const ProjectsTab = props => {
         updateTask={updateTask}
         userId={userId}
         disabled={disabled}
+        darkMode={darkMode}
       />
     </React.Fragment>
   );
