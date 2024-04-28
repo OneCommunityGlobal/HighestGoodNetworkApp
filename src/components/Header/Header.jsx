@@ -268,7 +268,7 @@ export function Header(props) {
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
-          style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
+          style={user.role == 'Owner' ? { marginRight: '1rem' } : { marginRight: '1.5rem' }}
         >
           {isAuthenticated && <Timer />}
           {isAuthenticated && (
