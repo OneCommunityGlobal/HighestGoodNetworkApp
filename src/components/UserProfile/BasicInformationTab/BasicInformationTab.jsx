@@ -293,7 +293,6 @@ export const TimeZoneDifference = props => {
 };
 
 const BasicInformationTab = props => {
-  console.log("props:"+props.userProfile.collaborationPreference);
   const {
     userProfile,
     setUserProfile,
@@ -485,6 +484,7 @@ const BasicInformationTab = props => {
               type="text"
               name="collaborationPreference"
               id="collaborationPreference"
+              data-testid="collaborationPreference"
               value={userProfile.collaborationPreference}
               onChange={e => {
                 setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
@@ -520,7 +520,7 @@ const BasicInformationTab = props => {
               name="role"
               className="form-control"
             >
-              {roles.map(({ roleName }) => {
+              {roles.map(( roleName ) => {
                 if (roleName === 'Owner') return;
                 return (
                   <option key={roleName} value={roleName}>
@@ -563,6 +563,7 @@ const BasicInformationTab = props => {
               <Row className="ml-0">
                 <Col className="p-0" style={{ marginRight: '10px' }}>
                   <Input
+                    data-testid="location"
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
                   />
@@ -582,7 +583,7 @@ const BasicInformationTab = props => {
             </Col>
           ) : (
             <Col className="cols">
-              <Input onChange={handleLocation} value={userProfile.location.userProvided || ''} />
+              <Input data-testid="location" onChange={handleLocation} value={userProfile.location.userProvided || ''} />
               <div>
                 <Button color="secondary" block size="sm" onClick={onClickGetTimeZone} className="mt-2">
                   Get Time Zone
