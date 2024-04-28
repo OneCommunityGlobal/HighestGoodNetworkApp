@@ -19,8 +19,10 @@ import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { fetchAllFollowUps } from '../../actions/followUpActions';
 
 const TeamMemberTasks = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   // props from redux store
   const { authUser, displayUser, isLoading, usersWithTasks, usersWithTimeEntries } = props;
 
@@ -46,6 +48,7 @@ const TeamMemberTasks = React.memo(props => {
 
   useEffect(() => {
     dispatch(getAllTimeOffRequests());
+    dispatch(fetchAllFollowUps())
   }, []);
 
   const closeMarkAsDone = () => {
@@ -221,17 +224,17 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   return (
-    <div className="container team-member-tasks">
+    <div className={"container " + (darkMode ? "team-member-tasks bg-oxford-blue" : "team-member-tasks")}>
       <header className="header-box">
-        <h1>Team Member Tasks</h1>
+        <h1 className={darkMode ? "text-light" : ""}>Team Member Tasks</h1>
 
         {finishLoading ? (
           <div className="hours-btn-container">
             <button
               type="button"
               className={`show-time-off-btn ${
-                showWhoHasTimeOff ? 'show-time-off-btn-selected' : ''
-              }`}
+                showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
+              }` + (darkMode ? " box-shadow-dark" : "")}
               onClick={handleshowWhoHasTimeOff}
             >
               <svg
@@ -265,7 +268,7 @@ const TeamMemberTasks = React.memo(props => {
               <button
                 key={idx}
                 type="button"
-                className={`circle-border ${days} days`}
+                className={`circle-border ${days} days ` + (darkMode ? "box-shadow-dark" : "")}
                 title={`Timelogs submitted in the past ${days} days`}
                 style={{
                   color: selectedPeriod === days && isTimeFilterActive ? 'white' : color,
@@ -322,14 +325,17 @@ const TeamMemberTasks = React.memo(props => {
               {/* Empty column header for hours completed icon */}
               <th colSpan={1}/>
               <th colSpan={2} className="team-member-tasks-headers">
-                <Table borderless className="team-member-tasks-subtable">
+                <Table borderless className={"team-member-tasks-subtable " + (darkMode ? "text-light" : "")}>
                   <thead>
                     <tr>
                       <th className="team-member-tasks-headers team-member-tasks-user-name">
                         Team Member
                       </th>
                       <th className="team-member-tasks-headers team-clocks team-clocks-header">
-                        <FontAwesomeIcon icon={faClock} title="Weekly Committed Hours" />
+                        <FontAwesomeIcon 
+                          style={{color: darkMode ? 'lightgray' : ''}} 
+                          icon={faClock} 
+                          title="Weekly Committed Hours" />
                         /
                         <FontAwesomeIcon
                           style={{ color: 'green' }}
@@ -348,7 +354,7 @@ const TeamMemberTasks = React.memo(props => {
                 </Table>
               </th>
               <th colSpan={3} className="team-member-tasks-headers">
-                <Table borderless className="team-member-tasks-subtable">
+                <Table borderless className={"team-member-tasks-subtable " + (darkMode ? "text-light" : "")}>
                   <thead>
                     <tr>
                       <th>Tasks(s)</th>
