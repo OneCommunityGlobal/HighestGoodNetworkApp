@@ -37,7 +37,7 @@ export const generateArrayOfUniqColors = numberOfColors => {
 
   const arrayOfUniqColors = [...pieChartColors];
 
-  for (let i = pieChartColors.length; i < numberOfColors; i++) {
+  for (let i = pieChartColors.length; i < numberOfColors; i += 1) {
     const newUniqColor = generateUniqColor(arrayOfUniqColors);
     arrayOfUniqColors.push(newUniqColor);
   }

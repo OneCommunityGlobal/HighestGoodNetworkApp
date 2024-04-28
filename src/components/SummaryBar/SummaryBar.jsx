@@ -16,7 +16,7 @@ import {
   Input,
   FormText,
 } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
 import task_icon from './task_icon.png';
@@ -37,7 +37,7 @@ const SummaryBar = props => {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
-  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit } = props;
+  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit, darkMode } = props;
 
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;
@@ -268,10 +268,10 @@ const SummaryBar = props => {
     displayUserProfile !== undefined && summaryBarData !== undefined 
     ? <Container
           fluid
-          className={
+          className={"px-lg-0 rounded " + (
             isAuthUser || canEditData()
-              ? 'px-lg-0 bg--bar'
-              : 'px-lg-0 bg--bar disabled-bar'
+              ? (darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'bg--bar text--black box-shadow-light')
+              : (darkMode ? 'bg-space-cadet disabled-bar text-light box-shadow-dark' : 'bg--bar disabled-bar text--black box-shadow-light'))
           }
         >
           <Row className="no-gutters row-eq-height">
@@ -280,12 +280,12 @@ const SummaryBar = props => {
               align="center"
             >
               <div>
-                <font className="text--black  align-middle" size="3">
+                <font className="align-middle" size="3">
                   {' '}
                   Activity for{' '}
                 </font>
-                <CardTitle className="text--black align-middle" tag="h3">
-                  <div>
+                <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
+                  <div className='font-weight-bold'>
                     {displayUserProfile.firstName + ' '}
                     {displayUserProfile.lastName}
                   </div>
@@ -295,19 +295,19 @@ const SummaryBar = props => {
             <Col className="d-flex col-lg-3 col-12 no-gutters">
               <Row className="no-gutters w-100">
                 {totalEffort < weeklyCommittedHours && (
-                  <div className="border-red col-4 bg--white-smoke">
+                  <div className={`border border-danger col-4 ${darkMode ? "bg-yinmn-blue" : "bg-white"}`}>
                     <div className="py-1"> </div>
-                    <p className="text-center large_text_summary text--black text-danger">!</p>
-                    <font className="text-center text--black" size="3">
+                    <p className="text-center large_text_summary text-danger">!</p>
+                    <font className="text-center" size="3">
                       HOURS
                     </font>
                     <div className="py-2"> </div>
                   </div>
                 )}
                 {totalEffort >= weeklyCommittedHours && (
-                  <div className="border-green col-4 bg--dark-green">
+                  <div className={`border-green col-4 bg--dark-green`}>
                     <div className="py-1"> </div>
-                    <p className="text-center large_text_summary text--black">✓</p>
+                    <p className="text-center large_text_summary">✓</p>
                     <font className="text-center" size="3">
                       HOURS
                     </font>
@@ -315,9 +315,10 @@ const SummaryBar = props => {
                   </div>
                 )}
 
-                <div className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center">
+                <div className={`col-8 d-flex justify-content-center align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`} 
+                     style={{border: "1px solid black"}}>
                   <div className="align-items-center" id="timelogweeklychart">
-                    <div className="text--black align-items-center med_text_summary">
+                    <div className="align-items-center med_text_summary">
                       Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                       <Progress
                         value={getProgressValue(totalEffort, weeklyCommittedHours)}
@@ -333,12 +334,12 @@ const SummaryBar = props => {
             <Col className="d-flex col-lg-3 col-12 no-gutters">
               <Row className="no-gutters w-100">
                 {!weeklySummary ? (
-                  <div className="border-red col-4 bg--white-smoke no-gutters">
+                  <div className={`border border-danger col-4 no-gutters ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}>
                     <div className="py-1"> </div>
                     { isAuthUser || canEditData()  ? (
                       <p
                         className={
-                          'text-center summary-toggle large_text_summary text--black text-danger'
+                          'text-center summary-toggle large_text_summary text-danger'
                         }
                         onClick={props.toggleSubmitForm}
                       >
@@ -347,25 +348,25 @@ const SummaryBar = props => {
                     ) : (
                       <p
                         className={
-                          'text-center summary-toggle large_text_summary text--black text-danger'
+                          'text-center summary-toggle large_text_summary text-danger'
                         }
                       >
                         !
                       </p>
                     )}
 
-                    <font className="text-center text--black" size="3">
+                    <font className="text-center" size="3">
                       SUMMARY
                     </font>
                     <div className="py-2"> </div>
                   </div>
                 ) : (
-                  <div className="border-green col-4 bg--dark-green">
+                  <div className={`border-green col-4 bg--dark-green`}>
                     <div className="py-1"> </div>
-                    <p onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
+                    <p onClick={props.toggleSubmitForm} className="text-center large_text_summary summary-toggle" >
                       ✓
                     </p>
-                    <font className="text-center text--black" size="3">
+                    <font className="text-center" size="3">
                       SUMMARY
                     </font>
                     <div className="py-2"> </div>
@@ -373,11 +374,11 @@ const SummaryBar = props => {
                 )}
 
                 <div
-                  className="col-8 border-black bg--white-smoke d-flex align-items-center"
-
+                  className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                  style={{border: "1px solid black"}}
                 >
                   <div className="m-auto p-2 text-center">
-                    <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
+                    <font onClick={props.toggleSubmitForm} className="med_text_summary align-middle summary-toggle" size="3">
                       {weeklySummary || props.submittedSummary ? (
                         'You have submitted your weekly summary.'
                       ) : isAuthUser ? (
@@ -395,8 +396,8 @@ const SummaryBar = props => {
               </Row>
             </Col>
 
-            <Col className="m-auto mt-2 col-lg-4 col-12 badge-list">
-              <div className="d-flex justify-content-around no-gutters">
+            <Col className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? "bg-space-cadet" : ""}`}>
+              <div className={"d-flex justify-content-around no-gutters"}>
                 &nbsp;&nbsp;
                 <div className="image_frame">
                   <div className="redBackgroup">
@@ -740,6 +741,7 @@ const mapStateToProps = state => ({
   authUser: state.auth.user,
   displayUserProfile: state.userProfile,
   displayUserTask: state.userTask,
+  darkMode: state.theme.darkMode,
 })
 
 export default connect(mapStateToProps, { hasPermission })(SummaryBar);
