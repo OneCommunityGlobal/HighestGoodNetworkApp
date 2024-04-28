@@ -5,7 +5,7 @@ import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
 
 // eslint-disable-next-line import/prefer-default-export, react/function-component-definition
-export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => {
+export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkMode }) => {
   const [totalHours, setTotalHours] = useState(0);
 
   // create the pie chart
@@ -22,6 +22,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
     svg
       .append('text')
       .attr('text-anchor', 'middle')
+      .style('fill', darkMode ? 'white' : 'black')
       .text(totalValue.toFixed(2));
 
     return svg;
@@ -39,7 +40,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
       .map(obj => obj.value)
       .reduce((a, c) => {
         return a + c;
-      },0);
+      }, 0);
     setTotalHours(totalValue);
 
     getCreateSvgPie(totalValue)
@@ -62,7 +63,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
   }, [data]);
 
   return (
-    <div className="pie-chart-wrapper">
+    <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
       <div>
         <div className="pie-chart-legend-header">
@@ -74,7 +75,12 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader }) => 
             <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
             <div className="data-legend-info">
               {dataLegend[key].map((legendPart, index) => (
-                <div className="data-legend-info-part" key={index}>{legendPart}</div>
+                <div
+                  className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`}
+                  key={index}
+                >
+                  {legendPart}
+                </div>
               ))}
             </div>
           </div>

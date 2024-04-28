@@ -19,6 +19,7 @@ import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import { fetchAllFollowUps } from '../../actions/followUpActions';
 
 const TeamMemberTasks = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -47,6 +48,7 @@ const TeamMemberTasks = React.memo(props => {
 
   useEffect(() => {
     dispatch(getAllTimeOffRequests());
+    dispatch(fetchAllFollowUps())
   }, []);
 
   const closeMarkAsDone = () => {
@@ -331,7 +333,7 @@ const TeamMemberTasks = React.memo(props => {
                       </th>
                       <th className="team-member-tasks-headers team-clocks team-clocks-header">
                         <FontAwesomeIcon 
-                          style={{color: darkMode ? 'grey' : ''}} 
+                          style={{color: darkMode ? 'lightgray' : ''}} 
                           icon={faClock} 
                           title="Weekly Committed Hours" />
                         /

@@ -17,10 +17,12 @@ import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
 import hasPermission from '../../utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 export const Badges = props => {
+  const {darkMode} = props;
+
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
 
@@ -59,7 +61,7 @@ export const Badges = props => {
 
   return (
     <>
-      <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
+      <Card id="badgeCard" className={darkMode ? 'bg-space-cadet' : ''}>
         <CardHeader>
           <div className="badge-header">
 
@@ -79,7 +81,7 @@ export const Badges = props => {
             <div >
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
-                  <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
+                  <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured
                   </Button>
                   <Modal size="lg" isOpen={isOpen} toggle={toggle}>
@@ -107,7 +109,7 @@ export const Badges = props => {
                   <Button
                     className="btn--dark-sea-green mr-2"
                     onClick={assignToggle}
-                    style={boxStyle}
+                    style={darkMode ? boxStyleDark : boxStyle}
                   >
                     Assign Badges
                   </Button>
@@ -137,7 +139,7 @@ export const Badges = props => {
             style={{
               fontWeight: 'bold',
               fontSize: 18,
-              color: '#285739',
+              color: darkMode ? '#fff' : '#285739',
             }}
           >
             {congratulatoryText}

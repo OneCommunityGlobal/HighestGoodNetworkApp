@@ -4,7 +4,7 @@ import "./PermissionChangeLogTable.css";
 import { formatDate, formatted_AM_PM_Time } from 'utils/formatDate';
 
 
-const PermissionChangeLogTable = ({ changeLogs }) => {
+const PermissionChangeLogTable = ({ changeLogs, darkMode }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 20;
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -16,34 +16,34 @@ const PermissionChangeLogTable = ({ changeLogs }) => {
 
   return (
     <>
-      <table className='permission-change-log-table' style={{ borderCollapse: 'collapse', width: '100%' }}>
+      <table className='permission-change-log-table' style={{ borderCollapse: 'collapse', width: '98%', margin: "0 auto" }}>
         <thead>
-          <tr>
-            <th className='permission-change-log-table--header'>Log Date and Time (PST)</th>
-            <th className='permission-change-log-table--header'>Role Name</th>
-            <th className='permission-change-log-table--header'>Permissions</th>
-            <th className='permission-change-log-table--header'>Permissions Added</th>
-            <th className='permission-change-log-table--header'>Permissions Removed</th>
-            <th className='permission-change-log-table--header'>Editor Role</th>
-            <th className='permission-change-log-table--header'>Editor Email</th>
+          <tr className={darkMode ? 'table-row-dark' : 'table-row'}>
+            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Log Date and Time (PST)</th>
+            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Role Name</th>
+            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Permissions</th>
+            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Permissions Added</th>
+            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Permissions Removed</th>
+            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Editor Role</th>
+            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Editor Email</th>
           </tr>
         </thead>
         <tbody>
           {currentItems.map(log => (
             <tr key={log._id}>
               {/* ... (same as before) */}
-              <td className='permission-change-log-table--cell'>{`${formatDate(log.logDateTime)} ${formatted_AM_PM_Time(log.logDateTime)}`}</td>
-              <td className='permission-change-log-table--cell'>{log.roleName}</td>
-              <td className='permission-change-log-table--cell'>{log.permissions.join(', ')}</td>
-              <td className='permission-change-log-table--cell'>{log.permissionsAdded.join(', ')}</td>
-              <td className='permission-change-log-table--cell'>{log.permissionsRemoved.join(', ')}</td>
-              <td className='permission-change-log-table--cell'>{log.requestorRole}</td>
-              <td className='permission-change-log-table--cell'>{log.requestorEmail}</td>
+              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{`${formatDate(log.logDateTime)} ${formatted_AM_PM_Time(log.logDateTime)}`}</td>
+              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.roleName}</td>
+              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.permissions.join(', ')}</td>
+              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.permissionsAdded.join(', ')}</td>
+              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.permissionsRemoved.join(', ')}</td>
+              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.requestorRole}</td>
+              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.requestorEmail}</td>
             </tr>
           ))}
         </tbody>
       </table>
-        <div className="pagination">
+        <div className="pagination" style={{ width: '98%', margin: "5px auto" }}>
         {Array.from({ length: Math.ceil(changeLogs.length / itemsPerPage) }).map((_, index) => (
           <button 
             key={index} 
