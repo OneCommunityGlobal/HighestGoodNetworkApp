@@ -54,13 +54,10 @@ const TimeEntry = (props) => {
 
   let projectName, projectCategory, taskName, taskClassification;
 
-<<<<<<< HEAD
    // Prevent update time entry if user has been removed from the project ONLY IN WeeklyTab.
    // Default to false. Will re-assign shouldPreventTimeEntryUpdateInWeeklyTab value if current tab is WeeklyTab
   let shouldPreventTimeEntryUpdateInWeeklyTab = false;
-=======
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
->>>>>>> e06ade2bddcea0ac2ee59bad4de98e6dbef319c4
 
   if (from === 'TaskTab') {
     // Time Entry rendered under Tasks tab
