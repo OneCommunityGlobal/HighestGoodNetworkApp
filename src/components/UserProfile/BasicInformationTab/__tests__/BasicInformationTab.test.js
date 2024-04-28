@@ -322,7 +322,7 @@ describe('Test suite for TimeZoneDifference component ', () => {
   //   render(<TimeZoneDifference {...testProps} />);
   //   expect(screen.getByText(/[-+]8+ hours/)).toBeInTheDocument(); 
 
-  });
+  // });
 
 });
 /*********************************************************************** */
