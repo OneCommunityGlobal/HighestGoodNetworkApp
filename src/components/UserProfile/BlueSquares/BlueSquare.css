@@ -80,6 +80,28 @@
   background-color: #0061a7;
 }
 
+.blueSquareButtonDark {
+  display: flex;
+  text-decoration: none;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(to bottom, #00a6ff 5%, #007ad1 100%);
+  background-color: rgb(69, 162, 255);
+  border-radius: 4px;
+
+  cursor: pointer;
+  color: #ffffff;
+  font-family: Arial;
+  margin: 5px;
+  width: 20px;
+  height: 20px;
+}
+
+.blueSquareButtonDark:hover {
+  background: linear-gradient(to bottom, #1da1ff 5%, #23b2ff 100%);
+  background-color: #1da1ff;
+}
+
 @media (max-width: 1420px) {
   #wrapper .report { 
      left: 102%;
