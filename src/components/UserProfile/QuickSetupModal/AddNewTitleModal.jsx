@@ -149,7 +149,6 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               selectedTeam={selectedTeam}
               setSearchText={setSearchText}
               searchText={searchText}
-              setNewTeamName={() => console.log('test')}
               cleanTeamAssigned={cleanTeamAssigned}
               onSelectTeam={onSelectTeam}
               undoTeamAssigned={undoTeamAssigned}

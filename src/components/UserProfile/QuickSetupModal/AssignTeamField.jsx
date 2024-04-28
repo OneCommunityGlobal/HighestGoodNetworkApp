@@ -34,7 +34,6 @@ const AssignTeamField = React.memo(props => {
         autoFocus={true}
         onChange={e => {
           props.setSearchText(e.target.value);
-          props.setNewTeamName(e.target.value);
           toggle(true);
         }}
       />
