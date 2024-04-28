@@ -31,12 +31,12 @@ const PermissionListItem = (props) => {
     // Check if 'Assign Project to Users' permission is being toggled
     if (permission === 'assignProjectToUsers') {
       const relatedPermissions = ['getProjectMembers', 'getUserProfiles', 'putUserProfile', 'putUserProfileImportantInfo', 'updateTask', 'deleteProject'];
-      const addingAssignPermission = !updatedPermissions.includes(permission);
+      const addAssignPermission = !updatedPermissions.includes(permission);
 
       relatedPermissions.forEach(relatedPermission => {
-          if (addingAssignPermission && !updatedPermissions.includes(relatedPermission)) {
+          if (addAssignPermission && !updatedPermissions.includes(relatedPermission)) {
               updatedPermissions.push(relatedPermission); // Add related permissions if not present
-          } else if (!addingAssignPermission && updatedPermissions.includes(relatedPermission)) {
+          } else if (!addAssignPermission && updatedPermissions.includes(relatedPermission)) {
               updatedPermissions = updatedPermissions.filter(perm => perm !== relatedPermission); // Remove related permissions
           }
       });
