@@ -134,7 +134,8 @@ export default function ToolItemsTable({
                     </td>
                     <td>
                       {el.itemType.available.includes(el._id) &&
-                      el.condition !== 'Lost' && el.condition !== 'Needs Replacing' ? (
+                      el.condition !== 'Lost' &&
+                      el.condition !== 'Needs Replacing' ? (
                         <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
                       ) : (
                         <FontAwesomeIcon icon={faTimes} size="lg" color="red" />

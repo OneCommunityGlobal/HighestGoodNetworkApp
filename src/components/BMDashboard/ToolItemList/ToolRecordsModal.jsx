@@ -75,7 +75,8 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.map(({ _id, date, status, makeModelPref, priority, quantity, requestedBy, usageDesc }) => {
+          {record.map(
+            ({ _id, date, status, makeModelPref, priority, quantity, requestedBy, usageDesc }) => {
               return (
                 <tr key={_id}>
                   <td>{priority}</td>

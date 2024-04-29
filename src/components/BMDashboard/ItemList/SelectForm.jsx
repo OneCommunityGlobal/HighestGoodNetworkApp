@@ -1,6 +1,6 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
-export default function SelectForm({ items, setSelectedProject, setSelectedItem, label }) {
+export default function SelectForm({ items, setSelectedProject, setSelectedItem }) {
   let projectsSet = [];
   if (items.length) {
     projectsSet = [...new Set(items.map(el => el.project?.name))];
