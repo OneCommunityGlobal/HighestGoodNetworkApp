@@ -53,7 +53,7 @@ import { boxStyle } from 'styles';
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile } = props;
 
   // props from store
   const { authUser } = props;
@@ -495,7 +495,8 @@ const TimeEntryForm = props => {
                 id="dateOfWork"
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
-                disabled={!canUserEditDate}
+                min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]} 
+                disabled={!canEditTimeEntry}
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -650,6 +651,7 @@ TimeEntryForm.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
+  userProfile: state.userProfile,
 });
 
 export default connect(mapStateToProps, {

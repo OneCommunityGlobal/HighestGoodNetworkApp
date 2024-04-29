@@ -7,9 +7,11 @@ import moment from 'moment';
 
 
 describe('PeopleTable component', () => {
+  // Shengwei/Peter: Update createdDate to startDate due to changes in the Report and UserProfile component
+  // Test case updated: renders the people details correctly
   const userProfiles = [
-    { firstName: 'Jane', lastName: 'Doe', _id: 1, isActive: true, createdDate: '2023-02-02T20:00:22.224Z', endDate: null },
-    { firstName: 'John', lastName: 'Smith', _id: 2, isActive: false, createdDate: '2023-03-02T20:00:22.224Z', endDate: '2024-03-02T20:00:22.224Z' },
+    { firstName: 'Jane', lastName: 'Doe', _id: 1, isActive: true, startDate: '2023-02-02T20:00:22.224Z', endDate: null },
+    { firstName: 'John', lastName: 'Smith', _id: 2, isActive: false, startDate: '2023-03-02T20:00:22.224Z', endDate: '2024-03-02T20:00:22.224Z' },
   ];
 
   const renderWithRouter = (ui, { route = '/' } = {}) => {
@@ -27,8 +29,12 @@ describe('PeopleTable component', () => {
     renderWithRouter(<PeopleTable userProfiles={userProfiles} />);
     userProfiles.forEach(people => {
       expect(screen.getByText(people.firstName + " " + people.lastName)).toBeInTheDocument();
-      expect(screen.getByText(moment(people.createdDate).format('MM-DD-YY'))).toBeInTheDocument();
-      expect(screen.getByText(moment(people.endDate).format('MM-DD-YY') || 'N/A')).toBeInTheDocument();
+      expect(screen.getByText(moment(people.startDate).format('MM-DD-YY'))).toBeInTheDocument();
+      if (people.endDate) {
+        expect(screen.getByText(moment(people.endDate).format('MM-DD-YY'))).toBeInTheDocument();
+      }else {
+        expect(screen.getByText('N/A')).toBeInTheDocument();
+      }
     });
   });
 
