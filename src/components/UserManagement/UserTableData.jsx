@@ -3,6 +3,7 @@ import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL, EDIT_USER_INFO } from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
+import DropDownSearchBox from './DropDownSearchBox';
 import hasPermission from 'utils/permissions';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faCalendarDay, faCheck, faClock } from '@fortawesome/free-solid-svg-icons';
@@ -18,7 +19,13 @@ const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Editing User Info
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  // console.log('props.roles',props.roles)
 
+  const onRoleSearch = (selectedRole) => {
+    // 这里可以添加处理角色更改的逻辑
+    console.log('Selected role:', selectedRole);
+    // 例如更新用户角色的状态或者调用API
+  };
   /**
    * reset the changing state upon rerender with new isActive status
    */
@@ -104,8 +111,16 @@ const UserTableData = React.memo(props => {
       </td>
       <td>
       {isEditing?(
-        //这里需要一个下拉菜单
-             <>{props.user.role}</>
+          // <td id="user_role">
+          <DropDownSearchBox
+            id={'role_search'}
+            items={props.roleList}
+            value={props.user.role}  // 假设 props.user.role 是当前选中的角色
+            searchCallback={onRoleSearch}  // 处理角色选择变更
+            placeholder="Select a role"  // 显示当没有选择任何角色时的提示
+            width="100%"  // 控制组件宽度
+          />
+        // </td>        
             ) : (
               <>{props.user.role}</>
           )}

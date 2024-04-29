@@ -74,8 +74,9 @@ class UserManagement extends React.PureComponent {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
     const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests);
     let roles = [...new Set(userProfiles.map(item => item.role))];
+    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, roles);
+    //let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
       <Container fluid>
         {fetching ? (
@@ -186,7 +187,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements = (userProfiles, rolesPermissions, timeOffRequests) => {
+  userTableElements = (userProfiles, rolesPermissions, timeOffRequests, roles) => {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -229,6 +230,7 @@ class UserManagement extends React.PureComponent {
               authEmail={this.props.state.userProfile.email}
               user={user}
               role={this.props.state.auth.user.role}
+              roleList = {roles}
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
             />

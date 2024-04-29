@@ -7,6 +7,8 @@ import userTableDataPermissions from 'utils/userTableDataPermissions';
  * The header row of the user table.
  */
 const UserTableSearchHeader = React.memo(props => {
+  //console.log('props.roles',props.roles)
+
   const onFirstNameSearch = text => {
     props.onFirstNameSearch(text);
   };
