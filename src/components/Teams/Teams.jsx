@@ -70,7 +70,6 @@ class Teams extends React.PureComponent {
   }
 
   render() {
-    // debugger;
     const { allTeams, fetching } = this.props.state.allTeamsData;
 
     this.state.teams = this.teamTableElements(allTeams);

@@ -333,7 +333,7 @@ const TeamMemberTasks = React.memo(props => {
                       </th>
                       <th className={`team-member-tasks-headers team-clocks team-clocks-header ${darkMode ? "bg-space-cadet" : ""}`}>
                         <FontAwesomeIcon 
-                          style={{color: darkMode ? 'grey' : ''}} 
+                          style={{color: darkMode ? 'lightgray' : ''}} 
                           icon={faClock} 
                           title="Weekly Committed Hours" />
                         /
