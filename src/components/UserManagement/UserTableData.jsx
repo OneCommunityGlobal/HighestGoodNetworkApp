@@ -115,10 +115,10 @@ const UserTableData = React.memo(props => {
           <DropDownSearchBox
             id={'role_search'}
             items={props.roleList}
-            value={props.user.role}  // 假设 props.user.role 是当前选中的角色
-            searchCallback={onRoleSearch}  // 处理角色选择变更
-            placeholder="Select a role"  // 显示当没有选择任何角色时的提示
-            width="100%"  // 控制组件宽度
+            value={props.user.role}  // props.user.role is the selected role
+            searchCallback={onRoleSearch}  // call when select a role
+            placeholder="Select a role"  
+            width="100%" 
           />
         // </td>        
             ) : (
