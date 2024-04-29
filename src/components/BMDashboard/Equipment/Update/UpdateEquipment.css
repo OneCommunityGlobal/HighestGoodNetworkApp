@@ -16,27 +16,27 @@
 }
 
 .cancel-button {
-  width: 100%; /* Ensures the button expands to fill the column */
+  width: 100%;
 }
 
 .submit-button {
-  width: 100%; /* Ensures the button expands to fill the column */
+  width: 100%;
 }
 
 .square-image {
-  width: 100%; /* Width relative to its container */
-  height: auto; /* Height is auto to maintain aspect ratio */
-  max-width: 250px; /* Maximum width of the image */
-  max-height: 250px; /* Maximum height of the image */
-  object-fit: cover; /* Cover the area without distorting the aspect ratio */
-  border-radius: 4px; /* Optional: rounded corners */
+  width: 100%;
+  height: auto;
+  max-width: 250px;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 4px;
 }
 
 .square-image {
-  width: 100%; /* Width relative to its container */
-  height: auto; /* Height is auto to maintain aspect ratio */
-  max-width: 250px; /* Maximum width of the image */
-  max-height: 250px; /* Maximum height of the image */
-  object-fit: cover; /* Cover the area without distorting the aspect ratio */
-  border-radius: 4px; /* Optional: rounded corners */
+  width: 100%;
+  height: auto;
+  max-width: 250px;
+  max-height: 250px;
+  object-fit: cover;
+  border-radius: 4px;
 }
