@@ -106,11 +106,11 @@ export function Dashboard(props) {
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            {/* <Timelog
+            <Timelog
               isDashboard
               passSummaryBarData={setSummaryBarData}
               isNotAllowedToEdit={isNotAllowedToEdit}
-            /> */}
+            />
           </div>
           <Badge
             userId={displayUserId}
