@@ -19,12 +19,12 @@ const UserTableData = React.memo(props => {
   const [isChanging, onReset] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Editing User Info
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  // console.log('props.roles',props.roles)
+  console.log('props',props)
 
   const onRoleSearch = (selectedRole) => {
-    // 这里可以添加处理角色更改的逻辑
+    // Add logic when select a role
     console.log('Selected role:', selectedRole);
-    // 例如更新用户角色的状态或者调用API
+    // Need to call update UserProfile's API
   };
   /**
    * reset the changing state upon rerender with new isActive status
@@ -76,9 +76,10 @@ const UserTableData = React.memo(props => {
             value = {props.user.firstName}
             onChange={e => props.handleFirstNameChange(e.target.value, props.user._id)}
             onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+            style={{ width: '100%', display: 'inline-block' }} 
           />
           ) : (
-            <a href={`/userprofile/${props.user._id}`}>{props.user.firstName} </a>
+            <a href={`/userprofile/${props.user._id}` }>{props.user.firstName} </a>
           )}
         <FontAwesomeIcon
           className="copy_icon"
@@ -96,6 +97,7 @@ const UserTableData = React.memo(props => {
               value = {props.user.lastName}
               onChange={e => props.handleLastNameChange(e.target.value, props.user._id)}
               onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+              style={{ width: '100%', display: 'inline-block' }} 
             />
             ) : (
               <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
@@ -132,6 +134,7 @@ const UserTableData = React.memo(props => {
               value = {props.user.email}
               onChange={e => props.handleEmailChange(e.target.value, props.user._id)}
               onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+              style={{ width: '100%', display: 'inline-block' }} 
             />
             ) : (
               <>{props.user.email}</>
@@ -152,6 +155,7 @@ const UserTableData = React.memo(props => {
               value = {props.user.weeklycommittedHours}
               onChange={e => props.handleTimeChange(e.target.value, props.user._id)}
               onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+              style={{ maxWidth: '75px' }}
             />
             ) : (
               <> {props.user.weeklycommittedHours}</>
