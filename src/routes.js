@@ -48,6 +48,9 @@ const PurchaseMaterials = lazy(() =>
 const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
+const PurchaseEquipment = lazy(() =>
+  import('./components/BMDashboard/PurchaseRequests/EquipmentPurchaseRequest'),
+);
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
@@ -220,6 +223,11 @@ export default (
           path="/bmdashboard/reusables/purchase"
           fallback
           component={PurchaseReusables}
+        />
+        <BMProtectedRoute
+          path="/bmdashboard/equipment/purchase"
+          fallback
+          component={PurchaseEquipment}
         />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute

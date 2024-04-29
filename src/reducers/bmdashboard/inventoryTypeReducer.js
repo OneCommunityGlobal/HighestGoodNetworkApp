@@ -1,6 +1,7 @@
 
 import GET_MATERIAL_TYPES, {
   GET_REUSABLE_TYPES,
+  GET_EQUIPMENT_TYPES,
   POST_BUILDING_MATERIAL_INVENTORY_TYPE,
   POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
   RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE,
@@ -43,6 +44,11 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
         },
       };
     case GET_REUSABLE_TYPES:
+      state.list = action.payload;
+      return {
+        ...state
+      };
+    case GET_EQUIPMENT_TYPES:
       state.list = action.payload;
       return {
         ...state

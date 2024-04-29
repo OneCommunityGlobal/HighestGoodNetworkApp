@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from "utils/URL";
-import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE, GET_TOOL_TYPES ,GET_CONSUMABLE_TYPES  } from "constants/bmdashboard/inventoryTypeConstants";
+import GET_MATERIAL_TYPES, { GET_EQUIPMENT_TYPES, GET_REUSABLE_TYPES, POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE, GET_TOOL_TYPES ,GET_CONSUMABLE_TYPES  } from "constants/bmdashboard/inventoryTypeConstants";
 import { GET_ERRORS } from "constants/errors";
 
 export const fetchMaterialTypes = () => {
@@ -15,7 +15,20 @@ export const fetchMaterialTypes = () => {
   }
 }
 
+export const fetchEquipmentTypes = () => {
+  return async dispatch => {
+    axios.get(ENDPOINTS.BM_EQUIPMENT_TYPES)
+      .then(res => {
+        dispatch(setEquipmentTypes(res.data))
+      })
+      .catch(err => {
+        dispatch(setErrors(err))
+      })
+  }
+}
+
 export const fetchReusableTypes = () => {
+  console.log("fetchReusableTypes");
   return async dispatch => {
     axios.get(ENDPOINTS.BM_REUSABLE_TYPES)
       .then(res => {
@@ -149,6 +162,13 @@ export const resetPostBuildingConsumableTypeResult = () => {
 export const setMaterialTypes = payload => {
   return {
     type: GET_MATERIAL_TYPES,
+    payload
+  }
+}
+
+export const setEquipmentTypes = payload => {
+  return {
+    type: GET_EQUIPMENT_TYPES,
     payload
   }
 }
