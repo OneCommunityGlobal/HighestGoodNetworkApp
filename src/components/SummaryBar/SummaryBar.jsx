@@ -264,6 +264,10 @@ const SummaryBar = props => {
     }
   }, [displayUserProfile, summaryBarData]);
 
+  const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
+  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
   return (
     displayUserProfile !== undefined && summaryBarData !== undefined 
     ? <Container
@@ -461,10 +465,9 @@ const SummaryBar = props => {
                 </div>
               </div>
             </Col>
-
-            <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal}>
-              <ModalHeader>User Suggestion</ModalHeader>
-              <ModalBody>
+            <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal} className={darkMode ? 'text-light' : ''}>
+              <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
+              <ModalBody className={bodyBg}>
                 {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
                   <FormGroup>
                     <Button
@@ -496,7 +499,7 @@ const SummaryBar = props => {
                     <FormGroup tag="fieldset" id="fieldsetinner">
                       <legend style={{ fontSize: '16px' }}>Select Action type:</legend>
                       <FormGroup check>
-                        <Label check>
+                        <Label check className={fontColor}>
                           <Input
                             onChange={() => seteditType('add')}
                             type="radio"
@@ -508,7 +511,7 @@ const SummaryBar = props => {
                         </Label>
                       </FormGroup>
                       <FormGroup check>
-                        <Label check>
+                        <Label check className={fontColor}>
                           <Input
                             onChange={() => seteditType('delete')}
                             type="radio"
@@ -525,7 +528,7 @@ const SummaryBar = props => {
                     </FormGroup>
                     {editType !== '' && (
                       <FormGroup>
-                        <Label for="newField">
+                        <Label for="newField" className={fontColor}>
                           {extraFieldForSuggestionForm === 'suggestion'
                             ? editType === 'delete'
                               ? 'Delete category (Write the suggestion category number from the dropdown to delete it).'
@@ -568,7 +571,7 @@ const SummaryBar = props => {
                 )}
                 <Form onSubmit={sendUserSuggestion} id="suggestionForm">
                   <FormGroup>
-                    <Label for="suggestioncate">Please select a category of your suggestion:</Label>
+                    <Label for="suggestioncate" className={fontColor}>Please select a category of your suggestion:</Label>
 
                     <Input
                       onChange={() => setTakeInput(true)}
@@ -589,7 +592,7 @@ const SummaryBar = props => {
                   </FormGroup>
                   {takeInput && (
                     <FormGroup>
-                      <Label for="suggestion"> Write your suggestion: </Label>
+                      <Label for="suggestion" className={fontColor}> Write your suggestion: </Label>
                       <Input
                         type="textarea"
                         name="suggestion"
@@ -602,7 +605,7 @@ const SummaryBar = props => {
                   {inputFiled.length > 0 &&
                     inputFiled.map((item, index) => (
                       <FormGroup key={index}>
-                        <Label for="title">{item} </Label>
+                        <Label for="title" className={fontColor}>{item} </Label>
                         <Input type="textbox" name={item} id={item} placeholder="" required />
                       </FormGroup>
                     ))}
@@ -611,12 +614,12 @@ const SummaryBar = props => {
                       Would you like a followup/reply regarding this feedback?
                     </legend>
                     <FormGroup check>
-                      <Label check>
+                      <Label check className={fontColor}>
                         <Input type="radio" name="confirm" value={'yes'} required /> Yes
                       </Label>
                     </FormGroup>
                     <FormGroup check>
-                      <Label check>
+                      <Label check className={fontColor}>
                         <Input type="radio" name="confirm" value={'no'} required /> No
                       </Label>
                     </FormGroup>
@@ -638,12 +641,12 @@ const SummaryBar = props => {
               </ModalBody>
             </Modal>
 
-            <Modal isOpen={report.in} toggle={openReport}>
-              <ModalHeader>Bug Report</ModalHeader>
-              <ModalBody>
+            <Modal isOpen={report.in} toggle={openReport} className={fontColor}>
+              <ModalHeader className={headerBg}>Bug Report</ModalHeader>
+              <ModalBody className={bodyBg}>
                 <Form onSubmit={sendBugReport} id="bugReportForm">
                   <FormGroup>
-                    <Label for="title">[Feature Name] Bug Title </Label>
+                    <Label for="title" className={fontColor}>[Feature Name] Bug Title </Label>
                     <Input
                       type="textbox"
                       name="title"
@@ -653,7 +656,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="environment">
+                    <Label for="environment" className={fontColor}>
                       {' '}
                       Environment (OS/Device/App Version/Connection/Time etc){' '}
                     </Label>
@@ -666,7 +669,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="reproduction">
+                    <Label for="reproduction" className={fontColor}>
                       Steps to reproduce (Please Number, Short Sweet to the point){' '}
                     </Label>
                     <Input
@@ -678,7 +681,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="expected">Expected Result (Short Sweet to the point) </Label>
+                    <Label for="expected" className={fontColor}>Expected Result (Short Sweet to the point) </Label>
                     <Input
                       type="textarea"
                       name="expected"
@@ -688,7 +691,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="actual">Actual Result (Short Sweet to the point) </Label>
+                    <Label for="actual" className={fontColor}>Actual Result (Short Sweet to the point) </Label>
                     <Input
                       type="textarea"
                       name="actual"
@@ -698,7 +701,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="visual">Visual Proof (screenshots, videos, text) </Label>
+                    <Label for="visual" className={fontColor}>Visual Proof (screenshots, videos, text) </Label>
                     <Input
                       type="textarea"
                       name="visual"
@@ -708,7 +711,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="severity">Severity/Priority (How Bad is the Bug?) </Label>
+                    <Label for="severity" className={fontColor}>Severity/Priority (How Bad is the Bug?) </Label>
                     <Input type="select" name="severity" id="severity" defaultValue={''} required>
                       <option hidden value="" disabled>
                         {' '}

@@ -650,6 +650,10 @@ export class WeeklySummary extends Component {
         : moment(dueDateThreeWeeksAgo).format('YYYY-MMM-DD'),
     };
 
+    const fontColor = darkMode ? 'text-light' : '';
+    const headerBg = darkMode ? 'bg-space-cadet' : '';
+    const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
     if (fetchError) {
       return (
         <Container>
@@ -736,7 +740,7 @@ export class WeeklySummary extends Component {
                     <Col>
                       <FormGroup>
                         <Label for={summaryName} className="summary-instructions-row">
-                          <div className={darkMode ? 'text-light' : ''}>
+                          <div className={fontColor}>
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
@@ -754,7 +758,7 @@ export class WeeklySummary extends Component {
                                   disabled={activeTab === '1'}
                                   onClick={() => this.handleMoveSelect('1')}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                 >
                                   This Week
                                 </DropdownItem>
@@ -762,14 +766,14 @@ export class WeeklySummary extends Component {
                                   disabled={activeTab === '2'}
                                   onClick={() => this.handleMoveSelect('2')}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                 >
                                   Last Week
                                 </DropdownItem>
                                 <DropdownItem
                                   disabled={activeTab === '3'}
                                   onClick={() => this.handleMoveSelect('3')}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
                                 >
                                   Week Before Last
@@ -777,7 +781,7 @@ export class WeeklySummary extends Component {
                                 <DropdownItem
                                   disabled={activeTab === '4'}
                                   onClick={() => this.handleMoveSelect('4')}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
                                 >
                                   Three Weeks Ago
@@ -838,7 +842,7 @@ export class WeeklySummary extends Component {
                   </FormGroup>
                 ) : (
                   <Col>
-                    <Label for="mediaUrl" className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
+                    <Label for="mediaUrl" className={`mt-1 ${fontColor}`}>
                       Dropbox link to your weekly media files. (required)
                       <MediaURLTooltip />
                     </Label>
@@ -855,14 +859,14 @@ export class WeeklySummary extends Component {
                             onChange={this.handleInputChange}
                           />
                         </FormGroup>
-                        <Modal isOpen={editPopup}>
-                          <ModalHeader> Warning!</ModalHeader>
-                          <ModalBody>
+                        <Modal isOpen={editPopup} className={fontColor}>
+                          <ModalHeader className={headerBg}> Warning!</ModalHeader>
+                          <ModalBody className={bodyBg}>
                             Whoa Tiger! Are you sure you want to do that? This link needs to be
                             added by an Admin when you were set up as a member of the team. Only
                             Update this if you are SURE your new link is correct.
                           </ModalBody>
-                          <ModalFooter>
+                          <ModalFooter className={bodyBg}>
                             <Button
                               onClick={this.handleMediaChange}
                               style={darkMode ? boxStyleDark : boxStyle}
@@ -901,10 +905,12 @@ export class WeeklySummary extends Component {
                 )}
 
                 <Row form>
-                  <Modal isOpen={movePopup} toggle={this.toggleMovePopup}>
-                    <ModalHeader> Warning!</ModalHeader>
-                    <ModalBody>Are you SURE you want to move the summary?</ModalBody>
-                    <ModalFooter>
+                  <Modal isOpen={movePopup} toggle={this.toggleMovePopup} className={fontColor}>
+                    <ModalHeader className={headerBg}> Warning!</ModalHeader>
+                    <ModalBody className={bodyBg}>
+                      Are you SURE you want to move the summary?
+                    </ModalBody>
+                    <ModalFooter className={bodyBg}>
                       <Button
                         onClick={this.handleMoveSave}
                         style={darkMode ? boxStyleDark : boxStyle}

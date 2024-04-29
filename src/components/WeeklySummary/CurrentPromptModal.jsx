@@ -160,10 +160,12 @@ function CurrentPromptModal(props) {
         <br />
       </ReactTooltip>
 
-      <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Current AI Prompt</ModalHeader>
-        <ModalBody>{renderModalContent()}</ModalBody>
-        <ModalFooter>
+      <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+          Current AI Prompt
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{renderModalContent()}</ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           {userRole === 'Owner' && (
             <Button color="secondary" onClick={() => setIsEditing(!isEditing)} disabled={loading}>
               {isEditing ? 'Cancel' : 'Edit'}
