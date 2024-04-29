@@ -133,22 +133,26 @@ export default function ToolItemsTable({
                       )}
                     </td>
                     <td>
-                      {el.itemType.available.includes(el._id) ? (
+                      {el.itemType.available.includes(el._id) &&
+                      el.condition !== 'Lost' && el.condition !== 'Needs Replacing' ? (
                         <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
                       ) : (
                         <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
                       )}
                     </td>
                     <td>
-                      {el.condition === 'Lost' ||
-                      el.condition === 'Needs Replacing' ||
-                      el.condition === 'Needs Repair' ? (
-                        <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
-                      ) : (
-                        <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
-                      )}
+                      <div className="condition_cell">
+                        {el.condition === 'Lost' ||
+                        el.condition === 'Needs Replacing' ||
+                        el.condition === 'Worn' ||
+                        el.condition === 'Needs Repair' ? (
+                          <FontAwesomeIcon icon={faTimes} size="lg" color="red" />
+                        ) : (
+                          <FontAwesomeIcon icon={faCheck} size="lg" color="green" />
+                        )}
+                        {el.condition}
+                      </div>
                     </td>
-                    <td>{el.condition}</td>
                     <td>{el.code}</td>
                     <td className="items_cell">
                       <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>

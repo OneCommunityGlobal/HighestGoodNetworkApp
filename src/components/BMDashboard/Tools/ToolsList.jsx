@@ -4,7 +4,7 @@ import { fetchTools } from '../../../actions/bmdashboard/toolActions';
 import ToolItemListView from '../ToolItemList/ToolItemListView';
 import UpdateToolModal from '../UpdateTools/UpdateToolModal';
 
-function MaterialListView() {
+function ToolsList() {
   const dispatch = useDispatch();
   const tools = useSelector(state => state.tools.toolslist);
   const errors = useSelector(state => state.errors);
@@ -26,7 +26,6 @@ function MaterialListView() {
     { label: 'Bought', key: 'purchaseStatus' },
     { label: 'Using', key: 'stockUsed' },
     { label: 'Available', key: 'stockAvailable' },
-    { label: 'Lost/Broken', key: 'stockWasted' },
     { label: 'Condition', key: 'condition' },
     { label: 'Code', key: 'code' },
   ];
@@ -42,4 +41,4 @@ function MaterialListView() {
   );
 }
 
-export default MaterialListView;
+export default ToolsList;
