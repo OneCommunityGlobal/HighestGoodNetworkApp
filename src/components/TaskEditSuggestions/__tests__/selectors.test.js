@@ -1,3 +1,4 @@
+import { themeMock } from '__tests__/mockStates';
 import { getTaskEditSuggestionsData } from '../selectors'; 
 
 describe('getTaskEditSuggestionsData', () => {
@@ -15,6 +16,7 @@ describe('getTaskEditSuggestionsData', () => {
         userSortDirection: 'asc',
         dateSuggestedSortDirection: 'desc',
       },
+      theme: themeMock,
     };
 
     // Define the expected result
@@ -24,6 +26,7 @@ describe('getTaskEditSuggestionsData', () => {
       taskEditSuggestions: [{ id: 1, suggestion: 'Edit suggestion 1' }],
       userSortDirection: 'asc',
       dateSuggestedSortDirection: 'desc',
+      darkMode: true,
     };
 
     // Call the function with the mock state

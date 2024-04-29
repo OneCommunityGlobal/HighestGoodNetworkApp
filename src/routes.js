@@ -264,10 +264,9 @@ export default (
         <BMProtectedRoute path="/bmdashboard/inventory/types" component={CheckTypes} />
         <BMProtectedRoute path="/bmdashboard/equipment" fallback exact component={EquipmentList} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
-        <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumableListView} />
+        <BMProtectedRoute path="/bmdashboard/consumables" fallback component={ConsumableListView} />
         <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialListView} />
         <BMProtectedRoute path="/bmdashboard/consumables/add" fallback component={AddConsumable} />
-        <BMProtectedRoute path="/bmdashboard/consumables" fallback component={ConsumableListView} />
         <BMProtectedRoute path="/bmdashboard/reusables" fallback component={ReusableListView} />
         <BMProtectedRoute
           path="/bmdashboard/equipment/:equipmentId"
@@ -275,9 +274,7 @@ export default (
           exact
           component={EquipmentDetail}
         />
-        <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumableListView} />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
-        <BMProtectedRoute path="/bmdashboard/consumables" component={ConsumableListView} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />

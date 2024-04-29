@@ -177,7 +177,7 @@ class ReportsPage extends Component {
           searchWithAccent(userProfile.lastName, this.state.wildCardSearchText))
       ) {
         return (
-          new Date(Date.parse(userProfile.createdDate)) >= this.state.startDate &&
+          new Date(Date.parse(userProfile.startDate)) >= this.state.startDate &&
           this.state.startDate <= new Date(Date.parse(userProfile?.endDate)) <= this.state.endDate
         );
       }
