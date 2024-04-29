@@ -29,7 +29,7 @@ import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -53,7 +53,7 @@ import { boxStyle } from 'styles';
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile, darkMode } = props;
 
   // props from store
   const { authUser } = props;
@@ -459,14 +459,18 @@ const TimeEntryForm = props => {
     setFormValues({ ...formValues, ...data})
   }, [data])
 
+  const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
+  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
   return (
     <>
-      <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
-        <ModalHeader toggle={toggle}>
+      <Modal className={fontColor} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
+        <ModalHeader toggle={toggle} className={`${headerBg} text-light`}>
           <div>
             {edit ? 'Edit ' : 'Add '}
             {formValues.isTangible ? (
-              <span style={{ color: 'blue' }}>Tangible </span>
+              <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
             ) : (
               <span style={{ color: 'orange' }}>Intangible </span>
             )}
@@ -485,10 +489,10 @@ const TimeEntryForm = props => {
             Click this icon to learn about this time entry form
           </ReactTooltip>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={bodyBg}>
           <Form>
             <FormGroup>
-              <Label for="dateOfWork">Date</Label>
+              <Label for="dateOfWork" className={fontColor}>Date</Label>
               <Input
                 type="date"
                 name="dateOfWork"
@@ -505,7 +509,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="timeSpent">Time (HH:MM)</Label>
+              <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
               <Row form>
                 <Col>
                   <Input
@@ -541,7 +545,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="project">Project/Task</Label>
+              <Label for="project" className={fontColor}>Project/Task</Label>
               <Input
                 type="select"
                 name="projectOrTask"
@@ -558,7 +562,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="notes">Notes</Label>
+              <Label for="notes" className={fontColor}>Notes</Label>
               <Editor
                 init={{
                   menubar: false,
@@ -589,7 +593,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup check>
-              <Label check>
+              <Label check className={fontColor}>
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -613,12 +617,12 @@ const TimeEntryForm = props => {
             </FormGroup>
           </Form>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={bodyBg}>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger" style={boxStyle}>
+          <Button onClick={clearForm} color="danger" style={darkMode ? boxStyleDark : boxStyle}>
             Clear Form
           </Button>
-          <Button color="primary" onClick={handleSubmit} style={boxStyle} disabled={submitting}>
+          <Button color="primary" onClick={handleSubmit} style={darkMode ? boxStyleDark : boxStyle} disabled={submitting}>
             {edit ? (submitting ? 'Saving...' : 'Save') : submitting ? 'Submitting...' : 'Submit'}
           </Button>
         </ModalFooter>
@@ -626,8 +630,9 @@ const TimeEntryForm = props => {
       <TangibleInfoModal
         visible={isTangibleInfoModalVisible}
         setVisible={setTangibleInfoModalVisibility}
+        darkMode={darkMode}
       />
-      <AboutModal visible={isAboutModalVisible} setVisible={setAboutModalVisible} />
+      <AboutModal visible={isAboutModalVisible} setVisible={setAboutModalVisible} darkMode={darkMode}/>
       <ReminderModal
         inputs={formValues}
         data={data}
@@ -636,6 +641,7 @@ const TimeEntryForm = props => {
         visible={reminder.openModal}
         setVisible={toggleRemainder}
         cancelChange={cancelChange}
+        darkMode={darkMode}
       />
     </>
   );

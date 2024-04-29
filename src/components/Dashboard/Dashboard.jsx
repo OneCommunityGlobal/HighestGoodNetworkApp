@@ -92,7 +92,7 @@ export function Dashboard(props) {
           />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-          {!popup ? (
+          {popup ? (
             <div className="my-2">
               <div id="weeklySum">
                 <WeeklySummary
