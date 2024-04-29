@@ -50,6 +50,8 @@ export default function UpdateEquipment() {
     e.preventDefault();
   };
 
+  const safeData = (data, property) => (data && data[property] ? data[property] : 'unknown');
+
   return (
     <Container className="inv-form-page-container">
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
@@ -80,7 +82,7 @@ export default function UpdateEquipment() {
               <Label for="itemName">Name</Label>
               <Input
                 readOnly
-                value={equipmentDetails ? equipmentDetails.itemType.name : 'Loading...'}
+                value={safeData(equipmentDetails?.itemType, 'name')}
                 className="read-only-input"
                 id="itemName"
               />
@@ -89,7 +91,7 @@ export default function UpdateEquipment() {
               <Label for="itemNumber">Number</Label>
               <Input
                 readOnly
-                value={equipmentDetails ? equipmentDetails._id : ''}
+                value={safeData(equipmentDetails, '_id')}
                 className="read-only-input"
                 id="itemNumber"
               />
@@ -98,7 +100,7 @@ export default function UpdateEquipment() {
               <Label for="itemClass">Class</Label>
               <Input
                 readOnly
-                value={equipmentDetails ? equipmentDetails.itemType.category : ''}
+                value={safeData(equipmentDetails?.itemType, 'category')}
                 className="read-only-input"
                 id="itemClass"
               />
@@ -109,7 +111,7 @@ export default function UpdateEquipment() {
               <Label for="itemProject">Project</Label>
               <Input
                 readOnly
-                value={equipmentDetails ? equipmentDetails.project.name : ''}
+                value={safeData(equipmentDetails?.project, 'name')}
                 className="read-only-input"
                 id="itemProject"
               />
@@ -119,10 +121,14 @@ export default function UpdateEquipment() {
               <Input
                 readOnly
                 value={
-                  equipmentDetails && equipmentDetails.updateRecord.length > 0
-                    ? equipmentDetails.updateRecord[equipmentDetails.updateRecord.length - 1]
-                        .condition
-                    : 'N/A'
+                  equipmentDetails &&
+                  equipmentDetails.updateRecord &&
+                  equipmentDetails.updateRecord.length > 0
+                    ? safeData(
+                        equipmentDetails.updateRecord[equipmentDetails.updateRecord.length - 1],
+                        'condition',
+                      )
+                    : 'unknown'
                 }
                 className="read-only-input"
                 id="itemStatus"
@@ -132,7 +138,7 @@ export default function UpdateEquipment() {
               <Label for="itemOwnership">Ownership</Label>
               <Input
                 readOnly
-                value={equipmentDetails ? equipmentDetails.purchaseStatus : ''}
+                value={safeData(equipmentDetails, 'purchaseStatus')}
                 className="read-only-input"
                 id="itemOwnership"
               />
@@ -144,7 +150,11 @@ export default function UpdateEquipment() {
                 <Label for="rentalEndDate">Rental End Date</Label>
                 <Input
                   readOnly
-                  value={equipmentDetails ? equipmentDetails.rentalDueDate.split('T')[0] : ''}
+                  value={
+                    equipmentDetails
+                      ? safeData(equipmentDetails, 'rentalDueDate').split('T')[0]
+                      : 'unknown'
+                  }
                   className="read-only-input"
                   id="rentalEndDate"
                 />
@@ -153,7 +163,7 @@ export default function UpdateEquipment() {
                 <Label for="daysLeft">Days Left</Label>
                 <Input
                   readOnly
-                  value={calculateDaysLeft(equipmentDetails.rentalDueDate)}
+                  value={calculateDaysLeft(equipmentDetails?.rentalDueDate)}
                   className="read-only-input"
                   id="daysLeft"
                 />
