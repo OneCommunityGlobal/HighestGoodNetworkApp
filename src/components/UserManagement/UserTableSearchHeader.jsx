@@ -40,7 +40,7 @@ const UserTableSearchHeader = React.memo(props => {
         <TextSearchBox id={'last_name_search'} searchCallback={onLastNameSearch} />
       </td>
       <td id="user_role">
-        <DropDownSearchBox id={'role_search'} items={props.roles} searchCallback={onRoleSearch} />
+        <DropDownSearchBox id={'role_search'} placeholder = "Select a role" items={props.roles} searchCallback={onRoleSearch} />
       </td>
       <td id="user_email">
         <TextSearchBox id={'email_search'} searchCallback={onEmailSearch} />

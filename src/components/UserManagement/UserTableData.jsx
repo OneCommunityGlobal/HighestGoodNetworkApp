@@ -119,7 +119,7 @@ const UserTableData = React.memo(props => {
             items={props.roleList}
             value={props.user.role}  // props.user.role is the selected role
             searchCallback={onRoleSearch}  // call when select a role
-            placeholder="Select a role"  
+            placeholder={props.user.role}
             width="100%" 
           />
         // </td>        
