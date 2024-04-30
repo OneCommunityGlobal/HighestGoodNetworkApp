@@ -3,7 +3,7 @@
  * Author: Henry Ng - 08/01/20
  * Display member of the members list
  ********************************************************************************/
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
 import { deleteWbs } from './../../../../actions/wbs';
@@ -12,7 +12,7 @@ import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 
-const WBSItem = props => {
+const WBSItem = (props) => {
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const canDeleteWBS = props.hasPermission('deleteWbs');
@@ -24,29 +24,33 @@ const WBSItem = props => {
 
   return (
     <React.Fragment>
-      <tr>
-        <th scope="row">
-          <div>{props.index}</div>
-        </th>
-        <td className="members__name">
-          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`}>{props.name}</a>
-        </td>
-        {canDeleteWBS ? (
-          <td className="members__assign">
-            <button
-              className="btn btn-outline-danger btn-sm"
-              type="button"
-              onClick={e => {
-                setShowModalDelete(true);
-                props.getPopupById(WBS_DELETE_POPUP_ID);
-              }}
-              style={boxStyle}
-            >
-              <i className="fa fa-minus" aria-hidden="true"></i>
-            </button>
-          </td>
-        ) : null}
-      </tr>
+      <table>
+        <tbody>
+          <tr>
+            <th scope="row">
+              <div>{props.index}</div>
+            </th>
+            <td className="members__name">
+              <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`}>{props.name}</a>
+            </td>
+            {canDeleteWBS ? (
+              <td className="members__assign">
+                <button
+                  className="btn btn-outline-danger btn-sm"
+                  type="button"
+                  onClick={(e) => {
+                    setShowModalDelete(true);
+                    props.getPopupById(WBS_DELETE_POPUP_ID);
+                  }}
+                  style={boxStyle}
+                >
+                  <i className="fa fa-minus" aria-hidden="true"></i>
+                </button>
+              </td>
+            ) : null}
+          </tr>
+        </tbody>
+      </table>
 
       <ModalDelete
         isOpen={showModalDelete}
@@ -58,9 +62,9 @@ const WBSItem = props => {
     </React.Fragment>
   );
 };
-const mapStateToProps = state => state;
+const mapStateToProps = (state) => state;
 export default connect(mapStateToProps, {
   deleteWbs,
   getPopupById,
-  hasPermission
+  hasPermission,
 })(WBSItem);
