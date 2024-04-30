@@ -40,3 +40,11 @@
   object-fit: cover;
   border-radius: 4px;
 }
+
+.read-only-div {
+  padding: 8px;
+  background-color: #e6f5f2 !important;
+  border-radius: 4px;
+  border: 1px solid #dee2e6; /* Light gray border for distinction */
+  color: #495057; /* Dark gray text for better readability */
+}

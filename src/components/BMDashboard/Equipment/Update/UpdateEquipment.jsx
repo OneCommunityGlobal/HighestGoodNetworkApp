@@ -50,7 +50,7 @@ export default function UpdateEquipment() {
     e.preventDefault();
   };
 
-  const safeData = (data, property) => (data && data[property] ? data[property] : 'unknown');
+  const safeData = (data, property) => (data && data[property] ? data[property] : 'Unknown');
 
   return (
     <Container className="inv-form-page-container">
@@ -80,93 +80,53 @@ export default function UpdateEquipment() {
           <Row form>
             <Col md={4}>
               <Label for="itemName">Name</Label>
-              <Input
-                readOnly
-                value={safeData(equipmentDetails?.itemType, 'name')}
-                className="read-only-input"
-                id="itemName"
-              />
+              <div className="read-only-div">{equipmentDetails?.itemType?.name || 'Unknown'}</div>
             </Col>
             <Col md={4}>
               <Label for="itemNumber">Number</Label>
-              <Input
-                readOnly
-                value={safeData(equipmentDetails, '_id')}
-                className="read-only-input"
-                id="itemNumber"
-              />
+              <div className="read-only-div">{equipmentDetails?._id || 'Unknown'}</div>
             </Col>
             <Col md={4}>
               <Label for="itemClass">Class</Label>
-              <Input
-                readOnly
-                value={safeData(equipmentDetails?.itemType, 'category')}
-                className="read-only-input"
-                id="itemClass"
-              />
+              <div className="read-only-div">
+                {equipmentDetails?.itemType?.category || 'Unknown'}
+              </div>
             </Col>
           </Row>
           <Row form>
             <Col md={4}>
               <Label for="itemProject">Project</Label>
-              <Input
-                readOnly
-                value={safeData(equipmentDetails?.project, 'name')}
-                className="read-only-input"
-                id="itemProject"
-              />
+              <div className="read-only-div">{equipmentDetails?.project?.name || 'Unknown'}</div>
             </Col>
             <Col md={4}>
               <Label for="itemStatus">Current Status</Label>
-              <Input
-                readOnly
-                value={
-                  equipmentDetails &&
-                  equipmentDetails.updateRecord &&
-                  equipmentDetails.updateRecord.length > 0
-                    ? safeData(
-                        equipmentDetails.updateRecord[equipmentDetails.updateRecord.length - 1],
-                        'condition',
-                      )
-                    : 'unknown'
-                }
-                className="read-only-input"
-                id="itemStatus"
-              />
+              <div className="read-only-div">
+                {equipmentDetails?.updateRecord?.length > 0
+                  ? equipmentDetails.updateRecord[equipmentDetails.updateRecord.length - 1]
+                      .condition
+                  : 'Unknown'}
+              </div>
             </Col>
             <Col md={4}>
               <Label for="itemOwnership">Ownership</Label>
-              <Input
-                readOnly
-                value={safeData(equipmentDetails, 'purchaseStatus')}
-                className="read-only-input"
-                id="itemOwnership"
-              />
+              <div className="read-only-div">{equipmentDetails?.purchaseStatus || 'Unknown'}</div>
             </Col>
           </Row>
           {equipmentDetails && equipmentDetails.purchaseStatus === 'Rental' && (
             <Row form>
               <Col md={4}>
-                <Label for="rentalEndDate">Rental End Date</Label>
-                <Input
-                  readOnly
-                  value={
-                    equipmentDetails
-                      ? safeData(equipmentDetails, 'rentalDueDate').split('T')[0]
-                      : 'unknown'
-                  }
-                  className="read-only-input"
-                  id="rentalEndDate"
-                />
+                <Label>Rental End Date</Label>
+                <div className="read-only-div">
+                  {equipmentDetails
+                    ? safeData(equipmentDetails, 'rentalDueDate').split('T')[0]
+                    : 'Unknown'}
+                </div>
               </Col>
               <Col md={4}>
-                <Label for="daysLeft">Days Left</Label>
-                <Input
-                  readOnly
-                  value={calculateDaysLeft(equipmentDetails?.rentalDueDate)}
-                  className="read-only-input"
-                  id="daysLeft"
-                />
+                <Label>Days Left</Label>
+                <div className="read-only-div">
+                  {calculateDaysLeft(equipmentDetails?.rentalDueDate)}
+                </div>
               </Col>
             </Row>
           )}
