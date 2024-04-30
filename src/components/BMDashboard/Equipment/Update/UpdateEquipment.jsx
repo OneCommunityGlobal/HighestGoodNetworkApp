@@ -50,8 +50,6 @@ export default function UpdateEquipment() {
     e.preventDefault();
   };
 
-  const safeData = (data, property) => (data && data[property] ? data[property] : 'Unknown');
-
   return (
     <Container className="inv-form-page-container">
       <CheckTypesModal modal={modal} setModal={setModal} type="Equipments" />
@@ -117,9 +115,7 @@ export default function UpdateEquipment() {
               <Col md={4}>
                 <Label>Rental End Date</Label>
                 <div className="read-only-div">
-                  {equipmentDetails
-                    ? safeData(equipmentDetails, 'rentalDueDate').split('T')[0]
-                    : 'Unknown'}
+                  {equipmentDetails.rentalDueDate?.split('T')[0] || 'Unknown'}
                 </div>
               </Col>
               <Col md={4}>
