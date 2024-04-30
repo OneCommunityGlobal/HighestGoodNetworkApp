@@ -19,6 +19,7 @@ export const fetchReusableTypes = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_REUSABLE_TYPES)
       .then(res => {
+        console.log("reusables: ", res)
         dispatch(setReusableTypes(res.data))
       })
       .catch(err => {
@@ -28,13 +29,16 @@ export const fetchReusableTypes = () => {
 }
 
 export const fetchToolTypes = () => {
+  console.log("fetchToolTypes in invTypeActions")
   return async dispatch => {
     axios
       .get(ENDPOINTS.BM_TOOL_TYPES)
       .then(res => {
+        console.log("result: ", res)
         dispatch(setToolTypes(res.data));
       })
       .catch(err => {
+        console.log("error: ", err)
         dispatch(setErrors(err));
       });
   };
