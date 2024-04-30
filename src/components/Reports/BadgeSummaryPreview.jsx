@@ -14,11 +14,11 @@ import {
   ModalFooter,
   UncontrolledPopover,
 } from 'reactstrap';
-import { boxStyle } from '../../styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryPreview.css';
 
-function BadgeSummaryPreview({ badges }) {
+function BadgeSummaryPreview({ badges, darkMode }) {
   const [isOpen, setIsOpen] = useState(false);
   const [sortedBadges, setSortedBadges] = useState([]);
 
@@ -41,7 +41,7 @@ function BadgeSummaryPreview({ badges }) {
 
   return (
     <div>
-      <Button onClick={toggle} style={boxStyle}>
+      <Button onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
         <MdPreview style={{ fontSize: '23px' }} />
       </Button>
       <Modal size="lg" isOpen={isOpen} toggle={toggle}>

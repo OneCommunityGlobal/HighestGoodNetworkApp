@@ -12,6 +12,7 @@ import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 
+
 const WBSItem = (props) => {
   const [showModalDelete, setShowModalDelete] = useState(false);
 
