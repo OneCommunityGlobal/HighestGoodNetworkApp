@@ -114,6 +114,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     const userAssigned = `${firstName} ${lastName}`;
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
+
     if (res.data.length === 0) {
       dispatch(
         getMessage(
@@ -172,7 +173,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
     }
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-    console.log(res.data);
+
     if (res.data.length === 0) {
       dispatch(
         getMessage(
@@ -223,33 +224,48 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
   let newBadgeCollection = Array.from(badgeCollection);
 
-  selectedBadgesId.forEach(badgeId => {
-    let included = false;
+  // object to track updated or newly added badges to prevent duplicates
+  let updatedOrAddedBadges = {};
+
+  selectedBadgesId.forEach(originalBadgeId => {
+    let badgeId = originalBadgeId;
     // Remove "assign-badge-" from badgeId
     if (badgeId.includes('assign-badge-')) badgeId = badgeId.replace('assign-badge-', '');
-    // Change format of date to MMM-DD-YYYY
-    let currentTs = Date.now();
-    let currentDate = formatDate();
-    // Update record in badgeCollection if exist
-    newBadgeCollection.forEach(badgeObj => {
-      if (badgeId === badgeObj.badge) {
-        badgeObj.count++;
-        badgeObj.lastModified = currentTs;
-        badgeObj.earnedDate.push(currentDate);
-        included = true;
-        return; // find match and break
-      }
-    });
-    // Add the new badge record to badgeCollection
-    if (!included) {
-      newBadgeCollection.push({
-        badge: badgeId,
-        count: 1,
-        lastModified: currentTs,
-        earnedDate: new Array(currentDate),
+
+    if (!updatedOrAddedBadges[badgeId]) {
+      let included = false;
+      let currentTs = Date.now();
+      let currentDate = formatDate();
+
+      newBadgeCollection.forEach(badgeObj => {
+        if (badgeId === badgeObj.badge) {
+          if (!included) { 
+            // Only update the first instance
+            // Increment count only for the first instance found
+            badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1;
+            badgeObj.lastModified = currentTs;
+            badgeObj.earnedDate.push(currentDate);
+            included = true;
+          }
+          // Note this badge ID as updated so it's not added again
+          updatedOrAddedBadges[badgeId] = true;
+        }
       });
+
+      // Add the new badge record to badgeCollection if not included already
+      if (!included) {
+        newBadgeCollection.push({
+          badge: badgeId,
+          count: 1,
+          lastModified: currentTs,
+          earnedDate: [currentDate],
+        });
+        // Note this badge ID as added
+        updatedOrAddedBadges[badgeId] = true;
+      }
     }
   });
+
   return newBadgeCollection;
 };
 

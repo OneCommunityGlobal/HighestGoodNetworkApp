@@ -31,8 +31,9 @@ const AddProjectPopup = React.memo(props => {
   useEffect(() => {
     onValidation(true);
   }, [props.open]);
-   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
+  
+  return (
+    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
       <ModalHeader toggle={closePopup}>Add Project </ModalHeader>
       <ModalBody style={{ textAlign: 'center' }}>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>

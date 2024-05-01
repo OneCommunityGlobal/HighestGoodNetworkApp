@@ -10,6 +10,18 @@
   border-radius: 8px;
 }
 
+.permissions-management-dark {
+  padding: 1.5rem 3rem;
+  width: 40%;
+  min-width: 400px;
+  margin: 1.5rem auto;
+  box-shadow: 1px 1px 8px black;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 8px;
+}
+
 .permissions-management__header {
   display: flex;
   align-items: center;
@@ -129,6 +141,11 @@
 .role-name:hover {
   background-color: lightgrey;
 }
+
+.role-name-dark:hover {
+  background-color: #1C2541;
+}
+
 
 .loading-message {
   font-size: 30px;
