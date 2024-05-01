@@ -61,8 +61,9 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
           .outerRadius(CHART_RADIUS),
       )
       .attr('fill', d => color(d.data[0]))
-      .on('mouseover', function (d, i) {
-        d3.select(this).transition()
+      .on('mouseover', function(d, i) {
+        d3.select(this)
+          .transition()
           .duration('50')
           .attr('opacity', '.5');
         div
@@ -84,7 +85,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
           .style('left', `${event.pageX + 10}px`)
           .style('top', `${event.pageY - 15}px`);
       })
-      .on('mouseout', function () {
+      .on('mouseout', function() {
         d3.select(this)
           .transition()
           .duration('50')
