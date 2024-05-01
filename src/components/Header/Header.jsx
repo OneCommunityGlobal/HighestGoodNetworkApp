@@ -115,7 +115,7 @@ export function Header(props) {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
-  const unreadNotifications = props.notification.unreadNotifications; // List of unread notifications
+  const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -166,11 +166,11 @@ export function Header(props) {
   }, []);
 
   useEffect(() => {
-    if (props.notification.error) {
+    if (props.notification?.error) {
       toast.error(props.notification.error.message);
       dispatch(resetNotificationError());
     }
-  }, [props.notification.error]);
+  }, [props.notification?.error]);
 
   const roles = props.role?.roles;
 
