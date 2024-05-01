@@ -10,16 +10,17 @@ import {
   USER_RESUME_DATE,
   MANAGE_FINAL_DAY,
   USER_START_DATE,
-  USER_END_DATE
+  USER_END_DATE,
+  REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 import userTableDataPermissions from 'utils/userTableDataPermissions';
 
 /**
  * The header row of the user table.
  */
-const UserTableHeader = React.memo(props => {
+const UserTableHeader = React.memo(({authRole, roleSearchText, darkMode}) => {
   return (
-    <tr>
+    <tr className={darkMode ? 'bg-space-cadet' : ''}>
       <th scope="col" id="usermanagement_active">
         {ACTIVE}
       </th>
@@ -41,6 +42,9 @@ const UserTableHeader = React.memo(props => {
       <th scope="col" id="usermanagement_pause">
         {PAUSE}
       </th>
+      <th scope="col" id="usermanagement_requested_time_off">
+        {REQUESTED_TIME_OFF}
+      </th>
       <th scope="col" id="usermanagement_finalday">
         {MANAGE_FINAL_DAY}
       </th>
@@ -53,7 +57,7 @@ const UserTableHeader = React.memo(props => {
       <th scope="col" id="usermanagement_resume_date">
         {USER_END_DATE}
       </th>
-      {userTableDataPermissions(props.authRole, props.roleSearchText) && (
+      {userTableDataPermissions(authRole, roleSearchText) && (
         <th scope="col" id="usermanagement_delete"></th>
       )}
     </tr>

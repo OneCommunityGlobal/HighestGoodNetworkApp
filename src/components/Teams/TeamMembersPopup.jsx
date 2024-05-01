@@ -13,9 +13,10 @@ export const TeamMembersPopup = React.memo(props => {
     props.onClose();
     setSortOrder(0)
   };
-  const [selectedUser, onSelectUser] = useState(undefined);
-  const [isValidUser, onValidation] = useState(true);
+  const [selectedUser, setSelectedUser] = useState(undefined);
+  const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
+  const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0)
 
@@ -24,16 +25,25 @@ export const TeamMembersPopup = React.memo(props => {
 
 
   const onAddUser = () => {
-    if (selectedUser && !props.members.teamMembers.some(x => x._id === selectedUser._id)) {
-      props.onAddUser(selectedUser);
-      setSearchText('');
+    if (selectedUser) {
+      const isDuplicate = props.members.teamMembers.some(x => x._id === selectedUser._id);
+      if (!isDuplicate) {
+        props.onAddUser(selectedUser);
+        setSearchText('');
+        setDuplicateUserAlert(false);
+      } else {
+        setSearchText('');
+        setDuplicateUserAlert(true);
+      }
     } else {
-      onValidation(false);
+      setDuplicateUserAlert(false);
+      setIsValidUser(false);
     }
   };
   const selectUser = user => {
-    onSelectUser(user);
-    onValidation(true);
+    setSelectedUser(user);
+    setIsValidUser(true);
+    setDuplicateUserAlert(false);
   };
 
   /**
@@ -120,7 +130,8 @@ export const TeamMembersPopup = React.memo(props => {
   }, [props.members.teamMembers, sortOrder])
 
   useEffect(() => {
-    onValidation(true);
+    setIsValidUser(true);
+    setDuplicateUserAlert(false);
   }, [props.open]);
 
   return (
@@ -142,10 +153,19 @@ export const TeamMembersPopup = React.memo(props => {
               </Button>
             </div>
           )}
-          {!isValidUser && <Alert color="danger">Please choose a valid user.</Alert>}
+
+          {duplicateUserAlert ? (
+            <Alert color="danger">Member is already a part of this team.</Alert>
+          ) : isValidUser === false ? (
+            <Alert color="danger">Please choose a valid user.</Alert>
+          ) : (
+            <></>
+          )}
+
           <table className="table table-bordered table-responsive-sm">
             <thead>
               <tr>
+                <th>Active</th>
                 <th>#</th>
                 <th>User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>Date Added <FontAwesomeIcon {...icons[sortOrder]} /></th>
@@ -154,8 +174,13 @@ export const TeamMembersPopup = React.memo(props => {
             </thead>
             <tbody>
               {props.members.teamMembers.length > 0 &&
-                memberList.toSorted().map((user, index) => (
-                  <tr key={`team_member_${index}`}>
+                memberList.toSorted().map((user, index) => {
+                  return (<tr key={`team_member_${index}`}>
+                    <td>
+                      <span className={user.isActive ? "isActive" : "isNotActive"}>
+                        <i className="fa fa-circle" aria-hidden="true" />
+                      </span>
+                    </td>
                     <td>{index + 1}</td>
                     <td>{returnUserRole(user) ? <b>{user.firstName} {user.lastName} ({user.role})</b> : <span>{user.firstName} {user.lastName} ({user.role})</span>} </td>
                     {/* <td>{user}</td> */}
@@ -171,8 +196,8 @@ export const TeamMembersPopup = React.memo(props => {
                         </Button>
                       </td>
                     )}
-                  </tr>
-                ))
+                  </tr>)
+                })
               }
             </tbody>
           </table>

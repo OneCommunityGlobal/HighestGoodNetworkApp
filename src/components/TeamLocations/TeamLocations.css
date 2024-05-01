@@ -1,0 +1,19 @@
+.leaflet-container {
+  width: 100%;
+  min-height: 500px;
+  height: 90vh;
+  z-index: 0; /* Will block navbar dropdowns otherwise */
+}
+
+.map-dropdown-table {
+  background-color: white;
+  padding: 0 5px 20px 20px;
+  top: 100%;
+  z-index: 10;
+  overflow: hidden;
+  max-height: 300px;
+}
+
+#map-container {
+  height: calc(100vh - 225px);
+}

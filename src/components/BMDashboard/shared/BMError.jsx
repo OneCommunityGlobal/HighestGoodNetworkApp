@@ -1,4 +1,4 @@
-// The component provides users with information about the error
+// This component provides users with information about the error
 // and the ability to refresh the page to reattempt their request.
 // The component takes in an axios error as props.
 // If the error is client-side, the status and statusText fields are

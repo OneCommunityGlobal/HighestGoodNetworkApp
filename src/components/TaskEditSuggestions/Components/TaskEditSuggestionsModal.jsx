@@ -26,7 +26,7 @@ export const TaskEditSuggestionsModal = ({
   const { getState } = useStore();
 
   const approveTask = () => {
-    console.log('mainproblem', taskEditSuggestion);
+    // console.log('mainproblem', taskEditSuggestion);
     updateTask(
       taskEditSuggestion.taskId,
       taskEditSuggestion.newTask,
@@ -63,7 +63,7 @@ export const TaskEditSuggestionsModal = ({
                   <td scope="col" data-tip="WBS ID">
                     WBS #
                   </td>
-                  <td scope="col">{taskEditSuggestion.oldTask.num}</td>
+                  {taskEditSuggestion && taskEditSuggestion.oldTask && <td scope="col">{taskEditSuggestion.oldTask.num}</td>}
                 </tr>
                 <tr>
                   <td scope="col">Task Name</td>

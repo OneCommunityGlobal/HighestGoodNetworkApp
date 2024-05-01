@@ -76,7 +76,9 @@ export const postTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry));
+      if(timeEntry.entryType == 'default'){
+        dispatch(updateTimeEntries(timeEntry));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -89,7 +91,9 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   return async dispatch => {
     try {
       const res = await axios.put(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      if (timeEntry.entryType == 'default') {
+        dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -101,11 +105,12 @@ export const deleteTimeEntry = timeEntry => {
   const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntry._id);
   return async dispatch => {
     try {
-      const res = await axios.delete(url);
-      dispatch(updateTimeEntries(timeEntry));
-      return res.status;
-    } catch (e) {
-      return e.response.status;
+      await axios.delete(url);
+      if (timeEntry.entryType === 'default') {
+        dispatch(updateTimeEntries(timeEntry));
+      }
+    } catch (error) {
+      return error;
     }
   };
 };
@@ -122,7 +127,7 @@ const updateTimeEntries = (timeEntry, oldDateOfWork) => {
     const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
 
     if (offset <= 2 && offset >= 0) {
-      dispatch(getTimeEntriesForWeek(timeEntry.curruserId, offset));
+      dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
     }
   };
 };

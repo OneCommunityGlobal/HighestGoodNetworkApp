@@ -39,10 +39,15 @@ export class Projects extends Component {
       showModalDelete: false,
       showModalMsg: false,
       trackModelMsg: false,
+       // The property below is the state that tracks the selected category to sort the project list - Sucheta #PR1738
+       categorySelectedForSort : "",
+       showStatus: "",
+       sortBy: "",
       projectTarget: {
         projectName: '',
         projectId: -1,
         active: false,
+        category: '',
       },
       projectInfoModal: false,
     };
@@ -61,7 +66,6 @@ export class Projects extends Component {
   };
 
   onUpdateProjectName = (projectId, projectName, category, isActive) => {
-    console.log('updateName', projectId, projectName, category, isActive);
     this.props.modifyProject('updateName', projectId, projectName, category, isActive);
   };
 
@@ -69,16 +73,47 @@ export class Projects extends Component {
    * Changes the number of projects
    * Also update the number of active project
    */
-  onClickDelete = (projectId, active, projectName) => {
+  onClickDelete = (projectId, active, projectName, category) => {
     this.setState({
       showModalDelete: true,
       projectTarget: {
         projectId,
         projectName,
         active,
+        category,
       },
     });
   };
+
+ // sort project list by category - Sucheta
+ onChangeCategory = (value) =>{
+  this.setState({
+    categorySelectedForSort: value
+  })
+}
+// sort project list by status- active / inactive - Sucheta
+onSelectStatus = (value)=>{
+  this.setState({
+    showStatus: value
+  })
+}
+// handle sort function alphabetically - Sucheta
+handleSort = (e)=>{
+  if(e.target.id === "Ascending"){
+   this.setState({
+    sortBy: "Ascending"
+   })
+
+  }else if(e.target.id === "Descending"){
+    this.setState({
+      sortBy: "Descending"
+    })
+  }else{
+    this.setState({
+      sortBy: ""
+    })
+  }
+}
 
   confirmDelete = () => {
     // get project info
@@ -90,8 +125,8 @@ export class Projects extends Component {
   };
 
   setInactiveProject = () => {
-    let { projectId, projectName } = this.state.projectTarget;
-    this.props.modifyProject('setActive', projectId, projectName, true);
+    let { projectId, projectName, category } = this.state.projectTarget;
+    this.props.modifyProject('setActive', projectId, projectName, category, true);
     // disable modal
     this.setState({ showModalDelete: false });
   };
@@ -108,6 +143,8 @@ export class Projects extends Component {
   };
 
   render() {
+    const {darkMode} = this.props.state.theme;
+    
     let { showModalDelete, projectTarget, trackModelMsg, projectInfoModal } = this.state;
     let { projects, status, fetching, fetched } = this.props.state.allProjects;
 
@@ -116,10 +153,15 @@ export class Projects extends Component {
 
     let showModalMsg = false;
 
+    // by Sucheta
+    const {categorySelectedForSort} = this.state;
+    const {showStatus} = this.state;
+    const {sortBy} = this.state;
+
 
     const role = this.props.state.userProfile.role;
 
-    const canPostProject = this.props.hasPermission('postProject') || this.props.hasPermission('seeProjectManagement');
+    const canPostProject = this.props.hasPermission('postProject');
 
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
@@ -128,74 +170,203 @@ export class Projects extends Component {
     // Display project lists
     let ProjectsList = [];
     if (projects.length > 0) {
-      ProjectsList = projects.map((project, index) => (
-        <Project
-          key={project._id}
-          index={index}
-          projectId={project._id}
-          name={project.projectName}
-          category={project.category || 'Unspecified'}
-          active={project.isActive}
-          onClickActive={this.onClickActive}
-          onUpdateProjectName={this.onUpdateProjectName}
-          onClickDelete={this.onClickDelete}
-          confirmDelete={this.confirmDelete}
-        />
-      ));
+      let sortedList = ""; // If user chooses to get sorted project list, this variable stores sorted project list - Sucheta
+      if(sortBy === "Ascending"){
+        sortedList = projects.sort((a,b)=>{
+          if(a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase()){
+            return -1
+          }else if(a.projectName[0].toLowerCase() > b.projectName[0].toLowerCase()){
+            return 1
+          }else{return 0}
+        })
+      }else if(sortBy === "Descending"){
+        sortedList = projects.sort((a,b)=>{
+          if(a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase()){
+            return 1
+          }else if(a.projectName[0].toLowerCase() > b.projectName[0].toLowerCase()){
+            return -1
+          }else{return 0}
+        })
+
+      }
+      // Below mentioned if block checks if there is a selected category to sort the projects - Sucheta
+
+      if(categorySelectedForSort){
+         if(categorySelectedForSort&&showStatus=== "Active"){
+          ProjectsList =  (sortBy?sortedList: projects).map((project, index) => {
+            if(project.category === categorySelectedForSort && project.isActive){
+             return (<Project
+              key={project._id}
+              index={index}
+              projectId={project._id}
+              name={project.projectName}
+              category={project.category || 'Unspecified'}
+              active={project.isActive}
+              onClickActive={this.onClickActive}
+              onUpdateProjectName={this.onUpdateProjectName}
+              onClickDelete={this.onClickDelete}
+              confirmDelete={this.confirmDelete}
+              darkMode={darkMode}
+            />)
+            }
+          })
+         }else if(categorySelectedForSort&&showStatus=== "Inactive"){
+          ProjectsList = (sortBy?sortedList: projects).map((project, index) => {
+            if(project.category === categorySelectedForSort && !project.isActive){
+             return (<Project
+              key={project._id}
+              index={index}
+              projectId={project._id}
+              name={project.projectName}
+              category={project.category || 'Unspecified'}
+              active={project.isActive}
+              onClickActive={this.onClickActive}
+              onUpdateProjectName={this.onUpdateProjectName}
+              onClickDelete={this.onClickDelete}
+              confirmDelete={this.confirmDelete}
+              darkMode={darkMode}
+            />)
+            }
+          })
+         }
+         else{
+          ProjectsList = (sortBy?sortedList: projects).map((project, index) => {
+            if(project.category === categorySelectedForSort){
+             return (<Project
+              key={project._id}
+              index={index}
+              projectId={project._id}
+              name={project.projectName}
+              category={project.category || 'Unspecified'}
+              active={project.isActive}
+              onClickActive={this.onClickActive}
+              onUpdateProjectName={this.onUpdateProjectName}
+              onClickDelete={this.onClickDelete}
+              confirmDelete={this.confirmDelete}
+              darkMode={darkMode}
+            />)
+            }
+          })
+         }
+
+      }else if(showStatus === "Active"){
+        ProjectsList = (sortBy?sortedList: projects).map((project, index) => {
+          if(project.isActive){
+           return (<Project
+            key={project._id}
+            index={index}
+            projectId={project._id}
+            name={project.projectName}
+            category={project.category || 'Unspecified'}
+            active={project.isActive}
+            onClickActive={this.onClickActive}
+            onUpdateProjectName={this.onUpdateProjectName}
+            onClickDelete={this.onClickDelete}
+            confirmDelete={this.confirmDelete}
+            darkMode={darkMode}
+          />)
+          }
+        })
+
+      }else if(showStatus === "Inactive"){
+        ProjectsList = (sortBy?sortedList: projects).map((project, index) => {
+          if(!project.isActive){
+           return (<Project
+            key={project._id}
+            index={index}
+            projectId={project._id}
+            name={project.projectName}
+            category={project.category || 'Unspecified'}
+            active={project.isActive}
+            onClickActive={this.onClickActive}
+            onUpdateProjectName={this.onUpdateProjectName}
+            onClickDelete={this.onClickDelete}
+            confirmDelete={this.confirmDelete}
+            darkMode={darkMode}
+          />)
+          }
+        })
+
+      }else{
+        ProjectsList = (sortBy?sortedList: projects).map((project, index) => (
+          <Project
+            key={project._id}
+            index={index}
+            projectId={project._id}
+            name={project.projectName}
+            category={project.category || 'Unspecified'}
+            active={project.isActive}
+            onClickActive={this.onClickActive}
+            onUpdateProjectName={this.onUpdateProjectName}
+            onClickDelete={this.onClickDelete}
+            confirmDelete={this.confirmDelete}
+            darkMode={darkMode}
+          />
+        ))
+        }
     }
 
     return (
       <React.Fragment>
-        <div className="container mt-3">
-          {fetching || !fetched ? <Loading /> : null}
-          <div className="d-flex align-items-center">
-          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <EditableInfoModal
-            areaName="projectsInfoModal"
-            areaTitle="Projects"
-            fontSize={30}
-            isPermissionPage={true}
-            role={role}
+        <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+          <div className="container py-3">
+            {fetching || !fetched ? <Loading /> : null}
+            <div className="d-flex align-items-center">
+            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+            <EditableInfoModal
+              areaName="projectsInfoModal"
+              areaTitle="Projects"
+              fontSize={30}
+              isPermissionPage={true}
+              role={role}
+            />
+          </div>
+
+            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+            {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
+
+            <table className="table table-bordered table-responsive-sm">
+              <thead>
+              <ProjectTableHeader 
+                onChange={this.onChangeCategory} 
+                selectedValue= {categorySelectedForSort} 
+                showStatus={showStatus} 
+                selectStatus={this.onSelectStatus} 
+                handleSort = {this.handleSort}
+                darkMode={darkMode}
+              />
+              </thead>
+              <tbody>{ProjectsList}</tbody>
+            </table>
+          </div>
+
+          <ModalDelete
+            isOpen={showModalDelete}
+            closeModal={() => {
+              this.setState({ showModalDelete: false });
+            }}
+            confirmModal={() => this.confirmDelete()}
+            setInactiveModal={() => this.setInactiveProject()}
+            modalMessage={
+              (this.props.state.popupEditor.currPopup.popupContent
+                ? this.props.state.popupEditor.currPopup.popupContent.replace(
+                    '[project_name]',
+                    this.state.projectTarget.projectName,
+                  )
+                : '') || ''
+            }
+            modalTitle={Message.CONFIRM_DELETION}
+          />
+
+          <ModalMsg
+            isOpen={showModalMsg}
+            closeModal={() => {
+              this.setState({ showModalMsg: false, trackModelMsg: false });
+            }}
+            modalMessage={Message.THIS_PROJECT_NAME_IS_ALREADY_TAKEN}
+            modalTitle={NOTICE}
           />
         </div>
-
-          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
-
-          <table className="table table-bordered table-responsive-sm">
-            <thead>
-              <ProjectTableHeader />
-            </thead>
-            <tbody>{ProjectsList}</tbody>
-          </table>
-        </div>
-
-        <ModalDelete
-          isOpen={showModalDelete}
-          closeModal={() => {
-            this.setState({ showModalDelete: false });
-          }}
-          confirmModal={() => this.confirmDelete()}
-          setInactiveModal={() => this.setInactiveProject()}
-          modalMessage={
-            (this.props.state.popupEditor.currPopup.popupContent
-              ? this.props.state.popupEditor.currPopup.popupContent.replace(
-                  '[project_name]',
-                  this.state.projectTarget.projectName,
-                )
-              : '') || ''
-          }
-          modalTitle={Message.CONFIRM_DELETION}
-        />
-
-        <ModalMsg
-          isOpen={showModalMsg}
-          closeModal={() => {
-            this.setState({ showModalMsg: false, trackModelMsg: false });
-          }}
-          modalMessage={Message.THIS_PROJECT_NAME_IS_ALREADY_TAKEN}
-          modalTitle={NOTICE}
-        />
       </React.Fragment>
     );
   }

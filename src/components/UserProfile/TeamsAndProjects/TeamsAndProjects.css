@@ -2,12 +2,37 @@
 .projecttable-container {
   background-color: #fafafa;
 }
+
+.projecttable-container .col-md-2,
+.teamtable-container .col-md-2 {
+  padding: 0px;
+}
+
+.container {
+  padding: 0;
+}
+
+.row {
+  margin-left: 0;
+}
+
+.teamtable-container .container,
+.projecttable-container .container {
+  padding: 0px;
+}
+
+.teamtable-container .row,
+.projecttable-container .row {
+  margin: 0px;
+}
+
 .btn-addteam,
 .btn-addproject {
   width: 100%;
   margin-bottom: 10px;
   outline: none;
 }
+
 .teams-span,
 .projects-span {
   font-size: x-large;
@@ -18,13 +43,16 @@
   cursor: pointer;
   padding: 5px;
 }
+
 .project-auto-complete:hover {
   background: #1d62f0;
 }
+
 .team-auto-complete {
   cursor: pointer;
   padding: 5px;
 }
+
 .team-auto-complete:hover {
   background: #1d62f0;
 }

@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { boxStyle } from 'styles';
 import { addNewRole, getAllRoles } from '../../actions/role';
-import { permissionLabel } from './UserRoleTab';
+import PermissionList from './PermissionList';
 
 function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
@@ -18,7 +18,11 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
   const handleSubmit = async e => {
     e.preventDefault();
 
-    if (!isValidRole) {
+    if (newRoleName.trim() === '') {
+      toast.error('Please enter a role name');
+    } else if (permissionsChecked.length === 0) {
+      toast.error('Please select at least one permission');
+    } else if (!isValidRole) {
       toast.error('Please enter a valid role name');
     } else if (!isNotDuplicateRole) {
       toast.error('Please enter a non duplicate role name');
@@ -38,6 +42,7 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     const regexTest = noSymbolsRegex.test(value);
     const duplicateTest = checkIfDuplicate(value);
     if (value.trim() === '') {
+      /* Changes Made */
       setNewRoleName(value);
       setErrorMessage('Please enter a role name');
       setIsValidRole(false);
@@ -67,16 +72,6 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     return duplicateFound;
   };
 
-  const handleChange = e => {
-    const actualValue = e.target.value;
-
-    setPermissionsChecked(previous => {
-      const isAlreadyChecked = previous.some(perm => perm === actualValue);
-      const unCheckPermission = previous.filter(perm => perm !== actualValue);
-      return isAlreadyChecked ? unCheckPermission : [...previous, actualValue];
-    });
-  };
-
   return (
     <Form id="createRole" onSubmit={handleSubmit}>
       <FormGroup>
@@ -97,17 +92,11 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
 
       <FormGroup>
         <Label>Permissions:</Label>
-        {Object.entries(permissionLabel).map(([key, value]) => {
-          return (
-            <FormCheck
-              onChange={e => handleChange(e)}
-              value={key}
-              key={key}
-              label={value}
-              id={value}
-            />
-          );
-        })}
+        <PermissionList
+          rolePermissions={permissionsChecked}
+          editable={true}
+          setPermissions={setPermissionsChecked}
+        />
       </FormGroup>
       <Button type="submit" id="createRole" color="primary" size="lg" block style={boxStyle}>
         Create

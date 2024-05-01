@@ -17,16 +17,22 @@ import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
 import { clearSelected } from 'actions/badgeManagement';
 import hasPermission from '../../utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 export const Badges = props => {
+  const {darkMode} = props;
+
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
-  const canAssignBadges = props.hasPermission('assignBadges');
 
+  const canAssignBadges = props.hasPermission('assignBadges') || props.hasPermission('assignBadgeOthers');
+
+  // Added restriction: Jae's badges only editable by Jae or Owner
+  const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';
   const toggle = () => setOpen(!isOpen);
 
+  // xiaohan: connect to see all badges
   const assignToggle = () => {
     setAssignOpen(isAssignOpen => !isAssignOpen);
   };
@@ -44,7 +50,7 @@ export const Badges = props => {
     }
     return acc + Math.round(Number(badge.count));
   }, 0);
-  
+
   const subject = props.isUserSelf ? 'You have' : 'This person has';
   const verb = badgesEarned ? `earned ${badgesEarned}` : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
@@ -55,27 +61,27 @@ export const Badges = props => {
 
   return (
     <>
-      <Card id="badgeCard" style={{ backgroundColor: '#f6f6f3', marginTop: 20, marginBottom: 20 }}>
+      <Card id="badgeCard" className={darkMode ? 'bg-space-cadet' : ''}>
         <CardHeader>
           <div className="badge-header">
-            <div className="badge-header d-flex align-items-center">
-              <span className="badge-header-title">
-                Featured Badges
-              </span>
-              <span>
-                <EditableInfoModal
-                  areaName="FeaturedBadgesInfoPoint"
-                  areaTitle="Featured Badges"
-                  fontSize={20}
-                  isPermissionPage={true}
-                  role={props.role}
-                />
-              </span>
-            </div>
-            <div>
+
+            <span>
+              Featured Badges
+            </span>
+            <span className="badge-header-title">
+              <EditableInfoModal
+                areaName="FeaturedBadgesInfoPoint"
+                areaTitle="Featured Badges"
+                fontSize={20}
+                isPermissionPage={true}
+                role={props.role}
+              />
+            </span>
+
+            <div >
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
-                  <Button className="btn--dark-sea-green" onClick={toggle} style={boxStyle}>
+                  <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured
                   </Button>
                   <Modal size="lg" isOpen={isOpen} toggle={toggle}>
@@ -92,6 +98,7 @@ export const Badges = props => {
                         setOriginalUserProfile={props.setOriginalUserProfile}
                         handleSubmit={props.handleSubmit}
                         isUserSelf={props.isUserSelf}
+                        isRecordBelongsToJaeAndUneditable={isRecordBelongsToJaeAndUneditable}
                       />
                     </ModalBody>
                   </Modal>
@@ -102,7 +109,7 @@ export const Badges = props => {
                   <Button
                     className="btn--dark-sea-green mr-2"
                     onClick={assignToggle}
-                    style={boxStyle}
+                    style={darkMode ? boxStyleDark : boxStyle}
                   >
                     Assign Badges
                   </Button>
@@ -115,6 +122,7 @@ export const Badges = props => {
                         setUserProfile={props.setUserProfile}
                         close={assignToggle}
                         handleSubmit={props.handleSubmit}
+                        isRecordBelongsToJaeAndUneditable={isRecordBelongsToJaeAndUneditable}
                       />
                     </ModalBody>
                   </Modal>
@@ -131,18 +139,20 @@ export const Badges = props => {
             style={{
               fontWeight: 'bold',
               fontSize: 18,
-              color: '#285739',
+              color: darkMode ? '#fff' : '#285739',
             }}
           >
             {congratulatoryText}
           </span>
-          <EditableInfoModal
-            areaName="NumberOfBadgesInfoPoint"
-            areaTitle="Number of Badges"
-            role={props.role}
-            fontSize={20}
-            isPermissionPage={true}
-          />
+          <span className="ml-2">
+            <EditableInfoModal
+              areaName="NumberOfBadgesInfoPoint"
+              areaTitle="Number of Badges"
+              role={props.role}
+              fontSize={20}
+              isPermissionPage={true}
+            />
+          </span>
         </CardFooter>
       </Card>
       {/* <UncontrolledTooltip

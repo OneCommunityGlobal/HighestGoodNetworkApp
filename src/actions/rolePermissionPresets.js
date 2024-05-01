@@ -43,10 +43,11 @@ export const createNewPreset = newPreset => {
       if (res.status === 201){
         dispatch(postNewPreset(res.data.newPreset));
       }
+      return 0;
     } catch (error) {
       console.log(error)
+      return 1;
     }
-    return status;
   };
 };
 
@@ -69,9 +70,11 @@ export const deletePresetById = (presetId) => {
       const res = await axios.delete(ENDPOINTS.PRESETS_BY_ID(presetId));
       if (res.status === 200){
         dispatch(deletePreset(presetId));
+        return 0;
       }
     } catch (error) {
       console.log(error);
+      return 1;
     }
   };
 };
