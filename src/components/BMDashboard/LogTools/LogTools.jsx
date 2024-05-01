@@ -16,33 +16,111 @@ import { useHistory } from 'react-router-dom';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons'; // Import the caret down icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchToolById } from 'actions/bmdashboard/toolActions';
+import { fetchTools } from '../../../actions/bmdashboard/toolActions';
 import { fetchToolTypes } from '../../../actions/bmdashboard/invTypeActions';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 
 function LogTools() {
   const toolTypes = useSelector(state => state.bmInvTypes.list);
+  const toolItems = useSelector(state => state.bmTools.toolslist);
   const projects = useSelector(state => state.bmProjects);
   const dispatch = useDispatch();
   const today = new Date().toISOString().split('T')[0];
+  const [selectedProject, setSelectedProject] = useState(projects[0].name)
+  const [selectedAction, setSelectedAction] = useState("Check In");
+  const [relevantToolItems, setRelevantToolItems] = useState([]);
 
   useEffect(() => {
     // dispatch(fetchToolById(toolId));
     dispatch(fetchToolTypes());
     dispatch(fetchBMProjects());
+    dispatch(fetchTools());
     // dispatch(fetchReusableTypes);
     // setTimeout(()=>{
       console.log("first load. tool types: ", toolTypes)
-      console.log("projects: ",projects)
-    // },2000)
+    //   console.log("projects: ",projects)
+      // console.log("toolItems: ",toolItems)
+      
+    //   console.log("toolItems name: ",toolItems[0].project.name)
+    // // },2000)
+    // setRelevantToolItems(toolItems);
+    console.log("first load toolItems: ",toolItems)
   }, []);
 
-  const handleProjectSelect = event => {
-    console.log('proj select. event: ', event.target.value);
-  }
+  useEffect(()=>{
+    console.log("relevantToolItems changed: ", relevantToolItems);
+  },[relevantToolItems])
 
-  const handleInOutSelect = ()=>{
-    console.log("rein raus");
+  useEffect(()=>{
+    console.log("selectedProject or selectedAction changed. proj: ", selectedProject, ", action: ", selectedAction);
+    // const unfilteredItems = relevantToolItems;
+    // console.log("unfilteredItems in useEff: ", unfilteredItems)
+    let filteredToolItems = [];
+    const actionArray = selectedAction === "Check In" ? "using" : "available"; 
+    console.log("actionArray: ", actionArray)
+    // filteredToolItems = toolItems.filter((item)=> (item.project.name === selectedProject)&&(item.itemType[actionArray].length > 0));
+    // console.log("filteredToolItems: ", filteredToolItems)
+    // setRelevantToolItems(filteredToolItems);
+
+
+  const filteredToolTypes = []
+
+  const toolsTypesByProject = toolTypes.filter((toolType)=>{
+    // toolType[actionArray]
+  })
+
+  // const arr = [
+  //   {
+  //     name: "Bob"
+  //   },{
+  //     name: "Benj"
+  //   },{
+  //     name: "Bellend"
+  //   }
+  // ]
+  // const arr2 = arr.filter((item)=> item.includes)
+
+  toolTypes.forEach((type)=> {
+    // console.log("looping types. type: ", type)
+    // console.log("type[",actionArray,"]: ", type[actionArray])
+
+    if(type[actionArray].length >0){
+      const typeDetails = {
+        toolName: type.name,
+        _id: type._id,
+        using: type.using.length,
+        available: type.available.length,
+        items: []
+      };
+
+      type[actionArray].forEach((item)=>{
+        // console.log("looping available or uring. item: ", item);
+        if(item.project.name === selectedProject){
+          const toolCodes = {code: item.code, _id: item._id};
+          typeDetails.items.push(toolCodes);
+        }else{
+          return
+        }
+      })
+      if(typeDetails.items.length > 0){ 
+        filteredToolTypes.push(typeDetails)
+      };
+    }
+    setRelevantToolItems(filteredToolTypes);
+  });
+
+console.log("filteredToolTypes: ",filteredToolTypes)
+
+  },[selectedProject, selectedAction])
+
+  const handleProjectSelect = event => {
+    // console.log('proj select. event: ', event.target.value);
+    setSelectedProject(event.target.value);
+  };
+
+  const handleInOutSelect = event =>{
+    // console.log("rein raus, ", event.target.value);
+    setSelectedAction(event.target.value)
   }
 
   const handleItemCodeSelect = () => {}
@@ -58,26 +136,6 @@ function LogTools() {
           <div className="title-label">
             <span>TOOL/EQUIPMENT DAILY ACTIVITIES LOG</span>
           </div>
-
-
-   <Form>
-                      <FormGroup>
-                      <Input
-                          id="exampleSelectMulti"
-                          multiple
-                          name="select-item-code"
-                          type="select"
-                          onChange={handleCodeSelect}
-                         >
-                        <option>
-                          001
-                        </option>
-                        <option>
-                          002
-                        </option>
-                         </Input>
-                      </FormGroup>
-                    </Form>
 
      
       <Form className='selectors'>
@@ -116,6 +174,7 @@ function LogTools() {
                         name="inOutSelect"
                         type="select"
                         onChange={handleInOutSelect}
+                        value={selectedAction}
                       >
                         <option>
                           Check In
@@ -146,68 +205,29 @@ function LogTools() {
               <td>Tool/Equipment Number</td>
             </tr>
             </thead>
+
             <tbody>
-                {toolTypes && toolTypes.map((toolType, index) => (
-                  <tr key={toolType.id} className='tool-type-row'>
-                    <td>{index + 1}</td>
-                    <td>{toolType.name}</td>
-                    <td>{toolType.available.length + toolType.using.length}</td>
-                    <td>{toolType.available.length}</td>
-                    <td>{toolType.using.length}</td>
-                    {/* <Form>
-                      <FormGroup> */}
-                      <Input
-                          id="exampleSelectMulti"
-                          // multiple
-                          name="select-item-code"
-                          type="select"
-                          onChange={handleItemCodeSelect}
-                         >
-                        <option>
-                          001
-                        </option>
-                        <option>
-                          002
-                        </option>
-                         </Input>
-                      {/* </FormGroup>
-                    </Form> */}
-                  </tr>
-                  ))}
-
-
-                    {/* <InputGroup>
-                      {data.workingItems &&
-                        data.workingItems
-                          .slice(0, dataIdToExpandBoolMap[data.id] ? data.workingItems.length : 3) // Show all items if expanded, otherwise show first 3
-                          .map(workingItem => (
-                            <div className="input-item-div">
-                              <Button
-                                tdor="secondary"
-                                // outline={!toolEquipmentIdToSet[data.id]?.has(workingItem.id)}
-                                // onClick={e => handleButtonClick(data.id, e.target.innerHTML)}
-                                style={{ paddingRight: '15px' }}
-                              >
-                                {workingItem.id}
-                              </Button>
-                              <CloseButton
-                                style={{
-                                  position: 'absolute',
-                                  top: '50%',
-                                  transform: 'translateY(-50%)',
-                                  right: 0,
-                                }}
-                              />
-                            </div>
-                          ))}
-                      <FontAwesomeIcon
-                        className="input-dropdown-toggle"
-                        icon={faCaretDown}
-                        // onClick={() => dropdownToggleClicked(data.id)}
-                      />
-                    </InputGroup> */}
+                {relevantToolItems.length > 0 ?
                 
-              
+                  relevantToolItems.map((toolType, index)=>(
+                    <tr 
+                      key={toolType._id}
+                      className='tool-type-row'
+                    >
+                       <td>{index + 1}</td>
+                       <td>{toolType.toolName}</td>
+                       <td>{toolType.available + toolType.using}</td>
+                       <td>{toolType.available}</td>
+                       <td>{toolType.using}</td>
+                      <td>{toolType.items.map((item)=>(
+                        <span key={item._id}>{item.code},</span>
+                      ))}</td>
+                    </tr>
+                  ))
+                
+                
+                : <tr><td colSpan="6">There are no tools to {selectedAction.toLowerCase()} for this project</td></tr>}
+
           </tbody>
         </Table>
         <div className="action-buttons">

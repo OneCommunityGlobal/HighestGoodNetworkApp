@@ -1,8 +1,24 @@
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import GET_TOOL_BY_ID from 'constants/bmdashboard/toolsConstants';
+import GET_TOOL_BY_ID, { GET_TOOLS } from 'constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from 'constants/errors';
 
+
+export const fetchTools = () => {
+  const url = ENDPOINTS.BM_TOOLS;
+  return async dispatch => {
+    axios
+      .get(url)
+      .then(res => {
+        // eslint-disable-next-line no-use-before-define
+        dispatch(setTools(res.data));
+      })
+      .catch(error => {
+        // eslint-disable-next-line no-use-before-define
+        dispatch(setErrors(error));
+      });
+  };
+};
 
 export const fetchToolById = (toolId) => {
   const url = ENDPOINTS.BM_TOOL_BY_ID(toolId);
@@ -26,6 +42,13 @@ export const purchaseTools = async body => {
       if (err.request) return err.request;
       return err.message;
     });
+};
+
+export const setTools = payload => {
+  return {
+    type: GET_TOOLS,
+    payload,
+  };
 };
 
 export const setTool = payload => {
