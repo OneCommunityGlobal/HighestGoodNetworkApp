@@ -1,9 +1,9 @@
+/* eslint-disable no-restricted-globals */
 import { useEffect, useState } from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
 import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
-
 
 // eslint-disable-next-line import/prefer-default-export, react/function-component-definition
 export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkMode }) => {
@@ -18,7 +18,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
       .attr('width', CHART_SIZE)
       .attr('height', CHART_SIZE)
       .append('g')
-      .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`)
+      .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
     svg
       .append('text')
       .attr('text-anchor', 'middle')
@@ -39,13 +39,15 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
         return a + c;
       }, 0);
     setTotalHours(totalValue);
-    var div = d3.select(".tooltip-donut");
+    let div = d3.select('.tooltip-donut');
     if (div.empty()) {
-      div = d3.select("body").append("div")
-        .attr("class", "tooltip-donut")
-        .style("opacity", 0)
-        .style("position", "absolute") // Ensure the tooltip uses absolute positioning
-        .style("pointer-events", "none"); // Prevents the tooltip from interfering with mouse events
+      div = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'tooltip-donut')
+        .style('opacity', 0)
+        .style('position', 'absolute') // Ensure the tooltip uses absolute positioning
+        .style('pointer-events', 'none'); // Prevents the tooltip from interfering with mouse events
     }
     getCreateSvgPie(totalValue)
       .selectAll('whatever')
@@ -62,36 +64,39 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
       .on('mouseover', function (d, i) {
         d3.select(this).transition()
           .duration('50')
-          .attr('opacity', '.5')
-        div.transition()
+          .attr('opacity', '.5');
+        div
+          .transition()
           .duration(50)
-          .style("opacity", 1)
-          .style("visibility", "visible");
+          .style('opacity', 1)
+          .style('visibility', 'visible');
         const taskName = Object.keys(dataLegend).map(key => {
           return dataLegend[key][0];
         });
-        const index = Object.keys(dataLegend).map(function (e) { return e; }).indexOf(i.data[0]);
-        let legendInfo = taskName[index].toString()
-        div.html(legendInfo)
-          .style("left", (event.pageX + 10) + "px")
-          .style("top", (event.pageY - 15) + "px");
-
+        const index = Object.keys(dataLegend)
+          .map(function(e) {
+            return e;
+          })
+          .indexOf(i.data[0]);
+        const legendInfo = taskName[index].toString();
+        div
+          .html(legendInfo)
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY - 15}px`);
       })
-      .on('mouseout', function (d, i) {
-        d3.select(this).transition()
+      .on('mouseout', function () {
+        d3.select(this)
+          .transition()
           .duration('50')
-          .attr('opacity', '.85')
-        div.transition()
+          .attr('opacity', '.85');
+        div
+          .transition()
           .duration('50')
-          .style("opacity", 0)
-          .on("end", function () {
-            d3.select(this).style("visibility", "hidden"); // Hide after transition
+          .style('opacity', 0)
+          .on('end', function() {
+            d3.select(this).style('visibility', 'hidden'); // Hide after transition
           });
-
       });
-
-
-
 
     return () => {
       d3.select(`#pie-chart-${pieChartId}`).remove();
