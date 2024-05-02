@@ -407,7 +407,6 @@ export default function Timer({ darkMode }) {
           isOpen={logTimeEntryModal}
           data={logTimer}
           sendStop={sendStop}
-          darkMode={darkMode}
         />
       )}
       <audio

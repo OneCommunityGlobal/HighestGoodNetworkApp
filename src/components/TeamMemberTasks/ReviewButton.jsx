@@ -140,12 +140,12 @@ const ReviewButton = ({
   return (
     <>
     {/* Verification Modal */}
-    <Modal isOpen={verifyModal} toggle={toggleVerify}>
-      <ModalHeader toggle={toggleVerify}>
+    <Modal isOpen={verifyModal} toggle={toggleVerify} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader toggle={toggleVerify} className={darkMode ? 'bg-space-cadet' : ''}>
         {selectedAction === 'Complete and Remove' && 'Are you sure you have completed the review?'}
         {selectedAction === 'More Work Needed' && 'Are you sure?'}
       </ModalHeader>
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
       <Button
             onClick={(e) => {
               if (selectedAction === 'More Work Needed') {
@@ -160,7 +160,7 @@ const ReviewButton = ({
             }}
             color="primary"
             className="float-left"
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             {reviewStatus == "Unsubmitted"
               ? `Submit`
@@ -168,7 +168,7 @@ const ReviewButton = ({
           </Button>
           <Button
             onClick={toggleVerify}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             Cancel
           </Button>
@@ -176,16 +176,16 @@ const ReviewButton = ({
     </Modal>
 
             {/* Submission Modal */}
-      <Modal isOpen={modal} toggle={toggleModal}>
-        <ModalHeader toggle={toggleModal}>
+      <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}>
           Change Review Status
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {reviewStatus == "Unsubmitted" 
             ? `Are you sure you want to submit for review?`
             : `Are you sure you have completed the review?`}
         </ModalBody>
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           Please add link to related work:
           <Input 
           type='text' 
@@ -193,7 +193,7 @@ const ReviewButton = ({
           onChange={handleLink}
           />
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             onClick={(e) => {
               reviewStatus == "Unsubmitted"
@@ -203,7 +203,7 @@ const ReviewButton = ({
             }}
             color="primary"
             className="float-left"
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             {reviewStatus == "Unsubmitted"
               ? `Submit`
@@ -211,7 +211,7 @@ const ReviewButton = ({
           </Button>
           <Button
             onClick={toggleModal}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             Cancel
           </Button>

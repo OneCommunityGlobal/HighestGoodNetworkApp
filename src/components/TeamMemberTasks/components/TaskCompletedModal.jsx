@@ -1,9 +1,11 @@
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import React, { useState } from 'react';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 
 const TaskCompletedModal = React.memo(props => {
+
+  const {darkMode} = props;
 
   const closeFunction = e => {
     props.setClickedToShowModal(false);
@@ -49,16 +51,16 @@ const TaskCompletedModal = React.memo(props => {
     : 'Are you sure you want to remove this user from the task?';
 
   return (
-    <Modal isOpen={props.isOpen} toggle={() => props.popupClose()}>
-      <ModalHeader toggle={() => props.popupClose()}>{modalHeader}</ModalHeader>
+    <Modal isOpen={props.isOpen} toggle={() => props.popupClose()} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader toggle={() => props.popupClose()} className={darkMode ? 'bg-space-cadet' : ''}>{modalHeader}</ModalHeader>
 
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p>{modalBody}</p>
-          <ModalFooter>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button
               color="primary"
               onClick={handleClick}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               {modalHeader}
             </Button>
@@ -66,7 +68,7 @@ const TaskCompletedModal = React.memo(props => {
               onClick={() => {
                 closeFunction();
               }}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Cancel
             </Button>

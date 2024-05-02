@@ -658,6 +658,7 @@ TimeEntryForm.propTypes = {
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {
