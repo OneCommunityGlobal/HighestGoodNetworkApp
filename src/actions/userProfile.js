@@ -5,6 +5,7 @@ import {
   EDIT_FIRST_NAME,
   EDIT_USER_PROFILE,
   CLEAR_USER_PROFILE,
+  GET_PROJECT_BY_FIRSTNAME_AND_LASTNAME,
 } from '../constants/userProfile';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -72,6 +73,22 @@ export const updateUserProfileProperty = (userProfile, key, value) => {
     return res.status;
   };
 };
+
+export const getProjectsByUsersName = (firstName, lastName) => {
+  const url = ENDPOINTS.GET_PROJECT_BY_PERSON(firstName, lastName);
+  return async dispatch => {
+    const res = await axios.get(url, {firstName,lastName});
+    if (res.status === 200){
+      await dispatch(getProjectsByPerson(res.data));
+    }
+    return res.status
+  }
+}
+
+export const getProjectsByPerson = data => ({
+  type: GET_PROJECT_BY_FIRSTNAME_AND_LASTNAME,
+  payload: data
+})
 
 export const getUserProfileActionCreator = data => ({
   type: GET_USER_PROFILE,
