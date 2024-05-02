@@ -15,10 +15,11 @@ import {
   deleteProject,
   modifyProject,
 } from '../../actions/projects';
+import {getProjectsByPerson} from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
-import SearchProjectByPerson from './SearchProject/SearchProjectByPerson';
+import SearchProjectByPerson from './SearchProject/SearchProjectByPerson'; 
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalDelete from './../common/Modal';
@@ -42,6 +43,10 @@ export class Projects extends Component {
       trackModelMsg: false,
        // The property below is the state that tracks the selected category to sort the project list - Sucheta #PR1738
        categorySelectedForSort : "",
+       searchByName: false, // this flag determines execution of function that renders projects by Name - Sucheta 
+       firstName: "",
+       lastName: "",
+       usersProjects: [],
        showStatus: "",
        sortBy: "",
       projectTarget: {
@@ -86,6 +91,24 @@ export class Projects extends Component {
     });
   };
 
+  onChangeInputField = (e) => {
+    if(e.target.name === 'firstName'){
+      this.setState({firstName: e.target.value});
+    }
+    else if (e.target.name === 'lastName'){
+      this.setState({lastName: e.target.value });
+    }
+  }
+  
+
+  handleNameSubmit = (e, firstName, lastName) => {
+    e.preventDefault();
+    console.log('Inside the handler');
+    console.log('this is firstName', firstName);
+    console.log('this is lastName', lastName);
+    this.props.getProjectsByPerson({firstName,lastName});
+  }
+
  // sort project list by category - Sucheta
  onChangeCategory = (value) =>{
   this.setState({
@@ -116,6 +139,8 @@ handleSort = (e)=>{
   }
 }
 
+
+
   confirmDelete = () => {
     // get project info
     let { projectId } = this.state.projectTarget;
@@ -143,6 +168,7 @@ handleSort = (e)=>{
     });
   };
 
+
   render() {
     const {darkMode} = this.props.state.theme;
     
@@ -157,7 +183,9 @@ handleSort = (e)=>{
     // by Sucheta
     const {categorySelectedForSort} = this.state;
     const {showStatus} = this.state;
-    const {sortBy} = this.state;
+    const {sortBy} = this.state; 
+    const {firstName, lastName} = this.state;
+   
 
 
     const role = this.props.state.userProfile.role;
@@ -325,7 +353,8 @@ handleSort = (e)=>{
 
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
             {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
-            <SearchProjectByPerson/>
+            <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} handleNameSubmit={this.handleNameSubmit}/>
+
             <table className="table table-bordered table-responsive-sm">
               <thead>
               <ProjectTableHeader 
@@ -383,4 +412,6 @@ export default connect(mapStateToProps, {
   modifyProject,
   getPopupById,
   hasPermission,
+  getProjectsByPerson
+
 })(Projects);
