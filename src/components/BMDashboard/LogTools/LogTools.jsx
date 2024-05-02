@@ -19,6 +19,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { fetchTools } from '../../../actions/bmdashboard/toolActions';
 import { fetchToolTypes } from '../../../actions/bmdashboard/invTypeActions';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+import Select, { StylesConfig }  from 'react-select'
 
 function LogTools() {
   const toolTypes = useSelector(state => state.bmInvTypes.list);
@@ -28,62 +29,62 @@ function LogTools() {
   const today = new Date().toISOString().split('T')[0];
   const [selectedProject, setSelectedProject] = useState(projects[0].name)
   const [selectedAction, setSelectedAction] = useState("Check In");
-  const [relevantToolItems, setRelevantToolItems] = useState([]);
+  const [relevantToolTypes, setRelevantToolTypes] = useState([]);
+  const [postObject, setPostObject] = useState({ 
+      action: selectedAction,
+      date: today,
+      typesArray: []
+    });
 
+  const multiSelectCustomStyles = {
+    control: (provided) => ({
+      ...provided,
+      width: 300,
+    }),
+    multiValue: (provided) => ({
+      ...provided,
+      padding: '5px',
+      backgroundColor: "#f7f7f7",
+      borderRadius: "5px",
+      border: '1px solid #aaacaf', 
+    }),
+    multiValueLabel: (provided) => ({
+      ...provided,
+      color: '#aaacaf',
+    }),
+    multiValueRemove: (provided) => ({
+      ...provided,
+      svg: {
+        ...provided.svg,
+        width: 20,
+        height: 20,
+      },
+    }),
+  };
+
+  // 
   useEffect(() => {
-    // dispatch(fetchToolById(toolId));
     dispatch(fetchToolTypes());
     dispatch(fetchBMProjects());
     dispatch(fetchTools());
-    // dispatch(fetchReusableTypes);
-    // setTimeout(()=>{
-      console.log("first load. tool types: ", toolTypes)
-    //   console.log("projects: ",projects)
-      // console.log("toolItems: ",toolItems)
-      
-    //   console.log("toolItems name: ",toolItems[0].project.name)
-    // // },2000)
-    // setRelevantToolItems(toolItems);
-    console.log("first load toolItems: ",toolItems)
+      // console.log("first load. tool types: ", toolTypes)
+ 
+    // console.log("first load toolItems: ",toolItems)
   }, []);
 
-  useEffect(()=>{
-    console.log("relevantToolItems changed: ", relevantToolItems);
-  },[relevantToolItems])
+  // useEffect(()=>{
+  //   console.log("relevantToolTypes changed: ", relevantToolTypes);
+  // },[relevantToolTypes])
 
   useEffect(()=>{
-    console.log("selectedProject or selectedAction changed. proj: ", selectedProject, ", action: ", selectedAction);
-    // const unfilteredItems = relevantToolItems;
-    // console.log("unfilteredItems in useEff: ", unfilteredItems)
-    let filteredToolItems = [];
+    // console.log("selectedProject or selectedAction changed. proj: ", selectedProject, ", action: ", selectedAction);
+    // let filteredToolItems = [];
     const actionArray = selectedAction === "Check In" ? "using" : "available"; 
-    console.log("actionArray: ", actionArray)
-    // filteredToolItems = toolItems.filter((item)=> (item.project.name === selectedProject)&&(item.itemType[actionArray].length > 0));
-    // console.log("filteredToolItems: ", filteredToolItems)
-    // setRelevantToolItems(filteredToolItems);
-
+    // console.log("actionArray: ", actionArray)
 
   const filteredToolTypes = []
 
-  const toolsTypesByProject = toolTypes.filter((toolType)=>{
-    // toolType[actionArray]
-  })
-
-  // const arr = [
-  //   {
-  //     name: "Bob"
-  //   },{
-  //     name: "Benj"
-  //   },{
-  //     name: "Bellend"
-  //   }
-  // ]
-  // const arr2 = arr.filter((item)=> item.includes)
-
   toolTypes.forEach((type)=> {
-    // console.log("looping types. type: ", type)
-    // console.log("type[",actionArray,"]: ", type[actionArray])
-
     if(type[actionArray].length >0){
       const typeDetails = {
         toolName: type.name,
@@ -94,9 +95,8 @@ function LogTools() {
       };
 
       type[actionArray].forEach((item)=>{
-        // console.log("looping available or uring. item: ", item);
         if(item.project.name === selectedProject){
-          const toolCodes = {code: item.code, _id: item._id};
+          const toolCodes = {value: item._id, label: item.code, type: type._id};
           typeDetails.items.push(toolCodes);
         }else{
           return
@@ -106,12 +106,23 @@ function LogTools() {
         filteredToolTypes.push(typeDetails)
       };
     }
-    setRelevantToolItems(filteredToolTypes);
+    setRelevantToolTypes(filteredToolTypes);
   });
 
-console.log("filteredToolTypes: ",filteredToolTypes)
+// console.log("filteredToolTypes: ",filteredToolTypes)
 
   },[selectedProject, selectedAction])
+
+useEffect(()=>{
+  console.log("postObject changed: ",postObject)
+  console.log("postObject typesArray: ",postObject.typesArray)
+  
+  if(postObject.typesArray.length === 0){
+    console.log("typesArray empty, nothing to post")
+  }
+  
+},[postObject])
+
 
   const handleProjectSelect = event => {
     // console.log('proj select. event: ', event.target.value);
@@ -119,15 +130,69 @@ console.log("filteredToolTypes: ",filteredToolTypes)
   };
 
   const handleInOutSelect = event =>{
-    // console.log("rein raus, ", event.target.value);
     setSelectedAction(event.target.value)
-  }
+  };
 
-  const handleItemCodeSelect = () => {}
+  // const handleItemCodeSelect = () => {}
 
-  const handleCodeSelect = () => {}
+  const handleCodeSelect = (event, eventParams) => {
+    // console.log("event: ", event, ", eventParams: ", eventParams.action)
+    // console.log("event[0]: ", event[0].value);
+    const postObjCopy = postObject; 
+
+    if(eventParams.action === 'select-option'){
+      // console.log("postObjCopy: ",postObjCopy)
+      const idx = postObjCopy.typesArray.findIndex((obj)=> obj.toolType === event[0].type);
+      if(idx < 0){
+        const tempObj = {
+          toolType: "",
+          toolItems: [],
+        }
+      tempObj.toolType = event[0].type;
+      tempObj.toolItems.push(event[0].value);
+      postObjCopy.typesArray.push(tempObj);
+    }else{
+      postObjCopy.typesArray[idx].toolItems.push(event[0].value)
+    }
+
+    // console.log("postObjCopy after add: ", postObjCopy);
+    }else if(eventParams.action === 'remove-value'){
+      // console.log("remove chip, eventParams: ", eventParams.removedValue);
+      const removedType = eventParams.removedValue.type;
+      const removedItem = eventParams.removedValue.value;
+      const typeIdx = postObjCopy.typesArray.findIndex((obj)=> obj.toolType === removedType);
+      // console.log("postObjCopy.typesArray[typeIdx].toolItems: ",postObjCopy.typesArray[typeIdx].toolItems)
+      // console.log("removedType: ",removedType, ", removedItem: ", removedItem, ", typeIdx: ", typeIdx);
+      const itemIdx = postObjCopy.typesArray[typeIdx].toolItems.findIndex((item)=> item === removedItem);
+      // console.log("itemIdx: ",itemIdx)
+      postObjCopy.typesArray[typeIdx].toolItems.splice(itemIdx,1)
+      // console.log("postObjCopy.typesArray: ", postObjCopy.typesArray[typeIdx].toolItems)
+      if(postObjCopy.typesArray[typeIdx].toolItems.length === 0){
+        // console.log("such empty");
+        postObjCopy.typesArray.splice(typeIdx,1);
+        // console.log("postObjCopy: ", postObjCopy);
+      }
+      
+    }else if(eventParams.action === 'clear'){
+      // console.log("clear, eventParams: ", eventParams);
+      const clearedType = eventParams.removedValues[0].type;
+      // console.log("clearedType: ", clearedType) 
+      // console.log("postObjCopy.typesArray: ",postObjCopy.typesArray[0].toolType)
+      postObjCopy.typesArray.forEach((type)=> console.log("type: ", type.toolType))
+      const clearedTypeIdx = postObjCopy.typesArray.findIndex((type)=>type.toolType === clearedType)
+      // console.log("clearedTypeIdx: ", clearedTypeIdx)
+      postObjCopy.typesArray.splice(clearedTypeIdx,1)
+      // console.log("postObjCopy: ", postObjCopy);
+    }
+  console.log("postObjCopy: ", postObjCopy);
+  setPostObject(postObjCopy);
+  };
 
   const handleCancel = ()=> {}
+
+  const handleSubmit = ()=>{
+    console.log("postObj: ", postObject);
+  }
 
   return (
     <div className="page">
@@ -207,9 +272,9 @@ console.log("filteredToolTypes: ",filteredToolTypes)
             </thead>
 
             <tbody>
-                {relevantToolItems.length > 0 ?
+                {relevantToolTypes.length > 0 ?
                 
-                  relevantToolItems.map((toolType, index)=>(
+                  relevantToolTypes.map((toolType, index)=>(
                     <tr 
                       key={toolType._id}
                       className='tool-type-row'
@@ -219,9 +284,17 @@ console.log("filteredToolTypes: ",filteredToolTypes)
                        <td>{toolType.available + toolType.using}</td>
                        <td>{toolType.available}</td>
                        <td>{toolType.using}</td>
-                      <td>{toolType.items.map((item)=>(
+                      {/* <td>{toolType.items.map((item)=>(
                         <span key={item._id}>{item.code},</span>
-                      ))}</td>
+                      ))}</td> */}
+                      <td> 
+                       <Select 
+                        options={toolType.items}
+                        isMulti  
+                        styles={multiSelectCustomStyles} 
+                        onChange={handleCodeSelect}  
+                        />
+                      </td>  
                     </tr>
                   ))
                 
@@ -234,7 +307,13 @@ console.log("filteredToolTypes: ",filteredToolTypes)
           <Button className="log-form-cancel-button" onClick={handleCancel}>
             Cancel
           </Button>
-          <Button className="log-form-submit-button">Submit</Button>
+          <Button 
+            className="log-form-submit-button" 
+            onClick={handleSubmit} /*disabled={true}*/ 
+            // disabled={postObject.typesArray.length === 0 ? true : false} 
+            >
+            Submit
+            </Button>
         </div>
       </div>
     </div>
