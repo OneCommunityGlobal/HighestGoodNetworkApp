@@ -14,6 +14,8 @@ export const fetchTools = () => {
         dispatch(setTools(res.data));
       })
       .catch(error => {
+        // eslint-disable-next-line no-console
+        console.log('err: ', error.response.data.message);
         // eslint-disable-next-line no-use-before-define
         dispatch(setErrors(error));
       });
