@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
-import { Table } from 'reactstrap';
+import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -20,6 +20,7 @@ import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
+import { MultiSelect } from 'react-multi-select-component';
 
 const TeamMemberTasks = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -43,6 +44,12 @@ const TeamMemberTasks = React.memo(props => {
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
+  const [teamNames, setTeamNames] = useState([]);
+  const [teamCodes, setTeamCodes] = useState([]);
+  const [colorOptions, setColorOptions] = useState([]);
+  const [selectedTeamNames, setSelectedTeamNames] = useState([]);
+  const [selectedCodes, setSelectedCodes] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -181,6 +188,7 @@ const TeamMemberTasks = React.memo(props => {
 
   const renderTeamsList = async () => {
     if (usersWithTasks.length > 0) {
+      console.log(usersWithTasks);
       //sort all users by their name
       usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
       //find currentUser
@@ -318,6 +326,41 @@ const TeamMemberTasks = React.memo(props => {
           taskModalOption={taskModalOption}
         />
       )}
+      <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 4}} xs={{ size: 12}}>
+            Select Team
+            <MultiSelect
+              className="multi-select-filter"
+              options={teamNames}
+              value={selectedTeamNames}
+              onChange={e => {
+                // this.handleSelectCodeChange(e);
+              }}
+            />
+          </Col>
+          <Col lg={{ size: 4}} xs={{ size: 12}}>
+            Select Team Code
+            <MultiSelect
+              className="multi-select-filter"
+              options={teamCodes}
+              value={selectedCodes}
+              onChange={e => {
+                // this.handleSelectCodeChange(e);
+              }}
+            />
+          </Col>
+          <Col lg={{ size: 4 }} xs={{ size: 12 }}>
+            Select Color
+            <MultiSelect
+              className="multi-select-filter"
+              options={colorOptions}
+              value={selectedColors}
+              onChange={e => {
+                // this.handleSelectColorChange(e);
+              }}
+            />
+          </Col>
+        </Row>
       <div className="task_table-container">
         <Table>
           <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
