@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
-  Dropdown,
-  DropdownMenu,
-  DropdownItem,
-  DropdownToggle,
   Input,
   Button,
-  InputGroup,
   Table,
   Form, FormGroup, Label
 } from 'reactstrap';
@@ -16,14 +11,14 @@ import { useHistory } from 'react-router-dom';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons'; // Import the caret down icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchTools } from '../../../actions/bmdashboard/toolActions';
+// import { fetchTools } from '../../../actions/bmdashboard/toolActions';
 import { fetchToolTypes } from '../../../actions/bmdashboard/invTypeActions';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import Select, { StylesConfig }  from 'react-select'
 
 function LogTools() {
   const toolTypes = useSelector(state => state.bmInvTypes.list);
-  const toolItems = useSelector(state => state.bmTools.toolslist);
+  // const toolItems = useSelector(state => state.bmTools.toolslist);
   const projects = useSelector(state => state.bmProjects);
   const dispatch = useDispatch();
   const today = new Date().toISOString().split('T')[0];
@@ -66,10 +61,6 @@ function LogTools() {
   useEffect(() => {
     dispatch(fetchToolTypes());
     dispatch(fetchBMProjects());
-    dispatch(fetchTools());
-      // console.log("first load. tool types: ", toolTypes)
- 
-    // console.log("first load toolItems: ",toolItems)
   }, []);
 
   // useEffect(()=>{
@@ -77,10 +68,12 @@ function LogTools() {
   // },[relevantToolTypes])
 
   useEffect(()=>{
-    // console.log("selectedProject or selectedAction changed. proj: ", selectedProject, ", action: ", selectedAction);
-    // let filteredToolItems = [];
+     setPostObject({ 
+      action: selectedAction,
+      date: today,
+      typesArray: []
+    })
     const actionArray = selectedAction === "Check In" ? "using" : "available"; 
-    // console.log("actionArray: ", actionArray)
 
   const filteredToolTypes = []
 
@@ -108,19 +101,10 @@ function LogTools() {
     }
     setRelevantToolTypes(filteredToolTypes);
   });
-
-// console.log("filteredToolTypes: ",filteredToolTypes)
-
   },[selectedProject, selectedAction])
 
 useEffect(()=>{
-  console.log("postObject changed: ",postObject)
-  console.log("postObject typesArray: ",postObject.typesArray)
-  
-  if(postObject.typesArray.length === 0){
-    console.log("typesArray empty, nothing to post")
-  }
-  
+  console.log("postObject changed: ",postObject)  
 },[postObject])
 
 
@@ -131,6 +115,7 @@ useEffect(()=>{
 
   const handleInOutSelect = event =>{
     setSelectedAction(event.target.value)
+   
   };
 
   // const handleItemCodeSelect = () => {}
@@ -138,7 +123,7 @@ useEffect(()=>{
   const handleCodeSelect = (event, eventParams) => {
     // console.log("event: ", event, ", eventParams: ", eventParams.action)
     // console.log("event[0]: ", event[0].value);
-    const postObjCopy = postObject; 
+    const postObjCopy = {...postObject}; 
 
     if(eventParams.action === 'select-option'){
       // console.log("postObjCopy: ",postObjCopy)
@@ -185,10 +170,13 @@ useEffect(()=>{
       // console.log("postObjCopy: ", postObjCopy);
     }
   console.log("postObjCopy: ", postObjCopy);
+
   setPostObject(postObjCopy);
   };
 
-  const handleCancel = ()=> {}
+  const handleCancel = ()=> {
+  //redirect to /tools
+  }
 
   const handleSubmit = ()=>{
     console.log("postObj: ", postObject);
@@ -309,8 +297,8 @@ useEffect(()=>{
           </Button>
           <Button 
             className="log-form-submit-button" 
-            onClick={handleSubmit} /*disabled={true}*/ 
-            // disabled={postObject.typesArray.length === 0 ? true : false} 
+            onClick={handleSubmit}
+            disabled={postObject.typesArray.length === 0 ? true : false} 
             >
             Submit
             </Button>
