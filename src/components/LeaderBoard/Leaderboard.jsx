@@ -35,6 +35,18 @@ function useDeepEffect(effectFunc, deps) {
   }, deps);
 }
 
+function displayDaysLeft(lastDay) {
+  if (lastDay) {
+      const today = new Date();
+      const endDate = new Date(lastDay);
+      const differenceInTime = endDate.getTime() - today.getTime();
+      const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+      return -differenceInDays;
+  } else {
+      return null; // or any other appropriate default value
+  }
+}
+
 function LeaderBoard({
   getLeaderboardData,
   getOrgData,
@@ -184,6 +196,7 @@ function LeaderBoard({
                   />
                 </div>
               </th>
+              <th>Days Left</th>
               <th>Time Off</th>
               <th>
                 <span className="d-sm-none">Tan. Time</span>
@@ -362,6 +375,15 @@ function LeaderBoard({
                     <i className="fa fa-eye-slash" title="User is invisible" />
                   )}
                 </th>
+                <td className="align-middle">
+                  <span
+                    title={mouseoverTextValue}
+                    id="Days left"
+                    style={{color:"red"}}
+                  >
+                    {displayDaysLeft(item.endDate)}
+                  </span>
+                </td>
                 <td className="align-middle">
                   {allRequests && allRequests[item.personId]?.length > 0 && (
                     <div>
