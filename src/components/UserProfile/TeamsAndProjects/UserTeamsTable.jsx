@@ -20,6 +20,7 @@ const UserTeamsTable = props => {
   const handleCodeChange = e => {
     let value = e.target.value;
 
+
     const regexTest = fullCodeRegex.test(value);
     if (regexTest) {
       props.setCodeValid(true);
@@ -58,6 +59,7 @@ const UserTeamsTable = props => {
             <Col
               md={canAssignTeamToUsers ? '7' : '10'}
               style={{
+                backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 border: '1px solid #ced4da',
                 marginBottom: '10px',
