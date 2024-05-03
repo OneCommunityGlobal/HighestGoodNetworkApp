@@ -46,7 +46,7 @@ const TeamMemberTasks = React.memo(props => {
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
   const [teamNames, setTeamNames] = useState([]);
   const [teamCodes, setTeamCodes] = useState([]);
-  const [colorOptions, setColorOptions] = useState([]);
+  const [colors, setColors] = useState([]);
   const [selectedTeamNames, setSelectedTeamNames] = useState([]);
   const [selectedCodes, setSelectedCodes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
@@ -188,7 +188,6 @@ const TeamMemberTasks = React.memo(props => {
 
   const renderTeamsList = async () => {
     if (usersWithTasks.length > 0) {
-      console.log(usersWithTasks);
       //sort all users by their name
       usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
       //find currentUser
@@ -201,6 +200,54 @@ const TeamMemberTasks = React.memo(props => {
       setTeamList([...usersWithTasks]);
     }
   };
+
+  const renderFilters = () => {
+    const teamGroup = {};
+    const teamCodeGroup = {};
+    const colorGroup = {};
+    const teamOptions = [];
+    const teamCodeOptions = [];
+    const colorOptions = [];
+
+    if(usersWithTasks.length > 0) {
+      console.log(usersWithTasks);
+      usersWithTasks.forEach(user => {
+        const code = user.teamCode || 'noCodeLabel';
+        const color = user.weeklySummaryOption;
+
+        if (teamCodeGroup[code]) {
+          teamCodeGroup[code].push(user.personId);
+        } else {
+          teamCodeGroup[code] = [user.personId];
+        }
+
+        if (colorGroup[color]) {
+          colorGroup[color].push(user.personId);
+        } else {
+          colorGroup[color] = [user.personId];
+        }
+      });
+
+      Object.keys(teamCodeGroup).forEach(code => {
+        if (code !== 'noCodeLabel') {
+          teamCodeOptions.push({
+            value: code,
+            label: `${code} (${teamCodeGroup[code].length})`
+          });
+        }
+      });
+
+      Object.keys(colorGroup).forEach(color => {
+        colorOptions.push({
+          value: color,
+          label: `${color} (${colorGroup[color].length})`
+        })
+      });
+
+      setTeamCodes(teamCodeOptions);
+      setColors(colorOptions);
+    }
+  }
 
   useEffect(() => {
     // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
@@ -219,6 +266,7 @@ const TeamMemberTasks = React.memo(props => {
   useEffect(() => {
     if (!isLoading) {
       renderTeamsList();
+      renderFilters();
       closeMarkAsDone();
     }
   }, [usersWithTasks]);
@@ -230,6 +278,33 @@ const TeamMemberTasks = React.memo(props => {
   const handleshowWhoHasTimeOff = () => {
     setShowWhoHasTimeOff(prev => !prev);
   };
+
+  const handleSelectCodeChange = event => {
+    setSelectedCodes(event);
+  }
+
+  const handleSelectColorChange = event => {
+    setSelectedColors(event);
+  }
+
+  const filterByUserFeatures = (user) => {
+    if(selectedTeamNames.length === 0 && selectedCodes.length === 0 && selectedColors.length === 0) return true;
+
+    return filterByTeamCodes(user.teamCode) || filterByColors(user.weeklySummaryOption);
+  }
+
+  const filterByTeamNames = (name) => {
+    return selectedTeamNames.some(option => option.value === name);
+  }
+
+  const filterByTeamCodes = (code) => {
+    return selectedCodes.some(option => option.value === code);
+  }
+
+  const filterByColors = (color) => {
+    return selectedColors.some(option => option.value === color);
+  }
+
 
   return (
     <div className={"container " + (darkMode ? "team-member-tasks bg-oxford-blue" : "team-member-tasks")}>
@@ -345,7 +420,7 @@ const TeamMemberTasks = React.memo(props => {
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
-                // this.handleSelectCodeChange(e);
+                handleSelectCodeChange(e);
               }}
             />
           </Col>
@@ -353,10 +428,10 @@ const TeamMemberTasks = React.memo(props => {
             Select Color
             <MultiSelect
               className="multi-select-filter"
-              options={colorOptions}
+              options={colors}
               value={selectedColors}
               onChange={e => {
-                // this.handleSelectColorChange(e);
+                handleSelectColorChange(e);
               }}
             />
           </Col>
@@ -413,7 +488,7 @@ const TeamMemberTasks = React.memo(props => {
             {isLoading ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
-              teamList.map(user => {
+              teamList.filter((user) => filterByUserFeatures(user)).map(user => {
                 if (!isTimeFilterActive) {
                   return (
                     <TeamMemberTask
