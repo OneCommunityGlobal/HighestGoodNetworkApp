@@ -3,10 +3,9 @@
  * Author: Sucheta Mukherjee - 04/27/24
  * This component is used to serach projects by a specific user/person
  ********************************************************************************/
-import React, { useState } from 'react';
+import React from 'react';
 import Button from 'react-bootstrap/Button';
 import Form from 'react-bootstrap/Form';
-
 
 
 
