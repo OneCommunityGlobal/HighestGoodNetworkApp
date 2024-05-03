@@ -66,26 +66,42 @@ export const updateUserProfile = (userProfile) => {
 export const updateUserProfileProperty = (userProfile, key, value) => {
   const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfile._id);
   return async dispatch => {
-    const res = await axios.patch(url, { key, value });
-    if (res.status === 200) {
-      await dispatch(getUserProfileActionCreator(userProfile));
+    try{
+        const res = await axios.patch(url, { key, value });
+        if (res.status === 200) {
+          console.log("This is the response data", res)
+          await dispatch(getUserProfileActionCreator(userProfile));
+        }
+        return res.status;
+    }catch(error){
+      console.log('An error while retrieving the projects',error)
     }
-    return res.status;
+    
   };
 };
 
 export const getProjectsByUsersName = (firstName, lastName) => {
-  const url = ENDPOINTS.GET_PROJECT_BY_PERSON(firstName, lastName);
+
+  const url = ENDPOINTS.GET_PROJECT_BY_PERSON(firstName,lastName);
   return async dispatch => {
-    const res = await axios.get(url, {firstName,lastName});
+    try{
+    const res = await axios.get(url);
+    console.log('This is the res',res)
+    if(!res.status === 200){
+      throw Error
+    }
     if (res.status === 200){
-      await dispatch(getProjectsByPerson(res.data));
+      await dispatch(getProjectsByPersonActionCreator(res.data));
     }
     return res.status
+    }catch(error){
+      console.log("THIS IS THE ERROR", error)
+    }
+    
   }
 }
 
-export const getProjectsByPerson = data => ({
+export const getProjectsByPersonActionCreator = data => ({
   type: GET_PROJECT_BY_FIRSTNAME_AND_LASTNAME,
   payload: data
 })
