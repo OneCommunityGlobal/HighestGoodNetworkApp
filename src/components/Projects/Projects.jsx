@@ -15,7 +15,7 @@ import {
   deleteProject,
   modifyProject,
 } from '../../actions/projects';
-import {getProjectsByPerson} from '../../actions/userProfile';
+import {getProjectsByUsersName} from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
@@ -32,6 +32,7 @@ import Loading from '../common/Loading';
 import { PROJECT_DELETE_POPUP_ID } from './../../constants/popupId';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+
 
 export class Projects extends Component {
   constructor(props) {
@@ -92,20 +93,17 @@ export class Projects extends Component {
 
   onChangeInputField = (e) => {
     if(e.target.name === 'firstName'){
-      this.setState({firstName: e.target.value});
+      this.setState({firstName: e.target.value.trim()});
     }
     else if (e.target.name === 'lastName'){
-      this.setState({lastName: e.target.value });
+      this.setState({lastName: e.target.value.trim() });
     }
   }
   
 
-  handleNameSubmit = (e, firstName, lastName) => {
+  handleNameSubmit = async (e, firstName, lastName) => {
     e.preventDefault();
-    console.log('Inside the handler');
-    console.log('this is firstName', firstName);
-    console.log('this is lastName', lastName);
-    this.props.getProjectsByPerson({firstName,lastName});
+    this.props.getProjectsByUsersName(firstName,lastName);
   }
 
  // sort project list by category - Sucheta
@@ -414,6 +412,6 @@ export default connect(mapStateToProps, {
   modifyProject,
   getPopupById,
   hasPermission,
-  getProjectsByPerson
+  getProjectsByUsersName
 
 })(Projects);

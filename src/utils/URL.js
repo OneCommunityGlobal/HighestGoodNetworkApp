@@ -168,7 +168,7 @@ export const ENDPOINTS = {
 
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
   SET_USER_FOLLOWUP: (userId,taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
-  GET_PROJECT_BY_PERSON: ()=> `${APIEndpoint}/userProfile/projects` ,  // by Sucheta
+  GET_PROJECT_BY_PERSON: (firstName,lastName) => `${APIEndpoint}/userProfile/${firstName}/${lastName}/getprojects` ,  // by Sucheta
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
