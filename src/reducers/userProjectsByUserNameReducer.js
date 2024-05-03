@@ -10,7 +10,7 @@ export const userProjectsByUserNameReducer = (state = initialUserName, action )=
     console.log("This got inside the Reducer")
     return {
       ...state,
-      projects: action.payload
+      projects: [...action.payload]
     }
     default: return state
   }
