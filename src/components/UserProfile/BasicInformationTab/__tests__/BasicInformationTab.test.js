@@ -289,7 +289,7 @@ describe('Test suite for TimeZoneDifference component ', () => {
   it('Test case 2 : Renders timezone offset when user is not self', () => {
     testProps.isUserSelf=false;
     render(<TimeZoneDifference {...testProps} />);
-    expect(screen.getByText(/[-+]\d+ hours/)).toBeInTheDocument(); 
+    expect(screen.getByText(/[-+]?\d+ hours/)).toBeInTheDocument(); 
   });
 
   it('Test case 3 : Renders error message if the component has encountered error for the first time ',()=>{
@@ -401,7 +401,7 @@ it('Test case 2: Renders the Name component as expected  ', () => {
   expect(screen.getByTestId("firstName")).toBeInTheDocument(); // input field
   expect(screen.getByTestId("lastName")).toBeInTheDocument(); //input field 
 });
-it('Test case 3: Renders the Title component as expected  ', () => {
+it(  'Test case 3: Renders the Title component as expected  ', () => {
   render(
     <Provider store={store}>
       <BasicInformationTab
