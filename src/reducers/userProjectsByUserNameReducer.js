@@ -12,5 +12,6 @@ export const userProjectsByUserNameReducer = (state = initialUserName, action )=
       ...state,
       projects: action.payload
     }
+    default: return state
   }
 }
