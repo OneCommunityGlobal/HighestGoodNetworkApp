@@ -154,11 +154,32 @@ export default (
           path="/wbs/tasks/:wbsId/:projectId/:wbsName"
           component={WBSDetail}
           fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
         />
-        <ProtectedRoute path="/project/wbs/:projectId" component={WBS} fallback />
-        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} fallback />
-        <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} fallback />
-        <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} fallback />
+        <ProtectedRoute
+          path="/project/wbs/:projectId"
+          component={WBS}
+          fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
+        />
+        <ProtectedRoute
+          path="/wbs/tasks/:wbsId/:projectId"
+          component={WBSDetail}
+          fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
+        />
+        <ProtectedRoute
+          path="/wbs/tasks/:taskId"
+          component={SingleTask}
+          fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
+        />
+        <ProtectedRoute
+          path="/wbs/samefoldertasks/:taskId"
+          component={SameFolderTasks}
+          fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
+        />
         <ProtectedRoute
           path="/usermanagement"
           exact
