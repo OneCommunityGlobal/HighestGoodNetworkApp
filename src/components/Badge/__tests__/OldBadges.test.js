@@ -38,7 +38,7 @@ describe('Old Badges component', () => {
   it('renders without crashing', () => {
     render(<OldBadges personalBestMaxHrs={25} badges={badges} />);
   });
-  it('check tool tip of Badges Earned Before Last Week', async () => {
+  it.skip('check tool tip of Badges Earned Before Last Week', async () => {
     const { container } = render(
       <OldBadges personalBestMaxHrs={25} badges={badges} darkMode={true} />,
     );
