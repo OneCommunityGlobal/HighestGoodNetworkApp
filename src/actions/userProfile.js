@@ -86,7 +86,6 @@ export const getProjectsByUsersName = (firstName, lastName) => {
   return async dispatch => {
     try{
     const res = await axios.get(url);
-    console.log('This is the res',res)
     if(!res.status === 200){
       await dispatch(getProjectsByPersonActionCreator(res.data))
     }
@@ -95,7 +94,7 @@ export const getProjectsByUsersName = (firstName, lastName) => {
     }
     return res.status
     }catch(error){
-      console.log("THIS IS THE ERROR", error)
+      console.log('An error while retrieving the projects',error)
     }
     
   }
