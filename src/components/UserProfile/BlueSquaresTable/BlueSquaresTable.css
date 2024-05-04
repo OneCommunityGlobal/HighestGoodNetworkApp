@@ -1,0 +1,35 @@
+.user-profile-blue-square-section {
+    position: relative;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #007bff;
+  background-color: #f8faff;
+  font-size: 1rem;
+}
+
+.user-profile-blue-square-div-header {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+}
+
+.user-profile-blue-square-div-header-title {
+  display: flex;
+  flex-direction: row;
+  padding: 5px;
+  border-bottom: 1px solid #007bff;
+  font-size: 1rem;
+  color: white;
+  background-color: #007bff;
+}
+
+.user-profile-blue-square-header-toggle {
+  border-bottom: 1px solid #007bff;
+  padding: 5px;
+  font-size: 0.8rem;
+}
+
+.user-profile-blue-square-header-toggle div {
+  justify-content: flex-start;
+  margin: 0px;
+}

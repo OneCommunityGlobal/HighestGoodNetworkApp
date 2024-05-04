@@ -21,7 +21,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
@@ -215,6 +215,8 @@ export class WeeklySummariesReport extends Component {
         open={this.state.summaryRecepientsPopupOpen}
         onClose={this.onSummaryRecepientsPopupClose}
         summaries={this.props.summaries}
+        password={this.state.weeklyRecipientAuthPass}
+        authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
       />
     );
   };
@@ -401,7 +403,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   render() {
-    const { role } = this.props;
+    const { role, darkMode } = this.props;
     const {
       loading,
       activeTab,
@@ -419,13 +421,17 @@ export class WeeklySummariesReport extends Component {
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
     const { authEmailWeeklySummaryRecipient } = this.props;
-    const authorizedUser1 = process.env.REACT_APP_JAE;
-    const authorizedUser2 = process.env.REACT_APP_SARA;
+    const authorizedUser1 = 'jae@onecommunityglobal.org';
+    const authorizedUser2 = 'sucheta_mu@test.com'; // To test please include your email here
 
     if (error) {
       return (
-        <Container>
-          <Row className="align-self-center" data-testid="error">
+        <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+          <Row
+            className="align-self-center pt-2"
+            data-testid="error"
+            style={{ width: '30%', margin: '0 auto' }}
+          >
             <Col>
               <Alert color="danger">Error! {error.message}</Alert>
             </Col>
@@ -436,15 +442,23 @@ export class WeeklySummariesReport extends Component {
 
     if (loading) {
       return (
-        <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
+        <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
           <Row className="text-center" data-testid="loading">
-            <SkeletonLoading template="WeeklySummariesReport" />
+            <SkeletonLoading
+              template="WeeklySummariesReport"
+              className={darkMode ? 'bg-yinmn-blue' : ''}
+            />
           </Row>
         </Container>
       );
     }
     return (
-      <Container fluid className="bg--white-smoke py-3 mb-5">
+      <Container
+        fluid
+        className={`container-wsr-wrapper py-3 mb-5 ${
+          darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
+        }`}
+      >
         {this.passwordInputModalToggle()}
         {this.popUpElements()}
         <Row>
@@ -472,7 +486,7 @@ export class WeeklySummariesReport extends Component {
               className="permissions-management__button"
               type="button"
               onClick={() => this.onClickRecepients()}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Weekly Summary Report Recipients
             </Button>
@@ -556,7 +570,10 @@ export class WeeklySummariesReport extends Component {
                 </NavItem>
               ))}
             </Nav>
-            <TabContent activeTab={activeTab} className="p-4">
+            <TabContent
+              activeTab={activeTab}
+              className={`p-4 ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
+            >
               {navItems.map((item, index) => (
                 <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
                   <Row>
@@ -569,17 +586,21 @@ export class WeeklySummariesReport extends Component {
                         summaries={filteredSummaries}
                         weekIndex={index}
                         weekDates={this.weekDates[index]}
+                        darkMode={darkMode}
                       />
                       {hasSeeBadgePermission && (
                         <Button
                           className="btn--dark-sea-green"
-                          style={boxStyle}
+                          style={darkMode ? boxStyleDark : boxStyle}
                           onClick={() => this.setState({ loadBadges: !loadBadges })}
                         >
                           {loadBadges ? 'Hide Badges' : 'Load Badges'}
                         </Button>
                       )}
-                      <Button className="btn--dark-sea-green" style={boxStyle}>
+                      <Button
+                        className="btn--dark-sea-green"
+                        style={darkMode ? boxStyleDark : boxStyle}
+                      >
                         Load Trophies
                       </Button>
                     </Col>
@@ -602,6 +623,7 @@ export class WeeklySummariesReport extends Component {
                         canEditTeamCode={this.codeEditPermission}
                         auth={auth}
                         canSeeBioHighlight={this.canSeeBioHighlight}
+                        darkMode={darkMode}
                       />
                     </Col>
                   </Row>
@@ -628,9 +650,10 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
-  role: state.userProfile.role,
+  role: state.auth.user.role,
   auth: state.auth,
-  authEmailWeeklySummaryRecipient: state.userProfile.email, // capturing the user email through Redux store - Sucheta
+  darkMode: state.theme.darkMode,
+  authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
 });
 
 const mapDispatchToProps = dispatch => ({

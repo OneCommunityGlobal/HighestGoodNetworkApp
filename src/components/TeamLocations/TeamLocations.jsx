@@ -6,6 +6,8 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Button, Container } from 'reactstrap';
 import './TeamLocations.css';
 
+import { boxStyle, boxStyleDark } from 'styles';
+import { toast } from 'react-toastify';
 import { SEARCH } from 'languages/en/ui';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -29,6 +31,8 @@ function TeamLocations() {
   const [tableVisible, setTableVisible] = useState(false);
   const [markerPopupVisible, setMarkerPopupVisible] = useState(false);
   const role = useSelector(state => state.auth.user.role);
+  const darkMode = useSelector(state => state.theme.darkMode);
+
 
   const isAbleToEdit = role === 'Owner';
   const mapRef = useRef(null); 
@@ -185,7 +189,7 @@ function TeamLocations() {
   });
 
   return (
-    <Container fluid className="mb-4">
+    <Container fluid className={`${darkMode ? 'bg-oxford-blue text-light' : ''}`} style={{minHeight: "100%", paddingBottom: "73px"}}>
       {isAbleToEdit ? (
         <>
           <AddOrEditPopup
@@ -299,7 +303,7 @@ function TeamLocations() {
                 outline
                 color="danger"
                 className="btn btn-outline-error mr-1 btn-sm"
-                style={{ ...boxStyle }}
+                style={darkMode ? boxStyleDark : boxStyle}
                 onClick={toggleListPopUp}
               >
                 Users list
@@ -308,7 +312,7 @@ function TeamLocations() {
                 outline
                 color="primary"
                 className="btn btn-outline-success mr-1 btn-sm"
-                style={{ ...boxStyle }}
+                style={darkMode ? boxStyleDark : boxStyle}
                 onClick={() => setAddNewIsOpen(true)}
               >
                 Add person
