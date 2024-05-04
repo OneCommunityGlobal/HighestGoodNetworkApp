@@ -2,7 +2,6 @@
  * There is the store to store constants that relate to
  * actions which will be sent to the reducers
  ******************************************************** */
-
 // INIT PROJECTS
 export const FETCH_PROJECTS_START = 'FETCH_PROJECTS_START';
 export const RECEIVE_PROJECTS = 'RECIVES_PROJECTS';
