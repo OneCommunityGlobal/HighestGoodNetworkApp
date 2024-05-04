@@ -47,7 +47,6 @@ export class Projects extends Component {
        searchByName: false, // this flag determines execution of function that renders projects by Name - Sucheta 
        firstName: "",
        lastName: "",
-       usersProjects: [],
        showStatus: "",
        sortBy: "",
       projectTarget: {
@@ -101,9 +100,14 @@ export class Projects extends Component {
     }
   }
   
+  cancelSearchByName = (e) =>{
+    this.setState({searchByName: false});
+  }
 
   handleNameSubmit = async (e, firstName, lastName) => {
     e.preventDefault();
+    this.setState({searchByName: true, firstName: '', lastName: ''});
+    
     this.props.getProjectsByUsersName(firstName,lastName);
   }
 
@@ -183,12 +187,15 @@ handleSort = (e)=>{
     const {showStatus} = this.state;
     const {sortBy} = this.state; 
     const {firstName, lastName} = this.state;
-   
+    const {userProjects} = this.props; //This state variable to store list of projects to display by user Name
 
+    const {searchByName} = this.state;
 
     const role = this.props.state.userProfile.role;
 
     const canPostProject = this.props.hasPermission('postProject');
+
+    
 
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
@@ -314,7 +321,27 @@ handleSort = (e)=>{
           }
         })
 
-      }else{
+      }else if(searchByName){
+        let filteredList = projects.filter(project => userProjects.includes(project._id));
+        console.log("FILTERED LIST",filteredList);
+        console.log("User Projects", userProjects);
+        ProjectsList = filteredList.map((project, index)=>{
+          return (<Project
+            key={project._id}
+            index={index}
+            projectId={project._id}
+            name={project.projectName}
+            category={project.category || 'Unspecified'}
+            active={project.isActive}
+            onClickActive={this.onClickActive}
+            onUpdateProjectName={this.onUpdateProjectName}
+            onClickDelete={this.onClickDelete}
+            confirmDelete={this.confirmDelete}
+            darkMode={darkMode}
+          />)
+        })
+      }
+      else{
         ProjectsList = (sortBy?sortedList: projects).map((project, index) => (
           <Project
             key={project._id}
@@ -351,7 +378,7 @@ handleSort = (e)=>{
 
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
             {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
-            <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} handleNameSubmit={this.handleNameSubmit}/>
+            <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName}/>
 
             <table className="table table-bordered table-responsive-sm">
               <thead>
@@ -364,6 +391,7 @@ handleSort = (e)=>{
                 darkMode={darkMode}
               />
               </thead>
+         
               <tbody>{ProjectsList}</tbody>
             </table>
           </div>
@@ -401,8 +429,9 @@ handleSort = (e)=>{
 }
 
 const mapStateToProps = state => {
-  return { state };
+  return { state, userProjects: state.userProjectsByUserNameReducer.projects.projects};
 };
+
 export default connect(mapStateToProps, {
   fetchAllProjects,
   postNewProject,
