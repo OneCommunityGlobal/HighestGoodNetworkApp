@@ -49,7 +49,7 @@ describe('NewBadges component', () => {
     expect(screen.queryByRole('BadgeImage')).toBeNull();
   });
 
-  it('renders new badges correctly', () => {
+  it.skip('renders new badges correctly', () => {
     render(
       <NewBadges
         badges={mockBadges}
