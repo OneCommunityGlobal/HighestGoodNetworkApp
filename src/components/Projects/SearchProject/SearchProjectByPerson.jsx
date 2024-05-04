@@ -11,7 +11,7 @@ import Form from 'react-bootstrap/Form';
 
 export default function SearchProjectByPerson(props){
 
- const {onChangeInputField, firstName, lastName, handleNameSubmit} = props;
+ const {onChangeInputField, firstName, lastName, handleNameSubmit, cancelSearchByName} = props;
 
   return <Form className='d-flex align-item-center justify-content-evenly border border-grey rounded p-1 mb-3' style={{height: "3em"}} >
     <Form.Group className='d-flex w-100'>
@@ -41,7 +41,11 @@ export default function SearchProjectByPerson(props){
           />
           <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
         </Form.Group>
+    <Form.Group className='d-flex w-100 ml-3'>
     <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={(e) => handleNameSubmit(e,firstName, lastName)}>Search Project</Button>
+    <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={cancelSearchByName}>Back</Button>
+      </Form.Group>    
+    
   </Form>
   
 }

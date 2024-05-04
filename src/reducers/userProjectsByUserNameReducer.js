@@ -1,16 +1,15 @@
 import {GET_PROJECT_BY_FIRSTNAME_AND_LASTNAME} from '../constants/userProfile';
 
-const initialUserName = {
-  projects: []
+const initialUserProject = {
+  userProjects: []
 };
 
-export const userProjectsByUserNameReducer = (state = initialUserName, action )=>{
+export const userProjectsByUserNameReducer = (state = initialUserProject, action )=>{
   switch (action.type) {
     case GET_PROJECT_BY_FIRSTNAME_AND_LASTNAME : 
-    console.log("This got inside the Reducer")
     return {
       ...state,
-      projects: [...action.payload]
+      projects: action.payload
     }
     default: return state
   }
