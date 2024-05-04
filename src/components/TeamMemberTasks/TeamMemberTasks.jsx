@@ -237,14 +237,14 @@ const TeamMemberTasks = React.memo(props => {
         }
       });
 
-      Object.keys(teamGroup).forEach(name => {
+      Object.keys(teamGroup).sort((a,b) => a.localeCompare(b)).forEach(name => {
         teamOptions.push({
           value: name,
           label: `${name} (${teamGroup[name].length})`
         });
       })
 
-      Object.keys(teamCodeGroup).forEach(code => {
+      Object.keys(teamCodeGroup).sort((a,b) => a.localeCompare(b)).forEach(code => {
         if (code !== 'noCodeLabel') {
           teamCodeOptions.push({
             value: code,
@@ -253,7 +253,7 @@ const TeamMemberTasks = React.memo(props => {
         }
       });
 
-      Object.keys(colorGroup).forEach(color => {
+      Object.keys(colorGroup).sort((a,b) => a.localeCompare(b)).forEach(color => {
         if (color !== 'noColorLabel') {
           colorOptions.push({
             value: color,
@@ -285,8 +285,11 @@ const TeamMemberTasks = React.memo(props => {
   useEffect(() => {
     if (!isLoading) {
       renderTeamsList();
-      renderFilters();
       closeMarkAsDone();
+      console.log(displayUser.role);
+      if(['Administrator', 'Owner', 'Manager', 'Mentor'].some( role => role === displayUser.role)) {
+        renderFilters();
+      }
     }
   }, [usersWithTasks]);
 
@@ -430,7 +433,9 @@ const TeamMemberTasks = React.memo(props => {
           taskModalOption={taskModalOption}
         />
       )}
-      <Row style={{ marginBottom: '10px' }}>
+      {
+        ['Administrator', 'Owner', 'Manager', 'Mentor'].some( role => role === displayUser.role) &&
+        <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 4}} xs={{ size: 12}}>
             Select Team
             <MultiSelect
@@ -465,6 +470,7 @@ const TeamMemberTasks = React.memo(props => {
             />
           </Col>
         </Row>
+      }
       <div className="task_table-container">
         <Table>
           <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
