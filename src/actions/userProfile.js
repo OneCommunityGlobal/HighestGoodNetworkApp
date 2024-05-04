@@ -69,7 +69,7 @@ export const updateUserProfileProperty = (userProfile, key, value) => {
     try{
         const res = await axios.patch(url, { key, value });
         if (res.status === 200) {
-          console.log("This is the response data", res)
+          
           await dispatch(getUserProfileActionCreator(userProfile));
         }
         return res.status;
@@ -88,7 +88,7 @@ export const getProjectsByUsersName = (firstName, lastName) => {
     const res = await axios.get(url);
     console.log('This is the res',res)
     if(!res.status === 200){
-      throw Error
+      await dispatch(getProjectsByPersonActionCreator(res.data))
     }
     if (res.status === 200){
       await dispatch(getProjectsByPersonActionCreator(res.data));
