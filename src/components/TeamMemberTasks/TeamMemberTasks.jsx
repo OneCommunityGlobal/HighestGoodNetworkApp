@@ -212,8 +212,17 @@ const TeamMemberTasks = React.memo(props => {
     if(usersWithTasks.length > 0) {
       console.log(usersWithTasks);
       usersWithTasks.forEach(user => {
+        const teamNames = user.teams.map(team => team.teamName);
         const code = user.teamCode || 'noCodeLabel';
-        const color = user.weeklySummaryOption;
+        const color = user.weeklySummaryOption || 'noColorLabel';
+
+        teamNames.forEach(name => {
+          if(teamGroup[name]) {
+            teamGroup[name].push(user.personId);
+          } else {
+            teamGroup[name] = [user.personId];
+          }
+        });
 
         if (teamCodeGroup[code]) {
           teamCodeGroup[code].push(user.personId);
@@ -228,6 +237,13 @@ const TeamMemberTasks = React.memo(props => {
         }
       });
 
+      Object.keys(teamGroup).forEach(name => {
+        teamOptions.push({
+          value: name,
+          label: `${name} (${teamGroup[name].length})`
+        });
+      })
+
       Object.keys(teamCodeGroup).forEach(code => {
         if (code !== 'noCodeLabel') {
           teamCodeOptions.push({
@@ -238,12 +254,15 @@ const TeamMemberTasks = React.memo(props => {
       });
 
       Object.keys(colorGroup).forEach(color => {
-        colorOptions.push({
-          value: color,
-          label: `${color} (${colorGroup[color].length})`
-        })
+        if (color !== 'noColorLabel') {
+          colorOptions.push({
+            value: color,
+            label: `${color} (${colorGroup[color].length})`
+          });
+        }
       });
 
+      setTeamNames(teamOptions);
       setTeamCodes(teamCodeOptions);
       setColors(colorOptions);
     }
@@ -279,6 +298,10 @@ const TeamMemberTasks = React.memo(props => {
     setShowWhoHasTimeOff(prev => !prev);
   };
 
+  const handleSelectTeamNames = event => {
+    setSelectedTeamNames(event);
+  }
+
   const handleSelectCodeChange = event => {
     setSelectedCodes(event);
   }
@@ -290,10 +313,16 @@ const TeamMemberTasks = React.memo(props => {
   const filterByUserFeatures = (user) => {
     if(selectedTeamNames.length === 0 && selectedCodes.length === 0 && selectedColors.length === 0) return true;
 
-    return filterByTeamCodes(user.teamCode) || filterByColors(user.weeklySummaryOption);
+    return filterByTeamCodes(user.teamCode) || filterByColors(user.weeklySummaryOption) || filterByTeams(user.teams);
   }
 
-  const filterByTeamNames = (name) => {
+  const filterByTeams = (teams) => {
+    let match = false;
+    teams.forEach(team => match = match || filterByTeamName(team.teamName));
+    return match;
+  }
+
+  const filterByTeamName = (name) => {
     return selectedTeamNames.some(option => option.value === name);
   }
 
@@ -409,7 +438,7 @@ const TeamMemberTasks = React.memo(props => {
               options={teamNames}
               value={selectedTeamNames}
               onChange={e => {
-                // this.handleSelectCodeChange(e);
+                handleSelectTeamNames(e);
               }}
             />
           </Col>
