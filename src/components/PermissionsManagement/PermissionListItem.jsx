@@ -26,32 +26,11 @@ const PermissionListItem = (props) => {
   };
 
   const togglePermission = (permission) => {
-    let updatedPermissions = [...rolePermissions];
-
-    // Check if 'Assign Project to Users' permission is being toggled
-    if (permission === 'assignProjectToUsers') {
-      const relatedPermissions = ['getProjectMembers', 'getUserProfiles', 'putUserProfile', 'putUserProfileImportantInfo', 'updateTask', 'deleteProject'];
-      const addAssignPermission = !updatedPermissions.includes(permission);
-
-      relatedPermissions.forEach(relatedPermission => {
-          if (addAssignPermission && !updatedPermissions.includes(relatedPermission)) {
-              updatedPermissions.push(relatedPermission); // Add related permissions if not present
-          } else if (!addAssignPermission && updatedPermissions.includes(relatedPermission)) {
-              updatedPermissions = updatedPermissions.filter(perm => perm !== relatedPermission); // Remove related permissions
-          }
-      });
-  }
-
-    // Add or remove the clicked permission
-    if (updatedPermissions.includes(permission)) {
-        updatedPermissions = updatedPermissions.filter(perm => perm !== permission);
-    } else {
-        updatedPermissions.push(permission);
-    }
-
-    setPermissions(updatedPermissions);
+    rolePermissions.includes(permission) || immutablePermissions.includes(permission)
+      ? setPermissions(previous => previous.filter(perm => perm !== permission))
+      : setPermissions(previous => [...previous, permission]);
     props.onChange();
-};
+  };
 
   const setSubpermissions = (subperms, adding) => {
     for(const subperm of subperms) {
