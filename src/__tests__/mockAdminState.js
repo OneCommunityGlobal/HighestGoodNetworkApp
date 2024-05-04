@@ -1619,6 +1619,7 @@ export default {
             'deleteTeam',
             'putTeam',
             'assignTeamToUsers',
+            'editTeamCode',
             // Time Entries
             'editTimeEntry',
             'deleteTimeEntry',

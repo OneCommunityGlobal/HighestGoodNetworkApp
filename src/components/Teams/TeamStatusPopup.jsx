@@ -16,8 +16,8 @@ export const TeamStatusPopup = React.memo(props => {
       <ModalFooter>
         <Button
           color="danger"
-          onClick={() => {
-            props.onConfirmClick(
+          onClick={async () => {
+            await props.onConfirmClick(
               props.selectedTeamName,
               props.selectedTeamId,
               !props.selectedStatus,

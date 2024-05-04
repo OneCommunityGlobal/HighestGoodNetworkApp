@@ -23,6 +23,8 @@ const TeamsTab = props => {
     codeValid,
     setCodeValid,
     saved,
+    isTeamSaved,
+    darkMode,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -47,11 +49,13 @@ const TeamsTab = props => {
   const onSelectDeleteTeam = teamId => {
     setRemovedTeams([...removedTeams, teamId]);
     onDeleteTeam(teamId);
+    if(isTeamSaved) isTeamSaved(false);
   };
 
   const onSelectAssignTeam = team => {
     if(userProfile._id){
-      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName)
+      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
+      if(isTeamSaved) isTeamSaved(true);
     }
     onAssignTeam(team);
     setRenderedOn(Date.now());
@@ -84,6 +88,7 @@ const TeamsTab = props => {
         codeValid={codeValid}
         setCodeValid={setCodeValid}
         onAssignTeamCode={onAssignTeamCode}
+        darkMode={darkMode}
       />
     </React.Fragment>
   );

@@ -1,12 +1,12 @@
+// eslint-disable-next-line no-unused-vars
 import { React, useEffect, useState } from 'react';
 import './ReportCharts.css';
 import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from '../../../common/PieChart/constants';
-import { generateArrayOfUniqColors } from '../../../common/PieChart/colorsGenerator';
 import '../../../common/PieChart/PieChart.css';
 import PieChartInfoDetail from './PieChartInfoDetail';
 
-function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeamsWeeklyEffort }) {
+function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeamsWeeklyEffort, darkMode }) {
   const chart = {
     team1:
       title === 'Weekly Commited Hours'
@@ -41,11 +41,11 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeams
   const pie = d3.pie().value(d => d[1]);
 
   useEffect(() => {
-    const data_ready = pie(Object.entries([chart.team1, chart.team2, chart.team3, chart.team4]));
+    const dataReady = pie(Object.entries([chart.team1, chart.team2, chart.team3, chart.team4]));
 
     getCreateSvgPie()
       .selectAll('whatever')
-      .data(data_ready)
+      .data(dataReady)
       .join('path')
       .attr(
         'd',
@@ -64,7 +64,7 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeams
 
   return (
     <section className="team-report-chart-wrapper">
-      <div className="team-report-chart-teams">
+      <div className={`team-report-chart-teams ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <h4>{title}</h4>
         <div className="team-report-chart-info-wrapper">
           <div className="team-report-chart-info">
@@ -80,12 +80,14 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeams
                     keyName={selectedTeamsData[0]?.name}
                     value={chart.team1}
                     color="#B88AD5"
+                    darkMode={darkMode}
                   />
                   {selectedTeamsData[1] && (
                     <PieChartInfoDetail
                       keyName={selectedTeamsData[1]?.name}
                       value={chart.team2}
                       color="#FAE386"
+                      darkMode={darkMode}
                     />
                   )}
                   {selectedTeamsData[2] && (
@@ -93,6 +95,7 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeams
                       keyName={selectedTeamsData[2]?.name}
                       value={chart.team3}
                       color="#92C4F9"
+                      darkMode={darkMode}
                     />
                   )}
                   {selectedTeamsData[3] && (
@@ -100,6 +103,7 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeams
                       keyName={selectedTeamsData[3]?.name}
                       value={chart.team4}
                       color="#ff5e82"
+                      darkMode={darkMode}
                     />
                   )}
                 </div>
@@ -108,7 +112,7 @@ function TeamsReportCharts({ title, pieChartId, selectedTeamsData, selectedTeams
               <strong>Please select a team. (Max 4)</strong>
             )}
           </div>
-          <div className="team-report-chart-info"></div>
+          <div className="team-report-chart-info" />
         </div>
       </div>
     </section>

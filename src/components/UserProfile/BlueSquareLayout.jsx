@@ -1,157 +1,127 @@
-import React, { useCallback } from 'react';
-import BlueSquare from './BlueSquares';
-import ToggleSwitch from './UserProfileEdit/ToggleSwitch';
+import { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Button, Modal } from 'react-bootstrap';
+import { boxStyle, boxStyleDark } from 'styles';
+import ScheduleExplanationModal from './ScheduleExplanationModal/ScheduleExplanationModal';
+import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
+import TimeOffRequestsTable from './TimeOffRequestsTable/TimeOffRequestsTable';
+import hasPermission from '../../utils/permissions';
+import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
-import { Button } from 'react-bootstrap';
-import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
-import { useState } from 'react';
-import { useReducer } from 'react';
-import Spinner from 'react-bootstrap/Spinner';
-import { addReason, patchReason } from 'actions/reasonsActions';
-import moment from 'moment-timezone';
-import { Modal } from 'react-bootstrap';
-import { boxStyle } from 'styles';
 
-const BlueSquareLayout = props => {
-  const fetchingReducer = (state, action) => {
-    switch (action.type) {
-      case 'FETCHING_STARTED':
-        return {
-          error: false,
-          success: false,
-          isFetching: true,
-          fetchMessage: '',
-          errorCode: null,
-        };
-      case 'ERROR':
-        return {
-          isFetching: false,
-          error: true,
-          success: false,
-          fetchMessage: action.payload.message,
-          errorCode: action.payload.errorCode,
-        };
-      case 'SUCCESS':
-        return { ...state, isFetching: false, error: false, success: true, isSet: true };
-      case 'FETCHING_FINISHED':
-        return {
-          error: false,
-          success: false,
-          isFetching: false,
-          fetchMessage: '',
-          errorCode: null,
-          isSet: action.payload.isSet,
-        };
-      default:
-        return state;
-    }
-  };
+const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user, darkMode }) => {
+  const dispatch = useDispatch();
+  const allRequests = useSelector(state => state.timeOffRequests.requests);
+  const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
 
-  const { userProfile, handleUserProfile, handleBlueSquare, canEdit } = props;
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
-  const [reason, setReason] = useState('');
-  const [date, setDate] = useState(
-    moment
-      .tz('America/Los_Angeles')
-      .endOf('week')
-      .toISOString()
-      .split('T')[0],
-  );
-  const [fetchState, fetchDispatch] = useReducer(fetchingReducer, {
-    isFetching: false,
-    error: false,
-    success: false,
-    fetchMessage: '',
-    errorCode: null,
-    isSet: false,
-  });
+  const [showExplanation, setShowExplanation] = useState(false);
 
-  const handleOpen = useCallback(() => {
+  const handleOpen = () => {
     setShow(true);
-  }, []);
-
-  const handleClose = useCallback(() => {
-    setShow(false);
-  }, []);
-
-  const handleSubmit = async event => {
-    event.preventDefault();
-    if (fetchState.isSet) {
-      fetchDispatch({ type: 'FETCHING_STARTED' });
-      const response = await patchReason(userProfile._id, { date: date, message: reason });
-      if (response.status !== 200) {
-        fetchDispatch({
-          type: 'ERROR',
-          payload: { message: response.message, errorCode: response.errorCode },
-        });
-      } else {
-        fetchDispatch({ type: 'SUCCESS' });
-      }
-      setShow(true);
-    } else {
-      fetchDispatch({ type: 'FETCHING_STARTED' });
-      const response = await addReason(userProfile._id, { date: date, message: reason });
-      console.log(response);
-      if (response.status !== 200) {
-        fetchDispatch({
-          type: 'ERROR',
-          payload: { message: response.message, errorCode: response.errorCode },
-        });
-      } else {
-        fetchDispatch({ type: 'SUCCESS' });
-      }
-    }
   };
 
+  const handleClose = () => {
+    setShow(false);
+  };
+
+  // This handler is used for Explanation Modal, that open when <a>Click to learn why </a> is clicked
+  const openExplanationModal = () => {
+    setShowExplanation(true);
+  };
+  // This handler is used to close Info Modal, -
+  const closeExplanationModal = () => {
+    setShowExplanation(false);
+  };
+
+  const checkIfUserCanScheduleTimeOff = () => {
+    let scheduledVacation = 0;
+    allRequests[userProfile._id]?.forEach(element => {
+      scheduledVacation += Number(element.duration);
+    });
+    const blueSquares = Number(userProfile.infringements?.length) || 0;
+    const infringementAndTimeOff = scheduledVacation + blueSquares;
+    const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
+    if (infringementAndTimeOff >= 5 && !hasRolePermission && !canManageTimeOffRequests) {
+      return false;
+    }
+    return true;
+  };
+
+  // ===============================================================
   if (canEdit) {
     return (
-      <div data-testid="blueSqaure-field">
-        <div className="blueSquare-toggle">
-          <div style={{ display: 'inline-block' }}>BLUE SQUARES</div>
-          {canEdit ? (
-            <ToggleSwitch
-              style={{ display: 'inline-block' }}
-              switchType="bluesquares"
-              state={privacySettings?.blueSquares}
-              handleUserProfile={handleUserProfile}
-            />
-          ) : null}
-        </div>
-
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
+      <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">
+        <BlueSquaresTable
+          userProfile={userProfile}
+          canEdit={canEdit}
+          isPrivate={privacySettings?.blueSquares}
+          handleUserProfile={handleUserProfile}
+          handleBlueSquare={handleBlueSquare}
+          darkMode={darkMode}
+        />
+        <TimeOffRequestsTable requests={allRequests[userProfile._id]} openModal={handleOpen} darkMode={darkMode}/>
+        {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
-          <Button
-            variant="primary"
-            onClick={handleOpen}
-            className="w-100"
-            size="md"
-            style={boxStyle}
-            disabled={true} //  disabled the Schedule Blue Square button.
-            title="This functionality doesn't work currently. Please contact your manager."
-          >
-            {fetchState.isFetching ? (
-              <Spinner size="sm" animation="border" />
-            ) : (
-              'Schedule Blue Square Reason'
-            )}
-          </Button>
+          {!checkIfUserCanScheduleTimeOff() ? (
+            <>
+              <Button
+                onClick={openExplanationModal}
+                className="w-100 text-success-emphasis"
+                size="md"
+                style={darkMode ? boxStyleDark : boxStyle}
+                id="stopSchedulerButton"
+              >
+                <span>{`Can't Schedule Time Off`}</span>
+                <br />
+                <span className="mt-0" style={{ fontSize: '.8em' }}>
+                  Click to learn why
+                </span>
+              </Button>
+              {allRequests[userProfile._id]?.length > 0 && (
+                <Button
+                  variant="primary"
+                  onClick={handleOpen}
+                  className="w-100 mt-3"
+                  size="md"
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  View scheduled Blue Square Reasons
+                </Button>
+              )}
+            </>
+          ) : (
+            <Button
+              variant="primary"
+              onClick={handleOpen}
+              className="w-100"
+              size="md"
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Schedule Blue Square Reason
+            </Button>
+          )}
         </div>
+        <Modal show={showExplanation} onHide={closeExplanationModal}>
+          <ScheduleExplanationModal
+            onHide={closeExplanationModal}
+            handleClose={closeExplanationModal}
+            infringementsNum={userProfile.infringements?.length || 0}
+            timeOffRequests={allRequests[userProfile._id]}
+            infringements={userProfile.infringements}
+          />
+        </Modal>
         {show && (
           <Modal show={show} onHide={handleClose}>
             <ScheduleReasonModal
               handleClose={handleClose}
-              user={userProfile}
-              reason={reason}
-              setReason={setReason}
-              handleSubmit={handleSubmit}
-              fetchState={fetchState}
-              date={date}
-              setDate={setDate}
-              fetchMessage={fetchState.fetchMessage}
-              fetchDispatch={fetchDispatch}
               userId={userProfile._id}
+              user={user}
+              infringements={userProfile.infringements}
+              canManageTimeOffRequests={canManageTimeOffRequests}
+              checkIfUserCanScheduleTimeOff={checkIfUserCanScheduleTimeOff}
             />
           </Modal>
         )}
@@ -159,20 +129,17 @@ const BlueSquareLayout = props => {
     );
   }
   return (
-    <div>
-      {!privacySettings?.blueSquares ? (
-        <p>Blue Square Info is Private</p>
-      ) : (
-        <div>
-          <p>BLUE SQUARES</p>
-          <BlueSquare
-            blueSquares={userProfile?.infringements}
-            handleBlueSquare={handleBlueSquare}
-          />
-        </div>
-      )}
+    <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">
+       <BlueSquaresTable
+          userProfile={userProfile}
+          canEdit={canEdit}
+          isPrivate={privacySettings?.blueSquares}
+          handleUserProfile={handleUserProfile}
+          handleBlueSquare={handleBlueSquare}
+        />
+      <TimeOffRequestsTable requests={allRequests[userProfile._id]} />
     </div>
-  );
+  ) 
 };
 
 export default BlueSquareLayout;

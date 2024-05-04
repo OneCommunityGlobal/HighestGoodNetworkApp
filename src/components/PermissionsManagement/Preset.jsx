@@ -1,8 +1,6 @@
 import React, { useState, useRef } from 'react';
-import { FormCheck } from 'react-bootstrap';
-import { Alert, Button, Form, FormGroup, Input, Label, Row } from 'reactstrap';
-import { permissionLabel } from './UserRoleTab';
-import { mainPermissions } from './RolePermissions';
+import { Button, Row } from 'reactstrap';
+import PermissionList from './PermissionList';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -10,8 +8,6 @@ import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { updateRole } from '../../actions/role';
 import { updatePresetById, deletePresetById } from '../../actions/rolePermissionPresets';
 import { BsFillCaretDownFill, BsFillCaretUpFill } from 'react-icons/bs';
-import { boxStyle } from 'styles';
-import { update } from 'lodash';
 
 
 const Preset = (props) => {
@@ -38,19 +34,34 @@ const Preset = (props) => {
     setEditing(false);
   };
 
-  const applyPreset = async (preset) => {
-    try {
-      const updatedRole = {
-        roleId: props.roleId,
-        roleName: props.roleName,
-        permissions: preset.permissions
-      };
-      props.updateRole(props.roleId, updatedRole);
-      props.onApply(preset.permissions);
-    } catch (error) {
-      console.log(error.message);
+  const handleApplyPreset = async (e) => {
+    e.stopPropagation();
+
+    const updatedRole = {
+      roleId: props.roleId,
+      roleName: props.roleName,
+      permissions: props.preset.permissions
+    };
+
+    const status = await props.updateRole(props.roleId, { ...props.userProfile, ...updatedRole});
+    if (status === 0) {
+      props.onApply(props.preset.permissions);
+      toast.success(`Preset applied successfully.`)
+    } else {
+      toast.error(`Error applying preset`);
     }
   };
+
+  const handleDeletePreset = async (e) => {
+    e.stopPropagation();
+
+    const status = await props.deletePreset(props.preset._id);
+    if (status === 0) {
+      toast.success(`Preset deleted successfully`);
+    } else {
+      toast.error(`Error deleting preset`);
+    }
+  }
 
   return (
     <>
@@ -92,34 +103,31 @@ const Preset = (props) => {
             display: 'flex',
             gap: '10px'
           }}>
-          <Button color='danger' onClick={(event)=>{event.stopPropagation(); props.deletePreset(props.preset._id);}}>
+          <Button color='danger' onClick={handleDeletePreset}>
             Delete
           </Button>
           <Button
             color='primary'
-            onClick={(event)=>{event.stopPropagation(); applyPreset(props.preset);}}>
+            onClick={handleApplyPreset}>
             Apply
           </Button>
         </div>
       </div>
-      {isOpen ? Object.keys(permissionLabel).map((permission) => (
-      <li className="user-role-tab__permissions" key={permission}>
-        <p style={{
-          color: props.preset.permissions.includes(permission) ? 'green' : 'red' ,
-          fontSize:  mainPermissions.includes(permissionLabel[permission]) ? '20px':'',
-          paddingLeft:  mainPermissions.includes(permissionLabel[permission]) ? '0': '50px'
-          }}>
-          {permissionLabel[permission]}
-        </p>
-      </li>
-      )):<></>}
+      {isOpen ?
+        <PermissionList
+          rolePermissions={props.preset.permissions}
+        />
+      :<></>}
     </>
   );
 };
 
 
 
-const mapStateToProps = state => ({ roles: state.role.roles });
+const mapStateToProps = state => ({
+  roles: state.role.roles,
+  userProfile: state.userProfile
+});
 
 const mapDispatchToProps = dispatch => ({
   updateRole: (roleId, updatedRole) => dispatch(updateRole(roleId, updatedRole)),

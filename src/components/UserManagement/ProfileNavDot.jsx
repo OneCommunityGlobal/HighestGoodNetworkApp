@@ -12,7 +12,7 @@ export const ProfileNavDot = ({ userId }) => {
       }}
       title="Click here to go to the user's profile."
     >
-      <i className="fa fa-user" />
+      <i className="fa fa-user"/>
     </span>
   );
 };

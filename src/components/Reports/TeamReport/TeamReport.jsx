@@ -1,8 +1,12 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState, useMemo } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import { FiUsers } from 'react-icons/fi';
+import Dropdown from 'react-bootstrap/Dropdown';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 import { getTeamDetail } from '../../../actions/team';
 import {
   getAllUserTeams,
@@ -14,18 +18,14 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-
 import { getTeamReportData } from './selectors';
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
-import Dropdown from 'react-bootstrap/Dropdown';
-
-import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-
 export function TeamReport({ match }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const dispatch = useDispatch();
   const { team } = useSelector(getTeamReportData);
   const user = useSelector(state => state.auth.user);
@@ -43,6 +43,7 @@ export function TeamReport({ match }) {
   const [selectedTeams, setSelectedTeams] = useState([]);
 
   // Create a state variable to store the selected radio input
+  // eslint-disable-next-line no-unused-vars
   const [selectedInput, setSelectedInput] = useState('isManager');
 
   // Event handler for when a radio input is selected
@@ -52,29 +53,41 @@ export function TeamReport({ match }) {
   };
 
   const handleStatus = useMemo(
-    () => isActive => {
-      return isActive ? (
-        <div
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-        >
-          <span
-            className="dot"
-            style={{ backgroundColor: '#00ff00', width: '0.7rem', height: '0.7rem' }}
-          ></span>
-          <strong>Active</strong>
-        </div>
-      ) : (
-        <div
-          style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '0.5rem' }}
-        >
-          <span
-            className="dot"
-            style={{ backgroundColor: 'red', width: '0.7rem', height: '0.7rem' }}
-          ></span>
-          <strong>Inactive</strong>
-        </div>
-      );
-    },
+    () =>
+      // eslint-disable-next-line react/no-unstable-nested-components,func-names
+      function(isActive) {
+        return isActive ? (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+            }}
+          >
+            <span
+              className="dot"
+              style={{ backgroundColor: '#00ff00', width: '0.7rem', height: '0.7rem' }}
+            />
+            <strong>Active</strong>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '0.5rem',
+            }}
+          >
+            <span
+              className="dot"
+              style={{ backgroundColor: 'red', width: '0.7rem', height: '0.7rem' }}
+            />
+            <strong>Inactive</strong>
+          </div>
+        );
+      },
     [],
   );
 
@@ -85,6 +98,7 @@ export function TeamReport({ match }) {
       }
     } else {
       setSelectedTeams(prevSelectedTeams =>
+        // eslint-disable-next-line no-shadow
         prevSelectedTeams.filter(team => team.selectedTeam._id !== selectedTeam._id),
       );
     }
@@ -126,6 +140,7 @@ export function TeamReport({ match }) {
   }
 
   function handleSearch() {
+    // eslint-disable-next-line no-shadow
     const searchResults = allTeams.filter(team => {
       const isMatchedName = team.teamName
         .toLowerCase()
@@ -147,6 +162,7 @@ export function TeamReport({ match }) {
 
   function handleDate(date) {
     const formattedDates = {};
+    // eslint-disable-next-line no-shadow
     const getFormattedDate = date => {
       if (!formattedDates[date]) {
         formattedDates[date] = moment(date).format('MM-DD-YYYY');
@@ -167,6 +183,7 @@ export function TeamReport({ match }) {
           return result;
         })
         .then(result => {
+          // eslint-disable-next-line no-shadow
           const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
           Promise.all(allTeamMembersPromises).then(results => {
             setAllTeamsMembers([...results]);
@@ -180,10 +197,10 @@ export function TeamReport({ match }) {
   const [totalTeamWeeklyWorkedHours, setTotalTeamWeeklyWorkedHours] = useState('');
 
   const calculateTotalHrsForPeriod = timeEntries => {
-    let hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
+    const hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
     if (timeEntries.length < 1) return hours;
 
-    for (let i = 0; i < timeEntries.length; i++) {
+    for (let i = 0; i < timeEntries.length; i += 1) {
       const timeEntry = timeEntries[i];
       if (timeEntry.isTangible) {
         hours.totalTangibleHrs += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
@@ -215,7 +232,9 @@ export function TeamReport({ match }) {
       if (parseFloat(totalTangibleHrs) > 0) {
         return totalTangibleHrs;
       }
+      return 0; // Added return statement
     } catch (networkError) {
+      // eslint-disable-next-line no-console
       console.log('Network error:', networkError.message);
       throw networkError;
     }
@@ -229,6 +248,7 @@ export function TeamReport({ match }) {
         );
         setTeamMembersWeeklyEffort(weeklyEfforts.filter(effort => !!effort));
       } catch (err) {
+        // eslint-disable-next-line no-console
         console.log(err.message);
       }
     };
@@ -244,24 +264,31 @@ export function TeamReport({ match }) {
   }, [teamMembersWeeklyEffort]);
 
   // Get Total Tangible Hours this week [SELECTED TEAM]
+  // eslint-disable-next-line no-unused-vars
   const [selectedTeamsMembers, setSelectedTeamsMembers] = useState([]);
   const [selectedTeamsWeeklyEffort, setSelectedTeamsWeeklyEffort] = useState([]);
 
   useEffect(() => {
     const setSelectedTeamsMembersAndEffort = async () => {
+      // eslint-disable-next-line no-shadow
       const members = selectedTeams.map(team => allTeamsMembers[team.index]);
       setSelectedTeamsMembers(members);
 
       if (members) {
         const weeklyEfforts = await Promise.all(
+          // eslint-disable-next-line no-shadow
           members.map(team => Promise.all(team.map(member => getWeeklyTangibleHours(member)))),
         );
+        // eslint-disable-next-line no-shadow
         const totalWeeklyEfforts = weeklyEfforts.map(team =>
           team.reduce((accumulator, effort) => {
-            if (effort === undefined) {
-              effort = 0;
+            let localEffort = effort;
+
+            if (localEffort === undefined) {
+              localEffort = 0;
             }
-            return accumulator + Number(effort);
+
+            return accumulator + Number(localEffort);
           }, 0),
         );
 
@@ -279,18 +306,19 @@ export function TeamReport({ match }) {
   return (
     <ReportPage
       contentClassName="team-report-blocks"
+      darkMode={darkMode}
       renderProfile={() => (
-        <ReportPage.ReportHeader isActive={team.isActive} avatar={<FiUsers />} name={team.teamName}>
-          <div>
+        <ReportPage.ReportHeader isActive={team.isActive} avatar={<FiUsers />} name={team.teamName} darkMode={darkMode}>
+          <div className={darkMode ? 'text-light' : ''}>
             <h5>{moment(team.createdDatetime).format('MMM-DD-YY')}</h5>
             <p>Created Date</p>
           </div>
         </ReportPage.ReportHeader>
       )}
     >
-      <ReportPage.ReportBlock className="team-report-main-info-wrapper">
+      <ReportPage.ReportBlock className="team-report-main-info-wrapper" darkMode={darkMode}>
         <div className="team-report-main-info-id">
-          <div style={{ wordBreak: 'break-all' }} className="update-date">
+          <div style={{ wordBreak: 'break-all', color: darkMode ? 'white' : ''}} className="update-date">
             <div>
               <span className="team-report-star">&#9733;</span> Team ID: {team._id}
             </div>
@@ -314,13 +342,15 @@ export function TeamReport({ match }) {
         selectedTeams={selectedTeams}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
         allTeamsMembers={allTeamsMembers}
+        darkMode={darkMode}
       />
       <div className="table-mobile">
-        <ReportPage.ReportBlock>
+        <ReportPage.ReportBlock darkMode={darkMode}>
           <div className="input-group input-group-sm d-flex flex-nowrap justify-content-between active-inactive-container">
             <div className="d-flex align-items-center">
               <div className="d-flex flex-column">
-                <label htmlFor="search-by-name" className="text-left">
+                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                <label htmlFor="search-by-name" className={`text-left ${darkMode ? 'text-light' : ''}`}>
                   Name
                 </label>
                 <input
@@ -334,7 +364,8 @@ export function TeamReport({ match }) {
               <div className="date-picker-container">
                 <div id="task_startDate" className="date-picker-item">
                   <div className="d-flex flex-column">
-                    <label htmlFor="search-by-startDate" className="text-left">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label htmlFor="search-by-startDate" className={`text-left ${darkMode ? 'text-light' : ''}`}>
                       Created After
                     </label>
                     <DatePicker
@@ -352,7 +383,8 @@ export function TeamReport({ match }) {
                 </div>
                 <div id="task_EndDate" className="date-picker-item">
                   <div className="d-flex flex-column">
-                    <label htmlFor="search-by-endDate" className="text-left">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label htmlFor="search-by-endDate" className={`text-left ${darkMode ? 'text-light' : ''}`}>
                       Modified After
                     </label>
                     <DatePicker
@@ -369,8 +401,9 @@ export function TeamReport({ match }) {
                   </div>
                 </div>
                 <div className="active-inactive-container">
-                  <div className="active-inactive-container-item">
-                    <label htmlFor="active">Active</label>
+                  <div className="active-inactive-container-item mr-2">
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label htmlFor="active" className={darkMode ? 'text-light' : ''}>Active</label>
                     <input
                       onChange={event => handleCheckboxChange(event)}
                       type="checkbox"
@@ -380,7 +413,8 @@ export function TeamReport({ match }) {
                     />
                   </div>
                   <div className="active-inactive-container-item">
-                    <label htmlFor="inactive">Inactive</label>
+                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
+                    <label htmlFor="inactive" className={darkMode ? 'text-light' : ''}>Inactive</label>
                     <input
                       onChange={event => handleCheckboxChange(event)}
                       type="checkbox"
@@ -394,39 +428,40 @@ export function TeamReport({ match }) {
             </div>
           </div>
           <table className="table tableHeader">
-            <thead className="table table-hover">
-              <tr>
-                <td className="tableHeader">
+            <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}`}>
+              <tr className={darkMode ? 'bg-space-cadet' : ''}>
+                <td>
                   <strong>All</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Team</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Status</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Team Members</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>ID</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Created At</strong>
                 </td>
-                <td className="tableHeader">
+                <td>
                   <strong>Modified At</strong>
                 </td>
               </tr>
             </thead>
             {allTeamsMembers.length > 1 ? (
               <tbody className="table">
+                {/* eslint-disable-next-line no-shadow */}
                 {handleSearch().map((team, index) => (
-                  <tr className="table-row" key={team._id}>
+                  <tr className={`table-row ${darkMode ? 'bg-yinmn-blue text-light table-hover-dark' : ''}`} key={team._id}>
                     <td>
                       <input
                         type="checkbox"
-                        onChange={() => handleSelectTeam(event, team, index)}
+                        onChange={event => handleSelectTeam(event, team, index)}
                         disabled={
                           selectedTeams.length === 4 &&
                           !selectedTeams.some(
@@ -474,16 +509,16 @@ export function TeamReport({ match }) {
               </tbody>
             ) : (
               <tbody>
-                <tr style={{ backgroundColor: 'white' }}>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                <tr style={{ backgroundColor: darkMode ? '#3A506B' : 'white' }}>
+                  <td />
+                  <td />
+                  <td />
                   <td>
-                    <strong>Loading...</strong>
+                    <strong className={darkMode ? 'text-light' : ''}>Loading...</strong>
                   </td>
-                  <td></td>
-                  <td></td>
-                  <td></td>
+                  <td />
+                  <td />
+                  <td />
                 </tr>
               </tbody>
             )}
