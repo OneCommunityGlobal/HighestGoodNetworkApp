@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
  * The header row of the team table.
  */
 export const TeamTableHeader = React.memo(
-  ({ onTeamNameSort, onTeamActiveSort, sortTeamNameState, sortTeamActiveState, ...props }) => {
+  ({ onTeamNameSort, onTeamActiveSort, sortTeamNameState, sortTeamActiveState, darkMode, ...props }) => {
     const canDeleteTeam = props.hasPermission('deleteTeam');
     const canPutTeam = props.hasPermission('putTeam');
 
@@ -20,18 +20,18 @@ export const TeamTableHeader = React.memo(
     }
 
   return (
-    <tr>
+    <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
       <th scope="col" id="teams__order">
         #
       </th>
       <th scope="col">
         {/* Add the sorting button */}
-        <button onClick={onTeamNameSort}>
+        <button onClick={onTeamNameSort} className={darkMode ? 'text-light' : ''}>
           {getSortIcon(sortTeamNameState)}{TEAM_NAME}
         </button>
       </th>
       <th scope="col" id="teams__active">
-        <button onClick={onTeamActiveSort}>
+        <button onClick={onTeamActiveSort} className={darkMode ? 'text-light' : ''}>
           {getSortIcon(sortTeamActiveState)}{ACTIVE}
         </button>
       </th>

@@ -45,10 +45,10 @@ function PeopleTable({ userProfiles, darkMode }) {
             </div>
           </td>
           <td className={`hide-mobile-start-end ${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
-            {moment(person.createdDate).format('MM-DD-YY')}
+            {moment(person.startDate).format('MM-DD-YY')}
           </td>
           <td className={`hide-mobile-start-end ${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
-            {moment(person.endDate).format('MM-DD-YY') || 'N/A'}
+          {person.endDate ? moment(person.endDate).format('MM-DD-YY') : 'N/A'}
           </td>
         </tr>
       ));
