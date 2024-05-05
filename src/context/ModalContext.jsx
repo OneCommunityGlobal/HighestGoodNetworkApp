@@ -5,8 +5,8 @@ export const ModalContext = createContext();
 export function ModalProvider({ children }) {
   const [modalStatus, setModalStatus] = useState(false);
 
-  const updateModalStatus = () => {
-    setModalStatus(true);
+  const updateModalStatus = newStatus => {
+    setModalStatus(newStatus);
   };
 
   const contextValue = useMemo(() => {
