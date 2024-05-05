@@ -13,8 +13,7 @@ export const RoutePermissions = {
     'seeBadges',
     'createBadges',
     'updateBadges',
-    'deleteBadges',
-    'assignBadges'
+    'deleteBadges'
   ],
   projects: [
     'postProject',
@@ -42,13 +41,4 @@ export const RoutePermissions = {
   userPermissionsManagement: 'putUserProfilePermissions',
   inventoryProject: '',
   inventoryProjectWbs: '',
-  workBreakdownStructure: [
-    'postWbs',
-    'deleteWbs',
-    'postTask',
-    'updateTask',
-    'deleteTask',
-    'resolveTask',
-    'putReviewStatus'
-  ]
 };

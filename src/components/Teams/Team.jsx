@@ -4,15 +4,14 @@ import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 
 export const Team = props => {
-  const darkMode = useSelector(state => state.theme.darkMode);
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
   return (
-    <tr className={`teams__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_${props.teamId}`}>
+    <tr className="teams__tr" id={`tr_${props.teamId}`}>
       <th className="teams__order--input" scope="row">
         <div>{props.index + 1}</div>
       </th>
@@ -38,7 +37,7 @@ export const Team = props => {
         )}
       </td>
       <td className="centered-cell">
-        <button style={darkMode ? {} : boxStyle}
+        <button style={boxStyle}
           type="button"
           className="btn btn-outline-info"
           onClick={e => {
@@ -58,7 +57,7 @@ export const Team = props => {
               onClick={() => {
                 props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
               }}
-              style={darkMode ? {} : boxStyle}
+              style={boxStyle}
             >
               Edit
             </button>
@@ -70,7 +69,7 @@ export const Team = props => {
               onClick={() => {
                 props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
               }}
-              style={darkMode ? {} : boxStyle}
+              style={boxStyle}
             >
               {DELETE}
             </button>

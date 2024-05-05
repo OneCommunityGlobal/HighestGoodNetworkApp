@@ -40,7 +40,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
       .map(obj => obj.value)
       .reduce((a, c) => {
         return a + c;
-      }, 0);
+      },0);
     setTotalHours(totalValue);
 
     getCreateSvgPie(totalValue)
@@ -75,12 +75,7 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
             <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
             <div className="data-legend-info">
               {dataLegend[key].map((legendPart, index) => (
-                <div
-                  className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`}
-                  key={index}
-                >
-                  {legendPart}
-                </div>
+                <div className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`} key={index}>{legendPart}</div>
               ))}
             </div>
           </div>

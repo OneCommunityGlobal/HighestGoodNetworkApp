@@ -5,14 +5,15 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 
 const DragAndDrop = ({ updateUploadedFiles }) => {
+
   const [dragActive, setDragActive] = useState(false);
 
   const handleDrag = function handleFileDrag(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === 'dragenter' || e.type === 'dragover') {
+    if (e.type === "dragenter" || e.type === "dragover") {
       setDragActive(true);
-    } else if (e.type === 'dragleave') {
+    } else if (e.type === "dragleave") {
       setDragActive(false);
     }
   };
@@ -35,10 +36,10 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
       const newFiles = Array.from(selectedFiles);
       updateUploadedFiles(prev => [...prev, ...newFiles]);
     }
-  };
+  }
 
   return (
-    <div id="file-upload-form" onDragEnter={handleDrag} onSubmit={e => e.preventDefault()}>
+    <div id="file-upload-form" onDragEnter={handleDrag} onSubmit={(e) => e.preventDefault()}>
       <input
         id="file-upload-input"
         type="file"
@@ -50,26 +51,21 @@ const DragAndDrop = ({ updateUploadedFiles }) => {
       <label
         htmlFor="file-upload-input"
         id="file-upload-label"
-        className={dragActive ? 'drag-active' : ''}
-      >
+        className={dragActive ? "drag-active" : ""}>
         <div>
           <FontAwesomeIcon icon={faImage} className="file-upload-icon" />
           <p>Drag and drop your picture here </p>
         </div>
-        <input type="file" id="file-upload-input" className="file-upload-input" />
+        <input
+          type="file"
+          id="file-upload-input"
+          className="file-upload-input"
+        />
       </label>
       {/* invisible element to cover the entire form when dragActive is true so that dragleave event is not triggeredwhen drag goes over other elements in the form. */}
-      {dragActive && (
-        <div
-          id="drag-file-element"
-          onDragEnter={handleDrag}
-          onDragLeave={handleDrag}
-          onDragOver={handleDrag}
-          onDrop={handleDrop}
-        />
-      )}
+      {dragActive && <div id="drag-file-element" onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop} />}
     </div>
-  );
-};
+  )
+}
 
 export default DragAndDrop;

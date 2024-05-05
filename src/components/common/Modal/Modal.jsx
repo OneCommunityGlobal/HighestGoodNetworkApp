@@ -26,6 +26,7 @@ const ModalExample = props => {
     linkType,
   } = props;
 
+
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
 

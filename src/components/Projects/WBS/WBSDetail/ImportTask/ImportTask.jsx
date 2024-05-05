@@ -11,14 +11,13 @@ import readXlsxFile from 'read-excel-file';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
 import ReactHtmlParser from 'react-html-parser';
-import { boxStyle, boxStyleDark } from 'styles';
 
 const ImportTask = props => {
   /*
   * -------------------------------- variable declarations -------------------------------- 
   */
   // props from store 
-  const { popupContent, members, darkMode } = props;
+  const { popupContent, members } = props;
 
   // states from hooks
   const [importStatus, setImportStatus] = useState('choosing');
@@ -259,7 +258,7 @@ const ImportTask = props => {
           </Button>
         </ModalFooter>
       </Modal>
-      <Button color="primary" className="controlBtn" size="sm" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button color="primary" className="controlBtn" size="sm" onClick={toggle}>
         <span onClick={toggle}>Import Tasks</span>
       </Button>
     </>
