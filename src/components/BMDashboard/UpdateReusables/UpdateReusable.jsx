@@ -1,17 +1,19 @@
 import { useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
 import { Container, FormGroup, Input, Label, Form, Col, Button } from 'reactstrap';
 
-function UpdateReusable() {
-  const [reusable, setReusable] = useState('');
-  const [projectName, setProjectName] = useState('');
-  const [date, setDate] = useState('');
-  const [available, setAvailable] = useState('');
+function UpdateReusable({ record }) {
+  const dispatch = useDispatch();
+  const postReusableUpdateResule = useSelector(state => state.bmReusables.updateReusables);
   const [quantityUsed, setQuantityUsed] = useState('');
   const [quantityWasted, setQuantityWasted] = useState('');
 
   const handleSubmit = e => {
     e.preventDefault();
   };
+
+  console.log('DEBUG: reusables state');
+  console.log(postReusableUpdateResule);
 
   return (
     <Container>
