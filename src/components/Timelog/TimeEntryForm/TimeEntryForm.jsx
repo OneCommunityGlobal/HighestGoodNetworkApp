@@ -31,6 +31,23 @@ import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  placeholder: 'Description (10-word minimum) and reference link',
+  plugins:
+    'advlist autolink autoresize lists link charmap table paste help wordcount',
+  toolbar:
+    'bold italic underline link removeformat | bullist numlist outdent indent |\
+                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                    subscript superscript charmap  | help',
+  branding: false,
+  min_height: 180,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+  content_style: 'body { cursor: text !important; }',
+};
+
 /**
  * Modal used to submit and edit tangible and intangible time entries.
  * There are several use cases:
@@ -560,21 +577,8 @@ const TimeEntryForm = props => {
             <FormGroup>
               <Label for="notes">Notes</Label>
               <Editor
-                init={{
-                  menubar: false,
-                  placeholder: 'Description (10-word minimum) and reference link',
-                  plugins:
-                    'advlist autolink autoresize lists link charmap table paste help wordcount',
-                  toolbar:
-                    'bold italic underline link removeformat | bullist numlist outdent indent |\
-                                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                    subscript superscript charmap  | help',
-                  branding: false,
-                  min_height: 180,
-                  max_height: 300,
-                  autoresize_bottom_margin: 1,
-                  content_style: 'body { cursor: text !important; }',
-                }}
+                tinymceScriptSrc="/tinymce/tinymce.min.js"
+                init={TINY_MCE_INIT_OPTIONS}
                 id="notes"
                 name="notes"
                 className="form-control"

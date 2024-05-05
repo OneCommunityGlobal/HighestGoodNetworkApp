@@ -59,7 +59,9 @@ function PopupText(props) {
 
         <div className="m-body">
           <Editor
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
             init={{
+              license_key: 'gpl',
               menubar: false,
               plugins: 'advlist autolink autoresize lists link charmap table paste help',
               toolbar:
@@ -70,7 +72,7 @@ function PopupText(props) {
               autoresize_bottom_margin: 1,
             }}
             value={content}
-            onEditorChange={newcontent => setContent(newcontent)}
+            onEditorChange={(newcontent) => setContent(newcontent)}
           />
         </div>
 
