@@ -1,4 +1,6 @@
-import React, { useState, useEffect, useRef, useId } from 'react';
+import React, {
+  useState, useEffect, useRef, useId,
+} from 'react';
 import {
   Row,
   Input,
@@ -23,6 +25,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
+import { boxStyle, boxStyleDark } from 'styles';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
@@ -48,19 +51,18 @@ import { updateUserStatus, updateRehireableStatus } from '../../actions/userMana
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
-import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { convertDateFormatToMMMDDYY } from 'utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
-import { getAllTeamCode  } from '../../actions/allTeamsAction';
+import { getAllTeamCode } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
 import { GiConsoleController } from 'react-icons/gi';
-import { setCurrentUser } from '../../actions/authActions'
+import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 function UserProfile(props) {
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
   /* Constant values */
 
@@ -107,7 +109,7 @@ function UserProfile(props) {
   const [summaryIntro, setSummaryIntro] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
-  const [isRehireable, setIsRehireable] = useState(null); 
+  const [isRehireable, setIsRehireable] = useState(null);
 
   const userProfileRef = useRef();
 
@@ -118,13 +120,12 @@ function UserProfile(props) {
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
 
-
   /* useEffect functions */
   useEffect(() => {
     loadUserProfile();
     dispatch(fetchAllProjects());
     dispatch(getAllTeamCode());
-    getTeammateListForTeamWeeklySummary(); 
+    getTeammateListForTeamWeeklySummary();
     loadUserTasks();
     dispatch(getAllTimeOffRequests());
   }, []);
@@ -146,7 +147,7 @@ function UserProfile(props) {
   }, [projects]);
 
   useEffect(() => {
-    if((userProfileRef.current && userProfileRef.current._id) === props?.match?.params?.userId) {return;}
+    if ((userProfileRef.current && userProfileRef.current._id) === props?.match?.params?.userId) { return; }
     setShowLoading(true);
     loadUserProfile();
     loadUserTasks();
@@ -158,19 +159,18 @@ function UserProfile(props) {
     handleSubmit();
   }, [blueSquareChanged]);
 
-
   useEffect(() => {
     if (!shouldRefresh) return;
     setShouldRefresh(false);
     loadUserProfile();
-    getTeammateListForTeamWeeklySummary(); 
+    getTeammateListForTeamWeeklySummary();
     loadUserTasks();
   }, [shouldRefresh]);
 
   const checkIsTeamsEqual = () => {
     setOriginalTeams(teams);
     const originalTeamProperties = [];
-    originalTeams?.forEach(team => {
+    originalTeams?.forEach((team) => {
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           originalTeamProperties.push({ [key]: value });
@@ -179,7 +179,7 @@ function UserProfile(props) {
     });
 
     const teamsProperties = [];
-    teams?.forEach(team => {
+    teams?.forEach((team) => {
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           teamsProperties.push({ [key]: value });
@@ -188,21 +188,19 @@ function UserProfile(props) {
     });
 
     const originalTeamsBeingDisplayed = teamsProperties.filter(
-      item =>
-        JSON.stringify(item) ===
-        JSON.stringify(originalTeamProperties.filter(elem => elem.teamName === item.teamName)[0]),
+      (item) => JSON.stringify(item)
+        === JSON.stringify(originalTeamProperties.filter((elem) => elem.teamName === item.teamName)[0]),
     );
 
-    const compare =
-      originalTeamsBeingDisplayed?.length === originalTeams?.length &&
-      originalTeamsBeingDisplayed?.length === teamsProperties?.length;
+    const compare = originalTeamsBeingDisplayed?.length === originalTeams?.length
+      && originalTeamsBeingDisplayed?.length === teamsProperties?.length;
     setIsTeamsEqual(compare);
   };
 
   const checkIsProjectsEqual = () => {
     setOriginalProjects(projects);
     const originalProjectProperties = [];
-    originalProjects?.forEach(project => {
+    originalProjects?.forEach((project) => {
       for (const [key, value] of Object.entries(project)) {
         if (key == 'projectName') {
           originalProjectProperties.push({ [key]: value });
@@ -211,7 +209,7 @@ function UserProfile(props) {
     });
 
     const projectsProperties = [];
-    projects?.forEach(project => {
+    projects?.forEach((project) => {
       for (const [key, value] of Object.entries(project)) {
         if (key == 'projectName') {
           projectsProperties.push({ [key]: value });
@@ -220,16 +218,14 @@ function UserProfile(props) {
     });
 
     const originalProjectsBeingDisplayed = projectsProperties.filter(
-      item =>
-        JSON.stringify(item) ===
-        JSON.stringify(
-          originalProjectProperties.filter(elem => elem.projectName === item.projectName)[0],
+      (item) => JSON.stringify(item)
+        === JSON.stringify(
+          originalProjectProperties.filter((elem) => elem.projectName === item.projectName)[0],
         ),
     );
 
-    const compare =
-      originalProjectsBeingDisplayed?.length === originalProjects?.length &&
-      originalProjectsBeingDisplayed?.length === projectsProperties?.length;
+    const compare = originalProjectsBeingDisplayed?.length === originalProjects?.length
+      && originalProjectsBeingDisplayed?.length === projectsProperties?.length;
     setIsProjectsEqual(compare);
   };
 
@@ -239,27 +235,29 @@ function UserProfile(props) {
       const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
       const { data } = res;
 
-      const activeMembers = data.filter(member => member._id !== currentManager._id && member.isActive);
+      const activeMembers = data.filter((member) => member._id !== currentManager._id && member.isActive);
 
       const memberSubmitted = activeMembers
-        .filter(member => member.weeklySummaries[0].summary !== '')
-        .map(member => `${member.firstName} ${member.lastName}`);
+        .filter((member) => member.weeklySummaries[0].summary !== '')
+        .map((member) => `${member.firstName} ${member.lastName}`);
 
       const memberNotSubmitted = activeMembers
-        .filter(member => member.weeklySummaries[0].summary === '')
-        .map(member => `${member.firstName} ${member.lastName}`);
+        .filter((member) => member.weeklySummaries[0].summary === '')
+        .map((member) => `${member.firstName} ${member.lastName}`);
 
-      const memberSubmittedString =
-        memberSubmitted.length !== 0
-          ? memberSubmitted.join(', ')
-          : '<list all team members names included in the summary>';
+      const memberSubmittedString = memberSubmitted.length !== 0
+        ? memberSubmitted.join(', ')
+        : '<list all team members names included in the summary>';
 
-      const memberDidntSubmitString =
-        memberNotSubmitted.length !== 0
-          ? memberNotSubmitted.join(', ')
-          : '<list all team members names NOT included in the summary>';
+      const memberDidntSubmitString = memberNotSubmitted.length !== 0
+        ? memberNotSubmitted.join(', ')
+        : '<list all team members names NOT included in the summary>';
 
-      const summaryIntroString = `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes ${memberSubmittedString}. These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
+      const summaryIntroString = `This week’s summary was managed by 
+      ${currentManager.firstName} ${currentManager.lastName} 
+      and includes ${memberSubmittedString}. These people did NOT provide a summary 
+      ${memberDidntSubmitString}. 
+      <Insert the proofread and single-paragraph summary created by ChatGPT>`;
 
       setSummaryIntro(summaryIntroString);
     } catch (error) {
@@ -271,11 +269,11 @@ function UserProfile(props) {
     const userId = props?.match?.params?.userId;
     axios
       .get(ENDPOINTS.TASKS_BY_USERID(userId))
-      .then(res => {
+      .then((res) => {
         setTasks(res?.data || []);
         setOriginalTasks(res.data);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   const loadUserProfile = async () => {
@@ -320,7 +318,7 @@ function UserProfile(props) {
     }
   };
 
-  const getWeeklySummary = async userId => {
+  const getWeeklySummary = async (userId) => {
     try {
       setSummarySelected('');
       setShowSummary(false);
@@ -358,20 +356,20 @@ function UserProfile(props) {
     }
   };
 
-  const onDeleteTeam = deletedTeamId => {
-    setTeams(prevTeams => prevTeams.filter(team => team._id !== deletedTeamId));
+  const onDeleteTeam = (deletedTeamId) => {
+    setTeams((prevTeams) => prevTeams.filter((team) => team._id !== deletedTeamId));
   };
 
-  const onDeleteProject = deletedProjectId => {
-    setProjects(prevProject => prevProject.filter(project => project._id !== deletedProjectId));
+  const onDeleteProject = (deletedProjectId) => {
+    setProjects((prevProject) => prevProject.filter((project) => project._id !== deletedProjectId));
   };
 
-  const onAssignTeam = assignedTeam => {
-    setTeams(prevState => [...prevState, assignedTeam]);
+  const onAssignTeam = (assignedTeam) => {
+    setTeams((prevState) => [...prevState, assignedTeam]);
   };
 
-  const onAssignProject = assignedProject => {
-    setProjects(prevProjects => [...prevProjects, assignedProject]);
+  const onAssignProject = (assignedProject) => {
+    setProjects((prevProjects) => [...prevProjects, assignedProject]);
   };
 
   const onUpdateTask = (taskId, updatedTask) => {
@@ -380,25 +378,25 @@ function UserProfile(props) {
       taskId,
     };
 
-    setTasks(tasks => {
+    setTasks((tasks) => {
       const tasksWithoutTheUpdated = [...tasks];
-      const taskIndex = tasks.findIndex(task => task._id === taskId);
+      const taskIndex = tasks.findIndex((task) => task._id === taskId);
       tasksWithoutTheUpdated[taskIndex] = updatedTask;
       return tasksWithoutTheUpdated;
     });
 
-    if (updatedTasks.findIndex(task => task.taskId === taskId) !== -1) {
-      const taskIndex = updatedTasks.findIndex(task => task.taskId === taskId);
+    if (updatedTasks.findIndex((task) => task.taskId === taskId) !== -1) {
+      const taskIndex = updatedTasks.findIndex((task) => task.taskId === taskId);
       const tasksToUpdate = updatedTasks;
       tasksToUpdate.splice(taskIndex, 1);
       tasksToUpdate.splice(taskIndex, 0, newTask);
       setUpdatedTasks(tasksToUpdate);
     } else {
-      setUpdatedTasks(tasks => [...tasks, newTask]);
+      setUpdatedTasks((tasks) => [...tasks, newTask]);
     }
   };
 
-  const handleImageUpload = async evt => {
+  const handleImageUpload = async (evt) => {
     if (evt) evt.preventDefault();
     const file = evt.target.files[0];
     if (typeof file !== 'undefined') {
@@ -439,7 +437,7 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
-    if (targetIsDevAdminUneditable){
+    if (targetIsDevAdminUneditable) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
@@ -466,7 +464,7 @@ function UserProfile(props) {
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
-      const newBlueSquare = { date: dateStamp, description: summary , createdDate: moment.tz('America/Los_Angeles').toISOString().split('T')[0]};
+      const newBlueSquare = { date: dateStamp, description: summary, createdDate: moment.tz('America/Los_Angeles').toISOString().split('T')[0] };
       setOriginalUserProfile({
         ...originalUserProfile,
         infringements: userProfile.infringements?.concat(newBlueSquare),
@@ -479,10 +477,10 @@ function UserProfile(props) {
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
       if (dateStamp != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
+        currentBlueSquares.find((blueSquare) => blueSquare._id === id).date = dateStamp;
       }
       if (summary != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
+        currentBlueSquares.find((blueSquare) => blueSquare._id === id).description = summary;
       }
 
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
@@ -490,7 +488,7 @@ function UserProfile(props) {
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
-        newInfringements = newInfringements.filter(infringement => infringement._id !== id);
+        newInfringements = newInfringements.filter((infringement) => infringement._id !== id);
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
       }
@@ -503,7 +501,7 @@ function UserProfile(props) {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
-      axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
+      axios.put(url, updatedTask.updatedTask).catch((err) => console.log(err));
     }
     try {
       await props.updateUserProfile(userProfileRef.current);
@@ -517,9 +515,9 @@ function UserProfile(props) {
       return err.message;
     }
   };
- 
-  // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit. 
-  // AssignBadgePopup already has onSubmit action to call an API to update the user badges. 
+
+  // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit.
+  // AssignBadgePopup already has onSubmit action to call an API to update the user badges.
   // Using handleSubmit will trigger actopms to call the assignBadge API and updateUserProfile API, which is redundant.
   const handleBadgeSubmit = async () => {
     try {
@@ -529,9 +527,9 @@ function UserProfile(props) {
     }
   };
 
-  const toggle = modalName => setMenuModalTabletScreen(modalName);
+  const toggle = (modalName) => setMenuModalTabletScreen(modalName);
 
-  const toggleTab = tab => {
+  const toggleTab = (tab) => {
     if (activeTab !== tab) setActiveTab(tab);
   };
 
@@ -545,7 +543,7 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = isActive => {
+  const setActiveInactive = (isActive) => {
     setActiveInactivePopupOpen(false);
     const newUserProfile = {
       ...userProfile,
@@ -573,7 +571,7 @@ function UserProfile(props) {
       ...userProfile,
       isRehireable: pendingRehireableStatus,
     };
-    updateRehireableStatus(updatedUserProfile, pendingRehireableStatus)
+    updateRehireableStatus(updatedUserProfile, pendingRehireableStatus);
     setIsRehireable(pendingRehireableStatus);
     setUserProfile(updatedUserProfile);
     setOriginalUserProfile(updatedUserProfile);
@@ -583,19 +581,13 @@ function UserProfile(props) {
     setShowConfirmDialog(false);
   };
 
-  useEffect(() => {
-    getTeamMembersWeeklySummary(); 
-    loadUserProfile();
-  }, []);
-
-
   /**
    *
    * UserProfile.jsx and its subsomponents are being refactored to avoid the use of this monolithic function.
    * Please pass userProfile and setUserProfile as props to subcomponents and modify state that way.
    * This function is being kept here until the refactoring is complete.
    */
-  const handleUserProfile = event => {
+  const handleUserProfile = (event) => {
     switch (event.target.id) {
       case 'emailPubliclyAccessible':
         setUserProfile({
@@ -652,7 +644,9 @@ function UserProfile(props) {
     );
   }
 
-  const { firstName, lastName, profilePic, jobTitle = '' } = userProfile;
+  const {
+    firstName, lastName, profilePic, jobTitle = '',
+  } = userProfile;
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
   const { userid: requestorId, role: requestorRole } = props.auth.user;
@@ -666,15 +660,15 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus')
+  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
- 
+
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner'
-    ? canAddDeleteEditOwners
-    : canPutUserProfile;
+      ? canAddDeleteEditOwners
+      : canPutUserProfile;
 
   const canEdit = canEditUserProfile || isUserSelf;
 
@@ -687,26 +681,26 @@ function UserProfile(props) {
         border: state.isFocused ? '2px solid #333' : '2px solid #ccc',
       },
     }),
-    dropdownIndicator: base => ({
+    dropdownIndicator: (base) => ({
       ...base,
       color: '#333',
     }),
-    menu: base => ({
+    menu: (base) => ({
       ...base,
       zIndex: 9999,
     }),
   };
 
-  const handleStartDate = async startDate => {
+  const handleStartDate = async (startDate) => {
     setUserStartDate(startDate);
   };
 
-  const handleEndDate = async endDate => {
+  const handleEndDate = async (endDate) => {
     setUserEndDate(endDate);
   };
 
   return (
-    <div className={darkMode ? 'bg-oxford-blue' : ''} style={{minHeight: "100%"}}>
+    <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
         isActive={userProfile.isActive}
         fullName={`${userProfile.firstName} ${userProfile.lastName}`}
@@ -745,7 +739,9 @@ function UserProfile(props) {
                 <div className="image-button file btn btn-lg btn-primary" style={darkMode ? boxStyleDark : boxStyle}>
                   Change Photo
                   <Input
-                    style={{ width: '100%', height: '100%', zIndex: '2', cursor: 'pointer' }}
+                    style={{
+                      width: '100%', height: '100%', zIndex: '2', cursor: 'pointer',
+                    }}
                     type="file"
                     name="newProfilePic"
                     id="newProfilePic"
@@ -767,12 +763,12 @@ function UserProfile(props) {
             ) : null}
             <div className="profile-head">
               <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
-              <div style={{marginTop: '6px'}} >
+              <div style={{ marginTop: '6px' }} >
               <EditableInfoModal
                 areaName="UserProfileInfoModal"
                 areaTitle="User Profile"
                 fontSize={24}
-                isPermissionPage={true}
+                isPermissionPage
                 role={requestorRole} // Pass the 'role' prop to EditableInfoModal
               />
               </div>
@@ -783,7 +779,7 @@ function UserProfile(props) {
                 canChange={canChangeUserStatus}
                 onClick={() => {
                   if (cantDeactivateOwner(userProfile, requestorRole)) {
-                    //Owner user cannot be deactivated by another user that is not an Owner.
+                    // Owner user cannot be deactivated by another user that is not an Owner.
                     alert('You are not authorized to deactivate an owner.');
                     return;
                   }
@@ -799,7 +795,7 @@ function UserProfile(props) {
                   aria-hidden="true"
                   style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
                   title="Click to see user's timelog"
-                  onClick={e => {
+                  onClick={(e) => {
                     if (e.metaKey || e.ctrlKey) {
                       window.open(`/timelog/${targetUserId}`, '_blank');
                     } else {
@@ -811,12 +807,12 @@ function UserProfile(props) {
                 </span>
               )}
               {canChangeRehireableStatus && (
-                <span className='mr-2'>
-                  <i 
-                    className={isRehireable ? "fa fa-check-square-o": "fa fa-square-o"}
+                <span className="mr-2">
+                  <i
+                    className={isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'}
                     aria-hidden="true"
-                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }} 
-                    title="Click to change rehirable status" 
+                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                    title="Click to change rehirable status"
                     onClick={handleRehireableChange}
                   />
                 </span>
@@ -864,7 +860,7 @@ function UserProfile(props) {
                   className={darkMode ? 'text-azure' : ''}
                   options={summaries}
                   styles={customStyles}
-                  onChange={e => {
+                  onChange={(e) => {
                     const fullname = e.value[0];
                     const userId = e.value[1];
                     setSummaryName(fullname);
@@ -875,14 +871,12 @@ function UserProfile(props) {
             ) : (
               <div />
             )}
-            {summarySelected &&
-              showSelect &&
-              showSummary &&
-              summarySelected.map((data, i) => {
-                return (
-                  <TeamWeeklySummaries key={data['_id']} i={i} name={summaryName} data={data} darkMode={darkMode}/>
-                );
-              })}
+            {summarySelected
+              && showSelect
+              && showSummary
+              && summarySelected.map((data, i) => (
+                  <TeamWeeklySummaries key={data._id} i={i} name={summaryName} data={data} darkMode={darkMode}/>
+              ))}
             <Badges
               isUserSelf={isUserSelf}
               userProfile={userProfile}
@@ -926,7 +920,7 @@ function UserProfile(props) {
               <Nav tabs>
                 <NavItem>
                   <NavLink
-                    className={classnames({ active: activeTab === '1', }, 'nav-link', (darkMode && activeTab === '1' ? 'bg-space-cadet text-light' : 'text-azure'))}
+                    className={classnames({ active: activeTab === '1' }, 'nav-link', (darkMode && activeTab === '1' ? 'bg-space-cadet text-light' : 'text-azure'))}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
                   >
@@ -963,7 +957,7 @@ function UserProfile(props) {
                 <NavItem>
                   <NavLink
                     className={classnames({ active: activeTab === '5' }, 'nav-link', (darkMode && activeTab === '5' ? 'bg-space-cadet text-light' : 'text-azure'))}
-                    onClick={e => {
+                    onClick={(e) => {
                       e.preventDefault();
                       toggleTab('5');
                     }}
@@ -997,8 +991,7 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="2">
-                {
-                  <VolunteeringTimeTab
+                <VolunteeringTimeTab
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
                     isUserSelf={isUserSelf}
@@ -1009,7 +1002,6 @@ function UserProfile(props) {
                     onStartDate={handleStartDate}
                     darkMode={darkMode}
                   />
-                }
               </TabPane>
               <TabPane tabId="3">
                 <TeamsTab
@@ -1024,11 +1016,11 @@ function UserProfile(props) {
                   canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
                   handleSubmit={handleSubmit}
                   disabled={
-                    !formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
-                    !isTeamSaved
+                    !formValid.firstName
+                    || !formValid.lastName
+                    || !formValid.email
+                    || !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                    && !isTeamSaved
                   }
                   canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner' || !targetIsDevAdminUneditable}
                   setUserProfile={setUserProfile}
@@ -1041,7 +1033,7 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="4">
-                <ProjectsTab 
+                <ProjectsTab
                   userProjects={userProfile.projects || []}
                   userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
@@ -1053,10 +1045,10 @@ function UserProfile(props) {
                   updateTask={onUpdateTask}
                   handleSubmit={handleSubmit}
                   disabled={
-                    !formValid.firstName ||
-                    !formValid.lastName ||
-                    !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                    !formValid.firstName
+                    || !formValid.lastName
+                    || !formValid.email
+                    || !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                   }
                   darkMode={darkMode}
                 />
@@ -1122,15 +1114,15 @@ function UserProfile(props) {
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
                         <Link
-                          to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
+                          to={targetIsDevAdminUneditable ? '#' : `/updatepassword/${userProfile._id}`}
                           onClick={() => {
                             if (targetIsDevAdminUneditable) {
                               alert(
-                                'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                                  'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                                'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. '
+                                  + 'You shouldn’t even be using this account except to create your own accounts to use. '
+                                  + 'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                               );
-                              return `#`;
+                              return '#';
                             }
                           }}
                         >
@@ -1146,11 +1138,11 @@ function UserProfile(props) {
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
-                              !formValid.firstName ||
-                              !formValid.lastName ||
-                              !formValid.email ||
-                              !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              !formValid.firstName
+                              || !formValid.lastName
+                              || !formValid.email
+                              || !codeValid
+                              || (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1170,7 +1162,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
-                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true" />
                       </Button>
                     </div>
                   </Row>
@@ -1207,11 +1199,11 @@ function UserProfile(props) {
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
-                              !formValid.firstName ||
-                              !formValid.lastName ||
-                              !formValid.email ||
-                              !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              !formValid.firstName
+                              || !formValid.lastName
+                              || !formValid.email
+                              || !codeValid
+                              || (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1231,7 +1223,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
-                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true" />
                       </Button>
                     </div>
                   </Row>
@@ -1255,15 +1247,15 @@ function UserProfile(props) {
                     canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
                     handleSubmit={handleSubmit}
                     disabled={
-                      !formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !(isProfileEqual && isTasksEqual 
-                        // && isTeamsEqual 
+                      !formValid.firstName
+                      || !formValid.lastName
+                      || !formValid.email
+                      || !(isProfileEqual && isTasksEqual
+                        // && isTeamsEqual
                         && isProjectsEqual)
                     }
                     canEditTeamCode={
-                      props.hasPermission('editTeamCode') || requestorRole === 'Owner' ||requestorRole === 'Administrator'
+                      props.hasPermission('editTeamCode') || requestorRole === 'Owner' || requestorRole === 'Administrator'
                     }
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
@@ -1281,11 +1273,11 @@ function UserProfile(props) {
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
-                              !formValid.firstName ||
-                              !formValid.lastName ||
-                              !formValid.email ||
-                              !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              !formValid.firstName
+                              || !formValid.lastName
+                              || !formValid.email
+                              || !codeValid
+                              || (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1305,7 +1297,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
-                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true" />
                       </Button>
                     </div>
                   </Row>
@@ -1329,10 +1321,10 @@ function UserProfile(props) {
                     updateTask={onUpdateTask}
                     handleSubmit={handleSubmit}
                     disabled={
-                      !formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      !formValid.firstName
+                      || !formValid.lastName
+                      || !formValid.email
+                      || !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     darkMode={darkMode}
                   />
@@ -1346,11 +1338,11 @@ function UserProfile(props) {
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
-                              !formValid.firstName ||
-                              !formValid.lastName ||
-                              !formValid.email ||
-                              !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              !formValid.firstName
+                              || !formValid.lastName
+                              || !formValid.email
+                              || !codeValid
+                              || (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1370,7 +1362,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
-                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true" />
                       </Button>
                     </div>
                   </Row>
@@ -1387,7 +1379,7 @@ function UserProfile(props) {
               <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle}>
                 <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Edit History</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile} darkMode={darkMode} tabletView={true}/>
+                  <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile} darkMode={darkMode} tabletView/>
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Row>
@@ -1398,11 +1390,11 @@ function UserProfile(props) {
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
-                              !formValid.firstName ||
-                              !formValid.lastName ||
-                              !formValid.email ||
-                              !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              !formValid.firstName
+                              || !formValid.lastName
+                              || !formValid.email
+                              || !codeValid
+                              || (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1422,7 +1414,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button outline onClick={() => loadUserProfile()} style={darkMode ? boxStyleDark : boxStyle}>
-                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true"></i>
+                        <i className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`} aria-hidden="true" />
                       </Button>
                     </div>
                   </Row>
@@ -1432,7 +1424,7 @@ function UserProfile(props) {
           </Col>
         </Row>
         <Row>
-          <Col md="4"></Col>
+          <Col md="4" />
           <Col md="8" className="desktop-panel">
             <div className="profileEditButtonContainer">
               {canUpdatePassword && canEdit && !isUserSelf && (
@@ -1444,15 +1436,15 @@ function UserProfile(props) {
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
                 <Link
-                  to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
+                  to={targetIsDevAdminUneditable ? '#' : `/updatepassword/${userProfile._id}`}
                   onClick={() => {
                     if (targetIsDevAdminUneditable) {
                       alert(
-                        'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                        'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. '
+                          + 'You shouldn’t even be using this account except to create your own accounts to use. '
+                          + 'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                       );
-                      return `#`;
+                      return '#';
                     }
                   }}
                 >
@@ -1468,13 +1460,13 @@ function UserProfile(props) {
                     className="mr-1 btn-bottom"
                     handleSubmit={async () => await handleSubmit()}
                     disabled={
-                      !formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !codeValid ||
-                      (userStartDate > userEndDate && userEndDate !== '') ||
-                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
-                      isTeamSaved
+                      !formValid.firstName
+                      || !formValid.lastName
+                      || !formValid.email
+                      || !codeValid
+                      || (userStartDate > userEndDate && userEndDate !== '')
+                      || (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      || isTeamSaved
                     }
                     userProfile={userProfile}
                     setSaved={() => setSaved(true)}

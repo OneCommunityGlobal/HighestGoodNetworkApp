@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import BadgeImage from '../BadgeImage';
 
-const FeaturedBadges = props => {
+function FeaturedBadges(props) {
   const [filteredBadges, setFilteredBadges] = useState([]);
-  const [ loading, setLoading ] = useState(true);
-  const filterBadges = allBadges => {
+  const [loading, setLoading] = useState(true);
+  const filterBadges = (allBadges) => {
     let filteredList = allBadges || [];
 
     filteredList = filteredList.sort((a, b) => {
@@ -21,22 +21,20 @@ const FeaturedBadges = props => {
   };
 
   const preCacheImages = async (badgeInfoList) => {
-    const promises = await badgeInfoList.map((badgeInfo) => {
-     return new Promise(function (resolve, reject) {
-        const img = new Image();
-        img.src = badgeInfo.badge.imageUrl;
-        img.onload = resolve;
-        img.onerror = reject;
-      });
-    });
+    const promises = await badgeInfoList.map((badgeInfo) => new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = badgeInfo.badge.imageUrl;
+      img.onload = resolve;
+      img.onerror = reject;
+    }));
     await Promise.all(promises);
     setLoading(false);
   };
 
   useEffect(() => {
-    if ( props.badges && props.badges.length > 0 ) {
+    if (props.badges && props.badges.length > 0) {
       const filteredBadges = filterBadges(props.badges);
-      
+
       preCacheImages(filteredBadges);
       setFilteredBadges(filteredBadges);
     }
@@ -49,6 +47,6 @@ const FeaturedBadges = props => {
       ))}
     </div>
   );
-};
+}
 
 export default FeaturedBadges;

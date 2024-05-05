@@ -12,16 +12,16 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.css';
+import { clearSelected } from 'actions/badgeManagement';
+import { boxStyle, boxStyleDark } from 'styles';
 import FeaturedBadges from './FeaturedBadges';
 import BadgeReport from '../Badge/BadgeReport';
 import AssignBadgePopup from './AssignBadgePopup';
-import { clearSelected } from 'actions/badgeManagement';
 import hasPermission from '../../utils/permissions';
-import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import EditableInfoModal from './EditableModal/EditableInfoModal';
 
-export const Badges = props => {
-  const {darkMode} = props;
+export function Badges(props) {
+  const { darkMode } = props;
 
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
@@ -34,7 +34,7 @@ export const Badges = props => {
 
   // xiaohan: connect to see all badges
   const assignToggle = () => {
-    setAssignOpen(isAssignOpen => !isAssignOpen);
+    setAssignOpen((isAssignOpen) => !isAssignOpen);
   };
 
   useEffect(() => {
@@ -56,8 +56,8 @@ export const Badges = props => {
   const object = badgesEarned == 1 ? 'badge' : 'badges';
   let congratulatoryText = `${subject} ${verb} ${object}`;
   congratulatoryText = badgesEarned
-    ? 'Bravo! ' + congratulatoryText + '! '
-    : congratulatoryText + '. ';
+    ? `Bravo! ${congratulatoryText}! `
+    : `${congratulatoryText}. `;
 
   return (
     <>
@@ -73,7 +73,7 @@ export const Badges = props => {
                 areaName="FeaturedBadgesInfoPoint"
                 areaTitle="Featured Badges"
                 fontSize={20}
-                isPermissionPage={true}
+                isPermissionPage
                 role={props.role}
               />
             </span>
@@ -150,7 +150,7 @@ export const Badges = props => {
               areaTitle="Number of Badges"
               role={props.role}
               fontSize={20}
-              isPermissionPage={true}
+              isPermissionPage
             />
           </span>
         </CardFooter>
@@ -196,14 +196,14 @@ export const Badges = props => {
       </UncontrolledTooltip> */}
     </>
   );
-};
+}
 
-const mapDispatchToProps = dispatch => ({
+const mapDispatchToProps = (dispatch) => ({
   clearSelected: () => dispatch(clearSelected()),
   hasPermission: (permission) => dispatch(hasPermission(permission)),
 });
 
-const mapStateToProps = state => ({
+const mapStateToProps = (state) => ({
   allBadgeData: state?.badge?.allBadgeData,
 });
 
