@@ -4,6 +4,7 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import CreateNewRolePopup from '../NewRolePopUp'
+import { ModalProvider } from 'context/ModalContext';
 
 const mockTogglePopUpNewRole = jest.fn()
 const mockAddNewRole = jest.fn()
@@ -29,7 +30,9 @@ const store = mockStore({
 const renderComponent = () => {
   const { container } = render(
     <Provider store={store}>
+      <ModalProvider>
       <CreateNewRolePopup toggle={mockTogglePopUpNewRole} addNewRole={mockAddNewRole} roleNames={mockRoleNames} />
+      </ModalProvider>
     </Provider>
   )
 
