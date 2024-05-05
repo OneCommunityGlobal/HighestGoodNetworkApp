@@ -3,36 +3,43 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
-import { useDispatch } from 'react-redux';
 import RecordsModal from './RecordsModal';
 
-export default function ItemsTable({ filteredItems, UpdateItemModal, resetItemUpdate, dynamicColumns }) {
-  const dispatch = useDispatch();
-  const [sortedData, setData] = useState(null);
+export default function ItemsTable({
+  selectedProject,
+  selectedItem,
+  filteredItems,
+  UpdateItemModal,
+  dynamicColumns,
+}) {
+  const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
   const [recordType, setRecordType] = useState('');
-  const [order, setOrder] = useState('default');
-  const [iconToDisplay, setIconToDisplay] = useState(faSort);
-
-  function getNestedValue(obj, path) {
-    return path.split('.').reduce((acc, part) => acc ? acc[part] : undefined, obj);
-  }
-
-  useEffect(() => {
-    if (filteredItems && filteredItems.length > 0) {
-      setData(filteredItems);
-    }
-  }, [filteredItems]);
-
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
+  const [projectNameCol, setProjectNameCol] = useState({
+    iconsToDisplay: faSort,
+    sortOrder: 'default',
+  });
+  const [inventoryItemTypeCol, setInventoryItemTypeCol] = useState({
+    iconsToDisplay: faSort,
+    sortOrder: 'default',
+  });
 
-  const handleEditRecordsClick = (selectedItem, type) => {
+  useEffect(() => {
+    setData(filteredItems);
+  }, [filteredItems]);
+
+  useEffect(() => {
+    setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+    setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
+  }, [selectedProject, selectedItem]);
+
+  const handleEditRecordsClick = (selectedEl, type) => {
     if (type === 'Update') {
-      dispatch(resetItemUpdate());
       setUpdateModal(true);
-      setUpdateRecord(selectedItem);
+      setUpdateRecord(selectedEl);
     }
   };
 
@@ -42,66 +49,71 @@ export default function ItemsTable({ filteredItems, UpdateItemModal, resetItemUp
     setRecordType(type);
   };
 
-  const sortingAsc = columnName => {
-    let sorted = [];
+  const sortData = columnName => {
+    const newSortedData = [...sortedData];
+
     if (columnName === 'ProjectName') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.project?.name >= b.project?.name ? 1 : -1));
+      if (projectNameCol.sortOrder === 'default' || projectNameCol.sortOrder === 'desc') {
+        newSortedData.sort((a, b) => (a.project?.name || '').localeCompare(b.project?.name || ''));
+        setProjectNameCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else if (projectNameCol.sortOrder === 'asc') {
+        newSortedData.sort((a, b) => (b.project?.name || '').localeCompare(a.project?.name || ''));
+        setProjectNameCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     } else if (columnName === 'InventoryItemType') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.itemType?.name >= b.itemType?.name ? 1 : -1));
+      if (
+        inventoryItemTypeCol.sortOrder === 'default' ||
+        inventoryItemTypeCol.sortOrder === 'desc'
+      ) {
+        newSortedData.sort((a, b) =>
+          (a.itemType?.name || '').localeCompare(b.itemType?.name || ''),
+        );
+        setInventoryItemTypeCol({ iconsToDisplay: faSortUp, sortOrder: 'asc' });
+      } else if (inventoryItemTypeCol.sortOrder === 'asc') {
+        newSortedData.sort((a, b) =>
+          (b.itemType?.name || '').localeCompare(a.itemType?.name || ''),
+        );
+        setInventoryItemTypeCol({ iconsToDisplay: faSortDown, sortOrder: 'desc' });
+      }
+      setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     }
 
-    setData(sorted);
-    setOrder('asc');
-    setIconToDisplay(faSortUp);
+    setData(newSortedData);
   };
 
-  const sortingDesc = columnName => {
-    let sorted = [];
-    if (columnName === 'ProjectName') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.project?.name <= b.project?.name ? 1 : -1));
-    } else if (columnName === 'InventoryItemType') {
-      sorted = []
-        .concat(...sortedData)
-        .sort((a, b) => (a.itemType?.name <= b.itemType?.name ? 1 : -1));
-    }
-
-    setData(sorted);
-    setOrder('desc');
-    setIconToDisplay(faSortDown);
-  };
-
-  const doSorting = columnName => {
-    if (order === 'desc') {
-      setData(filteredItems);
-      setIconToDisplay(faSort);
-      setOrder('default');
-    } else if (order === 'asc') {
-      sortingDesc(columnName);
-    } else {
-      sortingAsc(columnName);
-    }
+  const getNestedValue = (obj, path) => {
+    return path.split('.').reduce((acc, part) => (acc ? acc[part] : null), obj);
   };
 
   return (
     <>
-      <RecordsModal modal={modal} setModal={setModal} record={record} setRecord={setRecord} recordType={recordType} />
+      <RecordsModal
+        modal={modal}
+        setModal={setModal}
+        record={record}
+        setRecord={setRecord}
+        recordType={recordType}
+      />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
-      <div className="materials_table_container">
+      <div className="items_table_container">
         <Table>
           <thead>
             <tr>
-              <th onClick={() => doSorting('ProjectName')}>
-                Project <FontAwesomeIcon icon={iconToDisplay} size="lg" />
-              </th>
-              <th onClick={() => doSorting('InventoryItemType')}>
-                Name <FontAwesomeIcon icon={iconToDisplay} size="lg" />
-              </th>
+              {selectedProject === 'all' ? (
+                <th onClick={() => sortData('ProjectName')}>
+                  Project <FontAwesomeIcon icon={projectNameCol.iconsToDisplay} size="lg" />
+                </th>
+              ) : (
+                <th>Project</th>
+              )}
+              {selectedItem === 'all' ? (
+                <th onClick={() => sortData('InventoryItemType')}>
+                  Name <FontAwesomeIcon icon={inventoryItemTypeCol.iconsToDisplay} size="lg" />
+                </th>
+              ) : (
+                <th>Name</th>
+              )}
               {dynamicColumns.map(({ label }) => (
                 <th key={label}>{label}</th>
               ))}
@@ -109,6 +121,7 @@ export default function ItemsTable({ filteredItems, UpdateItemModal, resetItemUp
               <th>Purchases</th>
             </tr>
           </thead>
+
           <tbody>
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
@@ -119,7 +132,7 @@ export default function ItemsTable({ filteredItems, UpdateItemModal, resetItemUp
                     {dynamicColumns.map(({ label, key }) => (
                       <td key={label}>{getNestedValue(el, key)}</td>
                     ))}
-                    <td className="materials_cell">
+                    <td className="items_cell">
                       <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>
                         <BiPencil />
                       </button>

@@ -1,13 +1,13 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
-export default function SelectForm({ materials, setSelectedProject, setSelectedMaterial }) {
+export default function SelectForm({ items, setSelectedProject, setSelectedItem }) {
   let projectsSet = [];
-  if (materials.length) {
-    projectsSet = [...new Set(materials.map(mat => mat.project?.name))];
+  if (items.length) {
+    projectsSet = [...new Set(items.map(el => el.project?.name))];
   }
 
   const handleChange = event => {
-    setSelectedMaterial('all');
+    setSelectedItem('all');
     setSelectedProject(event.target.value);
   };
 
@@ -20,9 +20,9 @@ export default function SelectForm({ materials, setSelectedProject, setSelectedM
           name="select-project"
           type="select"
           onChange={handleChange}
-          disabled={!materials.length}
+          disabled={!items.length}
         >
-          {materials.length ? (
+          {items.length ? (
             <>
               <option value="all">All</option>
               {projectsSet.map(name => {

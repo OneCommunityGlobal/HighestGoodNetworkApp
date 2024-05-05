@@ -1,19 +1,17 @@
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import './UpdateReusable.css';
-import UpdateReusable from './UpdateReusable';
 
-function UpdateReusbableModal({ modal, setModal, record }) {
-  const toggle = () => {
-    setModal(false);
-  };
+function UpdateReusableModal({ modal, setModal, record }) {
   if (record) {
+    const toggle = () => {
+      setModal(false);
+    };
+
     return (
       <Modal isOpen={modal} size="md">
         <ModalHeader>Update Reusable Form</ModalHeader>
         <ModalBody>
-          <div className="updateModalContainer">
-            <UpdateReusable />
-          </div>
+          <div className="updateModalContainer" />
         </ModalBody>
         <ModalFooter>
           <Button onClick={toggle}>Close</Button>
@@ -21,8 +19,7 @@ function UpdateReusbableModal({ modal, setModal, record }) {
       </Modal>
     );
   }
-
   return null;
 }
 
-export default UpdateReusbableModal;
+export default UpdateReusableModal;

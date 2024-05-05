@@ -30,3 +30,13 @@ export const fetchAllReusables = () => {
       })
   }
 }
+
+export const purchaseReusable = async (body) => {
+  return axios.post(ENDPOINTS.BM_PURCHASE_REUSABLES, body)
+    .then(res => res)
+    .catch((err) => {
+      if (err.response) return err.response
+      if (err.request) return err.request
+      return err.message
+    })
+}

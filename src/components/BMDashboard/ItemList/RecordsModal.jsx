@@ -46,11 +46,12 @@ export function Record({ record, recordType }) {
             return (
               <tr key={data._id}>
                 <td>{moment.utc(data.date).format('LL')}</td>
-                <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
-                <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
+                <td>{`${data.quantityUsed} ${record.itemType?.unit || 'Unit'}` || '-'}</td>
+                <td>{`${data.quantityWasted} ${record.itemType?.unit || 'Unit'}` || '-'}</td>
                 <td>
                   <a href={`/userprofile/${data.createdBy._id}`}>
-                    {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
+                    {`${data.createdBy?.firstName || 'Unknown'} 
+                    ${data.createdBy?.lastName || 'Unknown'}`}
                   </a>
                 </td>
               </tr>
@@ -81,8 +82,8 @@ export function Record({ record, recordType }) {
                 <td>{brandPref}</td>
                 <td>{quantity || '-'}</td>
                 <td>
-                  <a href={`/userprofile/${requestedBy._id}`}>
-                    {`${requestedBy.firstName} ${requestedBy.lastName}`}
+                  <a href={`/userprofile/${requestedBy?._id}`}>
+                    {`${requestedBy?.firstName || 'Unknown'} ${requestedBy?.lastName || 'User'}`}
                   </a>
                 </td>
                 <td>{moment(date).format('MM/DD/YY')}</td>

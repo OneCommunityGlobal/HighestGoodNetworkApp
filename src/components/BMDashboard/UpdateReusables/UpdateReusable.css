@@ -1,5 +1,9 @@
 .updateModalContainer {
   overflow-y: scroll;
+  height: 75vh;
+}
+.updateModalContainer {
+  overflow-y: scroll;
   height: 65vh;
 }
 

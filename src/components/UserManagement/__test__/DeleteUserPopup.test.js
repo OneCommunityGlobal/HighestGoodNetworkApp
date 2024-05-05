@@ -1,8 +1,12 @@
 import React from 'react';
 import { screen, render } from '@testing-library/react';
+import { renderWithProvider } from '../../../__tests__/utils';
 import userEvent from '@testing-library/user-event';
 import DeleteUserPopup from '../DeleteUserPopup';
 import { UserDeleteType } from '../../../utils/enums';
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
 
 import {
   USER_DELETE_CONFIRMATION_FIRST_LINE,
@@ -13,11 +17,30 @@ import {
   USER_DELETE_OPTION_HEADING
 } from '../../../languages/en/messages';
 
+const mockStore = configureStore([thunk]);
+const onClose = jest.fn();
+const onDelete = jest.fn();
+let store;
+
+const defaultProps = {
+  open: true,
+  onClose: onClose,
+  onDelete: onDelete,
+};
+
+beforeEach(() => {
+  store = mockStore({
+    auth: authMock,
+    userProfile: userProfileMock,
+    role: rolesMock.role,
+    ...defaultProps,
+  });
+});
+
 describe('delete user popup', () => {
-  const onClose = jest.fn();
-  const onDelete = jest.fn();
+  
   beforeEach(() => {
-    render(<DeleteUserPopup open onClose={onClose} onDelete={onDelete} />);
+    renderWithProvider(<DeleteUserPopup {...defaultProps} />, {store});
   });
   describe('Structure', () => {
     it('should render the modal', () => {
@@ -59,10 +82,9 @@ describe('delete user popup', () => {
 });
 
 describe('delete user popup additional tests', () => {
-  const onClose = jest.fn();
-  const onDelete = jest.fn();
+
   beforeEach(() => {
-    render(<DeleteUserPopup open onClose={onClose} onDelete={onDelete} />);
+    renderWithProvider(<DeleteUserPopup {...defaultProps} />, {store});
   });
   describe('Texts display', () => {
     it('should render USER_DELETE_CONFIRMATION_FIRST_LINE', () => {
