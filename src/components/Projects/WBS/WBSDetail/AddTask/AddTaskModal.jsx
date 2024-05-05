@@ -5,7 +5,7 @@ import ReactTooltip from 'react-tooltip';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle } from 'styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
@@ -17,7 +17,7 @@ function AddTaskModal(props) {
   * -------------------------------- variable declarations -------------------------------- 
   */
   // props from store 
-  const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
+  const { tasks, copiedTask, allMembers, allProjects, error } = props;
 
   // states from hooks
   const defaultCategory = useMemo(() => {
@@ -684,7 +684,7 @@ function AddTaskModal(props) {
           </Button>
         </ModalFooter>
       </Modal>
-      <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={boxStyle}>
         Add Task
       </Button>
     </>

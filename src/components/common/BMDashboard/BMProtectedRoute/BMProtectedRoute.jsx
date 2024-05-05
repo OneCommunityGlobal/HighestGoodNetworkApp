@@ -1,43 +1,24 @@
 /* eslint-disable react/jsx-props-no-spreading */
-import { Redirect, Route } from 'react-router-dom';
+import { Redirect, Route } from "react-router-dom";
 import { connect } from 'react-redux';
-import { Suspense } from 'react';
+import { Suspense } from "react";
 
 // eslint-disable-next-line react/function-component-definition
 const BMProtectedRoute = ({ component: Component, render, auth, fallback, ...rest }) => {
-  return (
-    <Route
-      {...rest}
-      render={props => {
-        if (!auth.isAuthenticated) {
-          return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
-        }
-        if (auth.user.access && !auth.user.access.canAccessBMPortal) {
-          return (
-            <Redirect to={{ pathname: '/bmdashboard/login', state: { from: props.location } }} />
-          );
-        }
-        // eslint-disable-next-line no-nested-ternary
-        return Component && fallback ? (
-          <Suspense
-            fallback={
-              <div className="d-flex justify-content-center">
-                <i className="fa fa-spinner fa-pulse" />
-              </div>
-            }
-          >
-            {' '}
-            <Component {...props} />{' '}
-          </Suspense>
-        ) : Component ? (
-          <Component {...props} />
-        ) : (
-          render(props)
-        );
-      }}
-    />
-  );
-};
+  return <Route
+    {...rest}
+    render={props => {
+      if (!auth.isAuthenticated) {
+        return <Redirect to={{ pathname: '/login', state: { from: props.location } }} />;
+      }
+      if (auth.user.access && !auth.user.access.canAccessBMPortal) {
+        return <Redirect to={{ pathname: '/bmdashboard/login', state: { from: props.location } }} />
+      }
+      // eslint-disable-next-line no-nested-ternary
+      return (Component && fallback) ? <Suspense fallback={<div className="d-flex justify-content-center"><i className="fa fa-spinner fa-pulse" /></div>}> <Component {...props} />  </Suspense> : Component ? <Component {...props} /> : render(props);
+    }}
+  />
+}
 
 const mapStateToProps = state => ({
   auth: state.auth,
@@ -45,4 +26,4 @@ const mapStateToProps = state => ({
   roles: state.role.roles,
 });
 
-export default connect(mapStateToProps)(BMProtectedRoute);
+export default connect(mapStateToProps)(BMProtectedRoute)

@@ -1,12 +1,10 @@
 import { useState } from 'react';
 import './Announcements.css';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import { boxStyle, boxStyleDark } from 'styles';
 
 function Announcements() {
-  const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
@@ -70,7 +68,7 @@ function Announcements() {
   };
 
   return (
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+    <>
       <div className="email-update-container">
         <div className="editor">
           <h3>Weekly Progress Editor</h3>
@@ -139,14 +137,14 @@ function Announcements() {
               setEmailContent(content);
             }}
           />
-          <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
+          <button type="button" className="send-button" onClick={handleBroadcastEmails}>
             Broadcast Weekly Update
           </button>
         </div>
-        <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}  style={darkMode ? boxStyleDark : boxStyle}>
+        <div className="emails">
           Email List (comma-separated):
           <input type="text" onChange={handleEmailListChange} className='input-text-for-announcement' />
-          <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
+          <button type="button" className="send-button" onClick={handleSendEmails}>
             Send Email to specific user
           </button>
           <div>
@@ -155,7 +153,7 @@ function Announcements() {
             <div style={{ overflow: 'hidden' }}>
               <input type="text" onChange={handleHeaderContentChange} className='input-text-for-announcement'/>
             </div>
-            <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
+            <button type="button" className="send-button" onClick={addHeaderToEmailContent}>
               Insert
             </button>
             <hr />
@@ -172,7 +170,7 @@ function Announcements() {
         </div>
         <div className="email-content-preview" dangerouslySetInnerHTML={{ __html: emailContent }} />
       </div> */}
-    </div>
+    </>
   );
 }
 

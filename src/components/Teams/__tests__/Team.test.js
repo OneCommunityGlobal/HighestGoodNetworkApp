@@ -4,7 +4,7 @@ import Team from 'components/Teams/Team';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { renderWithProvider } from '../../../__tests__/utils';
-import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
+import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
@@ -28,7 +28,6 @@ beforeEach(() => {
     auth: authMock,
     userProfile: userProfileMock,
     role: rolesMock.role,
-    theme: themeMock,
     ...teamProps,
   });
 });

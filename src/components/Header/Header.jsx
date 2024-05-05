@@ -133,13 +133,13 @@ export function Header(props) {
         setIsAuthUser(true);
       }
     };
-
+  
     // Set the initial state when the component mounts
     handleStorageEvent();
-
+  
     // Add the event listener
     window.addEventListener('storage', handleStorageEvent);
-
+  
     // Clean up the event listener when the component unmounts
     return () => {
       window.removeEventListener('storage', handleStorageEvent);
@@ -160,13 +160,13 @@ export function Header(props) {
       props.getAllRoles();
     }
     // Fetch unread notification
-    if (isAuthenticated && userId) {
+    if ( isAuthenticated && userId) {
       dispatch(getUnreadUserNotifications(userId));
     }
   }, []);
 
   useEffect(() => {
-    if (props.notification.error) {
+    if(props.notification.error) {
       toast.error(props.notification.error.message);
       dispatch(resetNotificationError());
     }
@@ -307,28 +307,28 @@ export function Header(props) {
                     <span className="dashboard-text-link">{REPORTS}</span>
                   </DropdownToggle>
                   <DropdownMenu>
-                    {canGetReports &&
-                      <DropdownItem tag={Link} to="/reports">
-                        {REPORTS}
-                      </DropdownItem>
-                    }
-                    {canGetWeeklySummaries &&
-                      <DropdownItem tag={Link} to="/weeklysummariesreport">
-                        {WEEKLY_SUMMARIES_REPORT}
-                      </DropdownItem>
-                    }
-                    <DropdownItem tag={Link} to="/teamlocations">
-                      {TEAM_LOCATIONS}
-                    </DropdownItem>
+                        {canGetReports &&
+                          <DropdownItem tag={Link} to="/reports">
+                            {REPORTS}
+                          </DropdownItem>
+                        }
+                        {canGetWeeklySummaries &&
+                          <DropdownItem tag={Link} to="/weeklysummariesreport">
+                            {WEEKLY_SUMMARIES_REPORT}
+                          </DropdownItem>
+                        }
+                        <DropdownItem tag={Link} to="/teamlocations">
+                          {TEAM_LOCATIONS}
+                        </DropdownItem>
                   </DropdownMenu>
-                </UncontrolledDropdown>
+              </UncontrolledDropdown>
               ) :
-                <NavItem>
-                  <NavLink tag={Link} to="/teamlocations">
-                    {TEAM_LOCATIONS}
-                  </NavLink>
-                </NavItem>
-              }
+              <NavItem>
+                <NavLink tag={Link} to="/teamlocations">
+                  {TEAM_LOCATIONS}
+                </NavLink>
+              </NavItem>
+            }
               <NavItem>
                 <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                   <i className="fa fa-bell i-large">
@@ -345,51 +345,51 @@ export function Header(props) {
                 canAccessTeams ||
                 canAccessPopups ||
                 canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar>
-                    <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
-                    </DropdownToggle>
-                    <DropdownMenu>
-                      {canAccessUserManagement ? (
-                        <DropdownItem tag={Link} to="/usermanagement">
-                          {USER_MANAGEMENT}
+                <UncontrolledDropdown nav inNavbar>
+                  <DropdownToggle nav caret>
+                    <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    {canAccessUserManagement ? (
+                      <DropdownItem tag={Link} to="/usermanagement">
+                        {USER_MANAGEMENT}
+                      </DropdownItem>
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
+                    {canAccessBadgeManagement ? (
+                      <DropdownItem tag={Link} to="/badgemanagement">
+                        {BADGE_MANAGEMENT}
+                      </DropdownItem>
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
+                    {(canAccessProjects) && (
+                      <DropdownItem tag={Link} to="/projects">
+                        {PROJECTS}
+                      </DropdownItem>
+                    )}
+                    {(canAccessTeams) && (
+                      <DropdownItem tag={Link} to="/teams">
+                        {TEAMS}
+                      </DropdownItem>
+                    )}
+                    {(canAccessPermissionsManagement) && (
+                      <DropdownItem tag={Link} to="/announcements">
+                        {SEND_EMAILS}
+                      </DropdownItem>
+                    )}
+                    {canAccessPermissionsManagement && (
+                      <>
+                        <DropdownItem divider />
+                        <DropdownItem tag={Link} to="/permissionsmanagement">
+                          {PERMISSIONS_MANAGEMENT}
                         </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
-                      {canAccessBadgeManagement ? (
-                        <DropdownItem tag={Link} to="/badgemanagement">
-                          {BADGE_MANAGEMENT}
-                        </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
-                      {(canAccessProjects) && (
-                        <DropdownItem tag={Link} to="/projects">
-                          {PROJECTS}
-                        </DropdownItem>
-                      )}
-                      {(canAccessTeams) && (
-                        <DropdownItem tag={Link} to="/teams">
-                          {TEAMS}
-                        </DropdownItem>
-                      )}
-                      {(canAccessPermissionsManagement) && (
-                        <DropdownItem tag={Link} to="/announcements">
-                          {SEND_EMAILS}
-                        </DropdownItem>
-                      )}
-                      {canAccessPermissionsManagement && (
-                        <>
-                          <DropdownItem divider />
-                          <DropdownItem tag={Link} to="/permissionsmanagement">
-                            {PERMISSIONS_MANAGEMENT}
-                          </DropdownItem>
-                        </>
-                      )}
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                )}
+                      </>
+                    )}
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              )}
               <NavItem>
                 <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                   <img
@@ -425,7 +425,7 @@ export function Header(props) {
           </Collapse>
         )}
       </Navbar>
-      {!isAuthUser && <PopUpBar onClickClose={() => setPopup(prevPopup => !prevPopup)} viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))} />}
+      {!isAuthUser && <PopUpBar onClickClose={()=> setPopup(prevPopup=> !prevPopup)} viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))}/> }
       <div>
         <Modal isOpen={popup} >
           <ModalHeader >Return to your Dashboard</ModalHeader>
@@ -436,24 +436,24 @@ export function Header(props) {
             <Button variant='primary' onClick={removeViewingUser}>
               Ok
             </Button>{' '}
-            <Button variant='secondary' onClick={() => setPopup(prevPopup => !prevPopup)}>
+            <Button variant='secondary' onClick={()=> setPopup(prevPopup=> !prevPopup)}>
               Cancel
             </Button>
           </ModalFooter>
         </Modal>
       </div>
       {props.auth.isAuthenticated && isModalVisible && (
-        <Card color="primary">
-          <div className="close-button">
-            <Button close onClick={closeModal} />
-          </div>
-          <div className="card-content">{modalContent}</div>
-        </Card>
-      )}
+          <Card color="primary">
+            <div className="close-button">
+              <Button close onClick={closeModal} />
+            </div>
+            <div className="card-content">{modalContent}</div>
+          </Card>
+        )}
       {/* Only render one unread message at a time */}
-      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ?
-        <NotificationCard notification={unreadNotifications[0]} /> : null}
-
+      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? 
+       <NotificationCard notification={unreadNotifications[0]} /> : null} 
+   
     </div>
   );
 }
