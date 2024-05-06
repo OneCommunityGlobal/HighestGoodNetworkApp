@@ -53,7 +53,7 @@ const DATE_PICKER_MIN_DATE = '01/01/2010';
  */
 const today = new Date();
 
-class AddUserProfile extends Component {
+class UserProfileAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -164,7 +164,7 @@ class AddUserProfile extends Component {
                         name="firstName"
                         id="firstName"
                         value={firstName}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="First Name"
                         invalid={!!this.state.formErrors.firstName}
                       />
@@ -178,7 +178,7 @@ class AddUserProfile extends Component {
                         name="lastName"
                         id="lastName"
                         value={lastName}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
                         invalid={!!this.state.formErrors.lastName}
                       />
@@ -197,7 +197,7 @@ class AddUserProfile extends Component {
                         name="jobTitle"
                         id="jobTitle"
                         value={jobTitle}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
                       />
                     </FormGroup>
@@ -214,7 +214,7 @@ class AddUserProfile extends Component {
                         name="email"
                         id="email"
                         value={email}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Email"
                         invalid={!!this.state.formErrors.email}
                       />
@@ -266,7 +266,7 @@ class AddUserProfile extends Component {
                         max={168}
                         id="weeklyCommittedHours"
                         value={this.state.userProfile.weeklyCommittedHours}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         onKeyDown={event => {
                           if (event.key === 'Backspace' || event.key === 'Delete') {
                             this.setState({
@@ -307,7 +307,7 @@ class AddUserProfile extends Component {
                         name="role"
                         id="role"
                         defaultValue="Volunteer"
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                       >
                         {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
@@ -335,7 +335,7 @@ class AddUserProfile extends Component {
                             name="actualEmail"
                             id="actualEmail"
                             value={actualEmail}
-                            onChange={this.handleUserProfile}
+                            onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
                           />
@@ -354,7 +354,7 @@ class AddUserProfile extends Component {
                             name="actualPassword"
                             id="actualPassword"
                             value={actualPassword}
-                            onChange={this.handleUserProfile}
+                            onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Password"
                             invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
                             className="d-flex justify-start items-start"
@@ -373,7 +373,7 @@ class AddUserProfile extends Component {
                             name="actualConfirmedPassword"
                             id="actualConfirmedPassword"
                             value={actualConfirmedPassword}
-                            onChange={this.handleUserProfile}
+                            onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Confirm Actual Password"
                             invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
                             className="d-flex justify-start items-start"
@@ -402,7 +402,7 @@ class AddUserProfile extends Component {
                         name="collaborationPreference"
                         id="collaborationPreference"
                         value={this.state.userProfile.collaborationPreference}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
                       />
                     </FormGroup>
@@ -419,7 +419,7 @@ class AddUserProfile extends Component {
                         name="googleDoc"
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Google Doc"
                       />
                     </FormGroup>
@@ -436,7 +436,7 @@ class AddUserProfile extends Component {
                         name="dropboxDoc"
                         id="dropboxDoc"
                         value={this.state.userProfile.dropboxDoc}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
                       />
                     </FormGroup>
@@ -475,7 +475,7 @@ class AddUserProfile extends Component {
                     <FormGroup>
                       <TimeZoneDropDown
                         filter={this.state.timeZoneFilter}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         selected={'America/Los_Angeles'}
                         id="timeZone"
                       />
@@ -1190,4 +1190,4 @@ export default connect(mapStateToProps, {
   addTeamMember,
   fetchAllProjects,
   hasPermission,
-})(AddUserProfile);
+})(UserProfileAdd);

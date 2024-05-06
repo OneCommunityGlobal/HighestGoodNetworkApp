@@ -57,6 +57,7 @@ import { toast } from 'react-toastify';
 import { GiConsoleController } from 'react-icons/gi';
 import { setCurrentUser } from '../../actions/authActions'
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
 import { ENDPOINTS } from '../../utils/URL';
 
 function UserProfile(props) {
@@ -734,7 +735,8 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus')
+  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
+  const canSeeQSC = props.hasPermission('seeQSC');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
@@ -823,6 +825,20 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
+
+            {canSeeQSC && (
+              <QuickSetupModal
+                canAddTitle={props.hasPermission('addNewTitle')}
+                canAssignTitle={props.hasPermission('assignTitle')}
+                setSaved={setSaved}
+                handleSubmit={handleSubmit}
+                setUserProfile={setUserProfile}
+                userProfile={userProfile}
+                userTeams={teams || []}
+                teamsData={props?.allTeams?.allTeamsData || []}
+                projectsData={props?.allProjects?.projects || []}
+              />
+            )}
           </Col>
           <Col md="8">
             {!isProfileEqual ||

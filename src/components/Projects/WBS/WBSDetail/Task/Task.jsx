@@ -13,7 +13,7 @@ import './tagcolor.css';
 import './task.css';
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 
 function Task(props) {
@@ -21,7 +21,7 @@ function Task(props) {
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { tasks } = props;
+  const { tasks, darkMode } = props;
 
   const names = props.resources.map(element => element.name);
   const colors_objs = assignColorsToInitials(names);
@@ -159,7 +159,7 @@ function Task(props) {
               props.isNew ? 'newTask' : ''
             } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${
               props.parentId3
-            } mother_${props.mother} lv_${props.level}`}
+            } mother_${props.mother} lv_${props.level} ${darkMode ? 'bg-yinmn-blue' : ''}`}
             id={props.taskId}
           >
             <td
@@ -168,7 +168,7 @@ function Task(props) {
               } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <Button color="primary" size="sm" onClick={activeController} style={boxStyle}>
+              <Button color="primary" size="sm" onClick={activeController} style={darkMode ? boxStyleDark : boxStyle}>
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
