@@ -10,9 +10,10 @@ import {
   Input,
   FormGroup,
 } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../../utils/URL';
@@ -31,6 +32,8 @@ export default function PasswordInputModal({
   setAuthpassword,
   authEmailWeeklySummaryRecipient,
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [state, dispatch] = useReducer(weeklySummaryRecipientsReducer, {
     passwordMatch: '',
     passwordMatchErr: '',
@@ -80,9 +83,17 @@ export default function PasswordInputModal({
 
   return (
     <Container fluid>
-      <Modal isOpen={open} toggle={onClose} autoFocus={false} size="lg">
-        <ModalHeader toggle={onClose}>Password to Authorise User</ModalHeader>
-        <ModalBody style={{ textAlign: 'center' }}>
+      <Modal
+        isOpen={open}
+        toggle={onClose}
+        autoFocus={false}
+        size="md"
+        className={darkMode ? 'text-light' : ''}
+      >
+        <ModalHeader toggle={onClose} className={darkMode ? 'bg-space-cadet' : ''}>
+          Password to Authorise User
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
           {!isValidPwd && state.passwordMatchErr && (
             <Alert color="danger">{state.passwordMatchErr}</Alert>
           )}
@@ -113,11 +124,11 @@ export default function PasswordInputModal({
             )}
           </FormGroup>
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={onSubmit} style={boxStyle}>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button color="secondary" onClick={onSubmit} style={darkMode ? boxStyleDark : boxStyle}>
             Authorize
           </Button>
-          <Button color="secondary" onClick={onClose} style={boxStyle}>
+          <Button color="secondary" onClick={onClose} style={darkMode ? boxStyleDark : boxStyle}>
             Cancel
           </Button>
         </ModalFooter>

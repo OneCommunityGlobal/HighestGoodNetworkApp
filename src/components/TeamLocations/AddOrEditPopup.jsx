@@ -5,8 +5,9 @@ import { createLocation, editLocation } from 'services/mapLocationsService';
 import axios from 'axios';
 import CustomInput from './CustomInput.jsx';
 import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 const initialLocationData = {
   firstName: '',
@@ -31,6 +32,8 @@ function AddOrEditPopup({
   editProfile,
   submitText,
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
   const [errors, setErrors] = useState({
@@ -210,11 +213,11 @@ function AddOrEditPopup({
   }, [open, formSubmitted]);
 
   return (
-    <Modal isOpen={open} toggle={onClose} className="modal-dialog modal-lg">
-      <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
+    <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light' : ''}`}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
         {title}
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form onSubmit={onSubmitHandler}>
           <CustomInput
             type="text"
@@ -226,6 +229,7 @@ function AddOrEditPopup({
             required
             error={errors.firstName}
             ref={firstNameRef}
+            darkMode={darkMode}
           />
           <Input
             type="text"
@@ -236,6 +240,7 @@ function AddOrEditPopup({
             onChange={locationDataHandler}
             required
             error={errors.lastName}
+            darkMode={darkMode}
           />
 
           <Input
@@ -247,9 +252,10 @@ function AddOrEditPopup({
             onChange={locationDataHandler}
             required
             error={errors.jobTitle}
+            darkMode={darkMode}
           />
           <div>
-            <p className="mb-2">Location</p>
+            <p className={`mb-2 ${darkMode ? 'text-azure font-weight-bold' : ''}`}>Location</p>
             <div id="location" className="d-flex justify-content-stretch gap-1">
               <div className="w-50 mr-1 position-relative">
                 <input
@@ -280,7 +286,7 @@ function AddOrEditPopup({
               <Button
                 color="secondary"
                 onClick={getCoordsHandler}
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
                 className="px-0 w-50"
               >
                 Get location
@@ -289,14 +295,14 @@ function AddOrEditPopup({
             {errors.location && <div className="alert alert-danger mt-1">{errors.location}</div>}
           </div>
           <div className="text-center">
-            <Button className="btn btn-primary mt-5" type="submit" color="primary" style={boxStyle}>
+            <Button className="btn btn-primary mt-5" type="submit" color="primary" style={darkMode ? boxStyleDark : boxStyle}>
               {submitText}
             </Button>
           </div>
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button style={boxStyle} color="secondary" onClick={onClose}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button style={darkMode ? boxStyleDark : boxStyle } color="secondary" onClick={onClose}>
           Close
         </Button>
       </ModalFooter>

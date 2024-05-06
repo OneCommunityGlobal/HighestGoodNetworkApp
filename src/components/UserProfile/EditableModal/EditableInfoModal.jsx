@@ -14,7 +14,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 // New RichTextEditor component
 const RichTextEditor = ({ disabled, value, onEditorChange }) => (
@@ -226,6 +226,8 @@ export class EditableInfoModal extends Component {
       isPermissionPage,
     } = this.state;
 
+     const darkMode = this.props.darkMode;
+
     return (
       (CanRead) && (
         <div>
@@ -239,9 +241,9 @@ export class EditableInfoModal extends Component {
             onClick={() => this.setState({ editableModalOpen: true })}
           />
           {editableModalOpen && (
-            <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg">
-              <ModalHeader>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
-              <ModalBody>
+            <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
+              <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
+              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 {this.state.editing
                   ? <RichTextEditor
                     disabled={!this.state.editing}
@@ -262,7 +264,7 @@ export class EditableInfoModal extends Component {
                   )
                 }
               </ModalBody>
-              <ModalFooter>
+              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <Row className='no-gutters'>
                   {(this.state.editing) &&
                     (
@@ -282,13 +284,13 @@ export class EditableInfoModal extends Component {
                         <Button
                           className='saveBtn'
                           onClick={this.handleSave}
-                          style={boxStyle}>Save</Button>
+                          style={darkMode ? boxStyleDark : boxStyle}>Save</Button>
                       </Col>)
                   }
                   <Col
                     md={3}
                   >
-                    <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
+                    <Button onClick={this.handleClose} style={darkMode ? boxStyleDark : boxStyle}>Close</Button>
                   </Col>
                 </Row>
               </ModalFooter>
