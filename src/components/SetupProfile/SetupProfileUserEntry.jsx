@@ -23,9 +23,7 @@ import TimeZoneDropDown from '../UserProfile/TimeZoneDropDown';
 import logo from '../../assets/images/logo.png';
 import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
-import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
-import getUserTimeZone from '../../services/timezoneApiService';
 import { faEye, faEyeSlash } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { useDispatch } from 'react-redux';
@@ -34,8 +32,8 @@ import { tokenKey } from '../../config.json';
 import { setCurrentUser } from '../../actions/authActions';
 import HomeCountryModal from './homeCountryModal';
 import ProfilePictureModal from './profilePictureModal';
-import DeleteHoumeCountryModal from './deleteHomeCountryModal';
-import  collaborationOptions  from './collaborationSuggestionData' ;
+import DeleteHomeCountryModal from './deleteHomeCountryModal';
+import collaborationOptions from './collaborationSuggestionData';
 import Image from 'react-bootstrap/Image';
 import 'react-phone-input-2/lib/style.css';
 import './SetupProfileUserEntry.css';
@@ -48,7 +46,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
   const containLow = RegExp(/[a-z]/);
   const containNumb = RegExp(/\d/);
   const containOnlyLetters = RegExp(/^[a-zA-Z\s]+$/);
-  const [APIkey, setAPIkey] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [userProfile, setUserProfile] = useState({
@@ -98,11 +95,10 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     type: '',
   });
   const [totalCountryCount, setTotalCountryCount] = useState('');
-  const [deleteHoumeCountryModal, setDeleteHoumeCountryModal] = useState(false);
+  const [deleteHomeCountryModal, setDeleteHomeCountryModal] = useState(false);
 
   const [collaborationSuggestionOpen, setCollaborationSuggestionOpen] = useState(false);
   const [collaborationSuggestions, setCollaborationSuggestions] = useState([]);
-  
 
   const pictureInputRef = useRef(null);
 
@@ -167,11 +163,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     return result.trim();
   };
 
-  //  get the timezone API key using the setup token
   useEffect(() => {
-    httpService.post(ENDPOINTS.TIMEZONE_KEY_BY_TOKEN(), { token }).then(response => {
-      setAPIkey(response.data.userAPIKey);
-    });
     httpService.get(ENDPOINTS.GET_TOTAL_COUNTRY_COUNT()).then(response => {
       const total = numberToWords(Number(response.data.CountryCount));
       setTotalCountryCount(total);
@@ -208,8 +200,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     sethomecountryModalOpen(prev => !prev);
   };
 
-  const toggleDeleteHoumeCountryModal = () => {
-    setDeleteHoumeCountryModal(prev => !prev);
+  const toggleDeleteHomeCountryModal = () => {
+    setDeleteHomeCountryModal(prev => !prev);
   };
 
   const toggleProfilePictureModal = () => {
@@ -312,41 +304,27 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
       }));
       return;
     }
-    if (!APIkey) {
-      console.log('Geocoding API key missing');
-      return;
-    }
-    getUserTimeZone(location, APIkey)
+
+    httpService
+      .post(ENDPOINTS.TIMEZONE_LOCATION(location), { token })
       .then(response => {
-        if (
-          response.data.status.code === 200 &&
-          response.data.results &&
-          response.data.results.length
-        ) {
-          let timezone = response.data.results[0].annotations.timezone.name;
-          let currentLocation = {
-            userProvided: location,
-            coords: {
-              lat: response.data.results[0].geometry.lat,
-              lng: response.data.results[0].geometry.lng,
-            },
-            country: response.data.results[0].components.country,
-            city: response.data.results[0].components.city,
-          };
+        if (response.status === 200) {
+          const { timezone, currentLocation } = response.data;
           setUserProfile(prevProfile => ({
             ...prevProfile,
             timeZoneFilter: timezone,
             timeZone: timezone,
             location: currentLocation,
           }));
-        } else {
-          setFormErrors(prevErrors => ({
-            ...prevErrors,
-            location: 'Invalid location',
-          }));
         }
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        setFormErrors(prevErrors => ({
+          ...prevErrors,
+          location: 'Invalid location',
+        }));
+        alert(`An error occurred : ${err.response.data}`);
+      });
   };
 
   const validateFormData = () => {
@@ -495,7 +473,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         collaborationPreference: 'Video Call Preference can not be empty',
       }));
       isDataValid = false;
-    }else if (!containOnlyLetters.test(userProfile.jobTitle.trim())) {
+    } else if (!containOnlyLetters.test(userProfile.jobTitle.trim())) {
       setFormErrors(prevErrors => ({
         ...prevErrors,
         jobTitle: 'Please enter a valid job title',
@@ -553,10 +531,9 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     return true;
   };
 
-  const capitalizeString = (s) => {
-    
+  const capitalizeString = s => {
     const words = s.split(' ');
-  
+
     const capitalizedWords = words.map(word => {
       if (word.length > 0) {
         return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
@@ -564,11 +541,11 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         return '';
       }
     });
-  
+
     const capitalizedString = capitalizedWords.join(' ');
-  
+
     return capitalizedString;
-  }
+  };
 
   const handleFormSubmit = e => {
     e.preventDefault();
@@ -576,7 +553,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
     const isDataValid = validateFormData();
     const homeCoutryDataExists = areAllHomecountryValuesFilled();
     if (isDataValid) {
-
       const data = {
         firstName: capitalizeString(userProfile.firstName.trim()),
         lastName: capitalizeString(userProfile.lastName.trim()),
@@ -594,7 +570,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
         location: {
           ...userProfile.location,
           userProvided: capitalizeString(userProfile.location.userProvided.trim()),
-        }, 
+        },
         token,
         homeCountry: homeCoutryDataExists ? homecountryLocation : userProfile.location,
         profilePicture: userProfile.profilePicture,
@@ -613,13 +589,13 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
           }
         })
         .catch(error => {
-          if (error.response.data === 'email already in use') {
+          if (error?.response?.data === 'email already in use') {
             setFormErrors(prevErrors => ({
               ...prevErrors,
               email: 'This email is already in use, Please contact your manager',
             }));
           }
-          console.log(error.response);
+          console.log(error?.response);
         });
     }
   };
@@ -730,12 +706,22 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                   <InputGroupText
                     id="showPassword"
                     onClick={togglePasswordVisibility}
-                    style={{ backgroundColor: '#f5f5f5' }}
+                    style={{
+                      backgroundColor: 'transparent',
+                      width: '45px',
+                      justifyContent: 'center',
+                    }}
                   >
                     {showPassword ? (
-                      <FontAwesomeIcon icon={faEyeSlash} />
+                      <FontAwesomeIcon
+                        icon={faEyeSlash}
+                        style={{ position: 'static', right: 'auto', top: 'auto' }}
+                      />
                     ) : (
-                      <FontAwesomeIcon icon={faEye} />
+                      <FontAwesomeIcon
+                        icon={faEye}
+                        style={{ position: 'static', right: 'auto', top: 'auto' }}
+                      />
                     )}
                   </InputGroupText>
                 </InputGroupAddon>
@@ -759,12 +745,22 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                   <InputGroupText
                     id="showConfirmPassword"
                     onClick={toggleConfirmPasswordVisibility}
-                    style={{ backgroundColor: '#f5f5f5' }}
+                    style={{
+                      backgroundColor: 'transparent',
+                      width: '45px',
+                      justifyContent: 'center',
+                    }}
                   >
                     {showConfirmPassword ? (
-                      <FontAwesomeIcon icon={faEyeSlash} />
+                      <FontAwesomeIcon
+                        icon={faEyeSlash}
+                        style={{ position: 'static', right: 'auto', top: 'auto' }}
+                      />
                     ) : (
-                      <FontAwesomeIcon icon={faEye} />
+                      <FontAwesomeIcon
+                        icon={faEye}
+                        style={{ position: 'static', right: 'auto', top: 'auto' }}
+                      />
                     )}
                   </InputGroupText>
                 </InputGroupAddon>
@@ -859,8 +855,7 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                   <Dropdown
                     isOpen={collaborationSuggestionOpen}
                     toggle={togglecollaborationSuggestionDropdown}
-                    style={{ width: '100%'}}
-                    
+                    style={{ width: '100%' }}
                   >
                     <DropdownToggle tag={'span'}></DropdownToggle>
                     {collaborationSuggestions.length > 0 && (
@@ -871,7 +866,10 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                             onClick={() => handleCollaborationSuggestionClick(suggestion.name)}
                             className="collaboration-suggestion-dd-item"
                           >
-                            <img className='collaboration-suggestion-dd-item-logo' src={suggestion.logo}/>  
+                            <img
+                              className="collaboration-suggestion-dd-item-logo"
+                              src={suggestion.logo}
+                            />
                             <p>{suggestion.name}</p>
                           </DropdownItem>
                         ))}
@@ -900,7 +898,6 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                 </UncontrolledTooltip>
               </Label>
             </Col>
-
             <Col md="8">
               <Button
                 color="secondary "
@@ -914,8 +911,8 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
               <HomeCountryModal
                 isOpen={homecountryModalOpen}
                 toggle={toggleHomecountryModal}
-                apiKey={APIkey}
                 setLocation={setHomecountryLocation}
+                token={token}
               />
             </Col>
           </Row>
@@ -989,16 +986,16 @@ const SetupProfileUserEntry = ({ token, userEmail }) => {
                     </b>
                     .
                   </p>
-                  <button type="button" className="close" onClick={toggleDeleteHoumeCountryModal}>
+                  <button type="button" className="close" onClick={toggleDeleteHomeCountryModal}>
                     <span aria-hidden="true">&times;</span>
                   </button>
                 </div>
               </Col>
             </Row>
           )}
-          <DeleteHoumeCountryModal
-            isOpen={deleteHoumeCountryModal}
-            toggle={toggleDeleteHoumeCountryModal}
+          <DeleteHomeCountryModal
+            isOpen={deleteHomeCountryModal}
+            toggle={toggleDeleteHomeCountryModal}
             setLocation={setHomecountryLocation}
           />
           <Row>

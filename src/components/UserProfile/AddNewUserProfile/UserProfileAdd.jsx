@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { StickyContainer } from 'react-sticky';
 import {
   Container,
@@ -12,19 +12,17 @@ import {
   Button,
   TabPane,
   TabContent,
-  NavItem,
-  NavLink,
-  Nav,
 } from 'reactstrap';
+import CommonInput from 'components/common/Input';
 import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
-import { createUser, resetPassword } from '../../../services/userProfileService';
+import { createUser } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import { assign, get } from 'lodash';
+import { get } from 'lodash';
 import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
@@ -38,21 +36,24 @@ import { fetchAllProjects } from 'actions/projects';
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
-import NewUserPopup from 'components/UserManagement/NewUserPopup';
 import { boxStyle } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
-const nextDay = new Date();
-nextDay.setDate(nextDay.getDate() + 1);
+/** Change the create date from next date to current date
+ * const nextDay = new Date();
+ * nextDay.setDate(nextDay.getDate() + 1);
+ */
+const today = new Date();
 
-class AddUserProfile extends Component {
+class UserProfileAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -82,9 +83,11 @@ class AddUserProfile extends Component {
         },
         showphone: true,
         weeklySummaryOption: 'Required',
-        createdDate: nextDay,
+        createdDate: today,
         actualEmail: '',
         actualPassword: '',
+        startDate: today,
+        actualConfirmedPassword: '',
       },
       formValid: {},
       formErrors: {
@@ -94,6 +97,7 @@ class AddUserProfile extends Component {
         phoneNumber: 'Phone Number is required',
         actualEmail: 'Actual Email is required',
         actualPassword: 'Actual Password is required',
+        actualConfirmedPassword: 'Actual Confirmed Password is required',
       },
       timeZoneFilter: '',
       formSubmitted: false,
@@ -131,6 +135,7 @@ class AddUserProfile extends Component {
       role,
       actualEmail,
       actualPassword,
+      actualConfirmedPassword,
       jobTitle,
     } = this.state.userProfile;
     const phoneNumberEntered =
@@ -159,7 +164,7 @@ class AddUserProfile extends Component {
                         name="firstName"
                         id="firstName"
                         value={firstName}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="First Name"
                         invalid={!!this.state.formErrors.firstName}
                       />
@@ -173,7 +178,7 @@ class AddUserProfile extends Component {
                         name="lastName"
                         id="lastName"
                         value={lastName}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
                         invalid={!!this.state.formErrors.lastName}
                       />
@@ -192,7 +197,7 @@ class AddUserProfile extends Component {
                         name="jobTitle"
                         id="jobTitle"
                         value={jobTitle}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
                       />
                     </FormGroup>
@@ -209,7 +214,7 @@ class AddUserProfile extends Component {
                         name="email"
                         id="email"
                         value={email}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Email"
                         invalid={!!this.state.formErrors.email}
                       />
@@ -261,7 +266,7 @@ class AddUserProfile extends Component {
                         max={168}
                         id="weeklyCommittedHours"
                         value={this.state.userProfile.weeklyCommittedHours}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         onKeyDown={event => {
                           if (event.key === 'Backspace' || event.key === 'Delete') {
                             this.setState({
@@ -302,7 +307,7 @@ class AddUserProfile extends Component {
                         name="role"
                         id="role"
                         defaultValue="Volunteer"
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                       >
                         {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
@@ -330,7 +335,7 @@ class AddUserProfile extends Component {
                             name="actualEmail"
                             id="actualEmail"
                             value={actualEmail}
-                            onChange={this.handleUserProfile}
+                            onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
                           />
@@ -344,16 +349,35 @@ class AddUserProfile extends Component {
                       </Col>
                       <Col md="6">
                         <FormGroup>
-                          <Input
+                          <CommonInput
                             type="password"
                             name="actualPassword"
                             id="actualPassword"
                             value={actualPassword}
-                            onChange={this.handleUserProfile}
+                            onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword}
+                            invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
+                            className="d-flex justify-start items-start"
                           />
-                          <FormFeedback>{this.state.formErrors.actualPassword}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row className="user-add-row">
+                      <Col md={{ size: 4 }} className="text-md-right my-2">
+                        <Label>Confirm Actual Password</Label>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <CommonInput
+                            type="password"
+                            name="actualConfirmedPassword"
+                            id="actualConfirmedPassword"
+                            value={actualConfirmedPassword}
+                            onChange={(e) => this.handleUserProfile(e)}
+                            placeholder="Confirm Actual Password"
+                            invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
+                            className="d-flex justify-start items-start"
+                          />
                         </FormGroup>
                       </Col>
                     </Row>
@@ -378,7 +402,7 @@ class AddUserProfile extends Component {
                         name="collaborationPreference"
                         id="collaborationPreference"
                         value={this.state.userProfile.collaborationPreference}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
                       />
                     </FormGroup>
@@ -395,7 +419,7 @@ class AddUserProfile extends Component {
                         name="googleDoc"
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Google Doc"
                       />
                     </FormGroup>
@@ -412,7 +436,7 @@ class AddUserProfile extends Component {
                         name="dropboxDoc"
                         id="dropboxDoc"
                         value={this.state.userProfile.dropboxDoc}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
                       />
                     </FormGroup>
@@ -451,7 +475,7 @@ class AddUserProfile extends Component {
                     <FormGroup>
                       <TimeZoneDropDown
                         filter={this.state.timeZoneFilter}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         selected={'America/Los_Angeles'}
                         id="timeZone"
                       />
@@ -466,13 +490,13 @@ class AddUserProfile extends Component {
                     <FormGroup>
                       <div className="date-picker-item">
                         <DatePicker
-                          selected={this.state.userProfile.createdDate}
-                          minDate={new Date(DATE_PICKER_MIN_DATE)}
+                          selected={this.state.userProfile.startDate}
+                          minDate={today}
                           onChange={date =>
                             this.setState({
                               userProfile: {
                                 ...this.state.userProfile,
-                                createdDate: date,
+                                startDate: date == '' || date == null ? today : date,
                               },
                             })
                           }
@@ -527,6 +551,7 @@ class AddUserProfile extends Component {
                   color="primary"
                   block
                   size="lg"
+                  data-testid="create-userProfile"
                   onClick={() => this.createUserProfile(false)}
                   style={boxStyle}
                 >
@@ -590,51 +615,31 @@ class AddUserProfile extends Component {
     this.setState({ projects: initialUserProject });
   };
 
-  // Function to call TimeZoneService with location and key
+  // Function to call TimeZoneService with location 
   onClickGetTimeZone = () => {
     const location = this.state.userProfile.location.userProvided;
-    const key = this.props.timeZoneKey;
+
     if (!location) {
       alert('Please enter valid location');
       return;
     }
-    if (key) {
-      getUserTimeZone(location, key)
-        .then(response => {
-          if (
-            response.data.status.code === 200 &&
-            response.data.results &&
-            response.data.results.length
-          ) {
-            let timezone = response.data.results[0].annotations.timezone.name;
 
-            let currentLocation = {
-              userProvided: location,
-              coords: {
-                lat: response.data.results[0].geometry.lat,
-                lng: response.data.results[0].geometry.lng,
-              },
-              country: response.data.results[0].components.country,
-              city: response.data.results[0].components.city,
-            };
-            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
-
-            this.setState({
-              ...this.state,
-              timeZoneFilter: timezone,
-              userProfile: {
-                ...this.state.userProfile,
-                location: currentLocation,
-                timeZone: timezone,
-              },
-            });
-          } else {
-            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
-            `);
-          }
-        })
-        .catch(err => console.log(err));
-    }
+    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
+      if(res.status === 200) {
+        const { timezone, currentLocation } = res.data;
+        this.setState({
+          ...this.state,
+          timeZoneFilter: timezone,
+          userProfile: {
+            ...this.state.userProfile,
+            location: currentLocation,
+            timeZone: timezone,
+          },
+        });
+      }
+    }).catch(err => {
+      toast.error(`An error occurred : ${err.response.data}`);
+    });
   };
 
   fieldsAreValid = () => {
@@ -686,6 +691,8 @@ class AddUserProfile extends Component {
       createdDate,
       actualEmail,
       actualPassword,
+      startDate,
+      actualConfirmedPassword
     } = that.state.userProfile;
 
     const userData = {
@@ -712,9 +719,15 @@ class AddUserProfile extends Component {
       teamCode: this.state.teamCode,
       actualEmail: actualEmail,
       actualPassword: actualPassword,
+      startDate: startDate,
     };
 
     this.setState({ formSubmitted: true });
+
+    if (actualPassword != actualConfirmedPassword) {
+      toast.error('Your passwords do not match!');
+      return;
+    }
 
     if (googleDoc) {
       if (isValidGoogleDocsUrl(googleDoc)) {
@@ -1138,6 +1151,18 @@ class AddUserProfile extends Component {
           },
         });
         break;
+      case 'actualConfirmedPassword':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            actualConfirmedPassword: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
+          },
+        });
+        break;
       default:
         this.setState({
           ...userProfile,
@@ -1151,10 +1176,10 @@ const mapStateToProps = state => ({
   userProjects: state.userProjects,
   allProjects: get(state, 'allProjects'),
   allTeams: state,
-  timeZoneKey: state.timeZoneAPI.userAPIKey,
   role: state.role,
   state,
 });
+
 
 export default connect(mapStateToProps, {
   getUserProfile,
@@ -1165,4 +1190,4 @@ export default connect(mapStateToProps, {
   addTeamMember,
   fetchAllProjects,
   hasPermission,
-})(AddUserProfile);
+})(UserProfileAdd);

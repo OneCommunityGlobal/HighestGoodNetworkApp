@@ -6,7 +6,7 @@ import ActivationDatePopup from './ActivationDatePopup';
 import { updateUserStatus } from '../../actions/userManagement';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 /**
  * @param {*} props
@@ -15,6 +15,7 @@ import { boxStyle } from 'styles';
  * @returns
  */
 const PauseAndResumeButton = props => {
+  const {darkMode} = props;
   const [activationDateOpen, setActivationDateOpen] = useState(false);
   const [isActive, setIsActive] = useState(true);
 
@@ -73,7 +74,8 @@ const PauseAndResumeButton = props => {
         onClick={e => {
           onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
         }}
-        style={boxStyle}
+        style={darkMode ? boxStyleDark : boxStyle}
+        data-testid="pause-resume-button"
       >
         {isActive ? PAUSE : RESUME}
       </Button>

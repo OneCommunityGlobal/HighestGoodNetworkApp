@@ -13,6 +13,9 @@ import {
 } from '../../languages/en/messages';
 import { CLOSE } from '../../languages/en/ui';
 import { boxStyle } from 'styles';
+import { connect } from 'react-redux';
+import hasPermission from 'utils/permissions';
+
 /**
  * Modal popup to delete the user profile
  */
@@ -20,6 +23,7 @@ const DeleteUserPopup = React.memo(props => {
   const closePopup = e => {
     props.onClose();
   };
+  const canDeleteUser = props.hasPermission('deleteUserProfile');
 
   return (
     <Modal isOpen={props.open} toggle={closePopup}>
@@ -32,35 +36,44 @@ const DeleteUserPopup = React.memo(props => {
         </p>
         <p>{USER_DELETE_CONFIRMATION_SECOND_LINE}</p>
         <div style={{ textAlign: 'center', paddingTop: '10px' }}>
-          <Button
-            color="primary btn-danger"
-            onClick={() => {
-              props.onDelete(UserDeleteType.HardDelete);
-            }}
-            style={boxStyle}
-          >
-            {USER_DELETE_DATA_FOREVER}
-          </Button>
-          <DivSpacer />
-          <Button
-            color="primary btn-warning"
-            onClick={() => {
-              props.onDelete(UserDeleteType.Inactive);
-            }}
-            style={boxStyle}
-          >
-            {USER_DELETE_DATA_INACTIVE}
-          </Button>
-          <DivSpacer />
-          <Button
-            color="primary btn-success "
-            onClick={() => {
-              props.onDelete(UserDeleteType.SoftDelete);
-            }}
-            style={boxStyle}
-          >
-            {USER_DELETE_DATA_ARCHIVE}
-          </Button>
+          {(canDeleteUser) && (
+            <>
+              <Button
+                color="primary btn-danger"
+                onClick={() => {
+                  props.onDelete(UserDeleteType.HardDelete);
+                }}
+                style={boxStyle}
+              >
+                {USER_DELETE_DATA_FOREVER}
+              </Button>
+              <DivSpacer />
+              <Button
+                color="primary btn-warning"
+                onClick={() => {
+                  props.onDelete(UserDeleteType.Inactive);
+                }}
+                style={boxStyle}
+              >
+                {USER_DELETE_DATA_INACTIVE}
+              </Button>
+              <DivSpacer />
+              <Button
+                color="primary btn-success "
+                onClick={() => {
+                  props.onDelete(UserDeleteType.SoftDelete);
+                }}
+                style={boxStyle}
+              >
+                {USER_DELETE_DATA_ARCHIVE}
+              </Button>
+            </>
+          )}
+          {!(canDeleteUser) && (
+            <>
+              Unauthorized Action
+            </>
+          )}
         </div>
       </ModalBody>
       <ModalFooter>
@@ -76,4 +89,4 @@ const DivSpacer = React.memo(() => {
   return <div style={{ padding: '5px' }}></div>;
 });
 
-export default DeleteUserPopup;
+export default connect(null, { hasPermission })(DeleteUserPopup);

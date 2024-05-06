@@ -68,15 +68,11 @@ export const fetchTeamMembersTimeEntries = () => async (dispatch, getState) => {
 export const editTeamMemberTimeEntry = (newDate) => async (dispatch) => {
   const { userProfile, ...timeEntry } = newDate;
   const timeEntryURL = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntry._id);
-  const userProfileURL = ENDPOINTS.USER_PROFILE(userProfile._id);
   try {
-    const updateTimeEntryPromise = axios.put(timeEntryURL, timeEntry);
-    const updateUserProfilePromise = axios.put(userProfileURL, userProfile);
-    const res = await Promise.all([updateTimeEntryPromise, updateUserProfilePromise]);
-    const { data: newTimeEntry } = res[0];
-    dispatch(updateTeamMembersTimeEntrySuccess({ ...newTimeEntry, userProfile }));
+    const { data: newTimeEntry } = await axios.put(timeEntryURL, timeEntry);
+    dispatch(updateTeamMembersTimeEntrySuccess({ ...newTimeEntry }));
   } catch (e) {
-    console.log(e)
+    throw new Error(e);
   }
 };
 
