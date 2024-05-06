@@ -1,6 +1,7 @@
 {
   "name": "hgnreactapp",
   "version": "0.1.0",
+  "license": "GPL-2.0",
   "engines": {
     "node": ">=14.0.0 <15"
   },
