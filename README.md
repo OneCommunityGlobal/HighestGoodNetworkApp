@@ -97,7 +97,11 @@ For setting up your project locally, please get a local copy up and running foll
    ```sh
    npm install
    ```
-3. Get your `.env` file ready and start the app
+3. Run the `postinstall` script to copy TinyMCE to the public directory
+  ```sh
+   npm run postinstall
+  ```
+4. Get your `.env` file ready and start the app
    ```sh
    npm run start:local
    ```
