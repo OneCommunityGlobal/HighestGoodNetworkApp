@@ -72,7 +72,7 @@ function PopupText(props) {
               autoresize_bottom_margin: 1,
             }}
             value={content}
-            onEditorChange={(newcontent) => setContent(newcontent)}
+            onEditorChange={newcontent => setContent(newcontent)}
           />
         </div>
 
