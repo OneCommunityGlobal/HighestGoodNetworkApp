@@ -1,3 +1,4 @@
+// Script to copy tinymce to public folder. Read more: https://www.tiny.cloud/docs/tinymce/latest/react-pm-host/
 const fse = require('fs-extra');
 const path = require('path');
 
