@@ -1,6 +1,6 @@
 function QuickSetupCodes({ titles, setShowAssignModal, setTitleOnClick }) {
   return (
-    <div className="blueSquares mt-3">
+    <div className="blueSquares mt-3" id="qsc-outer-wrapper">
       {titles.map((title) => (
         <div
           key={title._id}

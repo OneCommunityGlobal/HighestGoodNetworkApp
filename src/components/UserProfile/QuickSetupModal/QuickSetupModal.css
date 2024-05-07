@@ -4,26 +4,34 @@
     margin: 5px;
   }
   
-  #wrapper{
+ #qsc-outer-wrapper #wrapper{
     position: relative;
   }
 
-  #wrapper .title {
+  #qsc-outer-wrapper  #wrapper .title {
     position: absolute;
-    color: white;
+    color: #ddd;
     top:30px;
     left: 30px;
+    /* height: 2rem;
+    width: 150px; */
     display: none;
     white-space: nowrap;
     z-index: 10;
+    background-color: #555;
+    border-radius: 2px;
+    padding: 0.5rem 1rem;
   }
   
-  #wrapper:hover .title {
-    display: inline-block;
-    visibility: visible;
+  #qsc-outer-wrapper  #wrapper:hover .title {
+    cursor: pointer;
+    display: block;
   }
+
+
 .setup-title-name{
     max-height: 30px;
+
 }
 
 .qsm-modal-required{
