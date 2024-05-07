@@ -9,6 +9,7 @@ import './timeTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY } from 'utils/formatDate';
 
+
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
