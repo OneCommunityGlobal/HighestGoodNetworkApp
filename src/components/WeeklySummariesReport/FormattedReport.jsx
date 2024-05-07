@@ -37,6 +37,7 @@ import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
 const textColors = {
   Default: '#000000',
@@ -68,6 +69,8 @@ function FormattedReport({
   darkMode,
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
+  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
+
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
@@ -76,6 +79,7 @@ function FormattedReport({
       <ListGroup flush>
         {summaries.map(summary => (
           <ReportDetails
+            loggedInUserEmail={loggedInUserEmail}
             key={summary._id}
             summary={summary}
             weekIndex={weekIndex}
@@ -84,7 +88,7 @@ function FormattedReport({
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
-            loadBadges={loadBadges}
+            loadBzadges={loadBadges}
             canSeeBioHighlight={canSeeBioHighlight}
             darkMode={darkMode}
           />
@@ -185,10 +189,12 @@ function ReportDetails({
   loadBadges,
   canEditTeamCode,
   canSeeBioHighlight,
+  loggedInUserEmail,
   darkMode,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const isMeetCriteria =
@@ -210,12 +216,15 @@ function ReportDetails({
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
             <ListGroupItem darkMode={darkMode}>
-              <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
+              <TeamCodeRow
+                canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
+                summary={summary}
+              />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
               <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
                 <Bio
-                  bioCanEdit={bioCanEdit}
+                  bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
                   bioPosted={summary.bioPosted}
                   summary={summary}
@@ -225,7 +234,7 @@ function ReportDetails({
             <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
                 summary={summary}
-                canEditSummaryCount={canEditSummaryCount}
+                canEditSummaryCount={canEditSummaryCount && !cantEditJaeRelatedRecord}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>

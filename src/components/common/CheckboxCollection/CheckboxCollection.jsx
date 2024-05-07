@@ -5,7 +5,6 @@ const CheckboxCollection = ({ items, error, pathName, isChecked, onChange, ...re
   const getCheckBox = element => (
     <div className="form-check" key={element._id}>
       <input
-
         {...rest}
         id={element._id}
         value={element[pathName]}

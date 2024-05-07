@@ -31,7 +31,6 @@ const SkeletonLoading = ({ template, className }) => {
           </div>
         );
       case 'TeamMemberTasks':
-
         for (let i = 0; i < 15; i++) {
           rows.push(
             <tr key={i}>
@@ -47,8 +46,6 @@ const SkeletonLoading = ({ template, className }) => {
           </Container>
         );
       case 'WeeklySummariesReport':
-
-
         for (let i = 0; i < 10; i++) {
           reportItems.push(
             <div key={i}>
@@ -71,7 +68,9 @@ const SkeletonLoading = ({ template, className }) => {
               <h3 style={{ textAlign: 'left', paddingBottom: '2rem' }}>
                 Weekly Summaries Reports page
               </h3>
-              <div className={`skeleton-loading-weekly-summaries-report ${className}`}>{reportItems}</div>
+              <div className={`skeleton-loading-weekly-summaries-report ${className}`}>
+                {reportItems}
+              </div>
             </div>
           </Container>
         );
@@ -89,10 +88,7 @@ const SkeletonLoading = ({ template, className }) => {
               <div className="skeleton-loading-user-profile-item" />
               <div className="skeleton-loading-user-profile-item mt-5" />
               <div className="skeleton-loading-user-profile-item" style={{ height: '16rem' }} />
-              <div
-                className="skeleton-loading-user-profile-item"
-                style={{ marginTop: '4rem' }}
-              />
+              <div className="skeleton-loading-user-profile-item" style={{ marginTop: '4rem' }} />
               <div className="skeleton-loading-user-profile-item mt-3" />
               <div className="skeleton-loading-user-profile-item mt-3" />
               <div className="skeleton-loading-user-profile-item mt-3" />
@@ -108,7 +104,6 @@ const SkeletonLoading = ({ template, className }) => {
           </Container>
         );
       case 'UserManagement':
-
         for (let i = 0; i < 17; i++) {
           userManagementItems.push(
             <div key={i} className="skeleton-loading-user-management-item" />,
