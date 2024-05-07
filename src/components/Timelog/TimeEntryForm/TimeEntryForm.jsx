@@ -54,7 +54,6 @@ const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
   const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile } = props;
-  debugger
   // props from store
   const { authUser } = props;
 
