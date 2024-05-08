@@ -53,8 +53,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile, darkMode } = props;
-
+  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile, darkMode } = props;W
   // props from store
   const { authUser } = props;
 
@@ -499,7 +498,7 @@ const TimeEntryForm = props => {
                 id="dateOfWork"
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
-                min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]} 
+                // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate ? userProfile?.startDate.split('T')[0] : null} 
                 disabled={!canEditTimeEntry}
               />
               {'dateOfWork' in errors && (
