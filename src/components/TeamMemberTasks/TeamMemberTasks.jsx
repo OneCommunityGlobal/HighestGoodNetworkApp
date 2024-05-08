@@ -210,7 +210,6 @@ const TeamMemberTasks = React.memo(props => {
     const colorOptions = [];
 
     if(usersWithTasks.length > 0) {
-      console.log(usersWithTasks);
       usersWithTasks.forEach(user => {
         const teamNames = user.teams.map(team => team.teamName);
         const code = user.teamCode || 'noCodeLabel';
@@ -240,7 +239,7 @@ const TeamMemberTasks = React.memo(props => {
       Object.keys(teamGroup).sort((a,b) => a.localeCompare(b)).forEach(name => {
         teamOptions.push({
           value: name,
-          label: `${name} (${teamGroup[name].length})`
+          label: `${name}`
         });
       })
 
@@ -248,7 +247,7 @@ const TeamMemberTasks = React.memo(props => {
         if (code !== 'noCodeLabel') {
           teamCodeOptions.push({
             value: code,
-            label: `${code} (${teamCodeGroup[code].length})`
+            label: `${code}`
           });
         }
       });
@@ -257,7 +256,7 @@ const TeamMemberTasks = React.memo(props => {
         if (color !== 'noColorLabel') {
           colorOptions.push({
             value: color,
-            label: `${color} (${colorGroup[color].length})`
+            label: `${color}`
           });
         }
       });
@@ -286,7 +285,6 @@ const TeamMemberTasks = React.memo(props => {
     if (!isLoading) {
       renderTeamsList();
       closeMarkAsDone();
-      console.log(displayUser.role);
       if(['Administrator', 'Owner', 'Manager', 'Mentor'].some( role => role === displayUser.role)) {
         renderFilters();
       }
@@ -316,10 +314,11 @@ const TeamMemberTasks = React.memo(props => {
   const filterByUserFeatures = (user) => {
     if(selectedTeamNames.length === 0 && selectedCodes.length === 0 && selectedColors.length === 0) return true;
 
-    return filterByTeamCodes(user.teamCode) || filterByColors(user.weeklySummaryOption) || filterByTeams(user.teams);
+    return filterByTeamCodes(user.teamCode) && filterByColors(user.weeklySummaryOption) && filterByTeams(user.teams);
   }
 
   const filterByTeams = (teams) => {
+    if(selectedTeamNames.length === 0) return true;
     let match = false;
     teams.forEach(team => match = match || filterByTeamName(team.teamName));
     return match;
@@ -330,10 +329,12 @@ const TeamMemberTasks = React.memo(props => {
   }
 
   const filterByTeamCodes = (code) => {
+    if(selectedCodes.length === 0) return true;
     return selectedCodes.some(option => option.value === code);
   }
 
   const filterByColors = (color) => {
+    if(selectedColors.length === 0) return true;
     return selectedColors.some(option => option.value === color);
   }
 
