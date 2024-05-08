@@ -6,8 +6,10 @@ import {
   EDIT_USER_PROFILE,
   CLEAR_USER_PROFILE,
   GET_PROJECT_BY_FIRSTNAME_AND_LASTNAME,
+  USER_NOT_FOUND_ERROR,
 } from '../constants/userProfile';
 import { ENDPOINTS } from '../utils/URL';
+import { toast } from 'react-toastify';
 
 export const getUserProfile = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
@@ -79,6 +81,11 @@ export const updateUserProfileProperty = (userProfile, key, value) => {
     
   };
 };
+const userNotFoundError = (error) =>({
+  type: USER_NOT_FOUND_ERROR,
+  payload: error,
+}) 
+
 
 export const getProjectsByUsersName = (firstName, lastName) => {
 
@@ -87,18 +94,23 @@ export const getProjectsByUsersName = (firstName, lastName) => {
     try{
     const res = await axios.get(url);
     if(!res.status === 200){
-      await dispatch(getProjectsByPersonActionCreator(res.data))
+      await dispatch(userNotFoundError("Could not find user"));
+      await dispatch(getProjectsByPersonActionCreator([]));
+      toast.error("Could not find user");
     }
     if (res.status === 200){
       await dispatch(getProjectsByPersonActionCreator(res.data));
     }
     return res.status
     }catch(error){
-      console.log('An error while retrieving the projects',error)
+      await dispatch(userNotFoundError(error));
+      toast.error("Could not find user, please try again");
+      await dispatch(getProjectsByPersonActionCreator([]));
     }
     
   }
 }
+
 
 export const getProjectsByPersonActionCreator = data => ({
   type: GET_PROJECT_BY_FIRSTNAME_AND_LASTNAME,

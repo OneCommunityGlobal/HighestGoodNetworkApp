@@ -32,6 +32,7 @@ import Loading from '../common/Loading';
 import { PROJECT_DELETE_POPUP_ID } from './../../constants/popupId';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { toast } from 'react-toastify';
 
 
 export class Projects extends Component {
@@ -91,11 +92,14 @@ export class Projects extends Component {
   };
 
   onChangeInputField = (e) => {
-    if(e.target.name === 'firstName'){
+    if(e.target.name === 'firstName' && e.target.value.length > 0){
       this.setState({firstName: e.target.value.trim()});
     }
-    else if (e.target.name === 'lastName'){
+    else if (e.target.name === 'lastName' && e.target.value.length > 0){
       this.setState({lastName: e.target.value.trim() });
+    }
+    else{
+      toast.error("Please enter the first and the last name")
     }
   }
   
@@ -105,9 +109,15 @@ export class Projects extends Component {
 
   handleNameSubmit = async (e, firstName, lastName) => {
     e.preventDefault();
-    this.setState({searchByName: true, firstName: '', lastName: ''});
+    if(firstName.length > 0 && lastName.length > 0 ){
+      this.setState({searchByName: true, firstName: '', lastName: ''});
     
-    this.props.getProjectsByUsersName(firstName,lastName);
+      this.props.getProjectsByUsersName(firstName,lastName);
+    }
+    else{
+      toast.error("Please enter the first and the last name")
+    }
+    
   }
 
  // sort project list by category - Sucheta
@@ -320,7 +330,8 @@ handleSort = (e)=>{
           }
         })
 
-      }else if(searchByName){
+      }else if(searchByName && userProjects){
+
         let filteredList = projects.filter(project => userProjects.includes(project._id));
         console.log("FILTERED LIST",filteredList);
         console.log("User Projects", userProjects);
@@ -431,7 +442,8 @@ handleSort = (e)=>{
 }
 
 const mapStateToProps = state => {
-  return { state, userProjects: state.userProjectsByUserNameReducer.projects.projects};
+
+  return { state, userProjects: state.userProjectsByUserNameReducer.projects.projects, userError: state.userProjectsByUserNameReducer.userError };
 };
 
 export default connect(mapStateToProps, {
