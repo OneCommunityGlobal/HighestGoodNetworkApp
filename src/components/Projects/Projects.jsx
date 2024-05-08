@@ -93,14 +93,11 @@ export class Projects extends Component {
   };
 
   onChangeInputField = (e) => {
-    if(e.target.name === 'firstName' && e.target.value.length > 0){
+    if(e.target.name === 'firstName'){
       this.setState({firstName: e.target.value.trim()});
     }
-    else if (e.target.name === 'lastName' && e.target.value.length > 0){
+    else if (e.target.name === 'lastName'){
       this.setState({lastName: e.target.value.trim() });
-    }
-    else{
-      toast.error("Please enter the first and the last name")
     }
   }
   
@@ -334,8 +331,7 @@ handleSort = (e)=>{
       }else if(searchByName && userProjects){
 
         let filteredList = projects.filter(project => userProjects.includes(project._id));
-        console.log("FILTERED LIST",filteredList);
-        console.log("User Projects", userProjects);
+       
         ProjectsList = filteredList.map((project, index)=>{
           return (<Project
             key={project._id}
