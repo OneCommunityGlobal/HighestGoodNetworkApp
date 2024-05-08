@@ -111,7 +111,6 @@ export const getProjectsByUsersName = (firstName, lastName) => {
   }
 }
 
-
 export const getProjectsByPersonActionCreator = data => ({
   type: GET_PROJECT_BY_FIRSTNAME_AND_LASTNAME,
   payload: data
