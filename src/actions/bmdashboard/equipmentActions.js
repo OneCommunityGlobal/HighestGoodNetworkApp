@@ -60,7 +60,8 @@ export const setErrors = payload => {
 }
 
 export const purchaseEquipment = async (body) => {
-  return axios.post(ENDPOINTS.BM_EQUIPMENTS, body)
+  console.log(ENDPOINTS.BM_EQUIPMENT_PURCHASE);
+  return axios.post(ENDPOINTS.BM_EQUIPMENT_PURCHASE, body)
     .then(res => res)
     .catch((err) => {
       if (err.response) return err.response
