@@ -7,6 +7,8 @@ import 'react-toastify/dist/ReactToastify.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
 
 const AddTeamPopup = React.memo(props => {
+  const {darkMode} = props;
+
   const dispatch = useDispatch();
   const closePopup = () => {
     props.onClose();
@@ -80,10 +82,10 @@ const AddTeamPopup = React.memo(props => {
   }, [newTeamName, newTeamIsActive, dispatch]);
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
-      <ModalHeader toggle={closePopup}>Add Team</ModalHeader>
-      <ModalBody style={{ textAlign: 'center' }}>
-        <label style={{textAlign: 'left'}}>Add to Team</label>
+    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Add Team</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
+        <label className={darkMode ? 'text-light' : ''} style={{textAlign: 'left'}}>Add to Team</label>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddTeamsAutoComplete
             teamsData={props.teamsData}
@@ -110,7 +112,7 @@ const AddTeamPopup = React.memo(props => {
           <Alert color="danger">A team with this name already exists</Alert>
         )}
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button color="secondary" onClick={closePopup}>
           Close
         </Button>

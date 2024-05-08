@@ -1,11 +1,13 @@
 import moment from 'moment';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 /**
  * Modal popup to show the user profile in create mode
  */
 const ActivationDatePopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [activationDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
@@ -21,9 +23,9 @@ const ActivationDatePopup = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>Pause until</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Pause until</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Input
           type="date"
           name="pauseUntilDate"
@@ -37,11 +39,11 @@ const ActivationDatePopup = React.memo(props => {
         />
         {dateError && <Alert color="danger">{'Please choose a future date.'}</Alert>}
       </ModalBody>
-      <ModalFooter>
-        <Button color="primary" onClick={pauseUser} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="primary" onClick={pauseUser} style={darkMode ? boxStyleDark : boxStyle}>
           Pause the user
         </Button>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>

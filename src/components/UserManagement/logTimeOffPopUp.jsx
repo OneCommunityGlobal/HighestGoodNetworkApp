@@ -19,7 +19,7 @@ import {
   Form,
   Alert,
 } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
@@ -29,6 +29,8 @@ import {
 } from '../../actions/timeOffRequestAction';
 
 const LogTimeOffPopUp = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const today = moment().format('YYYY-MM-DD');
@@ -348,15 +350,15 @@ const LogTimeOffPopUp = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>Add New Time Off Request</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Add New Time Off Request</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Container>
           <Form>
             <Row>
               <Col>
                 <FormGroup>
-                  <Label for="dateOfLeave">Date of leave</Label>
+                  <Label className={darkMode ? 'text-light' : ''} for="dateOfLeave">Date of leave</Label>
                   <DatePicker
                     selected={requestData.dateOfLeave}
                     onChange={date => {
@@ -377,7 +379,7 @@ const LogTimeOffPopUp = React.memo(props => {
               </Col>
               <Col>
                 <FormGroup>
-                  <Label for="numberOfWeeks">Duration in weeks</Label>
+                  <Label className={darkMode ? 'text-light' : ''} for="numberOfWeeks">Duration in weeks</Label>
                   <Input
                     type="number"
                     name="numberOfWeeks"
@@ -392,7 +394,7 @@ const LogTimeOffPopUp = React.memo(props => {
             <Row>
               <Col>
                 <FormGroup>
-                  <Label for="reasonForLeave">Reason for leave</Label>
+                  <Label className={darkMode ? 'text-light' : ''} for="reasonForLeave">Reason for leave</Label>
                   <Input
                     type="textarea"
                     rows="2"
@@ -409,7 +411,7 @@ const LogTimeOffPopUp = React.memo(props => {
               <Col>
                 <Button
                   color="primary"
-                  style={boxStyle}
+                  style={darkMode ? boxStyleDark : boxStyle}
                   onClick={e => {
                     handleAddRequest(e);
                   }}
@@ -423,14 +425,14 @@ const LogTimeOffPopUp = React.memo(props => {
       </ModalBody>
       {allRequests[props.user._id]?.length > 0 && (
         <>
-          <ModalHeader>Time Off Requests</ModalHeader>
-          <ModalBody className="Logged-time-off-cards-container">
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Time Off Requests</ModalHeader>
+          <ModalBody className={`Logged-time-off-cards-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
             <Container>
               {allRequests[props.user._id]
                 .slice()
                 .sort(sortRequests)
                 .map(request => (
-                  <Card className="mb-2" key={request._id}>
+                  <Card className={`mb-2 ${darkMode ? 'bg-yinmn-blue border-white' : ''}`} key={request._id}>
                     <CardBody>
                       <Row>
                         <Col>
@@ -508,7 +510,7 @@ const LogTimeOffPopUp = React.memo(props => {
                       <Col xs="auto" className="d-flex align-items-start">
                         <Button
                           color="primary"
-                          style={boxStyle}
+                          style={darkMode ? boxStyleDark : boxStyle}
                           onClick={e => handleUpdateRequestSave(e)}
                         >
                           Save
@@ -524,7 +526,7 @@ const LogTimeOffPopUp = React.memo(props => {
                 </Container>
               </ModalBody>
               <ModalFooter>
-                <Button color="secondary" onClick={closeNested} style={boxStyle}>
+                <Button color="secondary" onClick={closeNested} style={darkMode ? boxStyleDark : boxStyle}>
                   Close
                 </Button>
               </ModalFooter>
@@ -532,8 +534,8 @@ const LogTimeOffPopUp = React.memo(props => {
           </ModalBody>
         </>
       )}
-      <ModalFooter>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>

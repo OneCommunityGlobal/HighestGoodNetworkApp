@@ -12,23 +12,25 @@ import {
   USER_DELETE_CONFIRMATION_FIRST_LINE_CONT
 } from '../../languages/en/messages';
 import { CLOSE } from '../../languages/en/ui';
-import { boxStyle } from 'styles';
-import { connect } from 'react-redux';
+import { boxStyle, boxStyleDark } from 'styles';
+import { connect, useSelector } from 'react-redux';
 import hasPermission from 'utils/permissions';
 
 /**
  * Modal popup to delete the user profile
  */
 const DeleteUserPopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const closePopup = e => {
     props.onClose();
   };
   const canDeleteUser = props.hasPermission('deleteUserProfile');
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>{USER_DELETE_OPTION_HEADING}</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>{USER_DELETE_OPTION_HEADING}</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           {USER_DELETE_CONFIRMATION_FIRST_LINE}
           <b>{USER_DELETE_CONFIRMATION_USER_NAME(props?.username)} </b>
@@ -43,7 +45,7 @@ const DeleteUserPopup = React.memo(props => {
                 onClick={() => {
                   props.onDelete(UserDeleteType.HardDelete);
                 }}
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 {USER_DELETE_DATA_FOREVER}
               </Button>
@@ -53,7 +55,7 @@ const DeleteUserPopup = React.memo(props => {
                 onClick={() => {
                   props.onDelete(UserDeleteType.Inactive);
                 }}
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 {USER_DELETE_DATA_INACTIVE}
               </Button>
@@ -63,7 +65,7 @@ const DeleteUserPopup = React.memo(props => {
                 onClick={() => {
                   props.onDelete(UserDeleteType.SoftDelete);
                 }}
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 {USER_DELETE_DATA_ARCHIVE}
               </Button>
@@ -76,8 +78,8 @@ const DeleteUserPopup = React.memo(props => {
           )}
         </div>
       </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           {CLOSE}
         </Button>
       </ModalFooter>
