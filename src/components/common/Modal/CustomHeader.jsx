@@ -17,9 +17,11 @@ const CustomHeader = ({ title, toggle, children }) => {
           <h4 className={darkMode ? 'text-light' : 'text-dark'}>{title}</h4>
           {children}
         </div>
-        <button className={darkMode ? 'text-light' : ''} onClick={() => toggle()}>
-          <FontAwesomeIcon size="lg" icon={faWindowClose} />
-        </button>
+        {toggle ? (
+          <button className={darkMode ? 'text-light' : ''} onClick={() => toggle()}>
+            <FontAwesomeIcon size="lg" icon={faWindowClose} />
+          </button>
+        ) : null}
       </div>
     </div>
   );
