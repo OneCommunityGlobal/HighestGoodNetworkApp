@@ -97,3 +97,23 @@ thead {
 tr:hover {
   background: #e9f6ff;
 }
+
+#project_search_by_user_form {
+  height: 3em;
+  margin-bottom: 1em;
+  padding: .25em;
+  border: .8px solid rgb(163, 163, 163);
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-evenly;
+}
+.project_search_by_user_form-group{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  margin-right: .25em;
+}
+.project_search_by_user_form-label{
+  width: 100%;
+  padding-top: .25em;
+}
