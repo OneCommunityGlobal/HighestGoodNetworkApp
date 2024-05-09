@@ -10,7 +10,6 @@ import {
   Col,
   Button,
   Modal,
-  ModalHeader,
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
@@ -30,6 +29,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -53,7 +53,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile, darkMode } = props;W
+  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile, darkMode } = props;
   // props from store
   const { authUser } = props;
 
@@ -465,8 +465,8 @@ const TimeEntryForm = props => {
   return (
     <>
       <Modal className={fontColor} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
-        <ModalHeader toggle={toggle} className={`${headerBg} text-light`}>
-          <div>
+        <CustomModalHeader toggle={() => toggle()}>
+          <div className='h4'>
             {edit ? 'Edit ' : 'Add '}
             {formValues.isTangible ? (
               <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
@@ -487,7 +487,7 @@ const TimeEntryForm = props => {
           <ReactTooltip id="registerTip" place="bottom" effect="solid">
             Click this icon to learn about this time entry form
           </ReactTooltip>
-        </ModalHeader>
+        </CustomModalHeader>
         <ModalBody className={bodyBg}>
           <Form>
             <FormGroup>

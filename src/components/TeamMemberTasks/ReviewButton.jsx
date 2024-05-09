@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import { useSelector } from 'react-redux';
 import './style.css';
 import './reviewButton.css';
@@ -141,10 +142,10 @@ const ReviewButton = ({
     <>
     {/* Verification Modal */}
     <Modal isOpen={verifyModal} toggle={toggleVerify} className={darkMode ? 'text-light' : ''}>
-      <ModalHeader toggle={toggleVerify} className={darkMode ? 'bg-space-cadet' : ''}>
+      <CustomModalHeader toggle={() => toggleVerify()}>
         {selectedAction === 'Complete and Remove' && 'Are you sure you have completed the review?'}
         {selectedAction === 'More Work Needed' && 'Are you sure?'}
-      </ModalHeader>
+      </CustomModalHeader>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
       <Button
             onClick={(e) => {
@@ -177,9 +178,7 @@ const ReviewButton = ({
 
             {/* Submission Modal */}
       <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light' : ''}>
-        <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}>
-          Change Review Status
-        </ModalHeader>
+        <CustomModalHeader title="Change Review Status" toggle={() => toggleModal()}/>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {reviewStatus == "Unsubmitted" 
             ? `Are you sure you want to submit for review?`

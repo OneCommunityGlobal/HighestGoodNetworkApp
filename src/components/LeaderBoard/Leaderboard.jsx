@@ -2,7 +2,8 @@ import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
-import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
+import { Table, Progress, Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -248,12 +249,7 @@ function LeaderBoard({
                       className={darkMode ? 'text-light' : ''}
                       style={darkMode ? boxStyleDark : {}}
                     >
-                      <ModalHeader
-                        toggle={dashboardToggle}
-                        className={darkMode ? 'bg-space-cadet' : ''}
-                      >
-                        Jump to personal Dashboard
-                      </ModalHeader>
+                      <CustomModalHeader title="Jump to personal Dashboard" />
                       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
                       </ModalBody>

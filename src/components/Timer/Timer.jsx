@@ -1,7 +1,8 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import moment from 'moment';
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
+import { Modal, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { BsAlarmFill } from 'react-icons/bs';
 import {
@@ -298,7 +299,6 @@ export default function Timer({ darkMode }) {
   }, [inacModal]);
 
   const fontColor = darkMode ? 'text-light' : '';
-  const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
   return (
@@ -428,12 +428,7 @@ export default function Timer({ darkMode }) {
         size="md"
         className={fontColor}
       >
-        <ModalHeader
-          className={darkMode ? 'bg-space-cadet' : ''}
-          toggle={() => setConfirmationResetModal(false)}
-        >
-          Reset Time
-        </ModalHeader>
+        <CustomModalHeader title="Reset Time" toggle={() => setConfirmationResetModal(false)} />
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           Are you sure you want to reset your time?
         </ModalBody>
@@ -456,9 +451,7 @@ export default function Timer({ darkMode }) {
         toggle={() => setInacModal(!inacModal)}
         centered
       >
-        <ModalHeader className={headerBg} toggle={() => setInacModal(!inacModal)}>
-          Timer Paused
-        </ModalHeader>
+        <CustomModalHeader title="Timer Paused" toggle={() => setInacModal(!inacModal)} />
         <ModalBody className={bodyBg}>
           The user timer has been paused due to inactivity or a lost in connection to the server.
           Please check your internet connection and refresh the page to continue. This is to ensure
@@ -484,9 +477,7 @@ export default function Timer({ darkMode }) {
         centered
         size="md"
       >
-        <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
-          Time Complete!
-        </ModalHeader>
+        <CustomModalHeader title="Time Complete!" toggle={() => toggleTimeIsOver()} />
         <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
           logMinutes ? ` ${logMinutes} minutes` : ''
         }. Click below if you’d like to add time or Log Time.`}</ModalBody>

@@ -1,4 +1,5 @@
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomModalHeader';
 import React, { useState } from 'react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
@@ -52,28 +53,27 @@ const TaskCompletedModal = React.memo(props => {
 
   return (
     <Modal isOpen={props.isOpen} toggle={() => props.popupClose()} className={darkMode ? 'text-light' : ''}>
-      <ModalHeader toggle={() => props.popupClose()} className={darkMode ? 'bg-space-cadet' : ''}>{modalHeader}</ModalHeader>
-
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <p>{modalBody}</p>
-          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button
-              color="primary"
-              onClick={handleClick}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              {modalHeader}
-            </Button>
-            <Button
-              onClick={() => {
-                closeFunction();
-              }}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Cancel
-            </Button>
-          </ModalFooter>
-        </ModalBody>
+      <CustomHeader title={modalHeader} toggle={() => props.popupClose()}/>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <p>{modalBody}</p>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button
+            color="primary"
+            onClick={handleClick}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {modalHeader}
+          </Button>
+          <Button
+            onClick={() => {
+              closeFunction();
+            }}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Cancel
+          </Button>
+        </ModalFooter>
+      </ModalBody>
       
     </Modal>
   );

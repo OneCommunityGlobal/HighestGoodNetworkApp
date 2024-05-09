@@ -6,16 +6,14 @@ import {
   CardTitle,
   Button,
   Modal,
-  ModalHeader,
   ModalBody,
-  ModalFooter,
   Progress,
   Form,
   FormGroup,
   Label,
-  Input,
-  FormText,
+  Input
 } from 'reactstrap';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
@@ -30,7 +28,6 @@ import axios from 'axios';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { toast } from 'react-toastify';
 
 const SummaryBar = props => {
@@ -466,7 +463,7 @@ const SummaryBar = props => {
               </div>
             </Col>
             <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal} className={darkMode ? 'text-light' : ''}>
-              <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
+              <CustomModalHeader title="Use Suggestion" />
               <ModalBody className={bodyBg}>
                 {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
                   <FormGroup>
@@ -642,7 +639,7 @@ const SummaryBar = props => {
             </Modal>
 
             <Modal isOpen={report.in} toggle={openReport} className={fontColor}>
-              <ModalHeader className={headerBg}>Bug Report</ModalHeader>
+              <CustomModalHeader title="Bug Report"/>
               <ModalBody className={bodyBg}>
                 <Form onSubmit={sendBugReport} id="bugReportForm">
                   <FormGroup>

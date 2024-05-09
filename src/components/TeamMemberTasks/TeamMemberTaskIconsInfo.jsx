@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
@@ -30,9 +31,7 @@ const TeamMemberTaskInfo = React.memo(() => {
             color={darkMode ? 'lightgray' : ''}
         />
         <Modal className={darkMode ? 'text-light' : ''} backdropClassName="task-info-modal-backdrop" isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
-            <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggleInfoTaskIconModal}>
-                Task Icons Info
-            </ModalHeader>
+            <CustomModalHeader title="Task Icons Info" toggle={() => toggleInfoTaskIconModal()}/>
             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 {infoTaskIconContent}
             </ModalBody>

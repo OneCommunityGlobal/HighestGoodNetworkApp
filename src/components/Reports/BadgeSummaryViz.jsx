@@ -11,7 +11,6 @@ import {
   DropdownToggle,
   Modal,
   ModalBody,
-  ModalHeader,
   ModalFooter,
   UncontrolledDropdown,
   UncontrolledPopover,
@@ -23,6 +22,7 @@ import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';
 import { useSelector } from 'react-redux';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -57,7 +57,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
         {dashboard ? 'Badge Report' : 'Show Badges'}
       </Button>
       <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light' : ''}>
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
+        <CustomModalHeader title="Badge Summary"/>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}

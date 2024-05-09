@@ -18,13 +18,13 @@ import {
   NavLink,
   Modal,
   ModalBody,
-  ModalHeader,
   ModalFooter,
   UncontrolledDropdown,
   DropdownMenu,
   DropdownItem,
   DropdownToggle,
 } from 'reactstrap';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import './WeeklySummary.css';
 import { connect } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
@@ -651,7 +651,6 @@ export class WeeklySummary extends Component {
     };
 
     const fontColor = darkMode ? 'text-light' : '';
-    const headerBg = darkMode ? 'bg-space-cadet' : '';
     const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
     if (fetchError) {
@@ -860,7 +859,7 @@ export class WeeklySummary extends Component {
                           />
                         </FormGroup>
                         <Modal isOpen={editPopup} className={fontColor}>
-                          <ModalHeader className={headerBg}> Warning!</ModalHeader>
+                          <CustomModalHeader title="Warning!" />
                           <ModalBody className={bodyBg}>
                             Whoa Tiger! Are you sure you want to do that? This link needs to be
                             added by an Admin when you were set up as a member of the team. Only
@@ -906,7 +905,7 @@ export class WeeklySummary extends Component {
 
                 <Row form>
                   <Modal isOpen={movePopup} toggle={this.toggleMovePopup} className={fontColor}>
-                    <ModalHeader className={headerBg}> Warning!</ModalHeader>
+                    <CustomModalHeader title="Warning!" />
                     <ModalBody className={bodyBg}>
                       Are you SURE you want to move the summary?
                     </ModalBody>
