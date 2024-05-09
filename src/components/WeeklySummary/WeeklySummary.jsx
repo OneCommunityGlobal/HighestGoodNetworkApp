@@ -827,8 +827,8 @@ export class WeeklySummary extends Component {
               <Col>
                 {formElements.mediaUrl && !mediaFirstChange ? (
                   <FormGroup className="media-url">
-                    <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
-                    <Label for="mediaUrl" className="mt-1">
+                    <FontAwesomeIcon icon={faExternalLinkAlt} className=" text--silver" />
+                    <Label for="mediaUrl" className="mt-1 ml-2">
                       <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
                         Your DropBox Media Files Link (Share your files here)
                       </a>
@@ -837,23 +837,27 @@ export class WeeklySummary extends Component {
                   </FormGroup>
                 ) : (
                   <Col>
-                    <Label for="mediaUrl" className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
-                      Dropbox link to your weekly media files. (required)
-                      <MediaURLTooltip />
-                    </Label>
+                    <Row>
+                      <Label for="mediaUrl" className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
+                        Dropbox link to your weekly media files. (required)
+                        <MediaURLTooltip />
+                      </Label>
+                    </Row>
+                    <Row>
+                      <FormGroup>
+                        <Input
+                          type="url"
+                          name="mediaUrl"
+                          id="mediaUrl"
+                          data-testid="media-input"
+                          placeholder="Enter a link"
+                          value={formElements.mediaUrl}
+                          onChange={this.handleInputChange}
+                        />
+                      </FormGroup>
+                    </Row>
                     <Row form>
                       <Col md={8}>
-                        <FormGroup>
-                          <Input
-                            type="url"
-                            name="mediaUrl"
-                            id="mediaUrl"
-                            data-testid="media-input"
-                            placeholder="Enter a link"
-                            value={formElements.mediaUrl}
-                            onChange={this.handleInputChange}
-                          />
-                        </FormGroup>
                         <Modal isOpen={editPopup}>
                           <ModalHeader> Warning!</ModalHeader>
                           <ModalBody>
