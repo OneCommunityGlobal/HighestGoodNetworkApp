@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import AssignTableRow from './AssignTableRow';
+import { useSelector } from 'react-redux';
 
 function AssignBadgePopup(props) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [searchedName, setSearchedName] = useState('');
 
   const onSearch = text => {
@@ -32,7 +34,7 @@ function AssignBadgePopup(props) {
           onSearch(e.target.value);
         }}
       />
-      <Table>
+      <Table className="text-light">
         <thead>
           <tr>
             <th>Badge</th>
@@ -70,7 +72,7 @@ function AssignBadgePopup(props) {
       </Table>
       <Button
         className="btn--dark-sea-green float-right"
-        style={{ ...boxStyle, margin: 5 }}
+        style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
         onClick={props.submit}
       >
         Confirm

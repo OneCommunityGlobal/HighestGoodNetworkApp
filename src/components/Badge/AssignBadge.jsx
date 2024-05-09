@@ -6,11 +6,11 @@ import {
   Label,
   FormText,
   Modal,
-  ModalHeader,
   ModalBody,
   Alert,
   UncontrolledTooltip,
 } from 'reactstrap';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -217,9 +217,14 @@ function AssignBadge(props) {
         >
           Assign Badge
         </Button>
-        <Modal isOpen={isOpen} toggle={toggle} backdrop="static">
-          <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
-          <ModalBody>
+        <Modal
+          isOpen={isOpen}
+          toggle={toggle}
+          backdrop="static"
+          className={darkMode ? 'text-light' : ''}
+        >
+          <CustomModalHeader title="Assign Badge" toggle={() => toggle()} />
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <AssignBadgePopup
               allBadgeData={props.allBadgeData}
               submit={submit}

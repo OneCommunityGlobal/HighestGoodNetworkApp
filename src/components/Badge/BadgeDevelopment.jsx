@@ -1,5 +1,6 @@
 import { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import { boxStyle, boxStyleDark } from 'styles';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
@@ -20,9 +21,14 @@ function BadgeDevelopment(props) {
       >
         Create New Badge
       </Button>
-      <Modal isOpen={isCreateNewBadgePopupOpen} toggle={toggle} backdrop="static">
-        <ModalHeader toggle={toggle}>New Badge</ModalHeader>
-        <ModalBody>
+      <Modal
+        isOpen={isCreateNewBadgePopupOpen}
+        toggle={toggle}
+        backdrop="static"
+        className={darkMode ? 'text-light' : ''}
+      >
+        <CustomModalHeader title="New Badge" toggle={() => toggle()} />
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <CreateNewBadgePopup toggle={toggle} />
         </ModalBody>
       </Modal>
