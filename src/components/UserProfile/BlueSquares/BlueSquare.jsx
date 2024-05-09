@@ -5,6 +5,7 @@ import { formatCreatedDate, formatDate } from 'utils/formatDate';
 
 const BlueSquare = props => {
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
+  const canAddInfringements = props.hasPermission('addInfringements');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const { blueSquares, handleBlueSquare } = props;
 
@@ -54,7 +55,7 @@ const BlueSquare = props => {
                 </div>
               ))
           : <div>No blue squares.</div>}
-        {isInfringementAuthorizer && (
+        {canAddInfringements && (
           <div
             onClick={() => {
               handleBlueSquare(true, 'addBlueSquare', '');
