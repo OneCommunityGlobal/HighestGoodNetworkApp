@@ -76,10 +76,11 @@ function Announcements() {
           <h3>Weekly Progress Editor</h3>
           <br />
           <Editor
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
             id="email-editor"
-            apiKey="rpfrv9z58kbaoauzv9dncv73jeqv7c5lo73gqlk9rx5p726p" // Replace with your TinyMCE API key
             initialValue="<p>This is the initial content of the editor</p>"
             init={{
+              license_key: 'gpl',
               selector: 'textarea#open-source-plugins',
               height: 500,
               menubar: false,

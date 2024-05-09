@@ -102,22 +102,26 @@ const WeeklySummaries = ({ userProfile }) => {
 
   };
 
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    toolbar:
+      'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+    branding: false,
+    min_height: 180,
+    max_height: 500,
+    autoresize_bottom_margin: 1,
+  }; 
+
   const renderSummary = (title, summary, index) => {
     if (editing[index]) {
       return (
         <div>
           <h3>{title}</h3>
           <Editor
-            init={{
-              menubar: false,
-              plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-              toolbar:
-                'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-              branding: false,
-              min_height: 180,
-              max_height: 500,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            init={TINY_MCE_INIT_OPTIONS}
             value={editedSummaries[index]}
             onEditorChange={(content, editor) => handleSummaryChange({ target: { value: content } }, index, editor)}
             onGetContent={(content, editor) =>   setWordCount(editor.plugins.wordcount.getCount())}
