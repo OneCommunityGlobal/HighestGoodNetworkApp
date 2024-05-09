@@ -382,13 +382,14 @@ handleSort = (e)=>{
               role={role}
             />
           </div>
-    
-            <Overview className="border" numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          
+          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          
 
             
-            {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
+          {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
             
-            <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName}/>
+          <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName}/>
 
            
             
