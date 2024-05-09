@@ -692,8 +692,7 @@ export class WeeklySummary extends Component {
         {/* Before clicking Save button, summariesCountShowing is 0 */}
         <Row>
           <Col md="9">
-            Total submitted:
-            {summariesCountShowing || formElements.weeklySummariesCount}
+            Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
             <Button
@@ -743,7 +742,7 @@ export class WeeklySummary extends Component {
                           {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
                             <UncontrolledDropdown>
                               <DropdownToggle
-                                className="px-5 btn--dark-sea-green"
+                                className="px-5 mr-2 btn--dark-sea-green"
                                 caret
                                 style={darkMode ? boxStyleDark : boxStyle}
                               >
