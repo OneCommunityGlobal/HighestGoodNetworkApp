@@ -133,6 +133,7 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
         </tbody>
       </table>
     </div>
+
   );
 }
 

@@ -5,11 +5,14 @@ import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Button, Container } from 'reactstrap';
 import './TeamLocations.css';
-
 import { SEARCH } from 'languages/en/ui';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
+import { SEARCH } from 'languages/en/ui';
+import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { boxStyle } from 'styles';
 import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
 import AddOrEditPopup from './AddOrEditPopup';
 import ListUsersPopUp from './ListUsersPopUp';
@@ -30,7 +33,6 @@ function TeamLocations() {
   const [markerPopupVisible, setMarkerPopupVisible] = useState(false);
   const role = useSelector(state => state.auth.user.role);
   const darkMode = useSelector(state => state.theme.darkMode);
-
 
   const isAbleToEdit = role === 'Owner';
   const mapRef = useRef(null); 
