@@ -2,7 +2,7 @@ import moment from 'moment';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import CustomHeader from 'components/common/Modal/CustomHeader';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import { boxStyle, boxStyleDark } from 'styles';
 /**
  * Modal popup to show the user profile in create mode
@@ -25,7 +25,7 @@ const ActivationDatePopup = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
-      <CustomHeader title="Pause until" toggle={() => closePopup()}/>
+      <CustomModalHeader title="Pause until" toggle={() => closePopup()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Input
           type="date"

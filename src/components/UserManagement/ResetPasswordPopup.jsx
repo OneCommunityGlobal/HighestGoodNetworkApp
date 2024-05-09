@@ -8,7 +8,7 @@ import {
   Alert,
   Form,
 } from 'reactstrap';
-import CustomHeader from 'components/common/Modal/CustomHeader';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import Input from 'components/common/Input';
 import { boxStyle, boxStyleDark } from 'styles';
 import { useSelector } from 'react-redux';
@@ -62,7 +62,7 @@ const ResetPasswordPopup = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
-      <CustomHeader title="Reset Password" toggle={() => closePopup()}/>
+      <CustomModalHeader title="Reset Password" toggle={() => closePopup()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <div className="flex justify-between items-center">

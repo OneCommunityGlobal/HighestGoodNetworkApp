@@ -3,7 +3,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindowClose } from '@fortawesome/free-regular-svg-icons';
 import { useSelector } from 'react-redux';
 
-const CustomHeader = ({ title, toggle, children }) => {
+const CustomModalHeader = ({ title, toggle, children }) => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
@@ -27,4 +27,4 @@ const CustomHeader = ({ title, toggle, children }) => {
   );
 };
 
-export default CustomHeader;
+export default CustomModalHeader;

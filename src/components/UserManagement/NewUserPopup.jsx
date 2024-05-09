@@ -1,6 +1,6 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import CustomHeader from 'components/common/Modal/CustomHeader';
+import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -41,7 +41,7 @@ const NewUserPopup = React.memo(props => {
           />
       </div>
         <Modal isOpen={props.open} toggle={closePopup} className={`modal-dialog modal-lg ${darkMode ? 'text-light' : ''}`}>
-        <CustomHeader title='Create New User&nbsp;' toggle={() => closePopup()}>
+        <CustomModalHeader title='Create New User&nbsp;' toggle={() => closePopup()}>
           <EditableInfoModal
             areaName="NewUserPopup"
             areaTitle="New User"
@@ -50,7 +50,7 @@ const NewUserPopup = React.memo(props => {
             role={role} // Pass the 'role' prop to EditableInfoModal
             darkMode={darkMode}
           />
-        </CustomHeader>
+        </CustomModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <AddNewUserProfile
           closePopup={closePopup}
@@ -63,7 +63,7 @@ const NewUserPopup = React.memo(props => {
         {/* Nested Modal that triggers when a first and last name user already exists */}
 
         <Modal isOpen={props.close} className={darkMode ? 'text-light' : ''}>
-          <CustomHeader title="WARNING: Duplicate Name Exists!"/>
+          <CustomModalHeader title="WARNING: Duplicate Name Exists!"/>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             A user with a first and/or last name already exists. Do you still want to create this
             user?
