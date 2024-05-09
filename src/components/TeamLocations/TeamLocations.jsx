@@ -7,14 +7,17 @@ import { Button, Container } from 'reactstrap';
 import './TeamLocations.css';
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 =======
 >>>>>>> cac644cda (Finished implementing map coordination with table, table searching and sorting + code clean up.)
+=======
+>>>>>>> 54a844c35 (Added use of dark mode to table and map.)
 import { SEARCH } from 'languages/en/ui';
 import { useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
 import AddOrEditPopup from './AddOrEditPopup';
 import ListUsersPopUp from './ListUsersPopUp';
@@ -226,7 +229,8 @@ function TeamLocations() {
         <div className='text-and-table-icon-container'>
           <h5>Total Countries: {totalUniqueCountries}</h5>
           <button id='toggle-table-button' disabled={mapMarkers.length == 0} onClick={toggleTableVisibility}>
-            <i class="fa fa-table" aria-hidden="true"></i>
+            <i className={`fa fa-table ${darkMode ? 'text-light' : 'text-dark'}`} aria-hidden="true"
+/>
           </button>
         </div>
         {isAbleToEdit ? (
@@ -332,7 +336,7 @@ function TeamLocations() {
         ) : null}
       </div>
       <div style={{position: 'relative'}}>
-      <div>{tableVisible && <TeamLocationsTable visible={tableVisible} mapMarkers={mapMarkers} setCurrentUser={setCurrentUser} />}</div>
+      <div>{tableVisible && <TeamLocationsTable visible={tableVisible} mapMarkers={mapMarkers} setCurrentUser={setCurrentUser} darkMode={darkMode} />}</div>
       <MapContainer
         id='map-container'
         center={[51.505, -0.09]}
@@ -348,12 +352,21 @@ function TeamLocations() {
       >
         <EventComponent setPopupsOpen={setPopupsOpen} currentUser={currentUser} setMarkerPopupVisible={setMarkerPopupVisible}  />
         
-        <TileLayer
+           { darkMode ?  
+           
+           <TileLayer
+            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+            url={darkMode ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png' : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'}
+            minZoom={2}
+            maxZoom={15}
+          /> : 
+          
+          <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           minZoom={2}
           maxZoom={15}
-        />
+          /> }
         <MarkerClusterGroup disableClusteringAtZoom={13} spiderfyOnMaxZoom={true} chunkedLoading>
           {tableVisible && currentUser ?  
           

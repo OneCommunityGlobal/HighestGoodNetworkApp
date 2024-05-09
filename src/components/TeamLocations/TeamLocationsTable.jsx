@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './TeamLocations.css';
 
-function TeamLocationsTable({ visible, mapMarkers, setCurrentUser }) {
+function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
 
   const [sortOrder, setSortOrder] = useState({ field: null, direction: 'dsc' });
   const [nameSortOrder, setNameSortOrder] = useState('dsc');
@@ -118,13 +118,13 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser }) {
                 ></i>
               </td>
               <td>
-                <span className='column-content'>{`${user.firstName} ${user.lastName.charAt(0)}.`}</span>
+                <span style={{color: 'black'}} className='column-content'>{`${user.firstName} ${user.lastName.charAt(0)}.`}</span>
               </td>
               <td>
                 {user.location.city ? (
-                  <span className='column-content'>{`${user.location.city}, ${user.location.country}`}</span>
+                  <span style={{color: 'black'}} className='column-content'>{`${user.location.city}, ${user.location.country}`}</span>
                 ) : (
-                  <span className='column-content'>{`${user.location.country}`}</span>
+                  <span style={{color: 'black'}} className='column-content'>{`${user.location.country}`}</span>
                 )}
               </td>
               <td></td>
