@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import { UserDeleteType } from '../../utils/enums';
 import {
   USER_DELETE_CONFIRMATION_FIRST_LINE,
@@ -29,7 +30,7 @@ const DeleteUserPopup = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>{USER_DELETE_OPTION_HEADING}</ModalHeader>
+      <CustomHeader title={USER_DELETE_OPTION_HEADING} toggle={() => closePopup()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           {USER_DELETE_CONFIRMATION_FIRST_LINE}

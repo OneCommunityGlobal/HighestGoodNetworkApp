@@ -4,7 +4,6 @@ import moment from 'moment-timezone';
 import {
   Button,
   Modal,
-  ModalHeader,
   ModalBody,
   ModalFooter,
   Input,
@@ -19,6 +18,7 @@ import {
   Form,
   Alert,
 } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import { boxStyle, boxStyleDark } from 'styles';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -351,7 +351,7 @@ const LogTimeOffPopUp = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Add New Time Off Request</ModalHeader>
+      <CustomHeader title='Add New Time Off Request' toggle={() => closePopup()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Container>
           <Form>

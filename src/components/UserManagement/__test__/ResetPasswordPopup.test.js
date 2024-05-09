@@ -2,14 +2,28 @@ import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ResetPasswordPopup from '../ResetPasswordPopup';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import { themeMock } from '__tests__/mockStates';
+
+const initialState = {
+  theme: themeMock,
+};
+const mockStore = configureStore([]);
+const store = mockStore(initialState);
 
 const invalidPasswordError =
   'Please choose a strong password which is at least 8 characters long and should contains a digit , a capital letter and a special character.';
+
 describe('reset password popup', () => {
   const onClose = jest.fn();
   const onReset = jest.fn();
   beforeEach(() => {
-    render(<ResetPasswordPopup open onReset={onReset} onClose={onClose} />);
+    render(
+      <Provider store={store}>
+        <ResetPasswordPopup open onReset={onReset} onClose={onClose} />
+      </Provider>
+    );
   });
   describe('Structure', () => {
     it('should render two password input field', () => {
@@ -19,8 +33,8 @@ describe('reset password popup', () => {
     it('should render one confirm button', () => {
       expect(screen.getByRole('button', { name: /reset password/i }));
     });
-    it('should render two close buttons', () => {
-      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(2);
+    it('should render one close button', () => {
+      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(1);
     });
   });
   describe('Behavior', () => {
@@ -32,11 +46,11 @@ describe('reset password popup', () => {
       await userEvent.type(screen.getByLabelText(/new password/i), 'test', { allAtOnce: false });
       expect(screen.getByLabelText(/new password/i)).toHaveValue('test');
     });
-    it('should fire onClose() once the user clicks the close buttons', () => {
+    it('should fire onClose() once the user clicks the close button', () => {
       screen
         .getAllByRole('button', { name: /close/i })
         .forEach((button) => userEvent.click(button));
-      expect(onClose).toHaveBeenCalledTimes(2);
+      expect(onClose).toHaveBeenCalledTimes(1);
     });
     it('should popup error when the password length does not meet the requirement', async () => {
       await userEvent.type(screen.getByLabelText(/new password/i), 'AB@12345!', {

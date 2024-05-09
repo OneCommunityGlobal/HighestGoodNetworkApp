@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
 import { boxStyle, boxStyleDark } from 'styles';
 
@@ -36,7 +37,7 @@ const AddProjectPopup = React.memo(props => {
   
   return (
     <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light' : ''}>
-      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Add Project </ModalHeader>
+      <CustomHeader title='Add Project' toggle={() => closePopup()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddProjectsAutoComplete

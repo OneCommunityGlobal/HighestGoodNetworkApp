@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
 import { useSelector } from 'react-redux';
@@ -79,13 +80,7 @@ const SetupNewUserPopup = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={`modal-dialog modal-lg ${darkMode ? 'text-light' : ''}`}>
-      <ModalHeader
-        toggle={closePopup}
-        cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
-        className={darkMode ? 'bg-space-cadet' : ''}
-      >
-        Setup New User
-      </ModalHeader>
+      <CustomHeader title="Setup New User" toggle={() => closePopup()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div className="setup-new-user-popup-section">
           <label htmlFor="email" className={`setup-new-user-popup-label ${darkMode ? 'text-light' : ''}`}>

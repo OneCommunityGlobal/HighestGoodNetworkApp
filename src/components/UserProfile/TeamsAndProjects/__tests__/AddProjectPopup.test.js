@@ -1,5 +1,15 @@
 import { render, fireEvent, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
 import AddProjectPopup from '../AddProjectPopup';
+import configureStore from 'redux-mock-store';
+import { themeMock } from '__tests__/mockStates';
+
+const initialState = {
+  theme: themeMock,
+};
+
+const mockStore = configureStore();
+const store = mockStore(initialState);
 
 /** TEST DATA **/
 
@@ -7,27 +17,25 @@ const onCloseMock = jest.fn();
 const onSelectAssignProjectMock = jest.fn();
 const handleSubmitMock = jest.fn();
 
-
 const projectsMock = [{ _id: 'proj1', projectName: 'Project 1' }];
 const userProjectsByIdMock = [];
 
-
 const props = {
-    open: true,
-    onClose: onCloseMock,
-    onSelectAssignProject: onSelectAssignProjectMock,
-    userProjectsById: userProjectsByIdMock,
-    projects: projectsMock,
-    handleSubmit: handleSubmitMock,
+  open: true,
+  onClose: onCloseMock,
+  onSelectAssignProject: onSelectAssignProjectMock,
+  userProjectsById: userProjectsByIdMock,
+  projects: projectsMock,
+  handleSubmit: handleSubmitMock,
+};
 
-  };
-
-  const renderComponent=(props)=>
-  {
-    return(
-      render(<AddProjectPopup {...props} />)
-    );
-  };
+const renderComponent = (props) => {
+  return render(
+    <Provider store={store}>
+      <AddProjectPopup {...props} />
+    </Provider>
+  );
+};
 
 /** TEST CASE **/
 

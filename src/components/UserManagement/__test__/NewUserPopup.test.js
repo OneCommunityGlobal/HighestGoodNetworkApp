@@ -37,16 +37,16 @@ describe('new user popup', () => {
     it('should render User Profile', () => {
       expect(screen.getByRole('heading', { name: /user profile/i })).toBeInTheDocument();
     });
-    it('should render two close buttons', () => {
-      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(2);
+    it('should render one close button', () => {
+      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(1);
     });
   });
   describe('behavior', () => {
-    it('should fire onUserPopupClose() when the user clicks close buttons', () => {
+    it('should fire onUserPopupClose() when the user clicks close button', () => {
       screen.getAllByRole('button', { name: /close/i }).forEach((close) => {
         userEvent.click(close);
       });
-      expect(onUserPopupClose).toHaveBeenCalledTimes(2);
+      expect(onUserPopupClose).toHaveBeenCalledTimes(1);
     });
   });
 });

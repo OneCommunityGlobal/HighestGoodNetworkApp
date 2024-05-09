@@ -55,18 +55,18 @@ describe('Active Inactive confirmation popup', () => {
       />, {store});
       expect(screen.getByText(/active/i)).toBeInTheDocument();
     });
-    it('should render one confirm button and two close buttons', () => {
+    it('should render one confirm button and one close button', () => {
       expect(screen.getAllByRole('button')).toHaveLength(3);
       expect(screen.getByRole('button', { name: /ok/i })).toBeInTheDocument();
-      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(2);
+      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(1);
     });
   });
   describe('Behavior', () => {
-    it('should fire onClose() when clicking close buttons', () => {
+    it('should fire onClose() when clicking close button', () => {
       screen.getAllByRole('button', { name: /close/i }).forEach((close) => {
         userEvent.click(close);
       });
-      expect(onClose).toHaveBeenCalledTimes(2);
+      expect(onClose).toHaveBeenCalledTimes(1);
     });
     it('should fire setActiveInactive() when clicking ok button', () => {
       userEvent.click(screen.getByRole('button', { name: /ok/i }));

@@ -2,19 +2,22 @@ import React, { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
-  ModalHeader,
   ModalBody,
   ModalFooter,
   Label,
   Alert,
   Form,
 } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import Input from 'components/common/Input';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import { useSelector } from 'react-redux';
 /**
  * Modal popup to show the reset password action
  */
 const ResetPasswordPopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [newPassword, onNewPasswordChange] = useState({ password: '', isValid: false });
   const [confirmPassword, onConfirmPasswordChange] = useState({ password: '', isValid: false });
   const [errorMessage, setError] = useState('');
@@ -59,18 +62,17 @@ const ResetPasswordPopup = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
-      <ModalHeader toggle={closePopup}>Reset Password</ModalHeader>
-      <ModalBody>
+      <CustomHeader title="Reset Password" toggle={() => closePopup()}/>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
-          <div className="flex justify-between items-center mb-2">
-            <Label className="mr-2" for="newpassword">New Password</Label>
+          <div className="flex justify-between items-center">
+            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="newpassword">New Password</Label>
           </div>
           <Input
             autoFocus
             type={showPassword.newPassword ? 'text' : 'password'}
             name="newpassword"
             id="newpassword"
-            label="New Password"
             value={newPassword.password}
             onChange={event => {
               const value = event.target.value;
@@ -86,14 +88,13 @@ const ResetPasswordPopup = React.memo(props => {
             }}
           />
 
-          <div className="flex justify-between items-center mt-4 mb-2">
-            <Label className="mr-2" for="confirmpassword">Confirm Password</Label>
+          <div className="flex justify-between items-center mt-4">
+            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="confirmpassword">Confirm Password</Label>
           </div>
           <Input
             type={showPassword.confirmPassword ? 'text' : 'password'}
             name="confirmpassword"
             id="confirmpassword"
-            label="Confirm Password"
             value={confirmPassword.password}
             onChange={event => {
               onConfirmPasswordChange({
@@ -109,12 +110,12 @@ const ResetPasswordPopup = React.memo(props => {
           />
         </Form>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         {errorMessage === '' ? <React.Fragment /> : <Alert color="danger">{errorMessage}</Alert>}
-        <Button color="primary" onClick={resetPassword} style={boxStyle}>
+        <Button color="primary" onClick={resetPassword} style={darkMode ? boxStyleDark : boxStyle}>
           Reset Password
         </Button>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>

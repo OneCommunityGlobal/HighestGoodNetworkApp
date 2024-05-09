@@ -1,7 +1,8 @@
 import moment from 'moment';
 import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import { boxStyleDark, boxStyle } from 'styles';
 /**
  * Modal popup to show the user profile in create mode
@@ -25,7 +26,7 @@ const SetUpFinalDayPopUp = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light' : ''}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Set Your Final Day</ModalHeader>
+      <CustomHeader title='Set Your Final Day' toggle={() => closePopup()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Input
           autoFocus

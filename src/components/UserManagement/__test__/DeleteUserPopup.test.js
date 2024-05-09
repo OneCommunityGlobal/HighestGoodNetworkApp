@@ -47,8 +47,8 @@ describe('delete user popup', () => {
     it('should render the modal', () => {
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
-    it('should rendertwo close buttons', () => {
-      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(2);
+    it('should render one close button', () => {
+      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(1);
     });
     it('should render one delete button', () => {
       expect(screen.getByRole('button', { name: /.*delete.*/i })).toBeInTheDocument();
@@ -61,11 +61,11 @@ describe('delete user popup', () => {
     });
   });
   describe('behavior', () => {
-    it('should fire onClose() once the user clicks close buttons', () => {
+    it('should fire onClose() once the user clicks close button', () => {
       screen.getAllByRole('button', { name: /close/i }).forEach((button) => {
         userEvent.click(button);
       });
-      expect(onClose).toHaveBeenCalledTimes(2);
+      expect(onClose).toHaveBeenCalledTimes(1);
     });
     it('should fire onDelete(HardDelete) once the user clicks the `delete` button', () => {
       userEvent.click(screen.getByRole('button', { name: /.*delete.*/i }));

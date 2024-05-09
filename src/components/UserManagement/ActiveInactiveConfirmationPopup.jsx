@@ -1,5 +1,6 @@
 import React from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import { USER_STATUS_CHANGE_CONFIRMATION } from '../../languages/en/messages';
 import { useSelector } from 'react-redux';
 
@@ -18,7 +19,7 @@ const ActiveInactiveConfirmationPopup = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Change the user status</ModalHeader>
+      <CustomHeader title='Change the user status' toggle={() => closePopup()} />
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           {USER_STATUS_CHANGE_CONFIRMATION(props.fullName, props.isActive ? 'INACTIVE' : 'ACTIVE')}

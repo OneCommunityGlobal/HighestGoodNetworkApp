@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -83,7 +84,7 @@ const AddTeamPopup = React.memo(props => {
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light' : ''}>
-      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Add Team</ModalHeader>
+      <CustomHeader title='Add Team' toggle={() => closePopup()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
         <label className={darkMode ? 'text-light' : ''} style={{textAlign: 'left'}}>Add to Team</label>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>

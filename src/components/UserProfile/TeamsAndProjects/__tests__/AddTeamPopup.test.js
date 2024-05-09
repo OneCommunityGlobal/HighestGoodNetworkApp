@@ -9,6 +9,7 @@ import { postNewTeam, getAllUserTeams } from 'actions/allTeamsAction';
 import { ADD_NEW_TEAM, RECEIVE_ALL_USER_TEAMS } from 'constants/allTeamsConstants';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { themeMock } from '__tests__/mockStates';
 
 const userTeams = [
   {
@@ -45,6 +46,7 @@ const store = mockStore({
   fetched: true,
   fetching: false,
   status: '200',
+  theme: themeMock,
 });
 
 const onAddTeamPopupClose = jest.fn();
