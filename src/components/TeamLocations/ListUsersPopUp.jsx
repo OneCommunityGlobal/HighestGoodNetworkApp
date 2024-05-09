@@ -1,5 +1,6 @@
 import { useSelector } from 'react-redux';
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
+import { Button, Modal, ModalFooter, ModalBody } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import { boxStyle, boxStyleDark } from 'styles';
 
 function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
@@ -7,9 +8,7 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
 
   return (
     <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light' : ''}`}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
-        Add New User Location
-      </ModalHeader>
+      <CustomHeader title="Add New User Location" toggle={() => onClose()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
           {userProfiles.length > 0 ? (

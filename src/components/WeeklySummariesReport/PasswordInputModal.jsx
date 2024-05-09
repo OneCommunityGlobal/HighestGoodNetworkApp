@@ -2,7 +2,6 @@ import { useState, useReducer } from 'react';
 import {
   Button,
   Modal,
-  ModalHeader,
   ModalBody,
   ModalFooter,
   Container,
@@ -10,6 +9,7 @@ import {
   Input,
   FormGroup,
 } from 'reactstrap';
+import CustomHeader from 'components/common/Modal/CustomHeader';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
@@ -90,9 +90,7 @@ export default function PasswordInputModal({
         size="md"
         className={darkMode ? 'text-light' : ''}
       >
-        <ModalHeader toggle={onClose} className={darkMode ? 'bg-space-cadet' : ''}>
-          Password to Authorise User
-        </ModalHeader>
+        <CustomHeader title="Password to Authorise User" toggle={() => onClose()} />
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
           {!isValidPwd && state.passwordMatchErr && (
             <Alert color="danger">{state.passwordMatchErr}</Alert>
