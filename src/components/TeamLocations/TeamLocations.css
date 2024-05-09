@@ -153,3 +153,10 @@ thead th {
 .search-bar input[type='text']::placeholder {
   color: #888;
 }
+
+.dark-mode .leaflet-layer,
+.dark-mode .leaflet-control-zoom-in,
+.dark-mode .leaflet-control-zoom-out,
+.dark-mode .leaflet-control-attribution {
+  filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(85%);
+}

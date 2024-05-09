@@ -195,6 +195,7 @@ function TeamLocations() {
 
   return (
 <<<<<<< HEAD
+<<<<<<< HEAD
     <Container fluid className={`${darkMode ? 'bg-oxford-blue text-light' : ''}`} style={{minHeight: "100%", paddingBottom: "73px"}}>
 =======
     <Container fluid className="mb-4">
@@ -203,6 +204,9 @@ function TeamLocations() {
 >>>>>>> 3965a92e1 (Added the table to map component)
 =======
 >>>>>>> 84a65394c (Updated layout and styling of table; Added sorting functionality to table.)
+=======
+    <Container fluid className={`${darkMode ? 'bg-oxford-blue text-light dark-mode' : ''}`} style={{minHeight: "100%", paddingBottom: "73px"}}>
+>>>>>>> f0317385e (Changed URL for map in dark mode to use orginal URL.)
       {isAbleToEdit ? (
         <>
           <AddOrEditPopup
@@ -352,21 +356,16 @@ function TeamLocations() {
       >
         <EventComponent setPopupsOpen={setPopupsOpen} currentUser={currentUser} setMarkerPopupVisible={setMarkerPopupVisible}  />
         
-           { darkMode ?  
+          
            
-           <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url={darkMode ? 'https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}{r}.png' : 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'}
-            minZoom={2}
-            maxZoom={15}
-          /> : 
+           
           
           <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           minZoom={2}
-          maxZoom={15}
-          /> }
+          maxZoom={15} />
+         
         <MarkerClusterGroup disableClusteringAtZoom={13} spiderfyOnMaxZoom={true} chunkedLoading>
           {tableVisible && currentUser ?  
           
