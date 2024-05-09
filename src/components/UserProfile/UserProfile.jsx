@@ -697,7 +697,8 @@ function UserProfile(props) {
   const canPutUserProfile = props.hasPermission('putUserProfile');
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus')
+  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
+  const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
  
@@ -1210,6 +1211,7 @@ function UserProfile(props) {
                     role={requestorRole}
                     onEndDate={handleEndDate}
                     canEdit={canEdit}
+                    canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
                   />
                 </ModalBody>
