@@ -382,10 +382,16 @@ handleSort = (e)=>{
               role={role}
             />
           </div>
+    
+            <Overview className="border" numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
-            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+            
             {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
+            
             <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName}/>
+
+           
+            
 
             <table className="table table-bordered table-responsive-sm">
               <thead>
@@ -437,7 +443,7 @@ handleSort = (e)=>{
 
 const mapStateToProps = state => {
 
-  return { state, userProjects: state.userProjectsByUserNameReducer.projects.projects, userError: state.userProjectsByUserNameReducer.userError };
+  return { state, userProjects: state.userProjectsByUserNameReducer.projects?.projects, userError: state.userProjectsByUserNameReducer.userError };
 };
 
 export default connect(mapStateToProps, {
