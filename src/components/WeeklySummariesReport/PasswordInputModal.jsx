@@ -9,7 +9,7 @@ import {
   Input,
   FormGroup,
 } from 'reactstrap';
-import CustomHeader from 'components/common/Modal/CustomHeader';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import { useSelector } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEyeSlash, faEye } from '@fortawesome/free-solid-svg-icons';
@@ -90,7 +90,7 @@ export default function PasswordInputModal({
         size="md"
         className={darkMode ? 'text-light' : ''}
       >
-        <CustomHeader title="Password to Authorise User" toggle={() => onClose()} />
+        <CustomModalHeader title="Password to Authorise User" toggle={() => onClose()} />
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
           {!isValidPwd && state.passwordMatchErr && (
             <Alert color="danger">{state.passwordMatchErr}</Alert>

@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Button, Modal, ModalBody, ModalFooter, Form } from 'reactstrap';
-import CustomHeader from 'components/common/Modal/CustomHeader.jsx';
+import CustomModalHeader from 'components/common/Modal/CustomModalHeader.jsx';
 import Input from 'components/common/Input';
 import { createLocation, editLocation } from 'services/mapLocationsService';
 import axios from 'axios';
@@ -215,7 +215,7 @@ function AddOrEditPopup({
 
   return (
     <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light' : ''}`}>
-      <CustomHeader title={title} toggle={() => onClose()}/>
+      <CustomModalHeader title={title} toggle={() => onClose()}/>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form onSubmit={onSubmitHandler}>
           <CustomInput
