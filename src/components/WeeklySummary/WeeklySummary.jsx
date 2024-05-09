@@ -663,6 +663,8 @@ export class WeeklySummary extends Component {
         : moment(dueDateThreeWeeksAgo).format('YYYY-MMM-DD'),
     };
 
+    const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
     if (fetchError) {
       return (
         <Container>
@@ -709,11 +711,7 @@ export class WeeklySummary extends Component {
             {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
-            <Button
-              className="btn--dark-sea-green"
-              onClick={this.handleClose}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
+            <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyling}>
               Close this window
             </Button>
           </Col>
@@ -758,7 +756,7 @@ export class WeeklySummary extends Component {
                               <DropdownToggle
                                 className="px-5 btn--dark-sea-green"
                                 caret
-                                style={darkMode ? boxStyleDark : boxStyle}
+                                style={boxStyling}
                               >
                                 Move This Summary
                               </DropdownToggle>
@@ -866,15 +864,12 @@ export class WeeklySummary extends Component {
                             Update this if you are SURE your new link is correct.
                           </ModalBody>
                           <ModalFooter>
-                            <Button
-                              onClick={this.handleMediaChange}
-                              style={darkMode ? boxStyleDark : boxStyle}
-                            >
+                            <Button onClick={this.handleMediaChange} style={boxStyling}>
                               Confirm
                             </Button>
                             <Button
                               onClick={() => this.toggleShowPopup(editPopup)}
-                              style={darkMode ? boxStyleDark : boxStyle}
+                              style={boxStyling}
                             >
                               Close
                             </Button>
@@ -908,16 +903,10 @@ export class WeeklySummary extends Component {
                     <ModalHeader> Warning!</ModalHeader>
                     <ModalBody>Are you SURE you want to move the summary?</ModalBody>
                     <ModalFooter>
-                      <Button
-                        onClick={this.handleMoveSave}
-                        style={darkMode ? boxStyleDark : boxStyle}
-                      >
+                      <Button onClick={this.handleMoveSave} style={boxStyling}>
                         Confirm and Save
                       </Button>
-                      <Button
-                        onClick={this.toggleMovePopup}
-                        style={darkMode ? boxStyleDark : boxStyle}
-                      >
+                      <Button onClick={this.toggleMovePopup} style={boxStyling}>
                         Close
                       </Button>
                     </ModalFooter>
@@ -1003,7 +992,7 @@ export class WeeklySummary extends Component {
                         className="px-5 btn--dark-sea-green"
                         disabled={Boolean(this.validate())}
                         onClick={this.handleSave}
-                        style={darkMode ? boxStyleDark : boxStyle}
+                        style={boxStyling}
                       >
                         Save
                       </Button>
