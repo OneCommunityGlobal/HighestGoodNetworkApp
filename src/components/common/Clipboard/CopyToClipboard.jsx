@@ -6,17 +6,18 @@ import { useSelector } from 'react-redux';
 
 // eslint-disable-next-line react/function-component-definition
 const CopyToClipboard = ({ writeText, message }) => {
-  const darkMode = useSelector(state => state.theme.darkMode)
+  const darkMode = useSelector(state => state.theme.darkMode);
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(writeText);
     toast.success(message);
   };
 
   return (
-    <FontAwesomeIcon 
-      className="copy-to-clipboard" 
-      icon={faCopy} onClick={handleCopyToClipboard} 
-      color={darkMode ? 'lightgray' : ''}
+    <FontAwesomeIcon
+      className="copy-to-clipboard"
+      icon={faCopy}
+      onClick={handleCopyToClipboard}
+      color={darkMode ? 'lightgrey' : ''}
     />
   );
 };

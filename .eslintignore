@@ -3,16 +3,26 @@
 *.test.js
 *.test.jsx
 src/actions/**
+src/App.css
+src/config.json
+
+src/index.js
 src/reducers/**
+src/styles.js
 src/utils/**
 src/__tests__/**
 
+/public/
+/build/
+/node_modules/
 src/components/App.jsx
 src/components/AutoReload/**
-
+src/components/Badge/**
+src/components/common/**
 src/components/Header/**
 src/components/BMDashboard/BMHeader/**
 src/components/MonthlyEffort/**
+
 src/components/PermissionsManagement/**
 src/components/ProfileLinks/**
 src/components/Projects/**
