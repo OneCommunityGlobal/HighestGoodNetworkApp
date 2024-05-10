@@ -110,6 +110,8 @@ function RolePermissions(props) {
     }
   };
 
+  const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
   return (
     <>
       {changed ? (
@@ -140,7 +142,7 @@ function RolePermissions(props) {
                     className="btn_save"
                     color="success"
                     onClick={handleSaveNewPreset}
-                    style={darkMode ? boxStyleDark : boxStyle}
+                    style={boxStyling}
                   >
                     Create New Preset
                   </Button>
@@ -149,7 +151,7 @@ function RolePermissions(props) {
                     onClick={() => {
                       setShowPresetModal(!showPresetModal);
                     }}
-                    style={darkMode ? boxStyleDark : boxStyle}
+                    style={boxStyling}
                   >
                     Load Presets
                   </Button>
@@ -159,14 +161,14 @@ function RolePermissions(props) {
                     className="btn_save"
                     color="success"
                     onClick={() => updateInfo()}
-                    style={darkMode ? boxStyleDark : boxStyle}
+                    style={boxStyling}
                   >
                     Save
                   </Button>
                   <Button
                     color="danger"
                     onClick={toggleDeleteRoleModal}
-                    style={darkMode ? boxStyleDark : boxStyle}
+                    style={boxStyling}
                     disabled={!canDeleteRole}
                   >
                     Delete Role
