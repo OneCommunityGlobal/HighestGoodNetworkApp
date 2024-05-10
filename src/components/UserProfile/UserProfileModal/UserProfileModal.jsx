@@ -314,7 +314,7 @@ const UserProfileModal = props => {
           </>
         )}
 
-        {type === 'modBlueSquare' && (
+        {(type === 'modBlueSquare' || type === 'editBlueSquare') && (
           <>
             <FormGroup>
               <Label for="date">Date</Label>
@@ -333,7 +333,7 @@ const UserProfileModal = props => {
           </>
         )}
 
-        {type === 'viewBlueSquare' && (
+        {type === 'viewBlueSquare' || type === 'deleteBlueSquare'  && (
           <>
             <FormGroup>
               <Label for="date">
@@ -374,6 +374,30 @@ const UserProfileModal = props => {
           >
             Submit
           </Button>
+        )}
+
+        {type === 'editBlueSquare' && (
+           <Button
+           color="info"
+           onClick={() => {
+             modifyBlueSquares(id, dateStamp, summary, 'update');
+           }}
+           style={boxStyle}
+         >
+           Update
+         </Button>
+        )}
+        
+        {type === 'deleteBlueSquare' && (
+          <Button
+          color="danger"
+          onClick={() => {
+            modifyBlueSquares(id, dateStamp, summary, 'delete');
+          }}
+          style={boxStyle}
+        >
+          Delete
+        </Button>
         )}
 
         {type === 'modBlueSquare' && (

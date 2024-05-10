@@ -87,6 +87,12 @@ export const permissionLabels = [
           'Gives the user permission to add blue squares to any user.',
       },
       {
+        label: 'Edit Blue Squares',
+        key: 'editInfringements',
+        description:
+          'Gives the user permission to Edit any blue square.',
+      },
+      {
         label: 'Modify Important User Info',
         key: 'putUserProfileImportantInfo',
         description:
