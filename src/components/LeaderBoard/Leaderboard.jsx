@@ -395,7 +395,7 @@ function LeaderBoard({
               </td>
             </tr>
             {teamsUsers.map(item => (
-              <tr key={item.personId}  className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <tr key={item.personId} className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <td className="align-middle">
                   <div>
                     <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
