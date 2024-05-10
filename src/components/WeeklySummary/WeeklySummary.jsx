@@ -865,10 +865,7 @@ export class WeeklySummary extends Component {
                             Update this if you are SURE your new link is correct.
                           </ModalBody>
                           <ModalFooter className={bodyBg}>
-                            <Button
-                              onClick={this.handleMediaChange}
-                              style={boxStyling}
-                            >
+                            <Button onClick={this.handleMediaChange} style={boxStyling}>
                               Confirm
                             </Button>
                             <Button
@@ -909,10 +906,7 @@ export class WeeklySummary extends Component {
                       Are you SURE you want to move the summary?
                     </ModalBody>
                     <ModalFooter className={bodyBg}>
-                      <Button
-                        onClick={this.handleMoveSave}
-                        style={boxStyling}
-                      >
+                      <Button onClick={this.handleMoveSave} style={boxStyling}>
                         Confirm and Save
                       </Button>
                       <Button onClick={this.toggleMovePopup} style={boxStyling}>
