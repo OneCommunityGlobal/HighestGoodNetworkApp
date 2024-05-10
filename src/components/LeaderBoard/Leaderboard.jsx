@@ -173,7 +173,7 @@ function LeaderBoard({
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <Table className={`leaderboard table-fixed ${darkMode ? 'text-light' : ''}`}>
           <thead>
-            <tr>
+            <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
               <th>
                 <div className="d-flex align-items-center">
@@ -212,7 +212,7 @@ function LeaderBoard({
             </tr>
           </thead>
           <tbody className="my-custome-scrollbar">
-            <tr>
+            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
@@ -240,7 +240,7 @@ function LeaderBoard({
               </td>
             </tr>
             {leaderBoardData.map(item => (
-              <tr key={item.personId}>
+              <tr key={item.personId} className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <td className="align-middle">
                   <div>
                     <Modal
@@ -339,7 +339,7 @@ function LeaderBoard({
                         ) &&
                         currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                           ? 'rgba(128, 128, 128, 0.5)'
-                          : undefined,
+                          : '#007BFF',
                     }}
                   >
                     {item.name}

@@ -19,7 +19,9 @@ import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 // New RichTextEditor component
 const RichTextEditor = ({ disabled, value, onEditorChange }) => (
   <Editor
+    tinymceScriptSrc="/tinymce/tinymce.min.js"
     init={{
+      license_key: 'gpl',
       menubar: false,
       placeholder: 'Please input infos',
       plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
