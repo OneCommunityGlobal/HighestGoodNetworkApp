@@ -60,11 +60,14 @@ const SetupNewUserPopup = React.memo(props => {
             setAlert({ visibility: 'hidden', message: '', state: 'success' });
             setEmail('');
             setWeeklyCommittedHours(0);
-          }, 1500);
+          }, 2000);
           
-          _.debounce(() => {
+          // Prevent multiple requests to fetch invitation history
+          const deboucingRefreshHistory = _.debounce(() => {
             props.handleShouldRefreshInvitationHistory();
-          }, 800);
+          }, 1000);
+
+          deboucingRefreshHistory();
         });
     }
   };

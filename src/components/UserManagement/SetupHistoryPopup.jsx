@@ -6,8 +6,7 @@ import { formatDate } from 'utils/formatDate';
 import Table from 'react-bootstrap/Table';
 import { toast } from 'react-toastify';
 import UserTableFooter from './UserTableFooter';
-import moment from 'moment-timezone';
-import { set } from 'lodash';
+import { debounce } from 'lodash';
 const baseUrl = window.location.origin;
 
 // Define Table Header
@@ -129,7 +128,7 @@ const SetupHistoryPopup = props => {
         })
         .finally( () =>{
           setLoading(false);
-      });
+        });
   }, []);
 
   /**
@@ -156,7 +155,9 @@ const SetupHistoryPopup = props => {
         props.handleShouldRefreshInvitationHistory();
     });
     }
-   
+    return () => {
+      // cleanup
+    }
   }, [props.shouldRefreshInvitationHistory, props.open]);
 
   useEffect(() => {
@@ -171,7 +172,9 @@ const SetupHistoryPopup = props => {
     /**
      * Filter data list by email and status
      */
+    data = data || [];
     let filteredList = data.filter((invitation) => {
+
       const EXPIRED = invitation.expiredDate < Date.now();
       const CANCELLED = invitation.isCancelled;
 
@@ -185,14 +188,14 @@ const SetupHistoryPopup = props => {
     });
 
     const compareByCreationAndExpirationDate = (a, b) => {
-      const createdDateComparison = sortByCreationDateDesc === "true" ? 
+      const createdDateComparison = sortByCreationDateDesc === "true" || sortByCreationDateDesc === 'default' ? 
         new Date(b.createdDate) - new Date(a.createdDate) : new Date(a.createdDate) - new Date(b.createdDate);
       if (createdDateComparison !== 0 && sortByCreationDateDesc !== 'default') {
           return createdDateComparison;
       }
       
       // If sortByExpiredDateDesc is true, sort in descending order, else sort in ascending order
-      const expiredDateComparison = sortByExpiredDateDesc === "true" ? 
+      const expiredDateComparison = sortByExpiredDateDesc === "true" || sortByExpiredDateDesc === 'default'? 
         new Date(b.expiration) - new Date(a.expiration) : new Date(a.expiration) - new Date(b.expiration);
       return expiredDateComparison;
     };
@@ -237,7 +240,7 @@ const SetupHistoryPopup = props => {
   };
 
   const onClickCancel = (e, index) => {
-    // debugger;
+
     setIsButtonDisabled(true);
     httpService
       .post(ENDPOINTS.CANCEL_SETUP_INVITATION_TOKEN(), {
