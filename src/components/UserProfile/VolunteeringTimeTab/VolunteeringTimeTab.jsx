@@ -372,8 +372,7 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            // canEdit={canEdit}
-            canEdit={canUpdateSummaryRequirements}
+            canEdit={canEdit && canUpdateSummaryRequirements}
           />
         </Col>
       </Row>

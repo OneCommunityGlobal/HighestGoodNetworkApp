@@ -51,18 +51,8 @@ export const putUserProfile = data => dispatch => {
 
 export const clearUserProfile = () => ({ type: CLEAR_USER_PROFILE });
 
-// export const updateUserProfile = (userProfile) => {
-//   const url = ENDPOINTS.USER_PROFILE(userProfile._id);
-//   return async dispatch => {
-//     const res = await axios.put(url, userProfile);
-//     if (res.status === 200) {
-//       await dispatch(getUserProfileActionCreator(userProfile));
-//     }
-//     return res.status;
-//   };
-// };
 export const updateUserProfile = (userProfile) => {
-  const url = ENDPOINTS.UPDATE_USER_LINKS(userProfile._id);
+  const url = ENDPOINTS.USER_PROFILE(userProfile._id);
   return async dispatch => {
     const res = await axios.put(url, userProfile);
     if (res.status === 200) {
