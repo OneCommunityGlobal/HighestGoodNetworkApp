@@ -322,16 +322,16 @@ function AddTaskModal(props) {
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="table table-bordered responsive">
             <div>
-              <div className="m-0 border d-flex align-items-center">
-                <span className="p-1 " data-tip="WBS ID" style={{width: "30%"}}>
+              <div className="add_new_task_form-group">
+                <span className="add_new_task_form-label" data-tip="WBS ID">
                   WBS #
                 </span>
 
-                <span className="border-left flex-grow-1 p-2">{newTaskNum}</span>
+                <span className="add_new_task_form-input_area">{newTaskNum}</span>
               </div>
-              <div className="m-0 border d-flex align-items-center" >
-                <span className="p-1" style={{width: "30%"}}>Task Name</span>
-                <span className="border-left p-1 flex-grow-1">
+              <div className="add_new_task_form-group" >
+                <span className="add_new_task_form-label">Task Name</span>
+                <span className="add_new_task_form-input_area">
                   {/* Fix Task-name formatting - by Sucheta */}
                   <textarea
                     type="text"
@@ -343,9 +343,9 @@ function AddTaskModal(props) {
                   />
                 </span>
               </div >
-              <div className='m-0 border d-flex align-items-center'>
-                <span className="p-1" style={{width: "30%"}} >Priority</span>
-                <span className='border-left p-1 flex-grow-1'>
+              <div className='add_new_task_form-group'>
+                <span className="add_new_task_form-label" >Priority</span>
+                <span className='add_new_task_form-input_area'>
                   <select id="priority" onChange={e => setPriority(e.target.value)} ref={priorityRef}>
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
@@ -353,9 +353,9 @@ function AddTaskModal(props) {
                   </select>
                 </span>
               </div>
-              <div className="m-0 border d-flex align-items-center">
-                <span className="p-1" style={{width: "30%"}}>Resources</span>
-                <span className="border-left p-1" style={{width: "70%"}}>
+              <div className="add_new_task_form-group">
+                <span className="add_new_task_form-label">Resources</span>
+                <span className="add_new_task_form-input_area">
                     <TagsSearch
                       placeholder="Add resources"
                       members={allMembers.filter(user=>user.isActive)}
@@ -367,9 +367,9 @@ function AddTaskModal(props) {
                   
                 </span>
               </div>
-              <div className="m-0 border d-flex align-items-center">
-                <span className="p-1" style={{width: "30%"}}>Assigned</span>
-                <span className="border-left p-1">
+              <div className="add_new_task_form-group">
+                <span className="add_new_task_form-label" >Assigned</span>
+                <span className="add_new_task_form-input_area">
                   <div className="flex-row d-inline align-items-center" >
                     <div className="form-check form-check-inline">
                       <input
@@ -402,9 +402,9 @@ function AddTaskModal(props) {
                   </div>
                 </span>
               </div>
-              <div className="m-0 d-flex border align-items-center">
-                <span className= "p-1" style={{width: "30%"}}>Status</span>
-                <span className="p-1 border-left" style={{width: "70%"}}>
+              <div className="add_new_task_form-group">
+                <span className= 'add_new_task_form-label'>Status</span>
+                <span className="add_new_task_form-input_area">
                  <div className="d-flex align-items-center flex-wrap"> 
                   <span className="form-check form-check-inline mr-5">
                       <input
@@ -469,11 +469,11 @@ function AddTaskModal(props) {
                  </div>
                 </span>
               </div>
-              <div className="d-flex align-items-center">
-                <span className="p-1" style={{width: "30%"}}>
+              <div className="add_new_task_form-group">
+                <span className="add_new_task_form-label">
                   Hours
                 </span>
-                <span className="p-1 border-left" style={{width: "70%"}}>
+                <span className="add_new_task_form-input_area">
                   <div className="py-2 flex-responsive">
                     <label htmlFor="bestCase" className="text-nowrap mr-3 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Best-case
@@ -552,8 +552,8 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="d-flex border align-items-center" >
-                <span className="p-1" style={{width: "30%"}}>Links</span>
-                <span className="p-1 border-left" style={{width: "70%"}}>
+                <span className="add_new_task_form-label">Links</span>
+                <span className="add_new_task_form-input_area">
                   <div className="d-flex flex-row">
                     <input
                       type="text"
@@ -588,8 +588,8 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="d-flex border align-items-center">
-                <span  className= "p-1" style={{width: "30%"}}>Category</span>
-                <span  className="p-1 border-left" style={{width: "70%"}}>
+                <span  className= "add_new_task_form-label">Category</span>
+                <span  className="add_new_task_form-input_area">
                   <select value={category} onChange={e => setCategory(e.target.value)}>
                     {categoryOptions.map(cla => (
                       <option value={cla.value} key={cla.value}>
