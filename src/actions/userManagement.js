@@ -84,7 +84,12 @@ export const toggleVisibility = (user, isVisible) => {
   
   const toggleVisibilityPromise = axios.patch(ENDPOINTS.TOGGLE_VISIBILITY(user._id), requestData)
   return async dispatch => {
-    toggleVisibilityPromise.then(res => {
+   .catch((err)=>{
+   console.error("failed to toggle visibility:',error):
+   dispatch(userProfileErrorAction(error));
+   }
+   }
+   ........
       dispatch(userProfileUpdateAction(userProfile));
     });
   };
