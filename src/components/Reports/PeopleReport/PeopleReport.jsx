@@ -539,7 +539,6 @@ class PeopleReport extends Component {
               <p>Total Hours Logged</p>
             </ReportPage.ReportBlock>
           </div>
-
           <PeopleTasksPieChart />
           <div className="mobile-people-table">
             <ReportPage.ReportBlock>

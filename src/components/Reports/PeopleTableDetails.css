@@ -14,6 +14,7 @@
 .people-table-row {
   display: grid;
   grid-template-columns: 300px repeat(auto-fit, minmax(50px, 1fr));
+  /* display: flex; */
   justify-content: space-between;
   align-items: center;
   min-height: 42px;
@@ -22,11 +23,11 @@
   border-bottom: 3px solid #f8f7f8;
 }
 
-.people-table-row > div { 
+.people-table-row>div {
 
   padding: 1%;
   text-align: center;
-  margin:1%;
+  margin: 1%;
 }
 
 .people-table-row:hover {
@@ -43,6 +44,7 @@
   box-sizing: border-box;
   border: 2px solid black;
 }
+
 .hours_text {
   display: inline-block;
   height: 25px;
@@ -54,6 +56,7 @@
   padding: 1px;
   border: solid 1px black;
 }
+
 .rectangle {
   display: inline-block;
   width: 480px;
@@ -77,12 +80,13 @@
   display: none;
   border: collapse;
 }
+
 .extra1 {
   border: none !important;
 }
 
 
-.mobile-table{ 
+.mobile-table {
   width: 350px;
   border-radius: 16px;
   border: 3px solid rgb(150, 148, 148);
@@ -92,17 +96,43 @@
   justify-content: center;
   flex-wrap: wrap;
   align-items: center;
-  margin: 6em 100px;
+  /* margin: 6em 100px; */
+  margin-bottom: 24px;
 }
 
-.mobile-table p{
-    font-size: 15px;
-    justify-content: left;
-    text-align: left;
-    padding: 17px;
-    width: 100%;
-  
+.mobile-table p {
+  font-size: 15px;
+  justify-content: left;
+  text-align: left;
+  padding: 17px;
+  width: 100%;
 }
+
+/* Small screens (less than 640px) */
+@media only screen and (max-width: 640px) {
+  /* CSS rules for small screens */
+}
+
+/* Medium screens (641px to 1007px) */
+@media only screen and (min-width: 641px) and (max-width: 1250px) {
+  /* CSS rules for medium screens */
+
+}
+
+/* Large screens (1008px and larger) */
+@media only screen and (max-width: 1020px) {
+
+  /* CSS rules for large screens */
+  .people-table {
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+  }
+}
+
+
+/* margin-bottom: 24px;
 
 /* .modal > .header {
   width: 100%;

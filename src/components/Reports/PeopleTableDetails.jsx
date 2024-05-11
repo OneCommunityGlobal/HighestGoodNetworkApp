@@ -21,9 +21,11 @@ function PeopleTableDetails(props) {
   useEffect(() => {
     function handleResize() {
       const w = window.innerWidth
-      if (w <= 400) {
+      if (w <= 1020) {
 
         setisMobile(true);
+      } else {
+        setisMobile(false)
       }
     }
     window.addEventListener('resize', handleResize);
@@ -223,8 +225,6 @@ function PeopleTableDetails(props) {
 
     )
   }
-
-
 
   const renderFilteredTask = value => (
     <div>
