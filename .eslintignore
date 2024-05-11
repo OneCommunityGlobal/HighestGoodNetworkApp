@@ -12,8 +12,9 @@ src/styles.js
 src/utils/**
 src/__tests__/**
 
-
-
+/public/
+/build/
+/node_modules/
 src/components/App.jsx
 src/components/AutoReload/**
 src/components/Badge/**

@@ -16,6 +16,16 @@ import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  toolbar: false,
+  branding: false,
+  min_height: 80,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+};
+
 function Task(props) {
   /*
    * -------------------------------- variable declarations --------------------------------
@@ -326,42 +336,24 @@ function Task(props) {
               <ModalBody>
                 <h6>WHY THIS TASK IS IMPORTANT:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.whyInfo}
                 />
 
                 <h6>THE DESIGN INTENT:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.intentInfo}
                 />
 
                 <h6>ENDSTATE:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.endstateInfo}
                 />
