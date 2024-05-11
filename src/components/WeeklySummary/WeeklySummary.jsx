@@ -855,6 +855,23 @@ export class WeeklySummary extends Component {
                           onChange={this.handleInputChange}
                         />
                       </FormGroup>
+                      {formElements.mediaUrl && !errors.mediaUrl && (
+                        <Col md={4}>
+                          <FormGroup className="media-url">
+                            <FontAwesomeIcon
+                              icon={faExternalLinkAlt}
+                              className="mx-1 text--silver"
+                            />
+                            <a
+                              href={formElements.mediaUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Open link
+                            </a>
+                          </FormGroup>
+                        </Col>
+                      )}
                     </Row>
                     <Row form>
                       <Col md={8}>
@@ -882,23 +899,6 @@ export class WeeklySummary extends Component {
                         </Modal>
                         {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
                       </Col>
-                      {formElements.mediaUrl && !errors.mediaUrl && (
-                        <Col md={4}>
-                          <FormGroup className="media-url">
-                            <FontAwesomeIcon
-                              icon={faExternalLinkAlt}
-                              className="mx-1 text--silver"
-                            />
-                            <a
-                              href={formElements.mediaUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Open link
-                            </a>
-                          </FormGroup>
-                        </Col>
-                      )}
                     </Row>
                   </Col>
                 )}
