@@ -438,7 +438,9 @@ const TeamMemberTasks = React.memo(props => {
         ['Administrator', 'Owner', 'Manager', 'Mentor'].some( role => role === displayUser.role) &&
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 4}} xs={{ size: 12}}>
-            Select Team
+            <span className={darkMode ? "text-light" : ""}>
+              Select Team
+            </span>
             <MultiSelect
               className="multi-select-filter"
               options={teamNames}
@@ -449,7 +451,9 @@ const TeamMemberTasks = React.memo(props => {
             />
           </Col>
           <Col lg={{ size: 4}} xs={{ size: 12}}>
+            <span className={darkMode ? "text-light" : ""}>
             Select Team Code
+            </span>
             <MultiSelect
               className="multi-select-filter"
               options={teamCodes}
@@ -460,7 +464,9 @@ const TeamMemberTasks = React.memo(props => {
             />
           </Col>
           <Col lg={{ size: 4 }} xs={{ size: 12 }}>
+            <span className={darkMode ? "text-light" : ""}>
             Select Color
+            </span>
             <MultiSelect
               className="multi-select-filter"
               options={colors}
