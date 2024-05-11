@@ -75,12 +75,6 @@ export const permissionLabels = [
           'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
       },
       {
-        label: 'Handle Blue Squares',
-        key: 'infringementAuthorizer',
-        description:
-          'Gives the user permission to Create/Edit/Delete any blue square and assign them to any user.',
-      },
-      {
         label: 'Assign Blue Squares',
         key: 'addInfringements',
         description:
@@ -90,7 +84,13 @@ export const permissionLabels = [
         label: 'Edit Blue Squares',
         key: 'editInfringements',
         description:
-          'Gives the user permission to Edit any blue square.',
+          'Gives the user permission to edit any blue square.',
+      },
+      {
+        label: 'Delete Blue Squares',
+        key: 'deleteInfringements',
+        description:
+          'Gives the user permission to delete any blue square.',
       },
       {
         label: 'Modify Important User Info',

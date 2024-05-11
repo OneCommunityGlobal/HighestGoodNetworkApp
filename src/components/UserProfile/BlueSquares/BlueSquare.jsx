@@ -4,13 +4,11 @@ import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
 
 const BlueSquare = props => {
-  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canAddInfringements = props.hasPermission('addInfringements');
   const canEditInfringements = props.hasPermission('editInfringements');
   const canDeleteInfringements = props.hasPermission('deleteInfringements');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements
   const { blueSquares, handleBlueSquare } = props;
-
 
   return (
     <div className="blueSquareContainer">
@@ -27,18 +25,14 @@ const BlueSquare = props => {
                   className="blueSquareButton"
                   onClick={() => {
                     if (!blueSquare._id) {
-                      console.log("in here 1");
                       handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
-                    } else if (canEditInfringements && !canDeleteInfringements) {
-                      console.log("in here 2");
-                      // canEditInfringements
+                    } else if (canEditInfringements && canDeleteInfringements) {
                       handleBlueSquare(
-                        canEditInfringements && !canDeleteInfringements,
+                        canEditInfringements && canDeleteInfringements,
                         'modBlueSquare',
                         blueSquare._id,
                       );
                     } else if(canEditInfringements) {
-                      console.log("in here 3");
                       handleBlueSquare(
                         canEditInfringements,
                         'editBlueSquare',
@@ -52,9 +46,8 @@ const BlueSquare = props => {
                       );
 
                     }else{
-
                       handleBlueSquare(
-                        !canPutUserProfileImportantInfo,
+                        true,
                         'viewBlueSquare',
                         blueSquare._id,
                       );

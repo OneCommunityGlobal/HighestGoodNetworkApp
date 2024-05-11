@@ -36,7 +36,7 @@ const UserProfileModal = props => {
     },
   ];
 
-  if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
+  if (type !== 'message' && type !== 'addBlueSquare') {
     if (id.length > 0) {
       blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
     }
@@ -333,7 +333,7 @@ const UserProfileModal = props => {
           </>
         )}
 
-        {type === 'viewBlueSquare' || type === 'deleteBlueSquare'  && (
+        {(type === 'viewBlueSquare' || type === 'deleteBlueSquare')  && (
           <>
             <FormGroup>
               <Label for="date">
