@@ -108,18 +108,7 @@
   width: 100%;
 }
 
-/* Small screens (less than 640px) */
-@media only screen and (max-width: 640px) {
-  /* CSS rules for small screens */
-}
-
-/* Medium screens (641px to 1007px) */
-@media only screen and (min-width: 641px) and (max-width: 1250px) {
-  /* CSS rules for medium screens */
-
-}
-
-/* Large screens (1008px and larger) */
+/* Large screens (less than 1020px) */
 @media only screen and (max-width: 1020px) {
 
   /* CSS rules for large screens */
@@ -128,6 +117,10 @@
     flex-direction: column;
     flex-wrap: wrap;
     align-content: center;
+  }
+
+  .people-table-row {
+    display: none;
   }
 }
 
@@ -164,3 +157,53 @@
   border-radius: 18px;
   border: 1px solid #cfcece;
 } */
+
+
+
+.task-details {
+  padding: 2%;
+}
+
+.task-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+.task-header {
+  background-color: #eee7f8;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+
+.task-status {
+  display: flex;
+  align-items: center;
+  padding: 5px 10px;
+  border-radius: 20px;
+  background-color: #ffc107;
+  color: #fff;
+  width: fit-content;
+}
+
+.task-info {
+  display: flex;
+}
+
+.sub-head {
+  font-weight: 600;
+  text-align: end;
+  width: 50%;
+  padding-right: 2%;
+}
+
+.sub-details {
+  text-align: start;
+  width: 50%;
+  padding-left: 2%;
+}
