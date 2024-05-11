@@ -78,6 +78,26 @@
   opacity: 1; 
 }
 
+@media screen and (max-width: 350px) {
+  .map-table-container {
+    display: none;
+  }
+}
+
+.team-locations-table { 
+  border-collapse: collapse;
+  width: 100%;
+  font-size: 0.8rem;
+}
+
+
+.team-locations-table-header {
+  background-color: #282828 !important;
+  color: white;
+  padding: 10px;
+  text-align: left;
+}
+
 @media screen and (max-width: 768px) {
   .map-table-container {
     width: 60%; 
@@ -85,44 +105,27 @@
     max-height: 40vh;
   }
 
-  th {
+  .team-locations-table-header {
     background-color: #282828;
   }
 } 
 
-@media screen and (max-width: 350px) {
-  .map-table-container {
-    display: none;
-  }
-}
-
-table {
-  border-collapse: collapse; 
-  width: 100%; 
-  font-size: 0.8rem;
-}
-
-th {
-  background-color: #282828 !important;
-  color: white;
+.team-locations-table-data {
   padding: 10px;
   text-align: left;
 }
 
-td {
-  padding: 10px;
-  text-align: left;
-}
 
-tr:nth-child(even) {
+.team-locations-table-row-even {
   background-color: #f2f2f2;
 }
 
-tr:hover {
+
+.team-locations-table-row:hover {
   background-color: #cfcaca;
 }
 
-thead th {
+.team-locations-table thead th {
   position: sticky;
   top: 0;
   z-index: 100;
