@@ -336,8 +336,7 @@ const ScheduleReasonModal = ({
                  {` Need to take time off for an emergency or vacation? That's no problem. The system
                   will still issue you a blue square but scheduling here will note this reason on it
                   so it's clear you chose to use one (vs receiving one for missing something) and
-                  let us know in advance. Blue squares are meant for situations like this and we
-                  allow 4 a year.`}
+                  let us know in advance. Blue squares are meant for situations like this and we allow the use and scheduling of 4 a year.`}
                 </Form.Label>
                 <Form.Label>
                   {`Select the Sunday of the week you'll be leaving ( If you'll be absent this week,
