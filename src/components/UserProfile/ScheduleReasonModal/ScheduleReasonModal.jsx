@@ -339,8 +339,8 @@ const ScheduleReasonModal = ({
                   let us know in advance. Blue squares are meant for situations like this and we allow the use and scheduling of 4 a year.`}
                 </Form.Label>
                 <Form.Label>
-                  {`Select the Sunday of the week you'll be leaving ( If you'll be absent this week,
-                  choose the Sunday of current week ):`}
+                  {`Select the Sunday of the week you'll be leaving (If you'll be absent this week,
+                  choose the Sunday of current week):`}
                 </Form.Label>
                 <DatePicker
                   selected={requestData.dateOfLeave}

@@ -26,10 +26,10 @@ function SchedulerExplanationModal({
           <Row className="mb-3">
             <Col>
               Including your time already requested off, you have used the equivalent of{' '}
-              <span style={{ color: 'red', fontWeight: 500 }}>{infringementsNum}</span> blue squares{' '}
+              <span style={{ color: 'red', fontWeight: 500 }}>{infringementsNum}</span> blue squares
               {timeOffRequests?.length > 0 ? (
                 <span>
-                  and{' '}
+                  {' '}and{' '}
                   <span style={{ color: 'red', fontWeight: 500 }}>{timeOffRequests.length}</span>{' '}
                   schedule time offs for a duration of <span style={{ color: 'red', fontWeight: 500 }}>{getDurationOfAllTimeOff()}</span> weeks
                 </span>
@@ -37,7 +37,7 @@ function SchedulerExplanationModal({
                 ''
               )}
               . <span style={{ fontWeight: 500, color: 'green' }}>5</span> is the maximum number of blue squares allowed
-              per year of employment. And we allow the use and scheduling of <span style={{ color: 'green', fontWeight: 500 }}>4</span> a year. Please remove a time-off request below or contact your
+              per year of employment, so we allow the use and scheduling of <span style={{ color: 'green', fontWeight: 500 }}>4</span> a year. Please remove a time-off request below or contact your
               Administrator if you need to request time off in addition to what is listed here:
             </Col>
           </Row>
