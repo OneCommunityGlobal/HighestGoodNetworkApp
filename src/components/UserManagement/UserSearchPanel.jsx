@@ -1,10 +1,22 @@
 import React from 'react';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { boxStyle, boxStyleDark } from 'styles';
+
+
+const setupHistoryTooltip = (
+  <Tooltip id="tooltip">
+    Setup History Modal
+  </Tooltip>
+)
+
 /**
  * The search panel stateless component for user management grid
  */
-const UserSearchPanel = ({handleNewUserSetupPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
+
+const UserSearchPanel = ({handleNewUserSetupPopup, handleSetupHistoryPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
   // console.log('UserSearchPanel props', props);
 
   return (
@@ -12,6 +24,17 @@ const UserSearchPanel = ({handleNewUserSetupPopup, onNewUserClick, searchText, o
       <button type="button" className="btn btn-info mr-2" onClick={handleNewUserSetupPopup} style={darkMode ? boxStyleDark : boxStyle}>
         {SEND_SETUP_LINK}
       </button>
+      <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
+        <button type="button" className="btn btn-info mr-2" onClick={handleSetupHistoryPopup}>
+          <FontAwesomeIcon
+            className="bell_icon"
+            icon={faBell}
+          />
+        </button>
+      </OverlayTrigger>
+    
+    
+      
       <button
         type="button"
         className="btn btn-info mr-2"
