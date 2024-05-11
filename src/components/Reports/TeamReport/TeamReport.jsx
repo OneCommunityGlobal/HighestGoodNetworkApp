@@ -28,11 +28,20 @@ import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
+const parser = (val) => {
+  try {
+    return JSON.parse(val);
+  } catch (error) {
+    console.error("Failed to parse state:", error);
+    return null;
+  }
+};
+
 const persistConfig = {
   key: 'root',
   storage,
   serialize: (outboundState) => compressToUTF16(JSON.stringify(outboundState)),
-  deserialize: (inboundState) => JSON.parse(decompressFromUTF16(inboundState))
+  deserialize: (inboundState) => parser(decompressFromUTF16(inboundState))
 };
 
 const persistedReducer = persistReducer(persistConfig, rootReducers);
