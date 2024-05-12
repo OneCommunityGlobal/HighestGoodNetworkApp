@@ -3,7 +3,7 @@
 }
 .phone-input-style.phone-input-style {
   width: 100%; 
-  max-width: 300px; 
+  max-width: 350px; 
 }
 
 @media (max-width: 1024px) {
@@ -25,3 +25,5 @@
   }
 
 }
+
+

@@ -29,9 +29,24 @@ import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
-import checkNegativeNumber from 'utils/checkNegativeHours';
-import fixDiscrepancy from 'utils/fixDiscrepancy';
 import { boxStyle } from 'styles';
+
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  placeholder: 'Description (10-word minimum) and reference link',
+  plugins:
+    'advlist autolink autoresize lists link charmap table paste help wordcount',
+  toolbar:
+    'bold italic underline link removeformat | bullist numlist outdent indent |\
+                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                    subscript superscript charmap  | help',
+  branding: false,
+  min_height: 180,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+  content_style: 'body { cursor: text !important; }',
+};
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -55,8 +70,7 @@ import { boxStyle } from 'styles';
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab } = props;
-
+  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile } = props;
   // props from store
   const { authUser } = props;
 
@@ -72,7 +86,7 @@ const TimeEntryForm = props => {
       hours: 0,
       minutes: 0,
       notes: '',
-      isTangible: false,
+      isTangible: from === 'Timer' ? true : false,
       entryType: 'default',
     },
     data,
@@ -119,11 +133,16 @@ const TimeEntryForm = props => {
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
+  const isForAuthUser = timeEntryUserId === authUser.userid;
+  const isSameDayTimeEntry = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === formValues.dateOfWork;
+  const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
   const canEditTimeEntry =
     props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
-  const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry);
+// Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
+  const canUserEditDate = canEditTimeEntry && canPutUserProfileImportantInfo;
+  const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry || isSameDayAuthUserEdit) ;
 
   /*---------------- methods -------------- */
   const toggleRemainder = () =>
@@ -200,17 +219,11 @@ const TimeEntryForm = props => {
     const errorObj = {};
     const remindObj = { ...initialReminder };
     const date = moment(formValues.dateOfWork);
-    const today = moment().tz('America/Los_Angeles');
     const isDateValid = date.isValid();
-    // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-    const isUserAuthorized =
-      (canEditTimeEntry && canPutUserProfileImportantInfo) ||
-      !edit ||
-      today.diff(date, 'days') === 0;
 
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required';
     if (!isDateValid) errorObj.dateOfWork = 'Invalid date';
-    if (!isUserAuthorized) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
+    if (from !== 'Timer' && !canChangeTime) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
     if (!formValues.hours && !formValues.minutes)
       errorObj.time = 'Time should be greater than 0 minutes';
     if (!formValues.projectId) errorObj.projectId = 'Project/Task is required';
@@ -249,143 +262,6 @@ const TimeEntryForm = props => {
     return isEmpty(errorObj);
   };
 
-  //Update hoursByCategory when submitting new time entry
-  const updateHoursByCategory = async (timeEntry, hours, minutes) => {
-    const { projectId, isTangible, personId } = timeEntry;
-    const url = ENDPOINTS.USER_PROFILE(personId);
-
-    try {
-      const { data: userProfile } = await axios.get(url);
-
-      const { hoursByCategory } = userProfile;
-
-      //fix discrepancy in hours in userProfile if any
-      fixDiscrepancy(userProfile);
-      //Format hours && minutes
-      const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
-
-      //log  hours to intangible time entry
-      if (isTangible !== 'true') {
-        const totalIntangibleHrs = Number(
-          (userProfile.totalIntangibleHrs + volunteerTime).toFixed(2),
-        );
-        userProfile.totalIntangibleHrs = totalIntangibleHrs;
-      } else {
-        //This is get to know which project or task is selected
-        const timeEntryProject = timeEntryFormUserProjects.find(
-          project => project.projectId === projectId,
-        );
-        const category = timeEntryProject?.category.toLowerCase() || '';
-
-        //update hours
-        if (category in hoursByCategory) {
-          hoursByCategory[category] += volunteerTime;
-        } else {
-          hoursByCategory['unassigned'] += volunteerTime;
-        }
-      }
-
-      //update database
-      await axios.put(url, userProfile);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  //Update hoursByCategory when editing old time entry
-  const editHoursByCategory = async (timeEntry, hours, minutes) => {
-    const { projectId: formProjectId, isTangible: formIsTangible, personId } = timeEntry;
-    const url = ENDPOINTS.USER_PROFILE(personId);
-
-    try {
-      const { data: userProfile } = await axios.get(url);
-
-      const { hoursByCategory } = userProfile;
-      const isRegularUser = authUser.role !== 'Administrator' && authUser.role !== 'Owner';
-
-      //hours before && after edit
-      const dataEntryTime = parseFloat(initialHours) + parseFloat(initialMinutes) / 60;
-      const formEntryTime = parseFloat(hours) + parseFloat(minutes) / 60;
-      const timeDifference = formEntryTime - dataEntryTime;
-
-      //No hours needs to be updated
-      if (
-        dataEntryTime === formEntryTime &&
-        initialProjectId === formProjectId &&
-        initialIsTangible === formIsTangible
-      ) {
-        return;
-      }
-
-      //if time entry keeps intangible before and after edit, means we don't need update tangible hours
-      if (initialIsTangible === false && formIsTangible === false) {
-        userProfile.totalIntangibleHrs += timeDifference;
-      }
-
-      //found project
-      const formTimeEntryProject = timeEntryFormUserProjects.find(
-        project => project.projectId === formProjectId,
-      );
-      const formCategory = formTimeEntryProject?.category.toLowerCase();
-
-      //if change timeEntry from intangible to tangible, we need add hours on categories
-      if (initialIsTangible === false && formIsTangible === true) {
-        userProfile.totalIntangibleHrs -= formEntryTime;
-        if (formCategory in hoursByCategory) {
-          hoursByCategory[formCategory] += volunteerTime;
-        } else {
-          hoursByCategory['unassigned'] += volunteerTime;
-        }
-      }
-
-      //if change timeEntry from tangible to intangible, we need deduct hours on categories
-      if (initialIsTangible === true && formIsTangible === false) {
-        userProfile.totalIntangibleHrs += formEntryTime;
-        if (formCategory in hoursByCategory) {
-          hoursByCategory[formCategory] -= volunteerTime;
-        } else {
-          hoursByCategory['unassigned'] -= volunteerTime;
-        }
-      }
-
-      //if timeEntry is tangible before and after edit
-      if (initialIsTangible === true && formIsTangible === true) {
-        //if project didn't change, add timeDifference on category
-        if (initialProjectId === formProjectId) {
-          if (formCategory in hoursByCategory) {
-            hoursByCategory[formCategory] += timeDifference;
-          } else {
-            hoursByCategory['unassigned'] += timeDifference;
-          }
-        } else {
-          const dataTimeEntryProject = timeEntryFormUserProjects.find(
-            project => project.projectId === initialProjectId,
-          );
-          const dataCategory = dataTimeEntryProject?.category.toLowerCase();
-
-          if (dataCategory in hoursByCategory) {
-            hoursByCategory[dataCategory] -= dataEntryTime;
-          } else {
-            hoursByCategory['unassigned'] -= dataEntryTime;
-          }
-
-          if (formCategory in hoursByCategory) {
-            hoursByCategory[formCategory] += formEntryTime;
-          } else {
-            hoursByCategory['unassigned'] += formEntryTime;
-          }
-        }
-      }
-
-      checkNegativeNumber(userProfile);
-      //update database
-
-      await axios.put(url, userProfile);
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
   /**
    * Resets the project/task and notes fields of the form without resetting hours and minutes.
    * @param {*} closed If true, the form closes after being cleared.
@@ -417,77 +293,60 @@ const TimeEntryForm = props => {
       return;
     }
 
-    //Construct the timeEntry object
+    // Construct the timeEntry object
     const timeEntry = { ...formValues };
 
-    let timeEntryStatus;
-
-    if (edit) {
-      timeEntry.hours = formHours;
-      timeEntry.minutes = formMinutes;
-      editHoursByCategory(timeEntry, formHours, formMinutes);
-      timeEntryStatus = await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
-    } else {
-      timeEntry.timeSpent = `${formHours}:${formMinutes}:00`;
-      updateHoursByCategory(timeEntry, formHours, formMinutes);
-      timeEntryStatus = await props.postTimeEntry(timeEntry);
-    }
-
-    if (timeEntryStatus !== 200) {
-      toast.error(
-        `An error occurred while attempting to submit your time entry. Error code: ${timeEntryStatus}`,
-      );
-      setSubmitting(false);
-      return;
-    }
-
-    // see if this is the first time the user is logging time
-    if (!edit) {
-      if (timeEntryFormUserProfile?.isFirstTimelog) {
-        const updatedUserProfile = {
-          ...timeEntryFormUserProfile,
-          createdDate: new Date(),
-          isFirstTimelog: false,
-        };
-        await updateUserProfile(updatedUserProfile);
-      }
-    }
-
-    setFormValues(initialFormValues);
-
-    //Clear the form and clean up.
-    if (from === 'Timer') {
-      sendStop();
-      clearForm();
-    } else if (!reminder.editLimitNotification) {
-      setReminder(reminder => ({
-        ...reminder,
-        editLimitNotification: !reminder.editLimitNotification,
-      }));
-    }
-
-    if (from === 'TimeLog') {
-      const date = moment(formValues.dateOfWork);
-      const today = moment().tz('America/Los_Angeles');
-      const offset = today.week() - date.week();
-      if (offset < 3) {
-        props.getTimeEntriesForWeek(timeEntryUserId, offset);
+    try {
+      if (edit) {
+        await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
-        props.getTimeEntriesForWeek(timeEntryUserId, 3);
+        await props.postTimeEntry(timeEntry);
       }
-      clearForm();
-    }
+  
+      setFormValues(initialFormValues);
 
-    if (from === 'WeeklyTab') {
-      await Promise.all([
-        props.getUserProfile(timeEntryUserId),
-        props.getTimeEntriesForWeek(timeEntryUserId, tab),
-      ]);
-    }
+      //Clear the form and clean up.
+      switch (from) {
+        case 'Timer': // log time entry from Timer
+          sendStop();
+          clearForm();
+          break;
+        case 'TimeLog': // add intangible time entry
+          const date = moment(formValues.dateOfWork);
+          const today = moment().tz('America/Los_Angeles');
+          const offset = today.week() - date.week();
+          if (offset < 3) {
+            props.getTimeEntriesForWeek(timeEntryUserId, offset);
+          } else {
+            props.getTimeEntriesForWeek(timeEntryUserId, 3);
+          }
+          clearForm();
+          break;
+        case 'WeeklyTab':
+          await Promise.all([
+            props.getUserProfile(timeEntryUserId),
+            props.getTimeEntriesForWeek(timeEntryUserId, tab),
+          ]);
+          break;
+        default:
+          break;
+      }
 
-    setReminder(initialReminder);
-    if (isOpen) toggle();
-    setSubmitting(false);
+      if (from !== 'Timer' && !reminder.editLimitNotification) {
+        setReminder(reminder => ({
+          ...reminder,
+          editLimitNotification: !reminder.editLimitNotification,
+        }));
+      }
+  
+      setReminder(initialReminder);
+      if (isOpen) toggle();
+      setSubmitting(false);
+
+    } catch (error) {
+      toast.error(`An error occurred while attempting to submit your time entry. Error: ${error}`);
+      setSubmitting(false);
+    }
   };
 
   const tangibleInfoModalToggle = e => {
@@ -515,16 +374,24 @@ const TimeEntryForm = props => {
     timeEntryFormUserWBSs.forEach(WBS => {
       const { projectId, _id: wbsId } = WBS;
       WBS.taskObject = {};
-      projectsObject[projectId].WBSObject[wbsId] = WBS;
+      if(projectsObject[projectId]){
+        projectsObject[projectId].WBSObject[wbsId] = WBS;
+      }
     });
     timeEntryFormUserTasks.forEach(task => {
       const { projectId, wbsId, _id: taskId, resources } = task;
       const isTaskCompletedForTimeEntryUser = resources.find(
         resource => resource.userID === timeEntryUserId,
       ).completedTask;
-      if (!isTaskCompletedForTimeEntryUser) {
+      if (!isTaskCompletedForTimeEntryUser && projectsObject[projectId]) {
+        if (!projectsObject[projectId].WBSObject) {
+          projectsObject[projectId].WBSObject = {};
+        }
+        if (!projectsObject[projectId].WBSObject[wbsId]) {
+          projectsObject[projectId].WBSObject[wbsId] = { taskObject: {} };
+        }
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
-      }
+      }   
     });
 
     for (const [projectId, project] of Object.entries(projectsObject)) {
@@ -585,6 +452,7 @@ const TimeEntryForm = props => {
       setIsAsyncDataLoaded(true);
     } catch (e) {
       console.log(e);
+      toast.error('An error occurred while loading the form data. Please try again later.');
     }
   };
 
@@ -627,6 +495,7 @@ const TimeEntryForm = props => {
               title="timeEntryTip"
               onClick={aboutModalToggle}
             />
+            { !isAsyncDataLoaded && <span> Loading Data...</span> }
           </div>
           <ReactTooltip id="registerTip" place="bottom" effect="solid">
             Click this icon to learn about this time entry form
@@ -642,7 +511,8 @@ const TimeEntryForm = props => {
                 id="dateOfWork"
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
-                disabled={from === 'Timer' || !canEditTimeEntry}
+                // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate ? userProfile?.startDate.split('T')[0] : null} 
+                disabled={!canEditTimeEntry}
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -706,21 +576,8 @@ const TimeEntryForm = props => {
             <FormGroup>
               <Label for="notes">Notes</Label>
               <Editor
-                init={{
-                  menubar: false,
-                  placeholder: 'Description (10-word minimum) and reference link',
-                  plugins:
-                    'advlist autolink autoresize lists link charmap table paste help wordcount',
-                  toolbar:
-                    'bold italic underline link removeformat | bullist numlist outdent indent |\
-                                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                    subscript superscript charmap  | help',
-                  branding: false,
-                  min_height: 180,
-                  max_height: 300,
-                  autoresize_bottom_margin: 1,
-                  content_style: 'body { cursor: text !important; }',
-                }}
+                tinymceScriptSrc="/tinymce/tinymce.min.js"
+                init={TINY_MCE_INIT_OPTIONS}
                 id="notes"
                 name="notes"
                 className="form-control"
@@ -741,7 +598,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!canEditTimeEntry}
+                  disabled={!(canEditTimeEntry || from === 'Timer')}
                 />
                 Tangible&nbsp;
                 <i
@@ -797,6 +654,7 @@ TimeEntryForm.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
+  userProfile: state.userProfile,
 });
 
 export default connect(mapStateToProps, {

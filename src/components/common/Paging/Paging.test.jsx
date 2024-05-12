@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import { Paging } from './Paging';
+import Paging from './Paging';
 
 
 // Dummy child component for tests
@@ -41,7 +41,7 @@ describe('Paging Component', () => {
     fireEvent.click(leftArrow);
     expect(getByText('2')).toHaveClass('active-button'); // Checks if moved back to page 2
   });
-  
+
   test('navigates to the next page on next arrow click', () => {
     const { getByText, container } = render(
       <Paging totalElementsCount={30}>
