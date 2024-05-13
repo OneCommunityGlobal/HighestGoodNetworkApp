@@ -186,9 +186,8 @@ function getTextColorForHoursLogged(hoursLogged, promisedHours) {
     return 'red';
   } else if (percentage < 100) {
     return '#0B6623';
-  } else {
-    return 'black';
   }
+  return 'black';
 }
 
 function ReportDetails({
