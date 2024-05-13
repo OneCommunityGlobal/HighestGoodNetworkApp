@@ -5,19 +5,33 @@ import ReactTooltip from 'react-tooltip';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
 
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  plugins: 'advlist autolink autoresize lists link charmap table paste help',
+  toolbar:
+    'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                    subscript superscript charmap  | help',
+  branding: false,
+  min_height: 180,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+};
+
 function AddTaskModal(props) {
   /*
   * -------------------------------- variable declarations -------------------------------- 
   */
   // props from store 
-  const { tasks, copiedTask, allMembers, allProjects, error } = props;
+  const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
 
   // states from hooks
   const defaultCategory = useMemo(() => {
@@ -578,18 +592,9 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Why this Task is Important
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
+                    init={TINY_MCE_INIT_OPTIONS}
                     name="why-info"
                     className="why-info form-control"
                     value={whyInfo}
@@ -601,18 +606,9 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Design Intent
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
+                    init={TINY_MCE_INIT_OPTIONS}
                     name="intent-info"
                     className="intent-info form-control"
                     value={intentInfo}
@@ -624,18 +620,9 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Endstate
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
+                    init={TINY_MCE_INIT_OPTIONS}
                     name="endstate-info"
                     className="endstate-info form-control"
                     value={endstateInfo}
@@ -684,7 +671,7 @@ function AddTaskModal(props) {
           </Button>
         </ModalFooter>
       </Modal>
-      <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={boxStyle}>
+      <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={darkMode ? boxStyleDark : boxStyle}>
         Add Task
       </Button>
     </>

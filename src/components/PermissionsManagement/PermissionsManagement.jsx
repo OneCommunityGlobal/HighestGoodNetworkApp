@@ -7,7 +7,7 @@ import { connect, useSelector } from 'react-redux';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import { useHistory } from 'react-router-dom';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
@@ -17,7 +17,7 @@ import CreateNewRolePopup from './NewRolePopUp';
 import PermissionChangeLogTable from './PermissionChangeLogTable'
 import { ENDPOINTS } from 'utils/URL';
 
-function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile, hasPermission, getInfoCollections }) {
+function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile, hasPermission, getInfoCollections, darkMode }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
@@ -64,8 +64,8 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
   const roleNames = roles?.map(role => role.roleName);
 
   return (
-    <>
-      <div key={`${role}+permission`} className="permissions-management">
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight:"100%" ,border: "1px solid #1B2A41"}}>
+      <div key={`${role}+permission`} className={darkMode ? "permissions-management-dark bg-yinmn-blue" : "permissions-management"}>
         <h1 className="permissions-management__title">User Roles</h1>
         <div key={`${role}_header`} className="permissions-management__header">
           {canPutRole &&
@@ -73,11 +73,11 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
             {roleNames?.map(roleName => {
               const roleNameLC = roleName.toLowerCase().replace(' ', '-');
               return (
-                <div key={roleNameLC} className="role-name">
+                <div key={roleNameLC} className={`role-name ${darkMode ? 'role-name-dark' : ''}`}>
                   <button
                     onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                     key={roleName}
-                    className="role-btn"
+                    className={`role-btn ${darkMode ? 'text-light' : ''}`}
                   >
                     {roleName}
                   </button>
@@ -103,7 +103,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                 type="button"
                 color="success"
                 onClick={() => togglePopUpNewRole()}
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Add New Role
               </Button>}
@@ -115,7 +115,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                 onClick={() => {
                   togglePopUpUserPermissions();
                 }}
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Manage User Permissions
               </Button>}
@@ -152,10 +152,10 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
         </div>
       </div>
       {loading && (<p className='loading-message'>Loading...</p>)}
-      {changeLogs?.length > 0 && (<PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} />)}
+      {changeLogs?.length > 0 && (<PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} darkMode={darkMode}/>)}
       <br />
       <br />
-    </>
+    </div>
   );
 }
 
@@ -164,6 +164,7 @@ const mapStateToProps = state => ({
   roles: state.role.roles,
   auth: state.auth,
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

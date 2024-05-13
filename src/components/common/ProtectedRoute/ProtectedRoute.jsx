@@ -1,3 +1,4 @@
+/* eslint-disable */
 import { Redirect, Route } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Suspense } from 'react';
@@ -46,7 +47,23 @@ const ProtectedRoute = ({
           return <Redirect to={{ pathname: '/dashboard', state: { from: props.location } }} />;
         }
         // eslint-disable-next-line react/jsx-props-no-spreading, no-nested-ternary
-        return (Component && fallback) ? <Suspense fallback={<div className="d-flex justify-content-center"><i className="fa fa-spinner fa-pulse" /></div>}> <Component {...props} />  </Suspense> : Component ? <Component {...props} /> : render(props);
+        return Component && fallback ? (
+          <Suspense
+            fallback={
+              <div className="d-flex justify-content-center">
+                <i className="fa fa-spinner fa-pulse" />
+              </div>
+            }
+          >
+            {' '}
+            {/* eslint-disable-next-line react/jsx-props-no-spreading */}
+            <Component {...props} />{' '}
+          </Suspense>
+        ) : Component ? (
+          <Component {...props} />
+        ) : (
+          render(props)
+        );
       }}
     />
   );
