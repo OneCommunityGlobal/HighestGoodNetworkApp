@@ -14,9 +14,8 @@ import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
 import { hrsFilterBtnColorMap } from 'constants/colors';
-
-
-import checkNegativeNumber from 'utils/checkNegativeHours';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import { toast } from 'react-toastify';
 
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
@@ -40,6 +39,7 @@ const TimeEntry = (props) => {
   const { _id: timeEntryId } = data;
 
   const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();
 
   const { 
@@ -53,6 +53,8 @@ const TimeEntry = (props) => {
   } = data;
 
   let projectName, projectCategory, taskName, taskClassification;
+
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
 
   if (from === 'TaskTab') {
     // Time Entry rendered under Tasks tab
@@ -78,66 +80,34 @@ const TimeEntry = (props) => {
 
   //permission to edit any time log entry (from other user's Dashboard
     // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-  const canEdit = dispatch(hasPermission('editTimelogInfo')) 
+  const canEdit = (dispatch(hasPermission('editTimelogInfo')) 
     //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission('editTimeEntry')) 
+    || dispatch(hasPermission('editTimeEntry'))) && !cantEditJaeRelatedRecord;
 
   //permission to Delete time entry from other user's Dashboard
-  const canDelete = dispatch(hasPermission('deleteTimeEntryOthers')) ||
+  const canDelete = (dispatch(hasPermission('deleteTimeEntryOthers')) ||
     //permission to delete any time entry on their own time logs tab
-    dispatch(hasPermission('deleteTimeEntry')) ||
+    (isAuthUser && dispatch(hasPermission('deleteTimeEntry'))) ||
     //default permission: delete own sameday tangible entry
-    isAuthUserAndSameDayEntry;
+    isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord;;
 
-  const toggleTangibility = () => {
-    //Update intangible hours property in userprofile
-    const formattedHours = parseFloat(hours) + parseFloat(minutes) / 60;
-    const { hoursByCategory } = timeEntryUserProfile;
-    if (projectName) {
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === projectCategory);
-      //change tangible to intangible
-      if (isTangible) {
-        timeEntryUserProfile.totalIntangibleHrs += formattedHours;
-        isFindCategory
-          ? (hoursByCategory[projectCategory] -= formattedHours)
-          : (hoursByCategory['unassigned'] -= formattedHours);
-      } else {
-        //change intangible to tangible
-        timeEntryUserProfile.totalIntangibleHrs -= formattedHours;
-        isFindCategory
-          ? (hoursByCategory[projectCategory] += formattedHours)
-          : (hoursByCategory['unassigned'] += formattedHours);
-      }
-    } else {
-      const isFindCategory = Object.keys(hoursByCategory).find(key => key === taskClassification);
-      //change tangible to intangible
-      if (isTangible) {
-        timeEntryUserProfile.totalIntangibleHrs += formattedHours;
-        isFindCategory
-          ? (hoursByCategory[taskClassification] -= formattedHours)
-          : (hoursByCategory['unassigned'] -= formattedHours);
-      } else {
-        //change intangible to tangible
-        timeEntryUserProfile.totalIntangibleHrs -= formattedHours;
-        isFindCategory
-          ? (hoursByCategory[taskClassification] += formattedHours)
-          : (hoursByCategory['unassigned'] += formattedHours);
-      }
-    }
-    checkNegativeNumber(timeEntryUserProfile);
-
+  const toggleTangibility = async () => {
+    setIsProcessing(true);
     const newData = {
       ...data,
       isTangible: !isTangible,
     };
-
-    if (from === 'TaskTab') {
-      dispatch(editTeamMemberTimeEntry(newData));
-    } else if (from === 'WeeklyTab') {
-      dispatch(editTimeEntry(timeEntryId, newData));
-      dispatch(updateUserProfile(timeEntryUserProfile));
-      dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
+    try {
+      if (from === 'TaskTab') {
+        await dispatch(editTeamMemberTimeEntry(newData));
+      } else if (from === 'WeeklyTab') {
+        await dispatch(editTimeEntry(timeEntryId, newData));
+        await dispatch(getTimeEntriesForWeek(timeEntryUserId, tab));
+      }
+    } catch (error) {
+      toast.error(`Error: ${error.message}`);
     }
+    setIsProcessing(false);
   };
   let filteredColor;
   const daysPast = moment().diff(dateOfWork, 'days');
@@ -199,9 +169,10 @@ const TimeEntry = (props) => {
                           type="checkbox"
                           name="isTangible"
                           checked={isTangible}
-                          disabled={!canEdit}
+                          disabled={!canEdit || isProcessing}
                           onChange={toggleTangibility}
                       />
+                      { isProcessing ? <span> Processing... </span> : null }
                     </>
                   )
                 : <span className="font-italic">{isTangible ? 'Tangible' : 'Intangible'}</span> 
@@ -212,7 +183,7 @@ const TimeEntry = (props) => {
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {(canEdit || isAuthUserAndSameDayEntry) 
+              {((canEdit || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
                 && from === 'WeeklyTab' 
                 && (
                   <button className="mr-3 text-primary">
@@ -221,12 +192,7 @@ const TimeEntry = (props) => {
               )}
               {canDelete && from === 'WeeklyTab' && (
                 <button className='text-primary'>
-                  <DeleteModal
-                    timeEntry={data}
-                    userProfile={timeEntryUserProfile}
-                    projectCategory={projectCategory}
-                    taskClassification={taskClassification}
-                  />
+                  <DeleteModal timeEntry={data} />
                 </button>
               )}
             </div>

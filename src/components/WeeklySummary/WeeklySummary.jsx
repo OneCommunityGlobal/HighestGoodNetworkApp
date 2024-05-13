@@ -46,6 +46,19 @@ import {
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
 
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
+  plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+  toolbar:
+    'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+  branding: false,
+  min_height: 180,
+  max_height: 500,
+  autoresize_bottom_margin: 1,
+};
+
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
   // eslint-disable-next-line react/state-in-constructor
@@ -650,6 +663,8 @@ export class WeeklySummary extends Component {
         : moment(dueDateThreeWeeksAgo).format('YYYY-MMM-DD'),
     };
 
+    const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
     if (fetchError) {
       return (
         <Container>
@@ -696,11 +711,7 @@ export class WeeklySummary extends Component {
             {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
-            <Button
-              className="btn--dark-sea-green"
-              onClick={this.handleClose}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
+            <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyling}>
               Close this window
             </Button>
           </Col>
@@ -745,7 +756,7 @@ export class WeeklySummary extends Component {
                               <DropdownToggle
                                 className="px-5 btn--dark-sea-green"
                                 caret
-                                style={darkMode ? boxStyleDark : boxStyle}
+                                style={boxStyling}
                               >
                                 Move This Summary
                               </DropdownToggle>
@@ -792,18 +803,8 @@ export class WeeklySummary extends Component {
                           />
                         </Label>
                         <Editor
-                          init={{
-                            menubar: false,
-                            placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
-                            plugins:
-                              'advlist autolink autoresize lists link charmap table paste help wordcount',
-                            toolbar:
-                              'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-                            branding: false,
-                            min_height: 180,
-                            max_height: 500,
-                            autoresize_bottom_margin: 1,
-                          }}
+                          tinymceScriptSrc="/tinymce/tinymce.min.js"
+                          init={TINY_MCE_INIT_OPTIONS}
                           id={summaryName}
                           name={summaryName}
                           value={formElements[summaryName]}
@@ -863,15 +864,12 @@ export class WeeklySummary extends Component {
                             Update this if you are SURE your new link is correct.
                           </ModalBody>
                           <ModalFooter>
-                            <Button
-                              onClick={this.handleMediaChange}
-                              style={darkMode ? boxStyleDark : boxStyle}
-                            >
+                            <Button onClick={this.handleMediaChange} style={boxStyling}>
                               Confirm
                             </Button>
                             <Button
                               onClick={() => this.toggleShowPopup(editPopup)}
-                              style={darkMode ? boxStyleDark : boxStyle}
+                              style={boxStyling}
                             >
                               Close
                             </Button>
@@ -905,16 +903,10 @@ export class WeeklySummary extends Component {
                     <ModalHeader> Warning!</ModalHeader>
                     <ModalBody>Are you SURE you want to move the summary?</ModalBody>
                     <ModalFooter>
-                      <Button
-                        onClick={this.handleMoveSave}
-                        style={darkMode ? boxStyleDark : boxStyle}
-                      >
+                      <Button onClick={this.handleMoveSave} style={boxStyling}>
                         Confirm and Save
                       </Button>
-                      <Button
-                        onClick={this.toggleMovePopup}
-                        style={darkMode ? boxStyleDark : boxStyle}
-                      >
+                      <Button onClick={this.toggleMovePopup} style={boxStyling}>
                         Close
                       </Button>
                     </ModalFooter>
@@ -1000,7 +992,7 @@ export class WeeklySummary extends Component {
                         className="px-5 btn--dark-sea-green"
                         disabled={Boolean(this.validate())}
                         onClick={this.handleSave}
-                        style={darkMode ? boxStyleDark : boxStyle}
+                        style={boxStyling}
                       >
                         Save
                       </Button>

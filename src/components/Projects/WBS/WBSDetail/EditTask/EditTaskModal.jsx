@@ -13,7 +13,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
@@ -23,7 +23,7 @@ function EditTaskModal(props) {
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { allMembers, error } = props;
+  const { allMembers, error, darkMode } = props;
 
   // permissions
   const canUpdateTask = props.hasPermission('updateTask');
@@ -70,6 +70,7 @@ function EditTaskModal(props) {
   const FORMAT = 'MM/dd/yy';
   
   const EditorInit = {
+      license_key: 'gpl',
       menubar: false,
       plugins: 'advlist autolink autoresize lists link charmap table paste help',
       toolbar:
@@ -587,7 +588,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Why this Task is Important:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="why-info"
@@ -605,7 +608,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Design Intent:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="intent-info"
@@ -623,7 +628,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Endstate:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="endstate-info"
@@ -690,7 +697,7 @@ function EditTaskModal(props) {
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
+      <Button color="primary" size="sm" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
         {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
       </Button>
     </div>
@@ -700,5 +707,6 @@ function EditTaskModal(props) {
 const mapStateToProps = state => ({
   allMembers: state.projectMembers.members,
   error: state.tasks.error,
+  darkMode: state.theme.darkMode,
 });
 export default connect(mapStateToProps, { updateTask, hasPermission, })(EditTaskModal);

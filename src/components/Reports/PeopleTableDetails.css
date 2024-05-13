@@ -32,8 +32,16 @@
   background-color: #fafafa;
 }
 
+.people-table-row-dark:hover {
+  background-color: #1C2541;
+}
+
 .people-table-body-row:hover {
   background-color: #fafafa;
+}
+
+.people-table-body-row-dark:hover {
+  background-color: #1C2541;
 }
 
 .pic {
