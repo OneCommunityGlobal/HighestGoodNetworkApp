@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { boxStyle, boxStyleDark } from 'styles';
-import { Button, Modal, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import '../Header/DarkMode.css';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import { toast } from 'react-toastify';
 // import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import moment from 'moment';
@@ -103,9 +103,10 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
         toggle={closePopup}
         autoFocus={false}
         size="lg"
-        className={darkMode ? 'text-light' : ''}
+        className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <CustomModalHeader title="Recipients of Weekly Summaries" toggle={() => closePopup()}>
+        <ModalHeader toggle={closePopup}>
+          Recipients of Weekly summaries
           <FontAwesomeIcon
             icon={faInfoCircle}
             className="mx-2"
@@ -140,7 +141,7 @@ const WeeklySummaryRecipientsPopup = React.memo(props => {
               </section>
             </div>
           )}
-        </CustomModalHeader>
+        </ModalHeader>
         <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
             <MembersAutoComplete

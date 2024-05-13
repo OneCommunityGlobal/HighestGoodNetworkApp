@@ -1,18 +1,20 @@
 import { useSelector } from 'react-redux';
-import { Button, Modal, ModalFooter, ModalBody } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 
 function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
   const darkMode = useSelector(state => state.theme.darkMode)
 
   return (
-    <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light' : ''}`}>
-      <CustomModalHeader title="Add New User Location" toggle={() => onClose()}/>
+    <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
+        Add New User Location
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
           {userProfiles.length > 0 ? (
-            <table className={`table table-bordered table-responsive-md ${darkMode ? 'text-light' : ''}`}>
+            <table className={`table table-bordered table-responsive-md ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
               <thead>
                 <tr>
                   <th style={{ width: '70px' }}>#</th>

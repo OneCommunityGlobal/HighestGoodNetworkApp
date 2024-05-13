@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { Button, Modal, ModalBody, ModalFooter, Form } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader.jsx';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
 import { createLocation, editLocation } from 'services/mapLocationsService';
 import axios from 'axios';
 import CustomInput from './CustomInput.jsx';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
 
@@ -214,8 +214,10 @@ function AddOrEditPopup({
   }, [open, formSubmitted]);
 
   return (
-    <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light' : ''}`}>
-      <CustomModalHeader title={title} toggle={() => onClose()}/>
+    <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
+        {title}
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form onSubmit={onSubmitHandler}>
           <CustomInput
