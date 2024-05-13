@@ -6,44 +6,6 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { renderWithProvider } from '../../../__tests__/utils';
 const mockStore = configureStore([thunk]);
-const nonJaeAccountMock = {
-  _id: '5edf141c78f1380017b829a6',
-  isAdmin: true,
-  user: {
-    expiryTimestamp: '2023-08-22T22:51:06.544Z',
-    iat: 1597272666,
-    userid: '5edf141c78f1380017b829a6',
-    role: 'Volunteer',
-    email: 'non_jae@hgn.net',
-    permissions:["getUserProfiles"]
-  },
-  firstName: 'Non',
-  lastName: 'Petterson',
-  role: {
-    roles:[]
-  },
-  weeklycommittedHours: 10,
-  email: 'non_jae@hgn.net'
-}
-
-const ownerAccountMock = {
-  _id: '5edf141c78f1380017b829a6',
-  isAdmin: true,
-  user: {
-    expiryTimestamp: '2023-08-22T22:51:06.544Z',
-    iat: 1597272666,
-    userid: '5edf141c78f1380017b829a6',
-    role: 'Owner',
-    email: 'devadmin@hgn.net'
-  },
-  firstName: 'Dev',
-  lastName: 'Admin',
-  weeklycommittedHours: 10,
-  email: 'devadmin@hgn.net',
-  role: {
-    roles:[]
-  }
-}
 
 describe('user search panel not admin', () => {
   let onNewUserClick;

@@ -24,6 +24,23 @@ const jaeAccountMock = {
   email: 'devadmin@hgn.net',
   weeklycommittedHours: 10,
 }
+
+const ownerAccountMock = {
+  _id: '5edf141c78f1380017b829a6',
+  isAdmin: true,
+  user: {
+    expiryTimestamp: '2023-08-22T22:51:06.544Z',
+    iat: 1597272666,
+    userid: '5edf141c78f1380017b829a6',
+    role: 'Owner',
+    email: 'devadmin@hgn.net'
+  },
+  firstName: 'Dev',
+  lastName: 'Admin',
+  weeklycommittedHours: 10,
+  email: 'devadmin@hgn.net'
+}
+
 const nonJaeAccountMock = {
   _id: '2',
   isAdmin: true,
@@ -225,16 +242,16 @@ describe('User Table Data: Jae protected account record and login as Jae related
         `/userprofile/${jaeAccountMock._id}`,
       );
     });
-    // it('should fire alert() once the user clicks the pause button', () => {
-    //     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-    //     userEvent.click(screen.getByRole('button', { name: /pause/i }))
-    //     expect(alertMock).toHaveBeenCalledTimes(1)
+    it('should fire alert() once the user clicks the pause button', () => {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /pause/i }))
+        expect(alertMock).toHaveBeenCalledTimes(1)
 
-    // });
-    // it('should fire alert() once the user clicks the active/inactive button', () => {
-    //     const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-    //     userEvent.click(screen.getByRole('button', { name: /Set Final Day/i }))
-    //     expect(alertMock).toHaveBeenCalledTimes(1)
-    // });
+    });
+    it('should fire alert() once the user clicks the active/inactive button', () => {
+        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+        userEvent.click(screen.getByRole('button', { name: /Set Final Day/i }))
+        expect(alertMock).toHaveBeenCalledTimes(1)
+    });
   });
 });
