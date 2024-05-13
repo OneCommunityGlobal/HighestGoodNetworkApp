@@ -1,6 +1,5 @@
 import React from 'react';
-import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { UserDeleteType } from '../../utils/enums';
 import {
   USER_DELETE_CONFIRMATION_FIRST_LINE,
@@ -14,6 +13,7 @@ import {
 } from '../../languages/en/messages';
 import { CLOSE } from '../../languages/en/ui';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 import { connect, useSelector } from 'react-redux';
 import hasPermission from 'utils/permissions';
 
@@ -29,8 +29,8 @@ const DeleteUserPopup = React.memo(props => {
   const canDeleteUser = props.hasPermission('deleteUserProfile');
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
-      <CustomModalHeader title={USER_DELETE_OPTION_HEADING} toggle={() => closePopup()}/>
+    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>{USER_DELETE_OPTION_HEADING}</ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           {USER_DELETE_CONFIRMATION_FIRST_LINE}

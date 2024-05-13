@@ -29,7 +29,7 @@ describe('<ActivationDatePopup />', () => {
   });
   it('should render one pause button. two close buttons', () => {
     expect(screen.getByRole('button', { name: /pause the user/i })).toBeInTheDocument();
-    expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(1);
+    expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(2);
   });
   it('should change value while user type in the date input', async () => {
     const date = screen.getByTestId('date-input');
@@ -37,10 +37,11 @@ describe('<ActivationDatePopup />', () => {
     await userEvent.type(date, '2020-08-08', { allAtOnce: false });
     expect(date).toHaveValue('2020-08-08');
   });
-  it('should fire onClose() when user clicks `close` button', () => {
+  it('should fire onClose() when user clicks `close` buttons', () => {
     const buttons = screen.getAllByRole('button', { name: /close/i });
     userEvent.click(buttons[0]);
-    expect(onClose).toBeCalledTimes(1);
+    userEvent.click(buttons[1]);
+    expect(onClose).toBeCalledTimes(2);
   });
   it('should fire onPause() when user clicks `pause the user` button', async () => {
     const date = screen.getByTestId('date-input');

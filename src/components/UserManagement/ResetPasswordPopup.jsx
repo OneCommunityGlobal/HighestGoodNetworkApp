@@ -2,15 +2,16 @@ import React, { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
+  ModalHeader,
   ModalBody,
   ModalFooter,
   Label,
   Alert,
   Form,
 } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import Input from 'components/common/Input';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 import { useSelector } from 'react-redux';
 /**
  * Modal popup to show the reset password action
@@ -61,8 +62,8 @@ const ResetPasswordPopup = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
-      <CustomModalHeader title="Reset Password" toggle={() => closePopup()}/>
+    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Reset Password</ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <div className="flex justify-between items-center">

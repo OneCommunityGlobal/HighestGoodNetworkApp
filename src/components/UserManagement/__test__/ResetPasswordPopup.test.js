@@ -33,8 +33,8 @@ describe('reset password popup', () => {
     it('should render one confirm button', () => {
       expect(screen.getByRole('button', { name: /reset password/i }));
     });
-    it('should render one close button', () => {
-      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(1);
+    it('should render two close buttons', () => {
+      expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(2);
     });
   });
   describe('Behavior', () => {
@@ -46,11 +46,11 @@ describe('reset password popup', () => {
       await userEvent.type(screen.getByLabelText(/new password/i), 'test', { allAtOnce: false });
       expect(screen.getByLabelText(/new password/i)).toHaveValue('test');
     });
-    it('should fire onClose() once the user clicks the close button', () => {
+    it('should fire onClose() once the user clicks the close buttons', () => {
       screen
         .getAllByRole('button', { name: /close/i })
         .forEach((button) => userEvent.click(button));
-      expect(onClose).toHaveBeenCalledTimes(1);
+      expect(onClose).toHaveBeenCalledTimes(2);
     });
     it('should popup error when the password length does not meet the requirement', async () => {
       await userEvent.type(screen.getByLabelText(/new password/i), 'AB@12345!', {

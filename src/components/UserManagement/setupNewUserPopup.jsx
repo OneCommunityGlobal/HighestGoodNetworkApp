@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
 import { useSelector } from 'react-redux';
+import '../Header/DarkMode.css'
 
 const SetupNewUserPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -79,8 +79,14 @@ const SetupNewUserPopup = React.memo(props => {
   }
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} className={`modal-dialog modal-lg ${darkMode ? 'text-light' : ''}`}>
-      <CustomModalHeader title="Setup New User" toggle={() => closePopup()}/>
+    <Modal isOpen={props.open} toggle={closePopup} className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}>
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={closePopup}
+        cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
+      >
+        Setup New User
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div className="setup-new-user-popup-section">
           <label htmlFor="email" className={`setup-new-user-popup-label ${darkMode ? 'text-light' : ''}`}>

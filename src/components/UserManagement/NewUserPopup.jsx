@@ -1,9 +1,9 @@
 import React from 'react';
-import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import AddNewUserProfile from '../UserProfile/AddNewUserProfile';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { connect, useSelector } from 'react-redux';
 import { getDayOfWeekStringFromUTC } from '../../utils/formatDate';
@@ -11,14 +11,12 @@ import { getDayOfWeekStringFromUTC } from '../../utils/formatDate';
  * Modal popup to show the user profile in create mode
  */
 const NewUserPopup = React.memo(props => {
-  const darkMode = useSelector(state => state.theme.darkMode);
-
   const closePopup = e => {
     props.onUserPopupClose();
   };
   const history = useHistory();
 
-  const { role } = props; // Access the 'role' prop
+  const { role, darkMode } = props; // Access the 'role' prop
 
   /**
    * User creation success call back.
@@ -40,8 +38,13 @@ const NewUserPopup = React.memo(props => {
             darkMode={darkMode}
           />
       </div>
-        <Modal isOpen={props.open} toggle={closePopup} className={`modal-dialog modal-lg ${darkMode ? 'text-light' : ''}`}>
-        <CustomModalHeader title='Create New User&nbsp;' toggle={() => closePopup()}>
+        <Modal isOpen={props.open} toggle={closePopup} className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}>
+        <ModalHeader
+          className={darkMode ? 'bg-space-cadet' : ''}
+          toggle={closePopup}
+          cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
+        >
+          Create New User&nbsp;
           <EditableInfoModal
             areaName="NewUserPopup"
             areaTitle="New User"
@@ -50,7 +53,7 @@ const NewUserPopup = React.memo(props => {
             role={role} // Pass the 'role' prop to EditableInfoModal
             darkMode={darkMode}
           />
-        </CustomModalHeader>
+        </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <AddNewUserProfile
           closePopup={closePopup}
@@ -63,7 +66,7 @@ const NewUserPopup = React.memo(props => {
         {/* Nested Modal that triggers when a first and last name user already exists */}
 
         <Modal isOpen={props.close} className={darkMode ? 'text-light' : ''}>
-          <CustomModalHeader title="WARNING: Duplicate Name Exists!"/>
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>WARNING: Duplicate Name Exists!</ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             A user with a first and/or last name already exists. Do you still want to create this
             user?
@@ -91,6 +94,7 @@ const NewUserPopup = React.memo(props => {
 
 const mapStateToProps = state => ({
   role: state.userProfile.role, // Map 'role' from Redux state to 'role' prop
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps)(NewUserPopup);
