@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
+import _ from 'lodash';
 
 const SetupNewUserPopup = React.memo(props => {
   const [email, setEmail] = useState('');
@@ -29,6 +30,7 @@ const SetupNewUserPopup = React.memo(props => {
         });
       }
     } else {
+      
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER(), { baseUrl, email, weeklyCommittedHours })
         .then(res => {
@@ -38,7 +40,6 @@ const SetupNewUserPopup = React.memo(props => {
               message: 'The setup link has been successfully sent',
               state: 'success',
             });
-            // console.log(res.data);
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
@@ -60,6 +61,13 @@ const SetupNewUserPopup = React.memo(props => {
             setEmail('');
             setWeeklyCommittedHours(0);
           }, 2000);
+          
+          // Prevent multiple requests to fetch invitation history
+          const deboucingRefreshHistory = _.debounce(() => {
+            props.handleShouldRefreshInvitationHistory();
+          }, 1000);
+
+          deboucingRefreshHistory();
         });
     }
   };
