@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, connect } from 'react-redux';
+import { useDispatch, connect, useSelector } from 'react-redux';
 import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
 import './../reportsPage.css';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../../Header/DarkModeButton.css'
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from 'actions/userProfile';
 import { postTimeEntry } from 'actions/timeEntries';
@@ -14,6 +15,8 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 
 const AddLostTime = props => {
+
+  const darkMode = useSelector((state) => state.theme.darkMode);
 
   const initialForm = {
     projectId: undefined,
@@ -88,7 +91,7 @@ const AddLostTime = props => {
     if (entryType == 'project') {
       return (
         <FormGroup>
-          <Label>Project Name</Label>
+          <Label className={darkMode ? 'text-light' : ''}>Project Name</Label>
           <AddProjectsAutoComplete
             projectsData={props.projects}
             onDropDownSelect={selectProject}
@@ -96,7 +99,7 @@ const AddLostTime = props => {
           />
           {'projectId' in errors && (
             <div className="text-danger">
-              <small>{errors.projectId}</small>
+              <small style={{ fontWeight: darkMode ? 'bold' : 'normal' }}>{errors.projectId}</small>
             </div>
           )}
         </FormGroup>
@@ -105,7 +108,7 @@ const AddLostTime = props => {
       return (
         <>
           <FormGroup>
-            <Label>Name</Label>
+            <Label className={darkMode ? 'text-light' : ''}>Name</Label>
             <MemberAutoComplete
               userProfileData={{userProfiles: props.users}}
               onAddUser={selectUser}
@@ -114,7 +117,7 @@ const AddLostTime = props => {
             />
             {'personId' in errors && (
               <div className="text-danger">
-                <small>{errors.personId}</small>
+                <small style={{ fontWeight: darkMode ? 'bold' : 'normal' }}>{errors.personId}</small>
               </div>
             )}
           </FormGroup>
@@ -123,7 +126,7 @@ const AddLostTime = props => {
     } else if (entryType == 'team') {
       return (
         <FormGroup>
-          <Label>Team Name</Label>
+          <Label className={darkMode ? 'text-light' : ''}>Team Name</Label>
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
@@ -136,7 +139,7 @@ const AddLostTime = props => {
           />
           {'teamId' in errors && (
             <div className="text-danger">
-              <small>{errors.teamId}</small>
+              <small style={{ fontWeight: darkMode ? 'bold' : 'normal' }}>{errors.teamId}</small>
             </div>
           )}
         </FormGroup>
@@ -285,15 +288,15 @@ const AddLostTime = props => {
   };
 
   return (
-    <Modal isOpen={props.isOpen} toggle={props.toggle}>
-      <ModalHeader toggle={props.toggle}>
+    <Modal isOpen={props.isOpen} toggle={props.toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={props.toggle} className={darkMode ? 'bg-space-cadet text-light' : ''}>
         Add Lost Time
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <FormGroup>
-            <Label>Type</Label><br/>
-            <div className='type-container'>
+            <Label for="entryType" className={darkMode ? 'text-light' : ''} >Type</Label><br/>
+            <div className={`type-container ${darkMode ? 'text-light' : ''}`}>
               <div className='type-item' style={{paddingLeft: '20px'}} >
                 <Input
                   type="radio"
@@ -302,7 +305,7 @@ const AddLostTime = props => {
                   value="project"
                   onChange={handleTypeChange}
                 />
-                <Label>Project</Label>
+                <Label htmlFor="project" className={darkMode ? 'text-light' : ''}>Project</Label>
               </div>
               <div className='type-item'>
                 <Input  
@@ -312,7 +315,7 @@ const AddLostTime = props => {
                   value="person"
                   onChange={handleTypeChange}
                 />
-                <Label>Person</Label>
+                <Label htmlFor="person" className={darkMode ? 'text-light' : ''}>Person</Label>
               </div>
               <div className='type-item'>
                 <Input
@@ -322,7 +325,7 @@ const AddLostTime = props => {
                   value="team"
                   onChange={handleTypeChange}
                 />
-                <Label>Team</Label>
+                <Label htmlFor="team" className={darkMode ? 'text-light' : ''}>Team</Label>
               </div>
             </div>
           </FormGroup>
@@ -330,7 +333,7 @@ const AddLostTime = props => {
             <>
               {handleFormContent()}
               <FormGroup>
-                <Label for="dateOfWork">Date</Label>
+                <Label for="dateOfWork" className={darkMode ? 'text-light' : ''}>Date</Label>
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -340,12 +343,12 @@ const AddLostTime = props => {
                 />
                 {'dateOfWork' in errors && (
                   <div className="text-danger">
-                    <small>{errors.dateOfWork}</small>
+                    <small style={{ fontWeight: darkMode ? 'bold' : 'normal' }}>{errors.dateOfWork}</small>
                   </div>
                 )}
               </FormGroup>
               <FormGroup>
-              <Label for="timeSpent">Time (HH:MM)</Label>
+              <Label for="timeSpent" className={darkMode ? 'text-light' : ''}>Time (HH:MM)</Label>
               <Row form>
                 <Col>
                   <Input
@@ -374,12 +377,12 @@ const AddLostTime = props => {
               </Row>
               {'time' in errors && (
                 <div className="text-danger">
-                  <small>{errors.time}</small>
+                  <small style={{ fontWeight: darkMode ? 'bold' : 'normal' }}>{errors.time}</small>
                 </div>
               )}
             </FormGroup>
             <FormGroup check>
-              <Label check>
+              <Label check className={darkMode ? 'text-light' : ''}>
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -399,11 +402,11 @@ const AddLostTime = props => {
           )}
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={handleCancel} color="danger" style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button onClick={handleCancel} color="danger" style={darkMode ? boxStyleDark : boxStyle}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="primary" style={boxStyle}>
+        <Button onClick={handleSubmit} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
           Submit
         </Button>
       </ModalFooter>
