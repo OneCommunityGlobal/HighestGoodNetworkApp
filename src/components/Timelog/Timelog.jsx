@@ -48,7 +48,6 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -580,7 +579,7 @@ const Timelog = props => {
                         )
                       )}
                       <Modal isOpen={timeLogState.infoModal} toggle={openInfo} className={darkMode ? 'text-light' : ''}>
-                        <CustomModalHeader title="Info"/>
+                        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
                         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{timeLogState.information}</ModalBody>
                         <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
                           <Button onClick={openInfo} color="primary" style={darkMode ? boxStyleDark : boxStyle}>

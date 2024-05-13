@@ -1,8 +1,8 @@
 import React from 'react';
-import { Button, Modal, ModalBody, ModalFooter, Table } from 'reactstrap';
-import CustomHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
 import DiffedText from './DiffedText';
 import { boxStyleDark, boxStyle } from 'styles';
+import '../../Header/DarkMode.css'
 
 export const resourcesToString = resources => {
   if (!resources) {
@@ -62,8 +62,8 @@ export const TaskDifferenceModal = ({
   loggedInUserId,
   darkMode,
 }) => (
-  <Modal className={darkMode ? 'text-light' : ''} size="xl" isOpen={isOpen} toggle={() => toggle(undefined, [])}>
-    <CustomHeader title="Task Info Changes" toggle={() => toggle(undefined, [])} />
+  <Modal className={darkMode ? 'text-light dark-mode' : ''} size="xl" isOpen={isOpen} toggle={() => toggle(undefined, [])}>
+    <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={() => toggle(undefined, [])}>Task Info Changes</ModalHeader>
     <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
       {taskNotifications &&
         taskNotifications.map(

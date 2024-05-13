@@ -1,9 +1,9 @@
+
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
-import TaskCompletedModal from '../components/TaskCompletedModal';
-import { Provider } from 'react-redux';
-import configureStore from 'redux-mock-store';
-import { themeMock } from '__tests__/mockStates';
+import TaskCompletedModal from '../components/TaskCompletedModal'; 
+
+import { toast } from 'react-toastify';
 
 jest.mock('react-toastify', () => ({
   toast: {
@@ -25,39 +25,22 @@ describe('TaskCompletedModal Component', () => {
     taskModalOption: 'Checkmark', // or 'Remove'
   };
 
-  const initialState = {
-    theme: themeMock
-  };
-  const mockStore = configureStore([]);
-  const store = mockStore(initialState);
-
   it('renders without crashing', () => {
-    render(
-      <Provider store={store}>
-        <TaskCompletedModal {...mockProps} />
-      </Provider>
-    );
+    render(<TaskCompletedModal {...mockProps} />);
   });
 
   it('closes the modal on button click', () => {
-    render(
-      <Provider store={store}>
-        <TaskCompletedModal {...mockProps} />
-      </Provider>
-    );
+    render(<TaskCompletedModal {...mockProps} />);
     fireEvent.click(screen.getByText('Cancel'));
     expect(mockCloseFunction).toHaveBeenCalled();
   });
 
   it('handles Checkmark option correctly', () => {
-    render(
-      <Provider store={store}>
-        <TaskCompletedModal {...mockProps} />
-      </Provider>
-    );
+    render(<TaskCompletedModal {...mockProps} />);
     const markAsDoneButton = screen.getByRole('button', { name: 'Mark as Done' });
     expect(markAsDoneButton.textContent).toBe('Mark as Done');
     fireEvent.click(markAsDoneButton);
     expect(mockUpdateTask).toHaveBeenCalled();
   });
+
 });

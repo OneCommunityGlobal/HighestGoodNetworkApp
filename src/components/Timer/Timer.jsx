@@ -1,8 +1,7 @@
 /* eslint-disable jsx-a11y/media-has-caption */
 import moment from 'moment';
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
-import { Modal, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Progress } from 'reactstrap';
 import useWebSocket, { ReadyState } from 'react-use-websocket';
 import { BsAlarmFill } from 'react-icons/bs';
 import {
@@ -16,6 +15,7 @@ import {
 import { toast } from 'react-toastify';
 import cs from 'classnames';
 import css from './Timer.module.css';
+import '../Header/DarkMode.css';
 import { ENDPOINTS } from '../../utils/URL';
 import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
@@ -299,6 +299,7 @@ export default function Timer({ darkMode }) {
   }, [inacModal]);
 
   const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
   return (
@@ -426,9 +427,14 @@ export default function Timer({ darkMode }) {
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
         centered
         size="md"
-        className={fontColor}
+        className={`${fontColor} dark-mode`}
       >
-        <CustomModalHeader title="Reset Time" toggle={() => setConfirmationResetModal(false)} />
+        <ModalHeader
+          className={darkMode ? 'bg-space-cadet' : ''}
+          toggle={() => setConfirmationResetModal(false)}
+        >
+          Reset Time
+        </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           Are you sure you want to reset your time?
         </ModalBody>
@@ -445,13 +451,15 @@ export default function Timer({ darkMode }) {
         </ModalFooter>
       </Modal>
       <Modal
-        className={fontColor}
+        className={`${fontColor} dark-mode`}
         size="md"
         isOpen={inacModal}
         toggle={() => setInacModal(!inacModal)}
         centered
       >
-        <CustomModalHeader title="Timer Paused" toggle={() => setInacModal(!inacModal)} />
+        <ModalHeader className={headerBg} toggle={() => setInacModal(!inacModal)}>
+          Timer Paused
+        </ModalHeader>
         <ModalBody className={bodyBg}>
           The user timer has been paused due to inactivity or a lost in connection to the server.
           Please check your internet connection and refresh the page to continue. This is to ensure
@@ -471,13 +479,15 @@ export default function Timer({ darkMode }) {
         </ModalFooter>
       </Modal>
       <Modal
-        className={fontColor}
+        className={`${fontColor} dark-mode`}
         isOpen={timeIsOverModalOpen}
         toggle={toggleTimeIsOver}
         centered
         size="md"
       >
-        <CustomModalHeader title="Time Complete!" toggle={() => toggleTimeIsOver()} />
+        <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
+          Time Complete!
+        </ModalHeader>
         <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
           logMinutes ? ` ${logMinutes} minutes` : ''
         }. Click below if you’d like to add time or Log Time.`}</ModalBody>

@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import './style.css';
 import './reviewButton.css';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
@@ -141,11 +141,11 @@ const ReviewButton = ({
   return (
     <>
     {/* Verification Modal */}
-    <Modal isOpen={verifyModal} toggle={toggleVerify} className={darkMode ? 'text-light' : ''}>
-      <CustomModalHeader toggle={() => toggleVerify()}>
+    <Modal isOpen={verifyModal} toggle={toggleVerify} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={toggleVerify} className={darkMode ? 'bg-space-cadet' : ''}>
         {selectedAction === 'Complete and Remove' && 'Are you sure you have completed the review?'}
         {selectedAction === 'More Work Needed' && 'Are you sure?'}
-      </CustomModalHeader>
+        </ModalHeader>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
       <Button
             onClick={(e) => {
@@ -177,8 +177,10 @@ const ReviewButton = ({
     </Modal>
 
             {/* Submission Modal */}
-      <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light' : ''}>
-        <CustomModalHeader title="Change Review Status" toggle={() => toggleModal()}/>
+      <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
+        <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Change Review Status
+        </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {reviewStatus == "Unsubmitted" 
             ? `Are you sure you want to submit for review?`

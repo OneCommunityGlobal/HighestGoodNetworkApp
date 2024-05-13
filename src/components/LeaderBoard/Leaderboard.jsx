@@ -2,8 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
-import { Table, Progress, Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Table, Progress, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -19,6 +18,7 @@ import moment from 'moment-timezone';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
 import { boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -246,10 +246,15 @@ function LeaderBoard({
                     <Modal
                       isOpen={isDashboardOpen === item.personId}
                       toggle={dashboardToggle}
-                      className={darkMode ? 'text-light' : ''}
+                      className={darkMode ? 'text-light dark-mode' : ''}
                       style={darkMode ? boxStyleDark : {}}
                     >
-                      <CustomModalHeader title="Jump to personal Dashboard" />
+                      <ModalHeader
+                        toggle={dashboardToggle}
+                        className={darkMode ? 'bg-space-cadet' : ''}
+                      >
+                        Jump to personal Dashboard
+                      </ModalHeader>
                       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
                       </ModalBody>

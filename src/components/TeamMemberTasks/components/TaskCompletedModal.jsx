@@ -1,7 +1,7 @@
-import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
-import CustomHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import React, { useState } from 'react';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../../Header/DarkMode.css'
 import { toast } from 'react-toastify';
 
 const TaskCompletedModal = React.memo(props => {
@@ -52,8 +52,8 @@ const TaskCompletedModal = React.memo(props => {
     : 'Are you sure you want to remove this user from the task?';
 
   return (
-    <Modal isOpen={props.isOpen} toggle={() => props.popupClose()} className={darkMode ? 'text-light' : ''}>
-      <CustomHeader title={modalHeader} toggle={() => props.popupClose()}/>
+    <Modal isOpen={props.isOpen} toggle={() => props.popupClose()} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={() => props.popupClose()} className={darkMode ? 'bg-space-cadet' : ''}>{modalHeader}</ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>{modalBody}</p>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>

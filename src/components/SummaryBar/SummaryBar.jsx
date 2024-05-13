@@ -6,6 +6,7 @@ import {
   CardTitle,
   Button,
   Modal,
+  ModalHeader,
   ModalBody,
   Progress,
   Form,
@@ -13,7 +14,6 @@ import {
   Label,
   Input
 } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
@@ -463,7 +463,7 @@ const SummaryBar = props => {
               </div>
             </Col>
             <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal} className={darkMode ? 'text-light' : ''}>
-              <CustomModalHeader title="Use Suggestion" />
+              <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
               <ModalBody className={bodyBg}>
                 {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
                   <FormGroup>
@@ -639,7 +639,7 @@ const SummaryBar = props => {
             </Modal>
 
             <Modal isOpen={report.in} toggle={openReport} className={fontColor}>
-              <CustomModalHeader title="Bug Report"/>
+              <ModalHeader className={headerBg}>Bug Report</ModalHeader>
               <ModalBody className={bodyBg}>
                 <Form onSubmit={sendBugReport} id="bugReportForm">
                   <FormGroup>

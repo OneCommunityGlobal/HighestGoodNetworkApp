@@ -1,5 +1,4 @@
-import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
 
 /**
  * Modal displaying information about how time entry works
@@ -15,7 +14,7 @@ const ReminderModal = props => {
   const { edit, visible, data, inputs, reminder, cancelChange, setVisible, darkMode } = props;
   return (
     <Modal isOpen={visible} className={darkMode ? 'text-light' : ''}>
-      <CustomModalHeader title="Reminder"/>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Reminder</ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{reminder.remind}</ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button onClick={() => setVisible(false)} color="danger">

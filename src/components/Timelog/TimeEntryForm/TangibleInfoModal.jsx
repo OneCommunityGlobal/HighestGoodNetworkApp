@@ -1,5 +1,4 @@
-import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
 
 /**
  * Modal displaying information about the differences between tangible and intangible time
@@ -11,7 +10,7 @@ import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 const TangibleInfoModal = props => {
   return (
     <Modal isOpen={props.visible} className={props.darkMode ? 'text-light' : ''}>
-      <CustomModalHeader title="Info"/>
+      <ModalHeader className={props.darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
       <ModalBody className={props.darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           Intangible time is time logged to items not related to your specific action items OR for

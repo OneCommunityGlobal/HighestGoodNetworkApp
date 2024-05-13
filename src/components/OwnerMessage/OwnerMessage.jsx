@@ -2,8 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { toast } from 'react-toastify';
 
-import { Button, Modal, ModalBody, ModalFooter, Input } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { connect } from 'react-redux';
 import { boxStyle, boxStyleDark } from '../../styles';
 import './OwnerMessage.css';
@@ -153,7 +152,9 @@ function OwnerMessage({
       )}
 
       <Modal isOpen={modal} toggle={() => toggle()} className={fontColor}>
-        <CustomModalHeader title="Create message" toggle={() => toggle()} />
+        <ModalHeader toggle={() => toggle()} className={headerBg}>
+          Create message
+        </ModalHeader>
         <ModalBody className={`modal-body ${bodyBg}`}>
           <p>Write a message:</p>
           <Input

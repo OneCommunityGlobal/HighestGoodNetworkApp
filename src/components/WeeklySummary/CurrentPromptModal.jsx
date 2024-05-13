@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { Button, Modal, ModalBody, ModalFooter, Input } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
 import {
   updateDashboardData,
   updateCopiedPromptDate,
@@ -161,8 +161,10 @@ function CurrentPromptModal(props) {
         <br />
       </ReactTooltip>
 
-      <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light' : ''}>
-        <CustomModalHeader title="Current AI Prompt" toggle={() => toggle()} />
+      <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+          Current AI Prompt
+        </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{renderModalContent()}</ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           {userRole === 'Owner' && (

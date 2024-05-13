@@ -42,12 +42,12 @@ import {
   DropdownItem,
   Container,
   Modal,
+  ModalHeader,
   ModalBody,
   ModalFooter,
   Button,
   Card,
 } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import Logout from '../Logout/Logout';
 import PopUpBar from 'components/PopUpBar';
 import './Header.css';
@@ -429,7 +429,7 @@ export function Header(props) {
       {!isAuthUser && <PopUpBar onClickClose={() => setPopup(prevPopup => !prevPopup)} viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))} />}
       <div>
         <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
-          <CustomModalHeader title="Return to your Dashboard" toggle={() => setPopup(prevPopup => !prevPopup)}/>
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Return to your Dashboard</ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Are you sure you wish to return to your own dashboard?</p>
           </ModalBody>

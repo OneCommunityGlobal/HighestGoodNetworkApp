@@ -10,6 +10,7 @@ import {
   Col,
   Button,
   Modal,
+  ModalHeader,
   ModalBody,
   ModalFooter,
 } from 'reactstrap';
@@ -29,7 +30,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import '../../Header/DarkMode.css'
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -481,9 +482,9 @@ const TimeEntryForm = props => {
 
   return (
     <>
-      <Modal className={fontColor} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
-        <CustomModalHeader toggle={() => toggle()}>
-          <div className='h4'>
+      <Modal className={`${fontColor} dark-mode`} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
+        <ModalHeader toggle={toggle} className={`${headerBg} text-light`}>
+          <div>
             {edit ? 'Edit ' : 'Add '}
             {formValues.isTangible ? (
               <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
@@ -504,7 +505,7 @@ const TimeEntryForm = props => {
           <ReactTooltip id="registerTip" place="bottom" effect="solid">
             Click this icon to learn about this time entry form
           </ReactTooltip>
-        </CustomModalHeader>
+        </ModalHeader>
         <ModalBody className={bodyBg}>
           <Form>
             <FormGroup>

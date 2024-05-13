@@ -1,5 +1,4 @@
-import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
 
 /**
  * Modal displaying information about how time entry works
@@ -10,7 +9,7 @@ import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 const AboutModal = props => {
   return (
     <Modal isOpen={props.visible} className={props.darkMode ? 'text-light' : ''}>
-      <CustomModalHeader title="Info"/>
+      <ModalHeader className={props.darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
       <ModalBody className={props.darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           This is the One Community time clock! It is used to clock in and out when doing your

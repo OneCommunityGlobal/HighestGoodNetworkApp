@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
 import { boxStyle, boxStyleDark } from 'styles';
 import './style.css';
+import '../Header/DarkMode.css'
 import { infoTaskIconContent } from './infoTaskIconContent';
 import { useSelector } from 'react-redux';
 
@@ -30,8 +30,10 @@ const TeamMemberTaskInfo = React.memo(() => {
             onClick={handleModalOpen}
             color={darkMode ? 'lightgray' : ''}
         />
-        <Modal className={darkMode ? 'text-light' : ''} backdropClassName="task-info-modal-backdrop" isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
-            <CustomModalHeader title="Task Icons Info" toggle={() => toggleInfoTaskIconModal()}/>
+        <Modal className={darkMode ? 'text-light dark-mode' : ''} backdropClassName="task-info-modal-backdrop" isOpen={infoTaskIconModal} toggle={toggleInfoTaskIconModal}>
+            <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggleInfoTaskIconModal}>
+                Task Icons Info
+            </ModalHeader>
             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 {infoTaskIconContent}
             </ModalBody>
