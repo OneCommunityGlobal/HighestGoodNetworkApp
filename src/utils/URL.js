@@ -115,6 +115,9 @@ export const ENDPOINTS = {
   VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
+  GET_SETUP_INVITATION: () => `${APIEndpoint}/getSetupInvitation`,
+  REFRESH_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/refreshSetupInvitationToken`,
+  CANCEL_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/cancelSetupInvitationToken`,
   // emails endpoint
   POST_EMAILS: `${APIEndpoint}/send-emails`,
   BROADCAST_EMAILS: `${APIEndpoint}/broadcast-emails`,
