@@ -1,9 +1,9 @@
 import { useState } from 'react';
-import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
+import '../Header/DarkMode.css';
 
 function BadgeDevelopment(props) {
   const { darkMode } = props;
@@ -25,9 +25,11 @@ function BadgeDevelopment(props) {
         isOpen={isCreateNewBadgePopupOpen}
         toggle={toggle}
         backdrop="static"
-        className={darkMode ? 'text-light' : ''}
+        className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <CustomModalHeader title="New Badge" toggle={() => toggle()} />
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
+          New Badge
+        </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <CreateNewBadgePopup toggle={toggle} />
         </ModalBody>

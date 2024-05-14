@@ -34,7 +34,7 @@ function AssignBadgePopup(props) {
           onSearch(e.target.value);
         }}
       />
-      <Table className="text-light">
+      <Table className={darkMode ? 'text-light' : ''}>
         <thead>
           <tr>
             <th>Badge</th>

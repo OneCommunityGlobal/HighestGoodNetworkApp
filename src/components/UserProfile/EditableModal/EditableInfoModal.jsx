@@ -3,6 +3,7 @@ import PropTypes from 'prop-types';
 import {
   Button,
   Modal,
+  ModalHeader,
   ModalBody,
   ModalFooter,
   Row,
@@ -14,7 +15,6 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
 import { boxStyle, boxStyleDark } from 'styles';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 
 // New RichTextEditor component
 const RichTextEditor = ({ disabled, value, onEditorChange }) => (
@@ -242,7 +242,7 @@ export class EditableInfoModal extends Component {
           />
           {editableModalOpen && (
             <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
-              <CustomModalHeader title={`Welcome to the ${this.props.areaTitle} Information Page!`} />
+              <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
               <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 {this.state.editing
                   ? <RichTextEditor

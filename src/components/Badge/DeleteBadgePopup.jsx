@@ -1,7 +1,7 @@
 import { useSelector } from 'react-redux';
-import { Button, Modal, ModalBody, ModalFooter } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
 
 function DeleteBadgePopup({ open, setDeletePopup, deleteBadge, badgeId, badgeName }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -16,8 +16,10 @@ function DeleteBadgePopup({ open, setDeletePopup, deleteBadge, badgeId, badgeNam
   };
 
   return (
-    <Modal isOpen={open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
-      <CustomModalHeader title="Confirm Delete Badge" toggle={() => closePopup()} />
+    <Modal isOpen={open} toggle={closePopup} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        Confirm Delete Badge
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div>
           <p>

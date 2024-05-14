@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
+  ModalHeader,
   ModalBody,
   ModalFooter,
   Form,
@@ -12,12 +13,12 @@ import {
   FormFeedback,
   UncontrolledTooltip,
 } from 'reactstrap';
-import CustomModalHeader from 'components/common/Modal/CustomModalHeader';
 import { connect } from 'react-redux';
 import './Badge.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { updateBadge, closeAlert } from '../../actions/badgeManagement';
 import badgeTypes from './BadgeTypes';
+import '../Header/DarkMode.css';
 
 function EditBadgePopup(props) {
   // eslint-disable-next-line
@@ -182,8 +183,14 @@ function EditBadgePopup(props) {
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light' : ''}>
-      <CustomModalHeader title="Edit Badge" toggle={() => closePopup()} />
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        Edit Badge
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form id="badgeEdit">
           <FormGroup>
