@@ -10,9 +10,10 @@ import { CloseButton } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
 import { faCaretDown } from '@fortawesome/free-solid-svg-icons'; // Import the caret down icon
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 // import { fetchTools } from '../../../actions/bmdashboard/toolActions';
-import { fetchToolTypes } from '../../../actions/bmdashboard/invTypeActions';
+import { fetchToolTypes, postToolsLog, resetPostToolsLog } from '../../../actions/bmdashboard/invTypeActions';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import Select, { StylesConfig }  from 'react-select'
 
@@ -30,6 +31,8 @@ function LogTools() {
       date: today,
       typesArray: []
     });
+
+  const postToolsLogResult = useSelector(state => state.bmInvTypes.postedResult);
 
   const multiSelectCustomStyles = {
     control: (provided) => ({
@@ -61,6 +64,8 @@ function LogTools() {
   useEffect(() => {
     dispatch(fetchToolTypes());
     dispatch(fetchBMProjects());
+    console.log("first load. toolTypes in redux: ", toolTypes)
+    console.log("projects in redux: ", projects)
   }, []);
 
   // useEffect(()=>{
@@ -68,16 +73,20 @@ function LogTools() {
   // },[relevantToolTypes])
 
   useEffect(()=>{
+    // console.log("useEff. selectedProject or selectedAction changed");
+    // console.log("selectedProject: ",selectedProject);
+    // console.log("selectedAction: ",selectedAction);
+    
      setPostObject({ 
       action: selectedAction,
       date: today,
       typesArray: []
     })
     const actionArray = selectedAction === "Check In" ? "using" : "available"; 
-
+// console.log("actionArray: ", actionArray)
   const filteredToolTypes = []
 
-  toolTypes.forEach((type)=> {
+  toolTypes.forEach((type)=> {  
     if(type[actionArray].length >0){
       const typeDetails = {
         toolName: type.name,
@@ -86,6 +95,8 @@ function LogTools() {
         available: type.available.length,
         items: []
       };
+
+      //ADD A FAILSAFE IN CASE NO ITEMS IN THE ARRAY??
 
       type[actionArray].forEach((item)=>{
         if(item.project.name === selectedProject){
@@ -107,15 +118,39 @@ useEffect(()=>{
   console.log("postObject changed: ",postObject)  
 },[postObject])
 
+useEffect(()=>{
+  console.log("postToolsLogResult changed: ",postToolsLogResult);
+  if(postToolsLogResult?.error === true){
+    toast.error(`${postToolsLogResult?.result}`);
+    dispatch(resetPostToolsLog());
+  }else if(postToolsLogResult?.result !== null){
+    toast.success(
+      `${selectedAction} completed successfully`,
+    );
+    dispatch(fetchToolTypes());
+    dispatch(resetPostToolsLog());
+
+    // setSelectedProject(projects[0].name)
+
+    setPostObject({ 
+      action: selectedAction,
+      date: today,
+      typesArray: []
+    })
+
+    console.log("After successfull post. toolTypes: ", toolTypes)
+
+  }
+
+},[postToolsLogResult])
 
   const handleProjectSelect = event => {
     // console.log('proj select. event: ', event.target.value);
     setSelectedProject(event.target.value);
   };
 
-  const handleInOutSelect = event =>{
-    setSelectedAction(event.target.value)
-   
+  const handleInOutSelect = event => {
+    setSelectedAction(event.target.value);
   };
 
   // const handleItemCodeSelect = () => {}
@@ -130,7 +165,7 @@ useEffect(()=>{
       const idx = postObjCopy.typesArray.findIndex((obj)=> obj.toolType === event[0].type);
       if(idx < 0){
         const tempObj = {
-          toolType: "",
+          toolType: '',
           toolItems: [],
         }
       tempObj.toolType = event[0].type;
@@ -174,12 +209,22 @@ useEffect(()=>{
   setPostObject(postObjCopy);
   };
 
-  const handleCancel = ()=> {
-  //redirect to /tools
+  const handleCancel = () => {
+    const selectedProjectCopy = selectedProject;
+    const selectedActionCopy = selectedAction;
+    const blankPostObj = { 
+      action: selectedAction,
+      date: today,
+      typesArray: []
+    }
+   setSelectedAction(selectedProjectCopy)
+  //  setSelectedProject(selectedActionCopy)
+  //  setPostObject(blankPostObj)
   }
 
   const handleSubmit = ()=>{
     console.log("postObj: ", postObject);
+    dispatch(postToolsLog(postObject));
   }
 
   return (
@@ -272,13 +317,11 @@ useEffect(()=>{
                        <td>{toolType.available + toolType.using}</td>
                        <td>{toolType.available}</td>
                        <td>{toolType.using}</td>
-                      {/* <td>{toolType.items.map((item)=>(
-                        <span key={item._id}>{item.code},</span>
-                      ))}</td> */}
                       <td> 
                        <Select 
                         options={toolType.items}
                         isMulti  
+                        // value={postObject.typesArray[index]?.toolItems}
                         styles={multiSelectCustomStyles} 
                         onChange={handleCodeSelect}  
                         />
