@@ -23,7 +23,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
   const [reminderModal, setReminderModal] = useState(false);
-  const { modalStatus } = useContext(ModalContext);
+  const { modalStatus, reminderUser } = useContext(ModalContext);
 
   const canPostRole = hasPermission('postRole');
   const canPutRole = hasPermission('putRole');
@@ -41,6 +41,12 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
   roles = roles.filter(role => {
     if (role != null) return role;
   });
+
+  useEffect(() => {
+    if (reminderUser !== null) {
+      console.log(reminderUser)
+    }
+  }, [reminderUser])
 
   useEffect(() => {
     getAllRoles();
@@ -154,7 +160,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
               Manage User Permissions
             </ModalHeader>
             <ModalBody id="modal-body_new-role--padding">
-              <UserPermissionsPopUp toggle={togglePopUpUserPermissions} setReminderModal={setReminderModal} reminderModal={reminderModal} />
+              <UserPermissionsPopUp toggle={togglePopUpUserPermissions} setReminderModal={setReminderModal} reminderModal={reminderModal} modalStatus={modalStatus} />
             </ModalBody>
           </Modal>
         </div>

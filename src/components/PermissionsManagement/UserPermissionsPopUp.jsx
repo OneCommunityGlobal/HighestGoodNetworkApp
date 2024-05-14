@@ -12,7 +12,7 @@ import { boxStyle } from 'styles';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import ReminderModal from './ReminderModal';
 
-const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, authUser, setReminderModal, reminderModal }) => {
+const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, authUser, setReminderModal, reminderModal, modalStatus }) => {
 
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
@@ -85,7 +85,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
   }, []);
   return (
     <>
-      {reminderModal && (
+      {modalStatus && (
         <ReminderModal setReminderModal={setReminderModal} reminderModal={reminderModal} updateProfileOnSubmit={updateProfileOnSubmit} />
       )}
       <Form

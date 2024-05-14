@@ -8,13 +8,13 @@ const ReminderModal = ({ setReminderModal, reminderModal, updateProfileOnSubmit 
   return (
     <div className='ContainerReminder'>
       <div className='ReminderTitle'>
-        <h2>Remember to save your changes</h2>
+        <h2>Remember to save your changes?</h2>
       </div>
       <div className='ReminderBody'>
         <span>Remind people they need to log out and back in to see them take effect.</span>
       </div>
       <div className='ReminderButton'>
-        <button onClick={() => setReminderModal(!reminderModal)}>Close</button>
+        <button onClick={() => updateModalStatus(!modalStatus)}>Close</button>
         <button onClick={(e) => { updateProfileOnSubmit(e); setReminderModal(!reminderModal); updateModalStatus(!modalStatus) }}>Save Changes</button>
       </div>
     </div>
