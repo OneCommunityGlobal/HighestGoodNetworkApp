@@ -709,8 +709,7 @@ export class WeeklySummary extends Component {
         {/* Before clicking Save button, summariesCountShowing is 0 */}
         <Row>
           <Col md="9">
-            Total submitted:
-            {summariesCountShowing || formElements.weeklySummariesCount}
+            Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
             <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyling}>
@@ -756,7 +755,7 @@ export class WeeklySummary extends Component {
                           {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
                             <UncontrolledDropdown>
                               <DropdownToggle
-                                className="px-5 btn--dark-sea-green"
+                                className="px-5 mr-2 btn--dark-sea-green"
                                 caret
                                 style={boxStyling}
                               >
@@ -831,8 +830,8 @@ export class WeeklySummary extends Component {
               <Col>
                 {formElements.mediaUrl && !mediaFirstChange ? (
                   <FormGroup className="media-url">
-                    <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
-                    <Label for="mediaUrl" className="mt-1">
+                    <FontAwesomeIcon icon={faExternalLinkAlt} className=" text--silver" />
+                    <Label for="mediaUrl" className="mt-1 ml-2">
                       <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
                         Your DropBox Media Files Link (Share your files here)
                       </a>
@@ -841,23 +840,44 @@ export class WeeklySummary extends Component {
                   </FormGroup>
                 ) : (
                   <Col>
-                    <Label for="mediaUrl" className={`mt-1 ${fontColor}`}>
-                      Dropbox link to your weekly media files. (required)
-                      <MediaURLTooltip />
-                    </Label>
+                    <Row>
+                      <Label for="mediaUrl" className={`mt-1 ${fontColor}`}>
+                        Dropbox link to your weekly media files. (required)
+                        <MediaURLTooltip />
+                      </Label>
+                    </Row>
+                    <Row>
+                      <FormGroup>
+                        <Input
+                          type="url"
+                          name="mediaUrl"
+                          id="mediaUrl"
+                          data-testid="media-input"
+                          placeholder="Enter a link"
+                          value={formElements.mediaUrl}
+                          onChange={this.handleInputChange}
+                        />
+                      </FormGroup>
+                      {formElements.mediaUrl && !errors.mediaUrl && (
+                        <Col md={4}>
+                          <FormGroup className="media-url">
+                            <FontAwesomeIcon
+                              icon={faExternalLinkAlt}
+                              className="mx-1 text--silver"
+                            />
+                            <a
+                              href={formElements.mediaUrl}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                            >
+                              Open link
+                            </a>
+                          </FormGroup>
+                        </Col>
+                      )}
+                    </Row>
                     <Row form>
                       <Col md={8}>
-                        <FormGroup>
-                          <Input
-                            type="url"
-                            name="mediaUrl"
-                            id="mediaUrl"
-                            data-testid="media-input"
-                            placeholder="Enter a link"
-                            value={formElements.mediaUrl}
-                            onChange={this.handleInputChange}
-                          />
-                        </FormGroup>
                         <Modal isOpen={editPopup} className={fontColor}>
                           <ModalHeader className={headerBg}> Warning!</ModalHeader>
                           <ModalBody className={bodyBg}>
@@ -879,23 +899,6 @@ export class WeeklySummary extends Component {
                         </Modal>
                         {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
                       </Col>
-                      {formElements.mediaUrl && !errors.mediaUrl && (
-                        <Col md={4}>
-                          <FormGroup className="media-url">
-                            <FontAwesomeIcon
-                              icon={faExternalLinkAlt}
-                              className="mx-1 text--silver"
-                            />
-                            <a
-                              href={formElements.mediaUrl}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                            >
-                              Open link
-                            </a>
-                          </FormGroup>
-                        </Col>
-                      )}
                     </Row>
                   </Col>
                 )}
