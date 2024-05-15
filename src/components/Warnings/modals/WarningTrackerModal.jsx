@@ -129,10 +129,10 @@ function WarningTrackerModal({
     });
   };
 
-  const handleChange = e => {
-    const value = e.target.value;
-    setNewWarning(value);
-  };
+  // const handleChange = e => {
+  //   const value = e.target.value;
+  //   setNewWarning(value);
+  // };
 
   const handleEditWarningDescription = (e, warningId) => {
     setWarningEdited(true);
@@ -326,9 +326,7 @@ function WarningTrackerModal({
                 required
                 className="warning__input"
                 value={newWarning}
-                onChange={e => {
-                  handleChange(e);
-                }}
+                onChange={e => setNewWarning(e.target.value)}
               />
               <div>
                 <Button color="primary" type="submit">
