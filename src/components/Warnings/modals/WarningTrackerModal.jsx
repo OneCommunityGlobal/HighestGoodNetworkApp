@@ -130,7 +130,7 @@ function WarningTrackerModal({
   };
 
   const handleChange = e => {
-    const value = e.target.value.trim();
+    const value = e.target.value;
     setNewWarning(value);
   };
 
@@ -166,7 +166,8 @@ function WarningTrackerModal({
     e.preventDefault();
 
     if (newWarning === '') return;
-    dispatch(postNewWarning({ newWarning, activeWarning: true })).then(res => {
+    const trimmedWarning = newWarning.trim();
+    dispatch(postNewWarning({ newWarning: trimmedWarning, activeWarning: true })).then(res => {
       setNewWarning('');
       if (res?.error) {
         setError(res.error);

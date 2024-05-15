@@ -90,6 +90,7 @@ export const getWarningDescriptions = () => {
 export const postNewWarning = newWarning => {
   const url = ENDPOINTS.POST_NEW_WARNING();
 
+  console.log('new warnign dispatching', newWarning);
   return async dispatch => {
     try {
       // post needs to send an object with a key of newWarning
