@@ -22,7 +22,7 @@ const UserSearchPanel = ({hasPermission,handleNewUserSetupPopup, handleSetupHist
   const canCreateUsers = hasPermission('postUserProfile');
   return (
     <div className="input-group mt-3" id="new_usermanagement">
-      <button type="button" className="btn btn-info mr-2" onClick={handleNewUserSetupPopup} style={darkMode ? boxStyleDark : boxStyle}>
+      <button type="button" disabled={!canCreateUsers} className="btn btn-info mr-2" onClick={handleNewUserSetupPopup} style={darkMode ? boxStyleDark : boxStyle}>
         {SEND_SETUP_LINK}
       </button>
       <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
