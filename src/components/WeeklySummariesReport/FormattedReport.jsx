@@ -179,6 +179,17 @@ function EmailsList({ summaries, auth }) {
   return null;
 }
 
+function getTextColorForHoursLogged(hoursLogged, promisedHours) {
+  const percentage = (hoursLogged / promisedHours) * 100;
+
+  if (percentage < 50) {
+    return 'red';
+  } else if (percentage < 100) {
+    return '#0B6623';
+  }
+  return 'black';
+}
+
 function ReportDetails({
   summary,
   weekIndex,
@@ -239,15 +250,29 @@ function ReportDetails({
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
               {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-                <p style={{ color: 'red' }}>
-                  Hours logged: {''}
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                <p
+                  style={{
+                    color: getTextColorForHoursLogged(
+                      hoursLogged,
+                      summary.promisedHoursByWeek[weekIndex],
+                    ),
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </p>
               )}
               {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-                <p>
-                  Hours logged: {''}
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+                <p
+                  style={{
+                    color: getTextColorForHoursLogged(
+                      hoursLogged,
+                      summary.promisedHoursByWeek[weekIndex],
+                    ),
+                    fontWeight: 'bold',
+                  }}
+                >
+                  Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </p>
               )}
             </ListGroupItem>
