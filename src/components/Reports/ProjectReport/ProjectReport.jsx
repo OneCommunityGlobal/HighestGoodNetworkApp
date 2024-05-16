@@ -18,6 +18,7 @@ import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
 import { boxStyle, boxStyleDark } from 'styles';
+import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
 
 // eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
@@ -38,6 +39,7 @@ export function ProjectReport({ match }) {
     projectReportViewData,
   );
   const tasks = useSelector(state => state.tasks);
+
 
   useEffect(() => {
     if (match) {
@@ -115,6 +117,9 @@ export function ProjectReport({ match }) {
           <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
         </ReportPage.ReportBlock>
       </div>
+      <ReportPage.ReportBlock>
+        <WbsPieChart projectMembers={projectMembers} projectName={projectName}/>
+      </ReportPage.ReportBlock>
       <ReportPage.ReportBlock>
         <WbsPieChart projectMembers={projectMembers} projectName={projectName}/>
       </ReportPage.ReportBlock>
