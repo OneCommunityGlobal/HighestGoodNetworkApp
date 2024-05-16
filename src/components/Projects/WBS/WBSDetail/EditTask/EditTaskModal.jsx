@@ -70,6 +70,7 @@ function EditTaskModal(props) {
   const FORMAT = 'MM/dd/yy';
   
   const EditorInit = {
+      license_key: 'gpl',
       menubar: false,
       plugins: 'advlist autolink autoresize lists link charmap table paste help',
       toolbar:
@@ -587,7 +588,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Why this Task is Important:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="why-info"
@@ -605,7 +608,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Design Intent:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="intent-info"
@@ -623,7 +628,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Endstate:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="endstate-info"

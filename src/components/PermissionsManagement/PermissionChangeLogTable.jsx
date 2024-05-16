@@ -13,32 +13,34 @@ const PermissionChangeLogTable = ({ changeLogs, darkMode }) => {
 
   const paginate = pageNumber => setCurrentPage(pageNumber);
 
+  const bgYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
+  const addDark = darkMode ? '-dark' : '';
 
   return (
     <>
       <table className='permission-change-log-table' style={{ borderCollapse: 'collapse', width: '98%', margin: "0 auto" }}>
         <thead>
           <tr className={darkMode ? 'table-row-dark' : 'table-row'}>
-            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Log Date and Time (PST)</th>
-            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Role Name</th>
-            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Permissions</th>
-            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Permissions Added</th>
-            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Permissions Removed</th>
-            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Editor Role</th>
-            <th className={`permission-change-log-table--header${darkMode ? '-dark' : ''}`}>Editor Email</th>
+            <th className={`permission-change-log-table--header${addDark}`}>Log Date and Time (PST)</th>
+            <th className={`permission-change-log-table--header${addDark}`}>Role Name</th>
+            <th className={`permission-change-log-table--header${addDark}`}>Permissions</th>
+            <th className={`permission-change-log-table--header${addDark}`}>Permissions Added</th>
+            <th className={`permission-change-log-table--header${addDark}`}>Permissions Removed</th>
+            <th className={`permission-change-log-table--header${addDark}`}>Editor Role</th>
+            <th className={`permission-change-log-table--header${addDark}`}>Editor Email</th>
           </tr>
         </thead>
         <tbody>
           {currentItems.map(log => (
             <tr key={log._id}>
               {/* ... (same as before) */}
-              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{`${formatDate(log.logDateTime)} ${formatted_AM_PM_Time(log.logDateTime)}`}</td>
-              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.roleName}</td>
-              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.permissions.join(', ')}</td>
-              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.permissionsAdded.join(', ')}</td>
-              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.permissionsRemoved.join(', ')}</td>
-              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.requestorRole}</td>
-              <td className={`permission-change-log-table--cell ${darkMode ? 'bg-yinmn-blue' : ''}`}>{log.requestorEmail}</td>
+              <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{`${formatDate(log.logDateTime)} ${formatted_AM_PM_Time(log.logDateTime)}`}</td>
+              <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{log.roleName}</td>
+              <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{log.permissions.join(', ')}</td>
+              <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{log.permissionsAdded.join(', ')}</td>
+              <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{log.permissionsRemoved.join(', ')}</td>
+              <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{log.requestorRole}</td>
+              <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{log.requestorEmail}</td>
             </tr>
           ))}
         </tbody>
