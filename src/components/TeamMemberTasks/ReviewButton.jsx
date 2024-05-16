@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import './style.css';
 import './reviewButton.css';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -8,12 +8,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
 import { ApiEndpoint } from 'utils/URL';
-import hasPermission from 'utils/permissions';
 
 const ReviewButton = ({
   user,
   task,
   updateTask,
+  userPermission, 
 }) => {
   const darkMode = useSelector(state => state.theme.darkMode)
 
@@ -23,7 +23,6 @@ const ReviewButton = ({
   const [link, setLink] = useState("");
   const [verifyModal, setVerifyModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
-  const dispatch = useDispatch();
 
   const toggleModal = () => {
     setModal(!modal);
@@ -47,7 +46,6 @@ const ReviewButton = ({
     }
   }
 
-  const canReview = (dispatch(hasPermission('putReviewStatus')));
   const reviewStatus = function() {
     let status = "Unsubmitted";
     for(let resource of task.resources) {
@@ -91,7 +89,7 @@ const ReviewButton = ({
         Submit for Review
       </Button>;
      } else if (reviewStatus == "Submitted")  {
-      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || canReview) {
+      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || userPermission) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
