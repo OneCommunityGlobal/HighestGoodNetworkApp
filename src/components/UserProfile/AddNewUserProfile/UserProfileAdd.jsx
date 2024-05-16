@@ -47,11 +47,6 @@ import { ENDPOINTS } from 'utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
-/** Change the create date from next date to current date
- * const nextDay = new Date();
- * nextDay.setDate(nextDay.getDate() + 1);
- */
-const today = new Date();
 
 class UserProfileAdd extends Component {
   constructor(props) {
@@ -83,10 +78,10 @@ class UserProfileAdd extends Component {
         },
         showphone: true,
         weeklySummaryOption: 'Required',
-        createdDate: today,
+        createdDate: new Date(),
         actualEmail: '',
         actualPassword: '',
-        startDate: today,
+        startDate: new Date(),
         actualConfirmedPassword: '',
       },
       formValid: {},
@@ -491,12 +486,12 @@ class UserProfileAdd extends Component {
                       <div className="date-picker-item">
                         <DatePicker
                           selected={this.state.userProfile.startDate}
-                          minDate={today}
+                          minDate={new Date()}
                           onChange={date =>
                             this.setState({
                               userProfile: {
                                 ...this.state.userProfile,
-                                startDate: date == '' || date == null ? today : date,
+                                startDate: date == '' || date == null ? new Date() : date,
                               },
                             })
                           }
