@@ -51,6 +51,7 @@ function LeaderBoard({
   allRequests,
   showTimeOffRequestModal,
   darkMode,
+  getWeeklySummaries,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -103,6 +104,7 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
+    getWeeklySummaries(item.personId);
     dispatch(getUserProfile(item.personId)).then(user => {
       const { _id, role, firstName, lastName, profilePic, email } = user;
       const viewingUser = {
