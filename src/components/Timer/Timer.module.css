@@ -133,7 +133,7 @@
 }
 
 @media (max-width: 530px) {
-  .btnDiv{
+  .btnDiv {
     display: none;
   }
 }
