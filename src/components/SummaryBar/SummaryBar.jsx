@@ -62,7 +62,7 @@ const SummaryBar = props => {
   const [report, setBugReport] = useState(initialInfo);
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const weeklySummaryNotReq = displayUserProfile?.role === "Mentor" || displayUserProfile?.weeklySummaryOption === "Not Required";
+  const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(displayUserProfile?.role === "Mentor" || displayUserProfile?.weeklySummaryOption === "Not Required");
 
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop
@@ -262,6 +262,7 @@ const SummaryBar = props => {
       setBadges(getBadges());
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(displayUserProfile));
+      setweeklySummaryNotReq(displayUserProfile?.role === "Mentor" || displayUserProfile?.weeklySummaryOption === "Not Required");
     }
   }, [displayUserProfile, summaryBarData]);
 

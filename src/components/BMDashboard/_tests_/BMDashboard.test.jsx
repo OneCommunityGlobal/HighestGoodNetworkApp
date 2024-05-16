@@ -80,7 +80,7 @@ describe('BMDashboard Tests', () => {
   it('Renders BMDashboard and checks for header', () => {
     render(
       <Provider store={store}>
-          <BMDashboard />
+        <BMDashboard />
       </Provider>,
     );
     expect(screen.getByText('Building and Inventory Management Dashboard')).toBeInTheDocument();
@@ -116,7 +116,7 @@ describe('BMDashboard Tests', () => {
     expect(screen.getByText(/please select a project/i)).toBeInTheDocument();
   });
   //Test Case 4:
-  it('Displays the correct number of project summaries and verifies project summary content', () => {
+  it('Displays the correct number of project summaries and verifies project summary content', async () => {
     render(
       <Provider store={store}>
         <BrowserRouter>
@@ -126,8 +126,10 @@ describe('BMDashboard Tests', () => {
     );
 
     // number of project summaries
-    const projectSummaries = screen.getAllByText(/summary/);
-    expect(projectSummaries).toHaveLength(mockProjects.length);
+    await waitFor(() => {
+      const projectSummaries = screen.getAllByText(/summary/i);
+      expect(projectSummaries).toHaveLength(mockProjects.length);
+    });
 
     // check for labels
     const expectedLabels = [
