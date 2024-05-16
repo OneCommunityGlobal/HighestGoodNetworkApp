@@ -63,6 +63,7 @@
     "reactjs-popup": "^2.0.5",
     "reactstrap": "^8.4.1",
     "read-excel-file": "^5.5.3",
+    "recharts": "^2.12.1",
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",
     "redux-concatenate-reducers": "^1.0.0",

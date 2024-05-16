@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
+import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
 import { getProjectDetail } from '../../../actions/project';
 import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
 import { fetchAllTasks } from 'actions/task';
@@ -92,7 +93,7 @@ export function ProjectReport({ match }) {
       )}
       darkMode={darkMode}
     >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div> 
+      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
@@ -114,6 +115,9 @@ export function ProjectReport({ match }) {
           <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
         </ReportPage.ReportBlock>
       </div>
+      <ReportPage.ReportBlock>
+        <WbsPieChart projectMembers={projectMembers} projectName={projectName}/>
+      </ReportPage.ReportBlock>
     </ReportPage>
     </div>
   );
