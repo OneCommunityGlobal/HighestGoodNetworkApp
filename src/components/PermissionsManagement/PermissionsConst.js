@@ -157,10 +157,10 @@ export const permissionLabels = [
           'Gives the user permission to edit the category or the status of any Project. "Other Links" -> "Projects"',
       },
       {
-        label: 'Find User in Project',
+        label: 'See User in Project',
         key: 'getProjectMembers',
         description:
-          'Gives the user permission to find any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Find user input" ',
+          'Gives the user permission to access the profile of any user directly from the projects members page. "Other Links" -> "Projects" -> "Members"',
       },
       {
         label: 'Assign Project to Users',
