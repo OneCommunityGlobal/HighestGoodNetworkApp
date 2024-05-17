@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -127,7 +127,19 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
-  const { userId = authUser.userid } = useParams();
+
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  //const userId = searchParams.get('userId') || useParams().userId || authUser.userid;
+  const { userId: urlUserId } = useParams();
+  const [userId, setUserId] = useState(urlUserId || props.authUser.userid);
+
+  // Update user ID if it changes in the URL
+  useEffect(() => {
+    if (urlUserId) {
+      setUserId(urlUserId);
+    }
+  }, [urlUserId]);
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
@@ -161,6 +173,12 @@ const Timelog = props => {
     }
     return tab;
   };
+  useEffect(() => {
+    console.log("URL User ID:", urlUserId);
+    if (urlUserId) {
+      loadAsyncData(urlUserId);
+    }
+  }, [urlUserId]);
 
   /*---------------- methods -------------- */
   const updateTimeEntryItems = () => {

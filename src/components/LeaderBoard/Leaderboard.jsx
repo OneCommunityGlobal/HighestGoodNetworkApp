@@ -405,10 +405,14 @@ function LeaderBoard({
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
                 </td>
+               
                 <td className="align-middle">
                   <Link
-                    to={`/timelog/${item.personId}`}
+                    to={`/timelog/${item.personId}?userId=${item.personId}`}
+                    //</td>to={{pathname: `/timelog/${item.personId}`,state: { userId: item.personId } // Pass userId as state
+                  
                     title={`TangibleEffort: ${item.tangibletime} hours`}
+                    //target="_blank" // Add this attribute to open the link in a new tab
                   >
                     <Progress value={item.barprogress} color={item.barcolor} />
                   </Link>
