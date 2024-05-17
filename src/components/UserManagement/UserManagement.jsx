@@ -24,8 +24,8 @@ import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
-import { searchWithAccent } from '../../utils/search';
-
+import { searchWithAccent } from '../../utils/search'
+import SetupHistoryPopup from './SetupHistoryPopup';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
@@ -59,6 +59,8 @@ class UserManagement extends React.PureComponent {
       isPaused: false,
       finalDayDateOpen: false,
       setupNewUserPopupOpen: false,
+      setupHistoryPopupOpen: false,
+      shouldRefreshInvitationHistory: false,
       logTimeOffPopUpOpen: false,
       userForTimeOff: '',
     };
@@ -71,16 +73,17 @@ class UserManagement extends React.PureComponent {
   }
 
   render() {
+    const darkMode = this.props.state.theme.darkMode;
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
     const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests);
+    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode);
     let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
-      <Container fluid>
-        {fetching ? (
+      <Container fluid className={darkMode ? ' bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+        {/* {fetching ? (
           <SkeletonLoading template="UserManagement" />
-        ) : (
+        ) : ( */}
           <React.Fragment>
             {this.popupElements()}
             <UserSearchPanel
@@ -89,13 +92,16 @@ class UserManagement extends React.PureComponent {
               onActiveFiter={this.onActiveFiter}
               onNewUserClick={this.onNewUserClick}
               handleNewUserSetupPopup={this.handleNewUserSetupPopup}
+              handleSetupHistoryPopup={this.handleSetupHistoryPopup}
+              darkMode={darkMode}
             />
             <div className="table-responsive" id="user-management-table">
-              <Table className="table table-bordered noWrap">
+              <Table className={`table table-bordered noWrap ${darkMode ? 'text-light' : ''}`}>
                 <thead>
                   <UserTableHeader
                     authRole={this.props.state.auth.user.role}
                     roleSearchText={this.state.roleSearchText}
+                    darkMode={darkMode}
                   />
                   <UserTableSearchHeader
                     onFirstNameSearch={this.onFirstNameSearch}
@@ -106,6 +112,7 @@ class UserManagement extends React.PureComponent {
                     roles={roles}
                     authRole={this.props.state.auth.user.role}
                     roleSearchText={this.state.roleSearchText}
+                    darkMode={darkMode}
                   />
                 </thead>
                 <tbody>{userTable}</tbody>
@@ -117,9 +124,10 @@ class UserManagement extends React.PureComponent {
               onPageSelect={this.onSelectPage}
               onSelectPageSize={this.onSelectPageSize}
               pageSize={this.state.pageSize}
+              darkMode={darkMode}
             />
           </React.Fragment>
-        )}
+        {/* )} */}
       </Container>
     );
   }
@@ -172,6 +180,13 @@ class UserManagement extends React.PureComponent {
         <SetupNewUserPopup
           open={this.state.setupNewUserPopupOpen}
           onClose={this.handleNewUserSetupPopup}
+          handleShouldRefreshInvitationHistory={this.handleShouldRefreshInvitationHistory}
+        />
+        <SetupHistoryPopup
+          open={this.state.setupHistoryPopupOpen}
+          onClose={this.handleSetupHistoryPopup}
+          shouldRefreshInvitationHistory={this.state.shouldRefreshInvitationHistory}
+          handleShouldRefreshInvitationHistory={this.handleShouldRefreshInvitationHistory}
         />
         <LogTimeOffPopUp
           open={this.state.logTimeOffPopUpOpen}
@@ -185,7 +200,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements = (userProfiles, rolesPermissions, timeOffRequests) => {
+  userTableElements =(userProfiles, rolesPermissions, timeOffRequests, darkMode) => {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -196,8 +211,8 @@ class UserManagement extends React.PureComponent {
        */
       return usersSearchData
         .sort((a, b) => {
-          if (a.createdDate >= b.createdDate) return -1;
-          if (a.createdDate < b.createdDate) return 1;
+          if (a.startDate >= b.startDate) return -1;
+          if (a.startDate < b.startDate) return 1;
           return 0;
         })
         .slice(
@@ -228,6 +243,7 @@ class UserManagement extends React.PureComponent {
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
+              darkMode={darkMode}
             />
           );
         });
@@ -611,6 +627,23 @@ class UserManagement extends React.PureComponent {
   };
 
   /**
+   * When a new invitation send to user. We should update the state
+   * and re-fecth the invitation history.
+   */
+  handleShouldRefreshInvitationHistory = () => {
+    this.setState(prevState => ({
+      shouldRefreshInvitationHistory: !prevState.shouldRefreshInvitationHistory,
+    }));
+  };
+  /**
+   * Setup invitation history popup modal
+   */
+  handleSetupHistoryPopup = () => {
+    this.setState(prevState => ({
+      setupHistoryPopupOpen: !prevState.setupHistoryPopupOpen,
+    }));
+  };
+  /**
    * New user popup close button click
    */
   onUserPopupClose = () => {
@@ -618,6 +651,7 @@ class UserManagement extends React.PureComponent {
       newUserPopupOpen: false,
     });
   };
+  
 }
 
 const mapStateToProps = state => {

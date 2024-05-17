@@ -13,15 +13,25 @@ import './tagcolor.css';
 import './task.css';
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
+
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  toolbar: false,
+  branding: false,
+  min_height: 80,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+};
 
 function Task(props) {
   /*
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { tasks } = props;
+  const { tasks, darkMode } = props;
 
   const names = props.resources.map(element => element.name);
   const colors_objs = assignColorsToInitials(names);
@@ -159,7 +169,7 @@ function Task(props) {
               props.isNew ? 'newTask' : ''
             } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${
               props.parentId3
-            } mother_${props.mother} lv_${props.level}`}
+            } mother_${props.mother} lv_${props.level} ${darkMode ? 'bg-yinmn-blue' : ''}`}
             id={props.taskId}
           >
             <td
@@ -168,7 +178,7 @@ function Task(props) {
               } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <Button color="primary" size="sm" onClick={activeController} style={boxStyle}>
+              <Button color="primary" size="sm" onClick={activeController} style={darkMode ? boxStyleDark : boxStyle}>
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
@@ -326,42 +336,24 @@ function Task(props) {
               <ModalBody>
                 <h6>WHY THIS TASK IS IMPORTANT:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.whyInfo}
                 />
 
                 <h6>THE DESIGN INTENT:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.intentInfo}
                 />
 
                 <h6>ENDSTATE:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.endstateInfo}
                 />

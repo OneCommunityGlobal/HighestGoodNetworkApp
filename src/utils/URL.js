@@ -84,6 +84,13 @@ export const ENDPOINTS = {
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
 
+  //titles endpoints
+  TITLES: () => `${APIEndpoint}/title`,
+  // TITLES: () => `${APIEndpoint}/title/deleteAll`,
+  TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+  CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
+  DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
     `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
@@ -108,6 +115,9 @@ export const ENDPOINTS = {
   VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
+  GET_SETUP_INVITATION: () => `${APIEndpoint}/getSetupInvitation`,
+  REFRESH_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/refreshSetupInvitationToken`,
+  CANCEL_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/cancelSetupInvitationToken`,
   // emails endpoint
   POST_EMAILS: `${APIEndpoint}/send-emails`,
   BROADCAST_EMAILS: `${APIEndpoint}/broadcast-emails`,
@@ -164,7 +174,8 @@ export const ENDPOINTS = {
   BM_MATERIAL_TYPE: `${APIEndpoint}/bm/invtypes/material`,
   BM_MATERIALS: `${APIEndpoint}/bm/materials`,
   BM_CONSUMABLES: `${APIEndpoint}/bm/consumables`,
-  BM_CONSUMABLE_TYPES : `${APIEndpoint}/bm/invtypes/consumables`,
+  BM_UPDATE_CONSUMABLES: `${APIEndpoint}/bm/updateConsumablesRecord`,
+  BM_CONSUMABLE_TYPES: `${APIEndpoint}/bm/invtypes/consumables`,
   BM_CONSUMABLES_PURCHASE: `${APIEndpoint}/bm/consumables/purchase`,
   BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
