@@ -7,7 +7,7 @@ import './../reportsPage.css';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../../Header/DarkModeButton.css'
+import '../../Header/DarkMode.css'
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from 'actions/userProfile';
 import { postTimeEntry } from 'actions/timeEntries';

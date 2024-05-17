@@ -12,7 +12,7 @@ import { deleteTimeEntry, editTimeEntry } from 'actions/timeEntries';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './EditHistoryModal.css';
-import '../../Header/DarkModeButton.css'
+import '../../Header/DarkMode.css'
 
 const EditHistoryModal = props => {
   const darkMode = props.darkMode;
@@ -444,6 +444,7 @@ const EditHistoryModal = props => {
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
   auth: state.auth,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

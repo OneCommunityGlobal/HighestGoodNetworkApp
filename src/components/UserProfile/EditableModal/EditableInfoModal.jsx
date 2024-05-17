@@ -15,8 +15,6 @@ import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../../Header/DarkModeButton.css'
-// import { color } from 'd3';
 
 // New RichTextEditor component
 const RichTextEditor = ({ disabled, value, onEditorChange }) => (
@@ -244,7 +242,7 @@ export class EditableInfoModal extends Component {
             onClick={() => this.setState({ editableModalOpen: true })}
           />
           {editableModalOpen && (
-            <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'dark-mode text-light' : ''}>
+            <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
               <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
               <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 {this.state.editing
@@ -288,14 +286,14 @@ export class EditableInfoModal extends Component {
                         <Button
                           className='saveBtn'
                           onClick={this.handleSave}
-                          color={darkMode ? 'primary' : 'saveBtn btn btn-secondary'}
+                          color='primary'
                           style={darkMode ? boxStyleDark : boxStyle}>Save</Button>
                       </Col>)
                   }
                   <Col
                     md={3}
                   >
-                    <Button color={darkMode ? 'danger' : 'btn btn-secondary'} onClick={this.handleClose} style={darkMode ?  boxStyleDark : boxStyle}>Close</Button>
+                    <Button onClick={this.handleClose} color='danger' style={darkMode ? boxStyleDark : boxStyle}>Close</Button>
                   </Col>
                 </Row>
               </ModalFooter>
@@ -316,11 +314,10 @@ EditableInfoModal.propTypes = {
 };
 
 
-const mapStateToProps = ({ infoCollections, theme }) => ({
+const mapStateToProps = ({ infoCollections }) => ({
   loading: infoCollections?.loading,
   fetchError: infoCollections?.error,
   infoCollections: infoCollections?.infos,
-  darkMode: theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => {

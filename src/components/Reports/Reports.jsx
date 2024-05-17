@@ -415,6 +415,7 @@ class ReportsPage extends Component {
               fontSize={26}
               isPermissionPage={true}
               className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+              darkMode={darkMode}
             />
           </div>
         </h2>
@@ -563,6 +564,7 @@ class ReportsPage extends Component {
                     role={userRole}
                     fontSize={15}
                     isPermissionPage={true}
+                    darkMode={darkMode}
                   />
                   </div>
                 </div>
@@ -579,6 +581,7 @@ class ReportsPage extends Component {
                     role={userRole}
                     fontSize={15}
                     isPermissionPage={true}
+                    darkMode={darkMode}
                   />
                   </div>
                 </div>
@@ -593,6 +596,7 @@ class ReportsPage extends Component {
                     role={userRole}
                     fontSize={15}
                     isPermissionPage={true}
+                    darkMode={darkMode}
                   />
                   </div>
                 </div>
@@ -612,6 +616,7 @@ class ReportsPage extends Component {
                         role={myRole}
                         fontSize={15}
                         isPermissionPage={true}
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
@@ -628,6 +633,7 @@ class ReportsPage extends Component {
                         role={myRole}
                         fontSize={15}
                         isPermissionPage={true}
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
@@ -644,6 +650,7 @@ class ReportsPage extends Component {
                         role={myRole}
                         fontSize={15}
                         isPermissionPage={true}
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
@@ -667,6 +674,7 @@ class ReportsPage extends Component {
                         role={myRole}
                         fontSize={15}
                         isPermissionPage={true}
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
@@ -685,6 +693,7 @@ class ReportsPage extends Component {
                         role={myRole}
                         fontSize={15}
                         isPermissionPage={true}
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
@@ -701,6 +710,7 @@ class ReportsPage extends Component {
                         role={myRole}
                         fontSize={15}
                         isPermissionPage={true}
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
@@ -717,6 +727,7 @@ class ReportsPage extends Component {
                         role={myRole}
                         fontSize={15}
                         isPermissionPage={true}
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
