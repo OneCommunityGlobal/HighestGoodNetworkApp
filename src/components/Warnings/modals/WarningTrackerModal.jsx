@@ -337,7 +337,7 @@ function WarningTrackerModal({
                   className="cancel__btn"
                   onClick={() => {
                     setNewWarning(null);
-                    setToggleWarningTrackerModal(false);
+                    setToggeleWarningInput(false);
                   }}
                 >
                   Cancel
