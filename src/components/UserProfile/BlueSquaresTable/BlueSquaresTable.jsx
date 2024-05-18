@@ -3,16 +3,10 @@ import BlueSquare from '../BlueSquares/BlueSquare';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import './BlueSquaresTable.css';
 
-const BlueSquaresTable = ({
-  userProfile,
-  canEdit,
-  isPrivate,
-  handleUserProfile,
-  handleBlueSquare,
-}) => {
+const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile , handleBlueSquare, darkMode}) => {
   return (
     <div className="user-profile-blue-square-section">
-      <div className="user-profile-blue-square-div-header">
+      <div className={`user-profile-blue-square-div-header ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className="user-profile-blue-square-div-header-title">
           <div>BLUE SQUARES</div>
           <div>
@@ -31,15 +25,16 @@ const BlueSquaresTable = ({
             switchType="bluesquares"
             state={isPrivate}
             handleUserProfile={handleUserProfile}
+            darkMode={darkMode}
           />
         )}
       </div>
       {canEdit ? (
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
+        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode}/>
       ) : !isPrivate ? (
         <div className="pl-1">Blue Square Info is Private</div>
       ) : (
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} />
+        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode}/>
       )}
     </div>
   );

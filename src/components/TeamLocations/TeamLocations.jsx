@@ -1,21 +1,20 @@
 import axios from 'axios';
-import { useState, useEffect} from 'react';
-import { MapContainer, TileLayer, CircleMarker, Popup, useMapEvent } from 'react-leaflet';
-import MarkerClusterGroup from 'react-leaflet-cluster';
 import 'leaflet/dist/leaflet.css';
-import './TeamLocations.css';
+import { useEffect, useRef, useState } from 'react';
+import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Button, Container } from 'reactstrap';
+import './TeamLocations.css';
 
-import { boxStyle } from 'styles';
-import { toast } from 'react-toastify';
 import { SEARCH } from 'languages/en/ui';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
+import { boxStyle, boxStyleDark } from 'styles';
 import { ApiEndpoint, ENDPOINTS } from '../../utils/URL';
-import ListUsersPopUp from './ListUsersPopUp';
 import AddOrEditPopup from './AddOrEditPopup';
+import ListUsersPopUp from './ListUsersPopUp';
 import MarkerPopup from './MarkerPopup';
-
-
+import TeamLocationsTable from './TeamLocationsTable';
 
 function TeamLocations() {
   const [userProfiles, setUserProfiles] = useState([]);
@@ -26,11 +25,16 @@ function TeamLocations() {
   const [editingUser, setEditingUser] = useState(null);
   const [searchText, setSearchText] = useState('');
   const [popupsOpen, setPopupsOpen] = useState(false);
-  const [mapMarkers,setMapMarkers] =useState([])
+  const [mapMarkers,setMapMarkers] = useState([])
+  const [tableVisible, setTableVisible] = useState(false);
+  const [markerPopupVisible, setMarkerPopupVisible] = useState(false);
   const role = useSelector(state => state.auth.user.role);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
 
   const isAbleToEdit = role === 'Owner';
+  const mapRef = useRef(null); 
+  const [currentUser, setCurrentUser] = useState(null)
 
   useEffect(() => {
     async function getUserProfiles() {
@@ -61,6 +65,13 @@ function TeamLocations() {
     }
     getUserProfiles();
   }, []);
+
+  useEffect(() => {
+    let coords = currentUser?.location.coords;
+    if (coords) {
+      handleFlyTo(coords.lat, coords.lng);
+    }
+  }, [currentUser])
 
   // We don't need the back to top button on this page
   useEffect(() => {
@@ -115,6 +126,22 @@ function TeamLocations() {
     return modifiedLongitude;
   };
 
+  const toggleTableVisibility = () => {
+    if (tableVisible) {
+      setCurrentUser(null);
+      setTableVisible(false);
+      setMarkerPopupVisible(false);
+
+      if (mapRef.current.getZoom() >= 13) {
+        setPopupsOpen(true);
+      }
+    } 
+    else {
+      setTableVisible(true);
+      setPopupsOpen(false);
+    }
+  }
+
   // Get an array of all users' non-null countries (some locations may not be associated with a country)
   // Get the number of unique countries
 
@@ -137,8 +164,30 @@ function TeamLocations() {
     dropdown = true;
   }
 
+  const handleFlyTo = (latitude, longitude) => {
+    mapRef?.current.flyTo([latitude, longitude], 13, {
+      animate: true, 
+      duration: 3.0
+    });
+  } 
+
+  const markerPopups = mapMarkers.map(profile => {
+    let userName = getUserName(profile);
+
+    return (
+      <MarkerPopup
+        key={profile._id}
+        profile={profile}
+        userName={userName}
+        isAbleToEdit={isAbleToEdit}
+        editHandler={editHandler}
+        removeLocation={removeLocation}
+        isOpen={popupsOpen} />
+    );
+  });
+
   return (
-    <Container fluid className="mb-4">
+    <Container fluid className={`${darkMode ? 'bg-oxford-blue text-light dark-mode' : ''}`} style={{minHeight: "100%", paddingBottom: "73px"}}>
       {isAbleToEdit ? (
         <>
           <AddOrEditPopup
@@ -162,7 +211,13 @@ function TeamLocations() {
         </>
       ) : null}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
-        <h5>Total Countries: {totalUniqueCountries}</h5>
+        <div className='text-and-table-icon-container'>
+          <h5>Total Countries: {totalUniqueCountries}</h5>
+          <button id='toggle-table-button' disabled={mapMarkers.length == 0} onClick={toggleTableVisibility}>
+            <i className={`fa fa-table ${darkMode ? 'text-light' : 'text-dark'}`} aria-hidden="true"
+/>
+          </button>
+        </div>
         {isAbleToEdit ? (
           <div className="d-flex align-center">
             <div className="d-flex align-center pr-5 flex-column flex-md-row  position-relative">
@@ -247,7 +302,7 @@ function TeamLocations() {
                 outline
                 color="danger"
                 className="btn btn-outline-error mr-1 btn-sm"
-                style={{ ...boxStyle }}
+                style={darkMode ? boxStyleDark : boxStyle}
                 onClick={toggleListPopUp}
               >
                 Users list
@@ -256,7 +311,7 @@ function TeamLocations() {
                 outline
                 color="primary"
                 className="btn btn-outline-success mr-1 btn-sm"
-                style={{ ...boxStyle }}
+                style={darkMode ? boxStyleDark : boxStyle}
                 onClick={() => setAddNewIsOpen(true)}
               >
                 Add person
@@ -265,6 +320,8 @@ function TeamLocations() {
           </div>
         ) : null}
       </div>
+      <div style={{position: 'relative'}}>
+      <div>{tableVisible && <TeamLocationsTable visible={tableVisible} mapMarkers={mapMarkers} setCurrentUser={setCurrentUser} darkMode={darkMode} />}</div>
       <MapContainer
         id='map-container'
         center={[51.505, -0.09]}
@@ -276,52 +333,70 @@ function TeamLocations() {
         zoom={3}
         scrollWheelZoom
         style={{ border: '1px solid grey' }}
+        ref={mapRef}
       >
-        <EventComponent setPopupsOpen={setPopupsOpen}  />
-      
-        <TileLayer
+        <EventComponent setPopupsOpen={setPopupsOpen} currentUser={currentUser} setMarkerPopupVisible={setMarkerPopupVisible}  />
+        
+          
+           
+           
+          
+          <TileLayer
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           minZoom={2}
-          maxZoom={15}
-        />
+          maxZoom={15} />
+         
         <MarkerClusterGroup disableClusteringAtZoom={13} spiderfyOnMaxZoom={true} chunkedLoading>
-          {mapMarkers.map(profile => {
-            let userName = '';
-            if (profile.firstName && profile.lastName) {
-              userName = `${profile.firstName} ${`${profile.lastName[0]}.`}`;
-            } else {
-              userName =
-                profile.firstName || `${profile.lastName ? `${profile.lastName[0]}.` : ''}`;
-            }
-
-            return (
-              
-                <MarkerPopup
-                key={profile._id}
-                  profile={profile}
-                  userName={userName}
-                  isAbleToEdit={isAbleToEdit}
-                  editHandler={editHandler}
-                  removeLocation={removeLocation}
-                  isOpen={popupsOpen}
-                /> 
-            );
-          })}
+          {tableVisible && currentUser ?  
+          
+          <MarkerPopup
+            key={currentUser._id}
+            profile={currentUser}
+            userName={getUserName(currentUser)}
+            isAbleToEdit={isAbleToEdit}
+            editHandler={editHandler}
+            removeLocation={removeLocation}
+            isOpen={markerPopupVisible} /> 
+            
+            : markerPopups }
         </MarkerClusterGroup>
       </MapContainer>
+      </div>
     </Container>
   );
 }
 
-function EventComponent({ setPopupsOpen }) {
-  const map = useMapEvent('zoomend', () => {
-    if (map.getZoom() >= 13) {
-      setPopupsOpen(true);
-    } else {
-      setPopupsOpen(false);
+function getUserName(profile) {
+  let userName = '';
+  if (profile.firstName && profile.lastName) {
+    userName = `${profile.firstName} ${`${profile.lastName[0]}.`}`;
+  } else {
+    userName =
+      profile.firstName || `${profile.lastName ? `${profile.lastName[0]}.` : ''}`;
+  }
+  return userName;
+}
+
+function EventComponent({ setPopupsOpen, currentUser, setMarkerPopupVisible }) {
+
+  const map = useMapEvents({
+    zoomend() {
+      if (currentUser) {
+        setMarkerPopupVisible(true);
+        setPopupsOpen(false);
+      }
+      if (map.getZoom() >= 13 && !currentUser) {
+        setPopupsOpen(true);
+      } else {
+        setPopupsOpen(false);
+      }
+    }, 
+    
+    zoomstart() {
+      setMarkerPopupVisible(false);
     }
-  });
+  })
   return null;
 }
 
