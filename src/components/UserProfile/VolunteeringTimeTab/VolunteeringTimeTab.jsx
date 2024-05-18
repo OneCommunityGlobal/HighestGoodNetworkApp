@@ -7,7 +7,7 @@ import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY  } from 'utils/formatDate';
+import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY } from 'utils/formatDate';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
@@ -20,13 +20,13 @@ const startEndDateValidation = props => {
 
 
 const StartDate = props => {
-  const {darkMode} = props;
+  const { darkMode } = props;
 
   if (!props.canEdit) {
     return <p className={darkMode ? 'text-azure' : ''}>{formatDateYYYYMMDD(props.userProfile.startDate)}</p>;
   }
-  
-  
+
+
   return (
     <Input
       type="date"
@@ -47,7 +47,7 @@ const StartDate = props => {
 };
 
 const EndDate = props => {
-  const {darkMode} = props;
+  const { darkMode } = props;
 
   if (!props.canEdit) {
     return (
@@ -84,7 +84,7 @@ const EndDate = props => {
 };
 
 const WeeklySummaryOptions = props => {
-  const {darkMode} = props;
+  const { darkMode } = props;
 
   if (!props.canEdit) {
     return (
@@ -145,7 +145,7 @@ const WeeklyCommittedHours = props => {
   //Do Not change the property name "weeklycommittedHours"
   //Otherwise it will not update in the backend.
 
-  const {darkMode} = props;
+  const { darkMode } = props;
 
   if (!props.canEdit) {
     return <p className={darkMode ? 'text-azure' : ''}>{props.userProfile.weeklycommittedHours}</p>;
@@ -184,7 +184,7 @@ const WeeklyCommittedHours = props => {
 };
 
 const MissedHours = props => {
-  const{darkMode} = props;
+  const { darkMode } = props;
 
   if (!props.canEdit) {
     return <p className={darkMode ? 'text-azure' : ''}>{props.userProfile.missedHours ?? 0}</p>;
@@ -208,7 +208,7 @@ const MissedHours = props => {
 };
 
 const TotalIntangibleHours = props => {
-  const{darkMode} = props;
+  const { darkMode } = props;
 
   if (!props.canEdit) {
     return <p className={darkMode ? 'text-azure' : ''}>{props.userProfile.totalIntangibleHrs}</p>;
@@ -250,7 +250,7 @@ const ViewTab = props => {
 
   const handleStartDates = async startDate => {
 
-    if(!userProfile.isFirstTimelog) {
+    if (!userProfile.isFirstTimelog) {
       alert('This user has already logged time in the system. Are you sure you want to change the start date?');
     }
     props.onStartDate(startDate);
@@ -350,7 +350,7 @@ const ViewTab = props => {
           <Label className="hours-label">Account Created Date</Label>
         </Col>
         <Col md="6">
-        <p>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+          <p>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
@@ -479,39 +479,39 @@ const ViewTab = props => {
       </Row>
       {props?.userProfile?.hoursByCategory
         ? Object.keys(userProfile.hoursByCategory).map(key => (
-            <React.Fragment key={'hours-by-category-' + key}>
-              <Row className="volunteering-time-row">
-                <Col md="6">
-                  <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
-                    {key !== 'unassigned' ? (
-                      <>Total Tangible {capitalize(key)} Hours</>
-                    ) : (
-                      <>Total Unassigned Category Hours</>
-                    )}
-                  </Label>
-                </Col>
-                <Col md="6">
-                  {canEdit ? (
-                    <Input
-                      type="number"
-                      pattern="^\d*\.?\d{0,2}$"
-                      id={`${key}Hours`}
-                      step=".01"
-                      min="0"
-                      value={roundToTwo(userProfile.hoursByCategory[key])}
-                      onChange={e => handleOnChangeHours(e, key)}
-                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
-                    />
+          <React.Fragment key={'hours-by-category-' + key}>
+            <Row className="volunteering-time-row">
+              <Col md="6">
+                <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+                  {key !== 'unassigned' ? (
+                    <>Total Tangible {capitalize(key)} Hours</>
                   ) : (
-                    <p className={darkMode ? 'text-azure' : ''}>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
+                    <>Total Unassigned Category Hours</>
                   )}
-                </Col>
-              </Row>
-            </React.Fragment>
-          ))
+                </Label>
+              </Col>
+              <Col md="6">
+                {canEdit ? (
+                  <Input
+                    type="number"
+                    pattern="^\d*\.?\d{0,2}$"
+                    id={`${key}Hours`}
+                    step=".01"
+                    min="0"
+                    value={roundToTwo(userProfile.hoursByCategory[key])}
+                    onChange={e => handleOnChangeHours(e, key)}
+                    placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                  />
+                ) : (
+                  <p className={darkMode ? 'text-azure' : ''}>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
+                )}
+              </Col>
+            </Row>
+          </React.Fragment>
+        ))
         : []}
     </div>
   );
 };
 
-export default ViewTab;
+export { ViewTab, StartDate, WeeklyCommittedHours, MissedHours };
