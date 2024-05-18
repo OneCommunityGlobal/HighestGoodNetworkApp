@@ -344,9 +344,8 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
-        `An error occurred while attempting to save the new team code change to the profile.${err}`
+        `An error occurred while attempting to save the new team code change to the profile.${err}`,
       );
-
     }
   };
 
@@ -637,7 +636,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
         style={{
           color:
             currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-              currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
               : '#007BFF',
         }}
