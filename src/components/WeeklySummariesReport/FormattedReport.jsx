@@ -343,7 +343,10 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
       handleTeamCodeChange(userProfileSummary.teamCode, newStatus, userProfileSummary._id); // Update the team code dynamically
     } catch (err) {
       // eslint-disable-next-line no-alert
-      alert(`An error occurred while attempting to save the new team code change to the profile.${err}`);
+      alert(
+        `An error occurred while attempting to save the new team code change to the profile.${err}`
+      );
+
     }
   };
 
