@@ -9,7 +9,7 @@ import hasPermission from '../../utils/permissions';
 import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+
 
 const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user }) => {
   const dispatch = useDispatch();
@@ -94,7 +94,6 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
             )}
           </>
         ) : (
-          <div style={{ display: 'flex', width: '100%', alignItems: 'center' }}>
             <Button
               variant="primary"
               onClick={handleOpen}
@@ -104,18 +103,6 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
             >
               Schedule Blue Square Reason
             </Button>
-            {/* EditableInfoModal added to the right side 
-            <div style={{ marginLeft: '20px', flexShrink: 0 }}>
-              <EditableInfoModal
-                areaName="blueSquares_info"
-                areaTitle="Blue Squares"
-                fontSize={24}
-                isPermissionPage
-                role={userProfile.role}
-              />
-            </div>
-            */}
-          </div>
         )}
       </div>
 
