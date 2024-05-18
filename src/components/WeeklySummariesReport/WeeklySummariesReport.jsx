@@ -403,11 +403,11 @@ export class WeeklySummariesReport extends Component {
   };
 
   handleTeamCodeChange = (oldTeamCode, newTeamCode, userId) => {
-    this.setState((prevState) => {
+    this.setState(prevState => {
       let { teamCodes, summaries, selectedCodes } = prevState;
 
       // Find and update the user's team code in summaries
-      summaries = summaries.map((summary) => {
+      summaries = summaries.map(summary => {
         if (summary._id === userId) {
           return { ...summary, teamCode: newTeamCode };
         }
@@ -422,23 +422,24 @@ export class WeeklySummariesReport extends Component {
 
       // Update teamCodes by filtering out those with zero count
       teamCodes = Object.entries(teamCodeCounts)
-        .filter(([code, count]) => count > 0)
+        .filter(([count]) => count > 0)
         .map(([code, count]) => ({
           label: `${code} (${count})`,
           value: code,
         }));
 
       // Update selectedCodes labels and filter out those with zero count
-      selectedCodes = selectedCodes.map((selected) => {
-        const count = teamCodeCounts[selected.value];
-        if (count !== undefined && count > 0) {
-          return { ...selected, label: `${selected.value} (${count})` };
-        }
-        return null;
-      }).filter(Boolean); // Remove any null entries
+      selectedCodes = selectedCodes
+        .map(selected => {
+          const count = teamCodeCounts[selected.value];
+          if (count !== undefined && count > 0) {
+            return { ...selected, label: `${selected.value} (${count})` };
+          }
+          return null;
+        })
+        .filter(Boolean);
 
-      // If newTeamCode is not already selected, add it to selectedCodes
-      if (!selectedCodes.find((code) => code.value === newTeamCode)) {
+      if (!selectedCodes.find(code => code.value === newTeamCode)) {
         selectedCodes.push({
           label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
           value: newTeamCode,
@@ -505,8 +506,9 @@ export class WeeklySummariesReport extends Component {
     return (
       <Container
         fluid
-        className={`container-wsr-wrapper py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
-          }`}
+        className={`container-wsr-wrapper py-3 mb-5 ${
+          darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
+        }`}
       >
         {this.passwordInputModalToggle()}
         {this.popUpElements()}
@@ -529,18 +531,18 @@ export class WeeklySummariesReport extends Component {
         </Row>
         {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
           authEmailWeeklySummaryRecipient === authorizedUser2) && (
-            <Row className="d-flex justify-content-center mb-3">
-              <Button
-                color="primary"
-                className="permissions-management__button"
-                type="button"
-                onClick={() => this.onClickRecepients()}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Weekly Summary Report Recipients
-              </Button>
-            </Row>
-          )}
+          <Row className="d-flex justify-content-center mb-3">
+            <Button
+              color="primary"
+              className="permissions-management__button"
+              type="button"
+              onClick={() => this.onClickRecepients()}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Weekly Summary Report Recipients
+            </Button>
+          </Row>
+        )}
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
@@ -579,7 +581,7 @@ export class WeeklySummariesReport extends Component {
                       onChange={this.handleBioStatusToggleChange}
                     />
                     <label className="custom-control-label" htmlFor="bio-status-toggle">
-                      { }
+                      {}
                     </label>
                   </div>
                 </div>
@@ -595,7 +597,7 @@ export class WeeklySummariesReport extends Component {
                       onChange={this.handleOverHoursToggleChange}
                     />
                     <label className="custom-control-label" htmlFor="over-hours-toggle">
-                      { }
+                      {}
                     </label>
                   </div>
                 </div>
