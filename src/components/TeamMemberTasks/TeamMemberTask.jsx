@@ -81,6 +81,7 @@ const TeamMemberTask = React.memo(
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
+    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const handleTruncateTasksButtonClick = () => {
@@ -241,18 +242,19 @@ const TeamMemberTask = React.memo(
                                 data-testid={`tick-${task.taskName}`}
                               />
                             )}
-                            {canUpdateTask && (
-                              <FontAwesomeIcon
-                                className="team-member-task-remove"
-                                icon={faTimes}
-                                title="Remove User from Task"
-                                onClick={() => {
-                                  handleRemoveFromTaskModal(user.personId, task);
-                                  handleTaskModalOption('XMark');
-                                }}
-                                data-testid={`Xmark-${task.taskName}`}
-                              />
+                            { (canUpdateTask || canRemoveUserFromTask) && (
+                                <FontAwesomeIcon
+                                  className="team-member-task-remove"
+                                  icon={faTimes}
+                                  title="Remove User from Task"
+                                  onClick={() => {
+                                    handleRemoveFromTaskModal(user.personId, task);
+                                    handleTaskModalOption('XMark');
+                                  }}
+                                  data-testid={`Xmark-${task.taskName}`}
+                                />
                             )}
+
                             <TeamMemberTaskIconsInfo />
                           </div>
                           <div>
