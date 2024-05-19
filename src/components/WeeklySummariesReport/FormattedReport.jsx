@@ -186,7 +186,8 @@ function getTextColorForHoursLogged(hoursLogged, promisedHours) {
 
   if (percentage < 50) {
     return 'red';
-  } else if (percentage < 100) {
+  }
+  if (percentage < 100) {
     return '#0B6623';
   }
   return 'black';
