@@ -148,14 +148,18 @@ function TeamLocations() {
   
   const countries = mapMarkers.map(user => user.location.country);
   const totalUniqueCountries = [...new Set(countries)].length;
-  if (searchText) {
-    mapMarkers = mapMarkers.filter(
-      item =>
-        item.location.city?.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.location.country?.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.firstName?.toLowerCase().includes(searchText.toLowerCase()) ||
-        item.lastName?.toLowerCase().includes(searchText.toLowerCase()),
-    );
+  try {
+    if (searchText) {
+      mapMarkers = mapMarkers.filter(
+        item =>
+          item.location.city?.toLowerCase().includes(searchText.toLowerCase()) ||
+          item.location.country?.toLowerCase().includes(searchText.toLowerCase()) ||
+          item.firstName?.toLowerCase().includes(searchText.toLowerCase()) ||
+          item.lastName?.toLowerCase().includes(searchText.toLowerCase()),
+      );
+    }
+  } catch (error) {
+    console.error("Failed to filter map markers:", error);
   }
   let dropdown = false;
   const noUsersFound = 'No users found.';
