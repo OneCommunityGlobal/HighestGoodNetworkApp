@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import {
   Form,
   FormGroup,
@@ -30,6 +30,7 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import 'tinymce/skins/ui/oxide-dark/skin.min.css';
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -69,6 +70,11 @@ const TINY_MCE_INIT_OPTIONS = {
 
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
+  const darkMode = useSelector(state => state.theme.darkMode);
+  if(darkMode) {
+    TINY_MCE_INIT_OPTIONS.skin = 'oxide-dark';
+    TINY_MCE_INIT_OPTIONS.content_css = 'dark';
+  }
   // props from parent
   const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile } = props;
   // props from store
@@ -477,7 +483,7 @@ const TimeEntryForm = props => {
 
   return (
     <>
-      <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
+      <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" contentClassName={darkMode ? "dashboardmodaldark" : ""}>
         <ModalHeader toggle={toggle}>
           <div>
             {edit ? 'Edit ' : 'Add '}
@@ -504,7 +510,7 @@ const TimeEntryForm = props => {
         <ModalBody>
           <Form>
             <FormGroup>
-              <Label for="dateOfWork">Date</Label>
+              <Label for="dateOfWork" className={darkMode ? 'color-white' : ''}>Date</Label>
               <Input
                 type="date"
                 name="dateOfWork"
@@ -513,6 +519,7 @@ const TimeEntryForm = props => {
                 onChange={handleInputChange}
                 // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate ? userProfile?.startDate.split('T')[0] : null} 
                 disabled={!canEditTimeEntry}
+                className={darkMode ? 'tab-content bg-yinmn-blue color-white' : ''}
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -521,7 +528,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="timeSpent">Time (HH:MM)</Label>
+              <Label for="timeSpent" className={darkMode ? 'color-white' : ''}>Time (HH:MM)</Label>
               <Row form>
                 <Col>
                   <Input
@@ -534,6 +541,7 @@ const TimeEntryForm = props => {
                     value={formValues.hours}
                     onChange={handleInputChange}
                     disabled={!canChangeTime}
+                    className={darkMode ? 'tab-content bg-yinmn-blue color-white' : ''}
                   />
                 </Col>
                 <Col>
@@ -547,6 +555,7 @@ const TimeEntryForm = props => {
                     value={formValues.minutes}
                     onChange={handleInputChange}
                     disabled={!canChangeTime}
+                    className={darkMode ? 'tab-content bg-yinmn-blue color-white' : ''}
                   />
                 </Col>
               </Row>
@@ -557,13 +566,14 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="project">Project/Task</Label>
+              <Label for="project" className={darkMode ? 'color-white' : ''}>Project/Task</Label>
               <Input
                 type="select"
                 name="projectOrTask"
                 id="projectOrTask"
                 value={projectOrTaskId || 'title'}
                 onChange={handleProjectOrTaskChange}
+                className={darkMode ? 'tab-content bg-yinmn-blue color-white' : ''}
               >
                 {projectsAndTasksOptions}
               </Input>
@@ -574,7 +584,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="notes">Notes</Label>
+              <Label for="notes" className={darkMode ? 'color-white' : ''}>Notes</Label>
               <Editor
                 tinymceScriptSrc="/tinymce/tinymce.min.js"
                 init={TINY_MCE_INIT_OPTIONS}
@@ -592,7 +602,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup check>
-              <Label check>
+              <Label className={darkMode ? 'color-white' : ''} check>
                 <Input
                   type="checkbox"
                   name="isTangible"

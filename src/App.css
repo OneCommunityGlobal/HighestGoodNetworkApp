@@ -177,3 +177,11 @@ input[type="radio"]:hover {
 input[type="checkbox"]:not([disabled]):hover {
   cursor: pointer;
 }
+
+.dashboardmodaldark {
+  background-color: #1B2A41 !important;
+  color: #fff;
+}
+.color-white {
+  color: #fff !important;
+}
