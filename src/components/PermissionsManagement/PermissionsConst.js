@@ -1,18 +1,12 @@
-// returns an array of all the keys for permissions
-export const getAllPermissionKeys = () => {
-  return getAllSubpermissionKeys(permissionLabels);
-};
-
 // recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
-const getAllSubpermissionKeys = (permissions) => {
+const getAllSubpermissionKeys = permissions => {
   const keys = [];
-  permissions.forEach((permission) => {
+  permissions.forEach(permission => {
     // recursive call for nested permissions
-    if(permission.subperms){
-      keys.push(...getAllSubpermissionKeys(permission.subperms))
-    }
-    else {
-      keys.push(permission.key)
+    if (permission.subperms) {
+      keys.push(...getAllSubpermissionKeys(permission.subperms));
+    } else {
+      keys.push(permission.key);
     }
   });
   return keys;
@@ -382,10 +376,16 @@ export const permissionLabels = [
       {
         label: 'See All Users in Dashboard and Leaderboard',
         key: 'seeUsersInDashboard',
-        description: 'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+        description:
+          'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
       },
     ],
   },
 ];
+
+// returns an array of all the keys for permissions
+export const getAllPermissionKeys = () => {
+  return getAllSubpermissionKeys(permissionLabels);
+};
 
 export default permissionLabels;

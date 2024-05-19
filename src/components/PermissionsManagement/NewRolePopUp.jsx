@@ -1,5 +1,4 @@
-import React, { useState } from 'react';
-import { FormCheck } from 'react-bootstrap';
+import { useState } from 'react';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
@@ -7,7 +6,7 @@ import { boxStyle } from 'styles';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 
-function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
+function CreateNewRolePopup({ toggle, roleNames }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
@@ -37,6 +36,19 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     }
   };
 
+  const checkIfDuplicate = value => {
+    let duplicateFound = false;
+
+    roleNames.forEach(val => {
+      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
+        duplicateFound = true;
+        return true;
+      }
+      return 0;
+    });
+    return duplicateFound;
+  };
+
   const handleRoleName = e => {
     const { value } = e.target;
     const regexTest = noSymbolsRegex.test(value);
@@ -60,18 +72,6 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     }
   };
 
-  const checkIfDuplicate = value => {
-    let duplicateFound = false;
-
-    roleNames.forEach(val => {
-      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
-        duplicateFound = true;
-        return true;
-      }
-    });
-    return duplicateFound;
-  };
-
   return (
     <Form id="createRole" onSubmit={handleSubmit}>
       <FormGroup>
@@ -85,16 +85,14 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
           <Alert className="createRole__alert" color="danger">
             {errorMessage}
           </Alert>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </FormGroup>
 
       <FormGroup>
         <Label>Permissions:</Label>
         <PermissionList
           rolePermissions={permissionsChecked}
-          editable={true}
+          editable
           setPermissions={setPermissionsChecked}
         />
       </FormGroup>
