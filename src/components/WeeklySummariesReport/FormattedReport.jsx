@@ -253,32 +253,17 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
-              {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-                <p
-                  style={{
-                    color: getTextColorForHoursLogged(
-                      hoursLogged,
-                      summary.promisedHoursByWeek[weekIndex],
-                    ),
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              )}
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-                <p
-                  style={{
-                    color: getTextColorForHoursLogged(
-                      hoursLogged,
-                      summary.promisedHoursByWeek[weekIndex],
-                    ),
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              )}
+              <p
+                style={{
+                  color: getTextColorForHoursLogged(
+                    hoursLogged,
+                    summary.promisedHoursByWeek[weekIndex],
+                  ),
+                  fontWeight: 'bold',
+                }}
+              >
+                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+              </p>
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
