@@ -13,7 +13,7 @@ import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 
 const WBSItem = props => {
-  const {darkMode} = props;
+  const { darkMode } = props.theme;
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const canDeleteWBS = props.hasPermission('deleteWbs');
@@ -55,6 +55,7 @@ const WBSItem = props => {
         confirmModal={() => confirmDelete()}
         modalMessage={props.popupEditor.currPopup.popupContent || ''}
         modalTitle="Confirm Deletion"
+        darkMode={darkMode}
       />
     </React.Fragment>
   );
