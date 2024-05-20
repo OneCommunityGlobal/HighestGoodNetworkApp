@@ -21,11 +21,11 @@ import { Button } from 'reactstrap';
 
 
 const ProjectTableHeader = props => {
-  const { role } = props; // Access the 'role' prop
+  const { role, darkMode } = props;
   const canDeleteProject = props.hasPermission('deleteProject');
 
   return (
-    <tr>
+    <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
       <th scope="col" id="projects__order">
         #
       </th>
@@ -41,7 +41,7 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__category">
          {/* This span holds the header-name and a dropDown component */}
        <span className='d-flex justify-content-between'>{PROJECT_CATEGORY}
-        <DropdownButton id="" title="" size='sm'style={boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} >
+        <DropdownButton id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} >
             <Dropdown.Item default value="Unspecified">Unspecified</Dropdown.Item>
             <Dropdown.Item eventKey="Food">Food</Dropdown.Item>
             <Dropdown.Item eventKey="Energy">Energy</Dropdown.Item>
@@ -57,7 +57,7 @@ const ProjectTableHeader = props => {
       </th>
       <th scope="col" id="projects__active">
       <span className='d-flex justify-content-between'>{ACTIVE}
-        <DropdownButton className='ml-2' id="" title="" size='sm'style={boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus} >
+        <DropdownButton className='ml-2' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus} >
         <Dropdown.Item default value="Unspecified">Choose Status</Dropdown.Item>
             <Dropdown.Item eventKey="Active">Active</Dropdown.Item>
             <Dropdown.Item eventKey="Inactive">Inactive</Dropdown.Item>

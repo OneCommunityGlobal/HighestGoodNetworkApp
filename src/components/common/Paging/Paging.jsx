@@ -7,6 +7,9 @@ import './Paging.css';
 const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
+  const pageIndexButton = darkMode ? 'page-index-button-dark' : 'page-index-button';
+  const paginationButtons = darkMode ? 'pagination-buttons-dark' : 'pagination-buttons';
+
   const pagesCount = Math.ceil(totalElementsCount / maxElemPerPage);
 
   const renderPageNumberButton = pageNumber => (
@@ -14,7 +17,7 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
     <div
       onClick={() => setCurrentPage(pageNumber)}
       className={classnames(
-        `${darkMode ? 'page-index-button-dark' : 'page-index-button'}`,
+        `${pageIndexButton}`,
         darkMode
           ? { 'active-button-dark': pageNumber === currentPage }
           : { 'active-button': pageNumber === currentPage },
@@ -33,11 +36,7 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
         indexesButtons.push(renderPageNumberButton(i));
       }
 
-      return (
-        <div className={darkMode ? 'pagination-buttons-dark' : 'pagination-buttons'}>
-          {indexesButtons}
-        </div>
-      );
+      return <div className={paginationButtons}>{indexesButtons}</div>;
     }
 
     if (currentPage <= 5) {
@@ -46,7 +45,7 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
       }
 
       return (
-        <div className={darkMode ? 'pagination-buttons-dark' : 'pagination-buttons'}>
+        <div className={paginationButtons}>
           {indexesButtons}
           ...
           <div>{renderPageNumberButton(pagesCount)}</div>
@@ -59,7 +58,7 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
         indexesButtons.push(renderPageNumberButton(i));
       }
       return (
-        <div className={darkMode ? 'pagination-buttons-dark' : 'pagination-buttons'}>
+        <div className={paginationButtons}>
           {renderPageNumberButton(1)}
           ...
           {indexesButtons}
@@ -72,7 +71,7 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
     }
 
     return (
-      <div className={darkMode ? 'pagination-buttons-dark' : 'pagination-buttons'}>
+      <div className={paginationButtons}>
         {renderPageNumberButton(1)}
         ...
         {indexesButtons}
@@ -104,14 +103,14 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
       {totalElementsCount > maxElemPerPage && (
         <div className="pagination-buttons-wrapper">
           <FiChevronLeft
-            className={classnames(`${darkMode ? 'page-index-button-dark' : 'page-index-button'}`, {
+            className={classnames(`${pageIndexButton}`, {
               disabled: currentPage === 1,
             })}
             onClick={handlePrevArrowClick}
           />
           {renderPageIndexes()}
           <FiChevronRight
-            className={classnames(`${darkMode ? 'page-index-button-dark' : 'page-index-button'}`, {
+            className={classnames(`${pageIndexButton}`, {
               disabled: currentPage === pagesCount,
             })}
             onClick={handleNextArrowClick}
