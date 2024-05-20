@@ -3,11 +3,11 @@ import { FormCheck } from 'react-bootstrap';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 
-function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
+function CreateNewRolePopup({ toggle, addNewRole, roleNames, darkMode }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
@@ -75,7 +75,7 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
   return (
     <Form id="createRole" onSubmit={handleSubmit}>
       <FormGroup>
-        <Label>Role Name:</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Role Name:</Label>
         <Input
           placeholder="Please enter a new role name"
           value={newRoleName}
@@ -91,21 +91,22 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
       </FormGroup>
 
       <FormGroup>
-        <Label>Permissions:</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Permissions:</Label>
         <PermissionList
           rolePermissions={permissionsChecked}
           editable={true}
           setPermissions={setPermissionsChecked}
+          darkMode={darkMode}
         />
       </FormGroup>
-      <Button type="submit" id="createRole" color="primary" size="lg" block style={boxStyle}>
+      <Button type="submit" id="createRole" color="primary" size="lg" block style={darkMode ? boxStyleDark : boxStyle}>
         Create
       </Button>
     </Form>
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles });
+const mapStateToProps = state => ({ roles: state.role.roles, darkMode: state.theme.darkMode });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),

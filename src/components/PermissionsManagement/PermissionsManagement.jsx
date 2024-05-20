@@ -8,6 +8,7 @@ import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
@@ -87,6 +88,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                       areaName={`${roleName}` + 'Info'}
                       areaTitle={`${roleName}` + ' User Role'}
                       fontSize={18}
+                      darkMode={darkMode}
                       isPermissionPage
                     />
                   </div>
@@ -123,14 +125,15 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
           )}
         </div>
         <div className="permissions-management--flex">
-          <Modal isOpen={isNewRolePopUpOpen} toggle={togglePopUpNewRole} id="modal-content__new-role">
+          <Modal isOpen={isNewRolePopUpOpen} toggle={togglePopUpNewRole} id="modal-content__new-role" className={darkMode ? 'text-light dark-mode' : ''}>
             <ModalHeader
               toggle={togglePopUpNewRole}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
             >
               Create New Role
             </ModalHeader>
-            <ModalBody id="modal-body_new-role--padding">
+            <ModalBody id="modal-body_new-role--padding" className={darkMode ? 'bg-yinmn-blue' : ''}>
               <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} />
             </ModalBody>
           </Modal>
@@ -138,14 +141,16 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
             isOpen={isUserPermissionsOpen}
             toggle={togglePopUpUserPermissions}
             id="modal-content__new-role"
+            className={darkMode ? 'text-light dark-mode' : ''}
           >
             <ModalHeader
               toggle={togglePopUpUserPermissions}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
             >
               Manage User Permissions
             </ModalHeader>
-            <ModalBody id="modal-body_new-role--padding">
+            <ModalBody id="modal-body_new-role--padding"  className={darkMode ? 'bg-yinmn-blue' : ''}>
               <UserPermissionsPopUp toggle={togglePopUpUserPermissions} />
             </ModalBody>
           </Modal>
