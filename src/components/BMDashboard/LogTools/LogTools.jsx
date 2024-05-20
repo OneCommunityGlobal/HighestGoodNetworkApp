@@ -31,6 +31,7 @@ function LogTools() {
       date: today,
       typesArray: []
     });
+  const [selectCodesArray, setSelectCodesArray] = useState([]) 
 
   const postToolsLogResult = useSelector(state => state.bmInvTypes.postedResult);
 
@@ -64,9 +65,13 @@ function LogTools() {
   useEffect(() => {
     dispatch(fetchToolTypes());
     dispatch(fetchBMProjects());
-    console.log("first load. toolTypes in redux: ", toolTypes)
-    console.log("projects in redux: ", projects)
+    // console.log("first load. toolTypes in redux: ", toolTypes)
+    // console.log("projects in redux: ", projects)
   }, []);
+
+  useEffect(()=>{
+    console.log("toolTypes changed: ", toolTypes);
+  },[toolTypes])
 
   // useEffect(()=>{
   //   console.log("relevantToolTypes changed: ", relevantToolTypes);
@@ -80,7 +85,7 @@ function LogTools() {
      setPostObject({ 
       action: selectedAction,
       date: today,
-      typesArray: []
+      typesArray: [],
     })
     const actionArray = selectedAction === "Check In" ? "using" : "available"; 
 // console.log("actionArray: ", actionArray)
@@ -112,14 +117,15 @@ function LogTools() {
     }
     setRelevantToolTypes(filteredToolTypes);
   });
-  },[selectedProject, selectedAction])
+  },[selectedProject, selectedAction, toolTypes])
 
 useEffect(()=>{
-  console.log("postObject changed: ",postObject)  
+  console.log("postObject changed: ",postObject);
+  // console.log("[0]code: ", postObject.typesArray[0]?.toolCodes)  
 },[postObject])
 
 useEffect(()=>{
-  console.log("postToolsLogResult changed: ",postToolsLogResult);
+  // console.log("postToolsLogResult changed: ",postToolsLogResult);
   if(postToolsLogResult?.error === true){
     toast.error(`${postToolsLogResult?.result}`);
     dispatch(resetPostToolsLog());
@@ -130,15 +136,13 @@ useEffect(()=>{
     dispatch(fetchToolTypes());
     dispatch(resetPostToolsLog());
 
-    // setSelectedProject(projects[0].name)
-
     setPostObject({ 
       action: selectedAction,
       date: today,
       typesArray: []
     })
 
-    console.log("After successfull post. toolTypes: ", toolTypes)
+    // console.log("After successfull post. toolTypes: ", toolTypes)
 
   }
 
@@ -156,36 +160,68 @@ useEffect(()=>{
   // const handleItemCodeSelect = () => {}
 
   const handleCodeSelect = (event, eventParams) => {
-    // console.log("event: ", event, ", eventParams: ", eventParams.action)
+
+
     // console.log("event[0]: ", event[0].value);
     const postObjCopy = {...postObject}; 
+    // const selectCodesArrayCopy = {...selectCodesArray};
 
     if(eventParams.action === 'select-option'){
-      // console.log("postObjCopy: ",postObjCopy)
-      const idx = postObjCopy.typesArray.findIndex((obj)=> obj.toolType === event[0].type);
-      if(idx < 0){
-        const tempObj = {
-          toolType: '',
-          toolItems: [],
-        }
-      tempObj.toolType = event[0].type;
-      tempObj.toolItems.push(event[0].value);
-      postObjCopy.typesArray.push(tempObj);
-    }else{
-      postObjCopy.typesArray[idx].toolItems.push(event[0].value)
-    }
+      
+      event.forEach((el)=>{
+        // console.log("type: ", el.type, ", value: ", el.value, ", label: ", el.label);
+        const idx = postObjCopy.typesArray.findIndex((obj)=> obj.toolType === el.type);
+        // console.log("idx in loop: ", idx); //-1 means it's a new type, >0 means it's not
+        
 
+        if(idx < 0){
+
+          const tempObj = {
+            toolType: '',
+            toolItems: [],
+            toolCodes: [],
+          };
+          tempObj.toolType = el.type;
+          tempObj.toolItems.push(el.value);
+          // tempObj.toolCodes.push(el.label);
+
+          tempObj.toolCodes.push(el);
+          // // 
+          // setSelectCodesArray(...selectCodesArray, el.label);
+          // // 
+          postObjCopy.typesArray.push(tempObj);
+          
+
+        }else{
+          // console.log("idx >= 0, existing type");
+          if(!postObjCopy.typesArray[idx].toolItems.includes(el.value)){
+            postObjCopy.typesArray[idx].toolItems.push(el.value);
+            postObjCopy.typesArray[idx].toolCodes.push(el);
+            setSelectCodesArray(...selectCodesArray, el.label);
+          }
+        }
+      })
+
+     
     // console.log("postObjCopy after add: ", postObjCopy);
     }else if(eventParams.action === 'remove-value'){
-      // console.log("remove chip, eventParams: ", eventParams.removedValue);
+      console.log("remove chip, eventParams: ", eventParams.removedValue);
       const removedType = eventParams.removedValue.type;
       const removedItem = eventParams.removedValue.value;
+      
       const typeIdx = postObjCopy.typesArray.findIndex((obj)=> obj.toolType === removedType);
       // console.log("postObjCopy.typesArray[typeIdx].toolItems: ",postObjCopy.typesArray[typeIdx].toolItems)
-      // console.log("removedType: ",removedType, ", removedItem: ", removedItem, ", typeIdx: ", typeIdx);
+      console.log("removedType: ",removedType, ", removedItem: ", removedItem, ", typeIdx: ", typeIdx);
       const itemIdx = postObjCopy.typesArray[typeIdx].toolItems.findIndex((item)=> item === removedItem);
-      // console.log("itemIdx: ",itemIdx)
-      postObjCopy.typesArray[typeIdx].toolItems.splice(itemIdx,1)
+      console.log("itemIdx: ",itemIdx)
+      postObjCopy.typesArray[typeIdx].toolItems.splice(itemIdx,1);
+      console.log("postObjCopy item removed: ", postObjCopy);
+      //&&&
+      
+      postObjCopy.typesArray[typeIdx].toolCodes.splice(itemIdx,1);
+      console.log("postObjCopy code removed: ", postObjCopy);
+      //&&&
+      
       // console.log("postObjCopy.typesArray: ", postObjCopy.typesArray[typeIdx].toolItems)
       if(postObjCopy.typesArray[typeIdx].toolItems.length === 0){
         // console.log("such empty");
@@ -198,32 +234,33 @@ useEffect(()=>{
       const clearedType = eventParams.removedValues[0].type;
       // console.log("clearedType: ", clearedType) 
       // console.log("postObjCopy.typesArray: ",postObjCopy.typesArray[0].toolType)
-      postObjCopy.typesArray.forEach((type)=> console.log("type: ", type.toolType))
+      // postObjCopy.typesArray.forEach((type)=> console.log("type: ", type.toolType))
       const clearedTypeIdx = postObjCopy.typesArray.findIndex((type)=>type.toolType === clearedType)
       // console.log("clearedTypeIdx: ", clearedTypeIdx)
       postObjCopy.typesArray.splice(clearedTypeIdx,1)
       // console.log("postObjCopy: ", postObjCopy);
     }
-  console.log("postObjCopy: ", postObjCopy);
+  // console.log("postObjCopy: ", postObjCopy);
 
   setPostObject(postObjCopy);
   };
 
+
   const handleCancel = () => {
-    const selectedProjectCopy = selectedProject;
-    const selectedActionCopy = selectedAction;
+    // const selectedProjectCopy = selectedProject;
+    // const selectedActionCopy = selectedAction;
     const blankPostObj = { 
       action: selectedAction,
       date: today,
       typesArray: []
     }
-   setSelectedAction(selectedProjectCopy)
+  //  setSelectedAction(selectedProjectCopy)
   //  setSelectedProject(selectedActionCopy)
-  //  setPostObject(blankPostObj)
+   setPostObject(blankPostObj)
   }
 
   const handleSubmit = ()=>{
-    console.log("postObj: ", postObject);
+    // console.log("postObj: ", postObject);
     dispatch(postToolsLog(postObject));
   }
 
@@ -319,9 +356,10 @@ useEffect(()=>{
                        <td>{toolType.using}</td>
                       <td> 
                        <Select 
+                        // key={`${toolType._id}${index}`}//didn't solve the problem
                         options={toolType.items}
                         isMulti  
-                        // value={postObject.typesArray[index]?.toolItems}
+                        // value={postObject.typesArray.length > 0 ? postObject.typesArray[index]?.toolCodes : []}
                         styles={multiSelectCustomStyles} 
                         onChange={handleCodeSelect}  
                         />
