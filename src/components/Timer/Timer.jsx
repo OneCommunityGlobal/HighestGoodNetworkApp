@@ -304,7 +304,7 @@ export default function Timer({ darkMode }) {
 
   return (
     <div className={css.timerContainer}>
-      <button type="button" onClick={toggleTimer}>
+      <button type="button" onClick={toggleTimer} className={css.btnDiv}>
         <BsAlarmFill
           className={cs(css.transitionColor, css.btn)}
           fontSize="2rem"
