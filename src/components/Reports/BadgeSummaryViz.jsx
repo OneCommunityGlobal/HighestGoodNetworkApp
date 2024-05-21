@@ -10,8 +10,8 @@ import {
   CardText,
   DropdownToggle,
   Modal,
-  ModalBody,
   ModalHeader,
+  ModalBody,
   ModalFooter,
   UncontrolledDropdown,
   UncontrolledPopover,
@@ -19,11 +19,14 @@ import {
   DropdownItem,
   UncontrolledTooltip
 } from 'reactstrap';
-import { boxStyle } from '../../styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';
+import { useSelector } from 'react-redux';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [isOpen, setIsOpen] = useState(false);
   const [sortedBadges, setSortedBadges] = useState([]);
 
@@ -48,19 +51,19 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
     <div>
       <Button
         onClick={toggle}
-        style={boxStyle}
+        style={darkMode ? boxStyleDark : boxStyle}
         className={`${dashboard && 'btn--dark-sea-green float-right'}`}
       >
         {dashboard ? 'Badge Report' : 'Show Badges'}
       </Button>
-      <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-        <ModalHeader>Badge Summary</ModalHeader>
-        <ModalBody>
+      <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}
             <div className="desktop">
               <div style={{ overflowY: 'scroll', height: '75vh' }}>
-                <Table>
+                <Table className={darkMode ? 'text-light' : ''}>
                   <thead style={{ zIndex: '10' }}>
                     <tr style={{ zIndex: '10' }}>
                       <th style={{ width: '93px' }}>Badge</th>
@@ -114,7 +117,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                             <>
                               {' '}
                               <UncontrolledDropdown className="me-2" direction="down">
-                                <DropdownToggle caret color="primary" style={boxStyle}>
+                                <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                                   Dates
                                 </DropdownToggle>
                                 <DropdownMenu>
@@ -161,7 +164,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             {/* --- TABLET VERSION OF MODAL --- */}
             <div className="tablet">
               <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table>
+                <Table  className={darkMode ? 'text-light' : ''}>
                   <thead style={{ zIndex: '10' }}>
                     <tr style={{ zIndex: '10' }}>
                       <th style={{ width: '25%' }}>Badge</th>
@@ -223,7 +226,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             </div>
           </div>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="badge_summary_viz_footer">
             <ReactStrapButton
               className="btn--dark-sea-green badge_summary_viz_button"

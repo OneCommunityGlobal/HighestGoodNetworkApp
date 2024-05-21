@@ -13,7 +13,7 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { searchWithAccent } from 'utils/search';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
@@ -27,8 +27,10 @@ import {
   getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
+import '../Header/DarkMode.css';
 
 function AssignBadge(props) {
+  const { darkMode } = props;
   const [isOpen, setOpen] = useState(false);
   const [firstSuggestions, setFirstSuggestions] = useState([]);
   const [lastSuggestions, setLastSuggestions] = useState([]);
@@ -135,12 +137,14 @@ function AssignBadge(props) {
 
   return (
     <Form
+      className={darkMode ? 'bg-yinmn-blue text-light' : ''}
       style={{
-        margin: 20,
+        padding: 20,
       }}
     >
       <div className="assign-badge-margin-top" style={{ display: 'flex', alignItems: 'center' }}>
         <Label
+          className={darkMode ? 'text-light' : ''}
           style={{
             fontWeight: 'bold',
             marginLeft: '15px',
@@ -210,13 +214,20 @@ function AssignBadge(props) {
         <Button
           className="btn--dark-sea-green"
           onClick={toggle}
-          style={{ ...boxStyle, margin: 20 }}
+          style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
         >
           Assign Badge
         </Button>
-        <Modal isOpen={isOpen} toggle={toggle} backdrop="static">
-          <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
-          <ModalBody>
+        <Modal
+          isOpen={isOpen}
+          toggle={toggle}
+          backdrop="static"
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
+            Assign Badge
+          </ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <AssignBadgePopup
               allBadgeData={props.allBadgeData}
               submit={submit}
@@ -224,7 +235,9 @@ function AssignBadge(props) {
             />
           </ModalBody>
         </Modal>
-        <FormText color="muted">Please select a badge from the badge list.</FormText>
+        <FormText color={darkMode ? 'white' : 'muted'}>
+          Please select a badge from the badge list.
+        </FormText>
         <Alert color="dark" className="assign-badge-margin-top">
           {' '}
           {props.selectedBadges ? props.selectedBadges.length : '0'} badges selected
@@ -244,6 +257,7 @@ const mapStateToProps = state => ({
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
   allUserProfiles: state.allUserProfiles.userProfiles,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

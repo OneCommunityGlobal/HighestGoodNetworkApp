@@ -27,6 +27,7 @@ const ShowCollapse = props => {
 };
 
 export const TasksDetail = props => {
+  const darkMode = props.darkMode;
   let tasksList = [];
   let tasks = [];
   tasks = props.tasks_filter;
@@ -108,7 +109,7 @@ export const TasksDetail = props => {
   return (
     <div>
       <div className="tasks-detail-total">Total: {tasksList.length}</div>
-      <div className="tasks-detail-table-row tasks-detail-table-head">        
+      <div className={`tasks-detail-table-row tasks-detail-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>        
         <div>#</div>
         <div>Task</div>
         <div>Priority</div>

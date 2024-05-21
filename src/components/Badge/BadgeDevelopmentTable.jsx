@@ -22,6 +22,8 @@ import DeleteBadgePopup from './DeleteBadgePopup';
 import './Badge.css';
 
 function BadgeDevelopmentTable(props) {
+  const { darkMode } = props;
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('');
@@ -115,7 +117,7 @@ function BadgeDevelopmentTable(props) {
     const filteredList = allBadges.filter(badge => {
       if (
         badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-        badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 &&
+        badge.description?.toLowerCase().indexOf(description.toLowerCase()) > -1 &&
         (!type.toLowerCase() || badge?.type?.toLowerCase().indexOf(type.toLowerCase()) > -1)
       ) {
         return badge;
@@ -180,9 +182,9 @@ function BadgeDevelopmentTable(props) {
 
   return (
     <Container fluid>
-      <table className="table table-bordered">
+      <table className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <thead>
-          <BadgeTableHeader />
+          <BadgeTableHeader darkMode={darkMode} />
           <BadgeTableFilter
             onBadgeNameSearch={onBadgeNameSearch}
             onBadgeDescriptionSearch={onBadgeDescriptionSearch}
@@ -193,16 +195,17 @@ function BadgeDevelopmentTable(props) {
             description={description}
             type={type}
             order={order}
+            darkMode={darkMode}
           />
         </thead>
         <tbody>
           {filteredBadges.map(value => (
-            <tr key={value._id}>
+            <tr key={value._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td className="badge_image_sm">
                 {' '}
                 <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                  <Card className="text-center">
+                  <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />
                     <CardBody>
                       <CardTitle
@@ -231,7 +234,7 @@ function BadgeDevelopmentTable(props) {
                     outline
                     color="info"
                     onClick={() => onEditButtonClick(value)}
-                    style={boxStyle}
+                    style={darkMode ? {} : boxStyle}
                   >
                     Edit
                   </Button>{' '}
@@ -241,7 +244,7 @@ function BadgeDevelopmentTable(props) {
                     outline
                     color="danger"
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
-                    style={boxStyle}
+                    style={darkMode ? {} : boxStyle}
                   >
                     Delete
                   </Button>
@@ -260,11 +263,19 @@ function BadgeDevelopmentTable(props) {
         badgeId={deleteId}
         badgeName={deleteName}
       />
-      <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()}>
-        <ModalBody className={`badge-message-background-${props.color}`}>
+      <Modal
+        isOpen={props.alertVisible}
+        toggle={() => props.closeAlert()}
+        className={darkMode ? 'text-light' : ''}
+      >
+        <ModalBody
+          className={`badge-message-background-${props.color} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+        >
           <p className={`badge-message-text-${props.color}`}>{props.message}</p>
         </ModalBody>
-        <ModalFooter className={`badge-message-background-${props.color}`}>
+        <ModalFooter
+          className={`badge-message-background-${props.color} ${darkMode ? 'bg-space-cadet' : ''}`}
+        >
           <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK
           </Button>
@@ -278,6 +289,7 @@ const mapStateToProps = state => ({
   message: state.badge.message,
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({
