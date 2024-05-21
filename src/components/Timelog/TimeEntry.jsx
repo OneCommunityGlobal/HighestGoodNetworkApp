@@ -32,6 +32,7 @@ import { toast } from 'react-toastify';
 const TimeEntry = (props) => {
   // props from parent
   const { from, data, displayYear, timeEntryUserProfile, displayUserProjects, displayUserTasks, tab } = props
+  console.log(props);
   // props from store
   const { authUser } = props;
 
@@ -61,13 +62,19 @@ const TimeEntry = (props) => {
     ({ projectName, projectCategory, taskName, taskClassification } = data)
   } else {
     // Time Entry rendered under weekly tabs
-    const timeEntryProject = displayUserProjects.find(project => project.projectId === projectId);
+    try {
+      const timeEntryProject = displayUserProjects.find(project => project.projectId === projectId);
+      console.log(timeEntryProject);
     ({ projectName, projectCategory } = timeEntryProject);
     if (taskId) {
       const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
       console.log('timeEntryTask', timeEntryTask)
       if (timeEntryTask) ({ taskName, taskClassification = '' } = timeEntryTask); // temporary fix for timeentry of tasks not have current user as resource
     }
+    } catch (error) {
+      console.log(error)
+    }
+    
   }
   
   const toggle = () => setTimeEntryFormModal(modal => !modal);
@@ -153,7 +160,7 @@ const TimeEntry = (props) => {
             <h4 className="text-success">
               {hours}h {minutes}m
             </h4>
-            <div className="text-muted">Project/Task:</div>
+            <div className="text-muted">Project Kashyap/Task:</div>
             <p> 
               {projectName} 
               <br />
