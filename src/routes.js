@@ -62,6 +62,7 @@ const InventoryTypesList = lazy(() => import('./components/BMDashboard/Inventory
 const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRequest'));
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/AddConsumable'));
+const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
