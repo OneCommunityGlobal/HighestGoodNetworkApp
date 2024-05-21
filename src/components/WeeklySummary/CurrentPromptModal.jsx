@@ -4,6 +4,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'react
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
 import {
   updateDashboardData,
   updateCopiedPromptDate,
@@ -160,10 +161,12 @@ function CurrentPromptModal(props) {
         <br />
       </ReactTooltip>
 
-      <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Current AI Prompt</ModalHeader>
-        <ModalBody>{renderModalContent()}</ModalBody>
-        <ModalFooter>
+      <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+          Current AI Prompt
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{renderModalContent()}</ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           {userRole === 'Owner' && (
             <Button color="secondary" onClick={() => setIsEditing(!isEditing)} disabled={loading}>
               {isEditing ? 'Cancel' : 'Edit'}
