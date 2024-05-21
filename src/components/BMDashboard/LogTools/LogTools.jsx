@@ -108,7 +108,12 @@ function LogTools() {
         if (type[actionArray].length > 0) {
           type[actionArray].forEach(item => {
             if (item.project.name === selectedProject) {
-              const toolCodes = { value: item._id, label: item.code, type: type._id };
+              const toolCodes = {
+                value: item._id,
+                label: item.code,
+                type: type._id,
+                name: type.name,
+              };
               typeDetails.items.push(toolCodes);
             }
           });
@@ -131,28 +136,25 @@ function LogTools() {
   }, [relevantToolTypes]);
 
   useEffect(() => {
-    if (postToolsLogResult?.error === true) {
-      toast.error(`${postToolsLogResult?.result}`);
+    if (postToolsLogResult.result && !postToolsLogResult.error) {
+      postToolsLogResult.result.results.forEach(res => {
+        toast.success(res.message);
+      });
+      dispatch(fetchToolTypes());
       dispatch(resetPostToolsLog());
-    } else if (postToolsLogResult?.result !== null) {
-      toast.success(`${selectedAction} completed successfully`);
+    } else if (postToolsLogResult.result && postToolsLogResult.error) {
+      const postResult = JSON.parse(postToolsLogResult.result)
+      postResult.errors.forEach(err => {
+        toast.error(err.message);
+      });
+      postResult.results.forEach(res => {
+        toast.success(res.message);
+      });
       dispatch(fetchToolTypes());
       dispatch(resetPostToolsLog());
       clearPostObj();
     }
   }, [postToolsLogResult]);
-
-  // useEffect(()=>{
-  //   console.log("postObject changed: ",postObject)
-  // },[postObject])
-
-  // useEffect(()=>{
-  //   console.log("toolTypes changed: ",toolTypes)
-  // },[toolTypes])
-
-  // useEffect(()=>{
-  //   console.log("selectedAction changed: ",selectedAction)
-  // },[selectedAction])
 
   const handleProjectSelect = event => {
     setSelectedProject(event.target.value);
@@ -172,10 +174,12 @@ function LogTools() {
         if (idx < 0) {
           const tempObj = {
             toolType: '',
+            toolName: '',
             toolItems: [],
             toolCodes: [],
           };
           tempObj.toolType = el.type;
+          tempObj.toolName = el.name;
           tempObj.toolItems.push(el.value);
           tempObj.toolCodes.push(el);
           postObjCopy.typesArray.push(tempObj);

@@ -186,30 +186,24 @@ export const setErrors = payload => {
 };
 // 
 export const postToolsLog = payload => {
-  // console.log('189. invTypeActions payload: ', payload)
   return async dispatch => {
     axios
       .post(ENDPOINTS.BM_LOG_TOOLS, payload)
       .then(res => {
         // eslint-disable-next-line no-console
-        console.log("API call result: ", res);
         // eslint-disable-next-line no-use-before-define
         dispatch(setToolsLogResult(res.data));
       })
       .catch(err => {
-        console.log("postToolsLog err: ", err);
         dispatch(
-          setPostErrorToolsLog(
-            JSON.stringify(err.response.data.message) || 'Sorry! Some error occurred!',
-          ),
+          // eslint-disable-next-line no-use-before-define
+          setPostErrorToolsLog(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'),
         );
-      }
-    );
+      });
   };
 };
 
-export const setToolsLogResult = (payload) => {
-  // console.log("setToolsLogResult called. payload: ", payload)
+export const setToolsLogResult = payload => {
   return {
     type: POST_TOOLS_LOG,
     payload,
@@ -217,7 +211,6 @@ export const setToolsLogResult = (payload) => {
 };
 
 export const setPostErrorToolsLog = payload => {
-  console.log("220. setPostErrorToolsLog called. payload: ", payload)
   return {
     type: POST_ERROR_TOOLS_LOG,
     payload,
