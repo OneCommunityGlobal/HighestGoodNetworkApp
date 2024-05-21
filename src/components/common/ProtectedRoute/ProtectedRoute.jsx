@@ -8,7 +8,6 @@ const ProtectedRoute = ({
   component: Component,
   render,
   auth,
-  state,
   roles,
   allowedRoles,
   routePermissions,
@@ -69,7 +68,6 @@ const ProtectedRoute = ({
 };
 
 const mapStateToProps = state => ({
-  state,
   auth: state.auth,
   roles: state.role.roles,
 });
