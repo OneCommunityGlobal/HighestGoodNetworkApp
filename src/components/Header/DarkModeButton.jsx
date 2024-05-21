@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import './DarkModeButton.css';
+import './DarkMode.css';
 import { Tooltip } from 'reactstrap';
 
 const DarkModeButton = () => {

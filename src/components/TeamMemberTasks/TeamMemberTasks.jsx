@@ -33,9 +33,8 @@ import { Link } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
 
 const TeamMemberTasks = React.memo(props => {
-  const darkMode = useSelector(state => state.theme.darkMode);
   // props from redux store
-  const { authUser, displayUser, isLoading, usersWithTasks, usersWithTimeEntries } = props;
+  const { authUser, displayUser, isLoading, usersWithTasks, usersWithTimeEntries, darkMode } = props;
 
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
@@ -438,7 +437,8 @@ const TeamMemberTasks = React.memo(props => {
               areaTitle="Team Member Task Time Filter"
               fontSize={22}
               isPermissionPage={true}
-              role={authUser.role}
+              role={authUser.role} 
+              darkMode={darkMode}
             />
           </section>
         ) : (
@@ -453,6 +453,7 @@ const TeamMemberTasks = React.memo(props => {
         toggle={handleOpenTaskNotificationModal}
         onApprove={handleTaskNotificationRead}
         loggedInUserId={authUser.userid}
+        darkMode={darkMode}
       />
       {currentUserId != '' && (
         <TaskCompletedModal
@@ -469,6 +470,7 @@ const TeamMemberTasks = React.memo(props => {
           setCurrentUserId={setCurrentUserId}
           setClickedToShowModal={setClickedToShowModal}
           taskModalOption={taskModalOption}
+          darkMode={darkMode}
         />
       )}
       <div className="task_table-container">
@@ -597,6 +599,7 @@ const mapStateToProps = state => ({
   isLoading: state.teamMemberTasks.isLoading,
   usersWithTasks: state.teamMemberTasks.usersWithTasks,
   usersWithTimeEntries: state.teamMemberTasks.usersWithTimeEntries,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, null)(TeamMemberTasks);

@@ -72,27 +72,27 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
 
   return (
     <div className={`map-table-container ${visible ? 'visible' : ''}`}>
-      <table>
+      <table className='team-locations-table'>
         <thead>
           <tr>
-            <th className="small-column">
+            <th className="team-locations-table-header small-column">
               <div className='cursor-pointer' onClick={() => toggleSortOrder('setActiveUsers')}>
                 <i className='cursor-pointer fa fa-user-o' aria-hidden='true'></i>
               </div>
             </th>
-            <th className="medium-column">
+            <th className="team-locations-table-header medium-column">
               <div className='cursor-pointer' onClick={() => toggleSortOrder('name')}>
                 <span className="column-header">Team Member</span>
                 <i className={`fa fa-caret-${nameSortOrder === 'asc' ? 'down' : 'up'}`}></i>
               </div>
             </th>
-            <th className="large-column">
+            <th className="team-locations-table-header large-column">
               <div className='cursor-pointer' onClick={() => toggleSortOrder('location')}>
                 <span className="column-header">Location</span>
                 <i className={`fa fa-caret-${locationSortOrder === 'asc' ? 'down' : 'up'}`}></i>
               </div>
             </th>
-            <th className="small-column">
+            <th className="team-locations-table-header small-column">
               <div className='cursor-pointer'>
                 <i onClick={toggleShowSearchBar} className="fa fa-search" aria-hidden="true"></i>
               </div>
@@ -100,7 +100,7 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
           </tr>
           {showSearchBar &&
           <tr>
-            <th colSpan="4">
+            <th colSpan="4" className='team-locations-table-header'>
             <div className={`search-bar ${showSearchBar ? 'visible' : ''}`}>
                 <input type='text' placeholder='Search Team Members...' onChange={handleSearchTermChange} value={searchTerm} />
               </div>
@@ -109,25 +109,25 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
         </thead>
         <tbody>
           {filteredMapMarkers.map((user, index) => (
-            <tr key={index} onClick={() => setCurrentUser(user)}>
-              <td>
+            <tr key={index} onClick={() => setCurrentUser(user)} className={`team-locations-table-row ${index % 2 === 0 ? 'team-locations-table-row-even' : ''}`}>
+              <td className='team-locations-table-data'>
                 <i
                   className='fa fa-circle'
                   aria-hidden='true'
                   style={{ color: user.isActive ? 'green' : 'red' }}
                 ></i>
               </td>
-              <td>
+              <td className='team-locations-table-data'>
                 <span style={{color: 'black'}} className='column-content'>{`${user.firstName} ${user.lastName.charAt(0)}.`}</span>
               </td>
-              <td>
+              <td className='team-locations-table-data'>
                 {user.location.city ? (
                   <span style={{color: 'black'}} className='column-content'>{`${user.location.city}, ${user.location.country}`}</span>
                 ) : (
                   <span style={{color: 'black'}} className='column-content'>{`${user.location.country}`}</span>
                 )}
               </td>
-              <td></td>
+              <td className='team-locations-table-data'></td>
             </tr>
           ))}
         </tbody>

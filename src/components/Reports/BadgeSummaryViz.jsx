@@ -10,8 +10,8 @@ import {
   CardText,
   DropdownToggle,
   Modal,
-  ModalBody,
   ModalHeader,
+  ModalBody,
   ModalFooter,
   UncontrolledDropdown,
   UncontrolledPopover,
@@ -56,14 +56,14 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
       >
         {dashboard ? 'Badge Report' : 'Show Badges'}
       </Button>
-      <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-        <ModalHeader>Badge Summary</ModalHeader>
-        <ModalBody>
+      <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}
             <div className="desktop">
               <div style={{ overflowY: 'scroll', height: '75vh' }}>
-                <Table>
+                <Table className={darkMode ? 'text-light' : ''}>
                   <thead style={{ zIndex: '10' }}>
                     <tr style={{ zIndex: '10' }}>
                       <th style={{ width: '93px' }}>Badge</th>
@@ -117,7 +117,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                             <>
                               {' '}
                               <UncontrolledDropdown className="me-2" direction="down">
-                                <DropdownToggle caret color="primary" style={boxStyle}>
+                                <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                                   Dates
                                 </DropdownToggle>
                                 <DropdownMenu>
@@ -164,7 +164,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             {/* --- TABLET VERSION OF MODAL --- */}
             <div className="tablet">
               <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table>
+                <Table  className={darkMode ? 'text-light' : ''}>
                   <thead style={{ zIndex: '10' }}>
                     <tr style={{ zIndex: '10' }}>
                       <th style={{ width: '25%' }}>Badge</th>
@@ -226,7 +226,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             </div>
           </div>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="badge_summary_viz_footer">
             <ReactStrapButton
               className="btn--dark-sea-green badge_summary_viz_button"

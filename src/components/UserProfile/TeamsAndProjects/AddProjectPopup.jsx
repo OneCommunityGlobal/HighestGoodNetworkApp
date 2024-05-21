@@ -1,9 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../../Header/DarkMode.css'
 
 const AddProjectPopup = React.memo(props => {
+  const {darkMode} = props;
+
   const closePopup = () => {
     props.onClose();
   };
@@ -33,9 +36,9 @@ const AddProjectPopup = React.memo(props => {
   }, [props.open]);
   
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
-      <ModalHeader toggle={closePopup}>Add Project </ModalHeader>
-      <ModalBody style={{ textAlign: 'center' }}>
+    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Add Project </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddProjectsAutoComplete
             projectsData={props.projects}
@@ -44,7 +47,7 @@ const AddProjectPopup = React.memo(props => {
           />
           <Button
             color="primary"
-            style={{ ...boxStyle, marginLeft: '5px' }}
+            style={darkMode ? {} : { ...boxStyle, marginLeft: '5px' }}
             onClick={onAssignProject}
           >
             Confirm
@@ -59,8 +62,8 @@ const AddProjectPopup = React.memo(props => {
           )}
         </div>
       </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>

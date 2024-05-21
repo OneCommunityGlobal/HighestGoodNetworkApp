@@ -16,6 +16,7 @@ import {
   DropdownItem,
   Spinner,
 } from 'reactstrap';
+import { Table, Progress, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -32,6 +33,8 @@ import { boxStyle } from 'styles';
 import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
+import { boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
 import { ENDPOINTS } from '../../utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
@@ -243,7 +246,6 @@ function LeaderBoard({
   };
 
   return (
-    <div>
       <div>
         <h3>
           <div className="d-flex align-items-center">
@@ -263,11 +265,11 @@ function LeaderBoard({
               areaTitle="Leaderboard"
               role={loggedInUser.role}
               fontSize={24}
+              darkMode={darkMode}
               isPermissionPage
             />
           </div>
         </h3>
-
         {userRole === 'Administrator' || userRole === 'Owner' ? (
           <section className="d-flex flex-row flex-wrap mb-3">
             <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=" mr-3">
@@ -310,7 +312,6 @@ function LeaderBoard({
           </section>
         ) : null}
       </div>
-
       {!isVisible && (
         <Alert color="warning">
           <div className="d-flex align-items-center">
@@ -320,6 +321,7 @@ function LeaderBoard({
               areaTitle="Leaderboard settings"
               role={loggedInUser.role}
               fontSize={24}
+              darkMode={darkMode}
               isPermissionPage
             />
           </div>
@@ -340,6 +342,7 @@ function LeaderBoard({
                     role={loggedInUser.role}
                     fontSize={18}
                     isPermissionPage
+                    darkMode={darkMode}
                     className="p-2" // Add Bootstrap padding class to the EditableInfoModal
                   />
                 </div>
@@ -398,12 +401,21 @@ function LeaderBoard({
               <tr key={item.personId} className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <td className="align-middle">
                   <div>
-                    <Modal isOpen={isDashboardOpen === item.personId} toggle={dashboardToggle}>
-                      <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
-                      <ModalBody>
+                    <Modal 
+                    isOpen={isDashboardOpen === item.personId}
+                    toggle={dashboardToggle}
+                    className={darkMode ? 'text-light dark-mode' : ''}
+                    style={darkMode ? boxStyleDark : {}>
+                      <ModalHeader 
+                      toggle={dashboardToggle}
+                      className={darkMode ? 'bg-space-cadet' : ''}
+                      >
+                      Jump to personal Dashboard
+                      </ModalHeader>
+                      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
                       </ModalBody>
-                      <ModalFooter>
+                      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <Button variant="primary" onClick={() => showDashboard(item)}>
                           Ok
                         </Button>{' '}
@@ -583,7 +595,6 @@ function LeaderBoard({
           </tbody>
         </Table>
       </div>
-    </div>
   );
 }
 
