@@ -1,14 +1,11 @@
 import React from 'react';
 import EditBadgePopup from '../EditBadgePopup';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-// import '@testing-library/jest-dom/extend-expect';
+import { render, screen } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import { themeMock } from '__tests__/mockStates';
 
-//mock redux store
-jest.mock('react-redux', () => ({
-  connect: () => component => component,
-}));
-
-//mock props
+const mockStore = configureStore([]);
 const mockBadgeValues = {
   badgeName: 'Test Name',
   category: 'Test Category',
@@ -28,7 +25,14 @@ const mockBadgeValues = {
 
 describe('EditBadgePopup Component', () => {
   test('renders the entire component properly', () => {
-    render(<EditBadgePopup open={true} />);
+    const store = mockStore({
+      theme: themeMock,
+    });
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} />
+      </Provider>,
+    );
 
     //test for rendering all the core components
     expect(screen.getByText('Edit Badge')).toBeInTheDocument();
@@ -43,7 +47,14 @@ describe('EditBadgePopup Component', () => {
 
   test('shows the data correctly', () => {
     mockBadgeValues.type = 'Custom';
-    render(<EditBadgePopup open={true} badgeValues={mockBadgeValues} />);
+    const store = mockStore({
+      theme: themeMock,
+    });
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={mockBadgeValues} />
+      </Provider>,
+    );
 
     const nameField = screen.getByLabelText('Name');
     const imageField = screen.getByLabelText('Image URL');
@@ -62,7 +73,15 @@ describe('EditBadgePopup Component', () => {
   test('shows months feild and correct data in it in No Infringement Streak Badge Popup', () => {
     mockBadgeValues.type = 'No Infringement Streak';
     mockBadgeValues.months = 3;
-    render(<EditBadgePopup open={true} badgeValues={mockBadgeValues} />);
+
+    const store = mockStore({
+      theme: themeMock,
+    });
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={mockBadgeValues} />
+      </Provider>,
+    );
     const monthsField = screen.getByLabelText('Months');
 
     //test for dynamic months field and data
@@ -73,7 +92,16 @@ describe('EditBadgePopup Component', () => {
   test('shows multiple field and correct data in it in Minimum Hours Multiple Badge Popup', () => {
     mockBadgeValues.type = 'Minimum Hours Multiple';
     mockBadgeValues.multiple = 4;
-    render(<EditBadgePopup open={true} badgeValues={mockBadgeValues} />);
+
+    const store = mockStore({
+      theme: themeMock,
+    });
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={mockBadgeValues} />
+      </Provider>,
+    );
+
     const multipleField = screen.getByLabelText('Multiple');
 
     //test for dynamic multiple field and data
@@ -85,7 +113,14 @@ describe('EditBadgePopup Component', () => {
     mockBadgeValues.type = 'X Hours for X Week Streak';
     mockBadgeValues.totalHrs = 5;
     mockBadgeValues.weeks = 6;
-    render(<EditBadgePopup open={true} badgeValues={mockBadgeValues} />);
+    const store = mockStore({
+      theme: themeMock,
+    });
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={mockBadgeValues} />
+      </Provider>,
+    );
     const hoursField = screen.getByLabelText('Hours');
     const weeksField = screen.getByLabelText('Weeks');
 
@@ -99,7 +134,14 @@ describe('EditBadgePopup Component', () => {
   test('shows people field and correct data in it in Lead a team of X+ Badge Popup', () => {
     mockBadgeValues.type = 'Lead a team of X+';
     mockBadgeValues.people = 7;
-    render(<EditBadgePopup open={true} badgeValues={mockBadgeValues} />);
+    const store = mockStore({
+      theme: themeMock,
+    });
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={mockBadgeValues} />
+      </Provider>,
+    );
     const peopleField = screen.getByLabelText('People');
 
     //test for dynamic people field and data
@@ -109,7 +151,14 @@ describe('EditBadgePopup Component', () => {
 
   test('shows correct category dropdown options and hours field in Total Hrs in Category Badge Popup', () => {
     mockBadgeValues.type = 'Total Hrs in Category';
-    render(<EditBadgePopup open={true} badgeValues={mockBadgeValues} />);
+    const store = mockStore({
+      theme: themeMock,
+    });
+    render(
+      <Provider store={store}>
+        <EditBadgePopup open={true} badgeValues={mockBadgeValues} />
+      </Provider>,
+    );
 
     expect(screen.getByLabelText('Category')).toBeInTheDocument();
     const select = screen.getByLabelText('Category');

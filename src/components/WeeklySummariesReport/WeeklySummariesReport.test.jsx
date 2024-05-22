@@ -3,7 +3,7 @@ import { fireEvent, waitFor, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { WeeklySummariesReport } from './WeeklySummariesReport';
 import hasPermission from '../../utils/permissions';
-import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
+import { authMock, userProfileMock, rolesMock, themeMock } from '../../__tests__/mockStates';
 import { renderWithProvider } from '../../__tests__/utils';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -17,6 +17,7 @@ describe('WeeklySummariesReport page', () => {
       auth: authMock,
       userProfile: userProfileMock,
       role: rolesMock.role,
+      theme: themeMock,
     });
   });
   describe('On page load', () => {
@@ -33,7 +34,7 @@ describe('WeeklySummariesReport page', () => {
         badges: [],
         getInfoCollections: jest.fn(),
       };
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });
+      renderWithProvider(<WeeklySummariesReport {...props} />, { store });
 
       expect(screen.getByTestId('error')).toBeInTheDocument();
     });
@@ -50,7 +51,7 @@ describe('WeeklySummariesReport page', () => {
         badges: [],
         getInfoCollections: jest.fn(),
       };
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
+      renderWithProvider(<WeeklySummariesReport {...props} />, { store });
       expect(screen.getByTestId('loading')).toBeInTheDocument();
     });
   });
@@ -68,7 +69,7 @@ describe('WeeklySummariesReport page', () => {
       badges: [],
     };
     beforeEach(() => {
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store, });;
+      renderWithProvider(<WeeklySummariesReport {...props} />, { store });
     });
 
     afterEach(() => {
@@ -77,7 +78,7 @@ describe('WeeklySummariesReport page', () => {
 
     it('should have second tab set to "active" by default', () => {
       expect(screen.getByTestId('Last Week').classList.contains('active')).toBe(true);
-      expect(screen.getBy)
+      expect(screen.getBy);
     });
 
     it('should make 1st tab active when clicked', () => {
