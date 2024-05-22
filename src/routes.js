@@ -127,7 +127,7 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          routePermissions={[RoutePermissions.weeklySummariesReport]}
+          routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute
           path="/reports"
@@ -202,8 +202,8 @@ export default (
           component={PermissionsManagement}
           fallback
           routePermissions={[
-            RoutePermissions.permissionsManagement,
-            RoutePermissions.userPermissionsManagement,
+            ...RoutePermissions.permissionsManagement,
+            ...RoutePermissions.userPermissionsManagement,
           ].flat()}
         />
         <ProtectedRoute
