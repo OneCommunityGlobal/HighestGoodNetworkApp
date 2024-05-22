@@ -26,17 +26,19 @@ function BadgeManagement(props) {
     <div
       className={darkMode ? 'bg-oxford-blue' : ''}
       style={{
-        padding: 20,
+        padding: '5px 20px',
         minHeight: '100%',
       }}
     >
-      <div className="text-center">
+      <div className="d-flex justify-content-start align-items-center">
+        <h2 className="mr-2">Badge Management</h2>
         <EditableInfoModal
           areaName="BadgeManagement"
           areaTitle="Badge Management"
           fontSize={24}
           isPermissionPage
           role={role} // Pass the 'role' prop to EditableInfoModal
+          darkMode={darkMode}
         />
       </div>
       <Nav pills className="mb-2">

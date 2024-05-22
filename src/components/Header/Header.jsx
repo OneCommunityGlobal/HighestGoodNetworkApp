@@ -42,9 +42,9 @@ import {
   DropdownItem,
   Container,
   Modal,
+  ModalHeader,
   ModalBody,
   ModalFooter,
-  ModalHeader,
   Button,
   Card,
 } from 'reactstrap';
@@ -59,6 +59,7 @@ import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 
 export function Header(props) {
+  const darkMode = props.darkMode;
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user } = props.auth;
@@ -268,9 +269,9 @@ export function Header(props) {
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
-          style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
+          style={user.role == 'Owner' ? { marginRight: '1rem' } : { marginRight: '1.5rem' }}
         >
-          {isAuthenticated && <Timer />}
+          {isAuthenticated && <Timer darkMode={darkMode}/>}
           {isAuthenticated && (
             <div className="owner-message">
               <OwnerMessage />
@@ -427,12 +428,12 @@ export function Header(props) {
       </Navbar>
       {!isAuthUser && <PopUpBar onClickClose={() => setPopup(prevPopup => !prevPopup)} viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))} />}
       <div>
-        <Modal isOpen={popup} >
-          <ModalHeader >Return to your Dashboard</ModalHeader>
-          <ModalBody>
+        <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Return to your Dashboard</ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Are you sure you wish to return to your own dashboard?</p>
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button variant='primary' onClick={removeViewingUser}>
               Ok
             </Button>{' '}
@@ -464,6 +465,7 @@ const mapStateToProps = state => ({
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
   notification: state.notification,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {

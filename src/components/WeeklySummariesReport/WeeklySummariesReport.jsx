@@ -524,6 +524,7 @@ export class WeeklySummariesReport extends Component {
                   fontSize={24}
                   isPermissionPage
                   className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  darkMode={darkMode}
                 />
               </div>
             </h3>
