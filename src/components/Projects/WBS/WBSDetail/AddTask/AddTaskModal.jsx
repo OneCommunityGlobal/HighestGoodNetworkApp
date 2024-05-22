@@ -38,7 +38,8 @@ function AddTaskModal(props) {
     if (props.taskId) {
       return tasks.find(({ _id }) => _id === props.taskId).category;
     } 
-      return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
+  
+    return allProjects.projects.find(({ _id }) => _id === props.projectId);
       
   }, []);
   const [taskName, setTaskName] = useState('');
