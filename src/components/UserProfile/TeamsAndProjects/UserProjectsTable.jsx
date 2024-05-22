@@ -137,9 +137,9 @@ const UserProjectsTable = React.memo(props => {
           </div>
           <div className='table-container'>
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
-              <thead>
+              <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 {props.role && (
-                  <tr>
+                  <tr className={darkMode ? 'bg-space-cadet' : ''}>
                     <th className='table-header'>#</th>
                     <th>Project Name</th>
                     {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
@@ -149,7 +149,7 @@ const UserProjectsTable = React.memo(props => {
               <tbody>
                 {props.userProjectsById.length > 0 ? (
                   tasksByProject?.map((project, index) => (
-                    <tr key={project._id}>
+                    <tr key={project._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{index + 1}</td>
                       <td>{project.projectName}</td>
                       {props.edit && props.role && canDeleteProjects &&(
