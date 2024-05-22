@@ -326,7 +326,6 @@ function LeaderBoard({
           </div>
         </Alert>
       )}
-
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <Table className={`leaderboard table-fixed ${darkMode ? 'text-light' : ''}`}>
           <thead>
