@@ -19,15 +19,16 @@ function TotalProjectReport(props) {
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
 
-  const { startDate, endDate, userProfiles } = props;
+  const { startDate, endDate, userProfiles, projects, darkMode } = props;
 
   const fromDate = startDate.toLocaleDateString('en-CA');
   const toDate = endDate.toLocaleDateString('en-CA');
 
   const userList = userProfiles.map(user => user._id);
+  const projectList = projects.map(proj => proj._id);
 
   const loadTimeEntriesForPeriod = async () => {
-    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    let url = ENDPOINTS.TIME_ENTRIES_REPORTS;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
@@ -46,7 +47,23 @@ function TotalProjectReport(props) {
         // eslint-disable-next-line no-console
         console.log(err.message);
       });
-    setAllTimeEntries(timeEntries);
+
+    url = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+    const projTimeEntries = await axios
+      .post(url, { projects: projectList, fromDate, toDate })
+      .then(res => {
+        return res.data.map(entry => {
+          return {
+            projectId: entry.projectId,
+            projectName: entry.projectName,
+            hours: entry.hours,
+            minutes: entry.minutes,
+            isTangible: entry.isTangible,
+            date: entry.dateOfWork,
+          };
+        });
+      });
+    setAllTimeEntries([...timeEntries, ...projTimeEntries]);
   };
 
   const sumByProject = (objectArray, property) => {
@@ -192,7 +209,7 @@ function TotalProjectReport(props) {
             </th>
             <td>
               {project.projectId ? (
-                <Link to={`/projectReport/${project.projectId}`}>{project.projectName}</Link>
+                <Link to={`/projectReport/${project.projectId}`} className={darkMode ? 'text-light' : ''}>{project.projectName}</Link>
               ) : (
                 'Unrecorded Project'
               )}
@@ -223,8 +240,8 @@ function TotalProjectReport(props) {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-container">
-        <div className="total-title">Total Project Report</div>
+      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Project Report</div>
         <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
@@ -271,7 +288,7 @@ function TotalProjectReport(props) {
   return (
     <div>
       {dataLoading ? (
-        <Loading />
+        <Loading align="center" darkMode={darkMode}/>
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>

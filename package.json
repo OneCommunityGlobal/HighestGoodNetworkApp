@@ -1,6 +1,7 @@
 {
   "name": "hgnreactapp",
   "version": "0.1.0",
+  "license": "GPL-2.0",
   "engines": {
     "node": ">=14.0.0 <15"
   },
@@ -11,14 +12,17 @@
     "@fortawesome/free-solid-svg-icons": "^5.15.4",
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@sentry/browser": "^4.6.6",
-    "@tinymce/tinymce-react": "^3.6.0",
+    "@tinymce/tinymce-react": "^3.14.0",
     "axios": "^0.21.2",
+    "axios-mock-adapter": "^1.22.0",
     "bootstrap": "^4.5.3",
     "classnames": "^2.2.6",
-    "d3": "^7.3.0",
+    "d3": "^7.8.5",
     "date-fns": "^2.14.0",
     "diff": "^5.0.0",
+    "dompurify": "^3.0.6",
     "font-awesome": "^4.7.0",
+    "fs-extra": "^11.2.0",
     "history": "^4.10.1",
     "html-react-parser": "^1.4.14",
     "html-to-pdfmake": "^2.0.6",
@@ -27,6 +31,7 @@
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
+    "lz-string": "^1.5.0",
     "moment": "^2.29.2",
     "moment-timezone": "^0.5.33",
     "pdfmake": "^0.1.65",
@@ -60,15 +65,17 @@
     "read-excel-file": "^5.5.3",
     "redux": "^4.0.5",
     "redux-actions": "^2.6.5",
+    "redux-concatenate-reducers": "^1.0.0",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
-    "tinymce": "^5.10.8",
+    "tinymce": "^5.10.9",
     "uuid": "^9.0.1"
   },
   "scripts": {
     "prestart": "npm run test",
+    "postinstall": "node ./postinstall.js",
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "npm run postinstall && react-scripts build",
     "test": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:watch": " react-scripts test --env=jest-environment-jsdom-sixteen",
     "test:coverage": "cross-env CI=true react-scripts test --env=jest-environment-jsdom-sixteen --coverage",
@@ -103,7 +110,6 @@
     "eslint-plugin-react": "^7.29.4",
     "eslint-plugin-react-hooks": "^4.3.0",
     "eslint-plugin-testing-library": "^3.6.0",
-    "jest-environment-jsdom-sixteen": "^1.0.3",
     "msw": "^0.19.5",
     "node-sass": "^8.0.0",
     "prettier": "^1.19.1",
@@ -111,6 +117,7 @@
     "husky": "^8.0.0",
     "sinon": "^7.3.2",
     "surge": "^0.21.6",
+    "jest-environment-jsdom-sixteen": "^1.0.3",
     "node-fetch": "^3.1.1"
   }
 }

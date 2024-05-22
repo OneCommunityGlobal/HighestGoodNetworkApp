@@ -6,6 +6,7 @@ import {
   CLEAR_SELECTED,
   GET_FIRST_NAME,
   GET_LAST_NAME,
+  GET_USER_ID,
   GET_MESSAGE,
   CLOSE_ALERT,
 } from '../constants/badge';
@@ -15,6 +16,7 @@ const badgeInitial = {
   selectedBadges: [],
   firstName: '',
   lastName: '',
+  userId: '',
   message: '',
   color: null,
   alertVisible: false,
@@ -33,13 +35,15 @@ export const badgeReducer = (state = badgeInitial, action) => {
       toRemove.splice(toRemove.indexOf(action.badgeId), 1);
       return { ...state, selectedBadges: toRemove };
     case CLEAR_NAME_AND_SELECTED:
-      return { ...state, selectedBadges: [], firstName: '', lastName: '' };
+      return { ...state, selectedBadges: [], firstName: '', lastName: '', userId: '' };
     case CLEAR_SELECTED:
       return { ...state, selectedBadges: [] };
     case GET_FIRST_NAME:
       return { ...state, firstName: action.firstName };
     case GET_LAST_NAME:
       return { ...state, lastName: action.lastName };
+    case GET_USER_ID:
+      return { ...state, userId: action.userId };
     case GET_MESSAGE:
       return { ...state, message: action.message, alertVisible: true, color: action.color };
     case CLOSE_ALERT:

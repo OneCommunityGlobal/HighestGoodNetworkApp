@@ -5,27 +5,41 @@ import ReactTooltip from 'react-tooltip';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { Editor } from '@tinymce/tinymce-react';
 import dateFnsFormat from 'date-fns/format';
+import { boxStyle, boxStyleDark } from 'styles';
+import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
 import 'react-day-picker/lib/style.css';
 import TagsSearch from '../components/TagsSearch';
-import { boxStyle } from 'styles';
-import { useMemo } from 'react';
+
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  plugins: 'advlist autolink autoresize lists link charmap table paste help',
+  toolbar:
+    'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                    subscript superscript charmap  | help',
+  branding: false,
+  min_height: 180,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+};
 
 function AddTaskModal(props) {
   /*
   * -------------------------------- variable declarations -------------------------------- 
   */
   // props from store 
-  const { tasks, copiedTask, allMembers, allProjects, error } = props;
+  const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
 
   // states from hooks
   const defaultCategory = useMemo(() => {
     if (props.taskId) {
       return tasks.find(({ _id }) => _id === props.taskId).category;
-    } else {
+    } 
       return allProjects.projects.find(({ _id }) => _id === props.projectId).category;
-    }  
+      
   }, []);
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -222,6 +236,7 @@ function AddTaskModal(props) {
   };
 
   const addNewTask = async () => {
+    setIsLoading(true);
     const newTask = {
       taskName,
       wbsId: props.wbsId,
@@ -250,8 +265,9 @@ function AddTaskModal(props) {
       endstateInfo,
     };
     await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
-    props.load();
     toggle();
+    setIsLoading(false);
+    props.load();
   };
 
   /*
@@ -312,9 +328,11 @@ function AddTaskModal(props) {
               <tr>
                 <td scope="col">Task Name</td>
                 <td scope="col">
-                  <input
+                  {/* Fix Task-name formatting - by Sucheta */}
+                  <textarea
                     type="text"
-                    className="task-name"
+                    rows="2"
+                    className="task-name border border-dark rounded"
                     onChange={e => setTaskName(e.target.value)}
                     onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
@@ -341,6 +359,7 @@ function AddTaskModal(props) {
                       addResources={addResources}
                       removeResource={removeResource}
                       resourceItems={resourceItems}
+                      disableInput={false}
                     />
                   </div>
                 </td>
@@ -444,12 +463,12 @@ function AddTaskModal(props) {
                 </td>
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours - Best-case">
+                <td scope="col" className="w-100">
                   Hours
                 </td>
-                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                <td scope="col" className="w-100">
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
+                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Best-case
                     </label>
                     <input
@@ -469,7 +488,7 @@ function AddTaskModal(props) {
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
+                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Worst-case
                     </label>
                     <input
@@ -488,7 +507,7 @@ function AddTaskModal(props) {
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
+                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Most-case
                     </label>
                     <input
@@ -507,7 +526,7 @@ function AddTaskModal(props) {
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
+                    <label htmlFor="Estimated" className="text-nowrap mr-2 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
                       Estimated
                     </label>
                     <input
@@ -547,7 +566,7 @@ function AddTaskModal(props) {
                     {links.map((link, i) =>
                       link.length > 1 ? (
                         <div key={i}>
-                          <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)} ></i>
+                          <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={() => removeLink(i)}  />
                           <a href={link} className="task-link" target="_blank" rel="noreferrer">
                             {link}
                           </a>
@@ -573,18 +592,9 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Why this Task is Important
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
+                    init={TINY_MCE_INIT_OPTIONS}
                     name="why-info"
                     className="why-info form-control"
                     value={whyInfo}
@@ -596,18 +606,9 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Design Intent
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
+                    init={TINY_MCE_INIT_OPTIONS}
                     name="intent-info"
                     className="intent-info form-control"
                     value={intentInfo}
@@ -619,18 +620,9 @@ function AddTaskModal(props) {
                 <td scope="col" colSpan="2">
                   Endstate
                   <Editor
-                    init={{
-                      menubar: false,
-                      plugins: 'advlist autolink autoresize lists link charmap table paste help',
-                      toolbar:
-                        'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                                        styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                        subscript superscript charmap  | help',
-                      branding: false,
-                      min_height: 180,
-                      max_height: 300,
-                      autoresize_bottom_margin: 1,
-                    }}
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
+                    init={TINY_MCE_INIT_OPTIONS}
                     name="endstate-info"
                     className="endstate-info form-control"
                     value={endstateInfo}
@@ -674,18 +666,12 @@ function AddTaskModal(props) {
           </table>
         </ModalBody>
         <ModalFooter>
-          {taskName !== '' ? (
-            isLoading ? (
-              ' Adding...'
-            ) : (
-              <Button color="primary" onClick={addNewTask} disabled={hoursWarning} style={boxStyle}>
-                Save
-              </Button>
-            )
-          ) : null}
+          <Button color="primary" onClick={addNewTask} disabled={taskName === '' || hoursWarning || isLoading} style={boxStyle}>
+            {isLoading ? "Adding Task..." : "Save"}
+          </Button>
         </ModalFooter>
       </Modal>
-      <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={boxStyle}>
+      <Button color="primary" className="controlBtn" size="sm" onClick={openModal} style={darkMode ? boxStyleDark : boxStyle}>
         Add Task
       </Button>
     </>

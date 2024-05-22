@@ -118,3 +118,8 @@ tr:hover {
 .user-auto-cpmplete:hover {
   background: #1d62f0;
 }
+
+.usermanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
+}

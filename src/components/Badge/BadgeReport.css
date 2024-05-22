@@ -11,3 +11,9 @@
     display: block;
   }
 }
+
+.badge_dropdown {
+  height: 25vh;
+  overflow-y: scroll;
+  overflow: auto;
+}

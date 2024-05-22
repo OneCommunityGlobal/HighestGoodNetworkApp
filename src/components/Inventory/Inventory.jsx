@@ -1,8 +1,15 @@
-import React, { useState } from 'react';
-import { Modal, ModalHeader, ModalBody } from 'reactstrap';
+import { useSelector } from "react-redux";
 
-const Inventory = props => {
-  return <React.Fragment></React.Fragment>;
-};
+function Inventory() {
+  //  Use for implementing dark mode in the future
+  const darkMode = useSelector(state => state.theme.darkMode);
+
+  return (
+  <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+    <h1 style={{textAlign: "center", width: "100vw", paddingTop:"100px"}}>
+      Nothing here yet! 😔
+    </h1>
+  </div>);
+}
 
 export default Inventory;

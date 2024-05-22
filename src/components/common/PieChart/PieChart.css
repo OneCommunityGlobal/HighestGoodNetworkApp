@@ -47,3 +47,20 @@
 .data-legend-info-part:not(:last-child) {
   margin-right: 24px;
 }
+
+@media (max-width: 670px) {
+  .pie-chart-wrapper {
+     flex-direction: column;
+  }
+}
+
+div.tooltip-donut {
+  position: absolute;
+  text-align: center;
+  padding: .5rem;
+  background: #FFFFFF;
+  color: #313639;
+  border-radius: 8px;
+  pointer-events: none;
+  font-size: 1rem;
+}

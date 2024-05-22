@@ -54,9 +54,9 @@ function TotalReportBarGraph({ barData, range }) {
       .attr('width', xScale.bandwidth())
       .attr('fill', d => colorScale(d.value))
       // eslint-disable-next-line no-unused-vars
-      .on('mouseenter', (_, i) => {
+      .on('mouseenter', (event, i) => {
         d3.selectAll('.value').attr('opacity', 0);
-        d3.select(d3.event.currentTarget)
+        d3.select(event.currentTarget)
           .transition()
           .duration(300)
           .attr('opacity', 0.6);
@@ -80,9 +80,9 @@ function TotalReportBarGraph({ barData, range }) {
             .style('fill', 'black');
         }
       })
-      .on('mouseleave', () => {
+      .on('mouseleave', (event) => {
         d3.selectAll('.value').attr('opacity', 1);
-        d3.select(d3.event.currentTarget)
+        d3.select(event.currentTarget)
           .transition()
           .duration(300)
           .attr('opacity', 1);

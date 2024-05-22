@@ -1,17 +1,54 @@
-//  Necessary permission to access a route
+//  Necessary permission(s) to access a route. Only one in the list is required.
 // Route : Permissions
 export const RoutePermissions = {
-  inventoryProject: '',
-  inventoryProjectWbs: '',
-  weeklySummariesReport: 'getWeeklySummaries',
-  projects: 'postProject',
-  projectManagement_fullFunctionality: 'seeProjectManagement',
-  projectManagement_addTeamMembersUploadNewWBS: 'seeProjectManagementTab',
-  userManagement: 'postUserProfile',
-  badgeManagement: 'createBadges',
-  userPermissionsManagement: 'putUserProfilePermissions',
-  permissionsManagement: 'putRole',
-  permissionsManagementRole: 'putRole',
-  teams: 'putTeam',
-  reports: 'getWeeklySummaries',
+  reports: ['getReports'],
+  weeklySummariesReport: ['getWeeklySummaries'],
+  userManagement: [
+    'getUserProfiles',
+    'postUserProfile',
+    'deleteUserProfile',
+    'changeUserStatus'
+  ],
+  badgeManagement: [
+    'seeBadges',
+    'createBadges',
+    'updateBadges',
+    'deleteBadges',
+    'assignBadges'
+  ],
+  projects: [
+    'postProject',
+    'deleteProject',
+    'putProject',
+    'getProjectMembers',
+    'assignProjectToUsers',
+    'postWbs',
+    'deleteWbs',
+    'postTask',
+    'updateTask',
+    'deleteTask'
+  ],
+  teams: [
+    'postTeam',
+    'putTeam',
+    'deleteTeam',
+    'assignTeamToUsers'
+  ],
+  permissionsManagement: [
+    'postRole',
+    'putRole',
+    'deleteRole'
+  ],
+  userPermissionsManagement: ['putUserProfilePermissions'],
+  inventoryProject: [''],
+  inventoryProjectWbs: [''],
+  workBreakdownStructure: [
+    'postWbs',
+    'deleteWbs',
+    'postTask',
+    'updateTask',
+    'deleteTask',
+    'resolveTask',
+    'putReviewStatus'
+  ]
 };

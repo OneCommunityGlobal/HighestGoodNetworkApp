@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import React, { Component, useState } from 'react';
 import { StickyContainer } from 'react-sticky';
 import {
   Container,
@@ -12,20 +12,18 @@ import {
   Button,
   TabPane,
   TabContent,
-  NavItem,
-  NavLink,
-  Nav,
 } from 'reactstrap';
+import CommonInput from 'components/common/Input';
 import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
-import { createUser, resetPassword } from '../../../services/userProfileService';
+import { createUser } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
-import { assign, get } from 'lodash';
-import { getUserProfile, updateUserProfile, clearUserProfile } from '../../../actions/userProfile';
+import { get } from 'lodash';
+import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
 import {
   getAllUserTeams,
   updateTeam,
@@ -37,23 +35,20 @@ import { fetchAllProjects } from 'actions/projects';
 
 import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
-import classnames from 'classnames';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import getUserTimeZone from 'services/timezoneApiService';
 import hasPermission from 'utils/permissions';
-import NewUserPopup from 'components/UserManagement/NewUserPopup';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
-const nextDay = new Date();
-nextDay.setDate(nextDay.getDate()+1);
 
-class AddUserProfile extends Component {
+class UserProfileAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -83,7 +78,11 @@ class AddUserProfile extends Component {
         },
         showphone: true,
         weeklySummaryOption: 'Required',
-        createdDate: nextDay,
+        createdDate: new Date(),
+        actualEmail: '',
+        actualPassword: '',
+        startDate: new Date(),
+        actualConfirmedPassword: '',
       },
       formValid: {},
       formErrors: {
@@ -91,16 +90,18 @@ class AddUserProfile extends Component {
         lastName: 'Last Name is required',
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
+        actualEmail: 'Actual Email is required',
+        actualPassword: 'Actual Password is required',
+        actualConfirmedPassword: 'Actual Confirmed Password is required',
       },
       timeZoneFilter: '',
       formSubmitted: false,
       teamCode: '',
       codeValid: false,
     };
-    
 
     const { user } = this.props.auth;
-    this.canAddDeleteEditOwners = user && user.role === 'Owner'
+    this.canAddDeleteEditOwners = user && user.role === 'Owner';
   }
 
   popupClose = () => {
@@ -119,10 +120,25 @@ class AddUserProfile extends Component {
     this.state.showphone = true;
     this.onCreateNewUser();
   }
-  
-  
+
   render() {
-    const { firstName, email, lastName, phoneNumber, role, jobTitle } = this.state.userProfile;
+    const {
+      firstName,
+      email,
+      lastName,
+      phoneNumber,
+      role,
+      actualEmail,
+      actualPassword,
+      actualConfirmedPassword,
+      jobTitle,
+    } = this.state.userProfile;
+
+    const darkMode = this.props.darkMode;
+
+    const fontColor = darkMode ? 'text-light' : '';
+    const fontWeight = darkMode ? 'font-weight-bold' : '';
+
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
@@ -134,13 +150,13 @@ class AddUserProfile extends Component {
           onClose={this.props.closePopup}
           createUserProfile={this.createUserProfile}
         />
-        <Container className="emp-profile add-new-user">
+        <Container className={`emp-profile add-new-user ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <Row>
             <Col md="12">
               <Form>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Name</Label>
+                    <Label className={fontColor}>Name</Label>
                   </Col>
                   <Col md="3">
                     <FormGroup>
@@ -149,11 +165,11 @@ class AddUserProfile extends Component {
                         name="firstName"
                         id="firstName"
                         value={firstName}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="First Name"
-                        invalid={this.state.formErrors.firstName}
+                        invalid={!!this.state.formErrors.firstName}
                       />
-                      <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.firstName}</FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -163,17 +179,17 @@ class AddUserProfile extends Component {
                         name="lastName"
                         id="lastName"
                         value={lastName}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
-                        invalid={this.state.formErrors.lastName}
+                        invalid={!!this.state.formErrors.lastName}
                       />
-                      <FormFeedback>{this.state.formErrors.lastName}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.lastName}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Job Title</Label>
+                    <Label className={fontColor}>Job Title</Label>
                   </Col>
                   <Col md={{ size: 6 }}>
                     <FormGroup>
@@ -182,7 +198,7 @@ class AddUserProfile extends Component {
                         name="jobTitle"
                         id="jobTitle"
                         value={jobTitle}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
                       />
                     </FormGroup>
@@ -190,7 +206,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Email</Label>
+                    <Label className={fontColor}>Email</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -199,11 +215,11 @@ class AddUserProfile extends Component {
                         name="email"
                         id="email"
                         value={email}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Email"
-                        invalid={this.state.formErrors.email}
+                        invalid={!!this.state.formErrors.email}
                       />
-                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.email}</FormFeedback>
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -214,7 +230,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Phone</Label>
+                    <Label className={fontColor}>Phone</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -226,7 +242,7 @@ class AddUserProfile extends Component {
                         onChange={phone => this.phoneChange(phone)}
                       />
                       {phoneNumberEntered && (
-                        <div className="required-user-field">
+                        <div className={`required-user-field ${fontWeight}`}>
                           {this.state.formErrors.phoneNumber}
                         </div>
                       )}
@@ -240,17 +256,36 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Weekly Committed Hours</Label>
+                    <Label className={fontColor}>Weekly Committed Hours</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <Input
                         type="number"
                         name="weeklyCommittedHours"
+                        min={0}
+                        max={168}
                         id="weeklyCommittedHours"
                         value={this.state.userProfile.weeklyCommittedHours}
-                        onChange={this.handleUserProfile}
-                        onFocus={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
+                        onKeyDown={event => {
+                          if (event.key === 'Backspace' || event.key === 'Delete') {
+                            this.setState({
+                              userProfile: {
+                                ...this.state.userProfile,
+                                [event.target.id]: "",
+                              },
+                              formValid: {
+                                ...this.state.formValid,
+                                [event.target.id]: false,
+                              },
+                              formErrors: {
+                                ...this.state.formErrors,
+                                weeklyCommittedHours: 'Committed hours can not be empty',
+                              },
+                            });
+                          }
+                        }}
                         placeholder="Weekly Committed Hours"
                         invalid={
                           this.state.formValid.weeklyCommittedHours === undefined
@@ -258,13 +293,13 @@ class AddUserProfile extends Component {
                             : !this.state.formValid.weeklyCommittedHours
                         }
                       />
-                      <FormFeedback>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Role</Label>
+                    <Label className={fontColor}>Role</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -273,20 +308,85 @@ class AddUserProfile extends Component {
                         name="role"
                         id="role"
                         defaultValue="Volunteer"
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                       >
-                        {this.props.role.roles.map(({ roleName }) => {
+                        {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
-                          return <option value={roleName}>{roleName}</option>;
+                          return (
+                            <option value={roleName} key={index}>
+                              {roleName}
+                            </option>
+                          );
                         })}
                         {this.canAddDeleteEditOwners && <option value="Owner">Owner</option>}
                       </Input>
                     </FormGroup>
                   </Col>
                 </Row>
+                {(role === 'Administrator' || role === 'Owner') && (
+                  <>
+                    <Row className="user-add-row">
+                      <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
+                        <Label className={fontColor}>Actual Email</Label>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <Input
+                            type="actualEmail"
+                            name="actualEmail"
+                            id="actualEmail"
+                            value={actualEmail}
+                            onChange={(e) => this.handleUserProfile(e)}
+                            placeholder="Actual Email"
+                            invalid={!!this.state.formErrors.actualEmail}
+                          />
+                          <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row className="user-add-row">
+                      <Col md={{ size: 4 }} className="text-md-right my-2">
+                        <Label className={fontColor}>Actual Password</Label>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <CommonInput
+                            type="password"
+                            name="actualPassword"
+                            id="actualPassword"
+                            value={actualPassword}
+                            onChange={(e) => this.handleUserProfile(e)}
+                            placeholder="Actual Password"
+                            invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
+                            className="d-flex justify-start items-start"
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                    <Row className="user-add-row">
+                      <Col md={{ size: 4 }} className="text-md-right my-2">
+                        <Label className={fontColor}>Confirm Actual Password</Label>
+                      </Col>
+                      <Col md="6">
+                        <FormGroup>
+                          <CommonInput
+                            type="password"
+                            name="actualConfirmedPassword"
+                            id="actualConfirmedPassword"
+                            value={actualConfirmedPassword}
+                            onChange={(e) => this.handleUserProfile(e)}
+                            placeholder="Confirm Actual Password"
+                            invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
+                            className="d-flex justify-start items-start"
+                          />
+                        </FormGroup>
+                      </Col>
+                    </Row>
+                  </>
+                )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
+                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
                     <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
@@ -294,7 +394,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Video Call Preference</Label>
+                    <Label className={fontColor}>Video Call Preference</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -303,7 +403,7 @@ class AddUserProfile extends Component {
                         name="collaborationPreference"
                         id="collaborationPreference"
                         value={this.state.userProfile.collaborationPreference}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
                       />
                     </FormGroup>
@@ -311,7 +411,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Admin Document</Label>
+                    <Label className={fontColor}>Admin Document</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -320,7 +420,7 @@ class AddUserProfile extends Component {
                         name="googleDoc"
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Google Doc"
                       />
                     </FormGroup>
@@ -328,7 +428,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Link to Media Files</Label>
+                    <Label className={fontColor}>Link to Media Files</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -337,7 +437,7 @@ class AddUserProfile extends Component {
                         name="dropboxDoc"
                         id="dropboxDoc"
                         value={this.state.userProfile.dropboxDoc}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
                       />
                     </FormGroup>
@@ -345,7 +445,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
-                    <Label>Location</Label>
+                    <Label className={fontColor}>Location</Label>
                   </Col>
                   <Col md="6">
                     <Row>
@@ -359,7 +459,7 @@ class AddUserProfile extends Component {
                             block
                             size="sm"
                             onClick={this.onClickGetTimeZone}
-                            style={boxStyle}
+                            style={darkMode ? {} : boxStyle}
                           >
                             Get Time Zone
                           </Button>
@@ -370,13 +470,13 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Time Zone</Label>
+                    <Label className={fontColor}>Time Zone</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <TimeZoneDropDown
                         filter={this.state.timeZoneFilter}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         selected={'America/Los_Angeles'}
                         id="timeZone"
                       />
@@ -385,18 +485,22 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Start Date</Label>
+                    <Label className={fontColor}>Start Date</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <div className="date-picker-item">
                         <DatePicker
-                          selected={this.state.userProfile.createdDate}
-                          minDate={new Date(DATE_PICKER_MIN_DATE)}
-                          onChange={date => this.setState({ userProfile: {
-                            ...this.state.userProfile,
-                            createdDate: date,
-                          }})}
+                          selected={this.state.userProfile.startDate}
+                          minDate={new Date()}
+                          onChange={date =>
+                            this.setState({
+                              userProfile: {
+                                ...this.state.userProfile,
+                                startDate: date == '' || date == null ? new Date() : date,
+                              },
+                            })
+                          }
                           className="form-control"
                         />
                       </div>
@@ -408,7 +512,7 @@ class AddUserProfile extends Component {
           </Row>
           <Row>
             <Col md="12">
-              <TabContent id="myTabContent">
+              <TabContent id="myTabContent" className={darkMode ? 'bg-yinmn-blue border-0' : ''}>
                 <TabPane>
                   <ProjectsTab
                     userProjects={this.state.projects}
@@ -418,6 +522,7 @@ class AddUserProfile extends Component {
                     isUserAdmin={true}
                     role={this.props.auth.user.role}
                     edit
+                    darkMode={darkMode}
                   />
                 </TabPane>
                 <TabPane>
@@ -435,6 +540,7 @@ class AddUserProfile extends Component {
                     setCodeValid={this.setCodeValid}
                     edit
                     userProfile={this.state.userProfile}
+                    darkMode={darkMode}
                   />
                 </TabPane>
               </TabContent>
@@ -448,8 +554,9 @@ class AddUserProfile extends Component {
                   color="primary"
                   block
                   size="lg"
+                  data-testid="create-userProfile"
                   onClick={() => this.createUserProfile(false)}
-                  style={boxStyle}
+                  style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Create
                 </Button>
@@ -511,51 +618,31 @@ class AddUserProfile extends Component {
     this.setState({ projects: initialUserProject });
   };
 
-  // Function to call TimeZoneService with location and key
+  // Function to call TimeZoneService with location 
   onClickGetTimeZone = () => {
     const location = this.state.userProfile.location.userProvided;
-    const key = this.props.timeZoneKey;
+
     if (!location) {
       alert('Please enter valid location');
       return;
     }
-    if (key) {
-      getUserTimeZone(location, key)
-        .then(response => {
-          if (
-            response.data.status.code === 200 &&
-            response.data.results &&
-            response.data.results.length
-          ) {
-            let timezone = response.data.results[0].annotations.timezone.name;
-            
-            let currentLocation = {
-              userProvided: location,
-              coords: {
-                lat: response.data.results[0].geometry.lat,
-                lng: response.data.results[0].geometry.lng,
-              },
-              country: response.data.results[0].components.country,
-              city: response.data.results[0].components.city,
-            };
-            if (timezone === 'Europe/Kyiv') timezone = 'Europe/Kiev';
-            
-            this.setState({
-              ...this.state,
-              timeZoneFilter: timezone,
-              userProfile: {
-                ...this.state.userProfile,
-                location: currentLocation,
-                timeZone: timezone,
-              },
-            });
-          } else {
-            alert(`Bummer, invalid location! That place sounds wonderful, but it unfortunately does not appear to exist. Please check your spelling. \n\nIf you are SURE it does exist, use the “Report App Bug” button on your Dashboard to send the location to an Administrator and we will take it up with our AI Location Fairies (ALFs) and get it fixed. Please be sure to include proof of existence, the ALFs require it. 
-            `);
-          }
-        })
-        .catch(err => console.log(err));
-    }
+
+    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
+      if(res.status === 200) {
+        const { timezone, currentLocation } = res.data;
+        this.setState({
+          ...this.state,
+          timeZoneFilter: timezone,
+          userProfile: {
+            ...this.state.userProfile,
+            location: currentLocation,
+            timeZone: timezone,
+          },
+        });
+      }
+    }).catch(err => {
+      toast.error(`An error occurred : ${err.response.data}`);
+    });
   };
 
   fieldsAreValid = () => {
@@ -605,6 +692,10 @@ class AddUserProfile extends Component {
       location,
       weeklySummaryOption,
       createdDate,
+      actualEmail,
+      actualPassword,
+      startDate,
+      actualConfirmedPassword
     } = that.state.userProfile;
 
     const userData = {
@@ -629,14 +720,22 @@ class AddUserProfile extends Component {
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
+      actualEmail: actualEmail,
+      actualPassword: actualPassword,
+      startDate: startDate,
     };
 
     this.setState({ formSubmitted: true });
 
+    if (actualPassword != actualConfirmedPassword) {
+      toast.error('Your passwords do not match!');
+      return;
+    }
+
     if (googleDoc) {
       if (isValidGoogleDocsUrl(googleDoc)) {
         userData.adminLinks.push({ Name: 'Google Doc', Link: googleDoc.trim() });
-      } else{
+      } else {
         toast.error('Invalid Google Doc link. Please provide a valid Google Doc URL.');
         this.setState({
           formValid: {
@@ -653,21 +752,21 @@ class AddUserProfile extends Component {
     }
     if (dropboxDoc) {
       if (isValidMediaUrl(dropboxDoc)) {
-          userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
-        } else {
-          toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
-          this.setState({
-            formValid: {
-              ...that.state.formValid,
-              dropboxDoc: false,
-            },
-            formErrors: {
-              ...that.state.formErrors,
-              dropboxDoc: 'Invalid Dropbox Link URL',
-            },
-          });
-          return;
-        }
+        userData.adminLinks.push({ Name: 'Media Folder', Link: dropboxDoc.trim() });
+      } else {
+        toast.error('Invalid DropBox link. Please provide a valid Drop Box URL.');
+        this.setState({
+          formValid: {
+            ...that.state.formValid,
+            dropboxDoc: false,
+          },
+          formErrors: {
+            ...that.state.formErrors,
+            dropboxDoc: 'Invalid Dropbox Link URL',
+          },
+        });
+        return;
+      }
     }
     if (this.fieldsAreValid()) {
       this.setState({ showphone: false });
@@ -689,10 +788,15 @@ class AddUserProfile extends Component {
             } else {
               toast.success('User profile created.');
               this.state.userProfile._id = res.data._id;
-              if(this.state.teams.length > 0){
-                this.state.teams.forEach((team) => {
-                  this.props.addTeamMember(team._id, res.data._id, res.data.firstName, res.data.lastName)
-                })
+              if (this.state.teams.length > 0) {
+                this.state.teams.forEach(team => {
+                  this.props.addTeamMember(
+                    team._id,
+                    res.data._id,
+                    res.data.firstName,
+                    res.data.lastName,
+                  );
+                });
               }
             }
             this.props.userCreated();
@@ -734,6 +838,19 @@ class AddUserProfile extends Component {
                       popupOpen: true,
                     });
                   }
+                  break;
+                case 'credentials':
+                  this.setState({
+                    formValid: {
+                      ...that.state.formValid,
+                      email: false,
+                    },
+                    formErrors: {
+                      ...that.state.formErrors,
+                      actualEmail: 'Actual email or password may be incorrect',
+                      actualPassword: 'Actual email or password may be incorrect',
+                    },
+                  });
                   break;
               }
             }
@@ -870,7 +987,9 @@ class AddUserProfile extends Component {
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim().replace(/[A-Z]/g, (char) => char.toLowerCase()),
+            [event.target.id]: event.target.value
+              .trim()
+              .replace(/[A-Z]/g, char => char.toLowerCase()),
           },
           formValid: {
             ...formValid,
@@ -916,18 +1035,24 @@ class AddUserProfile extends Component {
         });
         break;
       case 'weeklyCommittedHours':
+        let val = Number(event.target.value);
+        if (val > 168) {
+          val = 168
+        } else if (val < 0) {
+          val = 0
+        } 
         this.setState({
           userProfile: {
             ...userProfile,
-            [event.target.id]: event.target.value.trim(),
+            [event.target.id]: val.toString(),
           },
           formValid: {
             ...formValid,
-            [event.target.id]: !!event.target.value,
+            [event.target.id]: true,
           },
           formErrors: {
             ...formErrors,
-            weeklyCommittedHours: !!event.target.value ? '' : 'Committed hours can not be empty',
+            weeklyCommittedHours: '',
           },
         });
         break;
@@ -1005,6 +1130,42 @@ class AddUserProfile extends Component {
           },
         });
         break;
+      case 'actualEmail':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            actualEmail: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            actualEmail: event.target.value.match(patt) ? '' : 'Actual Email is not valid',
+          },
+        });
+        break;
+      case 'actualPassword':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            actualPassword: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            actualPassword: event.target.value.length > 0 ? '' : 'Actual Password is required',
+          },
+        });
+        break;
+      case 'actualConfirmedPassword':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            actualConfirmedPassword: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
+          },
+        });
+        break;
       default:
         this.setState({
           ...userProfile,
@@ -1018,19 +1179,18 @@ const mapStateToProps = state => ({
   userProjects: state.userProjects,
   allProjects: get(state, 'allProjects'),
   allTeams: state,
-  timeZoneKey: state.timeZoneAPI.userAPIKey,
   role: state.role,
   state,
 });
 
+
 export default connect(mapStateToProps, {
   getUserProfile,
   clearUserProfile,
-  updateUserProfile,
   getAllUserTeams,
   updateTeam,
   deleteTeamMember,
   addTeamMember,
   fetchAllProjects,
   hasPermission,
-})(AddUserProfile);
+})(UserProfileAdd);

@@ -11,11 +11,13 @@ import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { Link } from 'react-router-dom';
 
 const WBSItem = props => {
+  const {darkMode} = props;
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const canDeleteWBS = props.hasPermission('deleteWbs') || props.hasPermission('seeProjectManagement');
+  const canDeleteWBS = props.hasPermission('deleteWbs');
 
   const confirmDelete = () => {
     props.deleteWbs(props.wbsId);
@@ -24,12 +26,12 @@ const WBSItem = props => {
 
   return (
     <React.Fragment>
-      <tr>
+      <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
         <th scope="row">
           <div>{props.index}</div>
         </th>
         <td className="members__name">
-          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`}>{props.name}</a>
+          <Link to={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</Link>
         </td>
         {canDeleteWBS ? (
           <td className="members__assign">
@@ -40,7 +42,7 @@ const WBSItem = props => {
                 setShowModalDelete(true);
                 props.getPopupById(WBS_DELETE_POPUP_ID);
               }}
-              style={boxStyle}
+              style={darkMode ? {} : boxStyle}
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>
