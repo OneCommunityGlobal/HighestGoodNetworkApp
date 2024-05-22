@@ -5,7 +5,6 @@ import BMLogin from '..';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import { useHistory } from 'react-router-dom';
 import { BrowserRouter as Router } from 'react-router-dom';
 import axios from 'axios';
 
@@ -43,7 +42,6 @@ const history = {
 const renderComponent = testStore => {
   function LoginWrapper() {
     const dispatch = useDispatch();
-    //const history = useHistory();
     const location = {};
 
     return <BMLogin dispatch={dispatch} history={history} location={location} />;
@@ -158,8 +156,9 @@ describe('BMLogin component', () => {
     ).not.toBeInTheDocument();
     expect(emailElement).not.toBeInvalid();
     expect(passwordElement).not.toBeInvalid();
-    await waitFor(() => {});
-    expect(history.push).toHaveBeenCalledWith('/bmdashboard');
+    await waitFor(() => {
+      expect(history.push).toHaveBeenCalledWith('/bmdashboard');
+    });
   });
   it("check if statusText in response is not 'OK' and status is 422 and displays validation error", async () => {
     axios.post.mockResolvedValue({
@@ -178,8 +177,9 @@ describe('BMLogin component', () => {
     const submitElement = screen.getByText('Submit');
     fireEvent.click(submitElement);
 
-    await waitFor(() => {});
-    expect(screen.getByText('User not found')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('User not found')).toBeInTheDocument();
+    });
   });
   it("check if statusText in response is not 'OK' and status is not 422 and does not display any validation error", async () => {
     axios.post.mockResolvedValue({
@@ -198,9 +198,10 @@ describe('BMLogin component', () => {
     const submitElement = screen.getByText('Submit');
     fireEvent.click(submitElement);
 
-    await waitFor(() => {});
-    const messageElement = container.querySelector('.invalid-feedback');
-    expect(messageElement).not.toBeInTheDocument();
+    await waitFor(() => {
+      const messageElement = container.querySelector('.invalid-feedback');
+      expect(messageElement).not.toBeInTheDocument();
+    });
   });
   it('check failed post request does not display any validation error', async () => {
     axios.post.mockRejectedValue({ response: 'server error' });
@@ -215,8 +216,9 @@ describe('BMLogin component', () => {
     const submitElement = screen.getByText('Submit');
     fireEvent.click(submitElement);
 
-    await waitFor(() => {});
-    const messageElement = container.querySelector('.invalid-feedback');
-    expect(messageElement).not.toBeInTheDocument();
+    await waitFor(() => {
+      const messageElement = container.querySelector('.invalid-feedback');
+      expect(messageElement).not.toBeInTheDocument();
+    });
   });
 });
