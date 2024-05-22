@@ -16,7 +16,6 @@ import {
   DropdownItem,
   Spinner,
 } from 'reactstrap';
-import { Table, Progress, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
