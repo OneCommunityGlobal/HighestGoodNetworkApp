@@ -265,11 +265,11 @@ export function Header(props) {
 
   return (
     <div className="header-wrapper">
-      <Navbar className="py-3 navbar" color="dark" dark expand="xl">
+      <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
-          style={user.role == 'Owner' ? { marginRight: '1rem' } : { marginRight: '1.5rem' }}
+          style={user.role == 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
         >
           {isAuthenticated && <Timer darkMode={darkMode}/>}
           {isAuthenticated && (
@@ -282,146 +282,151 @@ export function Header(props) {
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto nav-links" navbar>
-              <DarkModeButton />
-              {canUpdateTask && (
+              <div className='d-flex justify-content-center align-items-center' style={{width: '100%'}}>
+                <DarkModeButton />
+                {canUpdateTask && (
+                  <NavItem>
+                    <NavLink tag={Link} to="/taskeditsuggestions">
+                      <div className="redBackGroupHeader">
+                        <span>{props.taskEditSuggestionCount}</span>
+                      </div>
+                    </NavLink>
+                  </NavItem>
+                )}
                 <NavItem>
-                  <NavLink tag={Link} to="/taskeditsuggestions">
-                    <div className="redBackGroupHeader">
-                      <span>{props.taskEditSuggestionCount}</span>
-                    </div>
+                  <NavLink tag={Link} to="/dashboard">
+                    <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-              )}
-              <NavItem>
-                <NavLink tag={Link} to="/dashboard">
-                  <span className="dashboard-text-link">{DASHBOARD}</span>
-                </NavLink>
-              </NavItem>
-              <NavItem>
-                <NavLink tag={Link} to={`/timelog`}>
-                  <span className="dashboard-text-link">{TIMELOG}</span>
-                </NavLink>
-              </NavItem>
-              {(canGetReports || canGetWeeklySummaries) ? (
-                <UncontrolledDropdown nav inNavbar>
-                  <DropdownToggle nav caret>
-                    <span className="dashboard-text-link">{REPORTS}</span>
-                  </DropdownToggle>
-                  <DropdownMenu>
-                    {canGetReports &&
-                      <DropdownItem tag={Link} to="/reports">
-                        {REPORTS}
-                      </DropdownItem>
-                    }
-                    {canGetWeeklySummaries &&
-                      <DropdownItem tag={Link} to="/weeklysummariesreport">
-                        {WEEKLY_SUMMARIES_REPORT}
-                      </DropdownItem>
-                    }
-                    <DropdownItem tag={Link} to="/teamlocations">
-                      {TEAM_LOCATIONS}
-                    </DropdownItem>
-                  </DropdownMenu>
-                </UncontrolledDropdown>
-              ) :
                 <NavItem>
-                  <NavLink tag={Link} to="/teamlocations">
-                    {TEAM_LOCATIONS}
+                  <NavLink tag={Link} to={`/timelog`}>
+                    <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
-              }
-              <NavItem>
-                <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
-                  <i className="fa fa-bell i-large">
-                    <i className="badge badge-pill badge-danger badge-notify">
-                      {/* Pull number of unread messages */}
-                    </i>
-                    <span className="sr-only">unread messages</span>
-                  </i>
-                </NavLink>
-              </NavItem>
-              {(canAccessUserManagement ||
-                canAccessBadgeManagement ||
-                canAccessProjects ||
-                canAccessTeams ||
-                canAccessPopups ||
-                canAccessPermissionsManagement) && (
+              </div>
+              <div className='d-flex align-items-center justify-content-center'>
+                
+                {(canGetReports || canGetWeeklySummaries) ? (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                      <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
                     <DropdownMenu>
-                      {canAccessUserManagement ? (
-                        <DropdownItem tag={Link} to="/usermanagement">
-                          {USER_MANAGEMENT}
+                      {canGetReports &&
+                        <DropdownItem tag={Link} to="/reports">
+                          {REPORTS}
                         </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
-                      {canAccessBadgeManagement ? (
-                        <DropdownItem tag={Link} to="/badgemanagement">
-                          {BADGE_MANAGEMENT}
+                      }
+                      {canGetWeeklySummaries &&
+                        <DropdownItem tag={Link} to="/weeklysummariesreport">
+                          {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
-                      {(canAccessProjects) && (
-                        <DropdownItem tag={Link} to="/projects">
-                          {PROJECTS}
-                        </DropdownItem>
-                      )}
-                      {(canAccessTeams) && (
-                        <DropdownItem tag={Link} to="/teams">
-                          {TEAMS}
-                        </DropdownItem>
-                      )}
-                      {(canAccessPermissionsManagement) && (
-                        <DropdownItem tag={Link} to="/announcements">
-                          {SEND_EMAILS}
-                        </DropdownItem>
-                      )}
-                      {canAccessPermissionsManagement && (
-                        <>
-                          <DropdownItem divider />
-                          <DropdownItem tag={Link} to="/permissionsmanagement">
-                            {PERMISSIONS_MANAGEMENT}
-                          </DropdownItem>
-                        </>
-                      )}
+                      }
+                      <DropdownItem tag={Link} to="/teamlocations">
+                        {TEAM_LOCATIONS}
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
-                )}
-              <NavItem>
-                <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
-                  <img
-                    src={`${profilePic || '/pfp-default-header.png'}`}
-                    alt=""
-                    style={{ maxWidth: '60px', maxHeight: '60px' }}
-                    className="dashboardimg"
-                  />
-                </NavLink>
-              </NavItem>
-              <UncontrolledDropdown nav>
-                <DropdownToggle nav caret>
-                  <span className="dashboard-text-link">
-                    {WELCOME}, {firstName}
-                  </span>
-                </DropdownToggle>
-                <DropdownMenu>
-                  <DropdownItem header>Hello {firstName}</DropdownItem>
-                  <DropdownItem divider />
-                  <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`}>
-                    {VIEW_PROFILE}
-                  </DropdownItem>
-                  {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                    <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`}>
-                      {UPDATE_PASSWORD}
-                    </DropdownItem>
+                ) :
+                <NavItem>
+                    <NavLink tag={Link} to="/teamlocations">
+                      {TEAM_LOCATIONS}
+                    </NavLink>
+                  </NavItem>
+                }
+                <NavItem>
+                  <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
+                    <i className="fa fa-bell i-large">
+                      <i className="badge badge-pill badge-danger badge-notify">
+                        {/* Pull number of unread messages */}
+                      </i>
+                      <span className="sr-only">unread messages</span>
+                    </i>
+                  </NavLink>
+                </NavItem>
+                {(canAccessUserManagement ||
+                  canAccessBadgeManagement ||
+                  canAccessProjects ||
+                  canAccessTeams ||
+                  canAccessPopups ||
+                  canAccessPermissionsManagement) && (
+                    <UncontrolledDropdown nav inNavbar>
+                      <DropdownToggle nav caret>
+                        <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                      </DropdownToggle>
+                      <DropdownMenu>
+                        {canAccessUserManagement ? (
+                          <DropdownItem tag={Link} to="/usermanagement">
+                            {USER_MANAGEMENT}
+                          </DropdownItem>
+                        ) : (
+                          <React.Fragment></React.Fragment>
+                        )}
+                        {canAccessBadgeManagement ? (
+                          <DropdownItem tag={Link} to="/badgemanagement">
+                            {BADGE_MANAGEMENT}
+                          </DropdownItem>
+                        ) : (
+                          <React.Fragment></React.Fragment>
+                        )}
+                        {(canAccessProjects) && (
+                          <DropdownItem tag={Link} to="/projects">
+                            {PROJECTS}
+                          </DropdownItem>
+                        )}
+                        {(canAccessTeams) && (
+                          <DropdownItem tag={Link} to="/teams">
+                            {TEAMS}
+                          </DropdownItem>
+                        )}
+                        {(canAccessPermissionsManagement) && (
+                          <DropdownItem tag={Link} to="/announcements">
+                            {SEND_EMAILS}
+                          </DropdownItem>
+                        )}
+                        {canAccessPermissionsManagement && (
+                          <>
+                            <DropdownItem divider />
+                            <DropdownItem tag={Link} to="/permissionsmanagement">
+                              {PERMISSIONS_MANAGEMENT}
+                            </DropdownItem>
+                          </>
+                        )}
+                      </DropdownMenu>
+                    </UncontrolledDropdown>
                   )}
-                  <DropdownItem divider />
-                  <DropdownItem onClick={openModal}>{LOGOUT}</DropdownItem>
-                </DropdownMenu>
-              </UncontrolledDropdown>
+                <NavItem>
+                  <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
+                    <img
+                      src={`${profilePic || '/pfp-default-header.png'}`}
+                      alt=""
+                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                      className="dashboardimg"
+                    />
+                  </NavLink>
+                </NavItem>
+                <UncontrolledDropdown nav>
+                  <DropdownToggle nav caret>
+                    <span className="dashboard-text-link">
+                      {WELCOME}, {firstName}
+                    </span>
+                  </DropdownToggle>
+                  <DropdownMenu>
+                    <DropdownItem header>Hello {firstName}</DropdownItem>
+                    <DropdownItem divider />
+                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`}>
+                      {VIEW_PROFILE}
+                    </DropdownItem>
+                    {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
+                      <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`}>
+                        {UPDATE_PASSWORD}
+                      </DropdownItem>
+                    )}
+                    <DropdownItem divider />
+                    <DropdownItem onClick={openModal}>{LOGOUT}</DropdownItem>
+                  </DropdownMenu>
+                </UncontrolledDropdown>
+              </div>
             </Nav>
           </Collapse>
         )}
