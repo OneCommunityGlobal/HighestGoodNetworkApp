@@ -97,7 +97,7 @@ describe('AddTeamPopup component', () => {
     renderComponent(false, teamsData, userTeams);
     expect(screen.queryByText('Add Team')).not.toBeInTheDocument();
   });
-  it.skip('check if confirm button works', async () => {
+  it('check if confirm button works', async () => {
     axios.get.mockResolvedValue({
       status: 200,
     });
@@ -116,6 +116,7 @@ describe('AddTeamPopup component', () => {
     const searchElement = modalBodyElement.querySelector('.form-control');
 
     fireEvent.change(searchElement, { target: { value: 'team1' } });
+    await waitFor(() => {});
     const team12Element = screen.getByText('team12');
     fireEvent.click(team12Element);
     const confirmElement = screen.getByText('Confirm');

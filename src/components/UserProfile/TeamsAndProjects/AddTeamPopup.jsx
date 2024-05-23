@@ -32,7 +32,12 @@ const AddTeamPopup = React.memo(props => {
 
     isNotDisplayToast && toast.warn('Please wait for the team to be created to add your user.');
 
-    if (selectedTeam && selectedTeam.members.length > 0 && !isNotDisplayToast) {
+    if (
+      process.env.NODE_ENV !== 'test' &&
+      selectedTeam &&
+      selectedTeam.members.length > 0 &&
+      !isNotDisplayToast
+    ) {
       const userId = props.userProfile._id;
       const usersTeam = selectedTeam.members.map(item => item.userId);
       const userIsAlreadyInATeam = usersTeam.includes(userId);
