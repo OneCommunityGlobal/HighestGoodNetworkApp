@@ -245,72 +245,71 @@ function LeaderBoard({
   };
 
   return (
-      <div>
-        <h3>
-          <div className="d-flex align-items-center">
-            <span className="mr-2">Leaderboard</span>
-            <i
-              data-toggle="tooltip"
-              data-placement="right"
-              title="Click to refresh the leaderboard"
-              style={{ fontSize: 24, cursor: 'pointer' }}
-              aria-hidden="true"
-              className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
-              onClick={updateLeaderboardHandler}
-            />
-            &nbsp;
-            <EditableInfoModal
-              areaName="LeaderboardOrigin"
-              areaTitle="Leaderboard"
-              role={loggedInUser.role}
-              fontSize={24}
-              darkMode={darkMode}
-              isPermissionPage
-            />
-          </div>
-        </h3>
-        {userRole === 'Administrator' || userRole === 'Owner' ? (
-          <section className="d-flex flex-row flex-wrap mb-3">
-            <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=" mr-3">
-              <DropdownToggle caret>
-                {selectedTeamName} {/* Display selected team or default text */}
-              </DropdownToggle>
-              <DropdownMenu>
-                {teams.length === 0 ? (
-                  <DropdownItem
-                    onClick={() => toast.warning('Please, create a team to use the filter.')}
-                  >
-                    Please, create a team to use the filter.
+     <div>
+      <h3>
+        <div className="d-flex align-items-center">
+          <span className="mr-2">Leaderboard</span>
+          <i
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Click to refresh the leaderboard"
+            style={{ fontSize: 24, cursor: 'pointer' }}
+            aria-hidden="true"
+            className={`fa fa-refresh ${isLoading ? 'animation' : ''}`}
+            onClick={updateLeaderboardHandler}
+          />
+          &nbsp;
+          <EditableInfoModal
+            areaName="LeaderboardOrigin"
+            areaTitle="Leaderboard"
+            role={loggedInUser.role}
+            fontSize={24}
+            darkMode={darkMode}
+            isPermissionPage
+          />
+        </div>
+      </h3>
+      {userRole === 'Administrator' || userRole === 'Owner' ? (
+        <section className="d-flex flex-row flex-wrap mb-3">
+          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=" mr-3">
+            <DropdownToggle caret>
+              {selectedTeamName} {/* Display selected team or default text */}
+            </DropdownToggle>
+            <DropdownMenu>
+              {teams.length === 0 ? (
+                <DropdownItem
+                  onClick={() => toast.warning('Please, create a team to use the filter.')}
+                >
+                  Please, create a team to use the filter.
+                </DropdownItem>
+              ) : (
+                teams.map(team => (
+                  <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
+                    {dropdownName(team.teamName, team.teamName.length)}
                   </DropdownItem>
-                ) : (
-                  teams.map(team => (
-                    <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                      {dropdownName(team.teamName, team.teamName.length)}
-                    </DropdownItem>
-                  ))
-                )}
-              </DropdownMenu>
-            </Dropdown>
+                ))
+              )}
+            </DropdownMenu>
+          </Dropdown>
 
-            {teams.length === 0 ? (
-              <Link to="/teams">
-                <Button color="success" className="fw-bold" boxstyle={boxStyle}>
-                  Create Team
-                </Button>
-              </Link>
-            ) : (
-              <Button
-                color="primary"
-                onClick={handleToggleButtonClick}
-                disabled={isLoadingTeams}
-                boxstyle={boxStyle}
-              >
-                {isLoadingTeams ? <Spinner animation="border" size="sm" /> : textButton}
+          {teams.length === 0 ? (
+            <Link to="/teams">
+              <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                Create Team
               </Button>
-            )}
-          </section>
-        ) : null}
-      </div>
+            </Link>
+          ) : (
+            <Button
+              color="primary"
+              onClick={handleToggleButtonClick}
+              disabled={isLoadingTeams}
+              boxstyle={boxStyle}
+            >
+              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : textButton}
+            </Button>
+          )}
+        </section>
+      ) : null}
       {!isVisible && (
         <Alert color="warning">
           <div className="d-flex align-items-center">
@@ -399,16 +398,17 @@ function LeaderBoard({
               <tr key={item.personId} className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <td className="align-middle">
                   <div>
-                    <Modal 
-                    isOpen={isDashboardOpen === item.personId}
-                    toggle={dashboardToggle}
-                    className={darkMode ? 'text-light dark-mode' : ''}
-                    style={darkMode ? boxStyleDark : {}>
-                      <ModalHeader 
+                    <Modal
+                      isOpen={isDashboardOpen === item.personId}
                       toggle={dashboardToggle}
-                      className={darkMode ? 'bg-space-cadet' : ''}
+                      className={darkMode ? 'text-light dark-mode' : ''}
+                      style={darkMode ? boxStyleDark : {}}
+                    >
+                      <ModalHeader
+                        toggle={dashboardToggle}
+                        className={darkMode ? 'bg-space-cadet' : ''}
                       >
-                      Jump to personal Dashboard
+                        Jump to personal Dashboard
                       </ModalHeader>
                       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
@@ -593,6 +593,7 @@ function LeaderBoard({
           </tbody>
         </Table>
       </div>
+    </div>
   );
 }
 
