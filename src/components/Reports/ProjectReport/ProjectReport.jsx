@@ -55,7 +55,8 @@ export function ProjectReport({ match }) {
   }, [wbs]);
 
   useEffect(() => {
-    if (tasks.taskItems.length > 0) {
+    setHoursCommitted(0);
+    if (tasks.taskItems.length > 0 && wbs.WBSItems.length > 0) {
       setHoursCommitted(tasks.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
     }
   }, [tasks]);
