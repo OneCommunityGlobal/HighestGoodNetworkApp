@@ -339,7 +339,7 @@ const SummaryBar = props => {
                 {!weeklySummary ? weeklySummaryNotReq ? (
                 <div className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
                   align="center">
-                  <font className="text-center text--black" size="3">
+                  <font className="text-center text-light" size="3">
                     SUMMARY
                   </font>
                 </div>
