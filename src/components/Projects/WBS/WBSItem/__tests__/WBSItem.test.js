@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import getPopupById from 'actions/popupEditorAction';
 import axios from 'axios';
+import { MemoryRouter } from 'react-router-dom';
 
 const index = 0;
 const key = 'item123';
@@ -42,18 +43,20 @@ jest.mock('axios');
 const renderComponent = (index, key, wbsId, projectId, name) => {
   return render(
     <Provider store={store}>
-      <table>
-        <tbody>
-          <WBSItem
-            index={index}
-            key={key}
-            wbsId={wbsId}
-            projectId={projectId}
-            name={name}
-            popupEditor={{ currPopup: { popupContent: 'this is popup content' } }}
-          />
-        </tbody>
-      </table>
+      <MemoryRouter>
+        <table>
+          <tbody>
+            <WBSItem
+              index={index}
+              key={key}
+              wbsId={wbsId}
+              projectId={projectId}
+              name={name}
+              popupEditor={{ currPopup: { popupContent: 'this is popup content' } }}
+            />
+          </tbody>
+        </table>
+      </MemoryRouter>
     </Provider>,
   );
 };

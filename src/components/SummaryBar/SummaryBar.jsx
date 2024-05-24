@@ -8,15 +8,13 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Progress,
   Form,
   FormGroup,
   Label,
-  Input,
-  FormText,
+  Input
 } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
 import task_icon from './task_icon.png';
@@ -30,14 +28,13 @@ import axios from 'axios';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { toast } from 'react-toastify';
 
 const SummaryBar = props => {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
-  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit } = props;
+  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit, darkMode } = props;
 
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;
@@ -238,6 +235,8 @@ const SummaryBar = props => {
       : '';
   };
 
+  const canEditData = () => !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') && canPutUserProfileImportantInfo;
+
   useEffect(() => {
     setUserProfile(userProfile);
   }, [userProfile]);
@@ -262,14 +261,18 @@ const SummaryBar = props => {
     }
   }, [displayUserProfile, summaryBarData]);
 
+  const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
+  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
   return (
     displayUserProfile !== undefined && summaryBarData !== undefined 
-      ? <Container
+    ? <Container
           fluid
-          className={
-            isAuthUser || canPutUserProfileImportantInfo
-              ? 'px-lg-0 bg--bar'
-              : 'px-lg-0 bg--bar disabled-bar'
+          className={"px-lg-0 rounded " + (
+            isAuthUser || canEditData()
+              ? (darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'bg--bar text--black box-shadow-light')
+              : (darkMode ? 'bg-space-cadet disabled-bar text-light box-shadow-dark' : 'bg--bar disabled-bar text--black box-shadow-light'))
           }
         >
           <Row className="no-gutters row-eq-height">
@@ -278,12 +281,12 @@ const SummaryBar = props => {
               align="center"
             >
               <div>
-                <font className="text--black  align-middle" size="3">
+                <font className="align-middle" size="3">
                   {' '}
                   Activity for{' '}
                 </font>
-                <CardTitle className="text--black align-middle" tag="h3">
-                  <div>
+                <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
+                  <div className='font-weight-bold'>
                     {displayUserProfile.firstName + ' '}
                     {displayUserProfile.lastName}
                   </div>
@@ -293,19 +296,19 @@ const SummaryBar = props => {
             <Col className="d-flex col-lg-3 col-12 no-gutters">
               <Row className="no-gutters w-100">
                 {totalEffort < weeklyCommittedHours && (
-                  <div className="border-red col-4 bg--white-smoke">
+                  <div className={`border border-danger col-4 ${darkMode ? "bg-yinmn-blue" : "bg-white"}`}>
                     <div className="py-1"> </div>
-                    <p className="text-center large_text_summary text--black text-danger">!</p>
-                    <font className="text-center text--black" size="3">
+                    <p className="text-center large_text_summary text-danger">!</p>
+                    <font className="text-center" size="3">
                       HOURS
                     </font>
                     <div className="py-2"> </div>
                   </div>
                 )}
                 {totalEffort >= weeklyCommittedHours && (
-                  <div className="border-green col-4 bg--dark-green">
+                  <div className={`border-green col-4 bg--dark-green`}>
                     <div className="py-1"> </div>
-                    <p className="text-center large_text_summary text--black">✓</p>
+                    <p className="text-center large_text_summary">✓</p>
                     <font className="text-center" size="3">
                       HOURS
                     </font>
@@ -313,9 +316,10 @@ const SummaryBar = props => {
                   </div>
                 )}
 
-                <div className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center">
+                <div className={`col-8 d-flex justify-content-center align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`} 
+                     style={{border: "1px solid black"}}>
                   <div className="align-items-center" id="timelogweeklychart">
-                    <div className="text--black align-items-center med_text_summary">
+                    <div className="align-items-center med_text_summary">
                       Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                       <Progress
                         value={getProgressValue(totalEffort, weeklyCommittedHours)}
@@ -331,12 +335,12 @@ const SummaryBar = props => {
             <Col className="d-flex col-lg-3 col-12 no-gutters">
               <Row className="no-gutters w-100">
                 {!weeklySummary ? (
-                  <div className="border-red col-4 bg--white-smoke no-gutters">
+                  <div className={`border border-danger col-4 no-gutters ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}>
                     <div className="py-1"> </div>
-                    {isAuthUser || canPutUserProfileImportantInfo ? (
+                    { isAuthUser || canEditData()  ? (
                       <p
                         className={
-                          'text-center summary-toggle large_text_summary text--black text-danger'
+                          'text-center summary-toggle large_text_summary text-danger'
                         }
                         onClick={props.toggleSubmitForm}
                       >
@@ -345,25 +349,25 @@ const SummaryBar = props => {
                     ) : (
                       <p
                         className={
-                          'text-center summary-toggle large_text_summary text--black text-danger'
+                          'text-center summary-toggle large_text_summary text-danger'
                         }
                       >
                         !
                       </p>
                     )}
 
-                    <font className="text-center text--black" size="3">
+                    <font className="text-center" size="3">
                       SUMMARY
                     </font>
                     <div className="py-2"> </div>
                   </div>
                 ) : (
-                  <div className="border-green col-4 bg--dark-green">
+                  <div className={`border-green col-4 bg--dark-green`}>
                     <div className="py-1"> </div>
-                    <p onClick={props.toggleSubmitForm} className="text-center large_text_summary text--black summary-toggle" >
+                    <p onClick={props.toggleSubmitForm} className="text-center large_text_summary summary-toggle" >
                       ✓
                     </p>
-                    <font className="text-center text--black" size="3">
+                    <font className="text-center" size="3">
                       SUMMARY
                     </font>
                     <div className="py-2"> </div>
@@ -371,11 +375,11 @@ const SummaryBar = props => {
                 )}
 
                 <div
-                  className="col-8 border-black bg--white-smoke d-flex align-items-center"
-
+                  className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                  style={{border: "1px solid black"}}
                 >
                   <div className="m-auto p-2 text-center">
-                    <font onClick={props.toggleSubmitForm} className="text--black med_text_summary align-middle summary-toggle" size="3">
+                    <font onClick={props.toggleSubmitForm} className="med_text_summary align-middle summary-toggle" size="3">
                       {weeklySummary || props.submittedSummary ? (
                         'You have submitted your weekly summary.'
                       ) : isAuthUser ? (
@@ -393,14 +397,14 @@ const SummaryBar = props => {
               </Row>
             </Col>
 
-            <Col className="m-auto mt-2 col-lg-4 col-12 badge-list">
-              <div className="d-flex justify-content-around no-gutters">
+            <Col className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? "bg-space-cadet" : ""}`}>
+              <div className={"d-flex justify-content-around no-gutters"}>
                 &nbsp;&nbsp;
                 <div className="image_frame">
                   <div className="redBackgroup">
                     <span>{tasks}</span>
                   </div>
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
                   ) : (
                     <img className="sum_img" src={task_icon} alt=""></img>
@@ -408,7 +412,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
                   ) : (
                     <img className="sum_img" src={badges_icon} alt="" />
@@ -419,7 +423,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
                       <img className="sum_img" src={bluesquare_icon} alt="" />
                       <div className="redBackgroup">
@@ -437,7 +441,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
                   ) : (
                     <img className="sum_img" src={report_icon} alt="" />
@@ -445,7 +449,7 @@ const SummaryBar = props => {
                 </div>
                 &nbsp;&nbsp;
                 <div className="image_frame">
-                  {isAuthUser ? (
+                  {isAuthUser || canEditData() ? (
                     <img
                       className="sum_img"
                       src={suggestions_icon}
@@ -458,10 +462,9 @@ const SummaryBar = props => {
                 </div>
               </div>
             </Col>
-
-            <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal}>
-              <ModalHeader>User Suggestion</ModalHeader>
-              <ModalBody>
+            <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal} className={darkMode ? 'text-light' : ''}>
+              <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
+              <ModalBody className={bodyBg}>
                 {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
                   <FormGroup>
                     <Button
@@ -493,7 +496,7 @@ const SummaryBar = props => {
                     <FormGroup tag="fieldset" id="fieldsetinner">
                       <legend style={{ fontSize: '16px' }}>Select Action type:</legend>
                       <FormGroup check>
-                        <Label check>
+                        <Label check className={fontColor}>
                           <Input
                             onChange={() => seteditType('add')}
                             type="radio"
@@ -505,7 +508,7 @@ const SummaryBar = props => {
                         </Label>
                       </FormGroup>
                       <FormGroup check>
-                        <Label check>
+                        <Label check className={fontColor}>
                           <Input
                             onChange={() => seteditType('delete')}
                             type="radio"
@@ -522,7 +525,7 @@ const SummaryBar = props => {
                     </FormGroup>
                     {editType !== '' && (
                       <FormGroup>
-                        <Label for="newField">
+                        <Label for="newField" className={fontColor}>
                           {extraFieldForSuggestionForm === 'suggestion'
                             ? editType === 'delete'
                               ? 'Delete category (Write the suggestion category number from the dropdown to delete it).'
@@ -565,7 +568,7 @@ const SummaryBar = props => {
                 )}
                 <Form onSubmit={sendUserSuggestion} id="suggestionForm">
                   <FormGroup>
-                    <Label for="suggestioncate">Please select a category of your suggestion:</Label>
+                    <Label for="suggestioncate" className={fontColor}>Please select a category of your suggestion:</Label>
 
                     <Input
                       onChange={() => setTakeInput(true)}
@@ -586,7 +589,7 @@ const SummaryBar = props => {
                   </FormGroup>
                   {takeInput && (
                     <FormGroup>
-                      <Label for="suggestion"> Write your suggestion: </Label>
+                      <Label for="suggestion" className={fontColor}> Write your suggestion: </Label>
                       <Input
                         type="textarea"
                         name="suggestion"
@@ -599,7 +602,7 @@ const SummaryBar = props => {
                   {inputFiled.length > 0 &&
                     inputFiled.map((item, index) => (
                       <FormGroup key={index}>
-                        <Label for="title">{item} </Label>
+                        <Label for="title" className={fontColor}>{item} </Label>
                         <Input type="textbox" name={item} id={item} placeholder="" required />
                       </FormGroup>
                     ))}
@@ -608,12 +611,12 @@ const SummaryBar = props => {
                       Would you like a followup/reply regarding this feedback?
                     </legend>
                     <FormGroup check>
-                      <Label check>
+                      <Label check className={fontColor}>
                         <Input type="radio" name="confirm" value={'yes'} required /> Yes
                       </Label>
                     </FormGroup>
                     <FormGroup check>
-                      <Label check>
+                      <Label check className={fontColor}>
                         <Input type="radio" name="confirm" value={'no'} required /> No
                       </Label>
                     </FormGroup>
@@ -635,12 +638,12 @@ const SummaryBar = props => {
               </ModalBody>
             </Modal>
 
-            <Modal isOpen={report.in} toggle={openReport}>
-              <ModalHeader>Bug Report</ModalHeader>
-              <ModalBody>
+            <Modal isOpen={report.in} toggle={openReport} className={fontColor}>
+              <ModalHeader className={headerBg}>Bug Report</ModalHeader>
+              <ModalBody className={bodyBg}>
                 <Form onSubmit={sendBugReport} id="bugReportForm">
                   <FormGroup>
-                    <Label for="title">[Feature Name] Bug Title </Label>
+                    <Label for="title" className={fontColor}>[Feature Name] Bug Title </Label>
                     <Input
                       type="textbox"
                       name="title"
@@ -650,7 +653,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="environment">
+                    <Label for="environment" className={fontColor}>
                       {' '}
                       Environment (OS/Device/App Version/Connection/Time etc){' '}
                     </Label>
@@ -663,7 +666,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="reproduction">
+                    <Label for="reproduction" className={fontColor}>
                       Steps to reproduce (Please Number, Short Sweet to the point){' '}
                     </Label>
                     <Input
@@ -675,7 +678,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="expected">Expected Result (Short Sweet to the point) </Label>
+                    <Label for="expected" className={fontColor}>Expected Result (Short Sweet to the point) </Label>
                     <Input
                       type="textarea"
                       name="expected"
@@ -685,7 +688,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="actual">Actual Result (Short Sweet to the point) </Label>
+                    <Label for="actual" className={fontColor}>Actual Result (Short Sweet to the point) </Label>
                     <Input
                       type="textarea"
                       name="actual"
@@ -695,7 +698,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="visual">Visual Proof (screenshots, videos, text) </Label>
+                    <Label for="visual" className={fontColor}>Visual Proof (screenshots, videos, text) </Label>
                     <Input
                       type="textarea"
                       name="visual"
@@ -705,7 +708,7 @@ const SummaryBar = props => {
                     />
                   </FormGroup>
                   <FormGroup>
-                    <Label for="severity">Severity/Priority (How Bad is the Bug?) </Label>
+                    <Label for="severity" className={fontColor}>Severity/Priority (How Bad is the Bug?) </Label>
                     <Input type="select" name="severity" id="severity" defaultValue={''} required>
                       <option hidden value="" disabled>
                         {' '}
@@ -738,6 +741,7 @@ const mapStateToProps = state => ({
   authUser: state.auth.user,
   displayUserProfile: state.userProfile,
   displayUserTask: state.userTask,
+  darkMode: state.theme.darkMode,
 })
 
 export default connect(mapStateToProps, { hasPermission })(SummaryBar);
