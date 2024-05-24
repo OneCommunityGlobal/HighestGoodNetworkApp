@@ -111,7 +111,7 @@ export const ENDPOINTS = {
 
   AI_PROMPT: () => `${APIEndpoint}/dashboard/aiPrompt`,
   COPIED_AI_PROMPT: userId => `${APIEndpoint}/dashboard/aiPrompt/copied/${userId}`,
-
+  INTERACT_WITH_GPT: `${APIEndpoint}/interactWithGPT`,
   SETUP_NEW_USER: () => `${APIEndpoint}/getInitialSetuptoken`,
   VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
@@ -167,7 +167,7 @@ export const ENDPOINTS = {
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
 
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
-  SET_USER_FOLLOWUP: (userId,taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
+  SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,

@@ -19,6 +19,13 @@ const hasPermission = (action) => {
   }
 };
 
+export const getUserInfo = (action) => {
+  return (dispatch, getState) => {
+    const state = getState()
+    return state.auth.user;
+  }
+}
+
 // others cannot change the details for devadmin@hgn.net
 /**
  * 
@@ -28,14 +35,14 @@ const hasPermission = (action) => {
  */
 export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
   const allowedEmails = ['jae@onecommunityglobal.org',
-                         'one.community@me.com',
-                         'jsabol@me.com'
-                        ]
+    'one.community@me.com',
+    'jsabol@me.com'
+  ]
   const protectedEmails = ['jae@onecommunityglobal.org',
-                           'one.community@me.com',
-                           'jsabol@me.com',
-                           'devadmin@hgn.net'
-                          ]
+    'one.community@me.com',
+    'jsabol@me.com',
+    'devadmin@hgn.net'
+  ]
   return protectedEmails.includes(devAdminEmail) && !allowedEmails.includes(authEmail);
 };
 
