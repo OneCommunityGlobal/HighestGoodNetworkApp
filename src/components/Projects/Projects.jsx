@@ -48,6 +48,7 @@ export class Projects extends Component {
        searchByName: false, // this flag determines execution of function that renders projects by Name - Sucheta 
        firstName: "",
        lastName: "",
+       nameInput: "",
        showStatus: "",
        sortBy: "",
       projectTarget: {
@@ -92,14 +93,17 @@ export class Projects extends Component {
     });
   };
 
+  
+
   onChangeInputField = (e) => {
-    if(e.target.name === 'firstName'){
-      this.setState({firstName: e.target.value.trim()});
+    if(e.target.name === 'nameInput'){
+      this.setState({nameInput: e.target.value.trim()});
     }
-    else if (e.target.name === 'lastName'){
-      this.setState({lastName: e.target.value.trim() });
+    else if (e.target.name === 'nameSelector'){
+      this.setState({nameInput: e.target.value.trim() });
     }
   }
+  
   
   cancelSearchByName = (e) =>{
     this.setState({searchByName: false});
@@ -193,9 +197,8 @@ handleSort = (e)=>{
     const {categorySelectedForSort} = this.state;
     const {showStatus} = this.state;
     const {sortBy} = this.state; 
-    const {firstName, lastName} = this.state;
-    const {userProjects} = this.props; //This state variable to store list of projects to display by user Name
-
+    const {firstName, lastName, nameInput} = this.state;
+    const {userProjects, allUsers} = this.props; //This state variable to store list of projects to display by user Name
     const {searchByName} = this.state;
 
     const role = this.props.state.userProfile.role;
@@ -389,7 +392,7 @@ handleSort = (e)=>{
             
           {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
             
-          <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName}/>
+          <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} nameInput={nameInput} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName} allUsers={this.props.allUsers} onSelectHandler={this.onSelectHandler}/>
 
            
             
@@ -443,8 +446,8 @@ handleSort = (e)=>{
 }
 
 const mapStateToProps = state => {
-
-  return { state, userProjects: state.userProjectsByUserNameReducer.projects?.projects, userError: state.userProjectsByUserNameReducer.userError };
+  // console.log("This is the state", state.allUserProfiles.userProfiles);
+  return { state, userProjects: state.userProjectsByUserNameReducer.projects?.projects, userError: state.userProjectsByUserNameReducer.userError, allUsers: state.allUserProfiles.userProfiles  };
 };
 
 export default connect(mapStateToProps, {

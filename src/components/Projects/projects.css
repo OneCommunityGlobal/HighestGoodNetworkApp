@@ -117,3 +117,13 @@ tr:hover {
   width: 100%;
   padding-top: .25em;
 }
+
+.search-name_project-list{
+  border: 1px solid red;
+  position: absolute;
+  top:23em;
+  width: 18em;
+  left: 49em;
+  padding: .5em 1.2em;
+  z-index: 200;
+}
