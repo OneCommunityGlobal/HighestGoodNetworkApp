@@ -20,6 +20,17 @@ const getAllSubpermissionKeys = (permissions) => {
 
 export const permissionLabels = [
   {
+    label: 'General',
+    description: 'Category for all generalized permissions',
+    subperms: [
+      {
+        label: 'See All Users in Dashboard and Leaderboard',
+        key: 'seeUsersInDashboard',
+        description: 'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
+    ],
+  },
+  {
     label: 'Reports',
     description: 'Category for all permissions related to reports',
     subperms: [
@@ -44,6 +55,12 @@ export const permissionLabels = [
         key: 'highlightEligibleBios',
         description:
           'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
+      },
+      {
+        label: 'Edit Team 4-Digit Codes',
+        key: 'editTeamCode',
+        description:
+          'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
     ],
   },
@@ -369,23 +386,7 @@ export const permissionLabels = [
       // },
     ],
   },
-  {
-    label: 'Misc/Unsorted',
-    description: 'Category for all permissions not related to other categories',
-    subperms: [
-      {
-        label: 'Edit Team 4-Digit Codes',
-        key: 'editTeamCode',
-        description:
-          'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
-      },
-      {
-        label: 'See All Users in Dashboard and Leaderboard',
-        key: 'seeUsersInDashboard',
-        description: 'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
-      },
-    ],
-  },
+ 
 ];
 
 export default permissionLabels;
