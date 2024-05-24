@@ -11,36 +11,36 @@ import Form from 'react-bootstrap/Form';
 
 export default function SearchProjectByPerson(props){
 
- const {onChangeInputField, firstName, lastName, handleNameSubmit, cancelSearchByName} = props;
+ const {onChangeInputField, nameInput, handleNameSubmit, cancelSearchByName, allUsers} = props;
+
+ let filteredSuggestion = allUsers.filter(user =>{
+  return user.firstName.toLowerCase() == nameInput.toLowerCase() || user.lastName.toLowerCase() == nameInput.toLowerCase()
+ })
+//  The below code renders a list of suggested name that matches the input name
+ let renderSuggestedUser = filteredSuggestion.map((user, index)=>{
+  let name = `${user.firstName} ${user.lastName}`
+  return <option key={index} value={name}>{name}</option>})
+
 
   return <Form id="project_search_by_user_form" >
     <Form.Group className='project_search_by_user_form-group'>
-          <Form.Label className='project_search_by_user_form-label'>First name</Form.Label>
+          <Form.Label className='project_search_by_user_form-label'>Search Name</Form.Label>
           <Form.Control
             required
             type="text"
-            placeholder="First name"
+            placeholder="Search by First or Last name"
             className=''
-            name='firstName'
-            value={firstName}
+            name='nameInput'
+            value={nameInput}
             onChange={onChangeInputField}
             // defaultValue=""
           />
+         
     </Form.Group>
-    <Form.Group className='project_search_by_user_form-group'>
-          <Form.Label className='project_search_by_user_form-label'>Last name</Form.Label>
-          <Form.Control
-            required
-            type="text"
-            placeholder="Last name"
-            // defaultValue=""
-            className=''
-            name='lastName'
-            value={lastName}
-            onChange={onChangeInputField}
-          />
-          <Form.Control.Feedback>Looks good!</Form.Control.Feedback>
-        </Form.Group>
+    {nameInput && <select name ='nameSelector' className='search-name_project-list' value={nameInput} onChange={onChangeInputField}>
+      {renderSuggestedUser}
+    </select>}
+    
     <Form.Group className='project_search_by_user_form-group'>
     <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={(e) => handleNameSubmit(e,firstName, lastName)}>Search Project</Button>
     <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={cancelSearchByName}>Back</Button>
