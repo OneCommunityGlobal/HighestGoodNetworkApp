@@ -54,10 +54,10 @@ const AddWBS = props => {
             onChange={e => changeNewName(e.target.value)}
           />
           <button className="btn btn-primary btn-border" type="button" onClick={toggleSortAscending}>
-              &uarr;
+              A &darr;
             </button>
             <button className="btn btn-primary btn-border" type="button" onClick={toggleSortDescending}>
-              &darr;
+              D &uarr;
             </button>
           <div className="input-group-append">
             {showAddButton ? (
