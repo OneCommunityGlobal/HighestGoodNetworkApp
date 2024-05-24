@@ -114,12 +114,15 @@ tr:hover {
   margin-right: .25em;
 }
 .project_search_by_user_form-label{
-  width: 100%;
+  width:10em;
   padding-top: .25em;
+  align-self: center;
+}
+.project_search_by_user_form-input{
+  width: 100%;
 }
 
 .search-name_project-list{
-  border: 1px solid red;
   position: absolute;
   top:23em;
   width: 18em;

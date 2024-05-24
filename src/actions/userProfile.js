@@ -93,11 +93,9 @@ export const getProjectsByUsersName = (firstName, lastName) => {
   return async dispatch => {
     try{
     const res = await axios.get(url);
-    if(res.status !== 200){
-      await dispatch(userNotFoundError(error));
-      toast.error("User not found!");
-      // await dispatch(getProjectsByPersonActionCreator([]));
-      
+    if(res.status === 400){
+      await dispatch(userNotFoundError(res.data.message));
+      toast.error("No Projects were found");
     }
     if (res.status === 200){
       await dispatch(getProjectsByPersonActionCreator(res.data));

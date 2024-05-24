@@ -120,7 +120,7 @@ export class Projects extends Component {
       this.props.getProjectsByUsersName(firstName,lastName);
     }
     else{
-      toast.error("Please try again")
+      toast.error("Please enter a name")
     }
     
   }
