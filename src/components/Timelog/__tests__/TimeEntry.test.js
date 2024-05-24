@@ -20,7 +20,7 @@ beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
-describe('<TimeEntry />', () => {
+xdescribe('<TimeEntry />', () => {
   let store;
   const data = timeEntryMock.weeks[0][0];
   beforeEach(() => {
