@@ -13,6 +13,7 @@ export default function SearchProjectByPerson(props){
 
  const {onChangeInputField, nameInput, handleNameSubmit, cancelSearchByName, allUsers} = props;
 
+//  Below filetr function utilizes the state object gets all userProfile
  let filteredSuggestion = allUsers.filter(user =>{
   return user.firstName.toLowerCase() == nameInput.toLowerCase() || user.lastName.toLowerCase() == nameInput.toLowerCase()
  })
@@ -42,7 +43,7 @@ export default function SearchProjectByPerson(props){
     </select>}
     
     <Form.Group className='project_search_by_user_form-group'>
-    <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={(e) => handleNameSubmit(e,firstName, lastName)}>Search Project</Button>
+    <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={(e) => handleNameSubmit(e,nameInput)}>Search Project</Button>
     <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={cancelSearchByName}>Back</Button>
       </Form.Group>    
     

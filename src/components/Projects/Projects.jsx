@@ -108,15 +108,18 @@ export class Projects extends Component {
     this.setState({searchByName: false});
   }
 
-  handleNameSubmit = async (e, firstName, lastName) => {
+  handleNameSubmit = async (e, nameInput) => {
     e.preventDefault();
-    if(firstName.length > 0 && lastName.length > 0 ){
-      this.setState({searchByName: true, firstName: '', lastName: ''});
+    if(nameInput  ){
+      let name =  nameInput.split(' ');
+      const firstName = name[0];
+      const lastName = name[1]
+      this.setState({searchByName: true, nameInput: ''});
     
       this.props.getProjectsByUsersName(firstName,lastName);
     }
     else{
-      toast.error("Please enter the first and the last name")
+      toast.error("Please try again")
     }
     
   }
