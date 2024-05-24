@@ -9,12 +9,18 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import { ENDPOINTS } from 'utils/URL';
+import './Dashboard.css';
+import axios from 'axios';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
-  
+  const [actualUserProfile, setActualUserProfile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
+
+
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
@@ -50,8 +56,72 @@ export function Dashboard(props) {
     };
   }, []);
 
+
+
+
+
+  const getUserData = async () => {
+    // console.log(authUser)
+    try {
+      const url = ENDPOINTS.USER_PROFILE(authUser.userid);
+      const allUserInfo = await axios.get(url).then(res => res.data)
+      console.log(allUserInfo)
+
+      if (allUserInfo.permissions.frontPermissions.includes('showModal')) {
+        setShowModal(true);
+
+        setActualUserProfile(allUserInfo);
+
+      }
+
+    } catch (error) {
+      console.error("Erro", error);
+    }
+
+  }
+
+
+  const handleCloseModal = async () => {
+    if (actualUserProfile) {
+
+      try {
+        const userId = actualUserProfile?._id;
+        const url = ENDPOINTS.USER_PROFILE(userId);
+
+        const updatedPermissions = actualUserProfile.permissions.frontPermissions.filter(permission => permission !== 'showModal');
+        const newUserInfo = { ...actualUserProfile, permissions: { ...actualUserProfile.permissions, frontPermissions: updatedPermissions } };
+
+        console.log(newUserInfo)
+        await axios.put(url, newUserInfo).then(res => console.log(res))
+
+        setActualUserProfile('');
+
+      } catch (err) {
+
+      }
+    }
+    setShowModal(false);
+  };
+
+
+
+
+
+  useEffect(() => {
+
+    getUserData()
+
+  }, [])
+
+
+
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
+      {showModal && (
+        <div style={{ width: '300px', height: '300px', border: '1px solid red' }}>
+          <button onClick={handleCloseModal} style={{ border: '1px solid blue' }}>closer</button>
+        </div>
+      )}
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}

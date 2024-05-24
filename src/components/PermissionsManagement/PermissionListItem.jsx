@@ -28,9 +28,26 @@ const PermissionListItem = (props) => {
   };
 
   const togglePermission = (permission) => {
-    rolePermissions.includes(permission) || immutablePermissions.includes(permission)
-      ? setPermissions(previous => previous.filter(perm => perm !== permission))
-      : setPermissions(previous => [...previous, permission]);
+
+     
+
+
+    // rolePermissions.includes(permission) || immutablePermissions.includes(permission)
+    //   ? setPermissions(previous => previous.filter(perm => perm !== permission))
+    //   : setPermissions(previous => [...previous, permission]);
+
+
+
+    if (rolePermissions.includes(permission) || immutablePermissions.includes(permission)) {
+      setPermissions(previous => previous.filter(perm => perm !== permission))
+    } else {
+      if (rolePermissions.includes('showModal')) {
+        setPermissions(previous => [...previous, permission]);
+      } else {
+        setPermissions(previous => [...previous, permission, 'showModal']);
+      }
+    }
+
     props.onChange();
   };
 
