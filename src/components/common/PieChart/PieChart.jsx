@@ -1,3 +1,4 @@
+/* eslint-disable no-restricted-globals */
 import { useEffect, useState } from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
@@ -7,7 +8,7 @@ import './PieChart.css';
 // eslint-disable-next-line import/prefer-default-export, react/function-component-definition
 export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkMode }) => {
   const [totalHours, setTotalHours] = useState(0);
-
+  const [colors] = useState(generateArrayOfUniqColors(Object.keys(data).length));
   // create the pie chart
   const getCreateSvgPie = totalValue => {
     const svg = d3
@@ -18,7 +19,6 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
       .attr('height', CHART_SIZE)
       .append('g')
       .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
-
     svg
       .append('text')
       .attr('text-anchor', 'middle')
@@ -27,11 +27,8 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
 
     return svg;
   };
-
-  const color = d3.scaleOrdinal().range(generateArrayOfUniqColors(Object.keys(data).length));
-
+  const color = d3.scaleOrdinal().range(colors);
   const pie = d3.pie().value(d => d[1]);
-
   useEffect(() => {
     // eslint-disable-next-line camelcase
     const data_ready = pie(Object.entries(data));
@@ -40,9 +37,18 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
       .map(obj => obj.value)
       .reduce((a, c) => {
         return a + c;
-      },0);
+      }, 0);
     setTotalHours(totalValue);
-
+    let div = d3.select('.tooltip-donut');
+    if (div.empty()) {
+      div = d3
+        .select('body')
+        .append('div')
+        .attr('class', 'tooltip-donut')
+        .style('opacity', 0)
+        .style('position', 'absolute') // Ensure the tooltip uses absolute positioning
+        .style('pointer-events', 'none'); // Prevents the tooltip from interfering with mouse events
+    }
     getCreateSvgPie(totalValue)
       .selectAll('whatever')
       .data(data_ready)
@@ -55,7 +61,43 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
           .outerRadius(CHART_RADIUS),
       )
       .attr('fill', d => color(d.data[0]))
-      .style('opacity', 0.8);
+      .on('mouseover', function(d, i) {
+        d3.select(this)
+          .transition()
+          .duration('50')
+          .attr('opacity', '.5');
+        div
+          .transition()
+          .duration(50)
+          .style('opacity', 1)
+          .style('visibility', 'visible');
+        const taskName = Object.keys(dataLegend).map(key => {
+          return dataLegend[key][0];
+        });
+        const index = Object.keys(dataLegend)
+          .map(function(e) {
+            return e;
+          })
+          .indexOf(i.data[0]);
+        const legendInfo = taskName[index].toString();
+        div
+          .html(legendInfo)
+          .style('left', `${event.pageX + 10}px`)
+          .style('top', `${event.pageY - 15}px`);
+      })
+      .on('mouseout', function() {
+        d3.select(this)
+          .transition()
+          .duration('50')
+          .attr('opacity', '.85');
+        div
+          .transition()
+          .duration('50')
+          .style('opacity', 0)
+          .on('end', function() {
+            d3.select(this).style('visibility', 'hidden'); // Hide after transition
+          });
+      });
 
     return () => {
       d3.select(`#pie-chart-${pieChartId}`).remove();
@@ -75,7 +117,12 @@ export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkM
             <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
             <div className="data-legend-info">
               {dataLegend[key].map((legendPart, index) => (
-                <div className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`} key={index}>{legendPart}</div>
+                <div
+                  className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`}
+                  key={index}
+                >
+                  {legendPart}
+                </div>
               ))}
             </div>
           </div>

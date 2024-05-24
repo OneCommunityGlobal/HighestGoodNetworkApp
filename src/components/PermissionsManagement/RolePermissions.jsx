@@ -12,13 +12,14 @@ import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import PermissionsPresetsModal from './PermissionsPresetsModal.jsx';
 import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
 import hasPermission from '../../utils/permissions';
 
 function RolePermissions(props) {
+  const darkMode = props.darkMode;
   const [permissions, setPermissions] = useState(props.permissions);
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
@@ -109,6 +110,8 @@ function RolePermissions(props) {
     }
   };
 
+  const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
   return (
     <>
       {changed ? (
@@ -126,7 +129,7 @@ function RolePermissions(props) {
               <FontAwesomeIcon
                 icon={faEdit}
                 size="lg"
-                className="user-role-tab__icon edit-icon"
+                className={`user-role-tab__icon edit-icon ${darkMode ? 'text-light' : ''}`}
                 onClick={toggleEditRoleNameModal}
               />
             )}
@@ -139,7 +142,7 @@ function RolePermissions(props) {
                     className="btn_save"
                     color="success"
                     onClick={handleSaveNewPreset}
-                    style={boxStyle}
+                    style={boxStyling}
                   >
                     Create New Preset
                   </Button>
@@ -148,7 +151,7 @@ function RolePermissions(props) {
                     onClick={() => {
                       setShowPresetModal(!showPresetModal);
                     }}
-                    style={boxStyle}
+                    style={boxStyling}
                   >
                     Load Presets
                   </Button>
@@ -158,14 +161,14 @@ function RolePermissions(props) {
                     className="btn_save"
                     color="success"
                     onClick={() => updateInfo()}
-                    style={boxStyle}
+                    style={boxStyling}
                   >
                     Save
                   </Button>
                   <Button
                     color="danger"
                     onClick={toggleDeleteRoleModal}
-                    style={boxStyle}
+                    style={boxStyling}
                     disabled={!canDeleteRole}
                   >
                     Delete Role
@@ -243,6 +246,7 @@ function RolePermissions(props) {
           onChange={() => {
             setChanged(true);
           }}
+          darkMode={darkMode}
         />
       </ul>
       <Modal isOpen={deleteRoleModal} toggle={toggleDeleteRoleModal}>
