@@ -30,7 +30,7 @@ function NewBadges(props) {
             style={{
               fontWeight: 'bold',
               fontSize: 18,
-              color: props.darkMode ? '#1B2A41' : '#285739',
+              color: props.darkMode ? '#FFF' : '#285739',
               marginBottom: 15,
             }}
           >

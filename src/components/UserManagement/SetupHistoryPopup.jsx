@@ -7,6 +7,9 @@ import Table from 'react-bootstrap/Table';
 import { toast } from 'react-toastify';
 import UserTableFooter from './UserTableFooter';
 import { debounce } from 'lodash';
+import { useSelector } from 'react-redux';
+import '../Header/DarkMode.css'
+import { boxStyle, boxStyleDark } from 'styles';
 const baseUrl = window.location.origin;
 
 // Define Table Header
@@ -22,9 +25,10 @@ const TableFilter = ({
   setEmailFilter, 
   setStatusFilter,
   setSortByCreationDateDesc,
-  setSortByExpiredDateDesc}) => {
+  setSortByExpiredDateDesc,
+  darkMode}) => {
   return (
-    <tr>
+    <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
       <td style={{ width: '20%' }}>
           {/* <label htmlFor="email-filter">Email</label> */}
           <input
@@ -92,6 +96,7 @@ const TableFilter = ({
 
 
 const SetupHistoryPopup = props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   // const [alert, setAlert] = useState({ visibility: 'hidden', message: '', state: 'success' });
   // const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
   // const baseUrl = window.location.origin;
@@ -263,21 +268,22 @@ const SetupHistoryPopup = props => {
 
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} size={'xl'}>
+    <Modal isOpen={props.open} toggle={closePopup} size={'xl'} className={darkMode ? 'dark-mode text-light' : ''}>
       <ModalHeader
         toggle={closePopup}
         cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
+        className={darkMode ? 'bg-space-cadet' : ''}
       >
         Setup Invitation History
       </ModalHeader>
-      <ModalBody style={{minHeight: (pageSize * 5) + 'vh'}}>
+      <ModalBody style={{minHeight: (pageSize * 5) + 'vh'}} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div className="setup-invitation-popup-section">
         {loading ? <div>Data Loading...</div> : 
         setupInvitationData && setupInvitationData.length > 0 ? (
           <>
-            <Table responsive>
+            <Table responsive className={darkMode ? 'text-light' : ''}>
               <thead>
-                <tr>
+                <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   {TABLE_HEADER.map((key, index) => (
                     <th key={index}> {key} </th>
                   ))}
@@ -293,9 +299,10 @@ const SetupHistoryPopup = props => {
                   setStatusFilter={setStatusFilter}
                   setSortByCreationDateDesc={setSortByCreationDateDesc}
                   setSortByExpiredDateDesc={setSortByExpiredDateDesc} 
+                  darkMode={darkMode}
                 />
                 {filteredSetupInvitationData.map((record, index) => {
-                  return <tr key={index}>
+                  return <tr key={index} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{record.email}</td>
                       <td>{record.weeklyCommittedHours}</td>
                       <td>{formatDate(record.createdDate)}</td>
@@ -331,6 +338,7 @@ const SetupHistoryPopup = props => {
                onPageSelect={onPageSelect}
                onSelectPageSize={onSelectPageSize}
                pageSize={pageSize}
+               darkMode={darkMode}
             />
           </>
         ) : (
@@ -338,8 +346,8 @@ const SetupHistoryPopup = props => {
         )}
         </div>
       </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={closePopup}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>
