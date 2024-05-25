@@ -26,8 +26,9 @@ export const addEquipmentType = async (body) => {
     })
 }
 
-export const setEquipment = payload => {
+export const setEquipments = payload => {
   return {
+    type: SET_EQUIPMENTS,
     type: GET_EQUIPMENT_BY_ID,
     payload
   }
@@ -37,5 +38,17 @@ export const setErrors = payload => {
   return {
     type: GET_ERRORS,
     payload
+  }
+}
+
+export const fetchAllEquipments = () => {
+  return async dispatch => {
+    axios.get(ENDPOINTS.BM_EQUIPMENTS)
+      .then(res => {
+        dispatch(setEquipments(res.data))
+      })
+      .catch(err => {
+        dispatch(setErrors(err))
+      })
   }
 }
