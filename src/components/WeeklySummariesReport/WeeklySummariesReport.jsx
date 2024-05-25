@@ -1,3 +1,4 @@
+/* eslint-disable react/destructuring-assignment */
 /* eslint-disable no-shadow */
 /* eslint-disable react/require-default-props */
 /* eslint-disable react/forbid-prop-types */
@@ -20,7 +21,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
@@ -29,6 +30,8 @@ import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
 import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
+import PasswordInputModal from './PasswordInputModal';
+import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -53,6 +56,9 @@ export class WeeklySummariesReport extends Component {
       loading: true,
       summaries: [],
       activeTab: navItems[1],
+      passwordModalOpen: false,
+      summaryRecepientsPopupOpen: false,
+      isValidPwd: true,
       badges: [],
       loadBadges: false,
       hasSeeBadgePermission: false,
@@ -64,6 +70,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      // weeklyRecipientAuthPass: '',
     };
   }
 
@@ -84,7 +91,6 @@ export class WeeklySummariesReport extends Component {
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
-
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
@@ -194,6 +200,70 @@ export class WeeklySummariesReport extends Component {
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
   }
+
+  onSummaryRecepientsPopupClose = () => {
+    this.setState({ summaryRecepientsPopupOpen: false });
+  };
+
+  setSummaryRecepientsPopup = val => {
+    this.setState({ summaryRecepientsPopupOpen: val });
+  };
+
+  popUpElements = () => {
+    return (
+      <WeeklySummaryRecipientsPopup
+        open={this.state.summaryRecepientsPopupOpen}
+        onClose={this.onSummaryRecepientsPopupClose}
+        summaries={this.props.summaries}
+        password={this.state.weeklyRecipientAuthPass}
+        authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
+      />
+    );
+  };
+
+  onpasswordModalClose = () => {
+    this.setState({
+      passwordModalOpen: false,
+    });
+  };
+
+  checkForValidPwd = booleanVal => {
+    this.setState({ isValidPwd: booleanVal });
+  };
+
+  passwordInputModalToggle = () => {
+    return (
+      <PasswordInputModal
+        open={this.state.passwordModalOpen}
+        onClose={this.onpasswordModalClose}
+        checkForValidPwd={this.checkForValidPwd}
+        isValidPwd={this.state.isValidPwd}
+        setSummaryRecepientsPopup={this.setSummaryRecepientsPopup}
+        setAuthpassword={this.setAuthpassword}
+        authEmailWeeklySummaryRecipient={this.props.authEmailWeeklySummaryRecipient}
+      />
+    );
+  };
+
+  // Authorization for the weeklySummary Recipients is required once
+  setAuthpassword = authPass => {
+    this.setState({
+      weeklyRecipientAuthPass: authPass,
+    });
+  };
+
+  onClickRecepients = () => {
+    if (this.state.weeklyRecipientAuthPass) {
+      this.setState({
+        summaryRecepientsPopupOpen: true,
+      });
+    } else {
+      this.setState({
+        passwordModalOpen: true,
+      });
+      this.checkForValidPwd(true);
+    }
+  };
 
   /**
    * Sort the summaries in alphabetixal order
@@ -332,8 +402,59 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
+  handleTeamCodeChange = (oldTeamCode, newTeamCode, userId) => {
+    this.setState(prevState => {
+      let { teamCodes, summaries, selectedCodes } = prevState;
+
+      // Find and update the user's team code in summaries
+      summaries = summaries.map(summary => {
+        if (summary._id === userId) {
+          return { ...summary, teamCode: newTeamCode };
+        }
+        return summary;
+      });
+
+      // Count the occurrences of each team code
+      const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
+        acc[teamCode] = (acc[teamCode] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Update teamCodes by filtering out those with zero count
+      teamCodes = Object.entries(teamCodeCounts)
+        .filter(([count]) => count > 0)
+        .map(([code, count]) => ({
+          label: `${code} (${count})`,
+          value: code,
+        }));
+
+      // Update selectedCodes labels and filter out those with zero count
+      selectedCodes = selectedCodes
+        .map(selected => {
+          const count = teamCodeCounts[selected.value];
+          if (count !== undefined && count > 0) {
+            return { ...selected, label: `${selected.value} (${count})` };
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      if (!selectedCodes.find(code => code.value === newTeamCode)) {
+        selectedCodes.push({
+          label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
+          value: newTeamCode,
+        });
+      }
+
+      // Sort teamCodes by label
+      teamCodes.sort((a, b) => a.label.localeCompare(b.label));
+
+      return { summaries, teamCodes, selectedCodes };
+    });
+  };
+
   render() {
-    const { role } = this.props;
+    const { role, darkMode } = this.props;
     const {
       loading,
       activeTab,
@@ -350,11 +471,18 @@ export class WeeklySummariesReport extends Component {
     } = this.state;
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
+    const { authEmailWeeklySummaryRecipient } = this.props;
+    const authorizedUser1 = 'jae@onecommunityglobal.org';
+    const authorizedUser2 = 'sucheta_mu@test.com'; // To test please include your email here
 
     if (error) {
       return (
-        <Container>
-          <Row className="align-self-center" data-testid="error">
+        <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+          <Row
+            className="align-self-center pt-2"
+            data-testid="error"
+            style={{ width: '30%', margin: '0 auto' }}
+          >
             <Col>
               <Alert color="danger">Error! {error.message}</Alert>
             </Col>
@@ -365,15 +493,25 @@ export class WeeklySummariesReport extends Component {
 
     if (loading) {
       return (
-        <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
+        <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
           <Row className="text-center" data-testid="loading">
-            <SkeletonLoading template="WeeklySummariesReport" />
+            <SkeletonLoading
+              template="WeeklySummariesReport"
+              className={darkMode ? 'bg-yinmn-blue' : ''}
+            />
           </Row>
         </Container>
       );
     }
     return (
-      <Container fluid className="bg--white-smoke py-3 mb-5">
+      <Container
+        fluid
+        className={`container-wsr-wrapper py-3 mb-5 ${
+          darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
+        }`}
+      >
+        {this.passwordInputModalToggle()}
+        {this.popUpElements()}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <h3 className="mt-3 mb-5">
@@ -386,11 +524,26 @@ export class WeeklySummariesReport extends Component {
                   fontSize={24}
                   isPermissionPage
                   className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  darkMode={darkMode}
                 />
               </div>
             </h3>
           </Col>
         </Row>
+        {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
+          authEmailWeeklySummaryRecipient === authorizedUser2) && (
+          <Row className="d-flex justify-content-center mb-3">
+            <Button
+              color="primary"
+              className="permissions-management__button"
+              type="button"
+              onClick={() => this.onClickRecepients()}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Weekly Summary Report Recipients
+            </Button>
+          </Row>
+        )}
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
@@ -469,7 +622,10 @@ export class WeeklySummariesReport extends Component {
                 </NavItem>
               ))}
             </Nav>
-            <TabContent activeTab={activeTab} className="p-4">
+            <TabContent
+              activeTab={activeTab}
+              className={`p-4 ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
+            >
               {navItems.map((item, index) => (
                 <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
                   <Row>
@@ -482,17 +638,21 @@ export class WeeklySummariesReport extends Component {
                         summaries={filteredSummaries}
                         weekIndex={index}
                         weekDates={this.weekDates[index]}
+                        darkMode={darkMode}
                       />
                       {hasSeeBadgePermission && (
                         <Button
                           className="btn--dark-sea-green"
-                          style={boxStyle}
+                          style={darkMode ? boxStyleDark : boxStyle}
                           onClick={() => this.setState({ loadBadges: !loadBadges })}
                         >
                           {loadBadges ? 'Hide Badges' : 'Load Badges'}
                         </Button>
                       )}
-                      <Button className="btn--dark-sea-green" style={boxStyle}>
+                      <Button
+                        className="btn--dark-sea-green"
+                        style={darkMode ? boxStyleDark : boxStyle}
+                      >
                         Load Trophies
                       </Button>
                     </Col>
@@ -515,6 +675,8 @@ export class WeeklySummariesReport extends Component {
                         canEditTeamCode={this.codeEditPermission}
                         auth={auth}
                         canSeeBioHighlight={this.canSeeBioHighlight}
+                        darkMode={darkMode}
+                        handleTeamCodeChange={this.handleTeamCodeChange}
                       />
                     </Col>
                   </Row>
@@ -541,8 +703,10 @@ const mapStateToProps = state => ({
   summaries: state.weeklySummariesReport.summaries,
   allBadgeData: state.badge.allBadgeData,
   infoCollections: state.infoCollections.infos,
-  role: state.userProfile.role,
+  role: state.auth.user.role,
   auth: state.auth,
+  darkMode: state.theme.darkMode,
+  authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
 });
 
 const mapDispatchToProps = dispatch => ({

@@ -10,11 +10,13 @@ import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
-import { boxStyle } from 'styles';
+
+import { boxStyle, boxStyleDark } from 'styles';
 import './wbs.css';
 
 const WBS = props => {
   const { allProjects } = props;
+  const darkMode = props.state.theme.darkMode;
   const projectId = props.match.params.projectId;
   const [sortBy, setSortBy] = useState('default');
   const [clickCountAscending, setClickCountAscending] = useState(0);
@@ -82,14 +84,15 @@ const WBS = props => {
 
   return (
     <React.Fragment>
-      <div className="container">
-        <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
-            <NavItem tag={Link} to={`/projects/`}>
-              <button type="button" className="btn btn-secondary" style={boxStyle}>
-                <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-              </button>
-            </NavItem>
+      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+        <div className="container pt-2">
+          <nav aria-label="breadcrumb">
+            <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+              <NavItem tag={Link} to={`/projects/`}>
+                <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
+                  <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+                </button>
+              </NavItem>
 
             <div id="member_project__name">Return to Projects</div>
             <div className="wbs-title">{projectName}</div>
@@ -98,9 +101,9 @@ const WBS = props => {
 
         <AddWBS projectId={projectId} toggleSortAscending={toggleSortAscending} toggleSortDescending={toggleSortDescending}  />
 
-        <table className="table table-bordered table-responsive-sm">
+        <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light' : '' }`}>
           <thead>
-            <tr>
+            <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th scope="col" id="members__order">
                 #
               </th>
@@ -119,6 +122,7 @@ const WBS = props => {
                   wbsId={item._id}
                   projectId={projectId}
                   name={item.wbsName}
+                  darkMode={darkMode}
                 />
               ) : null,
             )}

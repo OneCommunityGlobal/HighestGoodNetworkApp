@@ -71,4 +71,7 @@ export const TOOL_EQUIPMENT = 'Tool/Equipment';
 export const LOG_MET = 'Log MET';
 export const LOG_TIME = 'Log Time';
 export const LOG_ISSUE = 'Log Issue';
-export const ADD_MEMBER = 'Add Member';export const REQUESTED_TIME_OFF = 'Requested Time Off';
+export const ADD_MEMBER = 'Add Member';
+export const REQUESTED_TIME_OFF = 'Requested Time Off';
+
+export const SEND_EMAILS = 'Send Emails';

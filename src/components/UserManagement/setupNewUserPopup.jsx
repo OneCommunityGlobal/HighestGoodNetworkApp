@@ -1,9 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from 'utils/URL';
+import { useSelector } from 'react-redux';
+import '../Header/DarkMode.css'
+import _ from 'lodash';
 
 const SetupNewUserPopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [email, setEmail] = useState('');
   const [weeklyCommittedHours, setWeeklyCommittedHours] = useState('0');
   const [alert, setAlert] = useState({ visibility: 'hidden', message: '', state: 'success' });
@@ -29,6 +34,7 @@ const SetupNewUserPopup = React.memo(props => {
         });
       }
     } else {
+      
       httpService
         .post(ENDPOINTS.SETUP_NEW_USER(), { baseUrl, email, weeklyCommittedHours })
         .then(res => {
@@ -38,7 +44,6 @@ const SetupNewUserPopup = React.memo(props => {
               message: 'The setup link has been successfully sent',
               state: 'success',
             });
-            console.log(res.data);
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
@@ -60,6 +65,13 @@ const SetupNewUserPopup = React.memo(props => {
             setEmail('');
             setWeeklyCommittedHours(0);
           }, 2000);
+          
+          // Prevent multiple requests to fetch invitation history
+          const deboucingRefreshHistory = _.debounce(() => {
+            props.handleShouldRefreshInvitationHistory();
+          }, 1000);
+
+          deboucingRefreshHistory();
         });
     }
   };
@@ -75,16 +87,17 @@ const SetupNewUserPopup = React.memo(props => {
   }
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} className={'modal-dialog modal-lg'}>
+    <Modal isOpen={props.open} toggle={closePopup} className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}>
       <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
         toggle={closePopup}
         cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
       >
         Setup New User
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div className="setup-new-user-popup-section">
-          <label htmlFor="email" className="setup-new-user-popup-label">
+          <label htmlFor="email" className={`setup-new-user-popup-label ${darkMode ? 'text-light' : ''}`}>
             Email
           </label>
           <input
@@ -123,7 +136,7 @@ const SetupNewUserPopup = React.memo(props => {
           </div>
         </div>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button color="secondary" onClick={closePopup}>
           Close
         </Button>

@@ -6,7 +6,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { toast } from 'react-toastify';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
-function TeamWeeklySummaries({ name, i, data }) {
+function TeamWeeklySummaries({ name, i, data, darkMode }) {
   const getWeekDates = weekIndex => ({
     fromDate: moment()
       .tz('America/Los_Angeles')
@@ -20,7 +20,7 @@ function TeamWeeklySummaries({ name, i, data }) {
       .format('DD-MMM-YY'),
   });
   return (
-    <div className="team-weekly-summaries" data-testid="team-weekly-summaries">
+    <div className={`team-weekly-summaries ${darkMode ? 'bg-space-cadet' : ''}`} data-testid="team-weekly-summaries">
       <div className="team-weekly-header"  >
         <h6 className="team-weekly-header-date">
           {getWeekDates(i).fromDate} to {getWeekDates(i).toDate}

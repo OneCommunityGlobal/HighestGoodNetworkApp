@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -110,8 +110,9 @@ function ControllerRow (props) {
           load={props.load}
           setIsLoading={props.setIsLoading}
         />
-        {canDeleteTask ? (
+        
           <>
+          {canDeleteTask && (
             <Button
               color="danger"
               size="sm"
@@ -121,6 +122,7 @@ function ControllerRow (props) {
             >
               Remove
             </Button>
+            )}
 
             <Dropdown
               direction="up"
@@ -154,9 +156,9 @@ function ControllerRow (props) {
               {isCopied ? 'Copied' : 'Copy'}
             </Button>
           </>
-        ) : null}
+        
         <ModalDelete
-          isOpen={modalDelete}
+          isOpen={canDeleteTask && modalDelete}
           closeModal={() => {
             setModalDelete(false);
           }}
