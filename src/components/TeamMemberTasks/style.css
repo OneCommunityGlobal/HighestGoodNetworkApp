@@ -103,6 +103,7 @@
   justify-content: space-around;
 }
 
+
 .team-clocks-header {
   height: 73.5px;
   align-items: center;
@@ -330,6 +331,7 @@
   grid-column: 1 / span 1;
   grid-row: 1 / span 1;
   align-self: center;
+  font-size: 0.9rem;
 }
 
 .team-task-progress-time-volunteers {
@@ -350,7 +352,10 @@
   margin-top: 5px;
 }
 
-@media screen and (max-width: 1240px) {
+.team-clock-small-screens-row{
+  display: none;
+}
+@media (max-width: 1240px) and (min-width: 992px) {
   .taskboard-card-header-box {
     flex-direction: column
   }
@@ -359,7 +364,39 @@
     justify-content:flex-start;
     align-items: center;
   }
+  .team-task-progress-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, auto);
+  }
+  .team-task-progress-time,.team-task-progress-time-volunteers {
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 1;
+  }
   
+  .followup-tooltip-container {
+    grid-column: 2 / span 1;
+    grid-row: 3 / span 1;
+    justify-self: start;
+  }
+  
+  .team-task-progress-bar {
+    grid-column: 1 / span 3;
+    grid-row: 2 / span 1;
+  }
+
+  .team-clocks{
+    display: none;
+  }
+
+  .team-clock-small-screens-row{
+    display: table-row;
+  }
+
+  .team-clocks-small-screen {
+    display: flex;
+    justify-content: center;
+  }
+
 }
 
 @media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
@@ -428,10 +465,6 @@
 @media only screen and (min-width: 768px) {
   .team-member-tasks h1 {
     font-size: 24px;
-  }
-
-  .taskboard-card-header-box {
-    flex-direction: unset;
   }
 }
 

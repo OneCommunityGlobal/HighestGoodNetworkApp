@@ -11,7 +11,7 @@
   padding: 20px;
   position: absolute;
   z-index: 9; 
-  top: 30px; 
+  top: 45px; 
   transform: translate(-50%); 
   width: 40vw;
 }
@@ -24,4 +24,13 @@
 
 .followup-tooltip-container:hover .followup-tooltip {
   visibility: visible;
+}
+
+@media screen and (max-width: 1240px) {
+  .followup-tooltip {
+  
+    top: 80px; 
+   
+  }
+
 }

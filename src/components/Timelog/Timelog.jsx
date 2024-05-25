@@ -473,11 +473,11 @@ const Timelog = props => {
             <Col md={12}>
               <Card className={darkMode ? 'border-0' : ''}>
                 <CardHeader className={darkMode ? 'card-header-shadow-dark bg-space-cadet text-light' : 'card-header-shadow'}>
-                  <Row>
-                    <Col md={11}>
+                <div className='tasks-and-timelog-header-row'>
+                    <Col md={12}>
                       <CardTitle tag="h4">
                       <div className="d-flex align-items-center">
-                        <span className="mb-1 mr-2">Tasks and Timelogs</span>
+                        <span className="taskboard-header-title mb-1 mr-2">Tasks and Timelogs</span>
                         <EditableInfoModal
                           areaName="TasksAndTimelogInfoPoint"
                           areaTitle="Tasks and Timelogs"
@@ -510,9 +510,9 @@ const Timelog = props => {
                         Viewing time entries logged in the last 3 weeks
                       </CardSubtitle>
                     </Col>
-                    <Col md={11}>
+                    <Col md={12}>
                       {isAuthUser ? (
-                        <div className="float-right">
+                        <div className="tasks-and-timelog-header-add-time-div">
                           <div>
                             <Button color="success" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                               {'Add Intangible Time Entry '}
@@ -569,7 +569,7 @@ const Timelog = props => {
                         </div>
                       ) : (
                         !(viewingUser && viewingUser.role === 'Owner' && authUser.role !== 'Owner') && (canPutUserProfileImportantInfo) && (
-                          <div className="float-right">
+                          <div className="tasks-and-timelog-header-add-time-div">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
                                 Add Time Entry {!isAuthUser && `for ${fullName}`}
@@ -606,10 +606,10 @@ const Timelog = props => {
                         Click this icon to learn about the timelog.
                       </ReactTooltip>
                     </Col>
-                  </Row>
+                  </div>
                 </CardHeader>
                 <CardBody className={darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'}>
-                  <Nav tabs className="mb-1">
+                  <Nav tabs className="task-and-timelog-card-nav mb-1">
                     <NavItem>
                       <NavLink
                         className={classnames({ active: timeLogState.activeTab === 0 })}
