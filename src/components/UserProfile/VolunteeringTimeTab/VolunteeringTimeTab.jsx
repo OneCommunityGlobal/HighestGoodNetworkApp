@@ -12,14 +12,14 @@ import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY } from 'utils/format
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
-const startEndDateValidation = props => {
+export const startEndDateValidation = props => {
   return (
     props.userProfile.startDate > props.userProfile.endDate && props.userProfile.endDate !== ''
   );
 };
 
 
-const StartDate = props => {
+export const StartDate = props => {
   const { darkMode } = props;
 
   if (!props.canEdit) {
@@ -83,7 +83,7 @@ const EndDate = props => {
   );
 };
 
-const WeeklySummaryOptions = props => {
+export const WeeklySummaryOptions = props => {
   const { darkMode } = props;
 
   if (!props.canEdit) {
@@ -141,7 +141,7 @@ const WeeklySummaryOptions = props => {
   );
 };
 
-const WeeklyCommittedHours = props => {
+export const WeeklyCommittedHours = props => {
   //Do Not change the property name "weeklycommittedHours"
   //Otherwise it will not update in the backend.
 
@@ -183,7 +183,7 @@ const WeeklyCommittedHours = props => {
   );
 };
 
-const MissedHours = props => {
+export const MissedHours = props => {
   const { darkMode } = props;
 
   if (!props.canEdit) {
@@ -207,7 +207,7 @@ const MissedHours = props => {
   );
 };
 
-const TotalIntangibleHours = props => {
+export const TotalIntangibleHours = props => {
   const { darkMode } = props;
 
   if (!props.canEdit) {
@@ -514,4 +514,4 @@ const ViewTab = props => {
   );
 };
 
-export { ViewTab, StartDate, WeeklyCommittedHours, MissedHours };
+export default ViewTab;

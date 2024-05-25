@@ -3,6 +3,9 @@ import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { ViewTab, StartDate, WeeklyCommittedHours, MissedHours } from '../VolunteeringTimeTab';
 
+beforeAll(() => {
+  window.alert = jest.fn(); // Mock the alert function
+});
 describe('Date and Hours Input Validations', () => {
 
   test('StartDate component should correctly validate and display a success style if the start date is before the end date', () => {
