@@ -126,11 +126,15 @@
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-.header-box {
+.taskboard-card-header-box {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 10px;
   justify-content: space-between;
+}
+
+#taskboard-card-header-title{
+  font-size: 1.5rem;
 }
 
 .complete-task-button {
@@ -346,6 +350,18 @@
   margin-top: 5px;
 }
 
+@media screen and (max-width: 1240px) {
+  .taskboard-card-header-box {
+    flex-direction: column
+  }
+  .hours-btn-container {
+    margin-top: 10px;
+    justify-content:flex-start;
+    align-items: center;
+  }
+  
+}
+
 @media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
   .team-task-progress {
     width: 100%; /* or any other value that fits your design */
@@ -414,7 +430,7 @@
     font-size: 24px;
   }
 
-  .header-box {
+  .taskboard-card-header-box {
     flex-direction: unset;
   }
 }

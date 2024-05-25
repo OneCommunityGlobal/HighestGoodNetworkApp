@@ -224,8 +224,8 @@ const TeamMemberTasks = React.memo(props => {
 
   return (
     <div className={"container " + (darkMode ? "team-member-tasks bg-space-cadet" : "team-member-tasks")}>
-      <header className="header-box">
-        <h1 className={darkMode ? "text-light" : ""}>Team Member Tasks</h1>
+      <header className="taskboard-card-header-box">
+        <h1 id="taskboard-card-header-title" className={darkMode ? "text-light" : ""}>Team Member Tasks</h1>
 
         {finishLoading ? (
           <div className="hours-btn-container">
