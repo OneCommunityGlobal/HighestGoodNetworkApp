@@ -26,7 +26,9 @@ function WBSTasks(props) {
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
+
   const { tasks, fetched, darkMode } = props;
+  const { allProjects } = props;
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
@@ -45,6 +47,7 @@ function WBSTasks(props) {
 
   // permissions
   const canPostTask = props.hasPermission('postTask');
+  const projectName = allProjects.find(project => project._id === projectId).projectName;
 
   /*
   * -------------------------------- functions --------------------------------
@@ -178,12 +181,13 @@ function WBSTasks(props) {
       <div className={`container-tasks m-0 p-2`}>
         <nav aria-label="breadcrumb">
           <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
-            <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
+            <NavItem tag={Link} to={`/project/wbs/${projectId}/${projectName}`}>
+              <button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
             </NavItem>
-            <div id="member_project__name">{wbsName}</div>
+            <div id="member_project__name">Return to WBSs</div>
+            <div className='wbs-task-title'>{wbsName}</div>
           </ol>
         </nav>
         <div className='mb-2'>
@@ -398,8 +402,11 @@ function WBSTasks(props) {
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
   fetched: state.tasks.fetched,
+  state: state,
+  allProjects: state.allProjects.projects,
   darkMode: state.theme.darkMode,
 });
+
 
 export default connect(mapStateToProps, {
   fetchAllTasks,

@@ -111,7 +111,7 @@ const Project = props => {
       </td>
 
       <td>
-        <NavItem tag={Link} to={`/project/wbs/${props.projectId}`}>
+        <NavItem tag={Link} to={`/project/wbs/${props.projectId}/${props.name}`}>
           <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
             <i className="fa fa-tasks" aria-hidden="true"></i>
           </button>
@@ -133,5 +133,7 @@ const Project = props => {
     </tr>
   );
 };
-const mapStateToProps = state => state;
+const mapStateToProps = state => {
+  return { state };
+};
 export default connect(mapStateToProps, { hasPermission })(Project);
