@@ -245,7 +245,7 @@ function LeaderBoard({
   };
 
   return (
-     <div>
+    <div>
       <h3>
         <div className="d-flex align-items-center">
           <span className="mr-2">Leaderboard</span>
