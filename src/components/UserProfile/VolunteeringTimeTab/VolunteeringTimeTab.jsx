@@ -33,7 +33,7 @@ export const StartDate = props => {
       name="StartDate"
       id="startDate"
       className={startEndDateValidation(props) ? 'border-error-validation' : null}
-      value={props.userProfile.startDate}
+      value={props.userProfile.startDate ?? ""}
       min={formatDateYYYYMMDD(props.userProfile.createdDate)}
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
