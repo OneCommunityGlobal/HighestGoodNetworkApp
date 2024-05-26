@@ -42,6 +42,7 @@ function WarningTrackerModal({
   const [warningToDelete, setWarningToDelete] = useState(null);
   const [warningEdited, setWarningEdited] = useState(false);
   const [editedWarning, setEditedWarning] = useState(null);
+  const [warningWasEdited, setWarningWasEdited] = useState(false);
 
   const [error, setError] = useState(null);
   const dispatch = useDispatch();
@@ -58,6 +59,12 @@ function WarningTrackerModal({
   useEffect(() => {
     fetchWarningDescriptions();
   }, []);
+
+  useEffect(() => {
+    setTimeout(() => {
+      setWarningWasEdited(false);
+    }, 5000);
+  }, [warningWasEdited]);
 
   const handleOverlayTrigger = title => {
     if (title === 'info') {
@@ -148,6 +155,12 @@ function WarningTrackerModal({
     setWarningDescriptions(updatedWarningDescriptions);
   };
 
+  const handleCancelEdit = () => {
+    fetchWarningDescriptions();
+    setWarningEdited(false);
+    setWarningWasEdited(false);
+  };
+
   const handleSaveEditedWarning = () => {
     dispatch(editWarningDescription(editedWarning)).then(res => {
       if (res.error) {
@@ -159,6 +172,7 @@ function WarningTrackerModal({
       getUsersWarnings();
       setError(null);
       fetchWarningDescriptions();
+      setWarningWasEdited(true);
     });
   };
   // eslint-disable-next-line no-shadow
@@ -242,6 +256,11 @@ function WarningTrackerModal({
           {error}
         </Alert>
       )}
+      {warningWasEdited && (
+        <Alert key="success" variant="success" color="success" className="alert__container">
+          Warning was succesfully edited!
+        </Alert>
+      )}
       <ModalBody>
         {warningDescriptions.map((warning, index) => (
           <div className="warnings__descriptions" key={warning._id}>
@@ -300,6 +319,9 @@ function WarningTrackerModal({
           <div className="btn__container">
             <Button onClick={handleSaveEditedWarning} color="success">
               Save
+            </Button>
+            <Button onClick={handleCancelEdit} color="danger" className="cancel__btn">
+              Cancel
             </Button>
           </div>
         )}
