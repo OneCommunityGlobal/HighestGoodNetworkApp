@@ -5,6 +5,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import './UserRoleTab.css';
+import '../Header/DarkMode.css'
 
 
 
@@ -77,10 +78,9 @@ const PermissionListItem = (props) => {
 
   return (
     <>
-      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
+      <li className="user-role-tab__permissions pr-2" key={permission} data-testid={permission}>
         <p
           style={{
-
             color: isCategory ?
               howManySubpermsInRole === 'All' ? 'green' :
               howManySubpermsInRole === 'Some' ? (darkMode ? 'white' : 'black') : 'red'
@@ -88,6 +88,7 @@ const PermissionListItem = (props) => {
 
             fontSize: isCategory && '20px',
             textIndent: 50 * depth + 'px',
+            textShadow: darkMode ? "0.5px 0.5px 2px black" : ""
           }}
         >
           {label}
@@ -170,10 +171,11 @@ const PermissionListItem = (props) => {
         isOpen={infoRoleModal}
         toggle={toggleInfoRoleModal}
         id="#modal2-body_new-role--padding"
+        className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
-        <ModalBody>{modalContent}</ModalBody>
-        <ModalFooter>
+        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>Permission Info</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalContent}</ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
             {' '}
             Ok{' '}
