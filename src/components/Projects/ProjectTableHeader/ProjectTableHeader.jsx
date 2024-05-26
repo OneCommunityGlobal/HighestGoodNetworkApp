@@ -80,6 +80,7 @@ const ProjectTableHeader = props => {
             isPermissionPage={true}
             role={role}
             className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+            darkMode={darkMode}
           />
         </div>
       </th>

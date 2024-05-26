@@ -59,7 +59,6 @@ const WBS = props => {
                     wbsId={item._id}
                     projectId={projectId}
                     name={item.wbsName}
-                    darkMode={darkMode}
                   />
                 ) : null,
               )}
