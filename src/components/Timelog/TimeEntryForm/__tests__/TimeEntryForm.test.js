@@ -4,9 +4,7 @@ import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import moment from 'moment-timezone';
-import {
-  authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock,
-} from '../../../../__tests__/mockStates';
+import { authMock, userProfileMock, timeEntryMock, userProjectMock, rolesMock, themeMock } from '../../../../__tests__/mockStates';
 import { renderWithProvider, renderWithRouterMatch } from '../../../../__tests__/utils';
 import TimeEntryForm from '../TimeEntryForm';
 import mockAxios from "axios";
@@ -28,6 +26,7 @@ describe('<TimeEntryForm Unit test rendering test/>', () => {
     store = mockStore({
       auth: authMock,
       role: rolesMock.role,
+      theme: themeMock,
     });
     sendStop = jest.fn();
     toggle = jest.fn();

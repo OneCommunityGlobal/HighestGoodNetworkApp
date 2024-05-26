@@ -13,17 +13,18 @@ import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
+import '../../../../Header/DarkMode.css'
 
 function EditTaskModal(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { allMembers, error } = props;
+  const { allMembers, error, darkMode } = props;
 
   // permissions
   const canUpdateTask = props.hasPermission('updateTask');
@@ -70,6 +71,7 @@ function EditTaskModal(props) {
   const FORMAT = 'MM/dd/yy';
   
   const EditorInit = {
+      license_key: 'gpl',
       menubar: false,
       plugins: 'advlist autolink autoresize lists link charmap table paste help',
       toolbar:
@@ -263,15 +265,16 @@ function EditTaskModal(props) {
 
   return (
     <div className="controlBtn">
-      <Modal isOpen={modal} toggle={toggle}>
+      <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'dark-mode text-light' : ''}>
         <ReactTooltip delayShow={300}/>
-        <ModalHeader toggle={toggle}>
+        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
           {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <table
             className={`table table-bordered responsive
-            ${canUpdateTask || canSuggestTask ? null : 'disable-div'}`}
+            ${canUpdateTask || canSuggestTask ? null : 'disable-div'} 
+            ${darkMode ? 'text-light' : ''}`}
           >
             <tbody>
               <tr>
@@ -340,7 +343,7 @@ function EditTaskModal(props) {
                         onChange={e => setAssigned(true)}
                         checked={assigned}
                       />
-                      <label className="form-check-label" htmlFor="true">
+                      <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="true">
                         Yes
                       </label>
                     </div>
@@ -354,7 +357,7 @@ function EditTaskModal(props) {
                         onChange={e => setAssigned(false)}
                         checked={!assigned}
                       />
-                      <label className="form-check-label" htmlFor="false">
+                      <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="false">
                         No
                       </label>
                     </div>
@@ -377,7 +380,7 @@ function EditTaskModal(props) {
                           checked={status === 'Active' || status === 'Started'}
                           onChange={(e) => setStatus(e.target.value)}
                         />
-                        <label className="form-check-label" htmlFor="active">
+                        <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="active">
                           Active
                         </label>
                       </div>
@@ -391,7 +394,7 @@ function EditTaskModal(props) {
                           checked={status === 'Not Started'}
                           onChange={(e) => setStatus(e.target.value)}
                         />
-                        <label className="form-check-label" htmlFor="notStarted">
+                        <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="notStarted">
                           Not Started
                         </label>
                       </div>
@@ -405,7 +408,7 @@ function EditTaskModal(props) {
                           checked={status === 'Paused'}
                           onChange={(e) => setStatus(e.target.value)}
                         />
-                        <label className="form-check-label" htmlFor="paused">
+                        <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="paused">
                           Paused
                         </label>
                       </div>
@@ -419,7 +422,7 @@ function EditTaskModal(props) {
                           checked={status === 'Complete'}
                           onChange={(e) => setStatus(e.target.value)}
                         />
-                        <label className="form-check-label" htmlFor="complete">
+                        <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="complete">
                           Complete
                         </label>
                       </div>
@@ -434,7 +437,7 @@ function EditTaskModal(props) {
                 </td>
                 <td scope="col" data-tip="Hours - Best-case" className="w-100">
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
+                    <label htmlFor="bestCase" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Best-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -459,7 +462,7 @@ function EditTaskModal(props) {
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
+                    <label htmlFor="worstCase" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Worst-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -483,7 +486,7 @@ function EditTaskModal(props) {
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
+                    <label htmlFor="mostCase" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Most-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -507,7 +510,7 @@ function EditTaskModal(props) {
                     </div>
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
+                    <label htmlFor="Estimated" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Estimated
                     </label>
                     {ReadOnlySectionWrapper(
@@ -547,7 +550,7 @@ function EditTaskModal(props) {
                         data-tip="Add Link"
                         onClick={addLink}
                       >
-                        <i className="fa fa-plus" aria-hidden="true" />
+                        <i className={`fa fa-plus ${darkMode ? 'text-light' : ''}`} aria-hidden="true" />
                       </button>
                     </div>,
                     editable,
@@ -556,7 +559,7 @@ function EditTaskModal(props) {
                   )}
                   <div>
                     {links?.map((link, i) =>
-                      link.length > 1 ? (
+                      link.length >= 1 ? (
                         <div key={i}>
                           {editable && <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={editable? () => removeLink(i) : () => {}}  /> }
                           <a href={link} className="task-link" target="_blank" data-tip={link} rel="noreferrer">
@@ -587,7 +590,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Why this Task is Important:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="why-info"
@@ -605,7 +610,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Design Intent:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="intent-info"
@@ -623,7 +630,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Endstate:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="endstate-info"
@@ -678,19 +687,19 @@ function EditTaskModal(props) {
           </table>
         </ModalBody>
         {canUpdateTask || canSuggestTask ? (
-          <ModalFooter>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask} style={boxStyle}>
+              <Button color="primary" onClick={updateTask} style={darkMode ? boxStyleDark : boxStyle}>
                 Update
               </Button>
             ) : null}
-            <Button color="secondary" onClick={toggle} style={boxStyle}>
+            <Button color="secondary" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
               Cancel
             </Button>
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
+      <Button color="primary" size="sm" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
         {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
       </Button>
     </div>
@@ -700,5 +709,6 @@ function EditTaskModal(props) {
 const mapStateToProps = state => ({
   allMembers: state.projectMembers.members,
   error: state.tasks.error,
+  darkMode: state.theme.darkMode,
 });
 export default connect(mapStateToProps, { updateTask, hasPermission, })(EditTaskModal);
