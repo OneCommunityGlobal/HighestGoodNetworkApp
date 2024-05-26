@@ -37,7 +37,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -133,6 +133,12 @@ class UserProfileAdd extends Component {
       actualConfirmedPassword,
       jobTitle,
     } = this.state.userProfile;
+
+    const darkMode = this.props.darkMode;
+
+    const fontColor = darkMode ? 'text-light' : '';
+    const fontWeight = darkMode ? 'font-weight-bold' : '';
+
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
@@ -144,13 +150,13 @@ class UserProfileAdd extends Component {
           onClose={this.props.closePopup}
           createUserProfile={this.createUserProfile}
         />
-        <Container className="emp-profile add-new-user">
+        <Container className={`emp-profile add-new-user ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <Row>
             <Col md="12">
               <Form>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Name</Label>
+                    <Label className={fontColor}>Name</Label>
                   </Col>
                   <Col md="3">
                     <FormGroup>
@@ -163,7 +169,7 @@ class UserProfileAdd extends Component {
                         placeholder="First Name"
                         invalid={!!this.state.formErrors.firstName}
                       />
-                      <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.firstName}</FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -177,13 +183,13 @@ class UserProfileAdd extends Component {
                         placeholder="Last Name"
                         invalid={!!this.state.formErrors.lastName}
                       />
-                      <FormFeedback>{this.state.formErrors.lastName}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.lastName}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Job Title</Label>
+                    <Label className={fontColor}>Job Title</Label>
                   </Col>
                   <Col md={{ size: 6 }}>
                     <FormGroup>
@@ -200,7 +206,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Email</Label>
+                    <Label className={fontColor}>Email</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -213,7 +219,7 @@ class UserProfileAdd extends Component {
                         placeholder="Email"
                         invalid={!!this.state.formErrors.email}
                       />
-                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.email}</FormFeedback>
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -224,7 +230,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Phone</Label>
+                    <Label className={fontColor}>Phone</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -236,7 +242,7 @@ class UserProfileAdd extends Component {
                         onChange={phone => this.phoneChange(phone)}
                       />
                       {phoneNumberEntered && (
-                        <div className="required-user-field">
+                        <div className={`required-user-field ${fontWeight}`}>
                           {this.state.formErrors.phoneNumber}
                         </div>
                       )}
@@ -250,7 +256,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Weekly Committed Hours</Label>
+                    <Label className={fontColor}>Weekly Committed Hours</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -287,13 +293,13 @@ class UserProfileAdd extends Component {
                             : !this.state.formValid.weeklyCommittedHours
                         }
                       />
-                      <FormFeedback>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Role</Label>
+                    <Label className={fontColor}>Role</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -321,7 +327,7 @@ class UserProfileAdd extends Component {
                   <>
                     <Row className="user-add-row">
                       <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                        <Label>Actual Email</Label>
+                        <Label className={fontColor}>Actual Email</Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
@@ -334,13 +340,13 @@ class UserProfileAdd extends Component {
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
                           />
-                          <FormFeedback>{this.state.formErrors.actualEmail}</FormFeedback>
+                          <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
                     <Row className="user-add-row">
                       <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label>Actual Password</Label>
+                        <Label className={fontColor}>Actual Password</Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
@@ -359,7 +365,7 @@ class UserProfileAdd extends Component {
                     </Row>
                     <Row className="user-add-row">
                       <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label>Confirm Actual Password</Label>
+                        <Label className={fontColor}>Confirm Actual Password</Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
@@ -380,7 +386,7 @@ class UserProfileAdd extends Component {
                 )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
+                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
                     <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
@@ -388,7 +394,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Video Call Preference</Label>
+                    <Label className={fontColor}>Video Call Preference</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -405,7 +411,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Admin Document</Label>
+                    <Label className={fontColor}>Admin Document</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -422,7 +428,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Link to Media Files</Label>
+                    <Label className={fontColor}>Link to Media Files</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -439,7 +445,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
-                    <Label>Location</Label>
+                    <Label className={fontColor}>Location</Label>
                   </Col>
                   <Col md="6">
                     <Row>
@@ -453,7 +459,7 @@ class UserProfileAdd extends Component {
                             block
                             size="sm"
                             onClick={this.onClickGetTimeZone}
-                            style={boxStyle}
+                            style={darkMode ? {} : boxStyle}
                           >
                             Get Time Zone
                           </Button>
@@ -464,7 +470,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Time Zone</Label>
+                    <Label className={fontColor}>Time Zone</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -479,7 +485,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Start Date</Label>
+                    <Label className={fontColor}>Start Date</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -506,7 +512,7 @@ class UserProfileAdd extends Component {
           </Row>
           <Row>
             <Col md="12">
-              <TabContent id="myTabContent">
+              <TabContent id="myTabContent" className={darkMode ? 'bg-yinmn-blue border-0' : ''}>
                 <TabPane>
                   <ProjectsTab
                     userProjects={this.state.projects}
@@ -516,6 +522,7 @@ class UserProfileAdd extends Component {
                     isUserAdmin={true}
                     role={this.props.auth.user.role}
                     edit
+                    darkMode={darkMode}
                   />
                 </TabPane>
                 <TabPane>
@@ -533,6 +540,7 @@ class UserProfileAdd extends Component {
                     setCodeValid={this.setCodeValid}
                     edit
                     userProfile={this.state.userProfile}
+                    darkMode={darkMode}
                   />
                 </TabPane>
               </TabContent>
@@ -548,7 +556,7 @@ class UserProfileAdd extends Component {
                   size="lg"
                   data-testid="create-userProfile"
                   onClick={() => this.createUserProfile(false)}
-                  style={boxStyle}
+                  style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Create
                 </Button>

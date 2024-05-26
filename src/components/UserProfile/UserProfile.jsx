@@ -542,6 +542,7 @@ function UserProfile(props) {
       await loadUserTasks();
       setSaved(false);
     } catch (err) {
+      console.log(err);
       alert('An error occurred while attempting to save this profile.');
       return err.message;
     }
@@ -701,6 +702,7 @@ function UserProfile(props) {
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
+  const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
   const canSeeQSC = props.hasPermission('seeQSC');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
@@ -953,7 +955,7 @@ function UserProfile(props) {
                 handleLinkModel={props.handleLinkModel}
                 handleSubmit={handleSubmit}
                 role={requestorRole}
-                canEdit={canEdit}
+                canEdit={canEdit || canManageAdminLinks}
                 darkMode={darkMode}
               />
               <BlueSquareLayout

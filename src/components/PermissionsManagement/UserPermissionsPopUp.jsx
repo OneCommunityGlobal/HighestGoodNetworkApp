@@ -6,12 +6,12 @@ import { getAllUserProfile } from 'actions/userManagement';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
-function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser }) {
+function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -171,6 +171,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser })
             immutablePermissions={actualUserRolePermission}
             editable={!!actualUserProfile}
             setPermissions={setUserPermissions}
+            darkMode={darkMode}
           />
         </ul>
       </div>
@@ -180,7 +181,9 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser })
         color="primary"
         size="lg"
         block
-        style={{ ...boxStyle, marginTop: '1rem' }}
+        style={
+          darkMode ? { ...boxStyleDark, marginTop: '1rem' } : { ...boxStyle, marginTop: '1rem' }
+        }
       >
         Submit
       </Button>
@@ -193,6 +196,7 @@ const mapStateToProps = state => ({
   roles: state.role.roles,
   allUserProfiles: state.allUserProfiles.userProfiles,
   permissionsUser: state.auth.permissions,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

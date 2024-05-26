@@ -103,6 +103,7 @@ function PermissionListItem(props) {
 
   const fontSize = isCategory ? '20px' : undefined;
   const textIndent = `${50 * depth}px`;
+  const textShadow = darkMode ? '0.5px 0.5px 2px black' : '';
 
   const getColor = () => {
     if (howManySubpermsInRole === 'All') {
@@ -116,12 +117,13 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
+      <li className="user-role-tab__permissions pr-2" key={permission} data-testid={permission}>
         <p
           style={{
             color,
             fontSize,
             textIndent,
+            textShadow,
           }}
         >
           {label}
@@ -199,6 +201,7 @@ function PermissionListItem(props) {
         isOpen={infoRoleModal}
         toggle={toggleInfoRoleModal}
         id="#modal2-body_new-role--padding"
+        className={darkMode ? 'text-light dark-mode' : ''}
       >
         <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
         <ModalBody>{modalContent}</ModalBody>
