@@ -34,7 +34,6 @@ src/components/TeamLocations/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/Timelog/**
-src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/Announcements/**
