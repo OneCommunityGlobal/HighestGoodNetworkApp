@@ -155,6 +155,7 @@ function UserProfile(props) {
     setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
+      if (!team) return;
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           originalTeamProperties.push({ [key]: value });
@@ -164,6 +165,7 @@ function UserProfile(props) {
 
     const teamsProperties = [];
     teams?.forEach(team => {
+      if (!team) return;
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           teamsProperties.push({ [key]: value });

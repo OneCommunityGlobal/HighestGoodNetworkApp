@@ -119,6 +119,7 @@ const UserTeamsTable = props => {
             <tbody>
               {props.userTeamsById.length > 0 ? (
                 props.userTeamsById.map((team, index) => (
+                  !team ? null :
                   <tr key={index} className="tr">
                     <td style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
                     <td>{`${team.teamName}`}</td>
@@ -237,6 +238,7 @@ const UserTeamsTable = props => {
             <tbody className={darkMode ? 'text-light' : ''}>
               {props.userTeamsById.length > 0 ? (
                 props.userTeamsById.map((team, index) => (
+                  !team ? null :
                   <tr key={index} className="tr">
                     <td>{index + 1}</td>
                     <td>{`${team.teamName}`}</td>

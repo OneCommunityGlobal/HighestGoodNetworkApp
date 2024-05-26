@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -22,6 +22,20 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     projectAssigned: '',
     // teamAssiged: {},
   });
+  let existTeamCodes = new Set();
+  if (teamsData?.allTeamCode) {
+    const codes = teamsData.allTeamCode.map(team => team.teamCode);
+    existTeamCodes = new Set(codes);
+  }
+  
+
+  // useEffect(() => {
+  //   debugger;
+  //   if (teamsData?.allTeamCode) {
+  //     const codes = teamsData.allTeamCode.map(team => team.teamCode);
+  //     setExistTeamCodes(new Set(codes));
+  //   }
+  // }, [teamsData]);
 
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
@@ -95,6 +109,27 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
       });
   };
 
+  const onTeamCodeValidation = (teamCode) => {
+    const format1 = /^[A-Za-z]-[A-Za-z]{3}$/;
+    const format2 = /^[A-Z]{5}$/;
+    // Check if the input value matches either of the formats
+    const isValidFormat = format1.test(teamCode) || format2.test(teamCode);
+    if (!isValidFormat) {
+      setWarningMessage({ title: "Error", content: "Invalid Team Code Format" });
+      setShowMessage(true);
+      setTitleData(prev => ({ ...prev, teamCode: '' }));
+      return;
+    } 
+    if(!existTeamCodes.has(teamCode)) {
+      setWarningMessage({ title: "Error", content: "Team Code Not Exists" });
+      setShowMessage(true);
+      setTitleData(prev => ({ ...prev, teamCode: '' }));
+      return;
+    }
+    setShowMessage(false);
+
+
+  }
 
 
 
@@ -128,11 +163,12 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
             <Label>Team Code<span className='qsm-modal-required'>*</span>:</Label>
             <Input
               type="text"
-              placeholder="X-XXX"
+              placeholder="X-XXX OR XXXXX"
               onChange={e => {
                 e.persist();
                 setTitleData(prev => ({ ...prev, teamCode: e.target.value }));
               }}
+              onBlur={(e) => onTeamCodeValidation(e.target.value)}
             />
             <Label>Project Assignment<span className='qsm-modal-required'>*</span>:</Label>
             <AssignProjectField
