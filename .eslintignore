@@ -22,8 +22,6 @@ src/components/common/**
 src/components/Header/**
 src/components/BMDashboard/BMHeader/**
 src/components/MonthlyEffort/**
-
-src/components/PermissionsManagement/**
 src/components/ProfileLinks/**
 src/components/Projects/**
 src/components/Reports/**
