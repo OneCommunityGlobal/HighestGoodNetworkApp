@@ -9,6 +9,7 @@ import { Provider } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import getPopupById from 'actions/popupEditorAction';
 import axios from 'axios';
+import { themeMock } from '__tests__/mockStates';
 import { MemoryRouter } from 'react-router-dom';
 
 const index = 0;
@@ -31,6 +32,7 @@ beforeEach(() => {
       },
     },
     role: mockAdminState.role,
+    theme: themeMock,
   });
 });
 
