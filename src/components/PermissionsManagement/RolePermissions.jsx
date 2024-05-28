@@ -10,10 +10,8 @@ import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
-import PermissionsPresetsModal from './PermissionsPresetsModal.jsx';
 import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
 import PermissionsPresetsModal from './PermissionsPresetsModal';
-import { ENDPOINTS } from '../../utils/URL';
 import { updateRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
@@ -114,7 +112,6 @@ function RolePermissions(props) {
   const mainPermissions = []
   const darkMode = props.darkMode;
 
-  const { darkMode } = props;
 
   const [permissions, setPermissions] = useState(props.permissions);
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
