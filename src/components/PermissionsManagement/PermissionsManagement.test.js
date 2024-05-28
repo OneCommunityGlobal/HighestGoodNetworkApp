@@ -14,12 +14,9 @@ const mockStore = configureMockStore([thunk]);
 
 const mockInfoCollections = [
   // Your mock data
-  {infoName: 'testInfo',
-  infoContent: 'a'},
-  {infoName: 'testInfo2',
-  infoContent: ''},
+  { infoName: 'testInfo', infoContent: 'a' },
+  { infoName: 'testInfo2', infoContent: '' },
 ];
-
 
 describe('permissions management page structure', () => {
   let store;
@@ -32,7 +29,17 @@ describe('permissions management page structure', () => {
     store.dispatch = jest.fn();
 
     renderWithRouterMatch(
-      <Route path="/permissionsmanagement">{props => <PermissionsManagement {...props} infoCollections={mockInfoCollections} areaName={'testInfo'} role={'Owner'} fontSiz={24} />}</Route>,
+      <Route path="/permissionsmanagement">
+        {props => (
+          <PermissionsManagement
+            {...props}
+            infoCollections={mockInfoCollections}
+            areaName={'testInfo'}
+            role={'Owner'}
+            fontSiz={24}
+          />
+        )}
+      </Route>,
       {
         route: `/permissionsmanagement`,
         store,

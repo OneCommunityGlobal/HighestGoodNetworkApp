@@ -31,7 +31,7 @@ describe('FileUpload Component', () => {
   it('alerts an error if the uploaded file exceeds maximum size', () => {
     const alertSpy = jest.spyOn(window, 'alert').mockImplementation(() => {});
     // Create a dummy file with a size larger than 1KB
-    const file = new File(['a'.repeat(1025)], 'dummy.png', { type: 'image/png' }); 
+    const file = new File(['a'.repeat(1025)], 'dummy.png', { type: 'image/png' });
 
     const { container } = render(
       <FileUpload name="test-upload" accept="image/png" maxSizeinKB={1} />,

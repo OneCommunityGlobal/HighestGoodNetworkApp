@@ -39,7 +39,7 @@ const TimeOffRequestDetailModal = () => {
                 </Row>
               </Container>
               {data.requests?.map(req => (
-                <Container className='time-off-detail-modal-card-container' key={req._id}>
+                <Container className="time-off-detail-modal-card-container" key={req._id}>
                   <Row className="pl-2">
                     <Col className="mb-2 font-italic">
                       {getWeekIntervals(req)[0].map((week, index) => (

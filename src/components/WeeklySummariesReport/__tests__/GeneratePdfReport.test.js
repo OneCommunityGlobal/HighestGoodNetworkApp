@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen} from '@testing-library/react';
+import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import mockSummaries from 'weeklySummariesReportData'; // Located in the tested component's __mocks__ folder
 import GeneratePdfReport from '../GeneratePdfReport';
@@ -17,7 +17,13 @@ const weekidx1 = 1;
 const weekidx2 = 2;
 describe('structure test', () => {
   beforeEach(() => {
-    render(<GeneratePdfReport summaries={dummy_summary} weekIndex={weekidx2} weekDates={dummy_WeekDates()} />);
+    render(
+      <GeneratePdfReport
+        summaries={dummy_summary}
+        weekIndex={weekidx2}
+        weekDates={dummy_WeekDates()}
+      />,
+    );
   });
   it('should render button that generates PDF reports', () => {
     expect(screen.getByRole('button', { name: /Open PDF/i }));
@@ -27,7 +33,11 @@ describe('structure test', () => {
 describe('FormattedReport Component', () => {
   it('Snapshot with mocked data', () => {
     const { asFragment } = render(
-      <GeneratePdfReport summaries={mockSummaries} weekIndex={weekidx1} weekDates={getWeekDates()} />,
+      <GeneratePdfReport
+        summaries={mockSummaries}
+        weekIndex={weekidx1}
+        weekDates={getWeekDates()}
+      />,
     );
     expect(asFragment()).toMatchSnapshot();
   });

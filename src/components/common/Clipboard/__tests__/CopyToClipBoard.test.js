@@ -41,7 +41,7 @@ describe('CopyToClipboard', () => {
     render(
       <Provider store={store}>
         <CopyToClipboard writeText={writeText} message={message} />
-      </Provider>
+      </Provider>,
     );
 
     // Select the element using its class

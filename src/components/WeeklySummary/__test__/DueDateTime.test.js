@@ -6,13 +6,14 @@ import moment from 'moment-timezone';
 
 describe('DueDateTime Component Tests', () => {
   const mockDueDate = moment();
-  const displayTime = moment(mockDueDate).tz('America/Los_Angeles').add(1, 'second');
+  const displayTime = moment(mockDueDate)
+    .tz('America/Los_Angeles')
+    .add(1, 'second');
 
   it('should render correctly', () => {
     render(<DueDateTime dueDate={mockDueDate} isShow={true} />);
     expect(
-      screen
-        .getByText(`${displayTime.format('MMM-DD-YY')} at ${displayTime.format('HH:mm')} PST`)
+      screen.getByText(`${displayTime.format('MMM-DD-YY')} at ${displayTime.format('HH:mm')} PST`),
     ).toBeInTheDocument();
   });
 

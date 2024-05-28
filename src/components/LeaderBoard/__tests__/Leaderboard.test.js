@@ -6,14 +6,13 @@ import mockState from '../../../__tests__/mockAdminState.js';
 import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ENDPOINTS , ApiEndpoint } from '../../../utils/URL.js';
+import { ENDPOINTS, ApiEndpoint } from '../../../utils/URL.js';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
 import routes from '../../../routes.js';
 const url = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
 let requestedLeaderBoard = false;
 let refreshed = false;
-
 
 const server = setupServer(
   rest.get(url, (req, res, ctx) => {

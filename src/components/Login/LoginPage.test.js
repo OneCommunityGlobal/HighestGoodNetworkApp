@@ -95,7 +95,6 @@ describe('Login behavior', () => {
     //   route: rt,
     //   history: hist,
     // });
-
     // //This errors out should look into it.
     // fireEvent.change(screen.getByLabelText('Email:'), {
     //   target: { value: 'validEmail@gmail.com' },
@@ -103,9 +102,7 @@ describe('Login behavior', () => {
     // fireEvent.change(screen.getByLabelText('Password:'), {
     //   target: { value: 'validPass' },
     // });
-
     // fireEvent.click(screen.getByText('Submit'));
-
     // await waitFor(() => {
     //   expect(screen.getByLabelText('Current Password:')).toBeTruthy();
     // });

@@ -16,7 +16,7 @@ describe('ShowSaveWarning component', () => {
   it('renders the correct warning message', () => {
     const { getByText } = render(<ShowSaveWarning />);
     const warningMessage = getByText(
-      /REMEMBER TO CLICK THE "SAVE CHANGES" BUTTON AT THE BOTTOM OF THE PAGE BEFORE LEAVING. YOUR CHANGES WILL BE LOST IF YOU DON'T DO THIS./
+      /REMEMBER TO CLICK THE "SAVE CHANGES" BUTTON AT THE BOTTOM OF THE PAGE BEFORE LEAVING. YOUR CHANGES WILL BE LOST IF YOU DON'T DO THIS./,
     );
     expect(warningMessage).toBeInTheDocument();
   });

@@ -57,11 +57,11 @@ describe('Update Password Page', () => {
   beforeEach(() => {
     store = mockStore({
       errors: '',
-      theme: {darkMode: true}
+      theme: { darkMode: true },
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
-      <Route path="/updatepassword/:userId">{(props) => <UpdatePassword {...props} />}</Route>,
+      <Route path="/updatepassword/:userId">{props => <UpdatePassword {...props} />}</Route>,
       {
         route: `/updatepassword/${userID}`,
         store,
@@ -118,7 +118,7 @@ describe('Update Password Page', () => {
         'ABCDEFabc', // no numbers or special characters
       ];
       userEvent.type(screen.getByLabelText(/current password:/i), 'z');
-      errorValues.forEach((value) => {
+      errorValues.forEach(value => {
         userEvent.clear(screen.getByLabelText(/new password:/i));
         userEvent.type(screen.getByLabelText(/new password:/i), value, { allAtOnce: false });
         expect(screen.getByText(errorMessages.newpasswordInvalid)).toBeInTheDocument();

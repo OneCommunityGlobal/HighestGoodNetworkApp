@@ -1,54 +1,52 @@
 import React from 'react';
 import Form from '../Form';
 
-
 describe('Form ', () => {
-    let form;
-  
-    beforeEach(() => {
-      form = new Form(); 
-      form.state = { data: {}, errors: {} }; // Manually setting initial state
-      form.setState = (newState) => { // Mocking setState function
-        form.state = { ...form.state, ...newState };
+  let form;
+
+  beforeEach(() => {
+    form = new Form();
+    form.state = { data: {}, errors: {} }; // Manually setting initial state
+    form.setState = newState => {
+      // Mocking setState function
+      form.state = { ...form.state, ...newState };
+    };
+    if (form.componentDidMount) {
+      form.componentDidMount();
+    }
+
+    form.dosubmit = jest.fn();
+
+    global.FileReader = jest.fn().mockImplementation(() => {
+      return {
+        readAsDataURL: function(file) {
+          // Simulate calling onload immediately with mock base64 content
+          const result = `data:${file.type};base64,dGVzdGZpbGU=`; // Example base64 for "testfile"
+          const event = { target: { result } };
+          if (this.onload) {
+            this.onload(event);
+          }
+        },
       };
-      if (form.componentDidMount) {
-        form.componentDidMount();
-      }
-
-      form.dosubmit = jest.fn();
-      
-
-      global.FileReader = jest.fn().mockImplementation(() => {
-        return {
-          readAsDataURL: function(file) {
-            // Simulate calling onload immediately with mock base64 content
-            const result = `data:${file.type};base64,dGVzdGZpbGU=`; // Example base64 for "testfile"
-            const event = { target: { result } };
-            if (this.onload) {
-              this.onload(event);
-            }
-          },
-        };
-      });
     });
-  
+  });
+
   // 1. Initial Rendering and Component Structure
   describe('Form Component', () => {
     test('renders without crashing', () => {
       expect(form.state).toEqual({ data: {}, errors: {} });
     });
-  
+
     test('sub-components are rendered correctly', () => {
       expect(form.handleInput).toBeDefined();
       expect(form.handleRichTextEditor).toBeDefined();
       expect(form.handleCollection).toBeDefined();
       expect(form.handleFileUpload).toBeDefined();
-       //the state
+      //the state
       expect(form.state.data).toBeDefined();
       expect(form.state.errors).toBeDefined();
     });
   });
-
 
   //2. input handling
   describe('Input Handling and State Updates', () => {
@@ -58,7 +56,7 @@ describe('Form ', () => {
       form.handleInput(inputEvent);
       expect(form.state.data.test).toEqual('testValue');
     });
-  
+
     test('handles rich text editor changes correctly', () => {
       // Simulate rich text editor change and verify state update
       const editorName = 'testEditor';
@@ -68,7 +66,7 @@ describe('Form ', () => {
       // Expect state to be updated with the editor content
       expect(form.state.data[editorName]).toBe(editorValue);
     });
-  
+
     test('handles file upload correctly', () => {
       const fileName = 'testFile.txt';
       const fileContent = 'Test file content';
@@ -122,9 +120,7 @@ describe('Form ', () => {
       expect(form.state.data[collectionName]).toContain(newItem);
       expect(form.state.data[collectionName].length).toBe(3);
     });
-
   });
-
 
   // 3. Form Validation
   describe('Form Validation', () => {
@@ -135,7 +131,6 @@ describe('Form ', () => {
       // Add assertions to check for specific error messages
     });
   });
-  
 
   // 4. Form Submission
   describe('Form Submission', () => {
@@ -151,9 +146,9 @@ describe('Form ', () => {
           testCollection: ['Item 1', 'Item 2'],
           email: 'test@example.com',
           password: 'testpassword',
-          someField: 'Some Field Value'
+          someField: 'Some Field Value',
         },
-        errors: {} // Assume no errors initially
+        errors: {}, // Assume no errors initially
       });
       const preventDefault = jest.fn();
       const stopPropagation = jest.fn();
@@ -161,7 +156,6 @@ describe('Form ', () => {
       // Assert
       expect(preventDefault).toHaveBeenCalled();
       expect(stopPropagation).toHaveBeenCalled();
-
     });
 
     test('does not submit form data with invalid data', () => {
@@ -171,7 +165,7 @@ describe('Form ', () => {
           // Populate fields with invalid data
           email: 'invalidemail', // Invalid email format
           password: '123', // Assuming password requires at least 6 characters
-        }
+        },
       });
       // Act: Mock doSubmit, simulate form submission
       const preventDefault = jest.fn();
@@ -179,10 +173,8 @@ describe('Form ', () => {
       form.handleSubmit({ preventDefault, stopPropagation });
       expect(preventDefault).toHaveBeenCalled();
       expect(stopPropagation).toHaveBeenCalled();
-     
     });
   });
-
 
   // 5. Functionality Tests
   describe('Functionality Tests', () => {
@@ -192,7 +184,6 @@ describe('Form ', () => {
       expect(form.state).toEqual({ data: {}, errors: {} });
     });
   });
-
 
   // 6. Error Handling and Display
   describe('Error Handling and Display', () => {
@@ -207,12 +198,13 @@ describe('Form ', () => {
     });
   });
 
-
   // 7. Mocking External Modules
   describe('Mocking External Modules', () => {
     test('validates form fields using Joi correctly', () => {
       // Correct structure for mock event data
-      const invalidData = { currentTarget: { name: 'someField', value: 'invalidValueDueToJoiSchema' } };
+      const invalidData = {
+        currentTarget: { name: 'someField', value: 'invalidValueDueToJoiSchema' },
+      };
       // Act: Simulate input and submission
       form.handleInput(invalidData);
       const preventDefault = jest.fn();
@@ -221,9 +213,6 @@ describe('Form ', () => {
       form.handleSubmit({ preventDefault, stopPropagation });
       expect(preventDefault).toHaveBeenCalled();
       expect(stopPropagation).toHaveBeenCalled();
-      
     });
   });
- 
 });
-

@@ -59,7 +59,7 @@ describe("<UpdatePassword/>' behavior", () => {
   const userID = '5f31dcb9a1a909eadee0eecb';
   beforeEach(() => {
     renderWithRouterMatch(
-      <Route path="/updatepassword/:userId">{(props) => <UpdatePassword {...props} />}</Route>,
+      <Route path="/updatepassword/:userId">{props => <UpdatePassword {...props} />}</Route>,
       {
         route: `/updatepassword/${userID}`,
       },
