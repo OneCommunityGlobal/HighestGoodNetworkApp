@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -25,7 +26,7 @@ import {
 } from 'reactstrap';
 import './Timelog.css';
 import classnames from 'classnames';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import ActiveCell from 'components/UserManagement/ActiveCell';
@@ -43,7 +44,7 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
@@ -82,6 +83,8 @@ const endOfWeek = offset => {
 };
 
 const Timelog = props => {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
@@ -124,12 +127,12 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
-
+  const { userId = authUser.userid } = useParams();
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
-  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId : authUser.userid,
+    viewingUser ? viewingUser.userId : userId,
   );
 
   const isAuthUser = authUser.userid === displayUserId;
@@ -238,7 +241,8 @@ const Timelog = props => {
       setTimeout(() => {
         const elem = document.getElementById('weeklySum');
         if (elem) {
-          elem.scrollIntoView();
+          const yOffset = elem.getBoundingClientRect().top + window.pageYOffset;
+          window.scrollTo({ top: yOffset, behavior: 'smooth' });
         }
       }, 150);
     }
@@ -291,14 +295,14 @@ const Timelog = props => {
       return <></>;
     } else if (timeLogState.activeTab === 4) {
       return (
-        <p className="ml-1">
+        <p className={"ml-1 " + (darkMode ? "text-light" : "")}>
           Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
           <b>{formatDate(timeLogState.toDate)}</b>
         </p>
       );
     } else {
       return (
-        <p className="ml-1">
+        <p className={"ml-1 " + (darkMode ? "text-light" : "")}>
           Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
           <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
         </p>
@@ -360,7 +364,7 @@ const Timelog = props => {
       for (const [wbsId, WBS] of Object.entries(WBSObject)) {
         const { wbsName, taskObject } = WBS;
         options.push(
-          <option value={wbsId} key={`TimeLog_${wbsId}`} disabled>
+          <option value={wbsId} key={`TimeLog_${wbsId}`} disabled className={darkMode ? "text-white-50" : ''}>
               {`\u2003WBS: ${wbsName}`}
           </option>
         )
@@ -415,7 +419,7 @@ const Timelog = props => {
     // Filter the time entries
     updateTimeEntryItems();
   }, [timeLogState.projectsSelected]);
-
+  
   useEffect(() => {
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
     window.addEventListener('storage', handleStorageEvent);
@@ -425,7 +429,8 @@ const Timelog = props => {
   },[]);
 
   return (
-    <div>
+    <div className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`} 
+         style={darkMode ? (!props.isDashboard ? {paddingBottom: "300px"} : {}) : {}}>
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
@@ -446,6 +451,7 @@ const Timelog = props => {
           fontSize={30}
           isPermissionPage={true}
           role={authUser.role}
+          darkMode={darkMode}
         />
         </Container>
    
@@ -458,15 +464,15 @@ const Timelog = props => {
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary displayUserId={displayUserId} setPopup={toggleSummary}/>
+                <WeeklySummary displayUserId={displayUserId} setPopup={toggleSummary} darkMode={darkMode}/>
               </div>
             </div>
           ) : null}
 
           <Row>
             <Col md={12}>
-              <Card>
-                <CardHeader className='card-header-shadow'>
+              <Card className={darkMode ? 'border-0' : ''}>
+                <CardHeader className={darkMode ? 'card-header-shadow-dark bg-space-cadet text-light' : 'card-header-shadow'}>
                   <Row>
                     <Col md={11}>
                       <CardTitle tag="h4">
@@ -478,6 +484,7 @@ const Timelog = props => {
                           fontSize={24}
                           isPermissionPage={true}
                           role={authUser.role} // Pass the 'role' prop to EditableInfoModal
+                          darkMode={darkMode}
                         />
                       
                         <span className="mr-2" style={{padding: '1px'}}>
@@ -499,7 +506,7 @@ const Timelog = props => {
                         <ProfileNavDot userId={displayUserId} style={{marginLeft: '2px', padding: '1px'}} />
                         </div>
                       </CardTitle>
-                      <CardSubtitle tag="h6" className="text-muted">
+                      <CardSubtitle tag="h6" className={darkMode ? "text-azure" : "text-muted"}>
                         Viewing time entries logged in the last 3 weeks
                       </CardSubtitle>
                     </Col>
@@ -507,7 +514,7 @@ const Timelog = props => {
                       {isAuthUser ? (
                         <div className="float-right">
                           <div>
-                            <Button color="success" onClick={toggle} style={boxStyle}>
+                            <Button color="success" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                               {'Add Intangible Time Entry '}
                               <i
                                 className="fa fa-info-circle"
@@ -571,15 +578,15 @@ const Timelog = props => {
                           </div>
                         )
                       )}
-                      <Modal isOpen={timeLogState.infoModal} toggle={openInfo}>
-                        <ModalHeader>Info</ModalHeader>
-                        <ModalBody>{timeLogState.information}</ModalBody>
-                        <ModalFooter>
-                          <Button onClick={openInfo} color="primary" style={boxStyle}>
+                      <Modal isOpen={timeLogState.infoModal} toggle={openInfo} className={darkMode ? 'text-light' : ''}>
+                        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
+                        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{timeLogState.information}</ModalBody>
+                        <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
+                          <Button onClick={openInfo} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                             Close
                           </Button>
                           {canEditTimeEntry ? (
-                            <Button onClick={openInfo} color="secondary">
+                            <Button onClick={openInfo} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
                               Edit
                             </Button>
                           ) : null}
@@ -601,7 +608,7 @@ const Timelog = props => {
                     </Col>
                   </Row>
                 </CardHeader>
-                <CardBody className="card-body-shadow">
+                <CardBody className={darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'}>
                   <Nav tabs className="mb-1">
                     <NavItem>
                       <NavLink
@@ -676,12 +683,12 @@ const Timelog = props => {
                     </NavItem>
                   </Nav>
 
-                  <TabContent activeTab={timeLogState.activeTab}>
+                  <TabContent activeTab={timeLogState.activeTab} className={darkMode ? "bg-yinmn-blue" : ""}>
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
                       <Form inline className="mb-2">
                         <FormGroup className="mr-2">
-                          <Label for="fromDate" className="mr-2">
+                          <Label for="fromDate" className={"mr-2 ml-1 " + (darkMode ? "text-light" : "")}>
                             From
                           </Label>
                           <Input
@@ -693,7 +700,7 @@ const Timelog = props => {
                           />
                         </FormGroup>
                         <FormGroup>
-                          <Label for="toDate" className="mr-2">
+                          <Label for="toDate" className={"mr-2 " + (darkMode ? "text-light" : "")}>
                             To
                           </Label>
                           <Input
@@ -708,7 +715,7 @@ const Timelog = props => {
                           color="primary"
                           onClick={handleSearch}
                           className="ml-2"
-                          style={boxStyle}
+                          style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Search
                         </Button>
@@ -719,7 +726,7 @@ const Timelog = props => {
                     ) : (
                       <Form className="mb-2">
                         <FormGroup>
-                          <Label htmlFor="projectSelected" className="mr-1 ml-1 mb-1 align-top">
+                          <Label htmlFor="projectSelected" className={"mr-1 ml-1 mb-1 align-top " + (darkMode ? "text-light" : "")}>
                             Filter Entries by Project and Task:
                           </Label>
                           <Input
@@ -738,6 +745,7 @@ const Timelog = props => {
                               });
                             }}
                             multiple
+                            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
                           >
                             {projectOrTaskOptions}
                           </Input>

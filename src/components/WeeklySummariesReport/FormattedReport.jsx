@@ -37,6 +37,7 @@ import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
 const textColors = {
   Default: '#000000',
@@ -51,8 +52,8 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-function ListGroupItem({ children }) {
-  return <LGI className="px-0 border-0 py-1">{children}</LGI>;
+function ListGroupItem({ children, darkMode }) {
+  return <LGI className={`px-0 border-0 py-1 ${darkMode ? 'bg-yinmn-blue' : ''}`}>{children}</LGI>;
 }
 
 function FormattedReport({
@@ -65,8 +66,12 @@ function FormattedReport({
   canEditTeamCode,
   auth,
   canSeeBioHighlight,
+  darkMode,
+  handleTeamCodeChange,
 }) {
   // if (auth?.user?.role){console.log(auth.user.role)}
+  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
+
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
@@ -75,6 +80,7 @@ function FormattedReport({
       <ListGroup flush>
         {summaries.map(summary => (
           <ReportDetails
+            loggedInUserEmail={loggedInUserEmail}
             key={summary._id}
             summary={summary}
             weekIndex={weekIndex}
@@ -83,8 +89,10 @@ function FormattedReport({
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
-            loadBadges={loadBadges}
+            loadBzadges={loadBadges}
             canSeeBioHighlight={canSeeBioHighlight}
+            darkMode={darkMode}
+            handleTeamCodeChange={handleTeamCodeChange}
           />
         ))}
       </ListGroup>
@@ -183,9 +191,13 @@ function ReportDetails({
   loadBadges,
   canEditTeamCode,
   canSeeBioHighlight,
+  loggedInUserEmail,
+  darkMode,
+  handleTeamCodeChange,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const isMeetCriteria =
@@ -199,47 +211,51 @@ function ReportDetails({
   }, []);
 
   return (
-    <li className="list-group-item px-0" ref={ref}>
+    <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
-        <ListGroupItem>
+        <ListGroupItem darkMode={darkMode}>
           <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
-            <ListGroupItem>
-              <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
+            <ListGroupItem darkMode={darkMode}>
+              <TeamCodeRow
+                canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
+                summary={summary}
+                handleTeamCodeChange={handleTeamCodeChange}
+              />
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
                 <Bio
-                  bioCanEdit={bioCanEdit}
+                  bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
                   bioPosted={summary.bioPosted}
                   summary={summary}
                 />
               </div>
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
                 summary={summary}
-                canEditSummaryCount={canEditSummaryCount}
+                canEditSummaryCount={canEditSummaryCount && !cantEditJaeRelatedRecord}
               />
             </ListGroupItem>
-            <ListGroupItem>
-              <b style={{ color: textColors[summary?.weeklySummaryOption] || textColors.Default }}>
-                Hours logged:
-              </b>
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] ? (
-                <p>
+            <ListGroupItem darkMode={darkMode}>
+              {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
+                <p style={{ color: 'red' }}>
+                  Hours logged: {''}
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
                 </p>
-              ) : (
-                <span className="ml-2">
+              )}
+              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
+                <p>
+                  Hours logged: {''}
                   {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </span>
+                </p>
               )}
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
@@ -315,7 +331,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary }) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
   const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
@@ -324,6 +340,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
     try {
       await axios.patch(url, { key: 'teamCode', value: newStatus });
+      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, userProfileSummary._id); // Update the team code dynamically
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -388,7 +405,7 @@ function MediaUrlLink({ summary }) {
         href={summary.mediaUrl}
         target="_blank"
         rel="noopener noreferrer"
-        style={{ paddingLeft: '5px' }}
+        style={{ paddingLeft: '5px', color: '#007BFF' }}
       >
         Open link to media files
       </a>
@@ -621,7 +638,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
             currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
             currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
-              : undefined,
+              : '#007BFF',
         }}
         title="View Profile"
       >

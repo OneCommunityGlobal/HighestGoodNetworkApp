@@ -1,17 +1,22 @@
-import React, { useState } from 'react';
+/* eslint-disable react/button-has-type */
+/* eslint-disable react/no-unstable-nested-components */
+/* eslint-disable camelcase */
+/* eslint-disable import/prefer-default-export */
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
-import { TasksDetail } from '../TasksDetail';
+// eslint-disable-next-line import/order
 import { getTasksTableData } from './selectors';
 import './TasksTable.css';
 import DropDownSearchBox from 'components/UserManagement/DropDownSearchBox';
 import { Checkbox } from 'components/common/Checkbox';
 import TextSearchBox from 'components/UserManagement/TextSearchBox';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import { TasksDetail } from '../TasksDetail';
 
-export const TasksTable = ({ WbsTasksID }) => {
-  const { get_tasks } = useSelector(state => getTasksTableData(state.tasks, { WbsTasksID }));
+export function TasksTable({ WbsTasksID, darkMode }) {
+  const { get_tasks } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
 
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
@@ -38,8 +43,8 @@ export const TasksTable = ({ WbsTasksID }) => {
     setFilters(prevState => ({ ...prevState, [filterName]: value }));
   };
 
-  const FilterOptions = ({ filterName, width }) => {
-    var filtersOptions = [...Array.from(new Set(get_tasks.map(item => item[filterName]))).sort()];
+  function FilterOptions({ filterName, width }) {
+    const filtersOptions = [...Array.from(new Set(get_tasks.map(item => item[filterName]))).sort()];
     return (
       <DropDownSearchBox
         items={filtersOptions}
@@ -50,9 +55,9 @@ export const TasksTable = ({ WbsTasksID }) => {
         value={filters[filterName]}
       />
     );
-  };
+  }
 
-  const UserOptions = ({ tasks }) => {
+  function UserOptions({ tasks }) {
     let users = [];
     tasks.forEach(task => task.resources?.forEach(resource => users.push(resource.name)));
 
@@ -60,25 +65,25 @@ export const TasksTable = ({ WbsTasksID }) => {
     return (
       <DropDownSearchBox
         items={users}
-        placeholder={`Any user`}
+        placeholder="Any user"
         searchCallback={value => setOneFilter('users', value)}
         className="tasks-table-filter-item tasks-table-filter-input"
         value={filters.users}
       />
     );
-  };
+  }
 
   return (
-    <div>
+    <div className={darkMode ? 'text-light' : ''}>
       <div>
         <h4 className="tasks-table-header">Tasks</h4>
       </div>
       <div className="tasks-table-filters-wrapper">
         <div className="tasks-table-filters">
           <UserOptions tasks={get_tasks} />
-          <FilterOptions filterName={'classification'} width="180px" />
-          <FilterOptions filterName={'priority'} />
-          <FilterOptions filterName={'status'} />
+          <FilterOptions filterName="classification" width="180px" />
+          <FilterOptions filterName="priority" />
+          <FilterOptions filterName="status" />
 
           <TextSearchBox
             placeholder="Estimated hours"
@@ -89,14 +94,14 @@ export const TasksTable = ({ WbsTasksID }) => {
           <Checkbox
             value={isActive}
             onChange={() => setActive(!isActive)}
-            id="active"
+            id="active_checkbox"
             wrapperClassname="tasks-table-filter-item"
             label="Active"
           />
           <Checkbox
             value={isAssigned}
             onChange={() => setAssigned(!isAssigned)}
-            id="assign"
+            id="assign_checkbox"
             wrapperClassname="tasks-table-filter-item"
             label="Assign"
           />
@@ -106,7 +111,7 @@ export const TasksTable = ({ WbsTasksID }) => {
           <button
             className="tasks-table-edit-tasks-button"
             onClick={() => setToggleEditTasks(!toggleEditTasks)}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             Edit Tasks
           </button>
@@ -114,12 +119,12 @@ export const TasksTable = ({ WbsTasksID }) => {
           <button
             className="tasks-table-clear-filter-button"
             onClick={() => resetAllFilters()}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             Clear filters
           </button>
         </div>
-
+        
       </div>
 
       <TasksDetail
@@ -131,7 +136,8 @@ export const TasksTable = ({ WbsTasksID }) => {
         status={filters.status}
         classification={filters.classification}
         users={filters.users}
+        darkMode={darkMode}
       />
     </div>
   );
-};
+}
