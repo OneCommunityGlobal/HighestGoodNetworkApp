@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import permissionLabel from './PermissionsConst';
-import PermissionList from './PermissionList';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
@@ -9,12 +8,10 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 import { updateRole, getAllRoles } from '../../actions/role';
 import { toast } from 'react-toastify';
-import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import PermissionsPresetsModal from './PermissionsPresetsModal.jsx';
 import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
 import hasPermission from '../../utils/permissions';
@@ -183,16 +180,12 @@ function RolePermissions(props) {
       return getKeyByValue(permissionLabel, perm);
     });
 
-    const permissionsBackEnd = permissionsObjectName.map(permission =>
-      permissionFrontToBack(permission),
-    );
 
     const id = props.roleId;
 
     const updatedRole = {
       roleName: roleName,
       permissions: permissionsObjectName,
-      permissionsBackEnd: permissionsBackEnd.flat(),
       roleId: id,
     };
     try {
