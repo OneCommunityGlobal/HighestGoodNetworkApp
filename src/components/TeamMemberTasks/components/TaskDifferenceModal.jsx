@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Table } from 'reactstrap';
 import DiffedText from './DiffedText';
+import { boxStyle } from 'styles';
 
 export const resourcesToString = resources => {
   if (!resources) {
@@ -66,7 +67,7 @@ export const TaskDifferenceModal = ({
         taskNotifications.map(
           taskNotification =>
             taskNotification.userId === userId && (
-              <div style={{ textAlign: 'center' }}>
+              <div key={taskNotification.taskId} style={{ textAlign: 'center' }}>
                 <div>
                   <span style={{ color: 'black', fontWeight: 'bold' }}>
                     Black Bold = No Changes
@@ -250,6 +251,7 @@ export const TaskDifferenceModal = ({
         <Button
           color="primary"
           onClick={() => onApprove(userId, task._id, taskNotifications[0]._id)}
+          style={boxStyle}
         >
           Mark as read
         </Button>

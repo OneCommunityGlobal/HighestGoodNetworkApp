@@ -52,12 +52,12 @@
   text-align: left;
 }
 
-.tableHeader {
-  background-color: #eee7f7;
-}
-
 .table-row {
   background: white;
+}
+
+.table-hover-dark:hover{
+  background-color: #162e4c !important;
 }
 
 .input-wrapper {
@@ -69,4 +69,23 @@
 
 .input-wrapper + .input-wrapper {
   margin-left: 1rem;
+}
+
+.active-inactive-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: .5rem;
+}
+
+.active-inactive-container-item {
+  display: flex;
+  flex-direction: column;
+}
+
+.date-picker-container {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.5rem;
 }

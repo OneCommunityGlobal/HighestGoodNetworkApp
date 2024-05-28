@@ -2,8 +2,8 @@ import axios from 'axios';
 import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
 import {
-  getUserProfile as getUserProfileActionCreator,
-} from '../constants/userProfile';
+  getUserProfileActionCreator,
+} from '../actions/userProfile';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -53,6 +53,7 @@ export const getWeeklySummaries = userId => {
         }
       }
       dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl:summaryDocLink || mediaUrl}));
+      dispatch(getUserProfileActionCreator(response.data));
       return response.status;
     } catch (error) {
       dispatch(fetchWeeklySummariesError(error));
@@ -78,13 +79,20 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
 
       // Merge the weekly summaries related changes with the user's profile.
       const {mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
-      console.log('respon get', response.data)
+      
       // update the changes on weekly summaries link into admin links
+      let doesMediaFolderExist = false;
       for (const link of adminLinks) {
         if (link.Name === 'Media Folder') {
           link.Link = mediaUrl;
+          doesMediaFolderExist = true;
           break; 
         }
+      }
+      if(!doesMediaFolderExist && mediaUrl){
+        adminLinks.push(
+          {Name:'Media Folder',Link:mediaUrl}
+        )
       }
       const userProfileUpdated = {
         ...userProfile,

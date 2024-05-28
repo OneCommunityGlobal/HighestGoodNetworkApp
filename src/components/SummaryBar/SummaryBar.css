@@ -201,3 +201,8 @@
     font-size: 1.5rem;
   }
 }
+
+.text-center{
+  display: flex;
+  justify-content: center;
+}

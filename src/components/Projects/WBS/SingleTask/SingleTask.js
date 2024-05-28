@@ -18,21 +18,32 @@ import { deleteTask } from '../../../../actions/task';
 import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
+import { formatDate } from 'utils/formatDate';
 
-
+const TINY_MCE_INIT_OPTIONS = 
+  {
+    license_key: 'gpl',
+    menubar: false,
+    toolbar: false,
+    branding: false,
+    min_height: 80,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+};
+  
 function SingleTask(props) {
   const {taskId} = props.match.params;
   const { user } = props.auth;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
-  const roles = useSelector(state => state.role.roles);
   const [task, setTask] = useState({});
   const [modal, setModal] = useState(false);
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
+  const canPostProject = props.hasPermission('postProject');
 
   const history = useHistory();
   useEffect(() => {
     const fetchTaskData = async () => {
+      if (!taskId) return;
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
         setTask(res?.data || {});
@@ -41,7 +52,7 @@ function SingleTask(props) {
       }
     };
     fetchTaskData();
-  }, []);
+  }, [taskId]);
 
   const deleteTask = (taskId, taskMother) => {
     props.deleteTask(taskId, taskMother);
@@ -59,7 +70,7 @@ function SingleTask(props) {
     <>
       <ReactTooltip />
       <div className="container-single-task">
-        {hasPermission(user.role, 'seeProjectManagement', roles, userPermissions) && (
+        {canPostProject && (
           <nav aria-label="breadcrumb">
             <ol className="breadcrumb">
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
@@ -225,8 +236,8 @@ function SingleTask(props) {
               <td>{task.hoursMost}</td>
               <td>{parseFloat(task.estimatedHours).toFixed(2)}</td>
               <td>{parseFloat(task.hoursLogged).toFixed(2)}</td>
-              <td>{task.startedDatetime ? task.startedDatetime.slice(0, 10) : 'N/A'}</td>
-              <td>{task.dueDatetime ? task.dueDatetime.slice(0, 10) : 'N/A'}</td>
+              <td>{task.startedDatetime ? formatDate(task.startedDatetime) : 'N/A'}</td>
+              <td>{task.dueDatetime ? formatDate(task.dueDatetime) : 'N/A'}</td>
               <td>{task.links}</td>
               <td className="desktop-view" onClick={toggleModel}>
                 <i className="fa fa-book" aria-hidden="true" />
@@ -240,42 +251,27 @@ function SingleTask(props) {
         <ModalBody>
           <h6>WHY THIS TASK IS IMPORTANT:</h6>
           <Editor
-            init={{
-              menubar: false,
-              toolbar: false,
-              branding: false,
-              min_height: 80,
-              max_height: 300,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            init={TINY_MCE_INIT_OPTIONS}
             disabled
             value={task.whyInfo}
           />
 
           <h6>THE DESIGN INTENT:</h6>
           <Editor
-            init={{
-              menubar: false,
-              toolbar: false,
-              branding: false,
-              min_height: 80,
-              max_height: 300,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            init={TINY_MCE_INIT_OPTIONS}
             disabled
             value={task.intentInfo}
           />
 
           <h6>ENDSTATE:</h6>
           <Editor
-            init={{
-              menubar: false,
-              toolbar: false,
-              branding: false,
-              min_height: 80,
-              max_height: 300,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            init={TINY_MCE_INIT_OPTIONS}
             disabled
             value={task.endstateInfo}
           />
@@ -289,4 +285,5 @@ export default connect(mapStateToProps, {
   getUserProfile,
   deleteTask,
   getPopupById,
+  hasPermission,
 })(SingleTask);

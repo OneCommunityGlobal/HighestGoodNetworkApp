@@ -10,6 +10,18 @@
   border-radius: 8px;
 }
 
+.permissions-management-dark {
+  padding: 1.5rem 3rem;
+  width: 40%;
+  min-width: 400px;
+  margin: 1.5rem auto;
+  box-shadow: 1px 1px 8px black;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  border-radius: 8px;
+}
+
 .permissions-management__header {
   display: flex;
   align-items: center;
@@ -53,10 +65,17 @@
 }
 
 .user-role-tab__permission {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
   border-bottom: solid 1px #ced4da;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  padding-bottom: 5px;
+  padding-top: 5px;
+}
+
+#info-icon__permissions {
+  cursor: pointer;
+  align-self: flex-end;
 }
 
 .permissions-management--flex {
@@ -115,11 +134,21 @@
   margin-left: auto;
   text-align: center;
   align-items: center;
+  padding-bottom: 8px;
 }
 
 
 .role-name:hover {
   background-color: lightgrey;
+}
+
+.role-name-dark:hover {
+  background-color: #1C2541;
+}
+
+
+.loading-message {
+  font-size: 30px;
 }
 
 @media only screen and (max-width: 1199px) {

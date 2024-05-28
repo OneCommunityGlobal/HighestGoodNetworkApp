@@ -51,8 +51,12 @@ export const permissionLabel = {
   seeSummaryIndicator: 'See Summary Indicator',
   seeVisibilityIcon: 'See Visibility Icon',
 };
+import { boxStyle, boxStyleDark } from 'styles';
+
 
 const UserRoleTab = props => {
+  const darkMode = props.darkMode;
+
   useEffect(() => {
     props.getUserRole(props.auth?.user.userid);
   }, []);
@@ -79,27 +83,25 @@ const UserRoleTab = props => {
   const roleName = actualRole.roleName;
   const roleId = actualRole._id;
 
-  const permissionsList = [];
-
-  for (const key in permissionLabel) {
-    permissionsList.push(permissionLabel[key]);
-  }
   return (
-    <div className="userRoleTab__container">
-      <button
-        onClick={() => history.push('/permissionsmanagement')}
-        className="userRoleTab__backBtn"
-      >
-        Back
-      </button>
-      <RolePermissions
-        userRole={props.userProfile.role}
-        role={roleName}
-        roleId={roleId}
-        header={`${roleName} Permissions:`}
-        permissionsList={permissionsList}
-        permissions={permissions}
-      />
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+      <div className={`userRoleTab__container`}>
+        <button
+          onClick={() => history.push('/permissionsmanagement')}
+          className="userRoleTab__backBtn"
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Back
+        </button>
+        <RolePermissions
+          userRole={props.userProfile.role}
+          role={roleName}
+          roleId={roleId}
+          header={`${roleName} Permissions:`}
+          permissions={permissions}
+          darkMode={darkMode}
+        />
+      </div>
     </div>
   );
 };
@@ -109,6 +111,7 @@ const mapStateToProps = state => ({
   roles: state.role.roles,
   auth: state.auth,
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

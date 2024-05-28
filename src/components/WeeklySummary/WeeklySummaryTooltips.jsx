@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import PropTypes from 'prop-types';
 import { Tooltip } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faInfoCircle } from '@fortawesome/free-solid-svg-icons';
 
-const WeeklySummaryContentTooltip = ({ tabId }) => {
+function WeeklySummaryContentTooltip({ tabId }) {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const toggle = () => setTooltipOpen(!tooltipOpen);
   return (
     <>
-      <span id="summaryContentTooltip">
+      <span id="summaryContentTooltip" data-testid="summary-content-tooltip-icon">
+        &nbsp;
         <FontAwesomeIcon icon={faInfoCircle} data-testid={`summary-content-tooltip-${tabId}`} />
       </span>
       <Tooltip
@@ -20,22 +21,26 @@ const WeeklySummaryContentTooltip = ({ tabId }) => {
         innerClassName="summaryContentTooltip"
         target="summaryContentTooltip"
         toggle={toggle}
+        data-testid={`summary-content-tooltip-comp-${tabId}`}
       >
         Weekly summaries are due by Saturday night at midnight Pacific Time. The countdown timer on
         the Dashboard is counting down the time to each week’s closing. To avoid receiving a blue
-        square, everything must be submitted before it hits zero. <br />
+        square, everything must be submitted before it hits zero. &nbsp;
+        <br />
         <br />
         Weekly summaries of your work are needed so we can track your progress and credit you for it
-        each week in the{' '}
+        each week in the&nbsp;
         <a href="https://www.onecommunityglobal.org/one-community-blog/">
           weekly progress updates blog.
-        </a>{' '}
-        When writing your weekly summary, you should <u>write it in 3rd person</u> and include as
-        much detail as possible about what you did for the week. Minimum length for a weekly summary
-        is 50 words and the app won’t allow you to submit one shorter than this.
+        </a>
+        &nbsp; When writing your weekly summary, you should&nbsp;
+        <u>write it in 3rd person</u>&nbsp; and include the specifics of what you did for the week.
+        Please be detailed. Minimum length for a weekly summary is 50 words and the app won’t allow
+        you to submit one shorter than this.
         <br />
         <br />
-        Here’s an example of how to write your weekly summary in 3rd person: <br />
+        Here’s an example of how to write your weekly summary in 3rd person:
+        <br />
         <br />
         <i>
           This week John continued development of the xxxx by completing aaa, bbb, and ccc. For aaa,
@@ -44,14 +49,15 @@ const WeeklySummaryContentTooltip = ({ tabId }) => {
       </Tooltip>
     </>
   );
-};
+}
 
-const MediaURLTooltip = () => {
+function MediaURLTooltip() {
   const [tooltipOpen, setTooltipOpen] = useState(false);
   const toggle = () => setTooltipOpen(!tooltipOpen);
   return (
     <>
-      <span id="mediaURLTooltip">
+      <span id="mediaURLTooltip" data-testid="mediaurl-tooltip-icon">
+        &nbsp;
         <FontAwesomeIcon icon={faInfoCircle} data-testid="mediaurl-tooltip" />
       </span>
       <Tooltip
@@ -62,34 +68,29 @@ const MediaURLTooltip = () => {
         innerClassName="mediaURLTooltip"
         target="mediaURLTooltip"
         toggle={toggle}
+        data-testid="mediaurl-tooltip-comp"
       >
         You are required to submit screenshots of your work completed each week. You need to submit
-        a minimum of 4 pictures (6-10 are better) either at the bottom of your Google Doc or in your
-        shared DropBox (if you’ve been added to one). If adding to DropBox, put them in a folder
-        with your name on it and in a new folder within that folder with the week labeled as “Week
-        1, 2, etc.”
+        a minimum of 4 pictures (6-10 are better) in your shared DropBox (the link you were invited
+        to by email). When adding to DropBox, they should be in a folder with your name on it and in
+        a new folder within that folder with the week labeled as “Week 1, 2, etc.”
         <br />
-        <br />
-        Add the link to whichever you are using in the Link field. The app will remember whatever
-        you put there and once saved, it can only be changed on the profile. <br />
         <br />
         Pictures should cover the details of your work completed for the week: written content,
         mockups, designs, materials researched, etc. They are used for reviewing your work and
         crediting you in the{' '}
         <a href="https://www.onecommunityglobal.org/one-community-blog/">weekly progress updates</a>
-        . We’ll remove each previous week’s pictures (or folder and archive it) when your summary
-        and pictures have been reviewed and passed along to the team that creates the progress
-        updates. <br />
+        .
+        <br />
         <br />
         Each Sunday/Monday after your manager reviews everything, they’ll add any questions or
-        feedback they have at the bottom of your Google Doc or using DropBox comments. If this is
-        done on your Google Doc, we’ll always be sure to also comment on them so you know to read
-        and reply to what has been written. <br />
-        <br />
+        feedback they have to your Google Doc, using DropBox comments, on Slack, etc. If anything is
+        written on your Google Doc, we’ll always be sure to also comment on the text so you know to
+        read and reply to what has been written.
       </Tooltip>
     </>
   );
-};
+}
 
 WeeklySummaryContentTooltip.propTypes = {
   tabId: PropTypes.string.isRequired,

@@ -6,16 +6,18 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
+import { boxStyle } from 'styles';
 
 const FoundUser = props => {
+  const {darkMode} = props;
   return (
     <React.Fragment>
-      <tr className="members__tr">
+      <tr className={`members__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}>
         <th scope="row">
           <div>{props.index + 1}</div>
         </th>
         <td className="foundUsers__order">
-          <a href={`/userprofile/${props.uid}`}>{props.firstName + ' ' + props.lastName}</a>
+          <a href={`/userprofile/${props.uid}`} className={darkMode ? 'text-azure' : ''}>{props.firstName + ' ' + props.lastName}</a>
         </td>
         <td className="foundUsers__email">{props.email}</td>
         <td className="foundUsers__assign">
@@ -32,6 +34,7 @@ const FoundUser = props => {
                   props.lastName,
                 )
               }
+              style={darkMode ? {} : boxStyle}
             >
               <i className="fa fa-plus" aria-hidden="true"></i>
             </button>

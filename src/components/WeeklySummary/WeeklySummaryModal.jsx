@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, ModalHeader, ModalBody } from 'reactstrap';
 import WeeklySummary from './WeeklySummary';
 
-const WeeklySummaryModal = () => {
+function WeeklySummaryModal() {
   const [modal, setModal] = useState(false);
 
   const toggle = () => setModal(!modal);
@@ -35,6 +35,6 @@ const WeeklySummaryModal = () => {
       </Modal>
     </div>
   );
-};
+}
 
 export default WeeklySummaryModal;

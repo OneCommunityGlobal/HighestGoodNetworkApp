@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
 
-const TeamStatusPopup = React.memo(props => {
+export const TeamStatusPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };
@@ -16,11 +16,12 @@ const TeamStatusPopup = React.memo(props => {
       <ModalFooter>
         <Button
           color="danger"
-          onClick={() => {
-            props.onConfirmClick(
+          onClick={async () => {
+            await props.onConfirmClick(
               props.selectedTeamName,
               props.selectedTeamId,
               !props.selectedStatus,
+              props.selectedTeamCode,
             );
           }}
         >

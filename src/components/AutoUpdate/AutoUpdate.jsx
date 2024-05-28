@@ -1,7 +1,7 @@
 import { Container, Row, Col, Alert } from 'reactstrap';
 import { useState, useEffect } from 'react';
 
-const AutoUpdate = () => {
+function AutoUpdate() {
   const SECOND = 1000;
   const MINUTE = 60 * SECOND;
 
@@ -26,7 +26,9 @@ const AutoUpdate = () => {
           setHash(text);
         });
       })
-      .catch(err => {});
+      .catch(err => {
+        console.error(err); // eslint-disable-line no-console
+      });
   }, []);
 
   useEffect(() => {
@@ -40,14 +42,18 @@ const AutoUpdate = () => {
               }
             });
           })
-          .catch(err => {});
+          .catch(err => {
+            console.error(err); // eslint-disable-line no-console
+          });
       }, 5 * MINUTE);
-
       return () => clearInterval(interval);
     }
+
+    // No cleanup needed if the hash is undefined.
+    return () => {};
   }, [hash]);
 
-  if (!updated) return <></>;
+  if (!updated) return null;
 
   return (
     <Container fluid>
@@ -61,6 +67,6 @@ const AutoUpdate = () => {
       </Row>
     </Container>
   );
-};
+}
 
 export default AutoUpdate;

@@ -1,1 +1,5 @@
-export { default } from './WeeklySummary';
+// export { default } from './WeeklySummary';
+
+import WeeklySummary from './WeeklySummary';
+
+export default WeeklySummary;

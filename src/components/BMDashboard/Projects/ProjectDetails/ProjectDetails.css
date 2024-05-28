@@ -1,0 +1,204 @@
+.project-details {
+  text-align: center;
+  padding-top: 20px;
+  padding-left: 3%;
+  padding-right: 3%;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  font-weight: bold;
+}
+
+.project-details h1{
+  font-size: 1.5rem;
+}
+
+/* styling for the logBar component - i.e. dashboard with buttons */
+
+.log-bar {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: 2em;
+  padding: 1em 2em;
+  width: 100%;
+  background-color: #eaeeef;
+}
+
+
+.log-bar__section {
+  width: 100%;
+  margin-top: 1em;
+}
+
+.log-bar__section h2, .card.cards-container h2, .project-log h2{
+  font-size: 1em;
+  font-weight: bold;
+}
+
+.log-bar__section ul{
+    list-style-type: none;
+  }
+
+.button.btn {
+  border: 0;
+  border-radius: 10px;
+  margin: 0.1em;
+  width: 100%;
+}
+
+.button.btn:hover{
+  outline:auto;
+  filter: brightness(130%);
+}
+
+/* buttons custom colors */
+.button.btn.button--green {
+  background-color: #015d4a;
+}
+
+.button.btn.button--blue {
+  background-color: #0f6386;
+}
+
+.button.btn.button--indigo {
+  background-color: #203844;
+}
+
+.button.btn.button--maroon {
+  background-color: #980101;
+  margin-top: 2em;
+}
+
+@media (min-width: 550px) {
+  .log-bar {
+    display: flex;
+    flex-direction: column;
+  }
+
+   .log-bar__btn-group {
+    margin-top: -0.5em;
+    display: flex;
+    justify-content: center;
+  }
+
+  .button.btn.btn-secondary {
+    width: auto;
+  }
+
+  .button.btn.btn-secondary.button--maroon {
+    margin-top: auto;
+  }
+}
+
+@media (min-width: 750px) {
+  .log-bar {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin: 2em;
+  }
+
+  .log-bar__section {
+    width: 50%;
+    flex: auto;
+  }
+
+  .button.btn.btn-secondary {
+    width: auto;
+  }
+
+  .button.btn.btn-secondary.button--maroon {
+    margin-left: 2em;
+  }
+}
+
+/* styling for containers with cards */
+.card.cards-container {
+  align-items: center;
+  margin: 1em 2em;
+  padding: 1em 2em;
+}
+
+.cards-container__content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+/* styling for single card element */
+.single-card {
+  border: 1px solid #eaeeef;
+  border-radius: 5px;
+  text-align: center;
+  margin-bottom: 0.5em;
+  cursor: pointer;
+}
+
+.single-card:hover {
+  box-shadow: 0 20px 20px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.2);
+  transform: translate3d(0.5px, 0.5px, 0.5px);
+}
+
+.single-card__body {
+  margin-top: 0.5em;
+}
+
+.single-card__body h3 {
+  font-size: 1em;
+  margin-bottom: -0.2em;
+}
+
+/* button on a card */
+.single-card__info {
+  font-size: 0.5rem;
+  padding: 1em;
+  margin: 0.5em;
+  border-radius: 10px;
+  background-color: #f2c897;
+}
+
+/* TO DO: dynamic value to be added */
+/* .single-card__info .warning{
+  color: white;
+  background-color: #980101; 
+} */
+
+@media (min-width: 600px) {
+  .cards-container__header {
+    height: 38px;
+  }
+
+  .cards-container__content {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-around;
+  }
+
+  /* styling for single card element */
+  .single-card {
+    margin: auto 0.2em;
+    flex: none;
+  }
+}
+
+/* styling for project log - i.e.table at the bottom */
+.project-log {
+  margin: 2em;
+  padding: 1em 2em;
+  width: 100%;
+  font-weight: lighter;
+}
+
+.project-log thead{
+  background-color: transparent;
+}
+
+@media (max-width: 768px){
+  .project-log td, .project-log th {
+    font-size: 0.6em;
+  }
+}
+

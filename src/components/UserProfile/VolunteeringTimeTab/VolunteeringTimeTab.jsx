@@ -6,45 +6,55 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY  } from 'utils/formatDate';
+
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
 const startEndDateValidation = props => {
   return (
-    props.userProfile.createdDate > props.userProfile.endDate && props.userProfile.endDate !== ''
+    props.userProfile.startDate > props.userProfile.endDate && props.userProfile.endDate !== ''
   );
 };
 
+
 const StartDate = props => {
+  const {darkMode} = props;
+
   if (!props.canEdit) {
-    return <p>{moment(props.userProfile.createdDate).format('YYYY-MM-DD')}</p>;
+    return <p className={darkMode ? 'text-azure' : ''}>{formatDateYYYYMMDD(props.userProfile.startDate)}</p>;
   }
+  
+  
   return (
     <Input
       type="date"
       name="StartDate"
       id="startDate"
       className={startEndDateValidation(props) ? 'border-error-validation' : null}
-      value={moment(props.userProfile.createdDate).format('YYYY-MM-DD')}
+      value={props.userProfile.startDate}
+      min={formatDateYYYYMMDD(props.userProfile.createdDate)}
       onChange={e => {
-        props.setUserProfile({ ...props.userProfile, createdDate: e.target.value });
+        props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
         props.onStartDateComponent(e.target.value);
       }}
       placeholder="Start Date"
       invalid={!props.canEdit}
-      max={props.userProfile.endDate ? moment(props.userProfile.endDate).format('YYYY-MM-DD') : ''}
+      max={props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : ''}
     />
   );
 };
 
 const EndDate = props => {
+  const {darkMode} = props;
+
   if (!props.canEdit) {
     return (
-      <p>
+      <p className={darkMode ? 'text-azure' : ''}>
         {props.userProfile.endDate
-          ? props.userProfile.endDate.toLocaleString().split('T')[0]
+          ? formatDateYYYYMMDD(props.userProfile.endDate)
           : 'N/A'}
       </p>
     );
@@ -66,8 +76,8 @@ const EndDate = props => {
       placeholder="End Date"
       invalid={!props.canEdit}
       min={
-        props.userProfile.createdDate
-          ? moment(props.userProfile.createdDate).format('YYYY-MM-DD')
+        props.userProfile.startDate
+          ? formatDateYYYYMMDD(props.userProfile.startDate)
           : ''
       }
     />
@@ -75,9 +85,11 @@ const EndDate = props => {
 };
 
 const WeeklySummaryOptions = props => {
+  const {darkMode} = props;
+
   if (!props.canEdit) {
     return (
-      <p>
+      <p className={darkMode ? 'text-azure' : ''}>
         {props.userProfile.weeklySummaryOption ??
           (props.userProfile.weeklySummaryNotReq ? 'Not Required' : 'Required')}
       </p>
@@ -91,7 +103,7 @@ const WeeklySummaryOptions = props => {
     { value: 'Team Marigold', text: 'Team Marigold (Orange)' },
     { value: 'Team Luminous', text: 'Team Luminous (Yellow)' },
     { value: 'Team Lush', text: 'Team Lush (Green)' },
-    { value: 'Team Sky', text: 'Team Sky (Blue)' },
+    { value: 'Team Skye', text: 'Team Skye (Blue)' },
     { value: 'Team Azure', text: 'Team Azure (Indigo)' },
     { value: 'Team Amethyst', text: 'Team Amethyst (Purple)' },
   ];
@@ -133,8 +145,11 @@ const WeeklySummaryOptions = props => {
 const WeeklyCommittedHours = props => {
   //Do Not change the property name "weeklycommittedHours"
   //Otherwise it will not update in the backend.
+
+  const {darkMode} = props;
+
   if (!props.canEdit) {
-    return <p>{props.userProfile.weeklycommittedHours}</p>;
+    return <p className={darkMode ? 'text-azure' : ''}>{props.userProfile.weeklycommittedHours}</p>;
   }
   const handleChange = e => {
     // Max: 168 hrs  Min: 0 hr
@@ -170,8 +185,10 @@ const WeeklyCommittedHours = props => {
 };
 
 const MissedHours = props => {
+  const{darkMode} = props;
+
   if (!props.canEdit) {
-    return <p>{props.userProfile.missedHours ?? 0}</p>;
+    return <p className={darkMode ? 'text-azure' : ''}>{props.userProfile.missedHours ?? 0}</p>;
   }
   return (
     <Input
@@ -192,8 +209,10 @@ const MissedHours = props => {
 };
 
 const TotalIntangibleHours = props => {
+  const{darkMode} = props;
+
   if (!props.canEdit) {
-    return <p>{props.userProfile.totalIntangibleHrs}</p>;
+    return <p className={darkMode ? 'text-azure' : ''}>{props.userProfile.totalIntangibleHrs}</p>;
   }
   return (
     <Input
@@ -204,9 +223,10 @@ const TotalIntangibleHours = props => {
       data-testid="totalIntangibleHours"
       value={props.userProfile.totalIntangibleHrs ?? 0}
       onChange={e => {
+        const newValue = Math.max(Number(e.target.value), 0).toFixed(2);
         props.setUserProfile({
           ...props.userProfile,
-          totalIntangibleHrs: Math.max(Number(e.target.value), 0),
+          totalIntangibleHrs: Number(newValue),
         });
       }}
       placeholder="Total Intangible Hours"
@@ -223,13 +243,17 @@ const TotalIntangibleHours = props => {
  * @returns
  */
 const ViewTab = props => {
-  const { userProfile, setUserProfile, role, canEdit } = props;
+  const { userProfile, setUserProfile, role, canEdit, darkMode } = props;
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
   const [historyModal, setHistoryModal] = useState(false);
 
   const handleStartDates = async startDate => {
+
+    if(!userProfile.isFirstTimelog) {
+      alert('This user has already logged time in the system. Are you sure you want to change the start date?');
+    }
     props.onStartDate(startDate);
   };
 
@@ -290,7 +314,7 @@ const ViewTab = props => {
       });
 
     //Get total tangible & intangible hours
-    const createdDate = moment(userProfile.createdDate).format('YYYY-MM-DD');
+    const createdDate = formatDateYYYYMMDD(userProfile.createdDate);
     const today = moment().format('YYYY-MM-DD');
 
     axios
@@ -324,7 +348,15 @@ const ViewTab = props => {
     <div data-testid="volunteering-time-tab">
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">Start Date</Label>
+          <Label className="hours-label">Account Created Date</Label>
+        </Col>
+        <Col md="6">
+        <p>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+        </Col>
+      </Row>
+      <Row className="volunteering-time-row">
+        <Col md="6">
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Start Date</Label>
         </Col>
         <Col md="6">
           <StartDate
@@ -333,13 +365,14 @@ const ViewTab = props => {
             setUserProfile={setUserProfile}
             canEdit={canEdit}
             onStartDateComponent={handleStartDates}
+            darkMode={darkMode}
           />
         </Col>
       </Row>
 
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">End Date</Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>End Date</Label>
         </Col>
         <Col md="6">
           <EndDate
@@ -348,22 +381,23 @@ const ViewTab = props => {
             setUserProfile={setUserProfile}
             canEdit={canEdit}
             onEndDateComponent={handleEndDates}
+            darkMode={darkMode}
           />
         </Col>
       </Row>
 
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">Total Tangible Hours This Week</Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Total Tangible Hours This Week</Label>
         </Col>
         <Col md="6">
-          <p className="hours-totalTangible-thisWeek">{totalTangibleHoursThisWeek}</p>
+          <p className={`hours-totalTangible-thisWeek ${darkMode ? 'text-azure' : ''}`}>{totalTangibleHoursThisWeek}</p>
         </Col>
       </Row>
 
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">Weekly Summary Options </Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Weekly Summary Options </Label>
         </Col>
         <Col md="6">
           <WeeklySummaryOptions
@@ -371,12 +405,13 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            darkMode={darkMode}
           />
         </Col>
       </Row>
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">Weekly Committed Hours </Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Weekly Committed Hours </Label>
         </Col>
         <Col md="6" className="d-flex align-items-center">
           <WeeklyCommittedHours
@@ -384,6 +419,7 @@ const ViewTab = props => {
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            darkMode={darkMode}
           />
           <HistoryModal
             isOpen={historyModal}
@@ -399,7 +435,7 @@ const ViewTab = props => {
       {userProfile.role === 'Core Team' && (
         <Row className="volunteering-time-row">
           <Col md="6">
-            <Label className="hours-label">Additional Make-up Hours This Week </Label>
+            <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Additional Make-up Hours This Week </Label>
           </Col>
           <Col md="6">
             <MissedHours
@@ -407,73 +443,74 @@ const ViewTab = props => {
               userProfile={userProfile}
               setUserProfile={setUserProfile}
               canEdit={canEdit}
+              darkMode={darkMode}
             />
           </Col>
         </Row>
       )}
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">Total Intangible Hours </Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Total Intangible Hours </Label>
         </Col>
         <Col md="6">
           <TotalIntangibleHours
             userProfile={userProfile}
             setUserProfile={setUserProfile}
             canEdit={canEdit}
+            darkMode={darkMode}
           />
         </Col>
       </Row>
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">Total Tangible Hours </Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Total Tangible Hours </Label>
         </Col>
         <Col md="6" className="tangible-hrs-group">
-          <p className="hours-totalTangible">{totalTangibleHours}</p>
+          <p className={`hours-totalTangible ${darkMode ? 'text-azure' : ''}`}>{totalTangibleHours}</p>
           <Button
             size="sm"
             color="info"
             className="refresh-btn"
             onClick={() => props.loadUserProfile()}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             Refresh
           </Button>
         </Col>
-
-        {props?.userProfile?.hoursByCategory
-          ? Object.keys(userProfile.hoursByCategory).map(key => (
-              <React.Fragment key={'hours-by-category-' + key}>
-                <Row className="volunteering-time-row">
-                  <Col md="6">
-                    <Label className="hours-label">
-                      {key !== 'unassigned' ? (
-                        <>Total Tangible {capitalize(key)} Hours</>
-                      ) : (
-                        <>Total Unassigned Category Hours</>
-                      )}
-                    </Label>
-                  </Col>
-                  <Col md="6">
-                    {canEdit ? (
-                      <Input
-                        type="number"
-                        pattern="^\d*\.?\d{0,2}$"
-                        id={`${key}Hours`}
-                        step=".01"
-                        min="0"
-                        value={roundToTwo(userProfile.hoursByCategory[key])}
-                        onChange={e => handleOnChangeHours(e, key)}
-                        placeholder={`Total Tangible ${capitalize(key)} Hours`}
-                      />
-                    ) : (
-                      <p>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
-                    )}
-                  </Col>
-                </Row>
-              </React.Fragment>
-            ))
-          : []}
       </Row>
+      {props?.userProfile?.hoursByCategory
+        ? Object.keys(userProfile.hoursByCategory).map(key => (
+            <React.Fragment key={'hours-by-category-' + key}>
+              <Row className="volunteering-time-row">
+                <Col md="6">
+                  <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+                    {key !== 'unassigned' ? (
+                      <>Total Tangible {capitalize(key)} Hours</>
+                    ) : (
+                      <>Total Unassigned Category Hours</>
+                    )}
+                  </Label>
+                </Col>
+                <Col md="6">
+                  {canEdit ? (
+                    <Input
+                      type="number"
+                      pattern="^\d*\.?\d{0,2}$"
+                      id={`${key}Hours`}
+                      step=".01"
+                      min="0"
+                      value={roundToTwo(userProfile.hoursByCategory[key])}
+                      onChange={e => handleOnChangeHours(e, key)}
+                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                    />
+                  ) : (
+                    <p className={darkMode ? 'text-azure' : ''}>{userProfile.hoursByCategory[key]?.toFixed(2)}</p>
+                  )}
+                </Col>
+              </Row>
+            </React.Fragment>
+          ))
+        : []}
     </div>
   );
 };

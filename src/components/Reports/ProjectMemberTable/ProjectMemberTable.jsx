@@ -3,11 +3,15 @@ import React, { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
 
-export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount }) => {
+export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount, darkMode }) => {
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
   const { fetched, foundUsers, members } = projectMembers;
+
+  useEffect(() => {
+    handleMemberCount(activeMemberList.length);
+  })
 
   useEffect(() => {
     if (fetched) {
@@ -37,23 +41,23 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile">
+      <Link to={`/userprofile/${member._id}`} title="View Profile"  className={darkMode ? "text-light" : ""}>
         <div>
-          {member.firstName} {member.lastName}
+        {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
         </div>
       </Link>
       <div className="projects__active--input">
         {member.active ? (
-          <tasks className="isActive">
+          <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
-          </tasks>
+          </div>
         ) : (
           <div className="isNotActive">
             <i className="fa fa-circle-o" aria-hidden="true"></i>
           </div>
         )}
       </div>
-      <div>{member._id}</div>
+      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>      
     </div>
   ));
 
@@ -62,66 +66,67 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile">
+      <Link to={`/userprofile/${member._id}`} title="View Profile" className={darkMode ? 'text-light' : ''}>
         <div>
-          {member.firstName} {member.lastName}
+        {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
         </div>
       </Link>
       <div className="projects__active--input">
         {member.active ? (
-          <tasks className="isActive">
+          <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
-          </tasks>
+          </div>
         ) : (
           <div className="isNotActive">
             <i className="fa fa-circle-o" aria-hidden="true"></i>
           </div>
         )}
       </div>
-
-      <div>{member._id}</div>
+      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>    
     </div>
   ));
 
   return (
-    <div className="project-member-table">
+    <div className={`project-member-table ${darkMode ? 'text-light' : ''}`}>
       <h5 className="project-member-table-title">Members</h5>
       <div className="project-member-count-head">
-        <div
-          onChange={e => {
-            setMemberFilter(e.target.value);
-          }}
-        >
-          <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
-          <label htmlFor="active" id="project-active-member-count" className="project-member-count">
-            ACTIVE: {foundUsers.length}
-          </label>
-          <input type="radio" name="memberFilter" value="all-time" id="all-time" />
-          <label htmlFor="all-time" id="project-all-member-count" className="project-member-count">
-            ALL-TIME: {members.length}
-          </label>
-          {memberFilter == 'all-time'
-            ? handleMemberCount(allMemberList.length)
-            : handleMemberCount(activeMemberList.length)}
-        </div>
+      <div className="filter-members-mobile"
+        onChange={e => {
+          setMemberFilter(e.target.value);
+          if (e.target.value === 'all-time') {
+            handleMemberCount(allMemberList.length);
+          } else {
+            handleMemberCount(activeMemberList.length);
+          }
+        }}
+      >
+        <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
+        <label htmlFor="active" id="project-active-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
+          ACTIVE: {foundUsers.length}
+        </label>
+        <input type="radio" name="memberFilter" value="all-time" id="all-time" />
+        <label htmlFor="all-time" id="project-all-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
+          ALL-TIME: {members.length}
+        </label>
       </div>
-      <div className="project-member-table-row reports-table-head">
-        <div id="projects__order">#</div>
-        <div>Name</div>
-        <div>Active</div>
-        <div>ID</div>
+      </div>
+      <div className={`reports-table-head-members ${darkMode ? 'bg-space-cadet' : ''}`}>
+        <div className="reports-table-head-cell">#</div>
+        <div className="reports-table-head-cell">Name</div>
+        <div className="reports-table-head-cell">Active</div>
+        <div className="reports-table-head-cell">ID</div>
       </div>
       <div>
         {memberFilter == 'all-time' ? (
           allMemberTable.length > 0 ? (
             allMemberTable
           ) : (
-            <Stub />
+            <Stub darkMode={darkMode}/>
           )
         ) : activeMemberTable.length > 0 ? (
           activeMemberTable
         ) : (
-          <Stub />
+          <Stub darkMode={darkMode}/>
         )}
       </div>
     </div>

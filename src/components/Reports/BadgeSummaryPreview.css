@@ -1,0 +1,20 @@
+.badge_summary_preview_footer {
+  width: fit-content;
+  float: right;
+}
+
+.badge_summary_preview_button {
+  box-shadow: '2px 2px 4px 1px lightgray';
+  margin: 5px;
+}
+
+@media screen and (max-width: 1024px) {
+  .badge_summary_preview_footer {
+    width: 100%;
+  }
+  .badge_summary_preview_button {
+    width: 100%;
+    float: none;
+    margin: 5px 0;
+  }
+}

@@ -6,30 +6,33 @@
 import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
-import { deleteWBS } from './../../../../actions/wbs';
+import { deleteWbs } from './../../../../actions/wbs';
 import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
+import { boxStyle } from 'styles';
 
 const WBSItem = props => {
+  const {darkMode} = props;
   const [showModalDelete, setShowModalDelete] = useState(false);
-  const { roles } = props.role;
-  const userPermissions = props.auth.user?.permissions?.frontPermissions;
+
+  const canDeleteWBS = props.hasPermission('deleteWbs');
+
   const confirmDelete = () => {
-    props.deleteWBS(props.wbsId);
+    props.deleteWbs(props.wbsId);
     setShowModalDelete(false);
   };
 
   return (
     <React.Fragment>
-      <tr>
+      <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
         <th scope="row">
           <div>{props.index}</div>
         </th>
         <td className="members__name">
-          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`}>{props.name}</a>
+          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</a>
         </td>
-        {hasPermission(props.auth.user.role, 'deleteWbs', roles, userPermissions) ? (
+        {canDeleteWBS ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"
@@ -38,6 +41,7 @@ const WBSItem = props => {
                 setShowModalDelete(true);
                 props.getPopupById(WBS_DELETE_POPUP_ID);
               }}
+              style={darkMode ? {} : boxStyle}
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>
@@ -56,4 +60,8 @@ const WBSItem = props => {
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps, { deleteWBS, getPopupById })(WBSItem);
+export default connect(mapStateToProps, {
+  deleteWbs,
+  getPopupById,
+  hasPermission
+})(WBSItem);

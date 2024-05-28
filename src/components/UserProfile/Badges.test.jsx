@@ -1,8 +1,22 @@
 import React from 'react';
-import { Badges } from './Badges';
-import { render } from 'enzyme';
+import Badges from './Badges';
+import { renderWithEnzymeProvider as renderWithProvider } from '../../__tests__/utils';
+import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
+import thunk from 'redux-thunk';
+import configureStore from 'redux-mock-store';
+
+const mockStore = configureStore([thunk]);
+
 
 describe('Badges Component', () => {
+  let store;
+  beforeEach(() => {
+    store = mockStore({
+      auth: authMock,
+      userProfile: userProfileMock,
+      role: rolesMock.role
+    });
+  })
   const badgeProps = {
     isUserSelf: false,
     userProfile: {
@@ -25,7 +39,9 @@ describe('Badges Component', () => {
           ...badgeProps,
           isUserSelf: true,
         };
-        const renderedBadges = render(<Badges {...props} />);
+        const renderedBadges = renderWithProvider(<Badges {...props} />, {
+          store,
+        });
         expect(renderedBadges.find('.card-footer').text()).toBe('You have no badges. ');
       });
 
@@ -33,9 +49,11 @@ describe('Badges Component', () => {
         const props = {
           ...badgeProps,
           isUserSelf: true,
-          userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1'] },
+          userProfile: { ...badgeProps.userProfile, badgeCollection: [{ count: 1 }] },
         };
-        const renderedBadges = render(<Badges {...props} />);
+        const renderedBadges = renderWithProvider(<Badges {...props} />, {
+          store,
+        });
         expect(renderedBadges.find('.card-footer').text()).toBe('Bravo! You have earned 1 badge! ');
       });
 
@@ -45,10 +63,12 @@ describe('Badges Component', () => {
           isUserSelf: true,
           userProfile: {
             ...badgeProps.userProfile,
-            badgeCollection: ['B1', 'B2', 'B3'],
+            badgeCollection: [{ count: 1 }, { count: 2 }, { count: 3 }],
           },
         };
-        const renderedBadges = render(<Badges {...props} />);
+        const renderedBadges = renderWithProvider(<Badges {...props} />, {
+          store,
+        });
         // This uses a regular expression that matches all postive numbers > 1.
         expect(renderedBadges.find('.card-footer').text()).toMatch(
           /Bravo! You have earned ([1-9]\d+|[2-9]) badges! /,
@@ -58,16 +78,20 @@ describe('Badges Component', () => {
 
     describe("When viewing someone else's profile", () => {
       it('should display the correct text when they have no badges', () => {
-        const renderedBadges = render(<Badges {...badgeProps} />);
+        const renderedBadges = renderWithProvider(<Badges {...badgeProps} />, {
+          store,
+        });
         expect(renderedBadges.find('.card-footer').text()).toBe('This person has no badges. ');
       });
 
       it('should display the correct text when they have exactly 1 badge', () => {
         const props = {
           ...badgeProps,
-          userProfile: { ...badgeProps.userProfile, badgeCollection: ['B1'] },
+          userProfile: { ...badgeProps.userProfile, badgeCollection: [ { count: 1 }] },
         };
-        const renderedBadges = render(<Badges {...props} />);
+        const renderedBadges = renderWithProvider(<Badges {...props} />, {
+          store,
+        });
         expect(renderedBadges.find('.card-footer').text()).toBe(
           'Bravo! This person has earned 1 badge! ',
         );
@@ -78,10 +102,13 @@ describe('Badges Component', () => {
           ...badgeProps,
           userProfile: {
             ...badgeProps.userProfile,
-            badgeCollection: ['B1', 'B2', 'B3'],
+            badgeCollection: [{ count: 1 }, { count: 2 }, { count: 3 }],
           },
         };
-        const renderedBadges = render(<Badges {...props} />);
+
+        const renderedBadges = renderWithProvider(<Badges {...props} />, {
+          store,
+        });
         expect(renderedBadges.find('.card-footer').text()).toMatch(
           /Bravo! This person has earned ([1-9]\d+|[2-9]) badges! /,
         );

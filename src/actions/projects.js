@@ -86,7 +86,6 @@ export const deleteProject = projectId => {
 
 export const modifyProject = (type, projectId, projectName, category, isActive) => {
   const url = ENDPOINTS.PROJECT + projectId;
-
   if (type === 'setActive') {
     isActive = !isActive;
   }

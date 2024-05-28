@@ -18,16 +18,11 @@
   border-bottom: 1px solid #828282;
 }
 
-.google-doc-icon {
-  height: 20px;
-  margin-left: 10px;
-}
-
 .bio-toggle {
   display: inline-block;
 }
 
-.name-info{
+.name-info {
   display: flex;
 }
 .total-valid-wrapper {
@@ -35,4 +30,105 @@
   align-items: center;
   flex-direction: row;
   white-space: nowrap;
+}
+
+.badge-tr {
+  margin-left: 20px;
+  display: block;
+}
+
+.badge-td > img {
+  float: left;
+  height: 45px;
+  width: 45px;
+  margin: 5px;
+}
+
+.nonsummary-wrapper {
+  display: flex;
+  flex-direction: row;
+}
+
+@media (min-width: 482px) {
+  .teamcode-wrapper {
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+  }
+}
+
+.code-alert {
+  margin: 10px 0 0 0;
+  padding: 8px;
+}
+
+.multi-select-filter {
+  .options {
+    max-height: 570px;
+    overflow-y: scroll;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .options::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .options::-webkit-scrollbar-track {
+    background: rgb(0, 0, 0, 0);
+  }
+
+  .options::-webkit-scrollbar-thumb {
+    background: rgb(206, 212, 218);
+    border-radius: 8px;
+  }
+
+  .select-item {
+    padding: 5px 10px;
+    margin-bottom: 0.25rem;
+  }
+}
+
+.weekly-summary-report-container {
+  display: flex;
+  flex-direction: row;
+}
+.weekly-summary-text {
+  max-width: 100%;
+  margin-right: 5px;
+}
+
+.copy-icon {
+  cursor: pointer;
+  margin: 2px 2px;
+}
+
+.filter-container {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.filter-style {
+  font-size: 0.8em;
+  display: flex;
+  align-items: center;
+}
+
+.custom-control-label:hover {
+  cursor: pointer;
+}
+
+.margin-right {
+  margin-right: 20px;
+}
+
+.custom-control-label {
+  margin-left: 8px;
+}
+
+.container-wsr-wrapper {
+  min-height: 100%;
+  min-width: 100vw;
+}
+.hours-not-fulfilled {
+  color: red;
 }

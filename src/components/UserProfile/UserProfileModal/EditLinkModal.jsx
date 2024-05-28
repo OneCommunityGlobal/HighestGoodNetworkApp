@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Button,
   Modal,
@@ -8,19 +8,18 @@ import {
   Label,
   CardBody,
   Card,
-  Col,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
-import { useSelector } from 'react-redux';
-import styles from './EditLinkModal.css';
+import './EditLinkModal.css';
 import { boxStyle } from 'styles';
-import { set } from 'lodash';
+import { connect } from 'react-redux';
+import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const EditLinkModal = props => {
-  const { isOpen, closeModal, updateLink, userProfile, setChanged, role } = props;
-  const { roles } = useSelector(state => state.role);
-  const userPermissions = useSelector(state => state.auth.user?.permissions?.frontPermissions);
+  const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
+
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
@@ -44,15 +43,19 @@ const EditLinkModal = props => {
   const [adminLinks, setAdminLinks] = useState(
     userProfile.adminLinks
       ? userProfile.adminLinks
-          .filter(link => link.Name !== 'Google Doc')
-          .filter(link => link.Name !== 'Media Folder')
+        .filter(link => link.Name !== 'Google Doc')
+        .filter(link => link.Name !== 'Media Folder')
       : [],
   );
   const [personalLinks, setPersonalLinks] = useState(
     userProfile.personalLinks ? userProfile.personalLinks : [],
   );
+  const originalMediaFolderLink = useRef(mediaFolderLink.Link);
 
   const [isChanged, setIsChanged] = useState(false);
+  const [mediaFolderDiffWarning, setMediaFolderDiffWarning] = useState(false);
+  const [isWarningPopupOpen, setIsWarningPopupOpen] = useState(false);
+  const [isMediaFolderLinkChanged, setIsMediaFolderLinkChanged] = useState(false);
   const [isValidLink, setIsValidLink] = useState(true);
 
   const handleNameChanges = (e, links, index, setLinks) => {
@@ -68,8 +71,28 @@ const EditLinkModal = props => {
     setIsChanged(true);
   };
 
+  const handleMediaFolderLinkChanges = (e) => {
+    if (!mediaFolderLink.Link) {
+      // Prevent warning popup appear if empty media folder link
+      setIsMediaFolderLinkChanged(true);
+      setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+      setIsChanged(true);
+    }
+    else {
+      setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
+      setIsChanged(true);
+      if (!isMediaFolderLinkChanged && !isWarningPopupOpen) { // First time media folder link is changed
+        setIsMediaFolderLinkChanged(true);
+        setIsWarningPopupOpen(true);
+      }
+    }
+  }
+
   const addNewLink = (links, setLinks, newLink, clearInput) => {
-    if (isDuplicateLink([googleLink,mediaFolderLink,...links], newLink) || !isValidUrl(newLink.Link)) {
+    if (
+      isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink) ||
+      !isValidUrl(newLink.Link)
+    ) {
       setIsValidLink(false);
     } else {
       const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
@@ -86,6 +109,16 @@ const EditLinkModal = props => {
     });
     setLinks(newLinks);
     setIsChanged(true);
+  };
+
+  const isDifferentMediaUrl = () => {
+    //* This is to compare the mediaUrl with Media Folder link when editing in the input area.
+    //* Because mediaUrl is a differnt object, but the link should be the same as Media Folder's link.
+    if (userProfile.mediaUrl !== mediaFolderLink.Link && userProfile.mediaUrl !== '') {
+      setMediaFolderDiffWarning(true);
+    } else {
+      setMediaFolderDiffWarning(false);
+    }
   };
 
   const isDuplicateLink = (links, newLink) => {
@@ -111,22 +144,27 @@ const EditLinkModal = props => {
     }
   };
 
-  const handleUpdate = () => {
-    const updatable =
-      (isValidUrl(googleLink.Link) && isValidUrl(mediaFolderLink.Link)) ||
-      (googleLink.Link === '' && mediaFolderLink.Link === '') ||
-      (isValidUrl(googleLink.Link) && mediaFolderLink.Link === '') ||
-      (isValidUrl(mediaFolderLink.Link) && googleLink.Link === '');
-    if (updatable) {
-      // * here the 'adminLinks' should be the total of 'googleLink' and 'adminLink'
-      updateLink(personalLinks, [googleLink, mediaFolderLink, ...adminLinks]);
+  const handleUpdate = async () => {
+    // Validate the Google Doc and Media Folder links
+    const isGoogleDocsValid = googleLink.Link === '' || isValidGoogleDocsUrl(googleLink.Link);
+    const isMediaFolderValid = mediaFolderLink.Link === '' || isValidMediaUrl(mediaFolderLink.Link);
+
+    if (isGoogleDocsValid && isMediaFolderValid) {
+      const linksToUpdate = [googleLink, mediaFolderLink, ...adminLinks];
+      await updateLink(personalLinks, linksToUpdate, mediaFolderLink.Link);
+      handleSubmit();
       setIsValidLink(true);
-      setIsChanged(true);
+      setIsChanged(false);
       closeModal();
     } else {
       setIsValidLink(false);
     }
   };
+
+
+  useEffect(() => {
+    isDifferentMediaUrl();
+  }, [mediaFolderLink.Link, userProfile.mediaUrl]);
 
   return (
     <React.Fragment>
@@ -134,23 +172,24 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {hasPermission(role, 'adminLinks', roles, userPermissions) && (
+            {canPutUserProfileImportantInfo && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
+                  {mediaFolderDiffWarning && (
+                    <span className="warning-help-context" data-testid="diff-media-url-warning" >
+                      <strong>Media Folder link must be a working DropBox link</strong>
+                      <p>
+                        Current Media URL: <a href={userProfile.mediaUrl}>{userProfile.mediaUrl}</a>
+                      </p>
+                    </span>
+                  )}
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                      <label className='custom-label' htmlFor='google-doc-link' >Google Doc</label>
                       <input
+                        id='google-doc-link'
                         className="customEdit"
-                        id="linkName1"
-                        placeholder="Google Doc"
-                        value="Google Doc"
-                        disabled
-                      />
-
-                      <input
-                        className="customEdit"
-                        id="linkURL1"
                         placeholder="Enter Google Doc link"
                         value={googleLink.Link}
                         onChange={e => {
@@ -160,23 +199,14 @@ const EditLinkModal = props => {
                       />
                     </div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <input
-                        className="customEdit"
-                        id="linkName2"
-                        placeholder="Media Folder"
-                        value="Media Folder"
-                        disabled
-                      />
 
+                      <label className='custom-label' htmlFor='media-folder-link' >Media Folder</label>
                       <input
                         className="customEdit"
-                        id="linkURL2"
+                        id="media-folder-link"
                         placeholder="Enter Dropbox link"
                         value={mediaFolderLink.Link}
-                        onChange={e => {
-                          setMediaFolderLink({ ...mediaFolderLink, Link: e.target.value.trim() });
-                          setIsChanged(true);
-                        }}
+                        onChange={e => { handleMediaFolderLinkChanges(e) }}
                       />
                     </div>
                     {adminLinks?.map((link, index) => {
@@ -209,7 +239,7 @@ const EditLinkModal = props => {
                               })
                             }
                           >
-                            X
+                            x
                           </button>
                         </div>
                       );
@@ -218,7 +248,7 @@ const EditLinkModal = props => {
                       <div className="customTitle">+ ADD LINK:</div>
                     </div>
 
-                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
+                    <div style={{ display: 'flex', margin: '5px' }} className="link-fields new-admin-links">
                       <input
                         className="customEdit"
                         id="linkName"
@@ -243,6 +273,7 @@ const EditLinkModal = props => {
                       <button
                         type="button"
                         className="addButton"
+                        aria-label='add-admin-link-button'
                         onClick={() => {
                           addNewLink(adminLinks, setAdminLinks, newAdminLink, () =>
                             setNewAdminLink(emptyLink),
@@ -280,6 +311,7 @@ const EditLinkModal = props => {
                         type="button"
                         className="closeButton"
                         color="danger"
+                        aria-label='add-personal-link-button'
                         onClick={() =>
                           removeLink(personalLinks, setPersonalLinks, {
                             name: link.Name,
@@ -287,7 +319,7 @@ const EditLinkModal = props => {
                           })
                         }
                       >
-                        X
+                        x
                       </button>
                     </div>
                   ))}
@@ -332,8 +364,8 @@ const EditLinkModal = props => {
                 </div>
               </Card>
               {!isValidLink && (
-                <p className="invalid-help-context">
-                  Please ensure each link has a unique and not empty, and enter valid URLs.
+                <p className='invalid-help-context' data-testid='invalid-url-warning' >
+                  Please enter valid URLs for each link.
                 </p>
               )}
             </CardBody>
@@ -350,10 +382,38 @@ const EditLinkModal = props => {
           >
             Update
           </Button>
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
+          <Button
+            color="primary"
+            onClick={() => {
+              setIsMediaFolderLinkChanged(false);
+              setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
+              closeModal();
+            }
+            }
+            style={boxStyle}>
             Cancel
           </Button>
         </ModalFooter>
+
+        <Modal data-testid='popup-warning' isOpen={isWarningPopupOpen} toggle={() => setIsWarningPopupOpen(!isWarningPopupOpen)}  >
+          <ModalHeader>Warning!</ModalHeader>
+          <ModalBody>
+            Whoa Tiger, don’t do this! This link was added by an Admin when you were set up in the system. It is used by the Admin Team and your Manager(s) for reviewing your work. You should only change it if you are ABSOLUTELY SURE the one you are changing it to is more correct than the one here already.
+          </ModalBody>
+          <ModalFooter>
+            <Button color='primary' onClick={() => { setIsWarningPopupOpen(!isWarningPopupOpen) }}>Confirm</Button>
+            {/* Cancel button put original Media Folder link into the input */}
+            <Button onClick={() => {
+              setIsWarningPopupOpen(!isWarningPopupOpen);
+              setIsMediaFolderLinkChanged(false);
+              setMediaFolderLink({ ...mediaFolderLink, Link: originalMediaFolderLink.current });
+            }}
+            >
+              Cancel
+            </Button>
+          </ModalFooter>
+        </Modal>
+
       </Modal>
     </React.Fragment>
   );
@@ -366,4 +426,4 @@ EditLinkModal.propTypes = {
   userProfile: PropTypes.object.isRequired,
 };
 
-export default EditLinkModal;
+export default connect(null, { hasPermission })(EditLinkModal);

@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import TagSent from './TagSent';
 import './TagsSearch.css';
+import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 
-function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems }) {
+function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems, disableInput }) {
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
@@ -10,7 +11,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   const handleClick = (event, member) => {
     addResources(member._id, member.firstName, member.lastName);
     setIsHidden(!isHidden);
-    event.target.closest('.container-fluid').querySelector('input').value = '';
+    event.target.closest(".my-element").previousElementSibling.value = '';
   };
 
   // sorting using the input letter, giving highest priority to first name starting with that letter,
@@ -60,15 +61,20 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   };
 
   return (
-    <div className="container-fluid d-flex flex-column px-0">
-      <div className="d-flex flex-column container-fluid mb-1 px-0">
+    <div className="d-flex flex-column px-0">
+      <div className="d-flex flex-column mb-1 px-0">
         <div className="align-items-start justify-content-start w-100 px-0 position-relative">
-          <input
-            type="text"
-            placeholder={placeholder}
-            className="border border-dark rounded form-control px-2"
-            onChange={handleFilter}
-          />
+          {ReadOnlySectionWrapper(
+            <input
+              type="text"
+              placeholder={placeholder}
+              className="border border-dark rounded form-control px-2"
+              onChange={handleFilter}
+            />,
+            !disableInput,
+            null,
+            {componentOnly:true}
+          )}
           {filteredData.length !== 0 ? (
             <ul
               className={`my-element ${
@@ -87,7 +93,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
                     }
                     onClick={event => handleClick(event, member)}
                   >
-                    {member.firstName + ' ' + member.lastName}
+                    {`${member.firstName  } ${  member.lastName}`}
                   </li>
                 </a>
               ))}

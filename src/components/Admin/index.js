@@ -1,1 +1,3 @@
-export { default } from './Admin.jsx';
+import Admin from './Admin';
+
+export default Admin;

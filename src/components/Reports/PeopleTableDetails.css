@@ -4,35 +4,44 @@
 
 .reports-table-head {
   background-color: #eee7f8;
-  margin-bottom: 16px;
+  margin-bottom: 4px;
   border-radius: 4px;
   min-height: 32px;
   padding: 8px 16px;
 }
 
 .people-table-row {
-  display: grid;
-  grid-auto-flow: column;
-  grid-template-columns: 3fr 1fr 1fr 1fr 1fr 1fr 2fr 2fr 2fr;
-  column-gap: 4px;
-  min-height: 42px;
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: row;
+  justify-content: space-between;
   align-items: center;
-  justify-items: start;
+  min-height: 42px;
   padding: 0 16px;
   cursor: pointer;
   border-bottom: 3px solid #f8f7f8;
 }
 
-.people-table-center-cell {
-  margin: auto;
+.people-table-row > div {
+  padding: 1%;
+  text-align: center;
+  margin:1%;
 }
 
-.people-table-end-cell {
-  margin-left: auto;
+.people-table-row:hover {
+  background-color: #fafafa;
+}
+
+.people-table-row-dark:hover {
+  background-color: #1C2541;
 }
 
 .people-table-body-row:hover {
   background-color: #fafafa;
+}
+
+.people-table-body-row-dark:hover {
+  background-color: #1C2541;
 }
 
 .pic {

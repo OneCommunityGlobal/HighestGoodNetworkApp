@@ -1,12 +1,17 @@
-import React from 'react';
 import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
+import { formatCreatedDate, formatDate } from 'utils/formatDate';
 
-const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermissions }) => {
+const BlueSquare = props => {
+  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const { blueSquares, handleBlueSquare, darkMode } = props;
+
   return (
-    <div className="blueSquareContainer">
-      <div className="blueSquares">
-        {blueSquares
+    <div className={`blueSquareContainer ${darkMode ? 'bg-space-cadet' : ''}`}>
+      <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
+        {blueSquares?.length > 0
           ? blueSquares
               .sort((a, b) => (a.date > b.date ? 1 : -1))
               .map((blueSquare, index) => (
@@ -15,23 +20,19 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
                   role="button"
                   id="wrapper"
                   data-testid="blueSquare"
-                  className="blueSquareButton"
+                  className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
                   onClick={() => {
                     if (!blueSquare._id) {
+                      handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
+                    } else if (canPutUserProfileImportantInfo) {
                       handleBlueSquare(
-                        hasPermission(role, 'handleBlueSquare', roles, userPermissions),
-                        'message',
-                        'none',
-                      );
-                    } else if (hasPermission(role, 'handleBlueSquare', roles, userPermissions)) {
-                      handleBlueSquare(
-                        hasPermission(role, 'handleBlueSquare', roles, userPermissions),
+                        canPutUserProfileImportantInfo,
                         'modBlueSquare',
                         blueSquare._id,
                       );
                     } else {
                       handleBlueSquare(
-                        !hasPermission(role, 'handleBlueSquare', roles, userPermissions),
+                        !canPutUserProfileImportantInfo,
                         'viewBlueSquare',
                         blueSquare._id,
                       );
@@ -39,30 +40,35 @@ const BlueSquare = ({ blueSquares, handleBlueSquare, role, roles, userPermission
                   }}
                 >
                   <div className="report" data-testid="report">
-                    <div className="title">{blueSquare.date}</div>
-                    <div className="summary">{blueSquare.description}</div>
+                    <div className="title">{formatDate(blueSquare.date)}</div>
+                    {blueSquare.description !== undefined && (
+                      <div className="summary">
+                        {blueSquare.createdDate !== undefined && blueSquare.createdDate !== null
+                          ? `${formatCreatedDate(blueSquare.createdDate)}: ${
+                              blueSquare.description
+                            }`
+                          : blueSquare.description}
+                      </div>
+                    )}
                   </div>
                 </div>
               ))
-          : null}
+          : <div>No blue squares.</div>}
+        {isInfringementAuthorizer && (
+          <div
+            onClick={() => {
+              handleBlueSquare(true, 'addBlueSquare', '');
+            }}
+            className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
+            color="primary"
+            data-testid="addBlueSquare"
+          >
+            +
+          </div>
+        )}
       </div>
-
-      {(hasPermission(role, 'editUserProfile', roles, userPermissions) ||
-        hasPermission(role, 'assignOnlyBlueSquares', roles, userPermissions)) && (
-        <div
-          onClick={() => {
-            handleBlueSquare(true, 'addBlueSquare', '');
-          }}
-          className="blueSquareButton"
-          color="primary"
-          data-testid="addBlueSquare"
-        >
-          +
-        </div>
-      )}
-      <br />
     </div>
   );
 };
 
-export default BlueSquare;
+export default connect(null, { hasPermission })(BlueSquare);

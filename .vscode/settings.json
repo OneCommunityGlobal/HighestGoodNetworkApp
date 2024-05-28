@@ -12,12 +12,15 @@
   "eslint.alwaysShowStatus": true,
   "editor.tabSize": 2,
   "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
+    "source.fixAll.eslint": "explicit"
   },
   "files.exclude": {
     "**/.classpath": true,
     "**/.project": true,
     "**/.settings": true,
     "**/.factorypath": true
+  },
+  "files.associations": {
+    "limits": "cpp"
   }
 }
