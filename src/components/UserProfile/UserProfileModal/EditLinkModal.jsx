@@ -12,11 +12,13 @@ import {
 import PropTypes from 'prop-types';
 import hasPermission from '../../../utils/permissions';
 import './EditLinkModal.css';
-import { boxStyle } from 'styles';
-import { connect } from 'react-redux';
+import { boxStyle, boxStyleDark } from 'styles';
+import { connect, useSelector } from 'react-redux';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 
 const EditLinkModal = props => {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
@@ -168,14 +170,14 @@ const EditLinkModal = props => {
 
   return (
     <React.Fragment>
-      <Modal isOpen={isOpen} toggle={closeModal}>
-        <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
-        <ModalBody>
+      <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closeModal}>Edit Links</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
             {canPutUserProfileImportantInfo && (
               <CardBody>
-                <Card style={{ padding: '16px' }}>
-                  <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
+                <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? 'text-light' : ''}>Admin Links:</Label>
                   {mediaFolderDiffWarning && (
                     <span className="warning-help-context" data-testid="diff-media-url-warning" >
                       <strong>Media Folder link must be a working DropBox link</strong>
@@ -186,7 +188,7 @@ const EditLinkModal = props => {
                   )}
                   <div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
-                      <label className='custom-label' htmlFor='google-doc-link' >Google Doc</label>
+                      <label className={`custom-label ${darkMode ? 'text-light' : ''}`} htmlFor='google-doc-link' >Google Doc</label>
                       <input
                         id='google-doc-link'
                         className="customEdit"
@@ -200,7 +202,7 @@ const EditLinkModal = props => {
                     </div>
                     <div style={{ display: 'flex', margin: '5px' }} className="link-fields">
 
-                      <label className='custom-label' htmlFor='media-folder-link' >Media Folder</label>
+                      <label className={`custom-label ${darkMode ? 'text-light' : ''}`} htmlFor='media-folder-link' >Media Folder</label>
                       <input
                         className="customEdit"
                         id="media-folder-link"
@@ -288,8 +290,8 @@ const EditLinkModal = props => {
               </CardBody>
             )}
             <CardBody>
-              <Card style={{ padding: '16px' }}>
-                <Label style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
+              <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
+                <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? 'text-light' : ''}>Personal Links:</Label>
                 <div>
                   {personalLinks.map((link, index) => (
                     <div
@@ -371,14 +373,14 @@ const EditLinkModal = props => {
             </CardBody>
           </div>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             color="info"
             disabled={!isChanged}
             onClick={() => {
               handleUpdate();
             }}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             Update
           </Button>
@@ -390,17 +392,17 @@ const EditLinkModal = props => {
               closeModal();
             }
             }
-            style={boxStyle}>
+            style={darkMode ? boxStyleDark : boxStyle}>
             Cancel
           </Button>
         </ModalFooter>
 
-        <Modal data-testid='popup-warning' isOpen={isWarningPopupOpen} toggle={() => setIsWarningPopupOpen(!isWarningPopupOpen)}  >
-          <ModalHeader>Warning!</ModalHeader>
-          <ModalBody>
+        <Modal data-testid='popup-warning' isOpen={isWarningPopupOpen} toggle={() => setIsWarningPopupOpen(!isWarningPopupOpen)} className={darkMode ? 'text-light dark-mode' : ''}>
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Warning!</ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             Whoa Tiger, don’t do this! This link was added by an Admin when you were set up in the system. It is used by the Admin Team and your Manager(s) for reviewing your work. You should only change it if you are ABSOLUTELY SURE the one you are changing it to is more correct than the one here already.
           </ModalBody>
-          <ModalFooter>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button color='primary' onClick={() => { setIsWarningPopupOpen(!isWarningPopupOpen) }}>Confirm</Button>
             {/* Cancel button put original Media Folder link into the input */}
             <Button onClick={() => {

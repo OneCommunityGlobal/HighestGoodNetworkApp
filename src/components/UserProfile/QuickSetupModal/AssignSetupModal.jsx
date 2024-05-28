@@ -1,8 +1,11 @@
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import { deleteTitleById } from 'actions/title';
+import { useSelector } from 'react-redux';
+import "../../Header/DarkMode.css"
 
 function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles}) {
+  const darkMode = useSelector(state => state.theme.darkMode)
   const [validation, setValid] = useState({
     volunteerAgree: false,
   });
@@ -57,14 +60,16 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       });
   }
 
+  const fontColor = darkMode ? 'text-light' : '';
+
   return (
-    <Modal isOpen={isOpen} toggle={() => setIsOpen(false)} >
-      <ModalHeader toggle={() => setIsOpen(false)}>
+    <Modal isOpen={isOpen} toggle={() => setIsOpen(false)} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={() => setIsOpen(false)} className={darkMode ? 'bg-space-cadet' : ''}>
         Assign {userProfile?.firstName} as {title?.titleName}
       </ModalHeader>
-      <ModalBody>
-        <div className="">
-          <Label>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <div className={fontColor}>
+          <Label className={fontColor}>
             <h6>Google Doc: </h6>
           </Label>
           <Input type="text" onChange={e => setGoogleDoc(e.target.value)}></Input>
@@ -82,14 +87,14 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
               value="true"
               onClick={() => checkboxOnClick()}
             />
-            <Label for="agreement" className="">
+            <Label for="agreement" className={fontColor}>
               Volunteer Agreement Confirmed
             </Label>
           </div>
           {validation.volunteerAgree ? '' : <p className="text-danger">{warning.checkbox}</p>}
         </div>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div className="col text-center">
           <Button className="bg-success m-3" onClick={() => setAssignedOnClick()}>
             Yes

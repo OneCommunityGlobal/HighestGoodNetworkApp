@@ -104,17 +104,18 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
             </Button>
           )}
         </div>
-        <Modal show={showExplanation} onHide={closeExplanationModal}>
+        <Modal show={showExplanation} onHide={closeExplanationModal} className={darkMode ? 'text-light dark-mode' : ''}>
           <ScheduleExplanationModal
             onHide={closeExplanationModal}
             handleClose={closeExplanationModal}
             infringementsNum={userProfile.infringements?.length || 0}
             timeOffRequests={allRequests[userProfile._id]}
             infringements={userProfile.infringements}
+            darkMode={darkMode}
           />
         </Modal>
         {show && (
-          <Modal show={show} onHide={handleClose}>
+          <Modal show={show} onHide={handleClose} className={darkMode ? 'text-light dark-mode' : ''}>
             <ScheduleReasonModal
               handleClose={handleClose}
               userId={userProfile._id}
@@ -122,6 +123,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
               infringements={userProfile.infringements}
               canManageTimeOffRequests={canManageTimeOffRequests}
               checkIfUserCanScheduleTimeOff={checkIfUserCanScheduleTimeOff}
+              darkMode={darkMode}
             />
           </Modal>
         )}
