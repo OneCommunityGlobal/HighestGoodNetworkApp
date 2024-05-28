@@ -10,8 +10,8 @@ import {
   CardText,
   DropdownToggle,
   Modal,
-  ModalBody,
   ModalHeader,
+  ModalBody,
   ModalFooter,
   UncontrolledDropdown,
   UncontrolledPopover,
@@ -31,18 +31,23 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
   const [sortedBadges, setSortedBadges] = useState([]);
 
   useEffect(() => {
-    if (badges && badges.length) {
-      const sortBadges = [...badges].sort((a, b) => {
-        if (a.badge.ranking === 0) return 1;
-        if (b.badge.ranking === 0) return -1;
-        if (a.badge.ranking > b.badge.ranking) return 1;
-        if (a.badge.ranking < b.badge.ranking) return -1;
-        if (a.badge.badgeName > b.badge.badgeName) return 1;
-        if (a.badge.badgeName < b.badge.badgeName) return -1;
-        return 0;
-      });
-      setSortedBadges(sortBadges);
+    try {
+      if (badges && badges.length) {
+        const sortBadges = [...badges].sort((a, b) => {
+          if (a?.badge?.ranking === 0) return 1;
+          if (b?.badge?.ranking === 0) return -1;
+          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
+          return 0;
+        });
+        setSortedBadges(sortBadges);
+      }
+    } catch (error) {
+       console.log(error);
     }
+   
   }, [badges]);
 
   const toggle = () => setIsOpen(prev => !prev);
@@ -56,14 +61,14 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
       >
         {dashboard ? 'Badge Report' : 'Show Badges'}
       </Button>
-      <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-        <ModalHeader>Badge Summary</ModalHeader>
-        <ModalBody>
+      <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
             {/* --- DESKTOP VERSION OF MODAL --- */}
             <div className="desktop">
               <div style={{ overflowY: 'scroll', height: '75vh' }}>
-                <Table>
+                <Table className={darkMode ? 'text-light' : ''}>
                   <thead style={{ zIndex: '10' }}>
                     <tr style={{ zIndex: '10' }}>
                       <th style={{ width: '93px' }}>Badge</th>
@@ -74,9 +79,9 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {badges && badges.length ? (
+                    {badges && badges.length>0 ? (
                       sortedBadges &&
-                      sortedBadges.map(value => (
+                      sortedBadges.map(value => value &&(
                         <tr key={value.badge._id}>
                           <td className="badge_image_sm">
                             {' '}
@@ -117,7 +122,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                             <>
                               {' '}
                               <UncontrolledDropdown className="me-2" direction="down">
-                                <DropdownToggle caret color="primary" style={boxStyle}>
+                                <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                                   Dates
                                 </DropdownToggle>
                                 <DropdownMenu>
@@ -129,7 +134,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                   ))}
                                 </DropdownMenu>
                               </UncontrolledDropdown>
-                              {value.hasBadgeDeletionImpact && value.hasBadgeDeletionImpact === true ?
+                              {value?.hasBadgeDeletionImpact && value?.hasBadgeDeletionImpact === true ?
                               (<>
                                 <span id="mismatchExplainationTooltip" style={{paddingLeft: '3px'}}>
                                   {'  '} *
@@ -164,7 +169,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             {/* --- TABLET VERSION OF MODAL --- */}
             <div className="tablet">
               <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table>
+                <Table  className={darkMode ? 'text-light' : ''}>
                   <thead style={{ zIndex: '10' }}>
                     <tr style={{ zIndex: '10' }}>
                       <th style={{ width: '25%' }}>Badge</th>
@@ -176,12 +181,12 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                   <tbody>
                     {badges && badges.length ? (
                       sortedBadges &&
-                      sortedBadges.map(value => (
+                      sortedBadges.map(value => value &&(
                         <tr key={value._id}>
                           <td className="badge_image_sm">
                             {' '}
                             <img
-                              src={value.badge.imageUrl}
+                              src={value?.badge.imageUrl}
                               id={`popover_${value._id}`}
                               alt="badge"
                             />
@@ -198,19 +203,19 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                     marginBottom: 15,
                                   }}
                                 >
-                                  {value.badge?.badgeName}
+                                  {value?.badge?.badgeName}
                                 </CardTitle>
-                                <CardText>{value.badge?.description}</CardText>
+                                <CardText>{value?.badge?.description}</CardText>
                               </CardBody>
                             </Card>
                           </UncontrolledPopover>
-                          <td>{value.badge.badgeName}</td>
+                          <td>{value?.badge?.badgeName}</td>
                           <td>
                             {typeof value.lastModified === 'string'
                               ? value.lastModified.substring(0, 10)
                               : value.lastModified.toLocaleString().substring(0, 10)}
                           </td>
-                          <td>{value.count}</td>
+                          <td>{value?.count}</td>
                         </tr>
                       ))
                     ) : (
@@ -226,7 +231,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             </div>
           </div>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="badge_summary_viz_footer">
             <ReactStrapButton
               className="btn--dark-sea-green badge_summary_viz_button"

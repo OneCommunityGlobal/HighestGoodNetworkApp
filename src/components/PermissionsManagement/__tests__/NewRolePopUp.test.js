@@ -4,6 +4,7 @@ import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import CreateNewRolePopup from '../NewRolePopUp'
+import { themeMock } from '__tests__/mockStates';
 
 const mockTogglePopUpNewRole = jest.fn()
 const mockAddNewRole = jest.fn()
@@ -23,7 +24,8 @@ const middlewares = [thunk]
 const mockStore = configureStore(middlewares)
 const store = mockStore({
   auth: mockAuth,
-  role: [mockRoleNames]
+  role: [mockRoleNames],
+  theme: themeMock,
 })
 
 const renderComponent = () => {

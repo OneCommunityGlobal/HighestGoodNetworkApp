@@ -4,7 +4,7 @@ import { screen, fireEvent } from '@testing-library/react';
 import { renderWithProvider } from '../../../__tests__/utils';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
+import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
 const mock = jest.fn();
 const mockStore = configureStore([thunk]);
@@ -25,6 +25,7 @@ beforeEach(() => {
     auth: authMock,
     userProfile: userProfileMock,
     role: rolesMock.role,
+    theme: themeMock,
     ...defaultProps,
   });
 });

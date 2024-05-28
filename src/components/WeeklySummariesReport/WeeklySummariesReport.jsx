@@ -402,6 +402,57 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
+  handleTeamCodeChange = (oldTeamCode, newTeamCode, userId) => {
+    this.setState(prevState => {
+      let { teamCodes, summaries, selectedCodes } = prevState;
+
+      // Find and update the user's team code in summaries
+      summaries = summaries.map(summary => {
+        if (summary._id === userId) {
+          return { ...summary, teamCode: newTeamCode };
+        }
+        return summary;
+      });
+
+      // Count the occurrences of each team code
+      const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
+        acc[teamCode] = (acc[teamCode] || 0) + 1;
+        return acc;
+      }, {});
+
+      // Update teamCodes by filtering out those with zero count
+      teamCodes = Object.entries(teamCodeCounts)
+        .filter(([count]) => count > 0)
+        .map(([code, count]) => ({
+          label: `${code} (${count})`,
+          value: code,
+        }));
+
+      // Update selectedCodes labels and filter out those with zero count
+      selectedCodes = selectedCodes
+        .map(selected => {
+          const count = teamCodeCounts[selected.value];
+          if (count !== undefined && count > 0) {
+            return { ...selected, label: `${selected.value} (${count})` };
+          }
+          return null;
+        })
+        .filter(Boolean);
+
+      if (!selectedCodes.find(code => code.value === newTeamCode)) {
+        selectedCodes.push({
+          label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
+          value: newTeamCode,
+        });
+      }
+
+      // Sort teamCodes by label
+      teamCodes.sort((a, b) => a.label.localeCompare(b.label));
+
+      return { summaries, teamCodes, selectedCodes };
+    });
+  };
+
   render() {
     const { role, darkMode } = this.props;
     const {
@@ -473,6 +524,7 @@ export class WeeklySummariesReport extends Component {
                   fontSize={24}
                   isPermissionPage
                   className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  darkMode={darkMode}
                 />
               </div>
             </h3>
@@ -624,6 +676,7 @@ export class WeeklySummariesReport extends Component {
                         auth={auth}
                         canSeeBioHighlight={this.canSeeBioHighlight}
                         darkMode={darkMode}
+                        handleTeamCodeChange={this.handleTeamCodeChange}
                       />
                     </Col>
                   </Row>

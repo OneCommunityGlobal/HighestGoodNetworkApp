@@ -4,20 +4,25 @@ import { WEEK_DIFF } from '../../constants/badge';
 
 function NewBadges(props) {
   const filterBadges = allBadges => {
-    const filteredList = allBadges.filter(
-      value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
-    );
+    try {
+      const filteredList = allBadges.filter(
+        value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
+      );
 
-    filteredList.sort((a, b) => {
-      if (a.badge.ranking === 0) return 1;
-      if (b.badge.ranking === 0) return -1;
-      if (a.badge.ranking > b.badge.ranking) return 1;
-      if (a.badge.ranking < b.badge.ranking) return -1;
-      if (a.badge.badgeName > b.badge.badgeName) return 1;
-      if (a.badge.badgeName < b.badge.badgeName) return -1;
-      return 0;
-    });
-    return filteredList;
+      filteredList &&
+        filteredList.sort((a, b) => {
+          if (a?.badge?.ranking === 0) return 1;
+          if (b?.badge?.ranking === 0) return -1;
+          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
+          return 0;
+        });
+      return filteredList;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   const filteredBadges = filterBadges(props.badges);
@@ -30,7 +35,7 @@ function NewBadges(props) {
             style={{
               fontWeight: 'bold',
               fontSize: 18,
-              color: props.darkMode ? '#1B2A41' : '#285739',
+              color: props.darkMode ? '#FFF' : '#285739',
               marginBottom: 15,
             }}
           >
@@ -50,8 +55,8 @@ function NewBadges(props) {
               <BadgeImage
                 personalBestMaxHrs={props.personalBestMaxHrs}
                 time="new"
-                count={value.count}
-                badgeData={value.badge}
+                count={value?.count}
+                badgeData={value?.badge}
                 index={index}
                 key={index}
               />
