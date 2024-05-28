@@ -1,4 +1,4 @@
-import { GET_TOOL_BY_ID, GET_TOOLS, SET_TOOLS } from "constants/bmdashboard/toolsConstants";
+import { GET_TOOL_BY_ID, GET_TOOLS, SET_TOOLS, GET_TOOL_TYPES } from "constants/bmdashboard/toolsConstants";
 
 const defaultState = {
   toolslist: [],
@@ -14,7 +14,7 @@ const defaultState = {
   },
 };
 
-// eslint-disable-next-line import/prefer-default-export
+// eslint-disable-next-line import/prefer-default-export, default-param-last
 export const toolReducer = (tools = defaultState, action) => {
   switch (action.type) {
     case GET_TOOLS: {
@@ -27,6 +27,7 @@ export const toolReducer = (tools = defaultState, action) => {
       };
     }
     case GET_TOOL_BY_ID:
+    case GET_TOOL_TYPES:
     case SET_TOOLS:
       return action.payload;
 ///////
@@ -65,3 +66,4 @@ export const toolReducer = (tools = defaultState, action) => {
       return tools; // Return the current state for unknown actions
   }
 };
+

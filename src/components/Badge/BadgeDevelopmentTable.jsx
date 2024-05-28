@@ -117,7 +117,7 @@ function BadgeDevelopmentTable(props) {
     const filteredList = allBadges.filter(badge => {
       if (
         badge.badgeName.toLowerCase().indexOf(name.toLowerCase()) > -1 &&
-        badge.description.toLowerCase().indexOf(description.toLowerCase()) > -1 &&
+        badge.description?.toLowerCase().indexOf(description.toLowerCase()) > -1 &&
         (!type.toLowerCase() || badge?.type?.toLowerCase().indexOf(type.toLowerCase()) > -1)
       ) {
         return badge;
@@ -205,7 +205,7 @@ function BadgeDevelopmentTable(props) {
                 {' '}
                 <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                  <Card className="text-center">
+                  <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />
                     <CardBody>
                       <CardTitle
@@ -263,11 +263,19 @@ function BadgeDevelopmentTable(props) {
         badgeId={deleteId}
         badgeName={deleteName}
       />
-      <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()}>
-        <ModalBody className={`badge-message-background-${props.color}`}>
+      <Modal
+        isOpen={props.alertVisible}
+        toggle={() => props.closeAlert()}
+        className={darkMode ? 'text-light' : ''}
+      >
+        <ModalBody
+          className={`badge-message-background-${props.color} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+        >
           <p className={`badge-message-text-${props.color}`}>{props.message}</p>
         </ModalBody>
-        <ModalFooter className={`badge-message-background-${props.color}`}>
+        <ModalFooter
+          className={`badge-message-background-${props.color} ${darkMode ? 'bg-space-cadet' : ''}`}
+        >
           <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK
           </Button>

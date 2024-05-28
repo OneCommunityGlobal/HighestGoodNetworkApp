@@ -74,6 +74,7 @@ const localReducers = {
 
   // bmdashboard
   materials: materialsReducer,
+  tools: toolReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,

@@ -32,6 +32,7 @@ export const ENDPOINTS = {
   TIME_ENTRIES_PERIOD: (userId, fromDate, toDate) =>
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
+  TIME_ENTRIES_REPORTS: `${APIEndpoint}/TimeEntry/reports`,
   TIME_ENTRIES_LOST_USER_LIST: `${APIEndpoint}/TimeEntry/lostUsers`,
   TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
@@ -84,6 +85,13 @@ export const ENDPOINTS = {
   DELETE_TASK_NOTIFICATION: taskNotificationId =>
     `${APIEndpoint}/tasknotification/${taskNotificationId}`,
 
+  //titles endpoints
+  TITLES: () => `${APIEndpoint}/title`,
+  // TITLES: () => `${APIEndpoint}/title/deleteAll`,
+  TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+  CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
+  DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
     `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
   TASK_EDIT_SUGGESTION: () => `${APIEndpoint}/taskeditsuggestion`,
@@ -108,6 +116,9 @@ export const ENDPOINTS = {
   VALIDATE_TOKEN: () => `${APIEndpoint}/validateToken`,
   SETUP_NEW_USER_PROFILE: () => `${APIEndpoint}/ProfileInitialSetup`,
   ALL_MAP_LOCATIONS: () => `${APIEndpoint}/mapLocations`,
+  GET_SETUP_INVITATION: () => `${APIEndpoint}/getSetupInvitation`,
+  REFRESH_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/refreshSetupInvitationToken`,
+  CANCEL_SETUP_INVITATION_TOKEN: () => `${APIEndpoint}/cancelSetupInvitationToken`,
   // emails endpoint
   POST_EMAILS: `${APIEndpoint}/send-emails`,
   BROADCAST_EMAILS: `${APIEndpoint}/broadcast-emails`,
