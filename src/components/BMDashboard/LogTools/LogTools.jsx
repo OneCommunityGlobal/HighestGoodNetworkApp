@@ -88,14 +88,13 @@ function LogTools() {
         if (availItem.project.name === selectedProject) {
           availForSelectedProj += 1;
         }
-      })
+      });
 
       type.using.forEach(usingItem => {
         if (usingItem.project.name === selectedProject) {
           usingForSelectedProj += 1;
         }
       });
-
 
       if (type[actionArray].length > 0) {
         const typeDetails = {
@@ -137,13 +136,14 @@ function LogTools() {
 
   useEffect(() => {
     if (postToolsLogResult.result && !postToolsLogResult.error) {
-      postToolsLogResult.result.results.forEach(res => {
+      const postResult = postToolsLogResult.result.results;
+      postResult.forEach(res => {
         toast.success(res.message);
       });
       dispatch(fetchToolTypes());
       dispatch(resetPostToolsLog());
     } else if (postToolsLogResult.result && postToolsLogResult.error) {
-      const postResult = JSON.parse(postToolsLogResult.result)
+      const postResult = postToolsLogResult.result;
       postResult.errors.forEach(err => {
         toast.error(err.message);
       });
@@ -168,24 +168,26 @@ function LogTools() {
     const postObjCopy = { ...postObject };
 
     if (eventParams.action === 'select-option') {
-      event.forEach(el => {
+      const tempObj = {
+        toolType: '',
+        toolName: '',
+        toolItems: [],
+        toolCodes: [],
+      };
+      event.forEach((el, eventElIdx) => {
         const idx = postObjCopy.typesArray.findIndex(obj => obj.toolType === el.type);
-
         if (idx < 0) {
-          const tempObj = {
-            toolType: '',
-            toolName: '',
-            toolItems: [],
-            toolCodes: [],
-          };
           tempObj.toolType = el.type;
           tempObj.toolName = el.name;
           tempObj.toolItems.push(el.value);
           tempObj.toolCodes.push(el);
           postObjCopy.typesArray.push(tempObj);
-        } else if (!postObjCopy.typesArray[idx].toolItems.includes(el.value)) {
-          postObjCopy.typesArray[idx].toolItems.push(el.value);
-          postObjCopy.typesArray[idx].toolCodes.push(el);
+        } else {
+          const lastIdx = postObjCopy.typesArray[idx].toolItems.length - 1;
+          if (eventElIdx > lastIdx) {
+            postObjCopy.typesArray[idx].toolItems.push(el.value);
+            postObjCopy.typesArray[idx].toolCodes.push(el);
+          }
         }
       });
     } else if (eventParams.action === 'remove-value') {
@@ -213,7 +215,7 @@ function LogTools() {
   const handleCancel = () => {
     clearPostObj();
     clearAllSelects();
-    history.push('/bmdashboard');
+    history.push('/bmdashboard/tools');
   };
 
   const handleSubmit = () => {

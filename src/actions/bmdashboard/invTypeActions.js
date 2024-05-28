@@ -196,8 +196,9 @@ export const postToolsLog = payload => {
       })
       .catch(err => {
         dispatch(
+          // setPostErrorToolsLog(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'),
           // eslint-disable-next-line no-use-before-define
-          setPostErrorToolsLog(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'),
+          setPostErrorToolsLog(err.response.data || 'Sorry! Some error occurred!'),
         );
       });
   };
