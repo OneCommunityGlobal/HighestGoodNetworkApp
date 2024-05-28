@@ -4,14 +4,15 @@ import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 export const Team = props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
   return (
-    <tr className="teams__tr" id={`tr_${props.teamId}`}>
+    <tr className={`teams__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_${props.teamId}`}>
       <th className="teams__order--input" scope="row">
         <div>{props.index + 1}</div>
       </th>
@@ -20,7 +21,7 @@ export const Team = props => {
         className="teams__active--input"
         onClick={e => {
           canDeleteTeam || canPutTeam
-            ? props.onStatusClick(props.name, props.teamId, props.active)
+            ? props.onStatusClick(props.name, props.teamId, props.active, props.teamCode)
             : null;
         }}
         // style={boxStyle}
@@ -32,16 +33,16 @@ export const Team = props => {
           </div>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true" />
+            <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'/>
           </div>
         )}
       </td>
       <td className="centered-cell">
-        <button style={boxStyle}
+        <button style={darkMode ? {} : boxStyle}
           type="button"
           className="btn btn-outline-info"
           onClick={e => {
-            props.onMembersClick(props.teamId, props.name);
+            props.onMembersClick(props.teamId, props.name, props.teamCode);
           }}
           data-testid='members-btn'
         >
@@ -55,9 +56,9 @@ export const Team = props => {
               type="button"
               className="btn btn-outline-success"
               onClick={() => {
-                props.onEditTeam(props.name, props.teamId, props.active);
+                props.onEditTeam(props.name, props.teamId, props.active, props.teamCode);
               }}
-              style={boxStyle}
+              style={darkMode ? {} : boxStyle}
             >
               Edit
             </button>
@@ -67,9 +68,9 @@ export const Team = props => {
               type="button"
               className="btn btn-outline-danger"
               onClick={() => {
-                props.onDeleteClick(props.name, props.teamId, props.active);
+                props.onDeleteClick(props.name, props.teamId, props.active, props.teamCode);
               }}
-              style={boxStyle}
+              style={darkMode ? {} : boxStyle}
             >
               {DELETE}
             </button>

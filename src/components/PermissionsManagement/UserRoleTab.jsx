@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react';
-import RolePermissions from './RolePermissions';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import './UserRoleTab.css';
 import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
-import { boxStyle } from 'styles';
 
 export const permissionLabel = {
   // Reports
@@ -25,71 +23,57 @@ export const permissionLabel = {
   // Projects
   seeProjectManagement: 'See Project Management Tab (Full Functionality) (DNE)',
   postProject: 'Add Project',
+  seeWeeklySummaryReports: 'See Only Weekly Summary Reports Tab',
+  seeUserManagement: 'See User Management Tab (Full Functionality)',
+  seeBadgeManagement: 'See Badge Management Tab (Full Functionality)',
+  deleteOwnBadge: 'Delete Badge',
+  modifyOwnBadgeAmount: 'Modify Badge Amount',
+  assignBadgeOthers: 'Assign Badges',
+  seeProjectManagement: 'See Project Management Tab (Full Functionality)',
+  addProject: 'Add Project',
   deleteProject: 'Delete Project',
-  putProject: 'Edit Project',
-  seeUserProfileInProjects: 'See User Profiles in Projects (DNE)',
-  findUserInProject: 'Find User in Project (DNE)',
-  assignProjectToUsers: 'Assign Project to User',
-  unassignUserInProject: 'Unassign User in Project (DNE - same as assigning)',
-  // WBS
-  postWbs: 'Add WBS',
+  editProject: 'Edit Project Category or Status',
+  seeUserProfileInProjects: 'See User Profiles in Projects',
+  findUserInProject: 'Find User in Project',
+  assignUserInProject: 'Assign User in Project',
+  unassignUserInProject: 'Unassign User in Project',
+  addWbs: 'Add WBS',
   deleteWbs: 'Delete WBS',
-  // Tasks
-  postTask: 'Add Task',
-  updateTask: 'Edit Task',
+  addTask: 'Add Task',
+  editTask: 'Edit Task',
   deleteTask: 'Delete Task',
   suggestTask: 'Suggest Changes on a task',
-  viewInteractTask: 'View and Interact with Task (DNE)',
-  importTask: 'Import Task (???)',
-  swapTask: 'Swap Task (???)',
-  updateNum: 'updateNum (something related to tasks???)',
-  // Teams
-  seeTeamsManagement: 'See Teams Management Tab (Full Functionality) (DNE)',
-  postTeam: 'Create Team',
-  deleteTeam: 'Delete Team',
-  putTeam: 'Edit Team',
-  assignTeamToUsers: 'Assign Team to User',
-  // Time Entries
-  editTimelogInfo: 'Edit Timelog Information (DNE)',
-  addTimeEntryOthers: 'Add Time Entry (Others) (DNE)',
-  deleteTimeEntryOthers: 'Delete Time Entry (Others) (DNE)',
-  toggleTangibleTime: 'Toggle Tangible Time (DNE)',
-  changeIntangibleTimeEntryDate: 'Change Date on Intangible Time Entry (DNE)',
-  editTimeEntry: 'Edit Time Entry (Others)',
-  deleteTimeEntry: 'Delete Time Entry (Others)',
-  // More User Profiles
-  putUserProfile: 'Edit User Profile',
+  seeTeamsManagement: 'See Teams Management Tab (Full Functionality)',
+  createTeam: 'Create Team',
+  editDeleteTeam: 'Edit/Delete Team',
+  editTimelogInfo: 'Edit Timelog Information',
+  addTimeEntryOthers: 'Add Time Entry (Others)',
+  deleteTimeEntryOthers: 'Delete Time Entry (Others)',
+  toggleTangibleTime: 'Toggle Tangible Time Self',
+  toggleTangibleTimeOthers: 'Toggle Tangible/Intangible Time Others',
+  changeIntangibleTimeEntryDate: 'Change Date on Intangible Time Entry',
+  editTimeEntry: 'Edit Own Time Entry',
+  deleteTimeEntry: 'Delete Own Time Entry',
+  editUserProfile: 'Edit User Profile',
   changeUserStatus: 'Change User Status',
-  infringementAuthorizer: 'Handle Blue Squares (and assign)',
-  assignOnlyBlueSquares: 'Only Assign Blue Squares (DNE - infringementAuthorizer)',
-  adminLinks: 'Manage Admin Links in User Profile (DNE - putUserProfileImportantInfo)',
-  assignTeam: "Assign User's Team (exists elsewhere)",
-  updatePassword: 'Reset Password (Others)',
-  toggleSubmitForm: 'Toggle Summary Submit Form (Others) (DNE - putUserProfileImportantInfo)',
-  submitWeeklySummaryForOthers: 'Submit Weekly Summary For Others  (DNE - putUserProfile)',
-  seePermissionsManagement: 'See Permissions Management Tab (DNE - postRole/putRole)',
-  putUserProfilePermissions: 'Manage User Permissions',
-  postRole: 'Add New User Permissions Role',
-  putRole: 'Edit Role Permissions',
-  changeBioAnnouncement: 'Change the Bio Announcement Status (DNE)',
-  // Misc
-  removeUserFromTask: 'View and Interact with Task “X” (DNE)',
-  seeSummaryIndicator: 'See Summary Indicator (DNE)',
-  seeVisibilityIcon: 'See Visibility Icon (DNE)',
-  editWeeklySummaryOptions: 'Edit Weekly Summary Options (DNE)',
-  // Popups
-  seePopupManagement: 'See Popup Management Tab (create and update popups) (DNE - separate)',
-  createPopup: 'Create Popups',
-  updatePopup: 'Edit Popups',
-  dataIsTangibleTimelog: 'Timelog Data is Tangible (DNE)',
-  // General
-  getUserProfiles: 'Get User Profiles',
-  checkLeadTeamOfXplus: 'checkLeadTeamOfXplus(???)',
-  getTimeZoneAPIKey: 'Get Time Zone API Key',
-
+  handleBlueSquare: 'Handle Blue Squares',
+  assignOnlyBlueSquares: 'Only Assign Blue Squares',
+  adminLinks: 'Manage Admin Links in User Profile',
+  assignTeamToUser: 'Assign Users Team',
+  resetPasswordOthers: 'Reset Password (Others)',
+  toggleSubmitForm: 'Toggle Summary Submit Form (Others)',
+  submitWeeklySummaryForOthers: 'Submit Weekly Summary For Others',
+  seePermissionsManagement: 'See Permissions Management Tab and Edit Permission',
+  seePopupManagement: 'See Popup Management Tab (create and update popups)',
+  seeSummaryIndicator: 'See Summary Indicator',
+  seeVisibilityIcon: 'See Visibility Icon',
 };
+import { boxStyle, boxStyleDark } from 'styles';
+import RolePermissions from './RolePermissions';
 
-const UserRoleTab = props => {
+function UserRoleTab(props) {
+  const { darkMode } = props;
+
   useEffect(() => {
     props.getUserRole(props.auth?.user.userid);
   }, []);
@@ -112,44 +96,43 @@ const UserRoleTab = props => {
   }
 
   const actualRole = props.roles[roleIndex];
-  const permissions = actualRole.permissions;
-  const roleName = actualRole.roleName;
+  const { permissions } = actualRole;
+  const { roleName } = actualRole;
   const roleId = actualRole._id;
 
-  const permissionsList = [];
-
-  for (const key in permissionLabel) {
-    permissionsList.push(permissionLabel[key]);
-  }
   return (
-    <div className="userRoleTab__container">
-      <button
-        onClick={() => history.push('/permissionsmanagement')}
-        className="userRoleTab__backBtn"
-        style={boxStyle}
-      >
-        Back
-      </button>
-      <RolePermissions
-        userRole={props.userProfile.role}
-        role={roleName}
-        roleId={roleId}
-        header={`${roleName} Permissions:`}
-        permissionsList={permissionsList}
-        permissions={permissions}
-      />
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+      <div className="userRoleTab__container">
+        <button
+          type="button"
+          onClick={() => history.push('/permissionsmanagement')}
+          className="userRoleTab__backBtn"
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Back
+        </button>
+        <RolePermissions
+          userRole={props.userProfile.role}
+          role={roleName}
+          roleId={roleId}
+          header={`${roleName} Permissions:`}
+          permissions={permissions}
+          darkMode={darkMode}
+        />
+      </div>
     </div>
   );
-};
+}
 
-// export default UserRoleTab;
 const mapStateToProps = state => ({
   roles: state.role.roles,
   auth: state.auth,
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({
+  // eslint-disable-next-line no-undef
   getAllRoles: () => dispatch(getAllRoles()),
   getUserRole: id => dispatch(getUserProfile(id)),
 });

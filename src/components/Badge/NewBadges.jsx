@@ -1,43 +1,48 @@
-import React from 'react';
 import { Card, CardTitle, CardBody, UncontrolledTooltip } from 'reactstrap';
 import BadgeImage from './BadgeImage';
 import { WEEK_DIFF } from '../../constants/badge';
 
-const NewBadges = props => {
+function NewBadges(props) {
   const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(
-      value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
-    );
+    try {
+      const filteredList = allBadges.filter(
+        value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
+      );
 
-    filteredList.sort((a, b) => {
-      if (a.badge.ranking === 0) return 1;
-      if (b.badge.ranking === 0) return -1;
-      if (a.badge.ranking > b.badge.ranking) return 1;
-      if (a.badge.ranking < b.badge.ranking) return -1;
-      if (a.badge.badgeName > b.badge.badgeName) return 1;
-      if (a.badge.badgeName < b.badge.badgeName) return -1;
-    });
-    return filteredList;
+      filteredList &&
+        filteredList.sort((a, b) => {
+          if (a?.badge?.ranking === 0) return 1;
+          if (b?.badge?.ranking === 0) return -1;
+          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
+          return 0;
+        });
+      return filteredList;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
-  let filteredBadges = filterBadges(props.badges);
+  const filteredBadges = filterBadges(props.badges);
 
   return (
     <>
-      <Card style={{ backgroundColor: '#f6f6f3' }}>
+      <Card style={{ backgroundColor: props.darkMode ? '#3A506B' : '#f6f6f3' }}>
         <CardBody>
           <CardTitle
             style={{
               fontWeight: 'bold',
               fontSize: 18,
-              color: '#285739',
+              color: props.darkMode ? '#FFF' : '#285739',
               marginBottom: 15,
             }}
           >
             New Badges Earned <i className="fa fa-info-circle" id="NewBadgeInfo" />
           </CardTitle>
-          <div className="new_badges">
-            {filteredBadges.length == 0 ? (
+          <div className={`new_badges ${props.darkMode ? 'text-light' : ''}`}>
+            {filteredBadges.length === 0 ? (
               <strong style={{ opacity: 0.7 }}>
                 Get yourself a herd of new badges! New badges are earned at the close of each epic
                 week. Newest badges are placed here at the top for a week after you earn them so
@@ -48,9 +53,10 @@ const NewBadges = props => {
             )}
             {filteredBadges.map((value, index) => (
               <BadgeImage
+                personalBestMaxHrs={props.personalBestMaxHrs}
                 time="new"
-                count={value.count}
-                badgeData={value.badge}
+                count={value?.count}
+                badgeData={value?.badge}
                 index={index}
                 key={index}
               />
@@ -72,6 +78,6 @@ const NewBadges = props => {
       </UncontrolledTooltip>
     </>
   );
-};
+}
 
 export default NewBadges;

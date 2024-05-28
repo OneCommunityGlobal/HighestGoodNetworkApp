@@ -9,7 +9,7 @@ const ActiveCell = props => {
   return (
     <span
       style={{ fontSize: '1.5rem', cursor: props.canChange ? 'pointer' : 'default' }}
-      className={props.isActive ? 'isActive' : 'isNotActive'}
+      className={props.isActive ? 'activeUser' : 'notActiveUser'}
       id={props.index === undefined ? undefined : `active_cell_${props.index}`}
       title={
         props.canChange

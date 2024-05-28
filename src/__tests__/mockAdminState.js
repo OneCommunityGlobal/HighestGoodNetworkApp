@@ -1619,6 +1619,7 @@ export default {
             'deleteTeam',
             'putTeam',
             'assignTeamToUsers',
+            'editTeamCode',
             // Time Entries
             'editTimeEntry',
             'deleteTimeEntry',
@@ -1630,6 +1631,7 @@ export default {
             'updatePassword',
             'deleteUserProfile',
             'infringementAuthorizer',
+            'manageAdminLinks',
             // WBS
             'postWbs',
             'deleteWbs',
@@ -1793,6 +1795,8 @@ export default {
             'getWeeklySummaries',
             'getTimeZoneAPIKey',
             'checkLeadTeamOfXplus',
+            'editTeamCode',
+            'manageAdminLinks',
           ],
         },
       ]

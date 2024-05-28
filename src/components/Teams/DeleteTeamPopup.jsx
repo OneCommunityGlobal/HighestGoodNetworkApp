@@ -1,45 +1,61 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
+import { connect, useSelector } from 'react-redux';
+import hasPermission from 'utils/permissions';
 
-const DeleteTeamPopup = React.memo(props => {
+export const DeleteTeamPopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const closePopup = () => {
     props.onClose();
   };
+  const canDeleteTeam = props.hasPermission('deleteTeam');
+  const canPutTeam = props.hasPermission('putTeam');
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>Delete</ModalHeader>
-      <ModalBody style={{ textAlign: 'center' }}>
+    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'dark-mode text-light' : ''}>
+      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Delete</ModalHeader>
+      <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <span>
           {`Are you sure you want to delete the team with name "${props.selectedTeamName}"?
           This action cannot be undone. Switch this team to "Inactive" if you'd like to keep it in the system.`}
         </span>
       </ModalBody>
-      <ModalFooter>
-        <Button
-          color="danger"
-          onClick={() => {
-            props.onDeleteClick(props.selectedTeamId);
-          }}
-          style={boxStyle}
-        >
-          Confirm
-        </Button>
-        <Button
-          color="warning"
-          onClick={() => {
-            props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false);
-          }}
-          style={boxStyle}
-        >
-          Set Inactive
-        </Button>
-        <Button color="primary" onClick={closePopup} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        {(canDeleteTeam || canPutTeam) && (
+          <>
+            <Button
+            color="danger"
+            onClick={async () => {
+              await props.onDeleteClick(props.selectedTeamId);
+            }}
+            style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Confirm
+            </Button>
+            <Button
+              color="warning"
+              onClick={async () => {
+                await props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false, props.selectedTeamCode);
+              }}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Set Inactive
+            </Button>
+          </>
+        )}
+        {!(canDeleteTeam || canPutTeam) && (
+          <>
+            Unauthorized Action
+          </>
+        )}
+        <Button color="primary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>
     </Modal>
   );
 });
-export default DeleteTeamPopup;
+export default connect(null, { hasPermission })(DeleteTeamPopup);

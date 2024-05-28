@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
 import ReportCharts from './ReportCharts';

@@ -1,11 +1,13 @@
+// eslint-disable-next-line no-unused-vars
 import React from 'react';
 import { SEARCH } from '../../languages/en/ui';
 import './reportsPage.css';
 
 /**
- * The search panel stateless component for  Rreport grid
+ * The search panel stateless component for Report grid
  */
-function ReportTableSearchPanel(props) {
+function ReportTableSearchPanel({ onSearch }) {
+  // Destructure onSearch here
   return (
     <div className="input-group" id="new_team">
       <div className="input-group-prepend">
@@ -13,6 +15,7 @@ function ReportTableSearchPanel(props) {
       </div>
 
       <input
+        /* eslint-disable-next-line jsx-a11y/no-autofocus */
         autoFocus
         type="text"
         className="form-control search-field-container"
@@ -20,7 +23,7 @@ function ReportTableSearchPanel(props) {
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
         onChange={e => {
-          props.onSearch(e.target.value);
+          onSearch(e.target.value); // Use destructured onSearch directly
         }}
       />
     </div>

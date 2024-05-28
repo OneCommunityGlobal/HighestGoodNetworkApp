@@ -1,23 +1,27 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 
-const CreateNewTeamPopup = React.memo(props => {
-  const [newTeam, onNewName] = useState('');
+export const CreateNewTeamPopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
+  const [newTeam, setNewName] = useState('');
   const closePopup = () => {
     props.onClose();
   };
   const [isValidTeam, onValidation] = useState(true);
   useEffect(() => {
-    onNewName(props.teamName);
+    setNewName(props.teamName);
   }, [props.open, props.teamName]);
   return (
-    <Modal autoFocus={false} isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>
+    <Modal autoFocus={false} isOpen={props.open} toggle={closePopup} className={darkMode ? 'dark-mode text-light' : ''}>
+      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>
         {props.isEdit ? 'Update Team Name' : 'Create New Team'}
       </ModalHeader>
-      <ModalBody style={{ textAlign: 'start' }}>
-        <label>Name of the Team</label>
+      <ModalBody style={{ textAlign: 'start' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <label className={darkMode ? 'text-light' : ''}>Name of the Team</label>
         <Input
           autoFocus
           id="teamName"
@@ -25,26 +29,26 @@ const CreateNewTeamPopup = React.memo(props => {
           value={newTeam}
           onChange={e => {
             onValidation(true);
-            onNewName(e.target.value);
+            setNewName(e.target.value);
           }}
           required
         />
         {isValidTeam === false ? <Alert color="danger">Please enter a team name.</Alert> : <></>}
       </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
         <Button
           color="primary"
-          onClick={() => {
+          onClick={async () => {
             if (newTeam !== '') {
-              props.onOkClick(newTeam, props.isEdit);
+              await props.onOkClick(newTeam, props.isEdit);
             } else {
               onValidation(false);
             }
           }}
-          style={boxStyle}
+          style={darkMode ? boxStyleDark : boxStyle}
         >
           OK
         </Button>

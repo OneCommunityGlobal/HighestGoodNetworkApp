@@ -1,5 +1,5 @@
 import React from 'react';
-import { rolesMock } from '../../__tests__/mockStates';
+import { rolesMock, themeMock } from '../../__tests__/mockStates';
 import PermissionsManagement from './PermissionsManagement';
 import thunk from 'redux-thunk';
 import { Route } from 'react-router-dom';
@@ -14,12 +14,9 @@ const mockStore = configureMockStore([thunk]);
 
 const mockInfoCollections = [
   // Your mock data
-  {infoName: 'testInfo',
-  infoContent: 'a'},
-  {infoName: 'testInfo2',
-  infoContent: ''},
+  { infoName: 'testInfo', infoContent: 'a' },
+  { infoName: 'testInfo2', infoContent: '' },
 ];
-
 
 describe('permissions management page structure', () => {
   let store;
@@ -27,11 +24,22 @@ describe('permissions management page structure', () => {
     store = mockStore({
       role: rolesMock.role,
       roleInfo: { roleInfo: {} },
+      theme: themeMock,
     });
     store.dispatch = jest.fn();
 
     renderWithRouterMatch(
-      <Route path="/permissionsmanagement">{props => <PermissionsManagement {...props} infoCollections={mockInfoCollections} areaName={'testInfo'} role={'Owner'} fontSiz={24} />}</Route>,
+      <Route path="/permissionsmanagement">
+        {props => (
+          <PermissionsManagement
+            {...props}
+            infoCollections={mockInfoCollections}
+            areaName={'testInfo'}
+            role={'Owner'}
+            fontSiz={24}
+          />
+        )}
+      </Route>,
       {
         route: `/permissionsmanagement`,
         store,

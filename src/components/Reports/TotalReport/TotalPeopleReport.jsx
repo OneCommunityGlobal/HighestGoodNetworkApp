@@ -1,15 +1,15 @@
 import { Link } from 'react-router-dom';
-import moment from 'moment';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import Loading from '../../common/Loading';
 import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
+import Loading from '../../common/Loading';
 
-const TotalPeopleReport = props => {
+function TotalPeopleReport(props) {
+  const { startDate, endDate, userProfiles, darkMode } = props;
   const [dataLoading, setDataLoading] = useState(true);
   const [dataRefresh, setDataRefresh] = useState(false);
   const [showTotalPeopleTable, setShowTotalPeopleTable] = useState(false);
@@ -20,35 +20,36 @@ const TotalPeopleReport = props => {
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
 
-  const fromDate = props.startDate.toLocaleDateString('en-CA');
-  const toDate = props.endDate.toLocaleDateString('en-CA');
+  const fromDate = startDate.toLocaleDateString('en-CA');
+  const toDate = endDate.toLocaleDateString('en-CA');
 
-  const userList = props.userProfiles.map(user => user._id);
+  const userList = userProfiles.map(user => user._id);
 
-  const loadTimeEntriesForPeriod = async () => {
-    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
-    const timeEntries = await axios
-      .post(url, { users: userList, fromDate, toDate })
-      .then(res => {
-        return res.data.map(entry => {
-          return {
-            userId: entry.personId,
-            hours: entry.hours,
-            minutes: entry.minutes,
-            isTangible: entry.isTangible,
-            date: entry.dateOfWork,
-          };
-        });
-      })
-      .catch(err => {
-        console.log(err.message);
-      });
-    setAllTimeEntries(timeEntries);
+  const loadTimeEntriesForPeriod = async (controller) => {
+    try {
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+      const res = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal });
+      const timeEntries = res.data.map(entry => ({
+        userId: entry.personId,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      }));
+      setAllTimeEntries(timeEntries);
+    } catch (err) {
+      if (axios.isCancel(err)) {
+        console.log('Request canceled', err.message);
+      } else {
+        console.error("API error:", err.message);
+      }
+    }
   };
+  
 
   const sumByUser = (objectArray, property) => {
     return objectArray.reduce((acc, obj) => {
-      var key = obj[property];
+      const key = obj[property];
       if (!acc[key]) {
         acc[key] = {
           userId: key,
@@ -58,12 +59,12 @@ const TotalPeopleReport = props => {
           tangibleMinutes: 0,
         };
       }
-      if (obj['isTangible']) {
-        acc[key]['tangibleHours'] += Number(obj['hours']);
-        acc[key]['tangibleMinutes'] += Number(obj['minutes']);
+      if (obj.isTangible) {
+        acc[key].tangibleHours += Number(obj.hours);
+        acc[key].tangibleMinutes += Number(obj.minutes);
       }
-      acc[key]['hours'] += Number(obj['hours']);
-      acc[key]['minutes'] += Number(obj['minutes']);
+      acc[key].hours += Number(obj.hours);
+      acc[key].minutes += Number(obj.minutes);
       return acc;
     }, {});
   };
@@ -75,10 +76,11 @@ const TotalPeopleReport = props => {
     } else if (timeRange === 'year') {
       range = 4;
     } else {
+      // eslint-disable-next-line no-console
       console.log('The time range should be month or year.');
     }
     return objectArray.reduce((acc, obj) => {
-      const key = obj['date'].substring(0, range);
+      const key = obj.date.substring(0, range);
       const month = acc[key] || [];
       month.push(obj);
       acc[key] = month;
@@ -86,9 +88,30 @@ const TotalPeopleReport = props => {
     }, {});
   };
 
+  const filterTenHourUser = userTimeList => {
+    const filteredUsers = [];
+    userTimeList.forEach(element => {
+      const allTimeLogged = element.hours + element.minutes / 60.0;
+      const allTangibleTimeLogged = element.tangibleHours + element.tangibleMinutes / 60.0;
+      if (allTimeLogged >= 10) {
+        const matchedUser = userProfiles.filter(user => user._id === element.userId)[0];
+        if (matchedUser) {
+          filteredUsers.push({
+            userId: element.userId,
+            firstName: matchedUser.firstName,
+            lastName: matchedUser.lastName,
+            totalTime: allTimeLogged.toFixed(2),
+            tangibleTime: allTangibleTimeLogged.toFixed(2),
+          });
+        }
+      }
+    });
+    return filteredUsers;
+  };
+
   const summaryOfTimeRange = timeRange => {
     const groupedEntries = Object.entries(groupByTimeRange(allTimeEntries, timeRange));
-    let summaryOfTime = [];
+    const summaryOfTime = [];
     groupedEntries.forEach(element => {
       const groupedUsersOfTime = Object.values(sumByUser(element[1], 'userId'));
       const contributedUsersOfTime = filterTenHourUser(groupedUsersOfTime);
@@ -97,46 +120,56 @@ const TotalPeopleReport = props => {
     return summaryOfTime;
   };
 
-  const filterTenHourUser = userTimeList => {
-    let filteredUsers = [];
-    userTimeList.forEach(element => {
-      const allTimeLogged = element.hours + element.minutes / 60.0;
-      const allTangibleTimeLogged = element.tangibleHours + element.tangibleMinutes / 60.0;
-      if (allTimeLogged >= 10) {
-        const matchedUser = props.userProfiles.filter(user => user._id === element.userId)[0];
-        filteredUsers.push({
-          userId: element.userId,
-          firstName: matchedUser.firstName,
-          lastName: matchedUser.lastName,
-          totalTime: allTimeLogged.toFixed(2),
-          tangibleTime: allTangibleTimeLogged.toFixed(2),
-        });
+
+  const generateBarData = (groupedDate, isYear = false) => {
+    if (isYear) {
+      const startMonth = startDate.getMonth();
+      const endMonth = endDate.getMonth();
+      const sumData = groupedDate.map(range => {
+        return {
+          label: range.timeRange,
+          value: range.usersOfTime.length,
+          months: 12,
+        };
+      });
+      if (sumData.length > 1) {
+        sumData[0].months = 12 - startMonth;
+        sumData[sumData.length - 1].months = endMonth + 1;
       }
+      return sumData;
+    }
+    const sumData = groupedDate.map(range => {
+      return {
+        label: range.timeRange,
+        value: range.usersOfTime.length,
+      };
     });
-    return filteredUsers;
+    return sumData;
   };
 
   const checkPeriodForSummary = () => {
     const oneMonth = 1000 * 60 * 60 * 24 * 31;
-    const diffDate = props.endDate - props.startDate;
+    const diffDate = endDate - startDate;
     if (diffDate > oneMonth) {
       setPeopleInMonth(generateBarData(summaryOfTimeRange('month')));
       setPeopleInYear(generateBarData(summaryOfTimeRange('year'), true));
       if (diffDate <= oneMonth * 12) {
         setShowMonthly(true);
       }
-      if (props.startDate.getFullYear() !== props.endDate.getFullYear()) {
+      if (startDate.getFullYear() !== endDate.getFullYear()) {
         setShowYearly(true);
       }
     }
   };
 
   useEffect(() => {
-    loadTimeEntriesForPeriod().then(() => {
+    const controller = new AbortController();
+    loadTimeEntriesForPeriod(controller).then(() => {
       setDataLoading(false);
       setDataRefresh(true);
     });
-  }, [props.startDate, props.endDate]);
+    return () => controller.abort();
+  }, [startDate, endDate]);
 
   useEffect(() => {
     if (!dataLoading && dataRefresh) {
@@ -166,7 +199,7 @@ const TotalPeopleReport = props => {
               <div>{index + 1}</div>
             </th>
             <td>
-              <Link to={`/userProfile/${person.userId}`}>
+              <Link to={`/userProfile/${person.userId}`} className={darkMode ? 'text-light' : ''}>
                 {person.firstName} {person.lastName}
               </Link>
             </td>
@@ -191,40 +224,13 @@ const TotalPeopleReport = props => {
     );
   };
 
-  const generateBarData = (groupedDate, isYear = false) => {
-    if (isYear) {
-      const startMonth = props.startDate.getMonth();
-      const endMonth = props.endDate.getMonth();
-      const sumData = groupedDate.map(range => {
-        return {
-          label: range.timeRange,
-          value: range.usersOfTime.length,
-          months: 12,
-        };
-      });
-      if (sumData.length > 1) {
-        sumData[0].months = 12 - startMonth;
-        sumData[sumData.length - 1].months = endMonth + 1;
-      }
-      return sumData;
-    } else {
-      const sumData = groupedDate.map(range => {
-        return {
-          label: range.timeRange,
-          value: range.usersOfTime.length,
-        };
-      });
-      return sumData;
-    }
-  };
-
   const totalPeopleInfo = totalPeople => {
     const totalTangibleTime = totalPeople.reduce((acc, obj) => {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-container">
-        <div className="total-title">Total People Report</div>
+      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total People Report</div>
         <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
@@ -246,7 +252,7 @@ const TotalPeopleReport = props => {
         </div>
         {allPeople.length ? (
           <div className="total-detail">
-            <Button onClick={e => onClickTotalPeopleDetail()}>
+            <Button onClick={() => onClickTotalPeopleDetail()}>
               {showTotalPeopleTable ? 'Hide Details' : 'Show Details'}
             </Button>
             <i
@@ -270,7 +276,7 @@ const TotalPeopleReport = props => {
   return (
     <div>
       {dataLoading ? (
-        <Loading />
+        <Loading align="center" darkMode={darkMode}/>
       ) : (
         <div>
           <div>{totalPeopleInfo(allPeople)}</div>
@@ -279,5 +285,5 @@ const TotalPeopleReport = props => {
       )}
     </div>
   );
-};
+}
 export default TotalPeopleReport;

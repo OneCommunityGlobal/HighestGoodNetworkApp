@@ -1,0 +1,58 @@
+.add-tool-form{
+  width: 100%;
+}
+
+.add-tool-form Label{
+font-size: .8em;
+}
+
+.add-tool-flex-group{
+  display: flex;  
+  gap: 2rem;
+}
+
+.add-tool-buttons{
+  display: flex;
+  gap: 1rem;
+  margin: 1rem auto 2rem;
+}
+
+.add-tool-buttons button{
+  width: 50%;
+}
+
+.add-tool-total-price{
+  display: flex;  
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #f5e6e6;
+  padding-left: 1em;
+}
+
+.add-tool-total-price div{
+  width: 50%;
+}
+
+.total-price-calculated{
+  text-align: end;
+  padding-right: 1em;
+}
+
+.file-preview-container{
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
+}
+
+@media screen and (max-width: 640px) {
+  .add-tool-flex-group {
+    display: block;
+  }
+
+  .file-preview-container{
+    display: block;
+  }
+}
