@@ -9,7 +9,7 @@ import { SET_CURRENT_USER } from '../../constants/auth';
 import { getUserInfo } from '../../utils/permissions';
 
 function WriteItForMeModal(props) {
-  const { pasteResponse } = props;
+  // const { pasteResponse } = props;
   const [modal, setModal] = useState(false);
   const [summary, setSummary] = useState();
   const toggle = () => setModal(!modal);
@@ -20,30 +20,24 @@ function WriteItForMeModal(props) {
     const { displayUserProfile } = props;
     toggle();
 
-    httpService
-      .post(ENDPOINTS.INTERACT_WITH_GPT, {
+    try {
+      const res = await httpService.post(ENDPOINTS.INTERACT_WITH_GPT, {
+        // prompt: 'Please summarize my week\'s work.',
         userid,
         firstName: displayUserProfile.firstName,
-      })
-      .then(res => {
-        if (res.status === 200) {
-          const {
-            data: { GPTSummary },
-          } = res;
-          setSummary(
-            'Please now proofread and edit your summary to make sure the AI didn’t confuse any technical terms, misspelled words from your weekly summaries, etc.',
-          );
-
-          pasteResponse(GPTSummary);
-        } else {
-          throw new Error(`HTTP error: ${res.status}`);
-        }
-      })
-      .catch(error => {
-        throw new Error(`HTTP error: ${error}`);
-        // console.error('Error during fetchSummary:', error);
-        // toast.error('Failed to fetch summary');
       });
+
+      if (res.status === 200) {
+        const { text } = res.data.text;
+        setSummary(text);
+        // pasteResponse(res.data.text);
+      } else {
+        throw new Error(`HTTP error: ${res.status}`);
+      }
+    } catch (error) {
+      setSummary('Failed to fetch summary.');
+      throw new Error(`HTTP error: ${error}`);
+    }
   };
 
   return (
