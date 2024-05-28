@@ -1,8 +1,7 @@
 import axios from 'axios';
-import GET_TOOL_BY_ID, { GET_TOOLS, POST_TOOLS_LOG, POST_ERROR_TOOLS_LOG, RESET_POST_TOOLS_LOG } from '../../constants/bmdashboard/toolsConstants';
+import GET_TOOL_BY_ID, { GET_TOOLS } from '../../constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from '../../constants/errors';
 import { ENDPOINTS } from '../../utils/URL';
-
 
 export const fetchTools = () => {
   const url = ENDPOINTS.BM_TOOLS;
