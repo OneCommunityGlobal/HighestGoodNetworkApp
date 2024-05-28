@@ -159,8 +159,8 @@ function TeamLocations() {
         isAbleToEdit={isAbleToEdit}
         editHandler={editHandler}
         removeLocation={removeLocation}
-        isOpen={popupsOpen}
-      />
+        isOpen={popupsOpen} 
+        darkMode={darkMode} />
     );
   });
 

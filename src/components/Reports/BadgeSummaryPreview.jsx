@@ -23,18 +23,23 @@ function BadgeSummaryPreview({ badges, darkMode }) {
   const [sortedBadges, setSortedBadges] = useState([]);
 
   useEffect(() => {
-    if (badges && badges.length) {
-      const sortBadges = [...badges].sort((a, b) => {
-        if (a.badge.ranking === 0) return 1;
-        if (b.badge.ranking === 0) return -1;
-        if (a.badge.ranking > b.badge.ranking) return 1;
-        if (a.badge.ranking < b.badge.ranking) return -1;
-        if (a.badge.badgeName > b.badge.badgeName) return 1;
-        if (a.badge.badgeName < b.badge.badgeName) return -1;
-        return 0;
-      });
-      setSortedBadges(sortBadges);
-    }
+     try {
+      if (badges && badges.length) {
+        const sortBadges = [...badges].sort((a, b) => {
+          if (a?.badge?.ranking === 0) return 1;
+          if (b?.badge?.ranking === 0) return -1;
+          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
+          return 0;
+        });
+        setSortedBadges(sortBadges);
+      }
+     } catch (error) {
+      console.log(error);
+     }
+   
   }, [badges]);
 
   const toggle = () => setIsOpen(prev => !prev);
@@ -53,10 +58,10 @@ function BadgeSummaryPreview({ badges, darkMode }) {
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {sortedBadges?.length === 0 && <div>No badges to show</div>}
                 {sortedBadges &&
-                  sortedBadges.map((value, index) => (
+                  sortedBadges.map((value, index) => value &&(
                     <div key={value._id} className="badge_image_md">
                       <img
-                        src={value.badge.imageUrl}
+                        src={value?.badge?.imageUrl}
                         id={`popover_${index.toString()}`}
                         alt="badge"
                       />
@@ -72,9 +77,9 @@ function BadgeSummaryPreview({ badges, darkMode }) {
                                 marginBottom: 15,
                               }}
                             >
-                              {value.badge?.badgeName}
+                              {value?.badge?.badgeName}
                             </CardTitle>
-                            <CardText>{value.badge?.description}</CardText>
+                            <CardText>{value?.badge?.description}</CardText>
                           </CardBody>
                         </Card>
                       </UncontrolledPopover>
@@ -86,10 +91,10 @@ function BadgeSummaryPreview({ badges, darkMode }) {
             <div className="tablet">
               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                 {sortedBadges &&
-                  sortedBadges.map((value, index) => (
+                  sortedBadges.map((value, index) => value &&(
                     <div key={value._id} className="badge_image_sm">
                       <img
-                        src={value.badge.imageUrl}
+                        src={value?.badge?.imageUrl}
                         id={`popover1_${index.toString()}`}
                         alt="badge"
                       />
@@ -105,9 +110,9 @@ function BadgeSummaryPreview({ badges, darkMode }) {
                                 marginBottom: 15,
                               }}
                             >
-                              {value.badge?.badgeName}
+                              {value?.badge?.badgeName}
                             </CardTitle>
-                            <CardText>{value.badge?.description}</CardText>
+                            <CardText>{value?.badge?.description}</CardText>
                           </CardBody>
                         </Card>
                       </UncontrolledPopover>
