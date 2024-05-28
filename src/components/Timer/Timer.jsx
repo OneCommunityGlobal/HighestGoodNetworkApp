@@ -15,13 +15,14 @@ import {
 import { toast } from 'react-toastify';
 import cs from 'classnames';
 import css from './Timer.module.css';
+import '../Header/DarkMode.css';
 import { ENDPOINTS } from '../../utils/URL';
 import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 
-export default function Timer() {
+export default function Timer({ darkMode }) {
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
@@ -297,9 +298,13 @@ export default function Timer() {
     }
   }, [inacModal]);
 
+  const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
+  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
   return (
     <div className={css.timerContainer}>
-      <button type="button" onClick={toggleTimer}>
+      <button type="button" onClick={toggleTimer} className={css.btnDiv}>
         <BsAlarmFill
           className={cs(css.transitionColor, css.btn)}
           fontSize="2rem"
@@ -422,10 +427,18 @@ export default function Timer() {
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
         centered
         size="md"
+        className={`${fontColor} dark-mode`}
       >
-        <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset Time</ModalHeader>
-        <ModalBody>Are you sure you want to reset your time?</ModalBody>
-        <ModalFooter>
+        <ModalHeader
+          className={darkMode ? 'bg-space-cadet' : ''}
+          toggle={() => setConfirmationResetModal(false)}
+        >
+          Reset Time
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          Are you sure you want to reset your time?
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             color="primary"
             onClick={() => {
@@ -437,15 +450,23 @@ export default function Timer() {
           </Button>{' '}
         </ModalFooter>
       </Modal>
-      <Modal size="md" isOpen={inacModal} toggle={() => setInacModal(!inacModal)} centered>
-        <ModalHeader toggle={() => setInacModal(!inacModal)}>Timer Paused</ModalHeader>
-        <ModalBody>
+      <Modal
+        className={`${fontColor} dark-mode`}
+        size="md"
+        isOpen={inacModal}
+        toggle={() => setInacModal(!inacModal)}
+        centered
+      >
+        <ModalHeader className={headerBg} toggle={() => setInacModal(!inacModal)}>
+          Timer Paused
+        </ModalHeader>
+        <ModalBody className={bodyBg}>
           The user timer has been paused due to inactivity or a lost in connection to the server.
           Please check your internet connection and refresh the page to continue. This is to ensure
           that our resources are being used efficiently and to improve performance for all of our
           users.
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={bodyBg}>
           <Button
             color="primary"
             onClick={() => {
@@ -457,12 +478,20 @@ export default function Timer() {
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={timeIsOverModalOpen} toggle={toggleTimeIsOver} centered size="md">
-        <ModalHeader toggle={toggleTimeIsOver}>Time Complete!</ModalHeader>
-        <ModalBody>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
+      <Modal
+        className={`${fontColor} dark-mode`}
+        isOpen={timeIsOverModalOpen}
+        toggle={toggleTimeIsOver}
+        centered
+        size="md"
+      >
+        <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
+          Time Complete!
+        </ModalHeader>
+        <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
           logMinutes ? ` ${logMinutes} minutes` : ''
         }. Click below if you’d like to add time or Log Time.`}</ModalBody>
-        <ModalFooter>
+        <ModalFooter className={bodyBg}>
           <Button
             color="primary"
             onClick={() => {

@@ -3,6 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
+import '../Header/DarkMode.css';
 
 function BadgeDevelopment(props) {
   const { darkMode } = props;
@@ -20,9 +21,16 @@ function BadgeDevelopment(props) {
       >
         Create New Badge
       </Button>
-      <Modal isOpen={isCreateNewBadgePopupOpen} toggle={toggle} backdrop="static">
-        <ModalHeader toggle={toggle}>New Badge</ModalHeader>
-        <ModalBody>
+      <Modal
+        isOpen={isCreateNewBadgePopupOpen}
+        toggle={toggle}
+        backdrop="static"
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
+          New Badge
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <CreateNewBadgePopup toggle={toggle} />
         </ModalBody>
       </Modal>
