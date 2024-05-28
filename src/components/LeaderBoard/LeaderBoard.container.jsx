@@ -36,7 +36,6 @@ const mapStateToProps = state => {
       element.barcolor = getcolor(element.totaltangibletime_hrs);
       element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
       element.totaltime = round(element.totaltime_hrs, 2);
-      element.isVisible = element.role === 'Volunteer' || element.isVisible;
 
       return element;
     });
@@ -66,8 +65,7 @@ const mapStateToProps = state => {
     roles: get(state, 'role', {}).roles,
     totalTimeMouseoverText: state?.mouseoverText?.[0]?.mouseoverText,
     totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
-    userOnTimeOff: state.timeOffRequests?.onTimeOff,
-    userGoingOnTimeOff: state.timeOffRequests?.goingOnTimeOff,
+    allRequests: state.timeOffRequests?.requests,
   };
 };
 export default connect(mapStateToProps, {

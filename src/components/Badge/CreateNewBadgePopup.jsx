@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -11,11 +11,13 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.css';
+import { boxStyle, boxStyleDark } from 'styles';
 import { createNewBadge, closeAlert } from '../../actions/badgeManagement';
-import { badgeTypes } from './BadgeTypes';
-import { boxStyle } from 'styles';
+import badgeTypes from './BadgeTypes';
 
-const CreateNewBadgePopup = props => {
+function CreateNewBadgePopup(props) {
+  const darkMode = props.darkMode;
+
   const [badgeName, setBadgeName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
   const [description, setDescription] = useState('');
@@ -35,21 +37,6 @@ const CreateNewBadgePopup = props => {
   const [multiple, setMultiple] = useState(0);
   const [showPeople, setShowPeople] = useState(false);
   const [people, setPeople] = useState(0);
-
-  useEffect(() => {
-    displayTypeRelatedFields(type);
-  }, []);
-
-  const validRanking = ranking => {
-    const pattern = /^[0-9]*$/;
-    return pattern.test(ranking);
-  };
-
-  const enableButton =
-    badgeName.length === 0 ||
-    imageUrl.length === 0 ||
-    description.length === 0 ||
-    !validRanking(ranking);
 
   const resetTypeFieldDisplay = () => {
     setShowCategory(false);
@@ -81,15 +68,32 @@ const CreateNewBadgePopup = props => {
         setShowCategory(true);
         break;
       default:
-        return;
     }
   };
 
+  useEffect(() => {
+    displayTypeRelatedFields(type);
+  }, []);
+
+  const validRanking = badgeRanking => {
+    const pattern = /^[0-9]*$/;
+    return pattern.test(badgeRanking);
+  };
+
+  const enableButton =
+    badgeName.length === 0 ||
+    imageUrl.length === 0 ||
+    description.length === 0 ||
+    !validRanking(ranking);
+
   const closePopup = () => {
+    // eslint-disable-next-line
     props.toggle();
   };
 
   const handleChange = event => {
+    let selectedCategoryValue;
+    let selectedType;
     switch (event.target.id) {
       case 'badgeName':
         setBadgeName(event.target.value);
@@ -101,7 +105,7 @@ const CreateNewBadgePopup = props => {
         setDescription(event.target.value);
         break;
       case 'category':
-        const selectedCategoryValue = event.target.value;
+        selectedCategoryValue = event.target.value;
         if (selectedCategoryValue.length === 0) {
           setCategory('Unspecified');
         } else {
@@ -109,7 +113,7 @@ const CreateNewBadgePopup = props => {
         }
         break;
       case 'badgeType':
-        const selectedType = event.target.value;
+        selectedType = event.target.value;
         setType(selectedType);
         if (selectedType.length === 0) {
           setType('Custom');
@@ -135,34 +139,37 @@ const CreateNewBadgePopup = props => {
         setPeople(Number(event.target.value));
         break;
       default:
-        return;
     }
   };
 
   const handleSubmit = () => {
-    console.log(totalHrs);
     const newBadge = {
-      badgeName: badgeName,
-      imageUrl: imageUrl,
-      description: description,
-      ranking: ranking,
-      type: type,
-      category: category,
-      totalHrs: totalHrs,
-      weeks: weeks,
-      months: months,
-      multiple: multiple,
-      people: people,
+      badgeName,
+      imageUrl,
+      description,
+      ranking,
+      type,
+      category,
+      totalHrs,
+      weeks,
+      months,
+      multiple,
+      people,
     };
+    // eslint-disable-next-line
     props.createNewBadge(newBadge).then(() => {
       closePopup();
     });
   };
 
+  const fontColor = darkMode ? 'text-light' : '';
+
   return (
     <Form id="badgeEdit">
       <FormGroup>
-        <Label for="badgeName">Name</Label>
+        <Label for="badgeName" className={fontColor}>
+          Name
+        </Label>
         <Input
           type="name"
           name="name"
@@ -175,7 +182,9 @@ const CreateNewBadgePopup = props => {
         <FormFeedback>Badge name is required and must be unique.</FormFeedback>
       </FormGroup>
       <FormGroup>
-        <Label for="imageUrl">Image URL</Label>
+        <Label for="imageUrl" className={fontColor}>
+          Image URL
+        </Label>
         <Input
           type="url"
           name="url"
@@ -185,12 +194,14 @@ const CreateNewBadgePopup = props => {
           placeholder="Image URL"
           invalid={imageUrl.length === 0}
         />
-        <FormText color="muted">
+        <FormText color={darkMode ? 'white' : 'muted'}>
           For Dropbox URL that ends with &quot;dl=0&quot;, please replace with &quot;raw=1&quot;.
         </FormText>
       </FormGroup>
       <FormGroup>
-        <Label for="badgeDescription">Description</Label>
+        <Label for="badgeDescription" className={fontColor}>
+          Description
+        </Label>
         <Input
           type="textarea"
           name="text"
@@ -202,7 +213,9 @@ const CreateNewBadgePopup = props => {
       </FormGroup>
 
       <FormGroup>
-        <Label for="badgeType">Type</Label>
+        <Label for="badgeType" className={fontColor}>
+          Type
+        </Label>
         <i className="fa fa-info-circle" id="TypeInfo" />
         <UncontrolledTooltip placement="right" target="TypeInfo" className="badgeTooltip">
           <p className="badge_info_icon_text">
@@ -212,7 +225,7 @@ const CreateNewBadgePopup = props => {
           </p>
         </UncontrolledTooltip>
         <Input type="select" name="selectType" id="badgeType" value={type} onChange={handleChange}>
-          <option value={'Custom'}>{'Custom'}</option>
+          <option value="Custom">Custom</option>
           {badgeTypes.map((element, i) => (
             <option key={i}>{element}</option>
           ))}
@@ -221,7 +234,9 @@ const CreateNewBadgePopup = props => {
 
       {showCategory ? (
         <FormGroup>
-          <Label for="category">Category</Label>
+          <Label for="category" className={fontColor}>
+            Category
+          </Label>
           <i className="fa fa-info-circle" id="CategoryInfo" />
           <UncontrolledTooltip placement="right" target="CategoryInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">
@@ -237,7 +252,8 @@ const CreateNewBadgePopup = props => {
             value={category}
             onChange={handleChange}
           >
-            <option value={''}>{''}</option>
+            {/* eslint-disable-next-line jsx-a11y/control-has-associated-label */}
+            <option value="" />
             <option>Food</option>
             <option>Energy</option>
             <option>Housing</option>
@@ -254,7 +270,9 @@ const CreateNewBadgePopup = props => {
 
       {showTotalHrs ? (
         <FormGroup>
-          <Label for="badgeTotalHrs">Hours</Label>
+          <Label for="badgeTotalHrs" className={fontColor}>
+            Hours
+          </Label>
           <i className="fa fa-info-circle" id="TotalHrsInfo" />
           <UncontrolledTooltip placement="right" target="TotalHrsInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">Choosing a the amount of Hours necessary for .</p>
@@ -275,7 +293,9 @@ const CreateNewBadgePopup = props => {
 
       {showWeeks ? (
         <FormGroup>
-          <Label for="badgeWeeks">Weeks</Label>
+          <Label for="badgeWeeks" className={fontColor}>
+            Weeks
+          </Label>
           <i className="fa fa-info-circle" id="WeeksInfo" />
           <UncontrolledTooltip placement="right" target="WeeksInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">Choosing a the amount of Weeks necessary for .</p>
@@ -296,7 +316,9 @@ const CreateNewBadgePopup = props => {
 
       {showMonths ? (
         <FormGroup>
-          <Label for="badgeMonths">Months</Label>
+          <Label for="badgeMonths" className={fontColor}>
+            Months
+          </Label>
           <i className="fa fa-info-circle" id="MonthsInfo" />
           <UncontrolledTooltip placement="right" target="MonthsInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">Choosing a the amount of Months necessary for .</p>
@@ -317,7 +339,9 @@ const CreateNewBadgePopup = props => {
 
       {showMultiple ? (
         <FormGroup>
-          <Label for="badgeMultiple">Multiple</Label>
+          <Label for="badgeMultiple" className={fontColor}>
+            Multiple
+          </Label>
           <i className="fa fa-info-circle" id="MultipleInfo" />
           <UncontrolledTooltip placement="right" target="MultipleInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">
@@ -340,7 +364,9 @@ const CreateNewBadgePopup = props => {
 
       {showPeople ? (
         <FormGroup>
-          <Label for="badgePeople">People</Label>
+          <Label for="badgePeople" className={fontColor}>
+            People
+          </Label>
           <i className="fa fa-info-circle" id="PeopleInfo" />
           <UncontrolledTooltip placement="right" target="PeopleInfo" className="badgeTooltip">
             <p className="badge_info_icon_text">Choosing a the amount of People necessary for .</p>
@@ -360,7 +386,9 @@ const CreateNewBadgePopup = props => {
       )}
 
       <FormGroup>
-        <Label for="badgeRanking">Ranking</Label>
+        <Label for="badgeRanking" className={fontColor}>
+          Ranking
+        </Label>
         <i className="fa fa-info-circle" id="RankingInfo" />
         <UncontrolledTooltip placement="right" target="RankingInfo" className="badgeTooltip">
           <p className="badge_info_icon_text">
@@ -389,22 +417,28 @@ const CreateNewBadgePopup = props => {
           placeholder="Please Enter a Number"
         />
       </FormGroup>
-      <Button color="info" onClick={handleSubmit} disabled={enableButton} style={boxStyle}>
+      <Button
+        color="info"
+        onClick={handleSubmit}
+        disabled={enableButton}
+        style={darkMode ? boxStyleDark : boxStyle}
+        className="mr-2"
+      >
         Create
       </Button>
     </Form>
   );
-};
+}
 
 const mapStateToProps = state => ({
   allProjects: state.allProjects.projects,
   message: state.badge.message,
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchAllProjects: () => dispatch(fetchAllProjects()),
   createNewBadge: newBadge => dispatch(createNewBadge(newBadge)),
   closeAlert: () => dispatch(closeAlert()),
 });

@@ -3,7 +3,7 @@ import EditLinkModal from '../UserProfileModal/EditLinkModal';
 import './UserProfileEdit.scss';
 
 const LinkModButton = props => {
-  const { updateLink, userProfile, setChanged, handleSubmit } = props;
+  const { updateLink, userProfile, setChanged, handleSubmit, color } = props;
   const [modal, setModal] = useState(false);
   const toggleModal = () => {
     setModal(!modal);
@@ -22,7 +22,7 @@ const LinkModButton = props => {
       <span
         style={{
           textDecoration: 'underline',
-          color: 'grey',
+          color: color ? color : 'grey',
           fontSize: '11pt',
           fontWeight: 600,
         }}

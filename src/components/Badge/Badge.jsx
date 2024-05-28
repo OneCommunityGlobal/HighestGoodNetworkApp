@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   Container,
@@ -14,43 +14,42 @@ import {
   ModalHeader,
 } from 'reactstrap';
 import './Badge.css';
+import BadgeSummaryViz from 'components/Reports/BadgeSummaryViz';
 import NewBadges from './NewBadges';
 import OldBadges from './OldBadges';
-import BadgeSummaryViz from 'components/Reports/BadgeSummaryViz';
 import { WEEK_DIFF } from '../../constants/badge';
-import { getUserProfile } from '../../actions/userProfile';
-import { boxStyle } from 'styles';
 
-const Badge = props => {
-  const [isOpen, setOpen] = useState(false);
+function Badge(props) {
+  const { darkMode } = props;
+
+  // const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
 
-  const toggle = () => {
-    if (isOpen) {
-      const userId = props.userId;
-      let count = 0;
-      if (props.userProfile.badgeCollection) {
-        props.userProfile.badgeCollection.forEach(badge => {
-          if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-            count += 1;
-          } else {
-            count += Number(badge.count);
-          }
-        });
-        setTotalBadge(Math.round(count));
-      }
-    }
-    setOpen(isOpen => !isOpen);
-  };
+  // const toggle = () => {
+  //   if (isOpen) {
+  //     let count = 0;
+  //     if (props.userProfile.badgeCollection) {
+  //       props.userProfile.badgeCollection.forEach(badge => {
+  //         if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
+  //           count += 1;
+  //         } else {
+  //           count += Number(badge.count);
+  //         }
+  //       });
+  //       setTotalBadge(Math.round(count));
+  //     }
+  //   }
+  //   setOpen(isOpen => !isOpen);
+  // };
 
   const toggleTypes = () => {
-    setOpenTypes(isOpenTypes => !isOpenTypes);
+    setOpenTypes(prevIsOpen => !prevIsOpen);
   };
 
-  const generateBadgeText = (totalBadge, badgeCollection, personalBestMaxHrs) => {
-    if (!totalBadge) return 'You have no badges. ';
-    
+  const generateBadgeText = (totalBadges, badgeCollection, personalBestMaxHrs) => {
+    if (!totalBadges) return 'You have no badges. ';
+
     const newBadges = badgeCollection.filter(
       value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
     );
@@ -60,12 +59,12 @@ const Badge = props => {
       ? ` and a personal best of ${roundedHours} ${roundedHours === 1 ? 'hour' : 'hours'} in a week`
       : '';
 
-    return `Bravo! You have earned ${totalBadge} ${totalBadge === 1 ? 'badge' : 'badges'
-      }${personalMaxText}! `;
+    return `Bravo! You have earned ${totalBadges} ${
+      totalBadges === 1 ? 'badge' : 'badges'
+    }${personalMaxText}! `;
   };
 
   useEffect(() => {
-    const userId = props.userId;
     let count = 0;
     if (props.userProfile.badgeCollection) {
       props.userProfile.badgeCollection.forEach(badge => {
@@ -80,27 +79,32 @@ const Badge = props => {
   }, [props.userProfile.badgeCollection, totalBadge]);
   return (
     <>
-      <Container className="right-padding-temp-fix">
+      <Container className={`p-0 ${darkMode ? 'badge-box-shadow-dark' : 'bagde-box-shadow'}`}>
         <Row>
           <Col md={12}>
-            <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
-              <CardHeader tag="h3">
-                Badges <i className="fa fa-info-circle" id="BadgeInfo" onClick={toggleTypes} />
+            <Card
+              style={{ backgroundColor: darkMode ? '#1C2541' : '#fafafa', borderRadius: 0 }}
+              id="badgesearned"
+            >
+              <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
+                Badges <i className="fa fa-info-circle" id="BadgeInfo" />
               </CardHeader>
               <CardBody>
                 <NewBadges
                   personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
                   badges={props.userProfile.badgeCollection || []}
+                  darkMode={darkMode}
                 />
                 <OldBadges
                   personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
                   badges={props.userProfile.badgeCollection || []}
+                  darkMode={darkMode}
                 />
                 <CardText
                   style={{
                     fontWeight: 'bold',
                     fontSize: 18,
-                    color: '#285739',
+                    color: darkMode ? '#007BFF' : '#285739',
                   }}
                 >
                   {generateBadgeText(
@@ -110,7 +114,7 @@ const Badge = props => {
                   )}
                   <i className="fa fa-info-circle" id="CountInfo" />
                 </CardText>
-                <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard={true} />
+                <BadgeSummaryViz badges={props.userProfile.badgeCollection} dashboard />
               </CardBody>
             </Card>
           </Col>
@@ -141,9 +145,11 @@ const Badge = props => {
           icon to learn more about the different types of badges.
         </p>
       </UncontrolledTooltip>
-      <Modal isOpen={isOpenTypes} toggle={toggleTypes}>
-        <ModalHeader toggle={toggleTypes}>Badge Types and Assignment</ModalHeader>
-        <ModalBody>
+      <Modal isOpen={isOpenTypes} toggle={toggleTypes} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggleTypes}>
+          Badge Types and Assignment
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p className="badge_info_icon_text">
             No Infringement Streak: Not recieving any infringement for a certain number of months.{' '}
           </p>
@@ -184,10 +190,11 @@ const Badge = props => {
       </Modal>
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps)(Badge);

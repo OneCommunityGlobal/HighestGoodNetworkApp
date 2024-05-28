@@ -24,6 +24,7 @@ const TeamsTab = props => {
     setCodeValid,
     saved,
     isTeamSaved,
+    darkMode,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
@@ -69,6 +70,7 @@ const TeamsTab = props => {
         userTeamsById={userTeams}
         onSelectAssignTeam={onSelectAssignTeam}
         handleSubmit={handleSubmit}
+        darkMode={darkMode}
       />
       <UserTeamsTable
         userTeamsById={userTeams}
@@ -87,6 +89,7 @@ const TeamsTab = props => {
         codeValid={codeValid}
         setCodeValid={setCodeValid}
         onAssignTeamCode={onAssignTeamCode}
+        darkMode={darkMode}
       />
     </React.Fragment>
   );
