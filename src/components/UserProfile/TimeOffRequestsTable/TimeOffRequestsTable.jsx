@@ -1,7 +1,7 @@
 import './TimeOffRequestsTable.css';
-import moment from 'moment';
+import moment, { duration } from 'moment';
 
-const TimeOffRequestsTable = ({requests ,openModal}) => {
+const TimeOffRequestsTable = ({requests, openModal, darkMode}) => {
   const sortRequests = (a, b) => {
     const momentA = moment(a.startingDate, 'YYYY-MM-DD');
     const momentB = moment(b.startingDate, 'YYYY-MM-DD');
@@ -14,7 +14,7 @@ const TimeOffRequestsTable = ({requests ,openModal}) => {
       </div>
       {requests?.length > 0 ? (
         <>
-          <div className="user-profile-time-off-div-table-header">
+          <div className={`user-profile-time-off-div-table-header ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
             <div className="user-profile-time-off-div-table-date">Date</div>
             <div className="user-profile-time-off-div-table-duration">Duration</div>
           </div>
@@ -23,7 +23,7 @@ const TimeOffRequestsTable = ({requests ,openModal}) => {
               .slice()
               .sort(sortRequests)
               .map(request => (
-                <div className="user-profile-time-off-div-table-entry" key={request._id}>
+                <div className={`user-profile-time-off-div-table-entry ${darkMode ? 'bg-space-cadet text-light' : ''}`} key={request._id}>
                   <div className="user-profile-time-off-div-table-entry-icon-tooltip-wrapper">
                     <div className="user-profile-time-off-div-table-entry-icon" onClick={openModal}>
                       <svg
@@ -74,7 +74,7 @@ const TimeOffRequestsTable = ({requests ,openModal}) => {
           </div>
         </>
       ) : (
-        <div className="pl-1">No time off scheduled.</div>
+        <div className={`pl-1 ${darkMode ? 'bg-space-cadet text-light' : ''}`}>No time off scheduled.</div>
       )}
     </div>
   );

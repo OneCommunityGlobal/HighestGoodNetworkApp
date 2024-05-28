@@ -3,6 +3,7 @@ import React from 'react';
 import { Table, Button } from 'react-bootstrap';
 import hasPermission from '../../utils/permissions';
 import { connect } from 'react-redux';
+import { boxStyle, boxStyleDark } from 'styles';
 
 /**
  * Shows the dates and times a user has edited their time entries. Admins are given the ability to delete these edits.
@@ -11,6 +12,8 @@ import { connect } from 'react-redux';
  * @returns
  */
 const TimeEntryEditHistory = props => {
+  const {darkMode, tabletView} = props;
+
   const editHistory = [...props.userProfile.timeEntryEditHistory].reverse();
 
   const canDeleteTimeEntry = props.hasPermission('deleteTimeEntry') ;
@@ -37,29 +40,29 @@ const TimeEntryEditHistory = props => {
 
   return (
     <>
-      <p>Time Entry Edit History</p>
-      <Table variant="">
+      <p className='text-azure'>Time Entry Edit History</p>
+      <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`} width="100%">
         <thead>
-          <tr>
-            <th>
+          <tr style={tabletView ? {fontSize: "10px"} : {}}>
+            <th className={darkMode ? 'bg-space-cadet p-2' : 'p-2'}>
               Date / Time
               <br />
               (Pacific Time)
             </th>
-            <th>
+            <th className={darkMode ? 'bg-space-cadet' : ''}>
               Initial Time
               <br />
               (HH:MM:SS)
             </th>
-            <th>
+            <th className={darkMode ? 'bg-space-cadet' : ''}>
               New Time
               <br />
               (HH:MM:SS)
             </th>
-            {canDeleteTimeEntry && <th></th>}
+            {canDeleteTimeEntry && editHistory.length > 0 && <th className={darkMode ? 'bg-space-cadet' : ''}></th>}
           </tr>
         </thead>
-        <tbody>
+        <tbody style={tabletView ? {fontSize: "10px"} : {}}>
           {editHistory.map(item => {
             return (
               <tr key={`edit-history-${item._id}`}>
@@ -72,7 +75,7 @@ const TimeEntryEditHistory = props => {
                 <td>{secondsToHms(item.newSeconds)}</td>
                 {canDeleteTimeEntry && !props.isRecordBelongsToJaeAndUneditable && (
                   <td>
-                    <Button variant="danger" onClick={() => deleteEdit(item._id)}>
+                    <Button variant="danger" onClick={() => deleteEdit(item._id)} style={{...(tabletView ? {fontSize: "10px"} : {}), ...(darkMode ? boxStyleDark : boxStyle)}}>
                       Delete&nbsp;Edit
                     </Button>
                   </td>
@@ -81,7 +84,7 @@ const TimeEntryEditHistory = props => {
             );
           })}
         </tbody>
-      </Table>
+      </table>
     </>
   );
 };

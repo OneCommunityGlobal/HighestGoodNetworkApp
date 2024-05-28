@@ -14,7 +14,7 @@ import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
 import { hrsFilterBtnColorMap } from 'constants/colors';
-
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { toast } from 'react-toastify';
 
 /**
@@ -37,11 +37,6 @@ const TimeEntry = (props) => {
 
   const { _id: timeEntryUserId } = timeEntryUserProfile;
   const { _id: timeEntryId } = data;
-
-  const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const dispatch = useDispatch();
-
   const { 
     dateOfWork, 
     isTangible, 
@@ -51,22 +46,71 @@ const TimeEntry = (props) => {
     taskId,
     notes,
   } = data;
-
-  let projectName, projectCategory, taskName, taskClassification;
-
-  if (from === 'TaskTab') {
-    // Time Entry rendered under Tasks tab
-    ({ projectName, projectCategory, taskName, taskClassification } = data)
-  } else {
-    // Time Entry rendered under weekly tabs
-    const timeEntryProject = displayUserProjects.find(project => project.projectId === projectId);
-    ({ projectName, projectCategory } = timeEntryProject);
-    if (taskId) {
-      const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
-      console.log('timeEntryTask', timeEntryTask)
-      if (timeEntryTask) ({ taskName, taskClassification = '' } = timeEntryTask); // temporary fix for timeentry of tasks not have current user as resource
-    }
+  const projectDetailsSetup =()=>{
+     try {
+         if(from === 'TaskTab' && data){
+             return {
+               projectName: data?.projectName||"",
+               projectCategory: data?.projectCategory||"",
+               taskName:data?.taskName||"",
+               taskClassification : data?.taskClassification || ""
+             }
+         }
+         else
+         {
+          const timeEntryProject = displayUserProjects.find(project => project.projectId === projectId);
+          let returnObj = {}
+           if(timeEntryProject!=undefined){
+               returnObj ={
+                projectName: timeEntryProject?.projectName || "",
+                projectCategory: timeEntryProject?.projectCategory || "",
+               }
+           }
+           if (taskId) {
+            const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
+            if (timeEntryTask){
+               returnObj ={...returnObj,taskName:timeEntryTask?.taskName||"",taskClassification:""}
+            }    
+          }
+          return returnObj;
+         }
+     } catch (error) {
+       console.log(error);
+     }
   }
+  const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [filteredColor,setFilteredColor] = useState(hrsFilterBtnColorMap[7]);
+  const [projectDetails,setProjectDetails] = useState(projectDetailsSetup())
+  const dispatch = useDispatch();
+
+ 
+
+
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
+
+  //moved below code to another function 
+  // if (from === 'TaskTab') {
+  //   // Time Entry rendered under Tasks tab
+  //   ({ projectName, projectCategory, taskName, taskClassification } = data)
+  // } else {
+  //   // Time Entry rendered under weekly tabs
+  //   try {
+  //     const timeEntryProject = displayUserProjects.find(project => project.projectId === projectId);
+  //     console.log(timeEntryProject);
+  //   if(timeEntryProject!=undefined){  
+  //     ({ projectName, projectCategory } = timeEntryProject);
+  //   }
+  //   if (taskId) {
+  //     const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
+  //     console.log('timeEntryTask', timeEntryTask)
+  //     if (timeEntryTask) ({ taskName, taskClassification = '' } = timeEntryTask); // temporary fix for timeentry of tasks not have current user as resource
+  //   }
+  //   } catch (error) {
+  //     console.log(error)
+  //   }
+    
+  // }
   
   const toggle = () => setTimeEntryFormModal(modal => !modal);
 
@@ -78,16 +122,16 @@ const TimeEntry = (props) => {
 
   //permission to edit any time log entry (from other user's Dashboard
     // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-  const canEdit = dispatch(hasPermission('editTimelogInfo')) 
+  const canEdit = (dispatch(hasPermission('editTimelogInfo')) 
     //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission('editTimeEntry')) 
+    || dispatch(hasPermission('editTimeEntry'))) && !cantEditJaeRelatedRecord;
 
   //permission to Delete time entry from other user's Dashboard
-  const canDelete = dispatch(hasPermission('deleteTimeEntryOthers')) ||
+  const canDelete = (dispatch(hasPermission('deleteTimeEntryOthers')) ||
     //permission to delete any time entry on their own time logs tab
     (isAuthUser && dispatch(hasPermission('deleteTimeEntry'))) ||
     //default permission: delete own sameday tangible entry
-    isAuthUserAndSameDayEntry;
+    isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord;;
 
   const toggleTangibility = async () => {
     setIsProcessing(true);
@@ -107,24 +151,41 @@ const TimeEntry = (props) => {
     }
     setIsProcessing(false);
   };
-  let filteredColor;
-  const daysPast = moment().diff(dateOfWork, 'days');
-  switch (true) {
-    case daysPast === 0:
-      filteredColor = hrsFilterBtnColorMap[1];
-      break;
-    case daysPast === 1:
-      filteredColor = hrsFilterBtnColorMap[2];
-      break;
-    case daysPast === 2:
-      filteredColor = hrsFilterBtnColorMap[3];
-      break;
-    case daysPast === 3:
-      filteredColor = hrsFilterBtnColorMap[4];
-      break;
-    default:
-      filteredColor = hrsFilterBtnColorMap[7];
+
+  const editFilteredColor = ()=>{
+    try {
+    const daysPast = moment().diff(dateOfWork, 'days');
+     let choosenColor ="";
+     switch (daysPast) {
+      case 0:
+         choosenColor = hrsFilterBtnColorMap[1]
+         break;
+      case 1:
+          choosenColor = hrsFilterBtnColorMap[2];
+          break;
+      case 2:
+          choosenColor = hrsFilterBtnColorMap[3];
+          break;
+      case 3:
+          choosenColor = hrsFilterBtnColorMap[4];
+          break;
+      default:
+          choosenColor = hrsFilterBtnColorMap[7];
+     }
+     setFilteredColor(choosenColor);
+    } catch (error) {
+      console.log(error);
+    }
   }
+  
+  
+  useEffect(()=>{
+     editFilteredColor();
+  },[])
+
+  useEffect(()=>{
+     setProjectDetails(projectDetailsSetup());
+  },[from])
 
   return (
     <div style={{ display: "flex" }}>
@@ -153,9 +214,9 @@ const TimeEntry = (props) => {
             </h4>
             <div className="text-muted">Project/Task:</div>
             <p> 
-              {projectName} 
+              {projectDetails?.projectName} 
               <br />
-              {taskName && `\u2003 ↳ ${taskName}`} 
+              {projectDetails?.taskName && `\u2003 ↳ ${projectDetails?.taskName}`} 
             </p>
             <div className='mb-3'>
             {
@@ -181,7 +242,7 @@ const TimeEntry = (props) => {
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {(canEdit || isAuthUserAndSameDayEntry) 
+              {((canEdit || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
                 && from === 'WeeklyTab' 
                 && (
                   <button className="mr-3 text-primary">

@@ -9,6 +9,7 @@ import { Router } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
 import axios from 'axios';
+import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
@@ -30,6 +31,7 @@ beforeEach(() => {
     },
     role: mockAdminState.role,
     tasks: { taskItems: [], fetched: true, copiedTask: '', error: 500 },
+    theme: themeMock,
     projectMembers: { members: [] },
     popupEditor: { currPopup: { popupContent: '' } },
     allProjects: {
@@ -166,6 +168,7 @@ describe('WBSTasks component', () => {
       },
       role: mockAdminState.role,
       tasks: { taskItems: [], fetched: true, copiedTask: '', error: 500 },
+      theme: themeMock,
       projectMembers: { members: [] },
       popupEditor: { currPopup: { popupContent: '' } },
       allProjects: {
@@ -215,6 +218,7 @@ describe('WBSTasks component', () => {
       },
       role: mockAdminState.role,
       tasks: { taskItems: [], fetched: true, copiedTask: '', error: 500 },
+      theme: themeMock,
       projectMembers: { members: [] },
       popupEditor: { currPopup: { popupContent: '' } },
       allProjects: {

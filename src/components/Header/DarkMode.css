@@ -9,3 +9,13 @@
 .dark-mode-button .icon {
   font-size: 34px;
 }
+
+.dark-mode .close {
+  color: white;
+  opacity: 1; 
+}
+
+.dark-mode .close:hover {
+  color: #f0f0f0;
+  opacity: 1; 
+}
