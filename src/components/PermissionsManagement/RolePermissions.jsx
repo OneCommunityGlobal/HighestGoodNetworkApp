@@ -9,6 +9,7 @@ import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
 import { updateRole, getAllRoles } from '../../actions/role';
 import { toast } from 'react-toastify';
+import { permissionFrontToBack } from 'utils/associatedPermissions';
 import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
@@ -131,7 +132,6 @@ function RolePermissions(props) {
   
   useEffect(() => {
     setRoleName(props.role);
-    props.getPresets(props.role);
   }, []);
 
   useEffect(() => {
@@ -148,6 +148,11 @@ function RolePermissions(props) {
 
   const handleChangeRoleName = e => {
     setRoleName(e.target.value);
+  };
+
+  const handleModalOpen = idx => {
+    setContent(modalInfo[idx]);
+    setinfoRoleModal(true);
   };
 
   useEffect(() => {
@@ -186,7 +191,8 @@ function RolePermissions(props) {
 
     const updatedRole = {
       roleName: roleName,
-      permissions: permissions,
+      permissions: permissionsObjectName,
+      permissionsBackEnd: permissionsBackEnd.flat(),
       roleId: id,
     };
     try {
