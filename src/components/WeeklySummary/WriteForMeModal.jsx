@@ -96,15 +96,22 @@ function WriteItForMeModal(props) {
   const handleFetchSummary = async () => {
     try {
       const promptBody = await getTimeEntriesForWeek(displayUserProfile._id, 0);
-      toggle();
-      fetchSummary(
-        `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format. 
-        Write it as only one paragraph. It must be only one paragraph. 
-        Keep it less than 500 words. Start the paragraph with 'This week ${displayUserProfile.firstName}'. 
-        Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment. 
-        Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. 
-        Apply all this to the following:\n${promptBody}`,
-      );
+      if (promptBody === '') {
+        toggle();
+        setButtonDisabled(true);
+        setSummary('You have no time entries logged for this week');
+      } else {
+        toggle();
+        setButtonDisabled(false);
+        fetchSummary(
+          `Please edit the following summary of my week's work. Make sure it is professionally written in 3rd person format. 
+          Write it as only one paragraph. It must be only one paragraph. 
+          Keep it less than 500 words. Start the paragraph with 'This week ${displayUserProfile.firstName}'. 
+          Make sure the paragraph contains no links or URLs and write it in a tone that is matter-of-fact and without embellishment. 
+          Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. 
+          Apply all this to the following:\n${promptBody}`,
+        );
+      }
     } catch (error) {
       throw new Error(`Error in either fetching time entries or summary ${error}`);
     }
