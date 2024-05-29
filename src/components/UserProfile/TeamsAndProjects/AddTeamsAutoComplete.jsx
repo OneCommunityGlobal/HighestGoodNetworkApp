@@ -6,9 +6,9 @@ const AddTeamsAutoComplete = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
 
   React.useEffect(() => {
-    if (!props.selectedTeam) props.setSearchText('');
+    if (!props.selectedTeam && props.setIsNotDisplayAlert) props.setSearchText('');
     else props.setSearchText(props.selectedTeam.teamName);
-  }, [props.selectedTeam, props.setSearchText]);
+  }, [props.selectedTeam, props.setSearchText, props.setIsNotDisplayAlert]);
 
   return (
     <Dropdown
@@ -23,6 +23,7 @@ const AddTeamsAutoComplete = React.memo(props => {
         value={props.searchText}
         autoFocus={true}
         onChange={e => {
+          props.setAutoComplete(1);
           props.setSearchText(e.target.value);
           props.setNewTeamName(e.target.value);
           toggle(true);
@@ -48,7 +49,6 @@ const AddTeamsAutoComplete = React.memo(props => {
               <div
                 key={item._id}
                 className="team-auto-complete"
-                key={item._id}
                 onClick={() => {
                   props.setSearchText(item.teamName);
                   toggle(false);
@@ -58,7 +58,6 @@ const AddTeamsAutoComplete = React.memo(props => {
                 {item.teamName}
               </div>
             ))}
-
 
           {props.teamsData.allTeams.every(
             team => team.teamName.toLowerCase() !== props.searchText.toLowerCase(),
@@ -73,8 +72,6 @@ const AddTeamsAutoComplete = React.memo(props => {
               Create new team: {props.searchText}
             </div>
           )}
-            
-            
         </div>
       ) : (
         <></>

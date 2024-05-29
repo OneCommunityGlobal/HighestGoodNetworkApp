@@ -22,48 +22,81 @@ const AddTeamPopup = React.memo(props => {
   const [newTeamIsActive, setNewTeamIsActive] = useState(true);
   const [isDuplicateTeam, setDuplicateTeam] = useState(false);
   const [isNotDisplayToast, setIsNotDisplayToast] = useState(false);
+  const [isNotDisplayAlert, setIsNotDisplayAlert] = useState(false);
+  const [autoComplete, setAutoComplete] = useState(null);
 
-  const onAssignTeam = () => {
+  const format = result =>
+    result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+
+  const IfTheUserNotSelectedSuggestionAutoComplete = () => {
+    const filterTeamData = props.teamsData.allTeams.filter(item =>
+      format(item.teamName).includes(format(searchText)),
+    );
+
+    if (filterTeamData.length > 0) {
+      const arrayToObj = filterTeamData.reduce((obj, item) => (obj = item), {});
+      onAssignTeam(arrayToObj);
+    } else {
+      setIsNotDisplayAlert(true);
+      onValidation(false);
+      return;
+    }
+  };
+
+  const onAssignTeam = result => {
+    const processEnvNodeEnv = process.env.NODE_ENV !== 'test';
+    const condition = {
+      TEAM_NAME: autoComplete === 0,
+      obj: autoComplete === 1,
+      isNotDisplayToast: isNotDisplayToast,
+      selectedTeam: selectedTeam,
+    };
+
     if (!searchText) {
-      // when the user typed nothing
       onValidation(false);
       return;
     }
 
     isNotDisplayToast && toast.warn('Please wait for the team to be created to add your user.');
 
-    if (
-      process.env.NODE_ENV !== 'test' &&
-      selectedTeam &&
-      selectedTeam.members.length > 0 &&
-      !isNotDisplayToast
-    ) {
+    if (condition && processEnvNodeEnv) {
       const userId = props.userProfile._id;
-      const usersTeam = selectedTeam.members.map(item => item.userId);
+
+      const usersTeam = condition.obj
+        ? result.members.map(item => item.userId)
+        : condition.TEAM_NAME
+        ? selectedTeam.members.map(item => item.userId)
+        : null;
+
       const userIsAlreadyInATeam = usersTeam.includes(userId);
       userIsAlreadyInATeam &&
         toast.error(
           'Your user has been found in this team. Please select another team to add your user.',
         );
     }
+    const some = condition.obj
+      ? !props.userTeamsById.some(x => x._id === result._id)
+      : condition.TEAM_NAME
+      ? !props.userTeamsById.some(x => x._id === selectedTeam._id)
+      : null;
 
-    if (
-      selectedTeam &&
-      !props.userTeamsById.some(x => x._id === selectedTeam._id) &&
-      !isNotDisplayToast
-    ) {
-      props.onSelectAssignTeam(selectedTeam);
-      toast.success('Team assigned successfully'); // toast notification
-      onSelectTeam(undefined);
+    if (condition && some) {
+      props.onSelectAssignTeam(condition.TEAM_NAME ? selectedTeam : condition.obj ? result : null);
+      toast.success('Team assigned successfully'); //toast notification
     } else {
       // when the user typed something but didn't select a team
       onValidation(false);
+      setIsNotDisplayAlert(false);
     }
   };
 
   const selectTeam = team => {
     onSelectTeam(team);
-    onValidation(true);
+    setSearchText(team.teamName);
+    setAutoComplete(0);
   };
 
   const onCreateTeam = async () => {
@@ -121,17 +154,33 @@ const AddTeamPopup = React.memo(props => {
             setNewTeamName={setNewTeamName}
             newTeamName={newTeamName}
             setSearchText={setSearchText} // Added setSearchText prop
+            setAutoComplete={setAutoComplete}
+            setIsNotDisplayAlert={setIsNotDisplayAlert}
           />
-          <Button color="primary" style={{ marginLeft: '5px' }} onClick={onAssignTeam}>
+          <Button
+            color="primary"
+            style={{ marginLeft: '5px' }}
+            onClick={() => {
+              if (autoComplete === 1) {
+                IfTheUserNotSelectedSuggestionAutoComplete();
+              } else if (autoComplete === 0) {
+                onAssignTeam();
+              } else if (!searchText) {
+                onValidation(false);
+              }
+            }}
+          >
             Confirm
           </Button>
         </div>
-        {!isValidTeam && searchText && !selectedTeam && (
+        {!isValidTeam && searchText && isNotDisplayAlert && !selectedTeam && (
           <Alert color="danger">Oops, this team does not exist! Create it if you want it.</Alert>
         )}
+
         {!isValidTeam && !searchText && (
           <Alert color="danger">Hey, You need to pick a team first!</Alert>
         )}
+
         {!isValidNewTeam && !isDuplicateTeam ? (
           <Alert color="danger">Please enter a team name.</Alert>
         ) : null}
