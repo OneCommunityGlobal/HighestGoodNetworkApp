@@ -62,6 +62,8 @@ function WriteItForMeModal(props) {
   // const { pasteResponse } = props;
   const [modal, setModal] = useState(false);
   const [summary, setSummary] = useState();
+  const [buttonText, setButtonText] = useState('Copy Text');
+  const [buttonDisabled, setButtonDisabled] = useState(false);
   const toggle = () => setModal(!modal);
 
   const { displayUserProfile } = props; // Access displayUserProfile and authUser from props
@@ -108,6 +110,19 @@ function WriteItForMeModal(props) {
     }
   };
 
+  const copyToClipboard = () => {
+    navigator.clipboard
+      .writeText(JSON.stringify(summary))
+      .then(() => {
+        setButtonText('Text Copied');
+        setButtonDisabled(true);
+      })
+      .catch(() => {
+        setButtonText('Copy Failed');
+        // setButtonDisabled(true);
+      });
+  };
+
   // Assuming you have an endpoints file
 
   return (
@@ -118,8 +133,20 @@ function WriteItForMeModal(props) {
 
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Generated Summary</ModalHeader>
-        <ModalBody>{JSON.stringify(summary) || 'Takeing a few minutes to load summary'}</ModalBody>
+        <ModalBody>
+          {JSON.stringify(summary) || 'Taking a few minutes to load your summary'}
+        </ModalBody>
         <ModalFooter>
+          <span>Proofread and Copy the summary</span>
+          <Button
+            color="primary"
+            id="copyButton"
+            onClick={copyToClipboard}
+            style={boxStyle}
+            disabled={buttonDisabled}
+          >
+            {buttonText}
+          </Button>
           <Button color="primary" onClick={toggle} style={boxStyle}>
             Close
           </Button>{' '}
