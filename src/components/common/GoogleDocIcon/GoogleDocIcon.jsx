@@ -1,9 +1,8 @@
 import { toast } from 'react-toastify';
-import googleDocIconPng from '../../../assets/images/google_doc_icon.png'
+import googleDocIconPng from '../../../assets/images/google_doc_icon.png';
 import './style.css';
 
 export default function GoogleDocIcon({ link }) {
-
   const handleGoogleDocClick = () => {
     const toastGoogleLinkDoesNotExist = 'toast-on-click';
     if (link) {
@@ -21,7 +20,8 @@ export default function GoogleDocIcon({ link }) {
   };
 
   return (
-    <span onClick={handleGoogleDocClick}
+    <span
+      onClick={handleGoogleDocClick}
       onKeyDown={event => {
         if (event.key === 'Enter' || event.key === ' ') {
           handleGoogleDocClick();
@@ -31,7 +31,11 @@ export default function GoogleDocIcon({ link }) {
       role="button"
     >
       {/* inactive: image will be grey if no Google Doc link present */}
-      <img className={`google-doc-icon ${link ? "" : "inactive"}`} src={googleDocIconPng} alt="google_doc" />
+      <img
+        className={`google-doc-icon ${link ? '' : 'inactive'}`}
+        src={googleDocIconPng}
+        alt="google_doc"
+      />
     </span>
-  )
+  );
 }

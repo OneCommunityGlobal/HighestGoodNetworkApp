@@ -22,9 +22,8 @@ import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
 
 const TeamMemberTasks = React.memo(props => {
-  const darkMode = useSelector(state => state.theme.darkMode);
   // props from redux store
-  const { authUser, displayUser, isLoading, usersWithTasks, usersWithTimeEntries } = props;
+  const { authUser, displayUser, isLoading, usersWithTasks, usersWithTimeEntries, darkMode } = props;
 
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
   const [currentTaskNotifications, setCurrentTaskNotifications] = useState([]);
@@ -224,7 +223,7 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   return (
-    <div className={"container " + (darkMode ? "team-member-tasks bg-oxford-blue" : "team-member-tasks")}>
+    <div className={"container " + (darkMode ? "team-member-tasks bg-space-cadet" : "team-member-tasks")}>
       <header className="header-box">
         <h1 className={darkMode ? "text-light" : ""}>Team Member Tasks</h1>
 
@@ -286,6 +285,7 @@ const TeamMemberTasks = React.memo(props => {
               fontSize={22}
               isPermissionPage={true}
               role={authUser.role} 
+              darkMode={darkMode}
             />
           </div>
         ) : (
@@ -300,6 +300,7 @@ const TeamMemberTasks = React.memo(props => {
         toggle={handleOpenTaskNotificationModal}
         onApprove={handleTaskNotificationRead}
         loggedInUserId={authUser.userid}
+        darkMode={darkMode}
       />
       {currentUserId != '' && (
         <TaskCompletedModal
@@ -316,24 +317,25 @@ const TeamMemberTasks = React.memo(props => {
           setCurrentUserId={setCurrentUserId}
           setClickedToShowModal={setClickedToShowModal}
           taskModalOption={taskModalOption}
+          darkMode={darkMode}
         />
       )}
       <div className="task_table-container">
         <Table>
-          <thead className="pc-component" style={{ position: 'sticky', top: 0 }}>
+          <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
               {/* Empty column header for hours completed icon */}
-              <th colSpan={1}/>
-              <th colSpan={2} className="team-member-tasks-headers">
+              <th colSpan={1} className={darkMode ? "bg-space-cadet" : ""}/>
+              <th colSpan={2} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
                 <Table borderless className={"team-member-tasks-subtable " + (darkMode ? "text-light" : "")}>
-                  <thead>
+                  <thead className={darkMode ? "bg-space-cadet" : ""}>
                     <tr>
-                      <th className="team-member-tasks-headers team-member-tasks-user-name">
+                      <th className={`team-member-tasks-headers team-member-tasks-user-name ${darkMode ? "bg-space-cadet" : ""}`}>
                         Team Member
                       </th>
-                      <th className="team-member-tasks-headers team-clocks team-clocks-header">
+                      <th className={`team-member-tasks-headers team-clocks team-clocks-header ${darkMode ? "bg-space-cadet" : ""}`}>
                         <FontAwesomeIcon 
-                          style={{color: darkMode ? 'grey' : ''}} 
+                          style={{color: darkMode ? 'lightgray' : ''}} 
                           icon={faClock} 
                           title="Weekly Committed Hours" />
                         /
@@ -353,12 +355,12 @@ const TeamMemberTasks = React.memo(props => {
                   </thead>
                 </Table>
               </th>
-              <th colSpan={3} className="team-member-tasks-headers">
+              <th colSpan={3} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
                 <Table borderless className={"team-member-tasks-subtable " + (darkMode ? "text-light" : "")}>
-                  <thead>
+                  <thead className={darkMode ? "bg-space-cadet" : ""}>
                     <tr>
-                      <th>Tasks(s)</th>
-                      <th className="team-task-progress">Progress</th>
+                      <th className={darkMode ? "bg-space-cadet" : ""}>Tasks(s)</th>
+                      <th className={`team-task-progress ${darkMode ? "bg-space-cadet" : ""}`}>Progress</th>
                       {displayUser.role === 'Administrator' ? <th>Status</th> : null}
                     </tr>
                   </thead>
@@ -442,6 +444,7 @@ const mapStateToProps = state => ({
   isLoading: state.teamMemberTasks.isLoading,
   usersWithTasks: state.teamMemberTasks.usersWithTasks,
   usersWithTimeEntries: state.teamMemberTasks.usersWithTimeEntries,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, null)(TeamMemberTasks);

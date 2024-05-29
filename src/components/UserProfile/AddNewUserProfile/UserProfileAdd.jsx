@@ -37,7 +37,7 @@ import PhoneInput from 'react-phone-input-2';
 import 'react-phone-input-2/lib/style.css';
 import TimeZoneDropDown from '../TimeZoneDropDown';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import WeeklySummaryOptions from './WeeklySummaryOptions';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -47,13 +47,8 @@ import { ENDPOINTS } from 'utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
-/** Change the create date from next date to current date
- * const nextDay = new Date();
- * nextDay.setDate(nextDay.getDate() + 1);
- */
-const today = new Date();
 
-class AddUserProfile extends Component {
+class UserProfileAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
@@ -83,10 +78,10 @@ class AddUserProfile extends Component {
         },
         showphone: true,
         weeklySummaryOption: 'Required',
-        createdDate: today,
+        createdDate: new Date(),
         actualEmail: '',
         actualPassword: '',
-        startDate: today,
+        startDate: new Date(),
         actualConfirmedPassword: '',
       },
       formValid: {},
@@ -138,6 +133,12 @@ class AddUserProfile extends Component {
       actualConfirmedPassword,
       jobTitle,
     } = this.state.userProfile;
+
+    const darkMode = this.props.darkMode;
+
+    const fontColor = darkMode ? 'text-light' : '';
+    const fontWeight = darkMode ? 'font-weight-bold' : '';
+
     const phoneNumberEntered =
       this.state.userProfile.phoneNumber === null ||
       this.state.userProfile.phoneNumber.length === 0;
@@ -149,13 +150,13 @@ class AddUserProfile extends Component {
           onClose={this.props.closePopup}
           createUserProfile={this.createUserProfile}
         />
-        <Container className="emp-profile add-new-user">
+        <Container className={`emp-profile add-new-user ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <Row>
             <Col md="12">
               <Form>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Name</Label>
+                    <Label className={fontColor}>Name</Label>
                   </Col>
                   <Col md="3">
                     <FormGroup>
@@ -164,11 +165,11 @@ class AddUserProfile extends Component {
                         name="firstName"
                         id="firstName"
                         value={firstName}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="First Name"
                         invalid={!!this.state.formErrors.firstName}
                       />
-                      <FormFeedback>{this.state.formErrors.firstName}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.firstName}</FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -178,17 +179,17 @@ class AddUserProfile extends Component {
                         name="lastName"
                         id="lastName"
                         value={lastName}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
                         invalid={!!this.state.formErrors.lastName}
                       />
-                      <FormFeedback>{this.state.formErrors.lastName}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.lastName}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Job Title</Label>
+                    <Label className={fontColor}>Job Title</Label>
                   </Col>
                   <Col md={{ size: 6 }}>
                     <FormGroup>
@@ -197,7 +198,7 @@ class AddUserProfile extends Component {
                         name="jobTitle"
                         id="jobTitle"
                         value={jobTitle}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
                       />
                     </FormGroup>
@@ -205,7 +206,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Email</Label>
+                    <Label className={fontColor}>Email</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -214,11 +215,11 @@ class AddUserProfile extends Component {
                         name="email"
                         id="email"
                         value={email}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Email"
                         invalid={!!this.state.formErrors.email}
                       />
-                      <FormFeedback>{this.state.formErrors.email}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.email}</FormFeedback>
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -229,7 +230,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Phone</Label>
+                    <Label className={fontColor}>Phone</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -241,7 +242,7 @@ class AddUserProfile extends Component {
                         onChange={phone => this.phoneChange(phone)}
                       />
                       {phoneNumberEntered && (
-                        <div className="required-user-field">
+                        <div className={`required-user-field ${fontWeight}`}>
                           {this.state.formErrors.phoneNumber}
                         </div>
                       )}
@@ -255,7 +256,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Weekly Committed Hours</Label>
+                    <Label className={fontColor}>Weekly Committed Hours</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -266,7 +267,7 @@ class AddUserProfile extends Component {
                         max={168}
                         id="weeklyCommittedHours"
                         value={this.state.userProfile.weeklyCommittedHours}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         onKeyDown={event => {
                           if (event.key === 'Backspace' || event.key === 'Delete') {
                             this.setState({
@@ -292,13 +293,13 @@ class AddUserProfile extends Component {
                             : !this.state.formValid.weeklyCommittedHours
                         }
                       />
-                      <FormFeedback>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label>Role</Label>
+                    <Label className={fontColor}>Role</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -307,7 +308,7 @@ class AddUserProfile extends Component {
                         name="role"
                         id="role"
                         defaultValue="Volunteer"
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                       >
                         {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
@@ -326,7 +327,7 @@ class AddUserProfile extends Component {
                   <>
                     <Row className="user-add-row">
                       <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                        <Label>Actual Email</Label>
+                        <Label className={fontColor}>Actual Email</Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
@@ -335,17 +336,17 @@ class AddUserProfile extends Component {
                             name="actualEmail"
                             id="actualEmail"
                             value={actualEmail}
-                            onChange={this.handleUserProfile}
+                            onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
                           />
-                          <FormFeedback>{this.state.formErrors.actualEmail}</FormFeedback>
+                          <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
                     <Row className="user-add-row">
                       <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label>Actual Password</Label>
+                        <Label className={fontColor}>Actual Password</Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
@@ -354,7 +355,7 @@ class AddUserProfile extends Component {
                             name="actualPassword"
                             id="actualPassword"
                             value={actualPassword}
-                            onChange={this.handleUserProfile}
+                            onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Password"
                             invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
                             className="d-flex justify-start items-start"
@@ -364,7 +365,7 @@ class AddUserProfile extends Component {
                     </Row>
                     <Row className="user-add-row">
                       <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label>Confirm Actual Password</Label>
+                        <Label className={fontColor}>Confirm Actual Password</Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
@@ -373,7 +374,7 @@ class AddUserProfile extends Component {
                             name="actualConfirmedPassword"
                             id="actualConfirmedPassword"
                             value={actualConfirmedPassword}
-                            onChange={this.handleUserProfile}
+                            onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Confirm Actual Password"
                             invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
                             className="d-flex justify-start items-start"
@@ -385,7 +386,7 @@ class AddUserProfile extends Component {
                 )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className="weeklySummaryOptionsLabel">Weekly Summary Options</Label>
+                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
                   </Col>
                   <Col md="6">
                     <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
@@ -393,7 +394,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Video Call Preference</Label>
+                    <Label className={fontColor}>Video Call Preference</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -402,7 +403,7 @@ class AddUserProfile extends Component {
                         name="collaborationPreference"
                         id="collaborationPreference"
                         value={this.state.userProfile.collaborationPreference}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
                       />
                     </FormGroup>
@@ -410,7 +411,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Admin Document</Label>
+                    <Label className={fontColor}>Admin Document</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -419,7 +420,7 @@ class AddUserProfile extends Component {
                         name="googleDoc"
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Google Doc"
                       />
                     </FormGroup>
@@ -427,7 +428,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Link to Media Files</Label>
+                    <Label className={fontColor}>Link to Media Files</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -436,7 +437,7 @@ class AddUserProfile extends Component {
                         name="dropboxDoc"
                         id="dropboxDoc"
                         value={this.state.userProfile.dropboxDoc}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
                       />
                     </FormGroup>
@@ -444,7 +445,7 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4, offset: 0 }} className="text-md-right my-2">
-                    <Label>Location</Label>
+                    <Label className={fontColor}>Location</Label>
                   </Col>
                   <Col md="6">
                     <Row>
@@ -458,7 +459,7 @@ class AddUserProfile extends Component {
                             block
                             size="sm"
                             onClick={this.onClickGetTimeZone}
-                            style={boxStyle}
+                            style={darkMode ? {} : boxStyle}
                           >
                             Get Time Zone
                           </Button>
@@ -469,13 +470,13 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label>Time Zone</Label>
+                    <Label className={fontColor}>Time Zone</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <TimeZoneDropDown
                         filter={this.state.timeZoneFilter}
-                        onChange={this.handleUserProfile}
+                        onChange={(e) => this.handleUserProfile(e)}
                         selected={'America/Los_Angeles'}
                         id="timeZone"
                       />
@@ -484,19 +485,19 @@ class AddUserProfile extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label>Start Date</Label>
+                    <Label className={fontColor}>Start Date</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
                       <div className="date-picker-item">
                         <DatePicker
                           selected={this.state.userProfile.startDate}
-                          minDate={today}
+                          minDate={new Date()}
                           onChange={date =>
                             this.setState({
                               userProfile: {
                                 ...this.state.userProfile,
-                                startDate: date == '' || date == null ? today : date,
+                                startDate: date == '' || date == null ? new Date() : date,
                               },
                             })
                           }
@@ -511,7 +512,7 @@ class AddUserProfile extends Component {
           </Row>
           <Row>
             <Col md="12">
-              <TabContent id="myTabContent">
+              <TabContent id="myTabContent" className={darkMode ? 'bg-yinmn-blue border-0' : ''}>
                 <TabPane>
                   <ProjectsTab
                     userProjects={this.state.projects}
@@ -521,6 +522,7 @@ class AddUserProfile extends Component {
                     isUserAdmin={true}
                     role={this.props.auth.user.role}
                     edit
+                    darkMode={darkMode}
                   />
                 </TabPane>
                 <TabPane>
@@ -538,6 +540,7 @@ class AddUserProfile extends Component {
                     setCodeValid={this.setCodeValid}
                     edit
                     userProfile={this.state.userProfile}
+                    darkMode={darkMode}
                   />
                 </TabPane>
               </TabContent>
@@ -553,7 +556,7 @@ class AddUserProfile extends Component {
                   size="lg"
                   data-testid="create-userProfile"
                   onClick={() => this.createUserProfile(false)}
-                  style={boxStyle}
+                  style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Create
                 </Button>
@@ -1190,4 +1193,4 @@ export default connect(mapStateToProps, {
   addTeamMember,
   fetchAllProjects,
   hasPermission,
-})(AddUserProfile);
+})(UserProfileAdd);

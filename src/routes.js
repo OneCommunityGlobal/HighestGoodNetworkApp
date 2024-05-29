@@ -35,8 +35,10 @@ import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
 import EquipmentList from './components/BMDashboard/Equipment/List';
 import EquipmentDetail from './components/BMDashboard/Equipment/Detail/EquipmentDetail';
+import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
+import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -125,7 +127,7 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          routePermissions={[RoutePermissions.weeklySummariesReport]}
+          routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute
           path="/reports"
@@ -154,11 +156,32 @@ export default (
           path="/wbs/tasks/:wbsId/:projectId/:wbsName"
           component={WBSDetail}
           fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
         />
-        <ProtectedRoute path="/project/wbs/:projectId" component={WBS} fallback />
-        <ProtectedRoute path="/wbs/tasks/:wbsId/:projectId" component={WBSDetail} fallback />
-        <ProtectedRoute path="/wbs/tasks/:taskId" component={SingleTask} fallback />
-        <ProtectedRoute path="/wbs/samefoldertasks/:taskId" component={SameFolderTasks} fallback />
+        <ProtectedRoute
+          path="/project/wbs/:projectId"
+          component={WBS}
+          fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
+        />
+        <ProtectedRoute
+          path="/wbs/tasks/:wbsId/:projectId"
+          component={WBSDetail}
+          fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
+        />
+        <ProtectedRoute
+          path="/wbs/tasks/:taskId"
+          component={SingleTask}
+          fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
+        />
+        <ProtectedRoute
+          path="/wbs/samefoldertasks/:taskId"
+          component={SameFolderTasks}
+          fallback
+          routePermissions={RoutePermissions.workBreakdownStructure}
+        />
         <ProtectedRoute
           path="/usermanagement"
           exact
@@ -179,8 +202,8 @@ export default (
           component={PermissionsManagement}
           fallback
           routePermissions={[
-            RoutePermissions.permissionsManagement,
-            RoutePermissions.userPermissionsManagement,
+            ...RoutePermissions.permissionsManagement,
+            ...RoutePermissions.userPermissionsManagement,
           ].flat()}
         />
         <ProtectedRoute
@@ -254,6 +277,11 @@ export default (
           component={EquipmentDetail}
         />
         <BMProtectedRoute path="/bmdashboard/equipment/:equipmentId" component={EquipmentDetail} />
+        <BMProtectedRoute
+          path="/bmdashboard/tools/:equipmentId/update"
+          component={UpdateEquipment}
+        />
+        <BMProtectedRoute path="/bmdashboard/tools" exact component={Toolslist} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />

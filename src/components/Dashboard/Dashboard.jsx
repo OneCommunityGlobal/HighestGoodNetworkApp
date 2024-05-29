@@ -14,7 +14,7 @@ export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
-  
+
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
@@ -106,7 +106,11 @@ export function Dashboard(props) {
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            <Timelog isDashboard passSummaryBarData={setSummaryBarData} isNotAllowedToEdit={isNotAllowedToEdit} />
+            <Timelog
+              isDashboard
+              passSummaryBarData={setSummaryBarData}
+              isNotAllowedToEdit={isNotAllowedToEdit}
+            />
           </div>
         </Col>
       </Row>
