@@ -1,0 +1,104 @@
+import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
+import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Col, Row} from 'reactstrap';
+import { Editor } from '@tinymce/tinymce-react';
+import { boxStyle, boxStyleDark } from 'styles';
+
+const RichTextEditor = ({ disabled, value, onEditorChange }) => (
+  <Editor
+    tinymceScriptSrc="/tinymce/tinymce.min.js"
+    init={{
+      license_key: 'gpl',
+      menubar: false,
+      placeholder: 'Please input infos',
+      plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+      toolbar: 'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+      branding: false,
+      min_height: 180,
+      max_height: 500,
+      autoresize_bottom_margin: 1,
+    }}
+    disabled={disabled}
+    value={value}
+    onEditorChange={onEditorChange}
+  />
+);
+
+const RoleInfoModal = ({ info, auth}) => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const { role } = auth.user;
+  const [isOpen, setOpen] = useState(false);
+  const [canEditInfoModal, setCanEditInfoModal] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const { infoContent, CanRead } = { ...info };
+
+  const handleMouseOver = () => {
+    setOpen(true);
+
+    if(role === "Owner"){
+      setCanEditInfoModal(true);
+    }
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
+  const handleInputChange = () => {
+    console.log("handleInput");
+  };
+
+  if (CanRead) {
+    return (
+      <span>
+        <i
+          data-toggle="tooltip"
+          data-placement="right"
+          title="Click for user class information"
+          style={{ fontSize: 24, cursor: 'pointer', color: '#00CCFF', marginLeft: '5px' }}
+          aria-hidden="true"
+          className="fa fa-info-circle"
+          onClick={handleMouseOver}
+        />
+        {isOpen && (
+          <Modal isOpen={isOpen} size="lg" className={darkMode ? 'text-light' : ''}>
+            <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to Information Page!</ModalHeader>
+            <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+              {canEditInfoModal && isEditing ? 
+                <RichTextEditor disabled={!isEditing} value={infoContent} onEditorChange={handleInputChange} /> : 
+                <div
+                style={{ paddingLeft: '20px' }}
+                dangerouslySetInnerHTML={{ __html: infoContent }}
+                onClick={() => setIsEditing(true)}
+              />}
+              {canEditInfoModal && (
+                <div style={{ paddingLeft: '20px' }}>
+                  <p>Click above to edit this content. </p>
+                </div>
+              )}
+            </ModalBody>
+            <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <Row className="no-gutters" style={{ gap: '10px', justifyContent: 'flex-end' }}>
+                {canEditInfoModal && isEditing && (
+                  <Col xs="auto">
+                    <Button className="saveBtn" onClick={handleInputChange} style={darkMode ? boxStyleDark : boxStyle}>
+                      Save
+                    </Button>
+                  </Col>
+                )}
+                <Col xs="auto">
+                  <Button onClick={handleClose} style={darkMode ? boxStyleDark : boxStyle}>
+                    Close
+                  </Button>
+                </Col>
+              </Row>
+            </ModalFooter>
+          </Modal>
+        )}
+      </span>
+    );
+  }
+  return <></>;
+};
+
+export default RoleInfoModal;
