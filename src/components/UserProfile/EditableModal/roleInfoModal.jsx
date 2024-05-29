@@ -9,14 +9,20 @@ const RoleInfoModal = ({ info, auth}) => {
   console.log(role);
 
   const [isOpen, setOpen] = useState(false);
+  const [canEditInfoModal, setCanEditInfoModal] = useState(false);
   const { infoContent, CanRead } = { ...info };
   const handleMouseOver = () => {
     setOpen(true);
+
+    if(role === "Owner"){
+      setCanEditInfoModal(true);
+    }
   };
 
   const handleClose = () => {
     setOpen(false);
   };
+
   if (CanRead) {
     return (
       <span>
