@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
-const RoleInfoModal = ({ info }) => {
-  const darkMode = useSelector(state => state.theme.darkMode)
+const RoleInfoModal = ({ info, auth}) => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const { role } = auth.user;
+
+  console.log(role);
 
   const [isOpen, setOpen] = useState(false);
   const { infoContent, CanRead } = { ...info };

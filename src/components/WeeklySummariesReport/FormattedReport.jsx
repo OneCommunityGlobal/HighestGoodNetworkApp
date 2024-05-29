@@ -69,7 +69,6 @@ function FormattedReport({
   darkMode,
   handleTeamCodeChange,
 }) {
-  // if (auth?.user?.role){console.log(auth.user.role)}
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
   const dispatch = useDispatch();
@@ -93,6 +92,7 @@ function FormattedReport({
             canSeeBioHighlight={canSeeBioHighlight}
             darkMode={darkMode}
             handleTeamCodeChange={handleTeamCodeChange}
+            auth={auth}
           />
         ))}
       </ListGroup>
@@ -194,6 +194,7 @@ function ReportDetails({
   loggedInUserEmail,
   darkMode,
   handleTeamCodeChange,
+  auth,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -214,7 +215,7 @@ function ReportDetails({
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
         <ListGroupItem darkMode={darkMode}>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
+          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} auth={auth} />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
@@ -615,7 +616,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo }) {
+function Index({ summary, weekIndex, allRoleInfo, auth }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
@@ -650,7 +651,10 @@ function Index({ summary, weekIndex, allRoleInfo }) {
         <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
       </span>
       {summary.role !== 'Volunteer' && (
-        <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)} />
+        <RoleInfoModal
+          info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
+          auth={auth}
+        />
       )}
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
