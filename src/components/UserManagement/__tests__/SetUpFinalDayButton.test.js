@@ -40,11 +40,15 @@ describe('SetUpFinalDayButton', () => {
     it(`If user profile end date is not set, then button text is ${SET_FINAL_DAY}`, () => {
       props.userProfile.endDate = undefined;
       renderSetUpFinalDayButton(props);
+
+      // Renders with SET_FINAL_DAY text
       expect(screen.getByText(SET_FINAL_DAY)).toBeInTheDocument();
     });
 
     it(`If user profile end date is set, then button text is ${CANCEL}`, () => {
       renderSetUpFinalDayButton(props);
+
+      // Renders with CANCEL text
       expect(screen.getByText(CANCEL)).toBeInTheDocument();
     });
 
@@ -60,20 +64,21 @@ describe('SetUpFinalDayButton', () => {
     });
   });
 
-  describe('onFinalDayClick tests', () => {
+  describe('onFinalDayClick tests ', () => {
     let props;
 
-    it('If isSet is true, then an alert will appear', async () => {
+    const finalDayDeletedMessage = "This user's final day has been deleted.";
+    it(`If isSet is true, then an alert will appear with message: ${finalDayDeletedMessage}`, async () => {
       renderSetUpFinalDayButton(props);
       const mockedResponse = { data: { status: 200 } };
       axios.patch.mockResolvedValue(mockedResponse);
 
-      const message = "This user's final day has been deleted.";
-
       const cancelFinalDayButton = screen.getByText(CANCEL);
       fireEvent.click(cancelFinalDayButton);
+
+      // Clicking CANCEL button calls final day deleted toast
       waitFor(() => {
-        expect(mockToastSuccess).toHaveBeenCalledWith(message);
+        expect(mockToastSuccess).toHaveBeenCalledWith(finalDayDeletedMessage);
       });
     });
 
@@ -83,7 +88,46 @@ describe('SetUpFinalDayButton', () => {
       renderSetUpFinalDayButton(props);
       fireEvent.click(screen.getByText(SET_FINAL_DAY));
       const setYourFinalDayElement = await screen.findByText('Set Your Final Day');
+
+      // Clicking SET_FINAL_DAY button causes popup to appear
       await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
+    });
+
+    it('setUpFinalDayPopupClose should close SetUpFinalDayPopUp', async () => {
+      props.userProfile.endDate = undefined;
+
+      renderSetUpFinalDayButton(props);
+      fireEvent.click(screen.getByText(SET_FINAL_DAY));
+      const setYourFinalDayElement = await screen.findByText('Set Your Final Day');
+      // Popup is open
+      await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
+
+      const closeFinalDayPopup = screen.getByText('Close');
+      fireEvent.click(closeFinalDayPopup);
+
+      // Clicking close on popup closes it (popup uses function defined in button element)
+      await waitFor(() => expect(setYourFinalDayElement).not.toBeInTheDocument());
+    });
+
+    const finalDaySetMessage = "This user's final day has been set.";
+    it(`When deactiveUser is called by child component, popup should close and alert will appear with following text: ${finalDaySetMessage}`, async () => {
+      props.userProfile.endDate = undefined;
+
+      renderSetUpFinalDayButton(props);
+      fireEvent.click(screen.getByText(SET_FINAL_DAY));
+      // Popup is open
+      const setYourFinalDayElement = await screen.findByText('Set Your Final Day');
+      await waitFor(() => expect(setYourFinalDayElement).toBeInTheDocument());
+
+      const dateInput = screen.getByTestId('date-input');
+      fireEvent.change(dateInput, { target: { value: '12-07-2019' } });
+      const saveFinalDayPopup = screen.getByText('Save');
+      fireEvent.click(saveFinalDayPopup);
+
+      // When final day is set, expect toast to be called with appropriate message
+      waitFor(() => {
+        expect(mockToastSuccess).toHaveBeenCalledWith(finalDaySetMessage);
+      });
     });
 
     beforeEach(() => {
