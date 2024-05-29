@@ -1,16 +1,32 @@
 import React, { PureComponent, useEffect, useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { getUserProfile } from 'actions/userProfile';
+import { getTimeEntriesForPeriod } from 'actions/timeEntries';
 
-export function WbsPieChart({
+export function PieChartByProject({
   projectMembers,
   projectName,
 }) {
+  // console.log("🚀 ~ projectMembers:", projectMembers)
   // console.log("🚀 ~ projectName:", projectName)
   // console.log("🚀 ~ projectMembers:", projectMembers)
 
-  const dispatch = useDispatch();
+  // const dispatch = useDispatch();
+
+  // const fromDate = '2016-01-01';
+  // const toDate = new Date().toISOString().split('T')[0]; // Esto dará la fecha actual en formato 'YYYY-MM-DD'
+  // console.log("🚀 ~ toDate:", toDate)
+
+
+  // dispatch(getTimeEntriesForPeriod(userId, fromDate, toDate));
+
+
+
+
+
+
+
   const [userData, setUserData] = useState([]);
   const [isChecked, setIsChecked] = useState(false);
   const [windowSize, setWindowSize] = useState({
@@ -117,6 +133,7 @@ export function WbsPieChart({
     </div>
   )
 }
+
 
 const generateRandomHexColor = () => {
   // Generate a random hex color code
