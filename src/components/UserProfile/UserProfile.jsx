@@ -691,12 +691,17 @@ function UserProfile(props) {
   const authEmail = props.auth?.user?.email;
   const isUserSelf = targetUserId === requestorId;
 
+  //const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  //const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  //const canPutUserProfile = props.hasPermission('putUserProfile');
+  //const canUpdatePassword = props.hasPermission('updatePassword');
+  //const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canChangeRehireableStatus = props.hasPermission(permissions.userManagement.changeUserRehireableStatus)
   const canChangeUserStatus = props.hasPermission(permissions.userManagement.changeUserStatus);
   const canAddDeleteEditOwners = props.hasPermission(permissions.userManagement.addDeleteEditOwners);
   const canPutUserProfile = props.hasPermission(permissions.userManagement.putUserProfile);
   const canUpdatePassword = props.hasPermission(permissions.userManagement.updatePassword);
   const canGetProjectMembers = props.hasPermission(permissions.projects.getProjectMembers);
-
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
  
   const canEditUserProfile = targetIsDevAdminUneditable

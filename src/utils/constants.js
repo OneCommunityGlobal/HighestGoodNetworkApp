@@ -14,6 +14,7 @@ export const permissions = {
     updatePassword: 'updatePassword',
     manageTimeOffRequests: 'manageTimeOffRequests',
     putUserProfileImportantInfo: 'putUserProfileImportantInfo',
+    changeUserRehireableStatus: 'changeUserRehireableStatus'
   },
   badgeManagement: {
     seeBadges: 'seeBadges',
