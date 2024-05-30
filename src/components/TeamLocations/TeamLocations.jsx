@@ -182,7 +182,8 @@ function TeamLocations() {
         isAbleToEdit={isAbleToEdit}
         editHandler={editHandler}
         removeLocation={removeLocation}
-        isOpen={popupsOpen} />
+        isOpen={popupsOpen} 
+        darkMode={darkMode} />
     );
   });
 
@@ -357,7 +358,8 @@ function TeamLocations() {
             isAbleToEdit={isAbleToEdit}
             editHandler={editHandler}
             removeLocation={removeLocation}
-            isOpen={markerPopupVisible} /> 
+            isOpen={markerPopupVisible}
+            darkMode={darkMode} /> 
             
             : markerPopups }
         </MarkerClusterGroup>
