@@ -12,6 +12,7 @@ function TotalPeopleReport(props) {
   const { startDate, endDate, userProfiles, darkMode } = props;
   const [dataLoading, setDataLoading] = useState(true);
   const [dataRefresh, setDataRefresh] = useState(false);
+  const [dataReady, setDataReady] = useState(false);
   const [showTotalPeopleTable, setShowTotalPeopleTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
   const [allPeople, setAllPeople] = useState([]);
@@ -163,6 +164,7 @@ function TotalPeopleReport(props) {
   };
 
   useEffect(() => {
+    setDataReady(false);
     const controller = new AbortController();
     loadTimeEntriesForPeriod(controller).then(() => {
       setDataLoading(false);
@@ -180,6 +182,7 @@ function TotalPeopleReport(props) {
       setAllPeople(contributedUsers);
       checkPeriodForSummary();
       setDataRefresh(false);
+      setDataReady(true);
     }
   }, [dataRefresh]);
 
@@ -275,7 +278,7 @@ function TotalPeopleReport(props) {
 
   return (
     <div>
-      {dataLoading ? (
+      {!dataReady? (
         <Loading align="center" darkMode={darkMode}/>
       ) : (
         <div>

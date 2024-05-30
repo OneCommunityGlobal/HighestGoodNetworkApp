@@ -11,6 +11,7 @@ import Loading from '../../common/Loading';
 function TotalProjectReport(props) {
   const [dataLoading, setDataLoading] = useState(true);
   const [dataRefresh, setDataRefresh] = useState(false);
+  const [dataReady, setDataReady] = useState(false);
   const [showTotalProjectTable, setShowTotalProjectTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
   const [allProject, setAllProject] = useState([]);
@@ -174,6 +175,7 @@ function TotalProjectReport(props) {
   };
 
   useEffect(() => {
+    setDataReady(false);
     loadTimeEntriesForPeriod().then(() => {
       setDataLoading(false);
       setDataRefresh(true);
@@ -189,6 +191,7 @@ function TotalProjectReport(props) {
       setAllProject(contributedProjects);
       checkPeriodForSummary();
       setDataRefresh(false);
+      setDataReady(true);
     }
   }, [dataRefresh]);
 
@@ -287,7 +290,7 @@ function TotalProjectReport(props) {
 
   return (
     <div>
-      {dataLoading ? (
+      {!dataReady ? (
         <Loading align="center" darkMode={darkMode}/>
       ) : (
         <div>
