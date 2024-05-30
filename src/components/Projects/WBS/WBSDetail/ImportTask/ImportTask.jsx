@@ -12,6 +12,7 @@ import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_IMPORT_POPUP_ID } from './../../../../../constants/popupId';
 import ReactHtmlParser from 'react-html-parser';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../../../../Header/DarkMode.css'
 
 const ImportTask = props => {
   /*
@@ -153,10 +154,10 @@ const ImportTask = props => {
 
   return (
     <>
-      <Modal isOpen={modal} toggle={toggle} onClosed={onCloseHandler}>
-        <ModalHeader toggle={toggle}>Import Tasks</ModalHeader>
-        <ModalBody>
-          <table className="table table-bordered">
+      <Modal isOpen={modal} toggle={toggle} onClosed={onCloseHandler} className={darkMode ? 'dark-mode text-light' : ''}>
+        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Import Tasks</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
             <tbody>
               <tr>
                 <td scope="col">
@@ -253,7 +254,7 @@ const ImportTask = props => {
             </tbody>
           </table>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button color="secondary" onClick={toggle}>
             {importStatus === 'uploaded' ? 'Done' : 'Cancel'}
           </Button>
@@ -269,6 +270,7 @@ const ImportTask = props => {
 const mapStateToProps = state => ({
   popupContent: state.popupEditor.currPopup.popupContent,
   members: state.projectMembers.members,
+  darkMode: state.theme.darkMode,
   state: state,
 });
 export default connect(mapStateToProps, { importTask, getPopupById })(ImportTask);
