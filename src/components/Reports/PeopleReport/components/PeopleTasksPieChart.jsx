@@ -32,6 +32,7 @@ export const PeopleTasksPieChart = ({darkMode}) => {
 
   return (
     <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
+      <div>hi</div>
       {showProjectsPieChart && (
         <ReportPage.ReportBlock darkMode={darkMode}>
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
@@ -51,7 +52,7 @@ export const PeopleTasksPieChart = ({darkMode}) => {
           }Tasks With Completed Hours`}</h5>
           {!showAllTasks && <PieChart
             pieChartId={'tasksPieChart'}
-            data={displayedTasksWithLoggedHoursById}
+            data={tasksWithLoggedHoursById}
             dataLegend={displayedTasksLegend}
             dataLegendHeader="Hours"
             darkMode={darkMode}
