@@ -12,6 +12,7 @@ import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { ENDPOINTS } from 'utils/URL';
 import './Dashboard.css';
 import axios from 'axios';
+import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
@@ -56,22 +57,15 @@ export function Dashboard(props) {
     };
   }, []);
 
-
-
-
-
   const getUserData = async () => {
-    // console.log(authUser)
+
     try {
       const url = ENDPOINTS.USER_PROFILE(authUser.userid);
       const allUserInfo = await axios.get(url).then(res => res.data)
-      console.log(allUserInfo)
 
       if (allUserInfo.permissions.frontPermissions.includes('showModal')) {
         setShowModal(true);
-
         setActualUserProfile(allUserInfo);
-
       }
 
     } catch (error) {
@@ -80,7 +74,6 @@ export function Dashboard(props) {
 
   }
 
-
   const handleCloseModal = async () => {
     if (actualUserProfile) {
 
@@ -88,40 +81,41 @@ export function Dashboard(props) {
         const userId = actualUserProfile?._id;
         const url = ENDPOINTS.USER_PROFILE(userId);
 
-        const updatedPermissions = actualUserProfile.permissions.frontPermissions.filter(permission => permission !== 'showModal');
-        const newUserInfo = { ...actualUserProfile, permissions: { ...actualUserProfile.permissions, frontPermissions: updatedPermissions } };
+        const FilteredPermission = actualUserProfile.permissions.frontPermissions.filter(permission => permission !== 'showModal');
+        const newUserInfo = { ...actualUserProfile, permissions: { frontPermissions: FilteredPermission } };
 
-        console.log(newUserInfo)
-        await axios.put(url, newUserInfo).then(res => console.log(res))
+        await axios.put(url, newUserInfo);
 
-        setActualUserProfile('');
-
-      } catch (err) {
-
+        setActualUserProfile(null);
+      } catch (error) {
+        console.error("Erro", error);
       }
     }
     setShowModal(false);
   };
 
-
-
-
-
   useEffect(() => {
 
     getUserData()
 
-  }, [])
+  }, [authUser.userid])
 
 
 
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
-      {showModal && (
-        <div style={{ width: '300px', height: '300px', border: '1px solid red' }}>
-          <button onClick={handleCloseModal} style={{ border: '1px solid blue' }}>closer</button>
-        </div>
-      )}
+      <Modal isOpen={showModal} toggle={handleCloseModal} id="modal-content__new-role">
+        <ModalHeader
+          toggle={handleCloseModal}
+          cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+        >
+          Important Notification
+        </ModalHeader>
+        <ModalBody id="modal-body_new-role--padding">
+          Your permissions have been updated. Please log out and log back in for the changes to take effect.
+          <Button color="primary" className="mt-3" onClick={handleCloseModal}>Closer</Button>
+        </ModalBody>
+      </Modal>
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
