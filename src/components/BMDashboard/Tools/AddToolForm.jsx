@@ -1,10 +1,23 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import DragAndDrop from 'components/common/DragAndDrop/DragAndDrop';
 import { PhoneInput } from 'components/common/PhoneInput/PhoneInput';
+import { toast } from 'react-toastify';
 
+import { useDispatch, useSelector } from 'react-redux';
+import Joi from 'joi';
 import { boxStyle } from 'styles';
 import './AddToolForm.css';
+
+// import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';
+
+import {
+  fetchToolTypes,
+  postBuildingToolType,
+  resetPostBuildingToolTypeResult,
+} from '../../../actions/bmdashboard/invTypeActions';
+
+// import { addTools } from 'actions/bmdashboard/toolActions';
 
 const initialFormState = {
   project: 'Project1',
@@ -32,8 +45,74 @@ export default function AddToolForm() {
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
+  // const [validationError, setValidationError] = useState('');
+  const [errors, setErrors] = useState({});
+  const dispatch = useDispatch();
+  const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
+
+  useEffect(() => {
+    if (postBuildingInventoryResult?.error === true) {
+      toast.error(`${postBuildingInventoryResult?.result}`);
+      dispatch(resetPostBuildingToolTypeResult());
+    } else if (postBuildingInventoryResult?.result !== null) {
+      toast.success(
+        `Created a new Tool Type "${postBuildingInventoryResult?.result.name}" successfully`,
+      );
+      dispatch(fetchToolTypes());
+      dispatch(resetPostBuildingToolTypeResult());
+      // setDisableSubmit(true);
+    }
+  }, [postBuildingInventoryResult]);
+
+  const validationObj = {
+    name: Joi.string()
+      .min(3)
+      .max(15)
+      .required(),
+    description: Joi.string()
+      .min(5)
+      .max(500)
+      .required(),
+    invoice: Joi.string().required(),
+    quantity: Joi.number()
+      .min(1)
+      .max(999)
+      .integer()
+      .required(),
+    unitPrice: Joi.number()
+      .min(1)
+      .required(),
+  };
+
+  const schema = Joi.object(validationObj).unknown();
+
+  const validate = data => {
+    const result = schema.validate(data, { abortEarly: false });
+    if (!result.error) return null;
+
+    const errorMessages = {};
+    result.error.details.forEach(detail => {
+      errorMessages[detail.path[0]] = detail.message;
+    });
+    return errorMessages;
+  };
 
   const handleInputChange = (name, value) => {
+    // const inputName = name;
+    // const inputValue = value;
+
+    // const errorsList = {};
+    // const validation = validationObj[inputName].validate(inputValue);
+    // if (validation.error) {
+    //   validation.error.details.forEach(error => {
+    //     errorsList[inputName] = error.message;
+    //     // errorsList[detail.path[0]] = detail.message;
+    //   });
+    // } else {
+    //   errorsList[inputName] = '';
+    // }
+
+    // setErrors({ ...errors, ...errorsList });
     setFormData(prevData => ({
       ...prevData,
       [name]: value,
@@ -59,15 +138,37 @@ export default function AddToolForm() {
   const totalTax = calculateTotalTax(Number(taxes), totalPrice);
   const totalPriceWithShipping = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
 
-  const handleSubmit = event => {
+  const handleSubmit = async event => {
     event.preventDefault();
-    // const updatedFormData = {
-    //   ...formData,
-    //   images: uploadedFiles,
-    //   areaCode,
-    //   phoneNumber,
-    // };
-    // console.log('Data', updatedFormData);
+    // eslint-disable-next-line no-console
+    // console.log(errors);
+    // const validation = schema.validate(formData);
+    const validationErrors = validate(formData);
+    setErrors(validationErrors || {});
+
+    if (validationErrors) {
+      // eslint-disable-next-line no-console
+      console.log('validation error:', validationErrors);
+      return;
+    }
+    // if (!validation.error) {
+    const imageURL = uploadedFiles.map(file => URL.createObjectURL(file));
+    const updatedFormData = {
+      ...formData,
+      category: 'Tool',
+      // images: uploadedFiles,
+      images: imageURL[0],
+      areaCode,
+      phoneNumber,
+      totalPriceWithShipping,
+    };
+    // eslint-disable-next-line no-console
+    dispatch(postBuildingToolType(updatedFormData));
+    setFormData(initialFormState);
+    setUploadedFiles([]);
+    setAreaCode(1);
+    setPhoneNumber('');
+    // }
     // TODO: validate form data
     // TODO: submit data to API
   };
@@ -85,7 +186,7 @@ export default function AddToolForm() {
 
   return (
     <Form className="add-tool-form container" onSubmit={handleSubmit}>
-      <FormGroup>
+      {/* <FormGroup>
         <Label for="select-project">Project</Label>
         <Input
           id="select-project"
@@ -97,7 +198,7 @@ export default function AddToolForm() {
           <option value="Project1">Project 1</option>
           <option value="Project2">Project 2</option>
         </Input>
-      </FormGroup>
+      </FormGroup> */}
       <FormGroup>
         <Label for="tool">Tool name</Label>
         <Input
@@ -108,6 +209,12 @@ export default function AddToolForm() {
           value={formData.name}
           onChange={event => handleInputChange('name', event.target.value)}
         />
+        {errors.name && (
+          <Label for="toolNameErr" sm={12} className="toolFormError">
+            {/* Tool &quot;name&quot; length must be at least 4 characters that are not space. */}
+            {errors.name}
+          </Label>
+        )}
       </FormGroup>
       <FormGroup>
         <Label for="invoice-number">Invoice Number or ID</Label>
@@ -119,6 +226,12 @@ export default function AddToolForm() {
           value={formData.invoice}
           onChange={event => handleInputChange('invoice', event.target.value)}
         />
+        {errors.invoice && (
+          <Label for="toolInvoiceErr" sm={12} className="toolFormError">
+            {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
+            {errors.invoice}
+          </Label>
+        )}
       </FormGroup>
       <div className="add-tool-flex-group">
         <FormGroup>
@@ -130,6 +243,12 @@ export default function AddToolForm() {
             value={formData.unitPrice}
             onChange={event => handleInputChange('unitPrice', event.target.value)}
           />
+          {errors.unitPrice && (
+            <Label for="toolUnitPriceErr" sm={12} className="toolFormError">
+              {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
+              {errors.unitPrice}
+            </Label>
+          )}
         </FormGroup>
         <FormGroup>
           <Label for="currency">Currency</Label>
@@ -154,6 +273,12 @@ export default function AddToolForm() {
             value={formData.quantity}
             onChange={event => handleInputChange('quantity', event.target.value)}
           />
+          {errors.quantity && (
+            <Label for="toolQuantityErr" sm={12} className="toolFormError">
+              {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
+              {errors.quantity}
+            </Label>
+          )}
         </FormGroup>
       </div>
       <div className="add-tool-flex-group">
@@ -285,6 +410,12 @@ export default function AddToolForm() {
           value={formData.description}
           onChange={event => handleInputChange('description', event.target.value)}
         />
+        {errors.description && (
+          <Label for="toolDescriptionErr" sm={12} className="toolFormError">
+            {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
+            {errors.description}
+          </Label>
+        )}
       </FormGroup>
       <div className="add-tool-total-price">
         <div>Total Price</div>
@@ -292,11 +423,34 @@ export default function AddToolForm() {
           {totalPriceWithShipping} {formData.currency}
         </div>
       </div>
+      {errors && (
+        <div>
+          <div className="toolFormError">
+            <p>{errors.name} </p>
+          </div>
+          <div className="toolFormError">
+            <p>{errors.description} </p>
+          </div>
+          <div className="toolFormError">
+            <p>{errors.invoice} </p>
+          </div>
+          <div className="toolFormError">
+            <p>{errors.quantity} </p>
+          </div>
+          <div className="toolFormError">
+            <p>{errors.unitPrice} </p>
+          </div>
+        </div>
+      )}
       <div className="add-tool-buttons">
         <Button outline style={boxStyle} onClick={handleCancelClick}>
           Cancel
         </Button>
-        <Button id="submit-button" style={boxStyle}>
+        <Button
+          id="submit-button"
+          style={boxStyle}
+          // disabled={!formData.name || !formData.description}
+        >
           Submit
         </Button>
       </div>
