@@ -1,32 +1,11 @@
 import React, { PureComponent, useEffect, useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
-import { useDispatch, useSelector } from 'react-redux';
-import { getUserProfile } from 'actions/userProfile';
-import { getTimeEntriesForPeriod } from 'actions/timeEntries';
+import './PieChartByProject.css';
 
 export function PieChartByProject({
-  projectMembers,
+  mergedProjectUsersArray,
   projectName,
 }) {
-  // console.log("🚀 ~ projectMembers:", projectMembers)
-  // console.log("🚀 ~ projectName:", projectName)
-  // console.log("🚀 ~ projectMembers:", projectMembers)
-
-  // const dispatch = useDispatch();
-
-  // const fromDate = '2016-01-01';
-  // const toDate = new Date().toISOString().split('T')[0]; // Esto dará la fecha actual en formato 'YYYY-MM-DD'
-  // console.log("🚀 ~ toDate:", toDate)
-
-
-  // dispatch(getTimeEntriesForPeriod(userId, fromDate, toDate));
-
-
-
-
-
-
-
   const [userData, setUserData] = useState([]);
   const [isChecked, setIsChecked] = useState(false);
   const [windowSize, setWindowSize] = useState({
@@ -34,53 +13,60 @@ export function PieChartByProject({
     height: window.innerHeight
   });
   const [inactiveData, setInactiveData] = useState([]);
+  const [activeData, setActiveData] = useState([]);
   const [showInactive, setShowInactive] = useState(false);
+  const [totalHours, setTotalHours] = useState(0);
+  const [globalInactiveHours, setGlobalInactiveHours] = useState(0);
 
   useEffect(() => {
-    const totalUsers = projectMembers.foundUsers;
-    const totalHours = totalUsers.reduce((acc, member) => {
-      return acc + member.weeklycommittedHours;
-    }, 0)
-    const arrData = totalUsers.map(member => {
+    // const totalUsers = mergedProjectUsersArray.length > 0 ? mergedProjectUsersArray.length : [];
+    const totalHoursCalculated = mergedProjectUsersArray.reduce((acc, curr) => {
+      return ((acc + curr.totalSeconds));
+    }, 0) / 3600;
+    setTotalHours(totalHoursCalculated);
+    const activeUsers = mergedProjectUsersArray.filter(member => member.personId.isActive )
+      setActiveData(activeUsers);
+
+    const arrData = mergedProjectUsersArray.map(member => {
       const data = {
-        name: `${member.firstName} ${member.lastName}`,
-        value: member.weeklycommittedHours,
+        name: `${member.personId.firstName} ${member.personId.lastName}`,
+        value: member.totalSeconds/3600,
         projectName,
-        totalHours,
-        lastName: member.lastName
+        totalHoursCalculated,
+        lastName: member.personId.lastName
       }
       return data
-    })
+    });
 
 
     if (showInactive === true) {
-      const inactiveUsers = projectMembers.members.filter(member => !member.isActive )
-      const inactiveUsersId = inactiveUsers.map(obj => obj._id)
-      const inactiveUserProfilesPromise = inactiveUsersId.map(id => {
-        return dispatch(getUserProfile(id))
-      })
-      Promise.all(inactiveUserProfilesPromise).then(inactiveUserProfile =>{
-        setInactiveData(inactiveUserProfile)
-      }).catch(err => console.log(err))
+      const inactiveUsers = mergedProjectUsersArray.filter(member => !member.personId.isActive )
+      setInactiveData(inactiveUsers);
+
+      const totalHoursInactive = inactiveUsers.reduce((acc, curr) => {
+        return ((acc + curr.totalSeconds));
+      }, 0) / 3600;
+      setGlobalInactiveHours(totalHoursInactive);
+
       const inactiveArr = inactiveData.map(member => {
         const data = {
-          name: `${member.firstName} ${member.lastName}`,
-          value: member.weeklycommittedHours,
+          name: `${member.personId.firstName} ${member.personId.lastName}`,
+          value: member.totalSeconds/3600,
           projectName,
-          totalHours,
-          lastName: member.lastName
+          totalHoursCalculated: totalHoursInactive,
+          lastName: member.personId.lastName
         }
         return data;
-      })
-      const allMembers = [...new Set([...inactiveArr, ...arrData])]
-      const sortedArr = allMembers.sort((a, b) => (a.name).localeCompare(b.name))
+      });
+      const sortedArr = inactiveArr.sort((a, b) => (a.name).localeCompare(b.name))
       setUserData(sortedArr)
-    } else {
+    }
+    else {
       const sortedArr = arrData.sort((a, b) => (a.name).localeCompare(b.name))
       setUserData(sortedArr)
     }
 
-  }, [projectMembers,showInactive ])
+  }, [mergedProjectUsersArray,showInactive ])
 
   useEffect(() => {
     window.addEventListener('resize', updateWindowSize);
@@ -101,33 +87,34 @@ export function PieChartByProject({
   };
   return (
     <div>
-      <div style={{
-        display: 'flex',
-        justifyContent: 'space-between',
-        alignItems: 'center',
-        backgroundColor: 'white'
-      }}>
-        <div><h4>{projectName}</h4></div>
+      <div className='pie-chart-title'><h4>PieCharts</h4></div>
+      <div><h5>{projectName}</h5></div>
+      <div className= "pie-chart-container" >
         <div>
           <label style={{
             paddingRight: '1rem'
-          }}>{isChecked ? 'Hide Piechart' : 'Show Piechart'}</label>
+          }}>{isChecked ? 'All-Time Total Hours by All Member (Hide Pie Chart)' : 'All-Time Total Hours by Member (Show PieChart)'}</label>
           <input
             type="checkbox"
             checked={isChecked}
             onChange={handleShowPieChart}
           />
+
         </div>
-      </div>
-      {isChecked && ( <div style={{textAlign:'left'}}>
-      <label style={{marginRight:'1rem'}}>{showInactive ? ' Hide Inactive Users ':' Show Inactive Users ' }</label>
+        {isChecked && ( <div style={{textAlign:'left'}}>
+        <label style={{marginRight:'1rem'}}>{showInactive ? ' Show only Inactive Members ':' Show only Inactive Members ' }</label>
           <input
             type="checkbox"
             checked={showInactive}
             onChange={() => setShowInactive(!showInactive)}
           />
-      </div>)}
-      {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
+          <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  <span> - Hrs Aplied: { totalHours.toFixed(2)- globalInactiveHours.toFixed(2) } </span> </p>
+          <p style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Aplied: { globalInactiveHours.toFixed(2) } </span> </p>
+          <p style={{fontWeight:'bold'}}>Total Aplied Hours: {totalHours.toFixed(2)} </p>
+          <p style={{fontWeight:'bold'}}>Total Members:  {mergedProjectUsersArray.length}</p>
+        </div>)}
+      </div>
+        {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
         <ProjectPieChart userData={userData} windowSize={windowSize.width} />
       </div>)}
     </div>
@@ -162,7 +149,7 @@ const renderActiveShape = (props) => {
   return (
     <g>
       <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-        {payload.lastName} {payload.value} of {payload.totalHours}hrs
+        {payload.lastName.substring(0, 5)} {payload.value.toFixed(1)} of {payload.totalHoursCalculated.toFixed(1)}hrs
       </text>
       <Sector
         cx={cx}
@@ -184,9 +171,9 @@ const renderActiveShape = (props) => {
       />
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${payload.name}`}</text>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${payload.name.substring(0, 14)}`}</text>
       <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-        {`${value} Hours (${(percent * 100).toFixed(2)}%)`}
+        {`${value.toFixed(2)} Hours (${(percent * 100).toFixed(2)}%)`}
       </text>
     </g>
   );

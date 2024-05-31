@@ -43,7 +43,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
     });
     const blueSquares = Number(userProfile.infringements?.length) || 0;
     const infringementAndTimeOff = scheduledVacation + blueSquares;
-    const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
+    const hasRolePermission = user && (user.role === 'Administrator' || user.role === 'Owner');
     if (infringementAndTimeOff >= 4 && !hasRolePermission && !canManageTimeOffRequests) {
       return false;
     }
@@ -139,7 +139,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
         />
       <TimeOffRequestsTable requests={allRequests[userProfile._id]} />
     </div>
-  ) 
+  )
 };
 
 export default BlueSquareLayout;

@@ -4,7 +4,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
 import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
 import { getProjectDetail } from '../../../actions/project';
-import { getTimeEntriesForPeriod } from 'actions/timeEntries';
 import {getTimeEntryByProjectSpecifiedPeriod} from '../../../actions/index'
 import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
 import { fetchAllTasks } from 'actions/task';
@@ -21,7 +20,6 @@ import '../../Teams/Team.css';
 import './ProjectReport.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { PieChartByProject } from './PiechartByProject/PieChartByProject';
-import { setUserProjects } from 'actions/userProjects';
 
 
 // eslint-disable-next-line import/prefer-default-export
@@ -31,8 +29,6 @@ export function ProjectReport({ match }) {
   const [activeMemberCount, setActiveMemberCount] = useState(0);
   const [nonActiveMemberCount, setNonActiveMemberCount] = useState(0);
   const [hoursCommitted, setHoursCommitted] = useState(0);
-  const [loading, setLoading] = useState(true); // Agrega un nuevo estado para rastrear si las solicitudes están en curso
-
   const dispatch = useDispatch();
 
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator';
@@ -49,66 +45,44 @@ export function ProjectReport({ match }) {
   const projectId = match.params.projectId;
 
   const [projectUsers, setProjectUsers] = useState([]);
+  const [mergedProjectUsersArray, setMergedProjectUsersArray] = useState([]);
 
   const fromDate = '2016-01-01';
-  const toDate = new Date().toISOString().split('T')[0]; // new data in  'YYYY-MM-DD'
-
-
-
-  // paso 1 get members of projectID
-
-  const projectMembersReport = useSelector(state => state.projectMembers.members);
-
-  // console.log("🚀 ~ ProjectReport ~ projectUsers:", projectMembersReport)
+  const toDate = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
     dispatch(getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate))
     .then(response => {
       if (response) {
-        console.log('Datos traidos correctamente');
-        console.log(response);
         setProjectUsers(response);
       } else {
-        console.log('Error al traer los datos');
+        console.log('error on fetching data');
       }
     }).catch(() => {
-      console.log('Error al traer los datos');
+      console.log('error on fetching data');
     });
   }, [projectId, fromDate, toDate, dispatch]);
 
   useEffect(() => {
-    console.log('project users', projectUsers);
     const mergedProjectUsers = projectUsers.reduce((acc, curr) => {
-      // Buscar si el usuario ya existe en el array acumulador
-      const existingUser = acc.find(user => user.personId === curr.personId);
-
-      if (existingUser) {
-        // Si el usuario ya existe, sumar totalSeconds al usuario existente
-        existingUser.totalSeconds += curr.totalSeconds;
-      } else {
-        // Si el usuario no existe, agregarlo al array acumulador
-        acc.push(curr);
+      if (curr.personId && !acc[curr.personId._id]) {
+        // Si el usuario no existe en el acumulador, lo inicializamos con el objeto actual
+        acc[curr.personId._id] = {...curr};
+      } else if (curr.personId) {
+        // Si el usuario ya existe, sumamos totalSeconds al existente
+        acc[curr.personId._id].totalSeconds += curr.totalSeconds;
       }
-
       return acc;
-    }, []);
-
-    console.log('merged project users', mergedProjectUsers);
-
-    console.log('length of merged project users', mergedProjectUsers.length);
-
-
+    }, {});
+    setMergedProjectUsersArray(Object.values(mergedProjectUsers));    // console.log('merged project users', mergedProjectUsersArray);
+    // console.log('length of merged project users', mergedProjectUsersArray.length);
   }, [projectUsers]);
 
-
-
   useEffect(() => {
-
     if (match) {
       dispatch(getProjectDetail(projectId));
       dispatch(fetchAllWBS(projectId));
       dispatch(fetchAllMembers(projectId));
-
     }
   }, [dispatch, projectId]);
 
@@ -176,14 +150,13 @@ export function ProjectReport({ match }) {
             </Paging>
           </ReportPage.ReportBlock>
         </div>
-        <div className="tasks-block">
-          <ReportPage.ReportBlock darkMode={darkMode}>
+        <ReportPage.ReportBlock darkMode={darkMode}>
             <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
-          </ReportPage.ReportBlock>
-        </div>
+        </ReportPage.ReportBlock>
         <ReportPage.ReportBlock>
+          <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName}/>
+          <div style={{ marginTop: '40px' }}></div>
           <WbsPieChart projectMembers={projectMembers} projectName={projectName}/>
-          <PieChartByProject projectMembers={projectMembers} projectName={projectName}/>
         </ReportPage.ReportBlock>
       </ReportPage>
     </div>
