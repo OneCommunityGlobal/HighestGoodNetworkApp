@@ -8,9 +8,14 @@ import { WeeklySummary } from '../WeeklySummary';
 import CountdownTimer from '../CountdownTimer';
 import { shallow } from 'enzyme';
 import CurrentPromptModal from '../CurrentPromptModal';
+import configureStore from 'redux-mock-store';
+import { themeMock } from '__tests__/mockStates';
+import { Provider } from 'react-redux';
 
-jest.mock('../CurrentPromptModal', () => 'current-Prompt-Modal')
+jest.mock('../CurrentPromptModal', () => 'current-Prompt-Modal');
 const wrapper = props => shallow(<CurrentPromptModal {...props} />);
+
+const mockStore = configureStore([]);
 
 describe('WeeklySummary page', () => {
   describe('On page load', () => {
@@ -25,7 +30,15 @@ describe('WeeklySummary page', () => {
         roles: [],
       };
 
-      render(<WeeklySummary {...props} />);
+      const store = mockStore({
+        theme: themeMock,
+      });
+
+      render(
+        <Provider store={store}>
+          <WeeklySummary {...props} />
+        </Provider>,
+      );
 
       expect(screen.getByTestId('loading')).toBeInTheDocument();
     });
@@ -40,7 +53,15 @@ describe('WeeklySummary page', () => {
         authUser: { role: '' },
         roles: [],
       };
-      render(<WeeklySummary {...props} />);
+      const store = mockStore({
+        theme: themeMock,
+      });
+
+      render(
+        <Provider store={store}>
+          <WeeklySummary {...props} />
+        </Provider>,
+      );
 
       await waitFor(() => screen.getByTestId('loading'));
 
@@ -59,8 +80,16 @@ describe('WeeklySummary page', () => {
       roles: [],
     };
 
+    const store = mockStore({
+      theme: themeMock,
+    });
+
     beforeEach(() => {
-      render(<WeeklySummary {...props} />);
+      render(
+        <Provider store={store}>
+          <WeeklySummary {...props} />
+        </Provider>,
+      );
     });
 
     it('should display 4 tabs even when the user summaries related fields have not been initialized in the database', () => {
@@ -74,7 +103,15 @@ describe('WeeklySummary page', () => {
         roles: [],
       };
 
-      render(<WeeklySummary {...props} />);
+      const store = mockStore({
+        theme: themeMock,
+      });
+
+      render(
+        <Provider store={store}>
+          <WeeklySummary {...props} />
+        </Provider>,
+      );
 
       const li = screen.getAllByRole('listitem');
       expect(li.length).toEqual(4);
@@ -135,8 +172,16 @@ describe('WeeklySummary page', () => {
       roles: [],
     };
 
+    const store = mockStore({
+      theme: themeMock,
+    });
+
     beforeEach(() => {
-      render(<WeeklySummary {...props} />);
+      render(
+        <Provider store={store}>
+          <WeeklySummary {...props} />
+        </Provider>,
+      );
     });
 
     const testTooltip = async testId => {
@@ -170,9 +215,16 @@ describe('WeeklySummary page', () => {
       authUser: { role: '' },
       roles: [],
     };
+    const store = mockStore({
+      theme: themeMock,
+    });
 
     beforeEach(() => {
-      render(<WeeklySummary {...props} />);
+      render(
+        <Provider store={store}>
+          <WeeklySummary {...props} />
+        </Provider>,
+      );
     });
 
     describe('Media URL field', () => {
