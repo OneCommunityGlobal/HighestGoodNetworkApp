@@ -3,7 +3,10 @@
  */
 export const permissions = {
   reports: 'getReports',
-  weeklySummariesReport: {getWeeklySummaries:'getWeeklySummaries',totalValidWeeklySummaries: 'totalValidWeeklySummaries'},
+  weeklySummariesReport: {
+    getWeeklySummaries: 'getWeeklySummaries',
+    totalValidWeeklySummaries: 'totalValidWeeklySummaries',
+  },
   userManagement: {
     getUserProfiles: 'getUserProfiles',
     postUserProfile: 'postUserProfile',
@@ -16,8 +19,7 @@ export const permissions = {
     putUserProfileImportantInfo: 'putUserProfileImportantInfo',
     changeUserRehireableStatus: 'changeUserRehireableStatus',
     manageAdminLinks: 'manageAdminLinks',
-    seeQSC:'seeQSC'
-
+    seeQSC: 'seeQSC',
   },
   badgeManagement: {
     seeBadges: 'seeBadges',
@@ -25,7 +27,7 @@ export const permissions = {
     updateBadges: 'updateBadges',
     deleteBadges: 'deleteBadges',
     assignBadges: 'assignBadges',
-    assignBadgeOthers: 'assignBadgeOthers'
+    assignBadgeOthers: 'assignBadgeOthers',
   },
   projects: {
     postProject: 'postProject',
@@ -39,15 +41,15 @@ export const permissions = {
     postTask: 'postTask',
     updateTask: 'updateTask',
     deleteTask: 'deleteTask',
-    suggestTask: 'suggestTask', 
+    suggestTask: 'suggestTask',
   },
-  
+
   teams: {
     postTeam: 'postTeam',
     putTeam: 'putTeam',
     deleteTeam: 'deleteTeam',
     assignTeamToUsers: 'assignTeamToUsers',
-    editTeamCode: 'editTeamCode'
+    editTeamCode: 'editTeamCode',
   },
   permissionsManagement: {
     postRole: 'postRole',
@@ -66,6 +68,6 @@ export const permissions = {
   },
   seeSummaryIndicator: 'seeSummaryIndicator',
   seeVisibilityIcon: 'seeVisibilityIcon',
-  infringementAuthorizer:'infringementAuthorizer',
-  highlightEligibleBios:'highlightEligibleBios'
+  infringementAuthorizer: 'infringementAuthorizer',
+  highlightEligibleBios: 'highlightEligibleBios',
 };

@@ -6,7 +6,6 @@ import { boxStyle, boxStyleDark } from 'styles';
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import './UserRoleTab.css';
-import { permissions } from 'utils/constants';
 
 function PermissionListItem(props) {
   const {
