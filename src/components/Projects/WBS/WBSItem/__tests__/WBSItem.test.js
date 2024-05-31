@@ -9,13 +9,10 @@ import { Provider } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import getPopupById from 'actions/popupEditorAction';
 import axios from 'axios';
-<<<<<<< HEAD
 import { permissions } from 'utils/constants';
 
-=======
 import { themeMock } from '__tests__/mockStates';
 import { MemoryRouter } from 'react-router-dom';
->>>>>>> development
 
 const index = 0;
 const key = 'item123';
