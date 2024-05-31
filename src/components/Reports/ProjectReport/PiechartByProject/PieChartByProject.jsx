@@ -5,6 +5,7 @@ import './PieChartByProject.css';
 export function PieChartByProject({
   mergedProjectUsersArray,
   projectName,
+  darkMode
 }) {
   const [userData, setUserData] = useState([]);
   const [isChecked, setIsChecked] = useState(false);
@@ -86,7 +87,7 @@ export function PieChartByProject({
     setIsChecked(!isChecked);
   };
   return (
-    <div>
+    <div className={darkMode ? 'text-light' : ''}>
       <div className='pie-chart-title'><h4>PieCharts</h4></div>
       <div><h5>{projectName}</h5></div>
       <div className= "pie-chart-container" >

@@ -153,10 +153,10 @@ export function ProjectReport({ match }) {
         <ReportPage.ReportBlock darkMode={darkMode}>
             <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
         </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock>
-          <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName}/>
+        <ReportPage.ReportBlock darkMode={darkMode}>
+          <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>
           <div style={{ marginTop: '40px' }}></div>
-          <WbsPieChart projectMembers={projectMembers} projectName={projectName}/>
+          <WbsPieChart projectMembers={projectMembers} projectName={projectName} darkMode={darkMode}/>
         </ReportPage.ReportBlock>
       </ReportPage>
     </div>

@@ -7,6 +7,7 @@ import '../PiechartByProject/PieChartByProject.css';
 export function WbsPieChart({
   projectMembers,
   projectName,
+  darkMode
 }) {
   const dispatch = useDispatch();
   const [userData, setUserData] = useState([]);
@@ -87,7 +88,7 @@ export function WbsPieChart({
     setIsChecked(!isChecked);
   };
   return (
-    <div>
+    <div className={darkMode ? 'text-light' : ''}>
       <div><h5> Owners, Mangers and Admins in {projectName} </h5></div>
       <div className= "pie-chart-title" >
         <div>
