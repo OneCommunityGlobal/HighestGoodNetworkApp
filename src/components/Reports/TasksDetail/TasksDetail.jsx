@@ -31,28 +31,29 @@ export const TasksDetail = props => {
   let tasksList = [];
   let tasks = [];
   tasks = props.tasks_filter;
-  if (props.tasks_filter.length > 0) {
-    tasks = ['priority', 'status', 'classification', 'isActive', 'isAssigned'].reduce(
-      (filteredTask, filter) => {
-        return props[filter]
-          ? filteredTask.filter(item => item[filter] === props[filter])
-          : filteredTask;
-      },
-      tasks,
-    );
 
-    if (props.users) {
-      let test = [];
-      for (var i = 0; i < tasks.length; i++) {
-        for (var j = 0; j < tasks[i].resources.length; j++) {
-          if (tasks[i].resources[j].name === props.users) {
-            test.push(tasks[i]);
-          }
-        }
-      }
-      tasks = test;
-    }
-  }
+  // if (tasks.length > 0) {
+  //   tasks = ['priority', 'status', 'classification', 'isActive', 'isAssigned'].reduce(
+  //     (filteredTask, filter) => {
+  //       return props[filter]
+  //         ? filteredTask.filter(item => item[filter] === props[filter])
+  //         : filteredTask;
+  //     },
+  //     tasks,
+  //   );
+
+  //   if (props.users) {
+  //     let test = [];
+  //     for (var i = 0; i < tasks.length; i++) {
+  //       for (var j = 0; j < tasks[i].resources.length; j++) {
+  //         if (tasks[i].resources[j].name === props.users) {
+  //           test.push(tasks[i]);
+  //         }
+  //       }
+  //     }
+  //     tasks = test;
+  //   }
+  // }
 
   tasksList = tasks.map((task, index) => (
     <div key={task._id} className="tasks-detail-table-row">

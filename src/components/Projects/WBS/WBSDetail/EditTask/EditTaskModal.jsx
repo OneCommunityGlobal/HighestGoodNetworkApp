@@ -305,6 +305,7 @@ function EditTaskModal(props) {
                     id="priority"
                     onChange={e => setPriority(e.target.value)}
                     value={priority}
+                    className='mt-2 ml-3'
                   >
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
