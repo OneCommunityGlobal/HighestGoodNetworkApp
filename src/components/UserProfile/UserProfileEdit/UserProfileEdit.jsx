@@ -874,7 +874,7 @@ class UserProfileEdit extends Component {
                         <Label>Start Date</Label>
                       </Col>
                       <Col md="6">
-                        <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
+                        <p>{moment(userProfile.startDate).format('YYYY-MM-DD')}</p>
                       </Col>
                     </Row>
                     <Row>
@@ -883,6 +883,14 @@ class UserProfileEdit extends Component {
                       </Col>
                       <Col md="6">
                         <p>Present</p>
+                      </Col>
+                    </Row>
+                    <Row>
+                      <Col md="6">
+                        <Label>Account Created Date</Label>
+                      </Col>
+                      <Col md="6">
+                      <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
                       </Col>
                     </Row>
                     <Row>

@@ -5,12 +5,18 @@ import { formatCreatedDate, formatDate } from 'utils/formatDate';
 import { permissions } from 'utils/constants';
 
 const BlueSquare = props => {
+<<<<<<< HEAD
   const isInfringementAuthorizer = props.hasPermission(permissions.infringementAuthorizer);
   const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
   const { blueSquares, handleBlueSquare} = props;
+=======
+  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
+  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const { blueSquares, handleBlueSquare, darkMode } = props;
+>>>>>>> development
 
   return (
-    <div className="blueSquareContainer">
+    <div className={`blueSquareContainer ${darkMode ? 'bg-space-cadet' : ''}`}>
       <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length > 0
           ? blueSquares
@@ -21,7 +27,7 @@ const BlueSquare = props => {
                   role="button"
                   id="wrapper"
                   data-testid="blueSquare"
-                  className="blueSquareButton"
+                  className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
                   onClick={() => {
                     if (!blueSquare._id) {
                       handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
@@ -60,7 +66,7 @@ const BlueSquare = props => {
             onClick={() => {
               handleBlueSquare(true, 'addBlueSquare', '');
             }}
-            className="blueSquareButton"
+            className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
             color="primary"
             data-testid="addBlueSquare"
           >

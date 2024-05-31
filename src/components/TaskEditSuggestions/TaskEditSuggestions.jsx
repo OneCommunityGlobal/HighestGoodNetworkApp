@@ -18,7 +18,9 @@ export const TaskEditSuggestions = () => {
     userSortDirection,
     dateSuggestedSortDirection,
     userRole,
+    darkMode
   } = useSelector(getTaskEditSuggestionsData);
+  
 
   const dispatch = useDispatch();
 
@@ -38,42 +40,45 @@ export const TaskEditSuggestions = () => {
   };
 
   return (
-    <Container>
-      <h1 className="mt-3">Task Edit Suggestions</h1>
-      {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
-      {isLoading && <Loading />}
-      {!isLoading && taskEditSuggestions && (
-        <div style={{ overflowX: 'auto' }}>
-          <Table>
-            <thead>
-              <tr>
-                <th onClick={() => dispatch(toggleDateSuggestedSortDirection())}>
-                  Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection} />
-                </th>
-                <th onClick={() => dispatch(toggleUserSortDirection())}>
-                  User <SortArrow sortDirection={userSortDirection} />
-                </th>
-                <th>Task</th>
-                <th></th>
-              </tr>
-            </thead>
-            <tbody>
-              {taskEditSuggestions.map(taskEditSuggestion => (
-                <TaskEditSuggestionRow
-                  key={taskEditSuggestion._id}
-                  taskEditSuggestion={taskEditSuggestion}
-                  handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
-                />
-              ))}
-            </tbody>
-          </Table>
-        </div>
-      )}
-      <TaskEditSuggestionsModal
-        isTaskEditSuggestionModalOpen={isTaskEditSuggestionModalOpen}
-        taskEditSuggestion={currentTaskEditSuggestion}
-        handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
-      />
-    </Container>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+      <Container>
+        <h1 className="pt-3">Task Edit Suggestions</h1>
+        {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
+        {isLoading && <Loading />}
+        {!isLoading && taskEditSuggestions && (
+          <div style={{ overflowX: 'auto' }}>
+            <Table>
+              <thead className={darkMode ? 'text-light' : ''}>
+                <tr>
+                  <th onClick={() => dispatch(toggleDateSuggestedSortDirection())}>
+                    Date Suggested <SortArrow sortDirection={dateSuggestedSortDirection} />
+                  </th>
+                  <th onClick={() => dispatch(toggleUserSortDirection())}>
+                    User <SortArrow sortDirection={userSortDirection} />
+                  </th>
+                  <th>Task</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                {taskEditSuggestions.map(taskEditSuggestion => (
+                  <TaskEditSuggestionRow
+                    key={taskEditSuggestion._id}
+                    taskEditSuggestion={taskEditSuggestion}
+                    handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
+                    darkMode={darkMode}
+                  />
+                ))}
+              </tbody>
+            </Table>
+          </div>
+        )}
+        <TaskEditSuggestionsModal
+          isTaskEditSuggestionModalOpen={isTaskEditSuggestionModalOpen}
+          taskEditSuggestion={currentTaskEditSuggestion}
+          handleToggleTaskEditSuggestionModal={handleToggleTaskEditSuggestionModal}
+        />
+      </Container>
+    </div>
   );
 };

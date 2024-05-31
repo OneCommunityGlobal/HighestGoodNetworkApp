@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
-import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
+import { Table, Progress, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -18,6 +18,8 @@ import moment from 'moment-timezone';
 import { permissions } from 'utils/constants';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
+import { boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -150,6 +152,7 @@ function LeaderBoard({
             areaTitle="Leaderboard"
             role={loggedInUser.role}
             fontSize={24}
+            darkMode={darkMode}
             isPermissionPage
           />
         </div>
@@ -163,6 +166,7 @@ function LeaderBoard({
               areaTitle="Leaderboard settings"
               role={loggedInUser.role}
               fontSize={24}
+              darkMode={darkMode}
               isPermissionPage
             />
           </div>
@@ -171,7 +175,7 @@ function LeaderBoard({
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <Table className={`leaderboard table-fixed ${darkMode ? 'text-light' : ''}`}>
           <thead>
-            <tr>
+            <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
               <th>
                 <div className="d-flex align-items-center">
@@ -182,6 +186,7 @@ function LeaderBoard({
                     role={loggedInUser.role}
                     fontSize={18}
                     isPermissionPage
+                    darkMode={darkMode}
                     className="p-2" // Add Bootstrap padding class to the EditableInfoModal
                   />
                 </div>
@@ -209,7 +214,7 @@ function LeaderBoard({
             </tr>
           </thead>
           <tbody className="my-custome-scrollbar">
-            <tr>
+            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
@@ -237,19 +242,25 @@ function LeaderBoard({
               </td>
             </tr>
             {leaderBoardData.map(item => (
-              <tr key={item.personId}>
+              <tr key={item.personId} className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <td className="align-middle">
                   <div>
                     <Modal
                       isOpen={isDashboardOpen === item.personId}
                       toggle={dashboardToggle}
-                      className="modal-personal-dashboard"
+                      className={darkMode ? 'text-light dark-mode' : ''}
+                      style={darkMode ? boxStyleDark : {}}
                     >
-                      <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
-                      <ModalBody>
+                      <ModalHeader
+                        toggle={dashboardToggle}
+                        className={darkMode ? 'bg-space-cadet' : ''}
+                      >
+                        Jump to personal Dashboard
+                      </ModalHeader>
+                      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
                       </ModalBody>
-                      <ModalFooter>
+                      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <Button variant="primary" onClick={() => showDashboard(item)}>
                           Ok
                         </Button>{' '}
@@ -335,7 +346,7 @@ function LeaderBoard({
                         ) &&
                         currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                           ? 'rgba(128, 128, 128, 0.5)'
-                          : undefined,
+                          : '#007BFF',
                     }}
                   >
                     {item.name}

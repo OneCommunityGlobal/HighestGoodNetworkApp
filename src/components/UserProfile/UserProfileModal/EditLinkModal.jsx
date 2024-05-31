@@ -19,8 +19,12 @@ import { permissions } from 'utils/constants';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
+<<<<<<< HEAD
 
   const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
+=======
+  const canManageAdminLinks = props.hasPermission('manageAdminLinks');
+>>>>>>> development
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
@@ -173,7 +177,7 @@ const EditLinkModal = props => {
         <ModalHeader toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody>
           <div>
-            {canPutUserProfileImportantInfo && (
+            {canManageAdminLinks && (
               <CardBody>
                 <Card style={{ padding: '16px' }}>
                   <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>

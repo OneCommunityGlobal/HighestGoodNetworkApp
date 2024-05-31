@@ -14,7 +14,10 @@ export const permissions = {
     updatePassword: 'updatePassword',
     manageTimeOffRequests: 'manageTimeOffRequests',
     putUserProfileImportantInfo: 'putUserProfileImportantInfo',
-    changeUserRehireableStatus: 'changeUserRehireableStatus'
+    changeUserRehireableStatus: 'changeUserRehireableStatus',
+    manageAdminLinks: 'manageAdminLinks',
+    seeQSC:'seeQSC'
+
   },
   badgeManagement: {
     seeBadges: 'seeBadges',

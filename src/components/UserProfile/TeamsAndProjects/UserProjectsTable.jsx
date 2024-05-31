@@ -3,13 +3,15 @@ import { Button, Col, Tooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserProjectsTable.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { permissions } from 'utils/constants';
 
 
 const UserProjectsTable = React.memo(props => {
+  const {darkMode} = props;
+
   const [tooltipOpen, setTooltip] = useState(false);
 
   const canAssignProjectToUsers = props.hasPermission(permissions.projects.assignProjectToUsers);
@@ -100,13 +102,13 @@ const UserProjectsTable = React.memo(props => {
 
   return (
     <div>
-      <div className="desktop">
-        <div className="projecttable-container">
+      <div className="desktop" data-testid='userProjectTest'>
+        <div className={`projecttable-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div className="container">
             <div className="row mr-auto">
               <Col
                 md='12'
-                className='projects-and-tasks-header d-flex'
+                className={`projects-and-tasks-header d-flex ${darkMode  ? 'bg-space-cadet' : ''}`}
               >
                 <span className="projects-span mr-auto pt-2">Projects</span>
                 {props.edit && props.role && canAssignProjectToUsers && (
@@ -116,7 +118,7 @@ const UserProjectsTable = React.memo(props => {
                       <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignproject" toggle={toggleTooltip}>
                         Please save changes before assign project
                       </Tooltip>
-                      <Button className="btn-addproject mt-2" id="btn-assignproject" color="primary" style={boxStyle} disabled>
+                      <Button className="btn-addproject mt-2" id="btn-assignproject" color="primary" style={darkMode ? boxStyleDark : boxStyle} disabled>
                         Assign Project
                       </Button>
                     </>
@@ -127,7 +129,7 @@ const UserProjectsTable = React.memo(props => {
                     onClick={() => {
                       props.onButtonClick();
                     }}
-                    style={boxStyle}
+                    style={darkMode ? boxStyleDark : boxStyle}
                    >
                     Assign Project
                   </Button>
@@ -138,10 +140,10 @@ const UserProjectsTable = React.memo(props => {
             </div>
           </div>
           <div className='table-container'>
-            <table className="table table-bordered table-responsive-sm">
-              <thead>
+            <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
+              <thead className={darkMode ? 'bg-space-cadet' : ''}>
                 {props.role && (
-                  <tr>
+                  <tr className={darkMode ? 'bg-space-cadet' : ''}>
                     <th className='table-header'>#</th>
                     <th>Project Name</th>
                     {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
@@ -151,7 +153,7 @@ const UserProjectsTable = React.memo(props => {
               <tbody>
                 {props.userProjectsById.length > 0 ? (
                   tasksByProject?.map((project, index) => (
-                    <tr key={project._id}>
+                    <tr key={project._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{index + 1}</td>
                       <td>{project.projectName}</td>
                       {props.edit && props.role && canDeleteProjects &&(
@@ -163,7 +165,7 @@ const UserProjectsTable = React.memo(props => {
                               props.onDeleteClicK(project._id);
                               deleteTasksTemporarily(project._id);
                             }}
-                            style={boxStyle}
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             Delete
                           </Button>
@@ -184,7 +186,7 @@ const UserProjectsTable = React.memo(props => {
             <div className="projecttable-container">
               <Col
                 md={'12'}
-                className='projects-and-tasks-header d-flex flex-row'
+                className={`projects-and-tasks-header d-flex flex-row ${darkMode  ? 'bg-space-cadet' : ''}`}
               >
                 <span className="projects-span py-2 mr-auto">Tasks</span>
                 <div
@@ -195,7 +197,7 @@ const UserProjectsTable = React.memo(props => {
                     type="button"
                     className="btn btn-primary btn-sm"
                     onClick={() => filterTasksAndUpdateFilter('all')}
-                    style={boxStyle}
+                    style={darkMode ? boxStyleDark : boxStyle}
                   >
                     All
                   </button>
@@ -203,7 +205,7 @@ const UserProjectsTable = React.memo(props => {
                     type="button"
                     className="btn btn-success btn-sm"
                     onClick={() => filterTasksAndUpdateFilter('active')}
-                    style={boxStyle}
+                    style={darkMode ? boxStyleDark : boxStyle}
                   >
                     Active
                   </button>
@@ -211,15 +213,15 @@ const UserProjectsTable = React.memo(props => {
                     type="button"
                     className="btn btn-danger btn-sm"
                     onClick={() => filterTasksAndUpdateFilter('complete')}
-                    style={boxStyle}
+                    style={darkMode ? boxStyleDark : boxStyle}
                   >
                     Complete
                   </button>
                 </div>
               </Col>
             </div>
-            <div className='table-container'>
-              <table className="table table-bordered table-responsive-sm">
+            <div className='table-container' data-testid='userProjectTaskTest'>
+              <table className={`table table-bordered table-responsive-sm ${darkMode ?'text-light' : ''}`}>
                 <thead>
                   {props.role && (
                     <tr>
@@ -248,7 +250,7 @@ const UserProjectsTable = React.memo(props => {
                               <td>
                                 <Button
                                   color="danger"
-                                  style={{ ...boxStyle, width: '72px' }}
+                                  style={darkMode ? { ...boxStyleDark, width: '72px' } : { ...boxStyle, width: '72px' }}
                                   disabled={!canAssignProjectToUsers}
                                   onClick={e => removeOrAddTaskFromUser(task, 'remove')}
                                 >
@@ -260,7 +262,7 @@ const UserProjectsTable = React.memo(props => {
                               <td>
                                 <Button
                                   color="success"
-                                  style={{ ...boxStyle, width: '72px' }}
+                                  style={darkMode ? { ...boxStyleDark, width: '72px' } : { ...boxStyle, width: '72px' }}
                                   disabled={!canAssignProjectToUsers}
                                   onClick={e => removeOrAddTaskFromUser(task, 'add')}
                                 >
@@ -282,11 +284,11 @@ const UserProjectsTable = React.memo(props => {
         )}
       </div>
       <div className="tablet">
-        <div className="projecttable-container">
+        <div className={`projecttable-container ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             <Col
               md="12"
-              className='d-flex projects-and-tasks-header'
+              className={`d-flex projects-and-tasks-header ${darkMode  ? 'bg-space-cadet text-light' : ''}`}
             >
               <span className="projects-span mr-auto pt-2">Projects</span>
               {props.edit && props.role && (
@@ -306,7 +308,7 @@ const UserProjectsTable = React.memo(props => {
                         onClick={() => {
                           props.onButtonClick();
                         }}
-                        style={boxStyle}
+                        style={darkMode ? boxStyleDark : boxStyle}
                         >
                         Assign Project
                       </Button>
@@ -317,13 +319,13 @@ const UserProjectsTable = React.memo(props => {
             </Col>
           </div>
           <div className='table-container'>
-            <table className="table table-bordered">
+            <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 {props.role && (
                   <tr>
-                    <th className='table-header'>#</th>
-                    <th>Project Name</th>
-                    {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
+                    <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
+                    <th className={darkMode ? 'bg-space-cadet' : ''}>Project Name</th>
+                    {canAssignProjectToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>{}</th> : null}
                   </tr>
                 )}
               </thead>
@@ -342,7 +344,7 @@ const UserProjectsTable = React.memo(props => {
                               props.onDeleteClicK(project._id);
                               deleteTasksTemporarily(project._id);
                             }}
-                            style={boxStyle}
+                            style={darkMode ? boxStyleDark : boxStyle}
                           >
                             Delete
                           </Button>
@@ -363,7 +365,7 @@ const UserProjectsTable = React.memo(props => {
               <div>
                 <Col
                   md={'12'}
-                  className='projects-and-tasks-header d-flex'
+                  className={`projects-and-tasks-header d-flex ${darkMode ? 'bg-space-cadet text-light' : ''}`}
                 >
                   <span className="projects-span mr-auto pt-2">Tasks</span>
                   <div className="justify-content-end d-flex py-2" style={{ gap: '4px' }}>
@@ -371,7 +373,7 @@ const UserProjectsTable = React.memo(props => {
                       type="button"
                       className="btn btn-primary btn-sm"
                       onClick={() => filterTasksAndUpdateFilter('all')}
-                      style={boxStyle}
+                      style={darkMode ? boxStyleDark : boxStyle}
                     >
                       All
                     </button>
@@ -379,7 +381,7 @@ const UserProjectsTable = React.memo(props => {
                       type="button"
                       className="btn btn-success btn-sm"
                       onClick={() => filterTasksAndUpdateFilter('active')}
-                      style={boxStyle}
+                      style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Active
                     </button>
@@ -387,7 +389,7 @@ const UserProjectsTable = React.memo(props => {
                       type="button"
                       className="btn btn-danger btn-sm"
                       onClick={() => filterTasksAndUpdateFilter('complete')}
-                      style={boxStyle}
+                      style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Complete
                     </button>
@@ -397,16 +399,16 @@ const UserProjectsTable = React.memo(props => {
             </div>
             <div className='table-container'>
               <table className="table table-bordered">
-                <thead>
+                <thead className={darkMode ? 'text-light' : ''}>
                   {props.role && (
                     <tr>
-                      <th className='table-header'>#</th>
-                      <th>Task Name</th>
-                      {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
+                      <th className={`table-header ${darkMode ? 'bg-space-cadet' : ''}`}>#</th>
+                      <th className={darkMode ? 'bg-space-cadet' : ''}>Task Name</th>
+                      {canAssignProjectToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>{}</th> : null}
                     </tr>
                   )}
                 </thead>
-                <tbody>
+                <tbody className={darkMode ? 'text-light' : ''}>
                   {props.userProjectsById.length > 0 ? (
                     filteredTasks?.map(project =>
                       project?.tasks?.map(task => {
@@ -425,7 +427,7 @@ const UserProjectsTable = React.memo(props => {
                               <td>
                                 <Button
                                   color="danger"
-                                  style={{ ...boxStyle, width: '72px' }}
+                                  style={darkMode ? { ...boxStyleDark, width: '72px' } : { ...boxStyle, width: '72px' }}
                                   disabled={!canAssignProjectToUsers}
                                   onClick={e => removeOrAddTaskFromUser(task, 'remove')}
                                 >
@@ -437,7 +439,7 @@ const UserProjectsTable = React.memo(props => {
                               <td>
                                 <Button
                                   color="success"
-                                  style={{ ...boxStyle, width: '72px' }}
+                                  style={darkMode ? { ...boxStyleDark, width: '72px' } : { ...boxStyle, width: '72px' }}
                                   disabled={!canAssignProjectToUsers}
                                   onClick={e => removeOrAddTaskFromUser(task, 'add')}
                                 >

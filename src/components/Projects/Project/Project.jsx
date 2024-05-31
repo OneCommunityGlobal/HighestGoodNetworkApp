@@ -9,6 +9,8 @@ import { boxStyle } from 'styles';
 import { permissions } from 'utils/constants';
 
 const Project = props => {
+  const {darkMode} = props;
+
   const [originName] = useState(props.name);
   const [originCategory, setOriginCategory] = useState(props.category);
   const [name, setName] = useState(props.name);
@@ -41,7 +43,7 @@ const Project = props => {
   };
 
   return (
-    <tr className="projects__tr" id={'tr_' + props.projectId}>
+    <tr className={`projects__tr ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} id={'tr_' + props.projectId}>
       <th className="projects__order--input" scope="row">
         <div>{props.index + 1}</div>
       </th>
@@ -49,7 +51,7 @@ const Project = props => {
         {(canPutProject) ? (
           <input
             type="text"
-            className="form-control"
+            className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
             value={name}
             onChange={e => setName(e.target.value)}
             onBlur={updateProject}
@@ -65,6 +67,7 @@ const Project = props => {
             onChange={e => {
               setCategory(e.target.value);
             }}
+            className={darkMode ? 'bg-yinmn-blue border-primary text-light' : ''}
           >
             <option default value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
@@ -93,7 +96,7 @@ const Project = props => {
       </td>
       <td>
         <NavItem tag={Link} to={`/inventory/${props.projectId}`}>
-          <button type="button" className="btn btn-outline-info" style={boxStyle}>
+          <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
             {' '}
             <i className="fa fa-archive" aria-hidden="true"></i>
           </button>
@@ -101,7 +104,7 @@ const Project = props => {
       </td>
       <td>
         <NavItem tag={Link} to={`/project/members/${props.projectId}`}>
-          <button type="button" className="btn btn-outline-info" style={boxStyle}>
+          <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
             {' '}
             <i className="fa fa-users" aria-hidden="true"></i>
           </button>
@@ -110,7 +113,7 @@ const Project = props => {
 
       <td>
         <NavItem tag={Link} to={`/project/wbs/${props.projectId}`}>
-          <button type="button" className="btn btn-outline-info" style={boxStyle}>
+          <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
             <i className="fa fa-tasks" aria-hidden="true"></i>
           </button>
         </NavItem>
@@ -122,7 +125,7 @@ const Project = props => {
             type="button"
             className="btn btn-outline-danger"
             onClick={e => props.onClickDelete(props.projectId, props.active, props.name, props.category)}
-            style={boxStyle}
+            style={darkMode ? {} : boxStyle}
           >
             {DELETE}
           </button>

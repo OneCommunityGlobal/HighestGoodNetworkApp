@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -21,9 +21,13 @@ import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
+<<<<<<< HEAD
 import { boxStyle } from 'styles';
 import {permissions} from 'utils/constants'
 
+=======
+import { boxStyle, boxStyleDark } from 'styles';
+>>>>>>> development
 
 function ControllerRow (props) {
   /*
@@ -34,7 +38,7 @@ function ControllerRow (props) {
   const canPostTask = props.hasPermission(permissions.projects.postTask);
 
   // props from store
-  const { role, userPermissions, roles, popupContent } = props;
+  const { role, userPermissions, roles, popupContent, darkMode } = props;
 
   // states from hooks
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -78,7 +82,7 @@ function ControllerRow (props) {
 
   return (
     <tr className="wbsTaskController desktop-view" id={`controller_${props.taskId}`}>
-      <td colSpan={props.tableColNum} className="controlTd">
+      <td colSpan={props.tableColNum} className={`controlTd ${darkMode ? 'bg-space-cadet' : ''}`}>
         {props.level < 4 && canPostTask ? (
           <AddTaskModal
             key={`addTask_${props.taskId}`}
@@ -112,25 +116,26 @@ function ControllerRow (props) {
           load={props.load}
           setIsLoading={props.setIsLoading}
         />
-        {canDeleteTask ? (
+        
           <>
+          {canDeleteTask && (
             <Button
               color="danger"
               size="sm"
               className="controlBtn"
               onClick={showUpDeleteModal}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Remove
             </Button>
+            )}
 
             <Dropdown
               direction="up"
               isOpen={dropdownOpen}
               toggle={toggle}
-              style={{ ...boxStyle, float: 'left' }}
             >
-              <DropdownToggle caret color="primary" className='controlBtn' size="sm">
+              <DropdownToggle caret color="primary" className='controlBtn' size="sm" style={darkMode ? boxStyleDark : boxStyle}>
                 Move
               </DropdownToggle>
               <DropdownMenu>
@@ -151,20 +156,21 @@ function ControllerRow (props) {
               size="sm"
               className="controlBtn"
               onClick={() => onCopy(props.taskId)}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               {isCopied ? 'Copied' : 'Copy'}
             </Button>
           </>
-        ) : null}
+        
         <ModalDelete
-          isOpen={modalDelete}
+          isOpen={canDeleteTask && modalDelete}
           closeModal={() => {
             setModalDelete(false);
           }}
           confirmModal={() => deleteTask(props.taskId, props.mother)}
           modalMessage={popupContent || ''}
           modalTitle={Message.CONFIRM_DELETION}
+          darkMode={darkMode}
         />
       </td>
     </tr>
@@ -176,6 +182,7 @@ const mapStateToProps = state => ({
   userPermissions: state.auth.user?.permissions?.frontPermissions,
   roles: state.role.roles,
   popupContent: state.popupEditor.currPopup.popupContent,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {
