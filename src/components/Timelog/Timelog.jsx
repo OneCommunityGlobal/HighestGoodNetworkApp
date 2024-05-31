@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -84,7 +84,12 @@ const endOfWeek = offset => {
 
 const Timelog = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
-
+  const location = useLocation();
+  function displayUserIdRoute() {
+   const path =  location.pathname
+   const id = path.split('/').pop()
+   return id;
+  }
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const canEditTimeEntry = props.hasPermission('editTimeEntry');
@@ -132,7 +137,7 @@ const Timelog = props => {
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId : userId,
+    viewingUser ? viewingUser.userId : displayUserIdRoute()||userId
   );
 
   const isAuthUser = authUser.userid === displayUserId;
@@ -421,6 +426,8 @@ const Timelog = props => {
   }, [timeLogState.projectsSelected]);
   
   useEffect(() => {
+
+    setDisplayUserId( viewingUser ? viewingUser.userId : displayUserIdRoute()||userId);
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
     window.addEventListener('storage', handleStorageEvent);
     return () => {

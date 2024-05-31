@@ -102,7 +102,8 @@ const SummaryBar = props => {
       if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
         totalBadges += 1;
       } else {
-        totalBadges += Math.round(Number(badge.count));
+        const badgeCount = badge?.count ? Number(badge.count) : 0;
+        totalBadges += Math.round(badgeCount);
       }
     });
 
@@ -239,7 +240,7 @@ const SummaryBar = props => {
   const canEditData = () => !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') && canPutUserProfileImportantInfo;
 
   useEffect(() => {
-    setUserProfile(userProfile);
+   setUserProfile(userProfile);
   }, [userProfile]);
 
   useEffect(() => {
@@ -289,8 +290,8 @@ const SummaryBar = props => {
                 </font>
                 <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
                   <div className='font-weight-bold'>
-                    {displayUserProfile.firstName + ' '}
-                    {displayUserProfile.lastName}
+                    {userProfile?.firstName ||displayUserProfile.firstName + ' '}
+                    {userProfile?.lastName || displayUserProfile.lastName}
                   </div>
                 </CardTitle>
               </div>
