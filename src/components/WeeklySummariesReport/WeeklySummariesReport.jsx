@@ -21,12 +21,8 @@ import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
-<<<<<<< HEAD
-import { boxStyle } from 'styles';
 import { permissions } from 'utils/constants';
-=======
 import { boxStyle, boxStyleDark } from 'styles';
->>>>>>> development
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';

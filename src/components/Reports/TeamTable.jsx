@@ -6,11 +6,8 @@ import { Input, FormGroup, FormFeedback } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { updateTeam } from 'actions/allTeamsAction';
-<<<<<<< HEAD
 import { permissions } from 'utils/constants';
-=======
 import { boxStyle, boxStyleDark } from 'styles';
->>>>>>> development
 
 function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
   // Display project lists

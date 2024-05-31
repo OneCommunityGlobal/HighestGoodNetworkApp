@@ -8,15 +8,10 @@ import { permissions } from 'utils/constants';
  * The header row of the team table.
  */
 export const TeamTableHeader = React.memo(
-<<<<<<< HEAD
-  ({ onTeamNameSort, onTeamActiveSort, sortTeamNameState, sortTeamActiveState, ...props }) => {
+
+  ({ onTeamNameSort, onTeamActiveSort, sortTeamNameState, sortTeamActiveState, darkMode, ...props }) => {
     const canDeleteTeam = props.hasPermission(permissions.teams.deleteTeam);
     const canPutTeam = props.hasPermission(permissions.teams.putTeam);
-=======
-  ({ onTeamNameSort, onTeamActiveSort, sortTeamNameState, sortTeamActiveState, darkMode, ...props }) => {
-    const canDeleteTeam = props.hasPermission('deleteTeam');
-    const canPutTeam = props.hasPermission('putTeam');
->>>>>>> development
 
     const getSortIcon = (sortState) => {
       switch(sortState) {

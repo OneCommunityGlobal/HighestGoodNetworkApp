@@ -29,12 +29,7 @@ import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
-<<<<<<< HEAD
 import { permissions } from 'utils/constants';
-import checkNegativeNumber from 'utils/checkNegativeHours';
-import fixDiscrepancy from 'utils/fixDiscrepancy';
-import { boxStyle } from 'styles';
-=======
 import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css'
 
@@ -54,7 +49,6 @@ const TINY_MCE_INIT_OPTIONS = {
   autoresize_bottom_margin: 1,
   content_style: 'body { cursor: text !important; }',
 };
->>>>>>> development
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.

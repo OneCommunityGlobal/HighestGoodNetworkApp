@@ -13,17 +13,9 @@ import { permissions } from 'utils/constants';
 
 
 const Member = props => {
-<<<<<<< HEAD
   const canUnassignUserInProject = props.hasPermission(permissions.projects.unassignUserInProject);
-  const canGetUserProfiles = props.hasPermission(permissions.userManagement.getUserProfiles);
-
- 
-=======
+  const canGetUserProfiles = props.hasPermission(permissions.userManagement.getUserProfiles)
   const {darkMode} = props;
-  const canGetUserProfiles = props.hasPermission('getUserProfiles');
-  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
->>>>>>> development
   return (
     <React.Fragment>
       <tr className={`members__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}>

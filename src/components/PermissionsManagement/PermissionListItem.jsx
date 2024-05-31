@@ -153,14 +153,9 @@ function PermissionListItem(props) {
                 // eslint-disable-next-line react/destructuring-assignment
                 props.onChange();
               }}
-<<<<<<< HEAD
-              disabled={!props.hasPermission(permissions.permissionsManagement.putRole)}
-              style={boxStyle}
-=======
               // eslint-disable-next-line react/destructuring-assignment
               disabled={!props.hasPermission('putRole')}
               style={darkMode ? boxStyleDark : boxStyle}
->>>>>>> development
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
             </Button>
@@ -168,11 +163,6 @@ function PermissionListItem(props) {
             <Button
               className="icon-button"
               color={hasThisPermission ? 'danger' : 'success'}
-<<<<<<< HEAD
-              onClick={() => {togglePermission(permission)}}
-              disabled={!props.hasPermission(permissions.permissionsManagement.putRole) || immutablePermissions.includes(permission)}
-              style={boxStyle}
-=======
               onClick={() => {
                 togglePermission(permission);
               }}
@@ -181,7 +171,6 @@ function PermissionListItem(props) {
                 !props.hasPermission('putRole') || immutablePermissions.includes(permission)
               }
               style={darkMode ? boxStyleDark : boxStyle}
->>>>>>> development
             >
               {hasThisPermission ? 'Delete' : 'Add'}
             </Button>

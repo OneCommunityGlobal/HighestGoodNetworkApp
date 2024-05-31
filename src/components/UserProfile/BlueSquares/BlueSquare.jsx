@@ -5,15 +5,9 @@ import { formatCreatedDate, formatDate } from 'utils/formatDate';
 import { permissions } from 'utils/constants';
 
 const BlueSquare = props => {
-<<<<<<< HEAD
   const isInfringementAuthorizer = props.hasPermission(permissions.infringementAuthorizer);
   const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
-  const { blueSquares, handleBlueSquare} = props;
-=======
-  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
   const { blueSquares, handleBlueSquare, darkMode } = props;
->>>>>>> development
 
   return (
     <div className={`blueSquareContainer ${darkMode ? 'bg-space-cadet' : ''}`}>

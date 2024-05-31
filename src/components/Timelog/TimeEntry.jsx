@@ -13,13 +13,10 @@ import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
 import { hrsFilterBtnColorMap } from 'constants/colors';
-<<<<<<< HEAD
-import checkNegativeNumber from 'utils/checkNegativeHours';
+// import checkNegativeNumber from 'utils/checkNegativeHours';
 import { permissions } from 'utils/constants';
-=======
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { toast } from 'react-toastify';
->>>>>>> development
 
 /**
  * This component can be imported in TimeLog component's week tabs and Tasks tab
@@ -126,21 +123,14 @@ const TimeEntry = (props) => {
 
   //permission to edit any time log entry (from other user's Dashboard
     // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-<<<<<<< HEAD
-  const canEdit = dispatch(hasPermission(permissions.timeLog.editTimelogInfo)) 
+
+  const canEdit = (dispatch(hasPermission(permissions.timeLog.editTimelogInfo)) 
     //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission(permissions.timeLog.editTimeEntry)) 
+    || dispatch(hasPermission(permissions.timeLog.editTimeEntry))) && !cantEditJaeRelatedRecord;
 
   //permission to Delete time entry from other user's Dashboard
-  const canDelete = dispatch(hasPermission(permissions.timeLog.deleteTimeEntryOthers)) ||
-=======
-  const canEdit = (dispatch(hasPermission('editTimelogInfo')) 
-    //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission('editTimeEntry'))) && !cantEditJaeRelatedRecord;
+  const canDelete = (dispatch(hasPermission(permissions.timeLog.deleteTimeEntryOthers)) && !cantEditJaeRelatedRecord)||
 
-  //permission to Delete time entry from other user's Dashboard
-  const canDelete = (dispatch(hasPermission('deleteTimeEntryOthers')) && !cantEditJaeRelatedRecord) ||
->>>>>>> development
     //permission to delete any time entry on their own time logs tab
     dispatch(hasPermission(permissions.timeLog.deleteTimeEntry)) ||
     //default permission: delete own sameday tangible entry

@@ -17,12 +17,9 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
-<<<<<<< HEAD
 import {permissions} from 'utils/constants'
 
-=======
 import '../../../../Header/DarkMode.css'
->>>>>>> development
 
 function EditTaskModal(props) {
   /*

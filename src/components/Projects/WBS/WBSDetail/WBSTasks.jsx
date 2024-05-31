@@ -19,13 +19,8 @@ import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
-<<<<<<< HEAD
-import { boxStyle } from 'styles';
 import {permissions} from 'utils/constants'
-
-=======
 import { boxStyle, boxStyleDark } from 'styles';
->>>>>>> development
 
 function WBSTasks(props) {
   /*

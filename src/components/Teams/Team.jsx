@@ -4,21 +4,13 @@ import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-<<<<<<< HEAD
-import { connect } from 'react-redux';
 import { permissions } from 'utils/constants';
-
-export const Team = props => {
-  const canDeleteTeam = props.hasPermission(permissions.teams.deleteTeam);
-  const canPutTeam = props.hasPermission(permissions.teams.putTeam);
-=======
 import { connect, useSelector } from 'react-redux';
 
 export const Team = props => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
->>>>>>> development
 
   return (
     <tr className={`teams__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_${props.teamId}`}>

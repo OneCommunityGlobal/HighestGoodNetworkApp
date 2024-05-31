@@ -53,13 +53,10 @@ import PopUpBar from 'components/PopUpBar';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
-<<<<<<< HEAD
 import {permissions} from '../../utils/constants'
-=======
 import { getUnreadUserNotifications, markNotificationAsRead, resetNotificationError } from '../../actions/notificationAction';
 import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
->>>>>>> development
 import DarkModeButton from './DarkModeButton';
 
 export function Header(props) {

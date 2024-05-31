@@ -19,12 +19,9 @@ import { permissions } from 'utils/constants';
 
 const EditLinkModal = props => {
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
-<<<<<<< HEAD
 
+  const canManageAdminLinks = props.hasPermission(permissions.userManagement.manageAdminLinks);
   const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
-=======
-  const canManageAdminLinks = props.hasPermission('manageAdminLinks');
->>>>>>> development
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },

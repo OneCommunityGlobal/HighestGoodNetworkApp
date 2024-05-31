@@ -22,13 +22,8 @@ import { permissions } from 'utils/constants';
 
 
 const ProjectTableHeader = props => {
-<<<<<<< HEAD
-  const { role } = props; // Access the 'role' prop
   const canDeleteProject = props.hasPermission(permissions.projects.deleteProject);
-=======
   const { role, darkMode } = props;
-  const canDeleteProject = props.hasPermission('deleteProject');
->>>>>>> development
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>

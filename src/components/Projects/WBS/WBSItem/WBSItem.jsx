@@ -11,12 +11,9 @@ import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-<<<<<<< HEAD
 import {permissions} from 'utils/constants'
 
-=======
 import { Link } from 'react-router-dom';
->>>>>>> development
 
 const WBSItem = props => {
   const { darkMode } = props.theme;

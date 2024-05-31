@@ -25,12 +25,9 @@ import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
 import { searchWithAccent } from '../../utils/search'
-<<<<<<< HEAD
 import { permissions } from 'utils/constants';
 
-=======
 import SetupHistoryPopup from './SetupHistoryPopup';
->>>>>>> development
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';

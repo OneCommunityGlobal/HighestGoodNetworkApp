@@ -16,13 +16,8 @@ import { getAllRoles } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
-<<<<<<< HEAD
 import PermissionChangeLogTable from './PermissionChangeLogTable'
-import { ENDPOINTS } from 'utils/URL';
 import { permissions } from 'utils/constants';
-=======
-import PermissionChangeLogTable from './PermissionChangeLogTable';
->>>>>>> development
 
 function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);

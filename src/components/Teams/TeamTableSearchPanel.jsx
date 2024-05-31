@@ -9,12 +9,8 @@ import { permissions } from 'utils/constants';
  * The search panel stateless component for  Teams grid
  */
 export const TeamTablesearchPanel = props => {
-<<<<<<< HEAD
   const canPostTeam = props.hasPermission(permissions.teams.postTeam);
-=======
   const {darkMode} = props;
-  const canPostTeam = props.hasPermission('postTeam');
->>>>>>> development
   return (
     <div className="input-group" id="new_team">
       {canPostTeam && (

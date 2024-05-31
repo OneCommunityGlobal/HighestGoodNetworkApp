@@ -7,12 +7,8 @@ import '../Header/DarkMode.css'
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
-<<<<<<< HEAD
-import { connect } from 'react-redux';
 import { permissions } from 'utils/constants';
-=======
 import { connect, useSelector } from 'react-redux';
->>>>>>> development
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
