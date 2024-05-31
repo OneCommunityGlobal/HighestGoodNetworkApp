@@ -147,8 +147,6 @@ export default function AddToolForm() {
     setErrors(validationErrors || {});
 
     if (validationErrors) {
-      // eslint-disable-next-line no-console
-      console.log('validation error:', validationErrors);
       return;
     }
     // if (!validation.error) {
