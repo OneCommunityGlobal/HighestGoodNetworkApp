@@ -33,15 +33,15 @@ describe('<TimeEntryForm Unit test rendering test/>', () => {
   });
   it('should render TimeEntryForm without crashing when the modal is not open', () => {
     renderWithProvider(
-      <TimeEntryForm 
-      from='TimeLog'//'Timer'//'WeeklyTab'
-      sendStop
-      edit={true}
-      data={data} 
-      toggle={toggle} 
-      isOpen={false}
-      tab={0} />,
-      {store}
+      <TimeEntryForm
+        from='TimeLog'//'Timer'//'WeeklyTab'
+        sendStop
+        edit={true}
+        data={data}
+        toggle={toggle}
+        isOpen={false}
+        tab={0} />,
+      { store }
     );
   });
 }
@@ -53,40 +53,41 @@ describe('<TimeEntryForm Unit test/>', () => {
   let sendStop;
   const data = timeEntryMock.weeks[0][0];
   beforeEach(() => {
-    
+
     store = mockStore({
       auth: authMock,
       role: rolesMock.role,
+      theme: themeMock,
     });
     sendStop = jest.fn();
     toggle = jest.fn();
-    
+
   });
   it('should render TimeEntryForm without crashing when the modal is open', async () => {
     await renderWithProvider(
-      <TimeEntryForm 
-      from='TimeLog'//'Timer'//'WeeklyTab'
-      sendStop
-      edit={true}
-      data={data} 
-      toggle={toggle} 
-      isOpen={true}
-      tab={0} />,
-      {store}
+      <TimeEntryForm
+        from='TimeLog'//'Timer'//'WeeklyTab'
+        sendStop
+        edit={true}
+        data={data}
+        toggle={toggle}
+        isOpen={true}
+        tab={0} />,
+      { store }
     );
   });
 
   it('should render with the correct placeholder', async () => {
     await renderWithProvider(
-      <TimeEntryForm 
-      from='TimeLog'//'Timer'//'WeeklyTab'
-      sendStop
-      edit={true}
-      data={data} 
-      toggle={toggle} 
-      isOpen={true}
-      tab={0} />,
-      {store}
+      <TimeEntryForm
+        from='TimeLog'//'Timer'//'WeeklyTab'
+        sendStop
+        edit={true}
+        data={data}
+        toggle={toggle}
+        isOpen={true}
+        tab={0} />,
+      { store }
     );
     expect(screen.getAllByRole('spinbutton')).toHaveLength(2);
     expect(screen.getAllByRole('spinbutton')[0]).toHaveValue(parseInt(data.hours, 10));
@@ -96,15 +97,15 @@ describe('<TimeEntryForm Unit test/>', () => {
 
   it('should change Time with user input', async () => {
     await renderWithProvider(
-      <TimeEntryForm 
-      from='TimeLog'//'Timer'//'WeeklyTab'
-      sendStop
-      edit={true}
-      data={data} 
-      toggle={toggle} 
-      isOpen={true}
-      tab={0} />,
-      {store}
+      <TimeEntryForm
+        from='TimeLog'//'Timer'//'WeeklyTab'
+        sendStop
+        edit={true}
+        data={data}
+        toggle={toggle}
+        isOpen={true}
+        tab={0} />,
+      { store }
     );
     const hours = screen.getByPlaceholderText('Hours');
     const minutes = screen.getByPlaceholderText('Minutes');
@@ -114,7 +115,7 @@ describe('<TimeEntryForm Unit test/>', () => {
     expect(hours).toHaveValue(1);
     expect(minutes).toHaveValue(13);
   });
-  
+
 }
 );
 
