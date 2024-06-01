@@ -100,7 +100,7 @@ tr:hover {
 
 #project_search_by_user_form {
   height: 3em;
-  margin-bottom: 1em;
+  /* margin-bottom: 1em; */
   padding: .25em;
   border: .8px solid rgb(163, 163, 163);
   border-radius: 5px;
@@ -123,10 +123,13 @@ tr:hover {
 }
 
 .search-name_project-list{
-  position: absolute;
-  top:23em;
-  width: 18em;
-  left: 49em;
-  padding: .5em 1.2em;
-  z-index: 200;
+  width: 15em;
+  padding: 0 0 0 8em;
+  
+}
+.form-select_options{
+  padding: .5em;
+  border-color:darkgrey;
+  border-radius: 5px;
+  scroll-behavior: smooth;
 }

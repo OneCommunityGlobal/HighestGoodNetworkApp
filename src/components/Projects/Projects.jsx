@@ -395,7 +395,7 @@ handleSort = (e)=>{
             
           {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
             
-          <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} nameInput={nameInput} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName} allUsers={this.props.allUsers} onSelectHandler={this.onSelectHandler}/>
+          <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} nameInput={nameInput} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName} allUsers={this.props.allUsers} onSelectHandler={this.onSelectHandler} darkMode={darkMode}/>
 
            
             
