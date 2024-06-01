@@ -25,6 +25,7 @@ import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
 import { searchWithAccent } from 'utils/search';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
@@ -512,7 +513,7 @@ class ReportsPage extends Component {
                   onCreateNewTeamClick={this.onCreateNewTeamShow}
                 />
               </div>
-              <div className="date-picker-container">
+              <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
                 <div id="task_startDate" className="date-picker-item">
                   <label htmlFor="task_startDate" className={`date-picker-label ${textColor}`}>
                     {' '}

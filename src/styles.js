@@ -6,3 +6,6 @@ export const boxStyle = {
 export const boxStyleDark = {
   boxShadow: '2px 2px 4px 1px black',
 };
+
+export const getFontColor = (darkMode) => darkMode ? 'text-light' : '';
+export const getBoxStyling = (darkMode) => darkMode ? boxStyleDark : boxStyle;

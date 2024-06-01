@@ -243,7 +243,7 @@ export class EditableInfoModal extends Component {
           />
           {editableModalOpen && (
             <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
-              <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
+              <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
               <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 {this.state.editing
                   ? <RichTextEditor
@@ -265,7 +265,6 @@ export class EditableInfoModal extends Component {
                   )
                 }
               </ModalBody>
-              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
               <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <Row className='no-gutters'>
                   {(this.state.editing) &&
@@ -291,7 +290,7 @@ export class EditableInfoModal extends Component {
                       </Col>)
                   }
                   <Col
-                    md={3}
+                    md={3} className='d-flex justify-content-center'
                   >
                     <Button onClick={this.handleClose} color='danger' style={darkMode ? boxStyleDark : boxStyle}>Close</Button>
                   </Col>

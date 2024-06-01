@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
 
+
 const RoleInfoModal = ({ info }) => {
   const darkMode = useSelector(state => state.theme.darkMode)
 
