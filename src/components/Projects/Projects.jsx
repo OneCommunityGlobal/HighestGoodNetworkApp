@@ -325,7 +325,7 @@ handleSort = (e)=>{
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
             {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
 
-            <table className="table table-bordered table-responsive-sm">
+            <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue' : ''}`}>
               <thead>
               <ProjectTableHeader 
                 onChange={this.onChangeCategory} 
@@ -336,7 +336,7 @@ handleSort = (e)=>{
                 darkMode={darkMode}
               />
               </thead>
-              <tbody>{ProjectsList}</tbody>
+              <tbody className={darkMode ? 'dark-mode' : ''}>{ProjectsList}</tbody>
             </table>
           </div>
 

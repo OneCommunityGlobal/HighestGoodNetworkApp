@@ -42,7 +42,7 @@ const Project = props => {
   };
 
   return (
-    <tr className={`projects__tr ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} id={'tr_' + props.projectId}>
+    <tr className={`projects__tr ${darkMode ? 'text-light' : ''}`} id={'tr_' + props.projectId}>
       <th className="projects__order--input" scope="row">
         <div>{props.index + 1}</div>
       </th>

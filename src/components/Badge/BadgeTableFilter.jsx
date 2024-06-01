@@ -29,7 +29,7 @@ function BadgeTableFilter({
   const orders = ['Ascending', 'Descending'];
 
   return (
-    <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
+    <tr>
       <td id="badge_image" />
       <td id="badge_name">
         <TextSearchBox id="badge_name_search" searchCallback={onBadgeNameSearch} value={name} />
