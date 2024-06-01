@@ -43,6 +43,8 @@ const UserProfileModal = props => {
   }
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canEditInfringements = props.hasPermission('editInfringements');
+  const canDeleteInfringements = props.hasPermission('deleteInfringements');
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -130,7 +132,7 @@ const UserProfileModal = props => {
   };
 
   function checkFields(field1, field2) {
-    console.log('f1:', field1, ' f2:', field2);
+    // console.log('f1:', field1, ' f2:', field2);
 
     if (field1 != null && field2 != null) {
       setAddButton(false);
@@ -138,6 +140,7 @@ const UserProfileModal = props => {
       setAddButton(true);
     }
   }
+
 
   return (
     <Modal isOpen={isOpen} toggle={closeModal}>
@@ -314,42 +317,44 @@ const UserProfileModal = props => {
           </>
         )}
 
-        {(type === 'modBlueSquare' || type === 'editBlueSquare') && (
+        {type === 'modBlueSquare' && (
           <>
             <FormGroup>
-              <Label for="date">Date</Label>
-              <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              <Label for="date">Date:</Label>
+              {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              : <span> {blueSquare[0]?.date}</span>}
             </FormGroup>
             <FormGroup>
               <Label for="createdDate">
                 Created Date:
-                {blueSquare[0]?.createdDate}
+                <span>{blueSquare[0]?.createdDate}</span>
               </Label>
             </FormGroup>
             <FormGroup>
               <Label for="report">Summary</Label>
-              <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} />
+              {canEditInfringements ? <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} />
+              :<p>{blueSquare[0]?.description}</p>}
             </FormGroup>
           </>
         )}
 
-        {(type === 'viewBlueSquare' || type === 'deleteBlueSquare')  && (
+        {type === 'viewBlueSquare'  && (
           <>
             <FormGroup>
               <Label for="date">
-                Date:
-                {blueSquare[0]?.date}
+                Date: 
+                <span>{blueSquare[0]?.date}</span>
               </Label>
             </FormGroup>
             <FormGroup>
               <Label for="createdDate">
                 Created Date:
-                {blueSquare[0]?.createdDate}
+                <span>{blueSquare[0]?.createdDate}</span>
               </Label>
             </FormGroup>
             <FormGroup>
               <Label for="description">Summary</Label>
-              <Label>{blueSquare[0]?.description}</Label>
+              <p>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
         )}
@@ -376,50 +381,30 @@ const UserProfileModal = props => {
           </Button>
         )}
 
-        {type === 'editBlueSquare' && (
-           <Button
-           color="info"
-           onClick={() => {
-             modifyBlueSquares(id, dateStamp, summary, 'update');
-           }}
-           style={boxStyle}
-         >
-           Update
-         </Button>
-        )}
-        
-        {type === 'deleteBlueSquare' && (
-          <Button
-          color="danger"
-          onClick={() => {
-            modifyBlueSquares(id, dateStamp, summary, 'delete');
-          }}
-          style={boxStyle}
-        >
-          Delete
-        </Button>
-        )}
-
         {type === 'modBlueSquare' && (
-          <>
-            <Button
-              color="info"
-              onClick={() => {
-                modifyBlueSquares(id, dateStamp, summary, 'update');
-              }}
-              style={boxStyle}
-            >
-              Update
-            </Button>
-            <Button
-              color="danger"
-              onClick={() => {
-                modifyBlueSquares(id, dateStamp, summary, 'delete');
-              }}
-              style={boxStyle}
-            >
-              Delete
-            </Button>
+            <>
+            {canEditInfringements && 
+              <Button
+                color="info"
+                onClick={() => {
+                  modifyBlueSquares(id, dateStamp, summary, 'update');
+                }}
+                style={boxStyle}
+              >
+                Update
+              </Button>
+              }
+            {canDeleteInfringements &&
+              <Button
+                color="danger"
+                onClick={() => {
+                  modifyBlueSquares(id, dateStamp, summary, 'delete');
+                }}
+                style={boxStyle}
+              >
+                Delete
+              </Button>
+            }
           </>
         )}
 

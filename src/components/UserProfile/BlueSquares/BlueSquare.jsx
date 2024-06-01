@@ -26,24 +26,24 @@ const BlueSquare = props => {
                   onClick={() => {
                     if (!blueSquare._id) {
                       handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
-                    } else if (canEditInfringements && canDeleteInfringements) {
+                    } else if (canEditInfringements || canDeleteInfringements) {
                       handleBlueSquare(
-                        canEditInfringements && canDeleteInfringements,
+                        canEditInfringements || canDeleteInfringements,
                         'modBlueSquare',
                         blueSquare._id,
                       );
-                    } else if(canEditInfringements) {
-                      handleBlueSquare(
-                        canEditInfringements,
-                        'editBlueSquare',
-                        blueSquare._id,
-                      );
-                    }else if (canDeleteInfringements){
-                      handleBlueSquare(
-                        canDeleteInfringements,
-                        'deleteBlueSquare',
-                        blueSquare._id,
-                      );
+                    // } else if(canEditInfringements) {
+                    //   handleBlueSquare(
+                    //     canEditInfringements,
+                    //     'editBlueSquare',
+                    //     blueSquare._id,
+                    //   );
+                    // } else if (canDeleteInfringements){
+                    //   handleBlueSquare(
+                    //     canDeleteInfringements,
+                    //     'deleteBlueSquare',
+                    //     blueSquare._id,
+                    //   );
 
                     }else{
                       handleBlueSquare(
