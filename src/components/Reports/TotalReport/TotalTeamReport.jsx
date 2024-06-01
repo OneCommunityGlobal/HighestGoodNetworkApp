@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo} from 'react';
 import { useDispatch } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
@@ -28,11 +28,10 @@ function TotalTeamReport(props) {
   const [userNameList, setUserNameList] = useState({});
 
   const { startDate, endDate, userProfiles, allTeamsData, darkMode } = props;
-
-  const fromDate = startDate.toLocaleDateString('en-CA');
-  const toDate = endDate.toLocaleDateString('en-CA');
-  const userList = userProfiles.map(user => user._id);
-  const teamList = allTeamsData.map(team => team._id);
+  const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
+  const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
+  const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
+  const teamList = useMemo(() => allTeamsData.map(team => team._id), [allTeamsData]);
 
   const filterTeamByEndDate = (teams, endDateTime) => {
     const filteredTeams = teams
