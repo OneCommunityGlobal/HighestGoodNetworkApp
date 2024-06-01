@@ -181,7 +181,7 @@ const Members = props => {
             handleUserProfile={handleToggle}
           />
 
-          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
+          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''}`}>
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <th scope="col" id="members__order">
