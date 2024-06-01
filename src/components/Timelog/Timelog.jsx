@@ -36,6 +36,7 @@ import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/ti
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
 import { getUserProjects, getUserWBSs } from '../../actions/userProjects';
 import { getAllRoles } from '../../actions/role';
+import { getBadgeCount, resetBadgeCount } from '../../actions/badgeManagement';
 import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
 import EffortBar from './EffortBar';
@@ -48,6 +49,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import Badge from '../Badge';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -111,6 +113,7 @@ const Timelog = props => {
     information: '',
     currentWeekEffort: 0,
     isTimeEntriesLoading: true,
+    badgeCount: 3,
   };
 
   const intangibletimeEntryFormData = {
@@ -269,6 +272,9 @@ const Timelog = props => {
   };
 
   const changeTab = tab => {
+    if (tab === 6) {
+      props.resetBadgeCount(displayUserId);
+    }
     setTimeLogState({
       ...timeLogState,
       activeTab: tab,
@@ -291,7 +297,7 @@ const Timelog = props => {
   };
 
   const renderViewingTimeEntriesFrom = () => {
-    if (timeLogState.activeTab === 0 || timeLogState.activeTab === 5) {
+    if (timeLogState.activeTab === 0 || timeLogState.activeTab === 5 || timeLogState.activeTab === 6) {
       return <></>;
     } else if (timeLogState.activeTab === 4) {
       return (
@@ -419,6 +425,10 @@ const Timelog = props => {
     // Filter the time entries
     updateTimeEntryItems();
   }, [timeLogState.projectsSelected]);
+
+  useEffect(() => {
+    props.getBadgeCount(displayUserId);
+  }, [displayUserId, props]);
 
   useEffect(() => {
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
@@ -681,6 +691,18 @@ const Timelog = props => {
                         Weekly Summaries
                       </NavLink>
                     </NavItem>
+                    <NavItem>
+                      <NavLink
+                        className={classnames({ active: timeLogState.activeTab === 6 })}
+                        onClick={() => {
+                          changeTab(6);
+                        }}
+                        href="#"
+                        to="#"
+                      >
+                        Badges<span className="badge badge-pill badge-danger ml-2">{props.badgeCount}</span>
+                      </NavLink>
+                    </NavItem>
                   </Nav>
 
                   <TabContent activeTab={timeLogState.activeTab} className={darkMode ? "bg-yinmn-blue" : ""}>
@@ -721,7 +743,7 @@ const Timelog = props => {
                         </Button>
                       </Form>
                     )}
-                    {timeLogState.activeTab === 0 || timeLogState.activeTab === 5 ? (
+                    {timeLogState.activeTab === 0 || timeLogState.activeTab === 5 || timeLogState.activeTab === 6 ? (
                       <></>
                     ) : (
                       <Form className="mb-2">
@@ -753,7 +775,7 @@ const Timelog = props => {
                       </Form>
                     )}
 
-                    {timeLogState.activeTab === 0 || timeLogState.activeTab === 5 ? (
+                    {timeLogState.activeTab === 0 || timeLogState.activeTab === 5 || timeLogState.activeTab === 6 ? (
                       <></>
                     ) : (
                       <EffortBar
@@ -771,6 +793,9 @@ const Timelog = props => {
                     <TabPane tabId={4}>{periodEntries}</TabPane>
                     <TabPane tabId={5}>
                       <WeeklySummaries userProfile={displayUserProfile} />
+                    </TabPane>
+                    <TabPane tabId={6}>
+                      <Badge userId={displayUserId} role={authUser.role} />
                     </TabPane>
                   </TabContent>
                 </CardBody>
@@ -791,6 +816,7 @@ const mapStateToProps = state => ({
   displayUserWBSs: state.userProjects.wbs,
   disPlayUserTasks: state.userTask,
   roles: state.role.roles,
+  badgeCount: state.badge.badgeCount,
 });
 
 
@@ -803,5 +829,7 @@ export default connect(mapStateToProps, {
   getUserTasks,
   updateUserProfile,
   getAllRoles,
+  getBadgeCount,
+  resetBadgeCount,
   hasPermission,
 })(Timelog);
