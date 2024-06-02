@@ -53,6 +53,7 @@ import PopUpBar from 'components/PopUpBar';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import {permissions} from '../../utils/constants'
 import { getUnreadUserNotifications, markNotificationAsRead, resetNotificationError } from '../../actions/notificationAction';
 import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
@@ -69,45 +70,23 @@ export function Header(props) {
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
   // Reports
-  const canGetReports = props.hasPermission('getReports');
-  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
-  // Users
-  const canAccessUserManagement = props.hasPermission('postUserProfile')
-    || props.hasPermission('deleteUserProfile')
-    || props.hasPermission('changeUserStatus')
-    || props.hasPermission('getUserProfiles');
+  const canGetReports = props.hasPermission(permissions.reports);
+  const canGetWeeklySummaries = props.hasPermission(permissions.weeklySummariesReport.getWeeklySummaries);
 
+  // Users
+  const canAccessUserManagement = props.hasPermission(permissions.userManagement)
   // Badges
-  const canAccessBadgeManagement = props.hasPermission('seeBadges')
-    || props.hasPermission('createBadges')
-    || props.hasPermission('updateBadges')
-    || props.hasPermission('deleteBadges');
+  const canAccessBadgeManagement = props.hasPermission(permissions.badgeManagement)
   // Projects
-  const canAccessProjects = props.hasPermission('postProject')
-    || props.hasPermission('deleteProject')
-    || props.hasPermission('putProject')
-    || props.hasPermission('getProjectMembers')
-    || props.hasPermission('assignProjectToUsers')
-    || props.hasPermission('postWbs')
-    || props.hasPermission('deleteWbs')
-    || props.hasPermission('postTask')
-    || props.hasPermission('updateTask')
-    || props.hasPermission('deleteTask');
+  const canAccessProjects = props.hasPermission(permissions.projects)
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask');
+  const canUpdateTask = props.hasPermission(permissions.projects.updateTask);
   // Teams
-  const canAccessTeams = props.hasPermission('postTeam')
-    || props.hasPermission('putTeam')
-    || props.hasPermission('deleteTeam')
-    || props.hasPermission('assignTeamToUsers');
+  const canAccessTeams = props.hasPermission(permissions.teams);
   // Popups
-  const canAccessPopups = props.hasPermission('createPopup')
-    || props.hasPermission('updatePopup');
+  const canAccessPopups = props.hasPermission(permissions.popups);
   // Permissions
-  const canAccessPermissionsManagement = props.hasPermission('postRole')
-    || props.hasPermission('putRole')
-    || props.hasPermission('deleteRole')
-    || props.hasPermission('putUserProfilePermissions')
+  const canAccessPermissionsManagement = props.hasPermission(permissions.permissionsManagement);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);

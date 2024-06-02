@@ -16,6 +16,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css'
 import { connect, useSelector } from 'react-redux';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
 
 /**
  * Modal popup to delete the user profile
@@ -26,7 +27,7 @@ const DeleteUserPopup = React.memo(props => {
   const closePopup = e => {
     props.onClose();
   };
-  const canDeleteUser = props.hasPermission('deleteUserProfile');
+  const canDeleteUser = props.hasPermission(permissions.userManagement.deleteUserProfile);
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light dark-mode' : ''}>

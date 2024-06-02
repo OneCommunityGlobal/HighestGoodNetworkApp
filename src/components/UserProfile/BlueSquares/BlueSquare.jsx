@@ -2,10 +2,11 @@ import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
+import { permissions } from 'utils/constants';
 
 const BlueSquare = props => {
-  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const isInfringementAuthorizer = props.hasPermission(permissions.infringementAuthorizer);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
   const { blueSquares, handleBlueSquare, darkMode } = props;
 
   return (

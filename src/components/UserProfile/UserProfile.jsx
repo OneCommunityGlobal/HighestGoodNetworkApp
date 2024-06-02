@@ -27,6 +27,7 @@ import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
 } from '../../utils/permissions';
+import { permissions } from 'utils/constants';
 import ActiveCell from '../UserManagement/ActiveCell';
 import { ENDPOINTS } from '../../utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -696,14 +697,23 @@ function UserProfile(props) {
   const authEmail = props.auth?.user?.email;
   const isUserSelf = targetUserId === requestorId;
 
-  const canChangeUserStatus = props.hasPermission('changeUserStatus');
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  const canPutUserProfile = props.hasPermission('putUserProfile');
-  const canUpdatePassword = props.hasPermission('updatePassword');
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
-  const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
-  const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
-  const canSeeQSC = props.hasPermission('seeQSC');
+  const canChangeUserStatus = props.hasPermission(permissions.userManagement.changeUserStatus);
+  const canAddDeleteEditOwners = props.hasPermission(permissions.userManagement.addDeleteEditOwners);
+  const canPutUserProfile = props.hasPermission(permissions.userManagement.putUserProfile);
+  const canUpdatePassword = props.hasPermission(permissions.userManagement.updatePassword);
+  const canGetProjectMembers = props.hasPermission(permissions.projects.getProjectMembers);
+  const canChangeRehireableStatus = props.hasPermission(permissions.userManagement.changeUserRehireableStatus)
+  const canManageAdminLinks = props.hasPermission(permissions.userManagement.manageAdminLinks);;
+  const canSeeQSC = props.hasPermission(permissions.userManagement.seeQSC);
+  // const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  // const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  // const canPutUserProfile = props.hasPermission('putUserProfile');
+  // const canUpdatePassword = props.hasPermission('updatePassword');
+  // const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  // const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
+  // const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
+  // const canSeeQSC = props.hasPermission('seeQSC');
+
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
  
@@ -1079,7 +1089,7 @@ function UserProfile(props) {
                     !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
                     !isTeamSaved
                   }
-                  canEditTeamCode={props.hasPermission('editTeamCode') || requestorRole == 'Owner' || !targetIsDevAdminUneditable}
+                  canEditTeamCode={props.hasPermission(permissions.teams.editTeamCode) || requestorRole == 'Owner' || targetIsDevAdminUneditable}
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
@@ -1310,7 +1320,7 @@ function UserProfile(props) {
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
                     canEditTeamCode={
-                      props.hasPermission('editTeamCode') || requestorRole === 'Owner' ||requestorRole === 'Administrator'
+                      props.hasPermission(permissions.teams.editTeamCode) || requestorRole === 'Owner' ||requestorRole === 'Administrator'
                     }
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}

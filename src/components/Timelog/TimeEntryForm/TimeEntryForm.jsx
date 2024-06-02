@@ -29,6 +29,7 @@ import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css'
 
@@ -138,8 +139,8 @@ const TimeEntryForm = props => {
   const isSameDayTimeEntry = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
   const canEditTimeEntry =
-    props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+    props.hasPermission(permissions.timeLog.editTimeEntry);
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
 
 // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
   const canUserEditDate = canEditTimeEntry && canPutUserProfileImportantInfo;

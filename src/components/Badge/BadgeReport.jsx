@@ -30,6 +30,7 @@ import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
 import { boxStyle } from 'styles';
 import { formatDate } from 'utils/formatDate';
+import { permissions } from 'utils/constants';
 import hasPermission from '../../utils/permissions';
 import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
@@ -43,8 +44,8 @@ function BadgeReport(props) {
   const [badgeToDelete, setBadgeToDelete] = useState([]);
   const [savingChanges, setSavingChanges] = useState(false);
 
-  const canDeleteBadges = props.hasPermission('deleteBadges');
-  const canUpdateBadges = props.hasPermission('updateBadges');
+  const canDeleteBadges = props.hasPermission(permissions.badgeManagement.deleteBadges);
+  const canUpdateBadges = props.hasPermission(permissions.badgeManagement.updateBadges);
 
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');

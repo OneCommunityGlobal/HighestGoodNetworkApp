@@ -11,13 +11,15 @@ import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import {permissions} from 'utils/constants'
+
 import { Link } from 'react-router-dom';
 
 const WBSItem = props => {
   const { darkMode } = props.theme;
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const canDeleteWBS = props.hasPermission('deleteWbs');
+  const canDeleteWBS = props.hasPermission(permissions.projects.deleteWbs);
 
   const confirmDelete = () => {
     props.deleteWbs(props.wbsId);

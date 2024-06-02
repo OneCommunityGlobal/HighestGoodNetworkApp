@@ -33,6 +33,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import { permissions } from 'utils/constants';
 import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
@@ -73,7 +74,9 @@ function FormattedReport({
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
   const dispatch = useDispatch();
-  const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
+  const isEditCount = dispatch(
+    hasPermission(permissions.weeklySummariesReport.totalValidWeeklySummaries),
+  );
 
   return (
     <>

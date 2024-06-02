@@ -3,13 +3,14 @@ import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
+import { permissions } from 'utils/constants';
 
 /**
  * The search panel stateless component for  Teams grid
  */
 export const TeamTablesearchPanel = props => {
+  const canPostTeam = props.hasPermission(permissions.teams.postTeam);
   const {darkMode} = props;
-  const canPostTeam = props.hasPermission('postTeam');
   return (
     <div className="input-group" id="new_team">
       {canPostTeam && (

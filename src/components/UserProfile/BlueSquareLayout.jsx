@@ -9,12 +9,13 @@ import hasPermission from '../../utils/permissions';
 import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
+import { permissions } from 'utils/constants';
 
 
 const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user, darkMode }) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
-  const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
+  const canManageTimeOffRequests = dispatch(hasPermission(permissions.userManagement.manageTimeOffRequests));
 
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);

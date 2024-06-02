@@ -25,7 +25,7 @@ import suggestions_icon from './suggestions_icon.png';
 import httpService from '../../services/httpService';
 import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
-
+import { permissions } from 'utils/constants';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
@@ -58,7 +58,7 @@ const SummaryBar = props => {
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
   const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(displayUserProfile?.role === "Mentor" || displayUserProfile?.weeklySummaryOption === "Not Required");
 
   // Similar to UserProfile component function

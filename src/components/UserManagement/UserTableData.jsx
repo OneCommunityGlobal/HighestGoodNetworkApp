@@ -11,6 +11,8 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import { permissions } from 'utils/constants';
+
 /**
  * The body row of the user table
  */
@@ -18,7 +20,7 @@ const UserTableData = React.memo(props => {
   const darkMode = props.darkMode;
 
   const [isChanging, onReset] = useState(false);
-  const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canAddDeleteEditOwners = props.hasPermission(permissions.userManagement.addDeleteEditOwners);
 
   /**
    * reset the changing state upon rerender with new isActive status

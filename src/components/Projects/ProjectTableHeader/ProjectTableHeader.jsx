@@ -18,11 +18,12 @@ import Dropdown from 'react-bootstrap/Dropdown';
 import DropdownButton from 'react-bootstrap/DropdownButton';
 import { boxStyle } from 'styles';
 import { Button } from 'reactstrap';
+import { permissions } from 'utils/constants';
 
 
 const ProjectTableHeader = props => {
+  const canDeleteProject = props.hasPermission(permissions.projects.deleteProject);
   const { role, darkMode } = props;
-  const canDeleteProject = props.hasPermission('deleteProject');
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>

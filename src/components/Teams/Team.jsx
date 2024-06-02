@@ -4,6 +4,7 @@ import { DELETE } from '../../languages/en/ui';
 import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { permissions } from 'utils/constants';
 import { connect, useSelector } from 'react-redux';
 
 export const Team = props => {

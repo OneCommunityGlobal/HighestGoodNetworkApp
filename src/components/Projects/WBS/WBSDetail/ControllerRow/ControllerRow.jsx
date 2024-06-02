@@ -21,6 +21,8 @@ import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
+import {permissions} from 'utils/constants'
+
 import { boxStyle, boxStyleDark } from 'styles';
 
 function ControllerRow (props) {
@@ -28,8 +30,8 @@ function ControllerRow (props) {
   * -------------------------------- variable declarations --------------------------------
   */
   // permissions
-  const canDeleteTask = props.hasPermission('deleteTask');
-  const canPostTask = props.hasPermission('postTask');
+  const canDeleteTask = props.hasPermission(permissions.projects.deleteTask);
+  const canPostTask = props.hasPermission(permissions.projects.postTask);
 
   // props from store
   const { role, userPermissions, roles, popupContent, darkMode } = props;

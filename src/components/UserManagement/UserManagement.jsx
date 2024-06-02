@@ -25,6 +25,8 @@ import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
 import { searchWithAccent } from '../../utils/search'
+import { permissions } from 'utils/constants';
+
 import SetupHistoryPopup from './SetupHistoryPopup';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
@@ -315,12 +317,13 @@ class UserManagement extends React.PureComponent {
    * Call back on log time off button click
    */
   onLogTimeOffClick = user => {
+
     // Check if target user is Jae's related user and authroized to manage time off requests
     if(cantUpdateDevAdminDetails(user.email , this.authEmail)){
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
+    const canManageTimeOffRequests = this.props.hasPermission(permissions.userManagement.manageTimeOffRequests)
     
     const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
     if(canManageTimeOffRequests || hasRolePermission){
@@ -411,7 +414,7 @@ class UserManagement extends React.PureComponent {
    */
   onActiveInactiveClick = user => {
     const authRole = this?.props?.state?.auth?.user.role || user.role;
-    const canChangeUserStatus = hasPermission('changeUserStatus');
+    const canChangeUserStatus = hasPermission(permissions.userManagement.changeUserStatus);
     if (cantDeactivateOwner(user, authRole)) {
       //Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');

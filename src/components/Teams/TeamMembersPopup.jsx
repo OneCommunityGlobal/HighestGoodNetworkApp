@@ -7,6 +7,7 @@ import '../Header/DarkMode.css'
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
+import { permissions } from 'utils/constants';
 import { connect, useSelector } from 'react-redux';
 
 export const TeamMembersPopup = React.memo(props => {
@@ -33,7 +34,7 @@ export const TeamMembersPopup = React.memo(props => {
     setDeletedPopup(true);
   }
 
-  const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+  const canAssignTeamToUsers = props.hasPermission(permissions.teams.assignTeamToUsers);
 
 
 

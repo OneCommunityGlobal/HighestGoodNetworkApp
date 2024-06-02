@@ -15,6 +15,7 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { permissions } from 'utils/constants';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
 import { boxStyleDark } from 'styles';
@@ -52,9 +53,10 @@ function LeaderBoard({
   showTimeOffRequestModal,
   darkMode,
 }) {
+  const hasSummaryIndicatorPermission = hasPermission(permissions.seeSummaryIndicator); // ??? this permission doesn't exist?
+  const hasVisibilityIconPermission = hasPermission(permissions.seeVisibilityIcon); // ??? this permission doesn't exist?
   const userId = displayUserId;
-  const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+
   const isOwner = ['Owner'].includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 

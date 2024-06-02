@@ -43,6 +43,7 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
+import { permissions } from 'utils/constants';
 import WeeklySummaries from './WeeklySummaries';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
@@ -86,8 +87,8 @@ const Timelog = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
 
   // Main Function component
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
+  const canPutUserProfileImportantInfo = props.hasPermission(permissions.userManagement.putUserProfileImportantInfo);
+  const canEditTimeEntry = props.hasPermission(permissions.timeLog.editTimeEntry);
 
   // access the store states
   const {

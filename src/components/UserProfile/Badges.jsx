@@ -19,14 +19,14 @@ import { clearSelected } from 'actions/badgeManagement';
 import hasPermission from '../../utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { permissions } from 'utils/constants';
 
 export const Badges = props => {
   const {darkMode} = props;
 
   const [isOpen, setOpen] = useState(false);
   const [isAssignOpen, setAssignOpen] = useState(false);
-
-  const canAssignBadges = props.hasPermission('assignBadges') || props.hasPermission('assignBadgeOthers');
+  const canAssignBadges = props.hasPermission(permissions.badgeManagement.assignBadges) || props.hasPermission(permissions.badgeManagement.assignBadgeOthers);
 
   // Added restriction: Jae's badges only editable by Jae or Owner
   const isRecordBelongsToJaeAndUneditable = props.isRecordBelongsToJaeAndUneditable && props.role !== 'Owner';

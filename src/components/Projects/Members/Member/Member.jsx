@@ -9,12 +9,13 @@ import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import PropTypes from 'prop-types'; 
+import { permissions } from 'utils/constants';
+
 
 const Member = props => {
+  const canUnassignUserInProject = props.hasPermission(permissions.projects.unassignUserInProject);
+  const canGetUserProfiles = props.hasPermission(permissions.userManagement.getUserProfiles)
   const {darkMode} = props;
-  const canGetUserProfiles = props.hasPermission('getUserProfiles');
-  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
   return (
     <React.Fragment>
       <tr className={`members__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}>

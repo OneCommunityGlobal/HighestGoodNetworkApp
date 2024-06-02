@@ -11,6 +11,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
+import { permissions } from 'utils/constants';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
@@ -22,9 +23,11 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
-  const canPostRole = hasPermission('postRole');
-  const canPutRole = hasPermission('putRole');
-  const canManageUserPermissions = hasPermission('putUserProfilePermissions');
+  const canPostRole = hasPermission(permissions.permissionsManagement.postRole);
+  const canPutRole = hasPermission(permissions.permissionsManagement.putRole);
+  const canManageUserPermissions = hasPermission(
+    permissions.permissionsManagement.putUserProfilePermissions,
+  );
 
   // Added permissionChangeLogs state management
   const [changeLogs, setChangeLogs] = useState([]);

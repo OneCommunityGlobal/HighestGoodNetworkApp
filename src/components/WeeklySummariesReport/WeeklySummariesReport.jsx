@@ -21,6 +21,7 @@ import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
+import { permissions } from 'utils/constants';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -91,14 +92,16 @@ export class WeeklySummariesReport extends Component {
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
-    this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+    this.canPutUserProfileImportantInfo = hasPermission(
+      permissions.userManagement.putUserProfileImportantInfo,
+    );
     this.bioEditPermission = this.canPutUserProfileImportantInfo;
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
     this.codeEditPermission =
-      hasPermission('editTeamCode') ||
+      hasPermission(permissions.teams.editTeamCode) ||
       auth.user.role === 'Owner' ||
       auth.user.role === 'Administrator';
-    this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
+    this.canSeeBioHighlight = hasPermission(permissions.highlightEligibleBios);
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];

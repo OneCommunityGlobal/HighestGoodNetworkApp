@@ -4,6 +4,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css'
 import { connect, useSelector } from 'react-redux';
 import hasPermission from 'utils/permissions';
+import { permissions } from 'utils/constants';
 
 export const DeleteTeamPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -11,8 +12,8 @@ export const DeleteTeamPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
   };
-  const canDeleteTeam = props.hasPermission('deleteTeam');
-  const canPutTeam = props.hasPermission('putTeam');
+  const canDeleteTeam = props.hasPermission(permissions.teams.deleteTeam);
+  const canPutTeam = props.hasPermission(permissions.teams.putTeam);
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'dark-mode text-light' : ''}>

@@ -9,6 +9,8 @@ import { Provider } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import getPopupById from 'actions/popupEditorAction';
 import axios from 'axios';
+import { permissions } from 'utils/constants';
+
 import { themeMock } from '__tests__/mockStates';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -105,13 +107,13 @@ describe('WBSItem component', () => {
   });
   it('check hasPermission returns true when the permission is present', () => {
     store.getState().auth.user.role = 'Volunteer';
-    const permissionValue = store.dispatch(hasPermission('deleteWbs'));
+    const permissionValue = store.dispatch(hasPermission(permissions.projects.deleteWbs));
     expect(permissionValue).toBe(true);
   });
   it('check hasPermission returns false when the permission is not present', () => {
     store.getState().auth.user.role = 'Volunteer';
     store.getState().auth.user.permissions.frontPermissions = [];
-    const permissionValue = store.dispatch(hasPermission('deleteWbs'));
+    const permissionValue = store.dispatch(hasPermission(permissions.projects.deleteWbs));
     expect(permissionValue).toBe(false);
   });
 });
