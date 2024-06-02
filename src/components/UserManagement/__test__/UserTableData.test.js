@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UserTableData from '../UserTableData';
-import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
+import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -67,7 +67,8 @@ describe('User Table Data: Non-Jae related Account', () => {
     store = mockStore({
       auth: ownerAccountMock,
       userProfile: nonJaeAccountMock,
-      role: nonJaeAccountMock.role
+      role: nonJaeAccountMock.role,
+      theme: themeMock,
     });
     onPauseResumeClick = jest.fn();
     onDeleteClick = jest.fn();

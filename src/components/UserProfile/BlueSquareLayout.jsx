@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Button, Modal } from 'react-bootstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import ScheduleExplanationModal from './ScheduleExplanationModal/ScheduleExplanationModal';
 import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 import TimeOffRequestsTable from './TimeOffRequestsTable/TimeOffRequestsTable';
@@ -10,7 +10,8 @@ import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
-const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user }) => {
+
+const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user, darkMode }) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
@@ -44,7 +45,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
     const blueSquares = Number(userProfile.infringements?.length) || 0;
     const infringementAndTimeOff = scheduledVacation + blueSquares;
     const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
-    if (infringementAndTimeOff >= 5 && !hasRolePermission && !canManageTimeOffRequests) {
+    if (infringementAndTimeOff >= 4 && !hasRolePermission && !canManageTimeOffRequests) {
       return false;
     }
     return true;
@@ -60,9 +61,9 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
           isPrivate={privacySettings?.blueSquares}
           handleUserProfile={handleUserProfile}
           handleBlueSquare={handleBlueSquare}
+          darkMode={darkMode}
         />
-        <TimeOffRequestsTable requests={allRequests[userProfile._id]} openModal={handleOpen} />
-
+        <TimeOffRequestsTable requests={allRequests[userProfile._id]} openModal={handleOpen} darkMode={darkMode}/>
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
           {!checkIfUserCanScheduleTimeOff() ? (
@@ -71,7 +72,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
                 onClick={openExplanationModal}
                 className="w-100 text-success-emphasis"
                 size="md"
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
                 id="stopSchedulerButton"
               >
                 <span>{`Can't Schedule Time Off`}</span>
@@ -86,7 +87,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
                   onClick={handleOpen}
                   className="w-100 mt-3"
                   size="md"
-                  style={boxStyle}
+                  style={darkMode ? boxStyleDark : boxStyle}
                 >
                   View scheduled Blue Square Reasons
                 </Button>
@@ -98,12 +99,15 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
               onClick={handleOpen}
               className="w-100"
               size="md"
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Schedule Blue Square Reason
             </Button>
-          )}
-        </div>
+        )}
+      </div>
+
+
+
         <Modal show={showExplanation} onHide={closeExplanationModal}>
           <ScheduleExplanationModal
             onHide={closeExplanationModal}
@@ -127,6 +131,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
         )}
       </div>
     );
+
   }
   return (
     <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">

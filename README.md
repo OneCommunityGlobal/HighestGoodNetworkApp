@@ -97,7 +97,11 @@ For setting up your project locally, please get a local copy up and running foll
    ```sh
    npm install
    ```
-3. Get your `.env` file ready and start the app
+3. Run the `postinstall` script to copy TinyMCE to the public directory
+   ```sh
+   npm run postinstall
+   ```
+4. Get your `.env` file ready and start the app
    ```sh
    npm run start:local
    ```
@@ -130,6 +134,18 @@ Don't forget to give the project a star! Thanks again!
 5. Open a Pull Request
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- Licence -->
+
+## Software License Agreement
+
+In this project, we are using TinyMCE (licensed under GPLv2 or later) as our rich text editor. This means that if you distribute this project (including TinyMCE), you must also comply with the terms of the GPLv2 license. [Read more](https://github.com/tinymce/tinymce/blob/main/LICENSE.md)
+
+**We encourage you to review the license terms.**
+
+ [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+
+
 
 <!-- CONTACT -->
 
