@@ -10,6 +10,7 @@ import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
+
 const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user, darkMode }) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
@@ -44,7 +45,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
     const blueSquares = Number(userProfile.infringements?.length) || 0;
     const infringementAndTimeOff = scheduledVacation + blueSquares;
     const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
-    if (infringementAndTimeOff >= 5 && !hasRolePermission && !canManageTimeOffRequests) {
+    if (infringementAndTimeOff >= 4 && !hasRolePermission && !canManageTimeOffRequests) {
       return false;
     }
     return true;
@@ -102,8 +103,11 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
             >
               Schedule Blue Square Reason
             </Button>
-          )}
-        </div>
+        )}
+      </div>
+
+
+
         <Modal show={showExplanation} onHide={closeExplanationModal}>
           <ScheduleExplanationModal
             onHide={closeExplanationModal}
@@ -127,6 +131,7 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
         )}
       </div>
     );
+
   }
   return (
     <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">

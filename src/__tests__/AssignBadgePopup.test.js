@@ -5,6 +5,7 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import AssignBadgePopup from 'components/Badge/AssignBadgePopup';
 import { Provider } from 'react-redux';
+import { themeMock } from './mockStates';
 
 const mockStore = configureStore([thunk]);
 
@@ -24,6 +25,7 @@ const mockSubmit = jest.fn();
 const renderComponent = () => {
   const store = mockStore({
     badge: { allBadgeData: mockallBadgeData },
+    theme: themeMock,
   });
 
   return render(
