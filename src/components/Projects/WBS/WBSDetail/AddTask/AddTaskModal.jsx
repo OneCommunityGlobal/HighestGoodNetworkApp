@@ -323,14 +323,14 @@ function AddTaskModal(props) {
           <div className="table table-bordered responsive">
             <div>
               <div className="add_new_task_form-group">
-                <span className="add_new_task_form-label" data-tip="WBS ID">
+                <span className={`add_new_task_form-label ${fontColor}`} data-tip="WBS ID">
                   WBS #
                 </span>
 
-                <span className="add_new_task_form-input_area">{newTaskNum}</span>
+                <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
               </div>
               <div className="add_new_task_form-group" >
-                <span className="add_new_task_form-label">Task Name</span>
+                <span className={`add_new_task_form-label ${fontColor}`}>Task Name</span>
                 <span className="add_new_task_form-input_area">
                   {/* Fix Task-name formatting - by Sucheta */}
                   <textarea
@@ -344,7 +344,7 @@ function AddTaskModal(props) {
                 </span>
               </div >
               <div className='add_new_task_form-group'>
-                <span className="add_new_task_form-label" >Priority</span>
+                <span className={`add_new_task_form-label ${fontColor}`} >Priority</span>
                 <span className='add_new_task_form-input_area'>
                   <select id="priority" onChange={e => setPriority(e.target.value)} ref={priorityRef}>
                     <option value="Primary">Primary</option>
@@ -354,7 +354,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="add_new_task_form-group">
-                <span className="add_new_task_form-label">Resources</span>
+                <span className={`add_new_task_form-label ${fontColor}`}>Resources</span>
                 <span className="add_new_task_form-input_area">
                     <TagsSearch
                       placeholder="Add resources"
@@ -368,7 +368,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="add_new_task_form-group">
-                <span className="add_new_task_form-label" >Assigned</span>
+                <span className={`add_new_task_form-label ${fontColor}`} >Assigned</span>
                 <span className="add_new_task_form-input_area">
                   <div className="flex-row d-inline align-items-center" >
                     <div className="form-check form-check-inline">
@@ -403,7 +403,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="add_new_task_form-group">
-                <span className= 'add_new_task_form-label'>Status</span>
+                <span className= {`add_new_task_form-label ${fontColor}`}>Status</span>
                 <span className="add_new_task_form-input_area">
                  <div className="d-flex align-items-center flex-wrap"> 
                   <span className="form-check form-check-inline mr-5">
@@ -446,7 +446,7 @@ function AddTaskModal(props) {
                           checked={status === 'Paused'}
                           onChange={(e) => setStatus(e.target.value)}
                         />
-                        <label className="form-check-label" htmlFor="paused">
+                        <label className={`form-check-label ${fontColor}`} htmlFor="paused">
                           Paused
                         </label>
                     
@@ -470,12 +470,12 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="add_new_task_form-group">
-                <span className="add_new_task_form-label">
+                <span className={`add_new_task_form-label ${fontColor}`}>
                   Hours
                 </span>
                 <span className="add_new_task_form-input_area">
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className="text-nowrap mr-3 w-25 mr-auto" style={{ fontWeight: 'normal' }}>
+                    <label htmlFor="bestCase" className={`text-nowrap mr-3 w-25 mr-auto ${fontColor}`} style={{ fontWeight: 'normal' }}>
                       Best-case
                     </label>
                     <input
@@ -492,7 +492,7 @@ function AddTaskModal(props) {
                   </div>
                   <div className="warning">
                       {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        ? 'The number of hours must be less than other cases'
                         : ''}
                   </div>
                   <div className="py-2 flex-responsive">
@@ -513,7 +513,7 @@ function AddTaskModal(props) {
                         {/* Moved warning outside of the parent div so that the input field does not get affected , now the warnings should appear in a new line - Sucheta*/}
                   <div className="warning">
                       {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        ? 'The number of hours must be higher than other cases'
                         : ''}
                     </div>
                   <div className="py-2 flex-responsive">
@@ -533,7 +533,7 @@ function AddTaskModal(props) {
                   </div>
                   <div className="warning">
                       {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
+                        ? 'The number of hours must range between best and worst cases'
                         : ''}
                     </div>
                   <div className="py-2 flex-responsive">
@@ -552,7 +552,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="d-flex border align-items-center" >
-                <span className="add_new_task_form-label">Links</span>
+                <span className={`add_new_task_form-label ${fontColor}`}>Links</span>
                 <span className="add_new_task_form-input_area">
                   <div className="d-flex flex-row">
                     <input
@@ -588,7 +588,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="d-flex border align-items-center">
-                <span  className= "add_new_task_form-label">Category</span>
+                <span  className= {`add_new_task_form-label ${fontColor}`}>Category</span>
                 <span  className="add_new_task_form-input_area">
                   <select value={category} onChange={e => setCategory(e.target.value)}>
                     {categoryOptions.map(cla => (
@@ -600,7 +600,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div >
-                <div scope="col" colSpan="2" className='border p-1' >
+                <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`} >
                   Why this Task is Important
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -614,7 +614,7 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div>
-                <div scope="col" colSpan="2" className="border p-1">
+                <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`}>
                   Design Intent
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -628,7 +628,7 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div>
-                <div scope="col" colSpan="2" className="border p-1"> 
+                <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`}> 
                   Endstate
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -642,7 +642,7 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div className="d-flex border">
-                <span scope="col" style={{width: "30%"}} className="p-1">Start Date</span>
+                <span scope="col" style={{width: "30%"}} className={`p-1 ${fontColor}`}>Start Date</span>
                 <span scope="col" className="border-left p-1">
                   <div>
                     <DayPickerInput
@@ -659,7 +659,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="d-flex border align-items-center">
-                <span scope="col" style={{width: "30%"}} className="p-1">End Date</span>
+                <span scope="col" style={{width: "30%"}} className={`p-1 ${fontColor}`}>End Date</span>
                 <span scope="col" className='border-left p-1'>
                   <DayPickerInput
                     format={FORMAT}
