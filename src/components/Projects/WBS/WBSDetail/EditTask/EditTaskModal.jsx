@@ -728,7 +728,7 @@ function EditTaskModal(props) {
         View
         </Button>
       }
-    </>
+    </div>
   );
 };
 
