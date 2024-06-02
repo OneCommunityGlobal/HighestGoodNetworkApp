@@ -52,6 +52,7 @@ export const putUserProfile = data => dispatch => {
 export const clearUserProfile = () => ({ type: CLEAR_USER_PROFILE });
 
 export const updateUserProfile = (userProfile) => {
+  console.log('updateUserProfile in userprofile.js called')
   const url = ENDPOINTS.USER_PROFILE(userProfile._id);
   return async dispatch => {
     const res = await axios.put(url, userProfile);

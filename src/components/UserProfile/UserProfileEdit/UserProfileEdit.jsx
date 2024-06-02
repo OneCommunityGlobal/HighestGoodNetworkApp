@@ -62,6 +62,7 @@ class UserProfileEdit extends Component {
   };
 
   async componentDidMount() {
+    console.log('UserProfileEdit componentDidMount is called');
     this.props.getAllUserTeams();
     // this.props.getAllUserProfile();
 
@@ -465,6 +466,7 @@ class UserProfileEdit extends Component {
   };
 
   handleSubmit = async event => {
+    console.log('handlesubmit in userProfileEdit.jsx called')
     const { updateUserProfile, match } = this.props;
     const { userProfile, formValid } = this.state;
     const submitResult = await updateUserProfile(userProfile);

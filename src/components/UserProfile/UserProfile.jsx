@@ -295,7 +295,7 @@ function UserProfile(props) {
       toast.error('Error while getting current logged in user email');
     }
   };
-
+  
   const loadUserProfile = async () => {
     const userId = props?.match?.params?.userId;
 
@@ -516,12 +516,14 @@ function UserProfile(props) {
   };
 
   const handleSubmit = async () => {
+    console.log('handlesubmit in userprofile.jsx called')
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
       const url = ENDPOINTS.TASK_UPDATE(updatedTask.taskId);
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
+      // check point, same name function declared in src/actions/userProfile.js  
       await props.updateUserProfile(userProfileRef.current);
       
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
