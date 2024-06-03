@@ -30,14 +30,13 @@ const RichTextEditor = ({ disabled, value, onEditorChange }) => (
 
 const RoleInfoModal = ({ info, auth}) => {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const { role } = auth.user;
   const [isOpen, setOpen] = useState(false);
   const [canEditInfoModal, setCanEditInfoModal] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const { infoContent, CanRead } = { ...info };
   const [infoContentModal, setInfoContentModal] = useState('');
   const dispatch = useDispatch();
-  
+
   useEffect(() => {
     setInfoContentModal(infoContent);
   }, [infoContent]);
@@ -59,7 +58,7 @@ const RoleInfoModal = ({ info, auth}) => {
   const handleMouseOver = () => {
     setOpen(true);
 
-    if(role === "Owner"){
+    if(auth?.user.role === "Owner"){
       setCanEditInfoModal(true);
     }
   };
@@ -74,9 +73,8 @@ const RoleInfoModal = ({ info, auth}) => {
 
   const handleSave = async (e) => {
     setIsEditing(false);
-    console.log('entrouu');
+
     if (e) {
-      console.log('entrouu2');
       e.preventDefault();
     }
 
