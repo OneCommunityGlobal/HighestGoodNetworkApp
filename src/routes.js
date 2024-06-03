@@ -33,7 +33,6 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
 import BMLogin from './components/BMDashboard/Login';
-// import BMTimeLogger from './components/BMDashboard/BMTimeLogger';
 import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 
 import EquipmentList from './components/BMDashboard/Equipment/List';
