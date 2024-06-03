@@ -482,8 +482,8 @@ const TimeEntryForm = props => {
 
   return (
     <>
-      <Modal className={`${fontColor} dark-mode`} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
-        <ModalHeader toggle={toggle} className={`${headerBg} text-light`}>
+      <Modal className={darkMode ? `${fontColor} dark-mode` : ''} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
+        <ModalHeader toggle={toggle} className={`${headerBg}`}>
           <div>
             {edit ? 'Edit ' : 'Add '}
             {formValues.isTangible ? (

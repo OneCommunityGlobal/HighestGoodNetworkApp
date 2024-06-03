@@ -140,7 +140,7 @@ function OwnerMessage({
           </button>
 
           {ownerMessage && (
-            <button type="submit" onClick={toggleDeleteWarning} style={{ marginLeft: '0.5rem' }}>
+            <button type="submit" onClick={toggleDeleteWarning} style={{ marginLeft: '0.25rem' }}>
               <img
                 src={deleteIcon}
                 alt="edit icon"

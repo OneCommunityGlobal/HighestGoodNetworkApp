@@ -20,8 +20,7 @@ const EditLinkModal = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
 
   const { isOpen, closeModal, updateLink, userProfile, handleSubmit } = props;
-
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const canManageAdminLinks = props.hasPermission('manageAdminLinks');
 
   const initialAdminLinkState = [
     { Name: 'Google Doc', Link: '' },
@@ -174,7 +173,7 @@ const EditLinkModal = props => {
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closeModal}>Edit Links</ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div>
-            {canPutUserProfileImportantInfo && (
+            {canManageAdminLinks && (
               <CardBody>
                 <Card style={{ padding: '16px' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Label style={{ display: 'flex', margin: '5px' }} className={darkMode ? 'text-light' : ''}>Admin Links:</Label>

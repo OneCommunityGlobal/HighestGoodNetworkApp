@@ -135,7 +135,7 @@ describe('EditLinkModal with admin links and personal links', () => {
     expect(addedPersonalLink).not.toBeInTheDocument();
   })
 
-  it('should display warning when invalid ulr is typed', () =>{
+  it('should display warning when invalid url is typed', () =>{
     const googleInput = component.getByPlaceholderText('Enter Google Doc link');
     const updateButton = component.getByText('Update');
     fireEvent.change(googleInput,{ target: {value: INVALID_URL}});
