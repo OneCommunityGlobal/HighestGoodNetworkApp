@@ -46,6 +46,8 @@ function BadgeReport(props) {
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
 
+  const darkMode = props.darkMode;
+
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
@@ -319,8 +321,6 @@ function BadgeReport(props) {
     //close the modal
     props.close();
   };
-
-  const { darkMode } = props.state.theme;
 
   return (
     <div>

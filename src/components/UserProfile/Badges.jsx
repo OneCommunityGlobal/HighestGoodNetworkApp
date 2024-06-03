@@ -100,6 +100,7 @@ export const Badges = props => {
                         handleSubmit={props.handleSubmit}
                         isUserSelf={props.isUserSelf}
                         isRecordBelongsToJaeAndUneditable={isRecordBelongsToJaeAndUneditable}
+                        darkMode={darkMode}
                       />
                     </ModalBody>
                   </Modal>
