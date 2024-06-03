@@ -95,6 +95,8 @@ function WriteItForMeModal(props) {
 
   const handleFetchSummary = async () => {
     try {
+      setButtonText('Copy Text');
+      setSummary();
       const promptBody = await getTimeEntriesForWeek(displayUserProfile._id, 0);
       if (promptBody === '') {
         toggle();
