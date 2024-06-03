@@ -21,6 +21,8 @@ import { boxStyle, boxStyleDark } from 'styles';
 // eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const tasks = useSelector(state => state.tasks);
+  
   const [memberCount, setMemberCount] = useState(0);
   const [activeMemberCount, setActiveMemberCount] = useState(0);
   const [nonActiveMemberCount, setNonActiveMemberCount] = useState(0);
@@ -36,30 +38,40 @@ export function ProjectReport({ match }) {
   const { wbs, projectMembers, isActive, projectName, wbsTasksID } = useSelector(
     projectReportViewData,
   );
-  const tasks = useSelector(state => state.tasks);
 
+  // Reset state when project ID changes
   useEffect(() => {
+
+    setMemberCount(0);
+    setActiveMemberCount(0);
+    setNonActiveMemberCount(0);
+    setHoursCommitted(0);
+
     if (match) {
-      dispatch(getProjectDetail(match.params.projectId));
-      dispatch(fetchAllWBS(match.params.projectId));
-      dispatch(fetchAllMembers(match.params.projectId));
+      const { projectId } = match.params;
+      dispatch(getProjectDetail(projectId));
+      dispatch(fetchAllWBS(projectId));
+      dispatch(fetchAllMembers(projectId));
     }
-  }, []);
+  }, [dispatch, match?.params.projectId]);
 
   useEffect(() => {
     if (wbs.fetching === false) {
-      wbs.WBSItems.forEach(wbs => {
-        dispatch(fetchAllTasks(wbs._id));
+      wbs.WBSItems.forEach(wbsitems => {
+        dispatch(fetchAllTasks(wbsitems._id));
       });
     }
-  }, [wbs]);
+  }, [dispatch, wbs]);
 
   useEffect(() => {
-    setHoursCommitted(0);
-    if (tasks.taskItems.length > 0 && wbs.WBSItems.length > 0) {
+    if (tasks.taskItems.length > 0) {
       setHoursCommitted(tasks.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
     }
-  }, [tasks]);
+
+    if(wbs.WBSItems.length === 0){
+      setHoursCommitted(0);
+    }
+  }, [tasks, wbs]);
 
   useEffect(() => {
     if (projectMembers.members) {
@@ -72,7 +84,7 @@ export function ProjectReport({ match }) {
       setActiveMemberCount(activeCount);
       setNonActiveMemberCount(nonActiveCount);
     }
-  }, [projectMembers.members]);
+  }, [dispatch, projectMembers.members]);
 
   const handleMemberCount = elementCount => {
     setMemberCount(elementCount);
