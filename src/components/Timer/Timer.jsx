@@ -400,6 +400,7 @@ export default function Timer({ darkMode }) {
           </div>
         </div>
       )}
+
       {logTimeEntryModal && (
         <TimeEntryForm
           from="Timer"

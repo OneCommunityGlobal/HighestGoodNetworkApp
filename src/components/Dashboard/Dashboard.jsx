@@ -105,6 +105,7 @@ export function Dashboard(props) {
               </div>
             </div>
           ) : null}
+
           <div className="my-2" id="wsummary">
             <Timelog
               isDashboard
@@ -112,6 +113,8 @@ export function Dashboard(props) {
               isNotAllowedToEdit={isNotAllowedToEdit}
             />
           </div>
+
+
           <Badge
             userId={displayUserId}
             role={authUser.role}
