@@ -16,11 +16,12 @@ export function PieChartByProject({
   const [inactiveData, setInactiveData] = useState([]);
   const [activeData, setActiveData] = useState([]);
   const [showInactive, setShowInactive] = useState(false);
+  const [showActive, setShowActive] = useState(false);
   const [totalHours, setTotalHours] = useState(0);
   const [globalInactiveHours, setGlobalInactiveHours] = useState(0);
+  const [globalactiveHours, setGlobalActiveHours] = useState(0);
 
   useEffect(() => {
-    // const totalUsers = mergedProjectUsersArray.length > 0 ? mergedProjectUsersArray.length : [];
     const totalHoursCalculated = mergedProjectUsersArray.reduce((acc, curr) => {
       return ((acc + curr.totalSeconds));
     }, 0) / 3600;
@@ -62,12 +63,34 @@ export function PieChartByProject({
       const sortedArr = inactiveArr.sort((a, b) => (a.name).localeCompare(b.name))
       setUserData(sortedArr)
     }
-    else {
+    if (showActive === true) {
+      const activeUsers = mergedProjectUsersArray.filter(member => member.personId.isActive )
+      setActiveData(activeUsers);
+
+      const totalHoursActive = activeUsers.reduce((acc, curr) => {
+        return ((acc + curr.totalSeconds));
+      }, 0) / 3600;
+      setGlobalActiveHours(totalHoursActive);
+
+      const activeArr = activeData.map(member => {
+        const data = {
+          name: `${member.personId.firstName} ${member.personId.lastName}`,
+          value: member.totalSeconds/3600,
+          projectName,
+          totalHoursCalculated: totalHoursActive,
+          lastName: member.personId.lastName
+        }
+        return data;
+      });
+      const sortedArr = activeArr.sort((a, b) => (a.name).localeCompare(b.name))
+      setUserData(sortedArr)
+    }
+    if (showInactive === false && showActive === false) {
       const sortedArr = arrData.sort((a, b) => (a.name).localeCompare(b.name))
       setUserData(sortedArr)
     }
 
-  }, [mergedProjectUsersArray,showInactive ])
+  }, [mergedProjectUsersArray,showInactive, showActive ])
 
   useEffect(() => {
     window.addEventListener('resize', updateWindowSize);
@@ -103,15 +126,21 @@ export function PieChartByProject({
 
         </div>
         {isChecked && ( <div style={{textAlign:'left'}}>
-        <label style={{marginRight:'1rem'}}>{showInactive ? ' Show only Inactive Members ':' Show only Inactive Members ' }</label>
+        <label style={{marginRight:'1rem'}}>{showActive ? ' Hide only Active Members Piechart ':' Show only Active Members Piechart' }</label>
+          <input
+            type="checkbox"
+            checked={showActive}
+            onChange={() => setShowActive(!showActive)}
+          />
+        <label style={{marginRight:'1rem', marginLeft:'1rem'}}>{showInactive ? 'Hide only Inactive Members PieChart ':' Show only Inactive Members Piechar' }</label>
           <input
             type="checkbox"
             checked={showInactive}
             onChange={() => setShowInactive(!showInactive)}
           />
-          <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  <span> - Hrs Aplied: { totalHours.toFixed(2)- globalInactiveHours.toFixed(2) } </span> </p>
-          <p style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Aplied: { globalInactiveHours.toFixed(2) } </span> </p>
-          <p style={{fontWeight:'bold'}}>Total Aplied Hours: {totalHours.toFixed(2)} </p>
+          <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  <span> - Hrs Applied: { globalactiveHours.toFixed(2) } </span> </p>
+          <p style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: { globalInactiveHours.toFixed(2) } </span> </p>
+          <p style={{fontWeight:'bold'}}>Total Applied Hours: {totalHours.toFixed(2)} </p>
           <p style={{fontWeight:'bold'}}>Total Members:  {mergedProjectUsersArray.length}</p>
         </div>)}
       </div>
