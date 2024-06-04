@@ -29,6 +29,8 @@ import {
   Row,
   Col,
   Alert,
+  Button,
+  ButtonGroup
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
@@ -37,6 +39,7 @@ import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import { index } from 'd3';
 
 const textColors = {
   Default: '#000000',
@@ -69,11 +72,22 @@ function FormattedReport({
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 10; // number of items per page
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
+
+  const totalPages = Math.ceil(summaries.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const paginatedSummaries = summaries.slice(startIndex, startIndex + itemsPerPage);
+
   return (
     <>
       {summaries !== undefined && (
         <ListGroup flush>
-          {summaries.map(summary => (
+          {paginatedSummaries.map(summary => (
             <ReportDetails
               key={summary._id}
               summary={summary}
@@ -90,6 +104,37 @@ function FormattedReport({
         </ListGroup>
       )}
       <EmailsList summaries={summaries} auth={auth} />
+
+      {/* Button group for pagination */}
+      {totalPages > 1 && (
+        <ButtonGroup>
+          {/* Previous Page */}
+          <Button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+          >
+            Previous
+          </Button>
+
+          {/* Separate button for page */}
+          {Array.from({ length: totalPages }, (_, index) => (
+            <Button
+              key={index}
+              onClick={() => handlePageChange(index + 1)}
+              active={currentPage === index + 1}>
+              {index + 1}
+            </Button>
+          ))}
+
+          {/* Next Page */}
+          <Button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+          >
+            Next
+          </Button>
+        </ButtonGroup>
+      )}
     </>
   );
 }
@@ -617,7 +662,7 @@ function Index({ summary, weekIndex, allRoleInfo }) {
         style={{
           color:
             currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
               : undefined,
         }}
