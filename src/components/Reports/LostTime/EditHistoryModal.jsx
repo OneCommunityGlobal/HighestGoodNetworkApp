@@ -263,15 +263,11 @@ const EditHistoryModal = props => {
       projectId: inputs.projectId,
       teamId: inputs.teamId,
       dateOfWork: inputs.dateOfWork,
-      isTangible: inputs.isTangible.toString(),
+      isTangible: inputs.isTangible,
       entryType: props.entryType,
       hours: parseInt(inputs.hours),
       minutes: parseInt(inputs.minutes),
     };
-
-    if(inputs.personId) {
-      updateHours(props.userProfile, timeEntry, inputs.hours, inputs.minutes);
-    }
 
     setSubmitting(true);
     let timeEntryStatus;
@@ -302,15 +298,11 @@ const EditHistoryModal = props => {
       projectId: inputs.projectId,
       teamId: inputs.teamId,
       dateOfWork: inputs.dateOfWork,
-      isTangible: inputs.isTangible.toString(),
+      isTangible: inputs.isTangible,
       entryType: props.entryType,
       hours: parseInt(inputs.hours),
       minutes: parseInt(inputs.minutes),
     };
-
-    if(inputs.personId) {
-      deleteHours(props.userProfile, timeEntry);
-    }
 
     const timeEntryStatus = await dispatch(deleteTimeEntry(timeEntry));
     if (timeEntryStatus !== 200) {

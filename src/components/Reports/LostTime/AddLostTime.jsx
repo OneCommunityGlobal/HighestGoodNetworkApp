@@ -256,15 +256,11 @@ const AddLostTime = props => {
       dateOfWork: inputs.dateOfWork,
       projectId: inputs.projectId,
       teamId: inputs.teamId,
-      isTangible: inputs.isTangible.toString(),
+      hours: inputs.hours,
+      minutes: inputs.minutes,
+      isTangible: inputs.isTangible,
       entryType: entryType,
     };
-
-    timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`;
-
-    if(inputs.personId) {
-      updateHours(props.userProfile, timeEntry, inputs.hours, inputs.minutes);
-    }
 
     setSubmitting(true);
     let timeEntryStatus;
