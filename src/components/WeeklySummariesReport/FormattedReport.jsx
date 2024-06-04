@@ -83,6 +83,33 @@ function FormattedReport({
   const startIndex = (currentPage - 1) * itemsPerPage;
   const paginatedSummaries = summaries.slice(startIndex, startIndex + itemsPerPage);
 
+
+  const getPageNumber = () => {
+    const pageNumbers = [];
+    const maxPagesToShow = 5;
+    const maxPagesBeforeCurrentPage = Math.floor(maxPagesToShow / 2); //2
+    const maxPagesAfterCurrentPage = Math.ceil(maxPagesToShow / 2) - 1; //2
+
+    let startPage = Math.max(1, currentPage - maxPagesBeforeCurrentPage);
+    let endPage = Math.min(totalPages, currentPage + maxPagesAfterCurrentPage);
+
+    if (startPage === 1) {
+      endPage = Math.min(totalPages, maxPagesToShow);
+    }
+
+    if (endPage === totalPages) {
+      startPage = Math.max(1, totalPages - maxPagesToShow + 1);
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pageNumbers.push(i);
+    }
+
+    return pageNumbers;
+  }
+
+  const pageNumbers = getPageNumber();
+
   return (
     <>
       {summaries !== undefined && (
@@ -116,15 +143,48 @@ function FormattedReport({
             Previous
           </Button>
 
+          {/* First Page */}
+          {currentPage > 3 && (
+            <>
+              <Button
+                onClick={() => handlePageChange(1)}
+                active={currentPage === 1}
+              >
+                1
+              </Button>
+              {
+                currentPage > 4 &&
+                <span style={{ padding: '0 10px' }}>...</span>
+              }
+            </>
+          )}
+
           {/* Separate button for page */}
-          {Array.from({ length: totalPages }, (_, index) => (
+          {pageNumbers.map((page) => (
             <Button
-              key={index}
-              onClick={() => handlePageChange(index + 1)}
-              active={currentPage === index + 1}>
-              {index + 1}
+              key={page}
+              onClick={() => handlePageChange(page)}
+              active={currentPage === page}
+            >
+              {page}
             </Button>
           ))}
+
+          {/* Last Page */}
+          {currentPage < totalPages - 2 && (
+            <>
+              {
+                currentPage < totalPages - 3 &&
+                <span style={{ padding: '0 10px' }}>...</span>
+              }
+              <Button
+                onClick={() => handlePageChange(totalPages)}
+                active={currentPage === totalPages}
+              >
+                {totalPages}
+              </Button>
+            </>
+          )}
 
           {/* Next Page */}
           <Button
