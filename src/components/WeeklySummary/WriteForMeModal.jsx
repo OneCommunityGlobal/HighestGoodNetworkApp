@@ -1,7 +1,7 @@
 /* eslint-disable no-console */
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import httpService from 'services/httpService';
 import { connect } from 'react-redux';
 import moment from 'moment-timezone';
@@ -67,7 +67,7 @@ function WriteItForMeModal(props) {
   const [buttonDisabled, setButtonDisabled] = useState(false);
   const toggle = () => setModal(!modal);
 
-  const { displayUserProfile } = props; // Access displayUserProfile and authUser from props
+  const { displayUserProfile, darkMode } = props; // Access displayUserProfile and authUser from props
   const fetchSummary = async prompt => {
     // eslint-disable-next-line react/destructuring-assignment
     toggle();
@@ -145,26 +145,30 @@ function WriteItForMeModal(props) {
       <Button
         color="info"
         onClick={handleFetchSummary}
-        style={{ ...boxStyle, width: '100%', marginTop: '5px' }}
+        style={{ ...(darkMode ? boxStyleDark : boxStyle), width: '100%', marginTop: '5px' }}
       >
         Write It For Me
       </Button>
 
-      <Modal isOpen={modal} toggle={toggle}>
-        <ModalHeader toggle={toggle}>Generated Summary</ModalHeader>
-        <ModalBody>{summary || 'Taking a few minutes to load your summary'}</ModalBody>
-        <ModalFooter>
+      <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
+          Generated Summary
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          {summary || 'Taking a few minutes to load your summary'}
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <span>Proofread and Copy the summary</span>
           <Button
             color="primary"
             id="copyButton"
             onClick={copyToClipboard}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
             disabled={buttonDisabled}
           >
             {buttonText}
           </Button>
-          <Button color="primary" onClick={toggle} style={boxStyle}>
+          <Button color="primary" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
             Close
           </Button>{' '}
         </ModalFooter>
@@ -175,6 +179,7 @@ function WriteItForMeModal(props) {
 
 const mapStateToProps = state => ({
   displayUserProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 // export default WriteItForMeModal and connect to redux
