@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle } from 'styles';
@@ -45,15 +46,15 @@ const getTimeEntriesForWeek = async (userId, offset) => {
         return cleanedAndConcatenatedNotes;
       })
       .catch(error => {
-        throw new Error(`Error fetching time entries:: ${error}`);
+        console.error(`Error fetching time entries: ${error.message || error}`);
       });
   } catch (error) {
     if (error.response && error.response.status === 401) {
       // Handle logout or unauthorized access
-      throw new Error(`User is not authorized. Please log in.:  ${error}`);
+      console.error(`User is not authorized. Please log in.: ${error}`);
       // return null;
     } else {
-      throw new Error(`Error fetching time entries:: ${error}`);
+      console.error(`Error fetching time entries:: ${error}`);
     }
   }
 };
@@ -85,11 +86,13 @@ function WriteItForMeModal(props) {
 
         setSummary(markdownRemoved);
       } else {
-        throw new Error(`HTTP error: ${res.status}`);
+        setSummary('Failed to fetch summary.');
+        console.error(`HTTP error: ${res.status}`);
       }
     } catch (error) {
       setSummary('Failed to fetch summary.');
-      throw new Error(`HTTP error: ${error}`);
+    } finally {
+      toggle();
     }
   };
 
@@ -117,7 +120,7 @@ function WriteItForMeModal(props) {
         );
       }
     } catch (error) {
-      throw new Error(`Error in either fetching time entries or summary ${error}`);
+      console.error(`Error in either fetching time entries or summary ${error}`);
     }
   };
 
