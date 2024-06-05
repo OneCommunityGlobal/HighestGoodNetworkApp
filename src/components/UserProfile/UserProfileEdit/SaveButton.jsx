@@ -99,7 +99,7 @@ const SaveButton = props => {
         outline
         color='primary'
         // to={`/userprofile/${this.state.userProfile._id}`}
-        className='btn btn-outline-primary mr-1 bg-white'
+        //className='btn btn-outline-primary mr-1 bg-white'
         onClick={handleSave}
         disabled={disabled}
         style={darkMode ? boxStyleDark : boxStyle}
