@@ -52,9 +52,14 @@ const PurchaseMaterials = lazy(() =>
 const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
+const BMTimeLogCard = lazy(() =>
+  import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'),
+);
+
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
+
 const UpdateMaterialsBulk = lazy(() =>
   import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
 );
@@ -237,6 +242,12 @@ export default (
         <Route path="/bmdashboard/login" component={BMLogin} />
 
         <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
+
+        <BMProtectedRoute
+          path="/bmdashboard/timelog/:projectId"
+          fallback
+          component={BMTimeLogCard}
+        />
 
         <BMProtectedRoute
           path="/bmdashboard/materials/purchase"
