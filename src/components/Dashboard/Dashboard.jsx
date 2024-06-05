@@ -112,11 +112,6 @@ export function Dashboard(props) {
               isNotAllowedToEdit={isNotAllowedToEdit}
             />
           </div>
-          <Badge
-            userId={displayUserId}
-            role={authUser.role}
-            isNotAllowedToEdit={isNotAllowedToEdit}
-          />
         </Col>
       </Row>
       <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />
