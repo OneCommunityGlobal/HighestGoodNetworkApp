@@ -82,7 +82,8 @@ function WriteItForMeModal(props) {
       if (res.status === 200) {
         const markdownRemoved = res.data.text
           .replace(/\n+/g, ' ') // Remove line breaks
-          .replace(/\*/g, ''); // Remove asterisks
+          .replace(/\*/g, '') // Remove asterisks
+          .replace(/"/g, '');
 
         setSummary(markdownRemoved);
       } else {
@@ -126,7 +127,7 @@ function WriteItForMeModal(props) {
 
   const copyToClipboard = () => {
     navigator.clipboard
-      .writeText(JSON.stringify(summary))
+      .writeText(summary)
       .then(() => {
         setButtonText('Text Copied');
         setButtonDisabled(true);
@@ -151,9 +152,7 @@ function WriteItForMeModal(props) {
 
       <Modal isOpen={modal} toggle={toggle}>
         <ModalHeader toggle={toggle}>Generated Summary</ModalHeader>
-        <ModalBody>
-          {JSON.stringify(summary) || 'Taking a few minutes to load your summary'}
-        </ModalBody>
+        <ModalBody>{summary || 'Taking a few minutes to load your summary'}</ModalBody>
         <ModalFooter>
           <span>Proofread and Copy the summary</span>
           <Button
