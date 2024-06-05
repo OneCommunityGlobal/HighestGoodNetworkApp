@@ -192,11 +192,11 @@ const EditHistoryModal = props => {
     const currEntryTime = parseFloat(hours) + parseFloat(minutes) / 60;
     const timeDifference = currEntryTime - oldEntryTime;
 
-    if (initialForm.isTangible == 'true' && isTangible == 'true') {
+    if (initialForm.isTangible && isTangible) {
       hoursByCategory['unassigned'] += timeDifference;
-    } else if (initialForm.isTangible == 'false' && isTangible == 'false') {
+    } else if (!initialForm.isTangible && !isTangible) {
       userProfile.totalIntangibleHrs += timeDifference;
-    } else if (initialForm.isTangible == 'true' && isTangible == 'false') {
+    } else if (initialForm.isTangible && !isTangible) {
       hoursByCategory['unassigned'] -= oldEntryTime;
       userProfile.totalIntangibleHrs += currEntryTime;
     } else {
@@ -218,8 +218,8 @@ const EditHistoryModal = props => {
     const { isTangible, personId } = timeEntry;
 
     const entryTime = parseFloat(initialForm.hours) + parseFloat(initialForm.minutes) / 60;
-
-    if (isTangible == 'true') {
+    
+    if (isTangible) {
       hoursByCategory['unassigned'] -= entryTime;
     } else {
       userProfile.totalIntangibleHrs -= entryTime;
@@ -269,6 +269,10 @@ const EditHistoryModal = props => {
       minutes: parseInt(inputs.minutes),
     };
 
+    if(inputs.personId) {
+      updateHours(props.userProfile, timeEntry, inputs.hours, inputs.minutes);
+    }
+
     setSubmitting(true);
     let timeEntryStatus;
     timeEntryStatus = await dispatch(editTimeEntry(props._id, timeEntry, initialForm.dateOfWork));
@@ -303,6 +307,10 @@ const EditHistoryModal = props => {
       hours: parseInt(inputs.hours),
       minutes: parseInt(inputs.minutes),
     };
+
+    if(inputs.personId) {
+      deleteHours(props.userProfile, timeEntry);
+    }
 
     const timeEntryStatus = await dispatch(deleteTimeEntry(timeEntry));
     if (timeEntryStatus !== 200) {

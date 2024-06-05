@@ -231,7 +231,7 @@ const AddLostTime = props => {
     const { isTangible, personId } = timeEntry;
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
-    if (isTangible !== 'true') {
+    if (!isTangible) {
       userProfile.totalIntangibleHrs += volunteerTime;
     } else {
       hoursByCategory['unassigned'] += volunteerTime;
@@ -256,11 +256,15 @@ const AddLostTime = props => {
       dateOfWork: inputs.dateOfWork,
       projectId: inputs.projectId,
       teamId: inputs.teamId,
-      hours: inputs.hours,
-      minutes: inputs.minutes,
       isTangible: inputs.isTangible,
       entryType: entryType,
     };
+
+    timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`
+
+    if(inputs.personId) {
+      updateHours(props.userProfile, timeEntry, inputs.hours, inputs.minutes);
+    }
 
     setSubmitting(true);
     let timeEntryStatus;
