@@ -260,7 +260,7 @@ const AddLostTime = props => {
       entryType: entryType,
     };
 
-    timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`
+    timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`;
 
     if(inputs.personId) {
       updateHours(props.userProfile, timeEntry, inputs.hours, inputs.minutes);
