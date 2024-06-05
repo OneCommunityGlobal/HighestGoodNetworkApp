@@ -103,7 +103,7 @@ export function WbsPieChart({
 
         </div>
       </div>
-      {isChecked && ( <div style={{textAlign:'left'}}>
+      {isChecked && ( <div style={{textAlign:'left', marginLeft:'35%'}}>
           <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  </p>
           <p style={{fontWeight:'bold'}}>Total Hours Commited: { totalHours.toFixed(2)} </p>
 

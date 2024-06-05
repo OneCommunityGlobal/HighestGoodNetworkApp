@@ -1,12 +1,15 @@
 import React, { PureComponent, useEffect, useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
 import './PieChartByProject.css';
+import TriMembersStateToggleSwitch from './TriMembersStateToggleSwitch/TriMembersStateToggleSwitch'
+import style from '../../../UserProfile/UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
 
 export function PieChartByProject({
   mergedProjectUsersArray,
   projectName,
   darkMode
 }) {
+  const [showMembers, setShowMembers] = useState(null);
   const [userData, setUserData] = useState([]);
   const [isChecked, setIsChecked] = useState(false);
   const [windowSize, setWindowSize] = useState({
@@ -41,7 +44,7 @@ export function PieChartByProject({
     });
 
 
-    if (showInactive === true) {
+    if (showMembers === false) {
       const inactiveUsers = mergedProjectUsersArray.filter(member => !member.personId.isActive )
       setInactiveData(inactiveUsers);
 
@@ -62,8 +65,7 @@ export function PieChartByProject({
       });
       const sortedArr = inactiveArr.sort((a, b) => (a.name).localeCompare(b.name))
       setUserData(sortedArr)
-    }
-    if (showActive === true) {
+    } else    if (showMembers === true) {
       const activeUsers = mergedProjectUsersArray.filter(member => member.personId.isActive )
       setActiveData(activeUsers);
 
@@ -84,13 +86,12 @@ export function PieChartByProject({
       });
       const sortedArr = activeArr.sort((a, b) => (a.name).localeCompare(b.name))
       setUserData(sortedArr)
-    }
-    if (showInactive === false && showActive === false) {
+    } else {
       const sortedArr = arrData.sort((a, b) => (a.name).localeCompare(b.name))
       setUserData(sortedArr)
     }
 
-  }, [mergedProjectUsersArray,showInactive, showActive ])
+  }, [mergedProjectUsersArray,showMembers])
 
   useEffect(() => {
     window.addEventListener('resize', updateWindowSize);
@@ -109,15 +110,26 @@ export function PieChartByProject({
   const handleShowPieChart = () => {
     setIsChecked(!isChecked);
   };
+
+  const handleShowMembersChange = (newState) => {
+    if (newState.showActive) {
+      setShowMembers(true);
+    } else if (newState.showInactive) {
+      setShowMembers(false);
+    } else {
+      setShowMembers(null);
+    }
+  };
+
   return (
     <div className={darkMode ? 'text-light' : ''}>
       <div className='pie-chart-title'><h4>PieCharts</h4></div>
       <div><h5>{projectName}</h5></div>
-      <div className= "pie-chart-container" >
+      <div className= "pie-chart-description" >
         <div>
           <label style={{
             paddingRight: '1rem'
-          }}>{isChecked ? 'All-Time Total Hours by All Member (Hide Pie Chart)' : 'All-Time Total Hours by Member (Show PieChart)'}</label>
+          }}>{isChecked ? 'All-Time Total Hours by All Member (Hide PieChart)' : 'All-Time Total Hours by Member (Show PieChart)'}</label>
           <input
             type="checkbox"
             checked={isChecked}
@@ -125,19 +137,18 @@ export function PieChartByProject({
           />
 
         </div>
-        {isChecked && ( <div style={{textAlign:'left'}}>
-        <label style={{marginRight:'1rem'}}>{showActive ? ' Hide only Active Members Piechart ':' Show only Active Members Piechart' }</label>
-          <input
-            type="checkbox"
-            checked={showActive}
-            onChange={() => setShowActive(!showActive)}
-          />
-        <label style={{marginRight:'1rem', marginLeft:'1rem'}}>{showInactive ? 'Hide only Inactive Members PieChart ':' Show only Inactive Members Piechar' }</label>
-          <input
-            type="checkbox"
-            checked={showInactive}
-            onChange={() => setShowInactive(!showInactive)}
-          />
+        {isChecked && ( <div style={{textAlign:'left', margin:'auto'}}>
+        <p style={{textAlign:'center'}}>{showMembers === null ? 'All members' : ''}</p>
+        <div className={style.switchSection}>
+            <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}} className={style.switchContainer}>
+              <span style={{color: 'blue'}}> Inactive Members</span>
+              <TriMembersStateToggleSwitch
+              value={showMembers}
+              onChange={handleShowMembersChange}
+            />
+              <span style={{color: 'green'}}> Active Members</span>
+            </div>
+        </div>
           <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  <span> - Hrs Applied: { globalactiveHours.toFixed(2) } </span> </p>
           <p style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: { globalInactiveHours.toFixed(2) } </span> </p>
           <p style={{fontWeight:'bold'}}>Total Applied Hours: {totalHours.toFixed(2)} </p>
