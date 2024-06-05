@@ -3,7 +3,7 @@ import { useState } from 'react';
 
 import './Warnings.css';
 import WarningIcons from './WarningIcons';
-import WarningModal from './modals/WarningModal';
+import WarningsModal from './WarningsModal';
 
 function WarningItem({
   warningText,
@@ -33,9 +33,8 @@ function WarningItem({
 
   return (
     <div className="warning-item-container">
-      {/* <Button>+/-</Button> */}
       {warning && (
-        <WarningModal
+        <WarningsModal
           visible={toggleModal}
           setToggleModal={setToggleModal}
           deleteWarning={deleteWarning}
