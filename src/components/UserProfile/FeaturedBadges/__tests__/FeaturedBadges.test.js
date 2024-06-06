@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import FeaturedBadges from '../FeaturedBadges';
-import mockProps from './mockData'
+import mockProps from '../__mocks__/mockData'
 
 describe('FeaturedBadges Component', () => {
   it('renders correctly with badges data', () => {
