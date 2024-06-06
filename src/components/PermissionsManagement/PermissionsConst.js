@@ -1,3 +1,17 @@
+// recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
+const getAllSubpermissionKeys = permissions => {
+  const keys = [];
+  permissions.forEach(permission => {
+    // recursive call for nested permissions
+    if (permission.subperms) {
+      keys.push(...getAllSubpermissionKeys(permission.subperms));
+    } else {
+      keys.push(permission.key);
+    }
+  });
+  return keys;
+};
+
 export const permissionLabels = [
   {
     label: 'Reports',
@@ -67,9 +81,20 @@ export const permissionLabels = [
           'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
       {
+        label: 'Manage Admin Links in User Profile',
+        key: 'manageAdminLinks',
+        description:
+          'Gives the user permission to edit the links of any user on the user profile page. "User Profile" -> "Links button"',
+      },
+      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
+      },
+      {
+        label: 'Change Rehireable Status',
+        key: 'changeUserRehireableStatus',
+        description: 'Gives the user permission to change the user status of rehireable or not.',
       },
     ],
   },
@@ -354,8 +379,19 @@ export const permissionLabels = [
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
+      {
+        label: 'See All Users in Dashboard and Leaderboard',
+        key: 'seeUsersInDashboard',
+        description:
+          'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
     ],
   },
 ];
+
+// returns an array of all the keys for permissions
+export const getAllPermissionKeys = () => {
+  return getAllSubpermissionKeys(permissionLabels);
+};
 
 export default permissionLabels;

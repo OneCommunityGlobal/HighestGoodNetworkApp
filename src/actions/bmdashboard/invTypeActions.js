@@ -1,19 +1,9 @@
 import axios from 'axios';
+import { ENDPOINTS } from "utils/URL";
+import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE, POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE, RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE, GET_INV_BY_TYPE, GET_TOOL_TYPES ,GET_CONSUMABLE_TYPES  } from "constants/bmdashboard/inventoryTypeConstants";
+import { POST_TOOLS_LOG, POST_ERROR_TOOLS_LOG, RESET_POST_TOOLS_LOG } from 'constants/bmdashboard/toolsConstants';
 
-import { ENDPOINTS } from '../../utils/URL';
-
-import GET_MATERIAL_TYPES, {
-  POST_BUILDING_MATERIAL_INVENTORY_TYPE,
-  POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
-  POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
-  RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE,
-  POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE,
-  RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
-  GET_INV_BY_TYPE,
-  GET_TOOL_TYPES,
-  GET_REUSABLE_TYPES,
-} from '../../constants/bmdashboard/inventoryTypeConstants';
-import { GET_ERRORS } from '../../constants/errors';
+import { GET_ERRORS } from "constants/errors";
 
 export const fetchMaterialTypes = () => {
   return async dispatch => {
@@ -44,22 +34,11 @@ export const fetchToolTypes = () => {
     axios
       .get(ENDPOINTS.BM_TOOL_TYPES)
       .then(res => {
+        // console.log("tool types: ", res)
         dispatch(setToolTypes(res.data));
       })
       .catch(err => {
-        dispatch(setErrors(err));
-      });
-  };
-};
-
-export const fetchConsumableTypes = () => {
-  return async dispatch => {
-    axios
-      .get(ENDPOINTS.BM_CONSUMABLES)
-      .then(res => {
-        dispatch(setConsumableTypes(res.data));
-      })
-      .catch(err => {
+        // console.log("fetchToolTypes err: ", err)
         dispatch(setErrors(err));
       });
   };
@@ -130,6 +109,25 @@ export const setPostErrorBuildingInventoryTypeResult = (payload) => {
   }
 }
 
+export const fetchConsumableTypes = () => {
+  return async dispatch => {
+    axios
+      .get(ENDPOINTS.BM_CONSUMABLE_TYPES)
+      .then(res => {
+        dispatch(setConsumableTypes(res.data));
+      })
+      .catch(err => {
+        dispatch(setErrors(err));
+      });
+  };
+}
+
+export const setConsumableTypes = payload => {
+  return {
+    type: GET_CONSUMABLE_TYPES,
+    payload,
+  };
+}
 
 export const setPostErrorBuildingConsumableTypeResult = payload => {
   return {
@@ -137,7 +135,6 @@ export const setPostErrorBuildingConsumableTypeResult = payload => {
     payload,
   };
 };
-
 
 export const resetPostBuildingInventoryTypeResult = () => {
   return {
@@ -186,12 +183,43 @@ export const setErrors = payload => {
     type: GET_ERRORS,
     payload
   }
-}
+};
+// 
+export const postToolsLog = payload => {
+  return async dispatch => {
+    axios
+      .post(ENDPOINTS.BM_LOG_TOOLS, payload)
+      .then(res => {
+        // eslint-disable-next-line no-console
+        // eslint-disable-next-line no-use-before-define
+        dispatch(setToolsLogResult(res.data));
+      })
+      .catch(err => {
+        dispatch(
+          // setPostErrorToolsLog(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'),
+          // eslint-disable-next-line no-use-before-define
+          setPostErrorToolsLog(err.response.data || 'Sorry! Some error occurred!'),
+        );
+      });
+  };
+};
 
-export const setConsumableTypes = payload => {
+export const setToolsLogResult = payload => {
   return {
-    type: GET_MATERIAL_TYPES, //check reducer! 
+    type: POST_TOOLS_LOG,
     payload,
   };
 };
 
+export const setPostErrorToolsLog = payload => {
+  return {
+    type: POST_ERROR_TOOLS_LOG,
+    payload,
+  };
+};
+
+export const resetPostToolsLog = () => {
+  return {
+    type: RESET_POST_TOOLS_LOG,
+  };
+};
