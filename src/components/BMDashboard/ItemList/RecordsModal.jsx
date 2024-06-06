@@ -83,9 +83,9 @@ export function Record({ record, recordType }) {
         </thead>
         <tbody>
           {record?.purchaseRecord && record?.purchaseRecord.length ? (
-            record.map(({ date, status, brandPref, priority, quantity, requestedBy }) => {
+            record.map(({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
               return (
-                <tr key={data._id}>
+                <tr key={_id}>
                   <td>{priority}</td>
                   <td>{brandPref}</td>
                   <td>{quantity || '-'}</td>
