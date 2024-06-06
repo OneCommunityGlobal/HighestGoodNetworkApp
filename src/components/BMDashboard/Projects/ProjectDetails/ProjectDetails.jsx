@@ -15,7 +15,7 @@ function ProjectDetails() {
         <h1>Project {projectId} Dashboard</h1>
       </Row>
       <Row className="mx-auto">
-        <LogBar />
+        <LogBar projectId={projectId} />
       </Row>
       <Row className="mx-auto">
         <Col lg="6" md="12">
