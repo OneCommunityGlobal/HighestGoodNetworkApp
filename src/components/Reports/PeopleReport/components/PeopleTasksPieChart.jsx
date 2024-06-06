@@ -3,7 +3,6 @@ import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportPage } from '../../sharedComponents/ReportPage';
-import { NewModal } from '../../../common/NewModal';
 import './PeopleTasksPieChart.css';
 
 export const PeopleTasksPieChart = ({ darkMode }) => {
@@ -30,7 +29,6 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
 
   return (
     <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
-      <div>hi</div>
       {showProjectsPieChart && (
         <ReportPage.ReportBlock darkMode={darkMode}>
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
@@ -38,6 +36,7 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
             pieChartId={'projectsPieChart'}
             data={projectsWithLoggedHoursById}
             dataLegend={projectsWithLoggedHoursLegend}
+            chartLegend={projectsWithLoggedHoursLegend}
             dataLegendHeader="Hours"
             darkMode={darkMode}
           />
@@ -52,6 +51,7 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
             pieChartId={'tasksPieChart'}
             data={tasksWithLoggedHoursById}
             dataLegend={showAllTasks ? tasksLegend : displayedTasksLegend}
+            chartLegend={tasksLegend}
             dataLegendHeader="Hours"
             darkMode={darkMode}
           />
