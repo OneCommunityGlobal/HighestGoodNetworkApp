@@ -107,6 +107,14 @@ handleSort = (e)=>{
     this.setState({
       sortBy: "Descending"
     })
+  }else if(e.target.id === "SortingByRecentEditedInventory"){
+    this.setState({
+      sortBy: "SortingByRecentEditedInventory"
+    })
+  }else if(e.target.id === "SortingByRecentEditedMembers"){
+    this.setState({
+      sortBy: "SortingByRecentEditedMembers"
+    })
   }else{
     this.setState({
       sortBy: ""
@@ -147,6 +155,7 @@ handleSort = (e)=>{
     let { showModalDelete, projectTarget, trackModelMsg, projectInfoModal } = this.state;
     let { projects, status, fetching, fetched } = this.props.state.allProjects;
 
+
     let numberOfProjects = projects.length;
     let numberOfActive = projects.filter(project => project.isActive).length;
 
@@ -183,6 +192,24 @@ handleSort = (e)=>{
           if(a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase()){
             return 1
           }else if(a.projectName[0].toLowerCase() > b.projectName[0].toLowerCase()){
+            return -1
+          }else{return 0}
+        })
+
+      }else if(sortBy === "SortingByRecentEditedInventory"){
+        sortedList = projects.sort((a,b)=>{
+          if(a.modifiedDatetime < b.modifiedDatetime){
+            return 1
+          }else if(a.modifiedDatetime > b.modifiedDatetime){
+            return -1
+          }else{return 0}
+        })
+
+      }else if(sortBy === "SortingByRecentEditedMembers"){
+        sortedList = projects.sort((a,b)=>{
+          if(a.modifiedDatetime < b.modifiedDatetime){
+            return 1
+          }else if(a.modifiedDatetime > b.modifiedDatetime){
             return -1
           }else{return 0}
         })
