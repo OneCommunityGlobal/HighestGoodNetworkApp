@@ -1,7 +1,6 @@
 import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import {
-  Table,
   Dropdown,
   DropdownToggle,
   DropdownMenu,
