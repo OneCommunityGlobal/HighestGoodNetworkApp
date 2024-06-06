@@ -29,6 +29,8 @@ import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
 import { updateRehireableStatus } from '../../../actions/userManagement';
+import { Spinner } from 'reactstrap';
+
 class PeopleReport extends Component {
   constructor(props) {
     super(props);
@@ -512,8 +514,6 @@ class PeopleReport extends Component {
       }
     };
 
-    console.log(userTask);
-
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
@@ -568,13 +568,22 @@ class PeopleReport extends Component {
           <PeopleTasksPieChart darkMode={darkMode} />
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
-              {userTask.length > 0 && (
-                <>
-                  <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
-                    <h4>Tasks contributed</h4>
-                  </div>
-                  <PeopleDataTable />
-                </>
+              {this.state.isLoading ? (
+                <p
+                  className={`${darkMode ? 'text-light' : ''}
+                   d-flex align-items-center flex-row justify-content-center`}
+                >
+                  Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+                </p>
+              ) : (
+                userTask.length > 0 && (
+                  <>
+                    <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
+                      <h4>Tasks contributed</h4>
+                    </div>
+                    <PeopleDataTable />
+                  </>
+                )
               )}
               <div className="Infringementcontainer">
                 <div className="InfringementcontainerInner">
