@@ -1,15 +1,14 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import PopUpBar from '../PopUpBar';
 
-// mock data
-const userProfile = {};
-let popUpText;
-const componentName = 'dashboard';
-const generateMessage = (component) => `You are currently viewing the ${component} for`;
+const viewingUser = {
+  firstName: 'TestUser',
+  lastName: 'LastName',
+};
 
 // render Component
-const renderComponent = () => {
-  render(<PopUpBar userProfile={userProfile} component={componentName}/>);
+const renderComponent = (props = {}) => {
+  render(<PopUpBar viewingUser={viewingUser} {...props} />);
 };
 
 // Test Cases
@@ -19,20 +18,22 @@ describe('Test Suite for PopUpBar', () => {
     const actualText = screen.getByTestId('test-popup');
     expect(actualText).toBeInTheDocument();
   });
-  it('Test Case 2: Assert if popup renders with null parameters ', () => {
+
+  it('Test Case 2: Renders with correct text', () => {
     renderComponent();
-    popUpText = `${generateMessage(componentName)} ${userProfile.firstName} ${userProfile.lastName}.`;
-    const actualText = screen.getByText(popUpText);
+    const expectedText = `You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`;
+    const actualText = screen.getByText(expectedText);
     expect(actualText).toBeInTheDocument();
   });
-  it('Test Case 3: Assert if popup renders with the expected text', () => {
-    userProfile.firstName = 'TestUser';
-    userProfile.lastName = 'LastName';
-    popUpText = `${generateMessage(componentName)} ${userProfile.firstName} ${userProfile.lastName}.`;
 
-    renderComponent();
+  it('Test Case 3: Closes on button click', () => {
+    const onClickClose = jest.fn();
+    renderComponent({ onClickClose });
 
-    const actualText = screen.getByText(popUpText);
-    expect(actualText).toBeInTheDocument();
+    const closeButton = screen.getByText('X');
+    fireEvent.click(closeButton);
+
+    // Ensure the onClickClose function is called
+    expect(onClickClose).toHaveBeenCalled();
   });
 });

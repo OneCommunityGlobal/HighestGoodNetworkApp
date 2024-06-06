@@ -26,7 +26,7 @@ export const TaskEditSuggestionsModal = ({
   const { getState } = useStore();
 
   const approveTask = () => {
-    console.log('mainproblem', taskEditSuggestion);
+    // console.log('mainproblem', taskEditSuggestion);
     updateTask(
       taskEditSuggestion.taskId,
       taskEditSuggestion.newTask,

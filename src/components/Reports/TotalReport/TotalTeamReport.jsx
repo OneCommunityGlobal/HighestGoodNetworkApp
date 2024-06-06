@@ -27,7 +27,7 @@ function TotalTeamReport(props) {
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
   const [userNameList, setUserNameList] = useState({});
 
-  const { startDate, endDate, userProfiles, allTeamsData } = props;
+  const { startDate, endDate, userProfiles, allTeamsData, darkMode } = props;
 
   const fromDate = startDate.toLocaleDateString('en-CA');
   const toDate = endDate.toLocaleDateString('en-CA');
@@ -116,7 +116,7 @@ function TotalTeamReport(props) {
   const loadTimeEntriesForPeriod = async () => {
     // get the time entries of every user in the selected time range.
     // console.log('Load time entries within the time range');
-    let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    let url = ENDPOINTS.TIME_ENTRIES_REPORTS;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
@@ -134,6 +134,7 @@ function TotalTeamReport(props) {
         // eslint-disable-next-line no-console
         console.log(err.message);
       });
+      setAllTimeEntries(timeEntries);
 
     url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
     const teamTimeEntries = await axios
@@ -153,7 +154,6 @@ function TotalTeamReport(props) {
       .catch(err => {
         console.log(err.message);
       });
-    setAllTimeEntries(timeEntries);
     setTeamTimeEntries(teamTimeEntries);
   };
 
@@ -409,8 +409,8 @@ function TotalTeamReport(props) {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-container">
-        <div className="total-title">Total Team Report</div>
+      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Team Report</div>
         <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
@@ -458,7 +458,7 @@ function TotalTeamReport(props) {
     <div>
       {!dataReady ? (
         <div>
-          <Loading />
+          <Loading align="center" darkMode={darkMode}/>
         </div>
       ) : (
         <div>
