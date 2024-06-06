@@ -269,10 +269,6 @@ const EditHistoryModal = props => {
       minutes: parseInt(inputs.minutes),
     };
 
-    if(inputs.personId) {
-      updateHours(props.userProfile, timeEntry, inputs.hours, inputs.minutes);
-    }
-
     setSubmitting(true);
     let timeEntryStatus;
     timeEntryStatus = await dispatch(editTimeEntry(props._id, timeEntry, initialForm.dateOfWork));
@@ -307,10 +303,6 @@ const EditHistoryModal = props => {
       hours: parseInt(inputs.hours),
       minutes: parseInt(inputs.minutes),
     };
-
-    if(inputs.personId) {
-      deleteHours(props.userProfile, timeEntry);
-    }
 
     const timeEntryStatus = await dispatch(deleteTimeEntry(timeEntry));
     if (timeEntryStatus !== 200) {
