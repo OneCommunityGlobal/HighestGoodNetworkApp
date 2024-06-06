@@ -545,7 +545,7 @@ const BasicInformationTab = props => {
       {desktopDisplay ? (
         <Col md="1">
           <div style={{ marginTop: topMargin, marginLeft: '-20px' }}>
-            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={20}/>
+            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={20} darkMode={darkMode}/>
           </div>
         </Col>
       ) : (

@@ -348,10 +348,10 @@ const ViewTab = props => {
     <div data-testid="volunteering-time-tab">
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">Account Created Date</Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
         </Col>
         <Col md="6">
-        <p>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+        <p className={darkMode ? 'text-azure' : ''}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
