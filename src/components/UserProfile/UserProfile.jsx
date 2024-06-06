@@ -777,6 +777,7 @@ function UserProfile(props) {
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
+                style={profilePic ? {} : { width: '240px', height: '240px' }}
               />
               {canEdit ? (
                 <div className="image-button file btn btn-lg btn-primary" style={darkMode ? boxStyleDark : boxStyle}>
