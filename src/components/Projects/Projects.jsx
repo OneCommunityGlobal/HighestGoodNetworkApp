@@ -22,7 +22,6 @@ import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalDelete from './../common/Modal';
 import ModalMsg from './../common/Modal';
-import ProjectInfoModal from './ProjectInfoModal';
 import * as Message from './../../languages/en/messages';
 import { NOTICE } from './../../languages/en/ui';
 import './projects.css';
@@ -319,6 +318,7 @@ handleSort = (e)=>{
               fontSize={30}
               isPermissionPage={true}
               role={role}
+              darkMode={darkMode}
             />
           </div>
 
@@ -356,6 +356,7 @@ handleSort = (e)=>{
                 : '') || ''
             }
             modalTitle={Message.CONFIRM_DELETION}
+            darkMode={darkMode}
           />
 
           <ModalMsg
@@ -365,6 +366,7 @@ handleSort = (e)=>{
             }}
             modalMessage={Message.THIS_PROJECT_NAME_IS_ALREADY_TAKEN}
             modalTitle={NOTICE}
+            darkMode={darkMode}
           />
         </div>
       </React.Fragment>

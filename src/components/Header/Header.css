@@ -32,10 +32,6 @@
   gap: 1rem;
 }
 
-.nav-links {
-  align-items: center;
-}
-
 .redBackGroupHeader {
   z-index: 10;
   bottom: 0;
@@ -57,6 +53,17 @@
   margin-right: 3rem;
 }
 
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+@media (max-width: 1400px) {
+  .nav-links{
+    flex-direction: column !important;
+  }
+}
+
 @media (max-width: 1500px) {
   .dashboard-text-link {
     font-size: 14px;
@@ -67,19 +74,13 @@
   }
 }
 
-@media (max-width: 1400px) {
+@media (max-width: 1050px) {
   .timer-message-section {
     display: flex;
     width: 0;
     margin-right: 0;
   }
 
-  .owner-message {
-    display: none;
-  }
-}
-
-@media screen and (min-width: 1400px) and (max-width: 1700px) {
   .owner-message {
     display: none;
   }
