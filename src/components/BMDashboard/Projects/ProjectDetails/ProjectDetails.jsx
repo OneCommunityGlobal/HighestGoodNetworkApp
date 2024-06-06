@@ -12,7 +12,7 @@ function ProjectDetails() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+    <div className={`${darkMode ? 'bg-oxford-blue text-light' : ''} h-100`}>
       <Container className="project-details" fluid>
         <Row className="mx-auto">
           <h1>Project {projectId} Dashboard</h1>
