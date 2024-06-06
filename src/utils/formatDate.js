@@ -28,7 +28,7 @@ export const formatDateYYYYMMDD = (date) => moment(date).tz(LA_TIME_ZONE).format
  */
 export const formatDateMMDDYYYY = (date) => moment(date).tz(LA_TIME_ZONE).format('MM/DD/YYYY');
 // converts time to AM/PM format. E.g., '2023-09-21T07:08:09-07:00' becomes '7:08:09 AM'.
-export const formatted_AM_PM_Time = (date) => moment(date).format('h:mm:ss A');
+export const formattedAmPmTime = (date) => moment(date).format('h:mm:ss A');
 export const formatCreatedDate = (date) => moment(date).format("MM/DD");
 
 /**

@@ -20,7 +20,17 @@ import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 import { formatDate } from 'utils/formatDate';
 
-
+const TINY_MCE_INIT_OPTIONS = 
+  {
+    license_key: 'gpl',
+    menubar: false,
+    toolbar: false,
+    branding: false,
+    min_height: 80,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+};
+  
 function SingleTask(props) {
   const {taskId} = props.match.params;
   const { user } = props.auth;
@@ -241,42 +251,27 @@ function SingleTask(props) {
         <ModalBody>
           <h6>WHY THIS TASK IS IMPORTANT:</h6>
           <Editor
-            init={{
-              menubar: false,
-              toolbar: false,
-              branding: false,
-              min_height: 80,
-              max_height: 300,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            init={TINY_MCE_INIT_OPTIONS}
             disabled
             value={task.whyInfo}
           />
 
           <h6>THE DESIGN INTENT:</h6>
           <Editor
-            init={{
-              menubar: false,
-              toolbar: false,
-              branding: false,
-              min_height: 80,
-              max_height: 300,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            init={TINY_MCE_INIT_OPTIONS}
             disabled
             value={task.intentInfo}
           />
 
           <h6>ENDSTATE:</h6>
           <Editor
-            init={{
-              menubar: false,
-              toolbar: false,
-              branding: false,
-              min_height: 80,
-              max_height: 300,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            init={TINY_MCE_INIT_OPTIONS}
             disabled
             value={task.endstateInfo}
           />

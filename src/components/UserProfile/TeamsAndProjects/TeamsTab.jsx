@@ -59,7 +59,7 @@ const TeamsTab = props => {
   const onSelectAssignTeam = team => {
     if (userProfile._id) {
       addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-      if (isTeamSaved) isTeamSaved(true);
+      if (isTeamSaved) isTeamSaved(false);
     }
     onAssignTeam(team);
     setRenderedOn(Date.now());
@@ -74,6 +74,7 @@ const TeamsTab = props => {
         userTeamsById={userTeams}
         onSelectAssignTeam={onSelectAssignTeam}
         handleSubmit={handleSubmit}
+        darkMode={darkMode}
       />
       <UserTeamsTable
         userTeamsById={userTeams}
