@@ -1,3 +1,4 @@
+import { useSelector } from 'react-redux';
 import { Card, Table } from 'reactstrap';
 
 const DummyData = [
@@ -34,6 +35,8 @@ const DummyData = [
 ];
 
 function ProjectLog() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const tableRows = DummyData.map(person => (
     <tr key={person.id}>
       <th scope="row">{person.id}</th>
@@ -48,9 +51,9 @@ function ProjectLog() {
   ));
 
   return (
-    <Card className="project-log">
+    <Card className={`project-log ${darkMode ? 'bg-yinmn-blue' : ''}`}>
       <h2>Members working on site today</h2>
-      <Table hover responsive striped>
+      <Table responsive striped className={darkMode ? 'text-light' : ''}>
         <thead>
           <tr>
             <th>ID</th>

@@ -8,6 +8,8 @@ import BMError from './shared/BMError';
 import './BMDashboard.css';
 
 export function BMDashboard() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [isError, setIsError] = useState(false);
 
   const dispatch = useDispatch();
@@ -26,21 +28,23 @@ export function BMDashboard() {
   }, [errors]);
 
   return (
-    <Container className="justify-content-center align-items-center mw-80 px-4">
-      <header className="bm-dashboard__header">
-        <h1>Building and Inventory Management Dashboard</h1>
-      </header>
-      <main>
-        {isError ? (
-          <BMError errors={errors} />
-        ) : (
-          <>
-            <ProjectSelectForm />
-            <ProjectsList />
-          </>
-        )}
-      </main>
-    </Container>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+      <Container className="justify-content-center align-items-center mw-80 px-4">
+        <header className="bm-dashboard__header">
+          <h1>Building and Inventory Management Dashboard</h1>
+        </header>
+        <main>
+          {isError ? (
+            <BMError errors={errors} />
+          ) : (
+            <>
+              <ProjectSelectForm />
+              <ProjectsList />
+            </>
+          )}
+        </main>
+      </Container>
+    </div>
   );
 }
 

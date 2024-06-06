@@ -7,7 +7,7 @@ import Joi from 'joi';
 import { loginBMUser } from 'actions/authActions';
 
 function BMLogin(props) {
-  const { dispatch, auth, history, location } = props;
+  const { dispatch, auth, history, location, darkMode } = props;
   // state
   const [enteredEmail, setEnteredEmail] = useState('');
   const [enterPassword, setEnteredPassword] = useState('');
@@ -83,14 +83,19 @@ function BMLogin(props) {
   }
 
   return (
-    <div className="container mt-5">
+    <div
+      className={`h-100 pt-5 ${darkMode ? 'text-light bg-oxford-blue' : ''}`}
+      style={{ paddingLeft: '20%', paddingRight: '20%' }}
+    >
       <h2>Log In To Building Management Dashboard</h2>
       <Form onSubmit={handleSubmit}>
         <FormText>
           Enter your current user credentials to access the Building Management Dashboard
         </FormText>
         <FormGroup>
-          <Label for="email">Email</Label>
+          <Label for="email" className={darkMode ? 'text-light' : ''}>
+            Email
+          </Label>
           <Input
             id="email"
             name="email"
@@ -103,7 +108,9 @@ function BMLogin(props) {
           )}
         </FormGroup>
         <FormGroup>
-          <Label for="password">Password</Label>
+          <Label for="password" className={darkMode ? 'text-light' : ''}>
+            Password
+          </Label>
           <Input
             id="password"
             name="password"
@@ -123,6 +130,7 @@ function BMLogin(props) {
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps)(BMLogin);

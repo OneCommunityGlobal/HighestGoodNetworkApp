@@ -9,6 +9,7 @@ import BMDashboard from '../BMDashboard';
 
 // Import the fetchBMProjects action creator
 import { fetchBMProjects as mockFetchBMProjects } from '../../../actions/bmdashboard/projectActions';
+import { themeMock } from '__tests__/mockStates';
 
 jest.mock('../../../actions/bmdashboard/projectActions');
 const middlewares = [thunk];
@@ -64,6 +65,7 @@ describe('BMDashboard Tests', () => {
     const initialState = {
       bmProjects: mockProjects,
       errors: {},
+      theme: themeMock,
     };
     store = mockStore(initialState);
   });

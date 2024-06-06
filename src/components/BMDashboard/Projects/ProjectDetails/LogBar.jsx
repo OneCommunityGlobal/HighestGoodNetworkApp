@@ -1,6 +1,7 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 // button styles for each section
 const buttonStyles = {
   dailyLogging: 'green',
@@ -16,10 +17,11 @@ const buttonLabels = {
 };
 
 function LogBar(props) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const { projectId } = props;
 
   return (
-    <div className="log-bar">
+    <div className="log-bar" style={{ backgroundColor: darkMode ? '#3A506B' : '#eaeeef' }}>
       {Object.keys(buttonStyles).map(section => (
         <div key={uuidv4()} className="log-bar__section">
           <h2>

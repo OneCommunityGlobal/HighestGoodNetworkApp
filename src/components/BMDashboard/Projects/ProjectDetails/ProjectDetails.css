@@ -1,14 +1,13 @@
 .project-details {
   text-align: center;
-  padding-top: 20px;
+  padding-top: 60px;
   padding-left: 3%;
   padding-right: 3%;
-  margin-top: 40px;
-  margin-bottom: 20px;
+  padding-bottom: 20px;
   font-weight: bold;
 }
 
-.project-details h1{
+.project-details h1 {
   font-size: 1.5rem;
 }
 
@@ -21,23 +20,23 @@
   margin: 2em;
   padding: 1em 2em;
   width: 100%;
-  background-color: #eaeeef;
 }
-
 
 .log-bar__section {
   width: 100%;
   margin-top: 1em;
 }
 
-.log-bar__section h2, .card.cards-container h2, .project-log h2{
+.log-bar__section h2,
+.card.cards-container h2,
+.project-log h2 {
   font-size: 1em;
   font-weight: bold;
 }
 
-.log-bar__section ul{
-    list-style-type: none;
-  }
+.log-bar__section ul {
+  list-style-type: none;
+}
 
 .button.btn {
   border: 0;
@@ -46,8 +45,8 @@
   width: 100%;
 }
 
-.button.btn:hover{
-  outline:auto;
+.button.btn:hover {
+  outline: auto;
   filter: brightness(130%);
 }
 
@@ -75,7 +74,7 @@
     flex-direction: column;
   }
 
-   .log-bar__btn-group {
+  .log-bar__btn-group {
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
@@ -157,6 +156,7 @@
   margin: 0.5em;
   border-radius: 10px;
   background-color: #f2c897;
+  color: black;
 }
 
 /* TO DO: dynamic value to be added */
@@ -192,13 +192,21 @@
   font-weight: lighter;
 }
 
-.project-log thead{
+.project-log thead {
   background-color: transparent;
 }
 
-@media (max-width: 768px){
-  .project-log td, .project-log th {
+@media (max-width: 768px) {
+  .project-log td,
+  .project-log th {
     font-size: 0.6em;
   }
 }
 
+.project-log tbody tr {
+  opacity: 70%;
+}
+
+.project-log tr:hover {
+  opacity: 100%;
+}

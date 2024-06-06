@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
 import LogBar from './LogBar';
 import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
@@ -8,27 +9,30 @@ import './ProjectDetails.css';
 
 function ProjectDetails() {
   const { projectId } = useParams();
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <Container className="project-details" fluid>
-      <Row className="mx-auto">
-        <h1>Project {projectId} Dashboard</h1>
-      </Row>
-      <Row className="mx-auto">
-        <LogBar projectId={projectId} />
-      </Row>
-      <Row className="mx-auto">
-        <Col lg="6" md="12">
-          <RentedToolsDisplay />
-        </Col>
-        <Col lg="6" md="12">
-          <MaterialsDisplay />
-        </Col>
-      </Row>
-      <Row className="mx-auto">
-        <ProjectLog />
-      </Row>
-    </Container>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+      <Container className="project-details" fluid>
+        <Row className="mx-auto">
+          <h1>Project {projectId} Dashboard</h1>
+        </Row>
+        <Row className="mx-auto">
+          <LogBar projectId={projectId} />
+        </Row>
+        <Row className="mx-auto">
+          <Col lg="6" md="12">
+            <RentedToolsDisplay />
+          </Col>
+          <Col lg="6" md="12">
+            <MaterialsDisplay />
+          </Col>
+        </Row>
+        <Row className="mx-auto">
+          <ProjectLog />
+        </Row>
+      </Container>
+    </div>
   );
 }
 
