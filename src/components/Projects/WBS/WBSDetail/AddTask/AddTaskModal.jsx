@@ -9,6 +9,10 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
+import {
+  START_DATE_ERROR_MESSAGE,
+  END_DATE_ERROR_MESSAGE,
+} from '../../../../../languages/en/messages.js';
 import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css'
 import TagsSearch from '../components/TagsSearch';
@@ -58,6 +62,8 @@ function AddTaskModal(props) {
   const [intentInfo, setIntentInfo] = useState('');
   const [startedDate, setStartedDate] = useState('');
   const [endstateInfo, setEndstateInfo] = useState('');
+  const [startDateError, setStartDateError] = useState(false);
+  const [endDateError, setEndDateError] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -166,22 +172,24 @@ function AddTaskModal(props) {
     setStartedDate(startDate);
     if (dueDate) {
       if (startDate > dueDate) {
-        setDateWarning(true);
+        setStartDateError(true);
       } else {
-        setDateWarning(false);
+        setStartDateError(false);
       }
     }
+    setEndDateError(false);
   };
 
   const changeDateEnd = dueDate => {
     setDueDate(dueDate);
     if (startedDate) {
       if (dueDate < startedDate) {
-        setDateWarning(true);
+        setEndDateError(true);
       } else {
-        setDateWarning(false);
+        setEndDateError(false);
       }
     }
+    setStartDateError(false);
   };
 
   const addLink = () => {
@@ -290,6 +298,15 @@ function AddTaskModal(props) {
       clear();
     }
   }, [error, tasks])
+
+  useEffect(() => {
+    if (!modal) {
+      setStartedDate('');
+      setDueDate('');
+      setStartDateError(false);
+      setEndDateError(false);
+    }
+  }, [modal]);
 
   const fontColor = darkMode ? 'text-light' : '';
 
@@ -644,7 +661,7 @@ function AddTaskModal(props) {
                       value={startedDate}
                     />
                     <div className="warning">
-                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                      {startDateError ? START_DATE_ERROR_MESSAGE : ''}
                     </div>
                   </div>
                 </td>
@@ -660,7 +677,7 @@ function AddTaskModal(props) {
                     value={dueDate}
                   />
                   <div className="warning">
-                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    {endDateError ? END_DATE_ERROR_MESSAGE : ''}
                   </div>
                 </td>
               </tr>
