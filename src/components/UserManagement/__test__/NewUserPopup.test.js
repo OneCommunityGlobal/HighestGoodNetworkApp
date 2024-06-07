@@ -6,6 +6,7 @@ import { renderWithProvider } from '../../../__tests__/utils';
 import thunk from 'redux-thunk';
 
 import NewUserPopup from '../NewUserPopup';
+import { themeMock } from '__tests__/mockStates';
 
 jest.mock('../../UserProfile/AddNewUserProfile', () => {
   const userprofile = () => (
@@ -25,6 +26,7 @@ describe('new user popup', () => {
       userProfile: {
         role: 'userRole', // Provide the role here in the initial state
       },
+      theme: themeMock,
     });
     renderWithProvider(<NewUserPopup open onUserPopupClose={onUserPopupClose} />, { store });
   });

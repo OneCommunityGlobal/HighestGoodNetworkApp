@@ -116,7 +116,7 @@ function TotalTeamReport(props) {
   const loadTimeEntriesForPeriod = async () => {
     // get the time entries of every user in the selected time range.
     // console.log('Load time entries within the time range');
-    let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    let url = ENDPOINTS.TIME_ENTRIES_REPORTS;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
@@ -134,6 +134,7 @@ function TotalTeamReport(props) {
         // eslint-disable-next-line no-console
         console.log(err.message);
       });
+      setAllTimeEntries(timeEntries);
 
     url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
     const teamTimeEntries = await axios
@@ -153,7 +154,6 @@ function TotalTeamReport(props) {
       .catch(err => {
         console.log(err.message);
       });
-    setAllTimeEntries(timeEntries);
     setTeamTimeEntries(teamTimeEntries);
   };
 
