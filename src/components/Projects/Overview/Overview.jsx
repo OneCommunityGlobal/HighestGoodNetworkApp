@@ -4,6 +4,7 @@
  * This component display the number of projects and active projects
  ********************************************************************************/
 import React from 'react';
+import { connect } from 'react-redux';
 import { PROJECTS, ACTIVE_PROJECTS } from './../../../languages/en/ui';
 
 const Overview = props => {
@@ -32,4 +33,11 @@ const Overview = props => {
   );
 };
 
-export default Overview;
+const mapStateToProps = state => {
+  return {
+    numberOfProjects: state.allProjects.projects.length,
+    numberOfActive: state.allProjects.projects.filter(project => project.isActive).length,
+  };
+}
+
+export default connect(mapStateToProps)(Overview);
