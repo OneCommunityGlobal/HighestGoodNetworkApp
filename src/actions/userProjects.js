@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { GET_USER_PROJECTS } from '../constants/userProjects';
+import types from '../constants/userProjects';
 import { ENDPOINTS } from '../utils/URL';
 
 export const getUserProjects = userId => {
@@ -17,7 +17,7 @@ export const getUserProjects = userId => {
 };
 
 export const setUserProjects = data => ({
-  type: GET_USER_PROJECTS,
+  type: types.GET_USER_PROJECTS,
   payload: data,
 });
 
