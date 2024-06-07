@@ -127,14 +127,14 @@ export function TasksTable({ darkMode, tasks }) {
 
       <TasksDetail
         tasks_filter={tasks}
+        toggleEditTasks={toggleEditTasks}
+        darkMode={darkMode}
         isAssigned={isAssigned}
         isActive={isActive}
-        toggleEditTasks={toggleEditTasks}
         priority={filters.priority}
         status={filters.status}
         classification={filters.classification}
         users={filters.users}
-        darkMode={darkMode}
       />
     </div>
   );

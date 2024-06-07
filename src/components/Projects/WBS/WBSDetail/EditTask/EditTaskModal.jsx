@@ -264,7 +264,7 @@ function EditTaskModal(props) {
   }, [links]);
 
   return (
-    <div className="controlBtn">
+    <div className="text-center">
       <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'dark-mode text-light' : ''}>
         <ReactTooltip delayShow={300}/>
         <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
@@ -650,7 +650,7 @@ function EditTaskModal(props) {
               <tr>
                 <td scope="col">Start Date</td>
                 {ReadOnlySectionWrapper(
-                  <div>
+                  <div className='text-dark'>
                     <DayPickerInput
                       format={FORMAT}
                       formatDate={formatDate}
@@ -658,7 +658,7 @@ function EditTaskModal(props) {
                       onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
                       value={startedDate}
                     />
-                    <div className="warning">
+                    <div className='warning text-danger'>
                       {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
                     </div>
                   </div>,
@@ -669,14 +669,15 @@ function EditTaskModal(props) {
               <tr>
                 <td scope="col">End Date</td>
                   {ReadOnlySectionWrapper(
-                    <div>
+                    <div className='text-dark'>
                     <DayPickerInput
                       format={FORMAT}
                       formatDate={formatDate}
                       placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                       onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
+                      
                     />
-                    <div className="warning">
+                    <div className='warning text-danger'>
                       {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
                     </div>
                     </div>,
