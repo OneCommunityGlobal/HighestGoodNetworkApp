@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import '../../Header/DarkMode.css'
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
 
 const AddTeamPopup = React.memo(props => {
+  const {darkMode} = props;
+
   const dispatch = useDispatch();
   const closePopup = () => {
     props.onClose();
@@ -140,10 +143,10 @@ const AddTeamPopup = React.memo(props => {
   }, [newTeamName, newTeamIsActive, dispatch]);
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
-      <ModalHeader toggle={closePopup}>Add Team</ModalHeader>
-      <ModalBody style={{ textAlign: 'center' }}>
-        <label style={{ textAlign: 'left' }}>Add to Team</label>
+    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Add Team</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
+        <label className={darkMode ? 'text-light' : ''} style={{textAlign: 'left'}}>Add to Team</label>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddTeamsAutoComplete
             teamsData={props.teamsData}
@@ -186,7 +189,7 @@ const AddTeamPopup = React.memo(props => {
         ) : null}
         {isDuplicateTeam && <Alert color="danger">A team with this name already exists</Alert>}
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button color="secondary" onClick={closePopup}>
           Close
         </Button>

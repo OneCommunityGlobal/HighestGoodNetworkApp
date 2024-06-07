@@ -450,9 +450,6 @@ class Teams extends React.PureComponent {
    */
   onDeleteTeamMember = deletedUserId => {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
-    alert(
-      'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
-    );
   };
 
   sortTeamsByModifiedDate = () => {

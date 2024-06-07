@@ -12,6 +12,7 @@ describe('<SaveButton />', () => {
       disabled: true,
       userProfile: userProfileMock,
       setSaved:jest.fn(),
+      darkMode: true,
       }
     render(<SaveButton {...props} />);
     const button = screen.getByRole('button', { name: /save changes/i });
@@ -26,6 +27,7 @@ describe('<SaveButton />', () => {
         disabled: true,
         userProfile: userProfileMock,
         setSaved:jest.fn(),
+        darkMode: true,
         } 
       render(<SaveButton {...props} />);
       const button = screen.getByRole('button', { name: /save changes/i });
@@ -40,6 +42,7 @@ describe('<SaveButton />', () => {
         disabled: false,
         userProfile: userProfileMock,
         setSaved:jest.fn(),
+        darkMode: true,
         } 
       render(<SaveButton {...props} />);
       const button = screen.getByRole('button', { name: /save changes/i });
