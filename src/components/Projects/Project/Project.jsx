@@ -66,7 +66,7 @@ const Project = props => {
             onChange={e => {
               setCategory(e.target.value);
             }}
-            className={darkMode ? 'bg-yinmn-blue border-primary text-light' : ''}
+            className={darkMode ? 'border-primary' : ''}
           >
             <option default value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
