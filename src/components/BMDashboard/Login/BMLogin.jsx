@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
-import { Redirect, useLocation } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { Form, FormGroup, FormText, Input, Label, Button, FormFeedback } from 'reactstrap';
 import Joi from 'joi';
 
@@ -13,19 +13,22 @@ function BMLogin(props) {
   const [enterPassword, setEnteredPassword] = useState('');
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
-  const prevLocation = useLocation();
+
+  // get the previous location from the state if available
+  // If access login page from URL directly, redirect to BM Dashboard
+  const prevLocation = location.state?.from || { pathname: '/bmdashboard' };
 
   // push to dashboard if user is authenticated
   useEffect(() => {
     if (auth.user.access && auth.user.access.canAccessBMPortal) {
-      history.push(`/login?redirectTo=${prevLocation}`);
+      history.push(prevLocation.pathname);
     }
   }, []);
   useEffect(() => {
     if (hasAccess) {
-      history.push(`/login?redirectTo=${prevLocation}`);
+      history.push(prevLocation.pathname);
     }
-  }, [hasAccess]);
+  }, [hasAccess, history, prevLocation.pathname]);
 
   // Note: email input type="text" to validate with Joi
   const schema = Joi.object({
