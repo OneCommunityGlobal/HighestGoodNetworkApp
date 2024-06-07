@@ -60,6 +60,11 @@ const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
 
+const BMTimeLogProjectDetails = lazy(() =>
+  import('./components/BMDashboard/BMTimeLogger/BMTimeLogProjectDetails'),
+);
+
+
 const UpdateMaterialsBulk = lazy(() =>
   import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
 );
@@ -265,6 +270,13 @@ export default (
           fallback
           component={ProjectDetails}
         />
+
+        <BMProtectedRoute
+          path="/bmdashboard/timelogger/:projectId"
+          fallback
+          component={BMTimeLogProjectDetails}
+        />
+
         <BMProtectedRoute path="/bmdashboard/lessonlist/" component={LessonList} />
         <BMProtectedRoute
           path="/bmdashboard/materials/update"

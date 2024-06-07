@@ -1,19 +1,19 @@
-// import { useParams } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 // import { Container, Row, Col } from 'reactstrap';
 import { Container, Row } from 'reactstrap';
 // import LogBar from './LogBar';
 // import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
 // import MaterialsDisplay from './Materials/MaterialsDisplay';
-// import ProjectLog from './ProjectLog';
-// import './ProjectDetails.css';
+// import ProjectLog from '../ProjectLog';
+// import '../ProjectDetails.css';
 
-function BMTimeLogCard() {
-  // const { projectId } = useParams();
+function BMTimeLogProjectDetails() {
+  const { projectId } = useParams();
 
   return (
     <Container className="project-details" fluid>
       <Row className="mx-auto">
-        <h1>Project Dashboard</h1>
+        <h1>BM TimeLog Project {projectId} Dashboard</h1>
       </Row>
       {/* <Row className="mx-auto">
         <LogBar projectId={projectId} />
@@ -33,4 +33,4 @@ function BMTimeLogCard() {
   );
 }
 
-export default BMTimeLogCard;
+export default BMTimeLogProjectDetails;

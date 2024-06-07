@@ -27,7 +27,7 @@ function BMTimeLogSelectProject() {
     if (selectedProjectId) {
       // navigate to a new page with information about the selected project
       // console.log('selectedProjectId: ', selectedProjectId);
-      history.push(`/bmdashboard/projects/${selectedProjectId}`);
+      history.push(`/bmdashboard/timelogger/${selectedProjectId}`);
     } else {
       setError(true);
     }
