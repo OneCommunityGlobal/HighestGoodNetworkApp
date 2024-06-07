@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import Form from 'react-bootstrap/Form';
 import moment from 'moment-timezone';
 import DatePicker from 'react-datepicker';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import ScheduleReasonModalCard from './ScheduleReasonModalCard';
 import {
   addTimeOffRequestThunk,
@@ -21,6 +21,7 @@ const ScheduleReasonModal = ({
   user,
   canManageTimeOffRequests,
   checkIfUserCanScheduleTimeOff,
+  darkMode,
 }) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
@@ -324,21 +325,21 @@ const ScheduleReasonModal = ({
     <>
       {checkIfUserCanScheduleTimeOff() && (
         <>
-          <Modal.Header closeButton={true}>
+          <Modal.Header closeButton={true} className={darkMode ? 'bg-space-cadet' : ''}>
             <Modal.Title className="centered-container">
               <div className="centered-text mt-0 p1">Choose to Use a Blue Square</div>
             </Modal.Title>
           </Modal.Header>
           <Form onSubmit={handleSaveReason}>
-            <Modal.Body>
+            <Modal.Body className={darkMode ? 'bg-yinmn-blue' : ''}>
               <Form.Group className="mb-0" controlId="exampleForm.ControlTextarea1">
-                <Form.Label className="mb-3">
+                <Form.Label className={`mb-3 ${darkMode ? 'text-light' : ''}`}>
                  {` Need to take time off for an emergency or vacation? That's no problem. The system
                   will still issue you a blue square but scheduling here will note this reason on it
                   so it's clear you chose to use one (vs receiving one for missing something) and
                   let us know in advance. Blue squares are meant for situations like this and we allow the use and scheduling of 4 a year.`}
                 </Form.Label>
-                <Form.Label>
+                <Form.Label className={darkMode ? 'text-light' : ''}>
                   {`Select the Sunday of the week you'll be leaving (If you'll be absent this week,
                   choose the Sunday of current week):`}
                 </Form.Label>
@@ -360,7 +361,7 @@ const ScheduleReasonModal = ({
                 <Form.Text className="text-danger pl-1">
                   {requestDataErrors.dateOfLeaveError}
                 </Form.Text>
-                <Form.Label>Enter the duration of your absence (In Weeks):</Form.Label>
+                <Form.Label className={darkMode ? 'text-light' : ''}>Enter the duration of your absence (In Weeks):</Form.Label>
                 <Form.Control
                   type="number"
                   placeholder="Enter duration in weeks"
@@ -371,7 +372,7 @@ const ScheduleReasonModal = ({
                 <Form.Text className="text-danger pl-1">
                   {requestDataErrors.numberOfWeeksError}
                 </Form.Text>
-                <Form.Label className="mt-1">
+                <Form.Label className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
                   What is your reason for requesting this time off?
                 </Form.Label>
                 <Form.Control
@@ -389,8 +390,8 @@ const ScheduleReasonModal = ({
                 </Form.Text>
               </Form.Group>
             </Modal.Body>
-            <Modal.Footer>
-              <Button variant="secondary" onClick={handleClose} style={boxStyle}>
+            <Modal.Footer className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <Button variant="secondary" onClick={handleClose} style={darkMode ? boxStyleDark : boxStyle}>
                 Close
               </Button>
               <Button
@@ -398,12 +399,12 @@ const ScheduleReasonModal = ({
                 type="submit"
                 title="To Save - add a new reason or edit an existing reason. 
           Clicking 'Save' will generate an email to you and One Community as a record of this request."
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Save
               </Button>
-              <NestedModal isOpen={confirmationModal} toggle={toggleConfirmationModal}>
-                <ModalBody>
+              <NestedModal isOpen={confirmationModal} toggle={toggleConfirmationModal} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Container>
                     <Row>
                       <Col className="mb-1">
@@ -453,7 +454,7 @@ const ScheduleReasonModal = ({
                     </Row>
                   </Container>
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Button variant="primary" onClick={handelConfirmReason}>
                     Confirm
                   </Button>
@@ -462,13 +463,13 @@ const ScheduleReasonModal = ({
                   </Button>
                 </ModalFooter>
               </NestedModal>
-              <NestedModal isOpen={allowedDurationModal} toggle={toggleDurationInfoModal}>
-                <ModalBody>
+              <NestedModal isOpen={allowedDurationModal} toggle={toggleDurationInfoModal} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Container>
                     <Row>{durationExplanationText(allowedDurationData)}</Row>
                   </Container>
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter className={darkMode ? 'text-light' : ''}>
                   <Button variant="secondary" onClick={toggleDurationInfoModal}>
                     Close
                   </Button>

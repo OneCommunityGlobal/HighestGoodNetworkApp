@@ -87,7 +87,7 @@ const TimeEntry = (props) => {
  
 
 
-  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile ?.email ? timeEntryUserProfile.email : '', authUser.email);
 
   //moved below code to another function 
   // if (from === 'TaskTab') {
@@ -111,18 +111,18 @@ const TimeEntry = (props) => {
   //   }
     
   // }
-  
+
   const toggle = () => setTimeEntryFormModal(modal => !modal);
 
   const isAuthUser = timeEntryUserId === authUser.userid;
   const isSameDay = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === dateOfWork;
-      
+
   //default permission: auth use can edit own sameday timelog entry, but not tangibility
   const isAuthUserAndSameDayEntry = isAuthUser && isSameDay;
 
   //permission to edit any time log entry (from other user's Dashboard
-    // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-  const canEdit = (dispatch(hasPermission('editTimelogInfo')) 
+  // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
+  const canEdit = (dispatch(hasPermission('editTimelogInfo'))
     //permission to edit any time entry on their own time logs tab
     || dispatch(hasPermission('editTimeEntry'))) && !cantEditJaeRelatedRecord;
 
@@ -193,7 +193,7 @@ const TimeEntry = (props) => {
         style={{
           width: '12px',
           marginBottom: '4px',
-          border: `5px solid ${filteredColor}` ,
+          border: `5px solid ${filteredColor}`,
           backgroundColor: taskId ? filteredColor : 'white',
         }}
       ></div>
@@ -219,36 +219,36 @@ const TimeEntry = (props) => {
               {projectDetails?.taskName && `\u2003 ↳ ${projectDetails?.taskName}`} 
             </p>
             <div className='mb-3'>
-            {
-              canEdit 
-                ? ( 
+              {
+                canEdit
+                  ? (
                     <>
                       <span className="text-muted">Tangible:&nbsp;</span>
                       <input
-                          type="checkbox"
-                          name="isTangible"
-                          checked={isTangible}
-                          disabled={!canEdit || isProcessing}
-                          onChange={toggleTangibility}
+                        type="checkbox"
+                        name="isTangible"
+                        checked={isTangible}
+                        disabled={!canEdit || isProcessing}
+                        onChange={toggleTangibility}
                       />
-                      { isProcessing ? <span> Processing... </span> : null }
+                      {isProcessing ? <span> Processing... </span> : null}
                     </>
                   )
-                : <span className="font-italic">{isTangible ? 'Tangible' : 'Intangible'}</span> 
-            }
+                  : <span className="font-italic">{isTangible ? 'Tangible' : 'Intangible'}</span>
+              }
             </div>
           </Col>
           <Col md={5} className="pl-2 pr-0">
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {((canEdit || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
-                && from === 'WeeklyTab' 
+              {((canEdit || isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord)
+                && from === 'WeeklyTab'
                 && (
                   <button className="mr-3 text-primary">
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
                   </button>
-              )}
+                )}
               {canDelete && from === 'WeeklyTab' && (
                 <button className='text-primary'>
                   <DeleteModal timeEntry={data} />
