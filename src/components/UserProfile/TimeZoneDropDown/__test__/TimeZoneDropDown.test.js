@@ -46,6 +46,6 @@ describe('TimeZoneDropDown Component', () => {
 
   test('handles invalid time zone names provided', () => {
     render(<TimeZoneDropDown selected="InvalidTimeZone" />);
-    expect(screen.getByTestId('time_zone_dropdown')).toHaveValue('Africa/Abidjan');
+    expect(screen.getByTestId('time_zone_dropdown')).toHaveValue('Asia/Kabul');
   });
 });

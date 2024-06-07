@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown } from 'reactstrap';
 import './style.css';
 import './reviewButton.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
@@ -12,19 +13,43 @@ import { ApiEndpoint } from 'utils/URL';
 const ReviewButton = ({
   user,
   task,
-  updateTask
+  updateTask,
+  userPermission, 
 }) => {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
+  const [link, setLink] = useState("");
+  const [verifyModal, setVerifyModal] = useState(false);
+  const [selectedAction, setSelectedAction] = useState(null);
 
   const toggleModal = () => {
     setModal(!modal);
   };
-  
+
+  const toggleVerify = () => {
+    setVerifyModal(!verifyModal);
+  }
+
+  const handleLink = (e) => {
+    setLink(e.target.value);
+  };
+
+  const validURL = (url) => {
+    try {
+      const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
+      return pattern.test(url);
+    } catch (err) {
+      console.log(err);
+      return false;
+    }
+  }
+
   const reviewStatus = function() {
     let status = "Unsubmitted";
-    for(let resource of task.resources){
+    for(let resource of task.resources) {
       if (resource.userID === user.personId) {
         status = resource.reviewStatus ? resource.reviewStatus : "Unsubmitted"
         break;
@@ -40,31 +65,50 @@ const ReviewButton = ({
       newResource.completedTask = newStatus === "Reviewed";
       return newResource;
     });
-    const updatedTask = { ...task, resources: newResources };
+    let updatedTask = { ...task, resources: newResources };
+    //Add relatedWorkLinks to existing tasks
+    if(!Array.isArray(task.relatedWorkLinks)) {
+      task.relatedWorkLinks = [];
+    }
+  
+    if (newStatus === 'Submitted' && link) {
+      if (validURL(link)) {
+        updatedTask = {...updatedTask, relatedWorkLinks: [...task.relatedWorkLinks, link] };
+        setLink("");
+      } else {
+        alert('Invalid URL. Please enter a valid URL of at least 20 characters');
+        return;
+      }
+    }
     updateTask(task._id, updatedTask);
     setModal(false);
   };
 
   const buttonFormat = () => {
     if (user.personId == myUserId && reviewStatus == "Unsubmitted") {
-      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={boxStyle}>
+      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={darkMode ? boxStyleDark : boxStyle}>
         Submit for Review
       </Button>;
      } else if (reviewStatus == "Submitted")  {
-      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager") {
+      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || userPermission) {
         return (
           <UncontrolledDropdown>
-            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={boxStyle}>
+            <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
               Ready for Review
             </DropdownToggle>
             <DropdownMenu>
-            <DropdownItem onClick={toggleModal}>
+            {task.relatedWorkLinks && task.relatedWorkLinks.map((link, index) => (
+              <DropdownItem key={index} href={link} target="_blank">
+                View Link
+              </DropdownItem>
+            ))}
+            <DropdownItem onClick={() => { setSelectedAction('Complete and Remove'); toggleVerify(); }}>
               <FontAwesomeIcon
                 className="team-member-tasks-done"
                 icon={faCheck}
               /> as complete and remove task
             </DropdownItem>
-            <DropdownItem onClick={() => {updReviewStat("Unsubmitted");}}>
+            <DropdownItem onClick={() => { setSelectedAction('More Work Needed'); toggleVerify()}}>
               More work needed, reset this button
             </DropdownItem>
             </DropdownMenu>
@@ -96,16 +140,61 @@ const ReviewButton = ({
 
   return (
     <>
-      <Modal isOpen={modal} toggle={toggleModal}>
-        <ModalHeader toggle={toggleModal}>
+    {/* Verification Modal */}
+    <Modal isOpen={verifyModal} toggle={toggleVerify} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={toggleVerify} className={darkMode ? 'bg-space-cadet' : ''}>
+        {selectedAction === 'Complete and Remove' && 'Are you sure you have completed the review?'}
+        {selectedAction === 'More Work Needed' && 'Are you sure?'}
+        </ModalHeader>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <Button
+            onClick={(e) => {
+              if (selectedAction === 'More Work Needed') {
+                updReviewStat("Unsubmitted");
+              } else if (reviewStatus === "Unsubmitted") {
+                updReviewStat("Submitted");
+                sendReviewReq(e);
+              } else {
+                updReviewStat("Reviewed");
+              }
+              toggleVerify();
+            }}
+            color="primary"
+            className="float-left"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {reviewStatus == "Unsubmitted"
+              ? `Submit`
+              : `Complete`}
+          </Button>
+          <Button
+            onClick={toggleVerify}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Cancel
+          </Button>
+      </ModalFooter>
+    </Modal>
+
+            {/* Submission Modal */}
+      <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
+        <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}>
           Change Review Status
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {reviewStatus == "Unsubmitted" 
             ? `Are you sure you want to submit for review?`
             : `Are you sure you have completed the review?`}
         </ModalBody>
-        <ModalFooter>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          Please add link to related work:
+          <Input 
+          type='text' 
+          value={link}
+          onChange={handleLink}
+          />
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             onClick={(e) => {
               reviewStatus == "Unsubmitted"
@@ -115,7 +204,7 @@ const ReviewButton = ({
             }}
             color="primary"
             className="float-left"
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             {reviewStatus == "Unsubmitted"
               ? `Submit`
@@ -123,7 +212,7 @@ const ReviewButton = ({
           </Button>
           <Button
             onClick={toggleModal}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             Cancel
           </Button>
@@ -133,5 +222,4 @@ const ReviewButton = ({
     </>
   );
 };
-
 export default ReviewButton;

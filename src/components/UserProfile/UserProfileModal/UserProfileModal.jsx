@@ -12,9 +12,10 @@ import {
   Card,
   Col,
 } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../../Header/DarkMode.css'
 import hasPermission from 'utils/permissions';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 const UserProfileModal = props => {
   const {
@@ -41,6 +42,8 @@ const UserProfileModal = props => {
       blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
     }
   }
+
+  const darkMode = useSelector(state=>state.theme.darkMode);
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
 
@@ -139,16 +142,19 @@ const UserProfileModal = props => {
     }
   }
 
+  const boxStyling = darkMode ? boxStyleDark : boxStyle;
+  const fontColor = darkMode ? 'text-light' : '';
+
   return (
-    <Modal isOpen={isOpen} toggle={closeModal}>
-      <ModalHeader toggle={closeModal}>{modalTitle}</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         {type === 'updateLink' && (
           <div>
             {canPutUserProfile && (
               <CardBody>
                 <Card>
-                  <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
+                  <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
                   <Col>
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <div className="customTitle">Name</div>
@@ -223,7 +229,7 @@ const UserProfileModal = props => {
             )}
             <CardBody>
               <Card>
-                <Label style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
+                <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
                 <Col>
                   <div style={{ display: 'flex', margin: '5px' }}>
                     <div className="customTitle">Name</div>
@@ -303,12 +309,12 @@ const UserProfileModal = props => {
         {type === 'addBlueSquare' && (
           <>
             <FormGroup>
-              <Label for="date">Date</Label>
+              <Label className={fontColor} for="date">Date</Label>
               <Input type="date" name="date" id="date" onChange={handleChange} />
             </FormGroup>
 
             <FormGroup hidden={summaryFieldView}>
-              <Label for="report">Summary</Label>
+              <Label className={fontColor} for="report">Summary</Label>
               <Input type="textarea" id="summary" onChange={handleChange} />
             </FormGroup>
           </>
@@ -317,12 +323,17 @@ const UserProfileModal = props => {
         {type === 'modBlueSquare' && (
           <>
             <FormGroup>
-              <Label for="date">Date</Label>
+              <Label className={fontColor} for="date">Date</Label>
               <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
             </FormGroup>
-
             <FormGroup>
-              <Label for="report">Summary</Label>
+              <Label className={fontColor} for="createdDate">
+                Created Date:
+                {blueSquare[0]?.createdDate}
+              </Label>
+            </FormGroup>
+            <FormGroup>
+              <Label className={fontColor} for="report">Summary</Label>
               <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} />
             </FormGroup>
           </>
@@ -331,14 +342,20 @@ const UserProfileModal = props => {
         {type === 'viewBlueSquare' && (
           <>
             <FormGroup>
-              <Label for="date">
+              <Label className={fontColor} for="date">
                 Date:
                 {blueSquare[0]?.date}
               </Label>
             </FormGroup>
             <FormGroup>
-              <Label for="description">Summary</Label>
-              <Label>{blueSquare[0]?.description}</Label>
+              <Label className={fontColor} for="createdDate">
+                Created Date:
+                {blueSquare[0]?.createdDate}
+              </Label>
+            </FormGroup>
+            <FormGroup>
+              <Label className={fontColor} for="description">Summary</Label>
+              <Label className={fontColor}>{blueSquare[0]?.description}</Label>
             </FormGroup>
           </>
         )}
@@ -350,7 +367,7 @@ const UserProfileModal = props => {
         {type === 'image' && modalMessage}
       </ModalBody>
 
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         {type === 'addBlueSquare' && (
           <Button
             color="danger"
@@ -359,7 +376,7 @@ const UserProfileModal = props => {
             onClick={() => {
               modifyBlueSquares('', dateStamp, summary, 'add');
             }}
-            style={boxStyle}
+            style={boxStyling}
           >
             Submit
           </Button>
@@ -372,7 +389,7 @@ const UserProfileModal = props => {
               onClick={() => {
                 modifyBlueSquares(id, dateStamp, summary, 'update');
               }}
-              style={boxStyle}
+              style={boxStyling}
             >
               Update
             </Button>
@@ -381,7 +398,7 @@ const UserProfileModal = props => {
               onClick={() => {
                 modifyBlueSquares(id, dateStamp, summary, 'delete');
               }}
-              style={boxStyle}
+              style={boxStyling}
             >
               Delete
             </Button>
@@ -401,7 +418,7 @@ const UserProfileModal = props => {
 
         {type === 'image' && (
           <>
-            <Button color="primary" onClick={closeModal} style={boxStyle}>
+            <Button color="primary" onClick={closeModal} style={boxStyling}>
               {' '}
               Close{' '}
             </Button>
@@ -410,7 +427,7 @@ const UserProfileModal = props => {
               onClick={() => {
                 window.open('https://picresize.com/');
               }}
-              style={boxStyle}
+              style={boxStyling}
             >
               {' '}
               Resize{' '}
@@ -419,11 +436,11 @@ const UserProfileModal = props => {
         )}
 
         {type === 'save' ? (
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
+          <Button color="primary" onClick={closeModal} style={boxStyling}>
             Close
           </Button>
         ) : (
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
+          <Button color="primary" onClick={closeModal} style={boxStyling}>
             Cancel
           </Button>
         )}
