@@ -1,4 +1,4 @@
-import { GET_USER_PROJECTS, GET_USER_WBS } from '../constants/userProjects';
+import { GET_USER_PROJECTS } from '../constants/userProjects';
 
 const initialState = {
   projects: [],
@@ -11,11 +11,6 @@ export const userProjectsReducer = (state = initialState, action) => {
       return {
         ...state,
         projects: action.payload,
-      };
-    case GET_USER_WBS:
-      return {
-        ...state,
-        wbs: action.payload,
       };
     default:
       return state;
