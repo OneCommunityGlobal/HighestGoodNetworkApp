@@ -17,13 +17,15 @@ import {
   NavLink,
   Button,
 } from 'reactstrap';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
+import TeamChart from './TeamChart';
 import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { toast } from 'react-toastify';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -54,6 +56,12 @@ export class WeeklySummariesReport extends Component {
     super(props);
 
     this.state = {
+      tableData: [],
+      structuredTableData: [],
+      teams: [],
+      data: [],
+      total: 0,
+      COLORS: [],
       loading: true,
       summaries: [],
       activeTab: navItems[1],
@@ -121,6 +129,9 @@ export class WeeklySummariesReport extends Component {
     const teamCodes = [];
     const colorOptionGroup = new Set();
     const colorOptions = [];
+    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF00FF', '#800080', '#FFFF00', '#00FFFF'];
+
+
 
     summariesCopy.forEach(summary => {
       const code = summary.teamCode || 'noCodeLabel';
@@ -155,6 +166,8 @@ export class WeeklySummariesReport extends Component {
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
       });
+      const data = [
+      ];
     this.setState({
       loading,
       allRoleInfo: [],
@@ -166,6 +179,9 @@ export class WeeklySummariesReport extends Component {
       badges: allBadgeData,
       hasSeeBadgePermission: badgeStatusCode === 200,
       filteredSummaries: summariesCopy,
+      tableData: teamCodeGroup,
+      data,
+      COLORS,
       colorOptions,
       teamCodes,
       auth,
@@ -328,34 +344,6 @@ export class WeeklySummariesReport extends Component {
     return 0;
   };
 
-  handleRefresh = async () => {
-    this.setState({ loading: true });
-
-    try {
-      const res = await this.props.getWeeklySummariesReport();
-      const summaries = res?.data ?? this.props.summaries;
-
-      const summariesCopy = this.alphabetize(summaries);
-      const updatedSummaries = summariesCopy.map(summary => {
-        const promisedHoursByWeek = this.weekDates.map(weekDate =>
-          this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-        );
-        return { ...summary, promisedHoursByWeek };
-      });
-
-      this.setState({
-        loading: false,
-        summaries: updatedSummaries,
-        filteredSummaries: updatedSummaries,
-      });
-
-      toast.success('Successfully Updated Weekly Summaries Report');
-    } catch (error) {
-      this.setState({ loading: false });
-      toast.error('Failed to update Weekly Summaries Report');
-    }
-  };
-
   toggleTab = tab => {
     const { activeTab } = this.state;
     if (activeTab !== tab) {
@@ -371,7 +359,12 @@ export class WeeklySummariesReport extends Component {
       summaries,
       selectedOverTime,
       selectedBioStatus,
+      tableData, 
+      COLORS
     } = this.state;
+    const data = [];
+    let temptotal = 0;
+    const structuredTeamTableData = [];
 
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
@@ -398,7 +391,58 @@ export class WeeklySummariesReport extends Component {
         isBio
       );
     });
+
+    if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
+      if (selectedCodes.length >= 52) {
+        selectedCodes.forEach(code => {
+          if (code.value === '') return;
+          data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
+          const team = tableData[code.value];
+          const index = selectedCodesArray.indexOf(code.value);
+          const color = COLORS[index % COLORS.length]
+          const members = [];
+          team.forEach(member => {
+             members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
+           })
+          structuredTeamTableData.push({team: code.value, color, members,})
+        })
+      }else{
+        data.push({name: 'All With NO Code', value: temp.filter(summary => summary.teamCode === '').length})
+        const team = tableData['noCodeLabel'];
+        const index = selectedCodesArray.indexOf('noCodeLabel');
+        const color = COLORS[index % COLORS.length]
+        const members = [];
+        team.forEach(member => {
+           members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
+         })
+        structuredTeamTableData.push({team: 'noCodeLabel', color, members,})
+      }
+    }else{
+    selectedCodes.forEach(code => {
+      data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
+      let team = tableData[code.value];
+      const index = selectedCodesArray.indexOf(code.value);
+      const color = COLORS[index % COLORS.length]
+      const members = [];
+      if (team !== undefined){
+        team.forEach(member => {
+          members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
+        })
+       structuredTeamTableData.push({team: code.value, color, members,})
+      }
+
+
+
+     })
+    }
+
+     data.sort()
+     temptotal = data.reduce((acc, entry) => acc + entry.value, 0);
+     structuredTeamTableData.sort()
+     this.setState({ total: temptotal });
     this.setState({ filteredSummaries: temp });
+    this.setState({ data: data });
+    this.setState({ structuredTableData: structuredTeamTableData });
   };
 
   handleSelectCodeChange = event => {
@@ -496,6 +540,10 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries,
       colorOptions,
       teamCodes,
+      structuredTableData,
+      data,
+      total,
+      COLORS,
       auth,
     } = this.state;
     const { error } = this.props;
@@ -532,7 +580,6 @@ export class WeeklySummariesReport extends Component {
         </Container>
       );
     }
-
     return (
       <Container
         fluid
@@ -547,15 +594,6 @@ export class WeeklySummariesReport extends Component {
             <h3 className="mt-3 mb-5">
               <div className="d-flex align-items-center">
                 <span className="mr-2">Weekly Summaries Reports page</span>
-                <i
-                  data-toggle="tooltip"
-                  data-placement="right"
-                  title="Click to refresh the report"
-                  style={{ fontSize: 24, cursor: 'pointer' }}
-                  aria-hidden="true"
-                  className={`fa fa-refresh ${this.state.loading ? 'animation' : ''} mr-2`}
-                  onClick={this.handleRefresh}
-                />
                 <EditableInfoModal
                   areaName="WeeklySummariesReport"
                   areaTitle="Weekly Summaries Report"
@@ -605,6 +643,34 @@ export class WeeklySummariesReport extends Component {
                 this.handleSelectColorChange(e);
               }}
             />
+          </Col>
+        </Row>
+        <Row>
+          <Col>
+          <ResponsiveContainer width="100%" height={500}>
+            <PieChart>
+              <Pie
+                data={data}
+                dataKey="value"
+                nameKey="name"
+                cx="50%"
+                cy="50%"
+                outerRadius={150}
+                fill="#8884d8"
+                label={({ name, value }) => `${name}:(${Math.round((value / total) * 100)}%)`}
+              >
+                {data.map((entry, index) => (
+                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                ))}
+              </Pie>
+              <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
+                Total: {total}
+              </text>
+            </PieChart>
+          </ResponsiveContainer>
+          </Col>
+          <Col>
+          <TeamChart teamData= {structuredTableData}/>
           </Col>
         </Row>
         <Row style={{ marginBottom: '10px' }}>
@@ -753,6 +819,8 @@ const mapDispatchToProps = dispatch => ({
   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
+  getAllUserTeams: () => dispatch(getAllUserTeams()),
+
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
