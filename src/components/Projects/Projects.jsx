@@ -15,9 +15,11 @@ import {
   deleteProject,
   modifyProject,
 } from '../../actions/projects';
+import {getProjectsByUsersName} from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
+import SearchProjectByPerson from './SearchProject/SearchProjectByPerson'; 
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
 import ModalDelete from './../common/Modal';
@@ -30,6 +32,8 @@ import Loading from '../common/Loading';
 import { PROJECT_DELETE_POPUP_ID } from './../../constants/popupId';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import { toast } from 'react-toastify';
+
 
 export class Projects extends Component {
   constructor(props) {
@@ -40,6 +44,10 @@ export class Projects extends Component {
       trackModelMsg: false,
        // The property below is the state that tracks the selected category to sort the project list - Sucheta #PR1738
        categorySelectedForSort : "",
+       searchByName: false, // this flag determines execution of function that renders projects by Name - Sucheta 
+       firstName: "",
+       lastName: "",
+       nameInput: "",
        showStatus: "",
        sortBy: "",
       projectTarget: {
@@ -84,6 +92,38 @@ export class Projects extends Component {
     });
   };
 
+  
+
+  onChangeInputField = (e) => {
+    if(e.target.name === 'nameInput'){
+      this.setState({nameInput: e.target.value.trim()});
+    }
+    else if (e.target.name === 'nameSelector'){
+      this.setState({nameInput: e.target.value.trim() });
+    }
+  }
+  
+  
+  cancelSearchByName = (e) =>{
+    this.setState({searchByName: false});
+  }
+
+  handleNameSubmit = async (e, nameInput) => {
+    e.preventDefault();
+    if(nameInput  ){
+      let name =  nameInput.split(' ');
+      const firstName = name[0];
+      const lastName = name[1]
+      this.setState({searchByName: true, nameInput: ''});
+    
+      this.props.getProjectsByUsersName(firstName,lastName);
+    }
+    else{
+      toast.error("Please enter a name")
+    }
+    
+  }
+
  // sort project list by category - Sucheta
  onChangeCategory = (value) =>{
   this.setState({
@@ -114,6 +154,8 @@ handleSort = (e)=>{
   }
 }
 
+
+
   confirmDelete = () => {
     // get project info
     let { projectId } = this.state.projectTarget;
@@ -141,6 +183,7 @@ handleSort = (e)=>{
     });
   };
 
+
   render() {
     const {darkMode} = this.props.state.theme;
     
@@ -155,12 +198,16 @@ handleSort = (e)=>{
     // by Sucheta
     const {categorySelectedForSort} = this.state;
     const {showStatus} = this.state;
-    const {sortBy} = this.state;
-
+    const {sortBy} = this.state; 
+    const {firstName, lastName, nameInput} = this.state;
+    const {userProjects, allUsers} = this.props; //This state variable to store list of projects to display by user Name
+    const {searchByName} = this.state;
 
     const role = this.props.state.userProfile.role;
 
     const canPostProject = this.props.hasPermission('postProject');
+
+    
 
     if (status === 400 && trackModelMsg) {
       showModalMsg = true;
@@ -286,7 +333,27 @@ handleSort = (e)=>{
           }
         })
 
-      }else{
+      }else if(searchByName && userProjects){
+
+        let filteredList = projects.filter(project => userProjects.includes(project._id));
+       
+        ProjectsList = filteredList.map((project, index)=>{
+          return (<Project
+            key={project._id}
+            index={index}
+            projectId={project._id}
+            name={project.projectName}
+            category={project.category || 'Unspecified'}
+            active={project.isActive}
+            onClickActive={this.onClickActive}
+            onUpdateProjectName={this.onUpdateProjectName}
+            onClickDelete={this.onClickDelete}
+            confirmDelete={this.confirmDelete}
+            darkMode={darkMode}
+          />)
+        })
+      }
+      else{
         ProjectsList = (sortBy?sortedList: projects).map((project, index) => (
           <Project
             key={project._id}
@@ -321,9 +388,17 @@ handleSort = (e)=>{
               darkMode={darkMode}
             />
           </div>
+          
+          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          
 
-            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-            {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
+            
+          {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
+            
+          <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} nameInput={nameInput} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName} allUsers={this.props.allUsers} onSelectHandler={this.onSelectHandler} darkMode={darkMode}/>
+
+           
+            
 
             <table className="table table-bordered table-responsive-sm">
               <thead>
@@ -336,6 +411,7 @@ handleSort = (e)=>{
                 darkMode={darkMode}
               />
               </thead>
+         
               <tbody>{ProjectsList}</tbody>
             </table>
           </div>
@@ -375,8 +451,10 @@ handleSort = (e)=>{
 }
 
 const mapStateToProps = state => {
-  return { state };
+  // console.log("This is the state", state.allUserProfiles.userProfiles);
+  return { state, userProjects: state.userProjectsByUserNameReducer.projects?.projects, userError: state.userProjectsByUserNameReducer.userError, allUsers: state.allUserProfiles.userProfiles  };
 };
+
 export default connect(mapStateToProps, {
   fetchAllProjects,
   postNewProject,
@@ -384,4 +462,6 @@ export default connect(mapStateToProps, {
   modifyProject,
   getPopupById,
   hasPermission,
+  getProjectsByUsersName
+
 })(Projects);

@@ -97,3 +97,39 @@ thead {
 tr:hover {
   background: #e9f6ff;
 }
+
+#project_search_by_user_form {
+  height: 3em;
+  /* margin-bottom: 1em; */
+  padding: .25em;
+  border: .8px solid rgb(163, 163, 163);
+  border-radius: 5px;
+  display: flex;
+  justify-content: space-evenly;
+}
+.project_search_by_user_form-group{
+  height: 100%;
+  width: 100%;
+  display: flex;
+  margin-right: .25em;
+}
+.project_search_by_user_form-label{
+  width:10em;
+  padding-top: .25em;
+  align-self: center;
+}
+.project_search_by_user_form-input{
+  width: 100%;
+}
+
+.search-name_project-list{
+  width: 15em;
+  padding: 0 0 0 8em;
+  
+}
+.form-select_options{
+  padding: .5em;
+  border-color:darkgrey;
+  border-radius: 5px;
+  scroll-behavior: smooth;
+}
