@@ -325,6 +325,9 @@ function UserProfile(props) {
         await loadSummaryIntroDetails(teamId, response.data);
       }
 
+      // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
+      newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
+      newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
