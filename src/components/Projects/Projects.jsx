@@ -374,7 +374,7 @@ handleSort = (e)=>{
 
     return (
       <React.Fragment>
-        <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+        <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
           <div className="container py-3">
             {fetching || !fetched ? <Loading /> : null}
             <div className="d-flex align-items-center">
