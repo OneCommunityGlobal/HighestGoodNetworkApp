@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import moment from 'moment';
-import { Card } from 'reactstrap';
+import { Row, Col, Card } from 'reactstrap';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import BMTimeLogSelectProject from './BMTimeLogSelectProject';
 import BMTimeLogCard from './BMTimeLogCard';
 import BMError from '../shared/BMError';
+import './BMTimeLogger.css';
 
 function BMTimeLogger() {
   const date = moment();
@@ -27,12 +28,19 @@ function BMTimeLogger() {
   }, [errors]);
 
   return (
-    <Card className="cards-container">
-      <h4 className="cards-container__header">Member Group Check In</h4>
-      <div>
-        <div>Date: {date.format('MM/DD/YY')}</div>
-        <BMTimeLogSelectProject />
-      </div>
+    <Card className="justify-content-center mw-50 px-5">
+      <header className="bm-timelogger__header">
+        <Row className="ml-0 gx-5 w-75 mx-auto" md="2" sm="1" xs="1">
+          <h1>Member Group Check In</h1>
+        </Row>
+        <Row className="ml-0 gx-5 w-75 mx-auto" md="2" sm="1" xs="1">
+          <Col className="p-3">Date: {date.format('MM/DD/YY')}</Col>
+          <Col className="p-3">
+            <BMTimeLogSelectProject />
+          </Col>
+        </Row>
+      </header>
+
       {isError ? <BMError errors={errors} /> : <BMTimeLogCard />}
     </Card>
   );
