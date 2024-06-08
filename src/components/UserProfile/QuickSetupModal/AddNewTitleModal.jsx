@@ -28,12 +28,13 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   });
 
   let existTeamCodes = new Set();
-  
+  let existTeamName = new Set();
   if (teamsData?.allTeamCode) {
     const codes = teamsData.allTeamCode.map(team => team.teamCode);
+    const names = teamsData.allTeamCode.map(team => team.teamName);
     existTeamCodes = new Set(codes);
+    existTeamName = new Set(names);
   }
-
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
   const [isValidProject, onValidation] = useState(false);
@@ -90,7 +91,12 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
 
   // confirm and save
-  const confirmOnClick = () => {
+    const confirmOnClick = () => {
+    // debugger;
+    const isValidTeamName = onTeamNameValidation(selectedTeam);
+    if (!isValidTeamName) {
+      return;
+    }
     addTitle(titleData)
       .then((resp) => {
         if (resp.status !== 200) {
@@ -125,6 +131,20 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     }
     setShowMessage(false);
   }
+
+  const onTeamNameValidation = (teamName) => {
+    if (teamName !== '') {
+      debugger;
+      if (!existTeamName.has(teamName.teamName)) {
+        setWarningMessage({ title: "Error", content: "Team Name Not Exists" });
+        setShowMessage(true);
+        return false;
+      }
+    }
+    setShowMessage(false);
+    return true;
+  }
+
 
   const fontColor = darkMode ? 'text-light' : '';
 
