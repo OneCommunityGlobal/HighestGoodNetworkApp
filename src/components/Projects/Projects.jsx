@@ -21,6 +21,8 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 const Projects = function(props) {
   const role = props.state.userProfile.role;
   const { darkMode } = props.state.theme;
+  const numberOfProjects = props.state.allProjects.projects.length;
+  const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive).length;
   const { fetching, fetched, status, error } = props.state.allProjects;
   const initialModalData = {
     showModal: false,
@@ -160,7 +162,7 @@ const Projects = function(props) {
           />
         </div>
 
-          <Overview />
+          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
 
           <table className="table table-bordered table-responsive-sm">
