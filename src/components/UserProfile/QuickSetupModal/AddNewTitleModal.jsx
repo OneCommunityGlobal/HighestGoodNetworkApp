@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import {
   Button,
   Modal,
@@ -134,7 +134,6 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
   const onTeamNameValidation = (teamName) => {
     if (teamName !== '') {
-      debugger;
       if (!existTeamName.has(teamName.teamName)) {
         setWarningMessage({ title: "Error", content: "Team Name Not Exists" });
         setShowMessage(true);
