@@ -13,8 +13,12 @@ import {
 import { addTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
+import { useSelector } from 'react-redux';
+import "../../Header/DarkMode.css"
 
 function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData, setWarningMessage, setShowMessage }) {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   const [titleData, setTitleData] = useState({
     titleName: '',
     mediaFolder: '',
@@ -127,19 +131,18 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
       return;
     }
     setShowMessage(false);
-
-
   }
 
+  const fontColor = darkMode ? 'text-light' : '';
 
 
   return (
-    <Modal isOpen={isOpen} toggle={() => setIsOpen(false)}>
-      <ModalHeader toggle={() => setIsOpen(false)}>Add A New Title</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={isOpen} toggle={() => setIsOpen(false)} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={() => setIsOpen(false)} className={darkMode ? "bg-space-cadet" : ""}>Add A New Title</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <FormGroup>
-            <Label>Title Name<span className='qsm-modal-required'>*</span>: </Label>
+            <Label className={fontColor}>Title Name<span className='qsm-modal-required'>*</span>: </Label>
             <Input
               type="text"
               name="text"
@@ -150,7 +153,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               }}
             />
 
-            <Label>Media Folder<span className='qsm-modal-required'>*</span>: </Label>
+            <Label className={fontColor}>Media Folder<span className='qsm-modal-required'>*</span>: </Label>
             <Input
               type="text"
               name="text"
@@ -160,7 +163,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
                 setTitleData(prev => ({ ...prev, mediaFolder: e.target.value }));
               }}
             />
-            <Label>Team Code<span className='qsm-modal-required'>*</span>:</Label>
+            <Label className={fontColor}>Team Code<span className='qsm-modal-required'>*</span>:</Label>
             <Input
               type="text"
               placeholder="X-XXX OR XXXXX"
@@ -170,7 +173,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               }}
               onBlur={(e) => onTeamCodeValidation(e.target.value)}
             />
-            <Label>Project Assignment<span className='qsm-modal-required'>*</span>:</Label>
+            <Label className={fontColor}>Project Assignment<span className='qsm-modal-required'>*</span>:</Label>
             <AssignProjectField
               projectsData={projectsData}
               onDropDownSelect={selectProject}
@@ -178,7 +181,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               cleanProjectAssign={cleanProjectAssign}
               onSelectProject={onSelectProject}
             />
-            <Label>Team Assignment:</Label>
+            <Label className={fontColor}>Team Assignment:</Label>
             <AssignTeamField
               teamsData={teamsData}
               onDropDownSelect={selectTeam}
@@ -193,7 +196,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
         </Form>
       </ModalBody>
 
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button color="primary" onClick={() => confirmOnClick()}>
           Confirm
         </Button>

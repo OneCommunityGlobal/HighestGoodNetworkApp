@@ -108,11 +108,12 @@ const UserTeamsTable = props => {
         </div>
         <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
           <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
-            <thead>
+            <thead className={darkMode ? 'bg-space-cadet' : ''}>
               {props.role && (
                 <tr>
-                  <th>#</th>
-                  {canAssignTeamToUsers ? <th style={{ width: '100px' }}>Team Name</th> : null}
+                  <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
+                  {canAssignTeamToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>Team Name</th> : null}
+                  {props.userTeamsById.length > 0 ? <th className={darkMode ? 'bg-space-cadet' : ''}></th> : null}
                 </tr>
               )}
             </thead>
@@ -121,10 +122,10 @@ const UserTeamsTable = props => {
                 props.userTeamsById.map((team, index) => (
                   !team ? null :
                   <tr key={index} className="tr">
-                    <td style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
-                    <td>{`${team.teamName}`}</td>
+                    <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
+                    <td className={darkMode ? 'bg-yinmn-blue' : ''}>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
-                      <td style={{ textAlign: 'center', width: '20%' }}>
+                      <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '20%' }}>
                         <Button
                           disabled={!canAssignTeamToUsers}
                           color="danger"
