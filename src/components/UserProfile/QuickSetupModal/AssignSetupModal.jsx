@@ -26,15 +26,21 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
   const setAssignedOnClick = () => {
     if (validation.volunteerAgree && googleDoc.length !== 0) {
       debugger;
+      
+      const originalTeamId = userProfile.teams.map(team => team._id);
+      const originalProjectId = userProfile.projects.map(project => project._id);
+      // If the title has team assigned, add the team to the user profile. Remove duplicate teams
+      const teamsAssigned = title.teamAssiged ? originalTeamId.includes(title?.teamAssiged._id) ? userProfile.teams : [...userProfile.teams, title.teamAssiged] : userProfile.teams;
+      // If the title has project assigned, add the project to the user profile. Remove duplicate projects
+      const projectAssigned = title.projectAssigned ? originalProjectId.includes(title?.projectAssigned._id) ? userProfile.projects : [...userProfile.projects, title.projectAssigned] : userProfile.projects;
+
       const data = {
-        teams: title.teamAssiged ? [...userProfile.teams, title.teamAssiged] : [...userProfile.teams],
+        teams: teamsAssigned,
         jobTitle: title.titleName,
-        projects: [...userProfile.projects, title.projectAssigned],
+        projects: projectAssigned,
         teamCode: title.teamCode,
       };
-      // remove duplicate project and teams
-      userProfile.teams.includes(title?.teamAssiged) ? data.teams.pop() : '';
-      userProfile.projects.includes(title.projectAssigned) ? data.projects.pop() : '';
+      
 
       setUserProfile(prev => ({ ...prev, ...data }));
 

@@ -343,6 +343,7 @@ function UserProfile(props) {
         startDate: newUserProfile?.startDate.split('T')[0],
       });
       setUserStartDate(newUserProfile?.startDate.split('T')[0]);
+      checkIsProjectsEqual();
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
