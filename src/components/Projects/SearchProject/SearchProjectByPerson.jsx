@@ -11,7 +11,7 @@ import Form from 'react-bootstrap/Form';
 
 export default function SearchProjectByPerson(props){
 
- const {onChangeInputField, nameInput, handleNameSubmit, cancelSearchByName, allUsers, darkMode} = props;
+const {onChangeInputField, nameInput, handleNameSubmit, cancelSearchByName, allUsers, darkMode} = props;
 
 //  Below filetr function utilizes the state object gets all userProfile
  let filteredSuggestion = allUsers.filter(user =>{

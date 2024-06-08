@@ -130,11 +130,12 @@ tr:hover {
 }
 
 .search-name_project-list{
-  width: 15em;
-  padding: 0 0 0 8em;
-  
+  width: 100%;
+  display: flex;
+  justify-content: center;
 }
 .form-select_options{
+  width: 60%;
   padding: .5em;
   border-color:darkgrey;
   border-radius: 5px;

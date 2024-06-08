@@ -48,6 +48,7 @@ export class Projects extends Component {
        firstName: "",
        lastName: "",
        nameInput: "",
+       hideSelector: true,
        showStatus: "",
        sortBy: "",
       projectTarget: {
@@ -93,21 +94,35 @@ export class Projects extends Component {
   };
 
   
-
+/**
+ * This function sets the search input - user's first or last name. 
+ * Or any alphabet that starts a user name
+ */
   onChangeInputField = (e) => {
     if(e.target.name === 'nameInput'){
-      this.setState({nameInput: e.target.value.trim()});
+      this.setState({nameInput: e.target.value});
+      
     }
     else if (e.target.name === 'nameSelector'){
-      this.setState({nameInput: e.target.value.trim() });
+      this.setState({nameInput: e.target.value });
     }
   }
   
-  
+  /**
+   * This function cancels the search criterion and/ or clears the search input
+   */
   cancelSearchByName = (e) =>{
     this.setState({searchByName: false});
+    this.setState({nameInput: ""});
   }
 
+  /**
+   * 
+   * @param {*} e 
+   * @param {*} nameInput // this is the search input that matches a user name. 
+   * On submission the projects related to the user will be returned and rendered on the project page
+   * If a user was found that had no projects assigned, user sees an error.
+   */
   handleNameSubmit = async (e, nameInput) => {
     e.preventDefault();
     if(nameInput  ){
@@ -199,7 +214,7 @@ handleSort = (e)=>{
     const {categorySelectedForSort} = this.state;
     const {showStatus} = this.state;
     const {sortBy} = this.state; 
-    const {firstName, lastName, nameInput} = this.state;
+    const {nameInput} = this.state;
     const {userProjects, allUsers} = this.props; //This state variable to store list of projects to display by user Name
     const {searchByName} = this.state;
 
@@ -395,10 +410,7 @@ handleSort = (e)=>{
             
           {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
             
-          <SearchProjectByPerson onChangeInputField={this.onChangeInputField} firstName={firstName} lastName={lastName} nameInput={nameInput} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName} allUsers={this.props.allUsers} onSelectHandler={this.onSelectHandler} darkMode={darkMode}/>
-
-           
-            
+          <SearchProjectByPerson onChangeInputField={this.onChangeInputField} nameInput={nameInput} handleNameSubmit={this.handleNameSubmit} cancelSearchByName={this.cancelSearchByName} allUsers={this.props.allUsers} onSelectHandler={this.onSelectHandler} darkMode={darkMode}/>
 
             <table className="table table-bordered table-responsive-sm">
               <thead>

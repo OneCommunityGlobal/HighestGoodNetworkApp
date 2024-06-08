@@ -103,6 +103,7 @@ export const getProjectsByUsersName = (firstName, lastName) => {
     return res.status
     }catch(error){
       await dispatch(userNotFoundError(error));
+      await dispatch(getProjectsByPersonActionCreator([]));
       toast.error("Could not find user or project, please try again");
       
     }
