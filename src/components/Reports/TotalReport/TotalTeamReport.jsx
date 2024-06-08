@@ -411,7 +411,7 @@ function TotalTeamReport(props) {
       <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Team Report</div>
         <div className="total-period">
-          In the period from {fromDate} to {toDate}:
+         In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
         </div>
         <div className="total-item">
           <div className="total-number">{totalTeam.length}</div>
