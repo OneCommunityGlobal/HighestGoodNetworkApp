@@ -41,49 +41,15 @@ const TimeEntry = (props) => {
     isTangible, 
     hours,
     minutes,
-    projectId,
+    projectName,
+    taskName,
     taskId,
     notes,
   } = data;
 
-  const projectDetailsSetup = () => {
-    try {
-      if (from === 'TaskTab' && data) {
-        return {
-          projectName: data?.projectName || "",
-          projectCategory: data?.projectCategory || "",
-          taskName: data?.taskName || "",
-          taskClassification: data?.taskClassification || ""
-        }
-      } else {
-        const timeEntryProject = displayUserProjects.find(project => project.projectId === projectId);
-        let returnObj = {}
-        if (timeEntryProject !== undefined) {
-          returnObj = {
-            projectName: timeEntryProject?.projectName || "",
-            projectCategory: timeEntryProject?.projectCategory || "",
-          }
-        }
-        if (taskId) {
-          const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
-          if (timeEntryTask) {
-            returnObj = { 
-              ...returnObj,
-              taskName: timeEntryTask?.taskName || "",
-              taskClassification: ""
-            }
-          }    
-        }
-        return returnObj;
-      }
-    } catch (error) {
-      console.log(error);
-    }
-  }
   const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [filteredColor,setFilteredColor] = useState(hrsFilterBtnColorMap[7]);
-  const [projectDetails,setProjectDetails] = useState(projectDetailsSetup())
   const dispatch = useDispatch();
 
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
@@ -159,10 +125,6 @@ const TimeEntry = (props) => {
     editFilteredColor();
   }, [])
 
-  useEffect(() => {
-    setProjectDetails(projectDetailsSetup());
-  }, [from])
-
   return (
     <div style={{ display: "flex" }}>
       <div
@@ -190,9 +152,9 @@ const TimeEntry = (props) => {
             </h4>
             <div className="text-muted">Project/Task:</div>
             <p> 
-              {projectDetails?.projectName} 
+              {projectName} 
               <br />
-              {projectDetails?.taskName && `\u2003 ↳ ${projectDetails?.taskName}`} 
+              {taskName && `\u2003 ↳ ${taskName}`} 
             </p>
             <div className='mb-3'>
               {

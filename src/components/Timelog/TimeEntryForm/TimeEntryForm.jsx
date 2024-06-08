@@ -141,7 +141,6 @@ const TimeEntryForm = props => {
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
 // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-  const canUserEditDate = canEditTimeEntry && canPutUserProfileImportantInfo;
   const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry || isSameDayAuthUserEdit) ;
 
   /*---------------- methods -------------- */
