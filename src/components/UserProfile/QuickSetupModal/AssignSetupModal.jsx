@@ -25,7 +25,6 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
   // add QSC into user profile (and needs to save by clicking the save button)
   const setAssignedOnClick = () => {
     if (validation.volunteerAgree && googleDoc.length !== 0) {
-      debugger;
       
       const originalTeamId = userProfile.teams.map(team => team._id);
       const originalProjectId = userProfile.projects.map(project => project._id);

@@ -26,20 +26,13 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     projectAssigned: '',
     // teamAssiged: {},
   });
+
   let existTeamCodes = new Set();
+  
   if (teamsData?.allTeamCode) {
     const codes = teamsData.allTeamCode.map(team => team.teamCode);
     existTeamCodes = new Set(codes);
   }
-  
-
-  // useEffect(() => {
-  //   debugger;
-  //   if (teamsData?.allTeamCode) {
-  //     const codes = teamsData.allTeamCode.map(team => team.teamCode);
-  //     setExistTeamCodes(new Set(codes));
-  //   }
-  // }, [teamsData]);
 
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
