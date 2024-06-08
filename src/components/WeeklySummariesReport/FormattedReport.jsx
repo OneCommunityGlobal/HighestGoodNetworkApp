@@ -30,7 +30,11 @@ import {
   Col,
   Alert,
   Button,
-  ButtonGroup
+  ButtonGroup,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem
 } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
@@ -73,11 +77,20 @@ function FormattedReport({
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // number of items per page
+  const [itemsPerPage, setItemsPerPage] = useState(10);
+  const [dropdownOpen, setDropdownOpen] = useState(false)
+  // const itemsPerPage = 10; // number of items per page
+
+  const toggleDropdown = () => setDropdownOpen(!dropdownOpen)
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
+
+  const handleItemsPerPage = (count) => {
+    setItemsPerPage(count);
+    setCurrentPage(1);
+  }
 
   const totalPages = Math.ceil(summaries.length / itemsPerPage);
   const startIndex = (currentPage - 1) * itemsPerPage;
@@ -132,69 +145,84 @@ function FormattedReport({
       )}
       <EmailsList summaries={summaries} auth={auth} />
 
-      {/* Button group for pagination */}
-      {totalPages > 1 && (
-        <ButtonGroup>
-          {/* Previous Page */}
-          <Button
-            onClick={() => handlePageChange(currentPage - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </Button>
-
-          {/* First Page */}
-          {currentPage > 3 && (
-            <>
-              <Button
-                onClick={() => handlePageChange(1)}
-                active={currentPage === 1}
-              >
-                1
-              </Button>
-              {
-                currentPage > 4 &&
-                <span style={{ padding: '0 10px' }}>...</span>
-              }
-            </>
-          )}
-
-          {/* Separate button for page */}
-          {pageNumbers.map((page) => (
+      <div className='pagination-main'>
+        {/* Button group for pagination */}
+        {totalPages > 1 && (
+          <ButtonGroup className='pagination-btn-group'>
+            {/* Previous Page */}
             <Button
-              key={page}
-              onClick={() => handlePageChange(page)}
-              active={currentPage === page}
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
             >
-              {page}
+              Previous
             </Button>
-          ))}
 
-          {/* Last Page */}
-          {currentPage < totalPages - 2 && (
-            <>
-              {
-                currentPage < totalPages - 3 &&
-                <span style={{ padding: '0 10px' }}>...</span>
-              }
+            {/* First Page */}
+            {currentPage > 3 && (
+              <>
+                <Button
+                  onClick={() => handlePageChange(1)}
+                  active={currentPage === 1}
+                >
+                  1
+                </Button>
+                {
+                  currentPage > 4 &&
+                  <span style={{ padding: '0 10px' }}>...</span>
+                }
+              </>
+            )}
+
+            {/* Separate button for page */}
+            {pageNumbers.map((page) => (
               <Button
-                onClick={() => handlePageChange(totalPages)}
-                active={currentPage === totalPages}
+                key={page}
+                onClick={() => handlePageChange(page)}
+                active={currentPage === page}
               >
-                {totalPages}
+                {page}
               </Button>
-            </>
-          )}
+            ))}
 
-          {/* Next Page */}
-          <Button
-            onClick={() => handlePageChange(currentPage + 1)}
-            disabled={currentPage === totalPages}
-          >
-            Next
-          </Button>
-        </ButtonGroup>
-      )}
+            {/* Last Page */}
+            {currentPage < totalPages - 2 && (
+              <>
+                {
+                  currentPage < totalPages - 3 &&
+                  <span style={{ padding: '0 10px' }}>...</span>
+                }
+                <Button
+                  onClick={() => handlePageChange(totalPages)}
+                  active={currentPage === totalPages}
+                >
+                  {totalPages}
+                </Button>
+              </>
+            )}
+
+            {/* Next Page */}
+            <Button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+            >
+              Next
+            </Button>
+          </ButtonGroup>
+        )}
+        {/* Dropdown for items per page */}
+        <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
+          <DropdownToggle caret>
+            Items per page : {itemsPerPage}
+          </DropdownToggle>
+          <DropdownMenu>
+            {[5, 10, 20, 50].map((count) => (
+              <DropdownItem key={count} onClick={() => handleItemsPerPage(count)}>
+                {count}
+              </DropdownItem>
+            ))}
+          </DropdownMenu>
+        </Dropdown>
+      </div>
     </>
   );
 }

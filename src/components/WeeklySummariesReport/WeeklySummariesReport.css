@@ -25,6 +25,7 @@
 .name-info {
   display: flex;
 }
+
 .total-valid-wrapper {
   display: flex;
   align-items: center;
@@ -37,7 +38,7 @@
   display: block;
 }
 
-.badge-td > img {
+.badge-td>img {
   float: left;
   height: 45px;
   width: 45px;
@@ -92,6 +93,7 @@
   display: flex;
   flex-direction: row;
 }
+
 .weekly-summary-text {
   max-width: 100%;
   margin-right: 5px;
@@ -132,6 +134,16 @@
 }
 
 .weekly-summaries-limit {
-  margin-right:2rem;
-  padding-right:1rem;
+  margin-right: 2rem;
+  padding-right: 1rem;
+}
+
+.pagination-main {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.pagination-btn-group {
+  margin-right: 1%;
 }
