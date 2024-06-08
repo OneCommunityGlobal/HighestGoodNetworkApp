@@ -263,6 +263,8 @@ export function Header(props) {
     }
   }, [lastDismissed, userId, userDashboardProfile]);
 
+  const fontColor = darkMode ? 'text-light dropdown-item-hover' : '';
+
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
@@ -311,18 +313,18 @@ export function Header(props) {
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu>
+                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
                       {canGetReports &&
-                        <DropdownItem tag={Link} to="/reports">
+                        <DropdownItem tag={Link} to="/reports" className={`${fontColor}`}>
                           {REPORTS}
                         </DropdownItem>
                       }
                       {canGetWeeklySummaries &&
-                        <DropdownItem tag={Link} to="/weeklysummariesreport">
+                        <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor}>
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
                       }
-                      <DropdownItem tag={Link} to="/teamlocations">
+                      <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>
                     </DropdownMenu>
@@ -354,40 +356,40 @@ export function Header(props) {
                       <DropdownToggle nav caret>
                         <span className="dashboard-text-link">{OTHER_LINKS}</span>
                       </DropdownToggle>
-                      <DropdownMenu>
+                      <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
                         {canAccessUserManagement ? (
-                          <DropdownItem tag={Link} to="/usermanagement">
+                          <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                             {USER_MANAGEMENT}
                           </DropdownItem>
                         ) : (
                           <React.Fragment></React.Fragment>
                         )}
                         {canAccessBadgeManagement ? (
-                          <DropdownItem tag={Link} to="/badgemanagement">
+                          <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                             {BADGE_MANAGEMENT}
                           </DropdownItem>
                         ) : (
                           <React.Fragment></React.Fragment>
                         )}
                         {(canAccessProjects) && (
-                          <DropdownItem tag={Link} to="/projects">
+                          <DropdownItem tag={Link} to="/projects" className={fontColor}>
                             {PROJECTS}
                           </DropdownItem>
                         )}
                         {(canAccessTeams) && (
-                          <DropdownItem tag={Link} to="/teams">
+                          <DropdownItem tag={Link} to="/teams" className={fontColor}>
                             {TEAMS}
                           </DropdownItem>
                         )}
                         {(canAccessPermissionsManagement) && (
-                          <DropdownItem tag={Link} to="/announcements">
+                          <DropdownItem tag={Link} to="/announcements" className={fontColor}>
                             {SEND_EMAILS}
                           </DropdownItem>
                         )}
                         {canAccessPermissionsManagement && (
                           <>
                             <DropdownItem divider />
-                            <DropdownItem tag={Link} to="/permissionsmanagement">
+                            <DropdownItem tag={Link} to="/permissionsmanagement" className={fontColor}>
                               {PERMISSIONS_MANAGEMENT}
                             </DropdownItem>
                           </>
@@ -411,19 +413,19 @@ export function Header(props) {
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem header>Hello {firstName}</DropdownItem>
+                  <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <DropdownItem header className={darkMode ? 'text-light' : ''}>Hello {firstName}</DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`}>
+                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor}>
                       {VIEW_PROFILE}
                     </DropdownItem>
                     {!cantUpdateDevAdminDetails(props.userProfile.email, props.userProfile.email) && (
-                      <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`}>
+                      <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`} className={fontColor}>
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
                     <DropdownItem divider />
-                    <DropdownItem onClick={openModal}>{LOGOUT}</DropdownItem>
+                    <DropdownItem onClick={openModal} className={fontColor}>{LOGOUT}</DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </div>
