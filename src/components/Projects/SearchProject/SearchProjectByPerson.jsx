@@ -24,9 +24,9 @@ export default function SearchProjectByPerson(props){
 
 
   return <div id='search_form_container'>
-    <Form id="project_search_by_user_form" >
+    <Form id="project_search_by_user_form" onSubmit={(e)=> handleNameSubmit(e,nameInput)}>
         <Form.Group className='project_search_by_user_form-group'>
-            <Form.Label className={darkMode? 'bg-oxford-blue text-light project_search_by_user_form-label':'project_search_by_user_form-label'}>Search Name</Form.Label>
+            <Form.Label className={darkMode? 'bg-oxford-blue text-light project_search_by_user_form-label':'project_search_by_user_form-label'}>Search Project By Person</Form.Label>
             <Form.Control
               required
               type="text"
@@ -39,9 +39,9 @@ export default function SearchProjectByPerson(props){
           
       </Form.Group>
        
-      <Form.Group className='project_search_by_user_form-group btn-group'>
+      <Form.Group className='project_search_by_user_form-group-btn btn-group'>
         <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={(e) => handleNameSubmit(e,nameInput)}>Search Project</Button>
-        <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={cancelSearchByName}>Back</Button>
+        <Button className='p-2 ml-2 btn-md btn-grey border w-100 text-center' style={{height: "2.4em"}} onClick={cancelSearchByName}>Clear Search</Button>
       </Form.Group>    
     
   </Form>

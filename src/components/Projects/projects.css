@@ -100,22 +100,30 @@ tr:hover {
 
 #project_search_by_user_form {
   height: 3em;
-  /* margin-bottom: 1em; */
+  width: 100%;
   padding: .25em;
   border: .8px solid rgb(163, 163, 163);
   border-radius: 5px;
   display: flex;
-  justify-content: space-evenly;
+  justify-content: space-between;
 }
 .project_search_by_user_form-group{
+  
   height: 100%;
-  width: 100%;
+  width: 70%;
   display: flex;
+  justify-content: space-between;
   margin-right: .25em;
 }
+.project_search_by_user_form-group-btn{
+  width: 35%;
+}
+
+
 .project_search_by_user_form-label{
-  width:10em;
-  padding-top: .25em;
+  width:50%;
+  padding: .15em;
+  flex-wrap: nowrap;
   align-self: center;
 }
 .project_search_by_user_form-input{
