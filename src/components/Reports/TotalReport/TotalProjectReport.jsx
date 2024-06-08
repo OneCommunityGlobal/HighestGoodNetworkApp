@@ -7,13 +7,13 @@ import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
+import { set } from 'lodash';
 
 function TotalProjectReport(props) {
   const { startDate, endDate, userProfiles, projects, darkMode } = props;
 
-  const [dataLoading, setDataLoading] = useState(true);
-  const [dataRefresh, setDataRefresh] = useState(false);
-  const [dataReady, setDataReady] = useState(false);
+  const [totalProjectReportDataLoading, setTotalProjectReportDataLoading] = useState(true);
+  const [totalProjectReportDataReady, setTotalProjectReportDataReady] = useState(false);
   const [showTotalProjectTable, setShowTotalProjectTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
   const [allProject, setAllProject] = useState([]);
@@ -139,25 +139,26 @@ function TotalProjectReport(props) {
     }
   }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
+
   useEffect(() => {
-    setDataReady(false);
-    loadTimeEntriesForPeriod().then(() => {
-      setDataLoading(false);
-      setDataRefresh(true);
+    setTotalProjectReportDataReady(false);
+    const controller = new AbortController();
+    loadTimeEntriesForPeriod(controller).then(() => {
+      setTotalProjectReportDataLoading(false);
+      setTotalProjectReportDataReady(true);
     });
+    return () => controller.abort();
   }, [loadTimeEntriesForPeriod, startDate, endDate]);
 
   useEffect(() => {
-    if (!dataLoading && dataRefresh) {
+    if (!totalProjectReportDataLoading && totalProjectReportDataReady) {
       setShowMonthly(false);
       setShowYearly(false);
       const groupedProjects = Object.values(sumByProject(allTimeEntries, 'projectId'));
       setAllProject(filterOneHourProject(groupedProjects));
       checkPeriodForSummary();
-      setDataRefresh(false);
-      setDataReady(true);
     }
-  }, [dataLoading, dataRefresh, sumByProject, filterOneHourProject, allTimeEntries, checkPeriodForSummary]);
+  }, [totalProjectReportDataLoading,totalProjectReportDataReady,sumByProject, filterOneHourProject, allTimeEntries, checkPeriodForSummary]);
 
   const onClickTotalProjectDetail = () => setShowTotalProjectTable(prevState => !prevState);
 
@@ -242,7 +243,7 @@ function TotalProjectReport(props) {
 
   return (
     <div>
-      {!dataReady ? (
+      {!totalProjectReportDataReady ? (
         <Loading align="center" darkMode={darkMode}/>
       ) : (
         <div>

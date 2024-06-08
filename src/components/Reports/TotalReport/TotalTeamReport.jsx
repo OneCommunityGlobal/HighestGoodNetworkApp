@@ -12,10 +12,8 @@ import Loading from '../../common/Loading';
 
 function TotalTeamReport(props) {
   const dispatch = useDispatch();
-  const [dataLoading, setDataLoading] = useState(true);
-  const [dataRefresh, setDataRefresh] = useState(false);
-  const [teamMemberLoaded, setTeamMemberLoaded] = useState(false);
-  const [dataReady, setDataReady] = useState(false);
+  const [totalTeamReportDataLoading, setTotalTeamReportDataLoading] = useState(true);
+  const [totalTeamReportDataReady, setTotalTeamReportDataReady] = useState(false);
   const [showTotalTeamTable, setShowTotalTeamTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
   const [teamTimeEntries, setTeamTimeEntries] = useState([]);
@@ -266,18 +264,14 @@ function TotalTeamReport(props) {
 
   useEffect(() => {
     const { savedTeamMemberList } = props;
-
     if (savedTeamMemberList.length > 0) {
       setAllTeamsMembers(savedTeamMemberList);
-      setTeamMemberLoaded(true);
     } else {
-      matchTeamUser(allTeamsData).then(() => {
-        setTeamMemberLoaded(true);
-      });
+      matchTeamUser(allTeamsData);
     }
     loadTimeEntriesForPeriod().then(() => {
-      setDataLoading(false);
-      setDataRefresh(true);
+      setTotalTeamReportDataLoading(false);
+      setTotalTeamReportDataReady(true);
     });
     const nameList = {};
     userProfiles.forEach(user => {
@@ -286,22 +280,11 @@ function TotalTeamReport(props) {
     setUserNameList(nameList);
   }, []);
 
-  useEffect(() => {
-    setDataReady(false);
-    if (teamMemberLoaded) {
-      // Re-render: reload the time entries when the date changes
-      // console.log('Refresh data');
-      loadTimeEntriesForPeriod().then(() => {
-        setDataLoading(false);
-        setDataRefresh(true);
-      });
-    }
-  }, [startDate, endDate]);
 
   useEffect(() => {
     const { savedTeamMemberList, passTeamMemberList } = props;
 
-    if (!dataLoading && teamMemberLoaded && dataRefresh) {
+    if (!totalTeamReportDataLoading && totalTeamReportDataReady) {
       if (!savedTeamMemberList.length) {
         passTeamMemberList(allTeamsMembers);
       }
@@ -313,10 +296,19 @@ function TotalTeamReport(props) {
       const contributedTeams = filterTenHourTeam(groupedTeam);
       setAllTeams(contributedTeams);
       checkPeriodForSummary();
-      setDataRefresh(false);
-      setDataReady(true);
     }
-  }, [dataRefresh]);
+  }, [totalTeamReportDataLoading, totalTeamReportDataReady, allTeamsMembers, allTimeEntries, teamTimeEntries]);
+
+  useEffect(() => {
+    setTotalTeamReportDataReady(false);
+    const controller = new AbortController();
+    loadTimeEntriesForPeriod(controller).then(() => {
+      setTotalTeamReportDataReady(true);
+    });
+    return () => {
+      controller.abort();
+    }
+  }, [startDate, endDate]);
 
   const onClickTotalTeamDetail = () => {
     const showDetail = showTotalTeamTable;
@@ -333,8 +325,6 @@ function TotalTeamReport(props) {
   };
 
   const getMemberName = (teamId, userNames) => {
-    // given a team(id) and the userid-name list,
-    // return the list of member names of the team
     const nameList = [];
     allTeamsMembers
       .filter(team => team.teamId === teamId)[0]
@@ -455,7 +445,7 @@ function TotalTeamReport(props) {
 
   return (
     <div>
-      {!dataReady ? (
+      {!totalTeamReportDataReady ? (
         <div>
           <Loading align="center" darkMode={darkMode}/>
         </div>

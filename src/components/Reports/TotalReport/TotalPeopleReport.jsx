@@ -10,8 +10,8 @@ import Loading from '../../common/Loading';
 
 function TotalPeopleReport(props) {
   const { startDate, endDate, userProfiles, darkMode } = props;
-  const [dataLoading, setDataLoading] = useState(true);
-  const [dataReady, setDataReady] = useState(false);
+  const [totalPeopleReportDataLoading, setTotalPeopleReportDataLoading] = useState(true);
+  const [totalPeopleReportDataReady, setTotalPeopleReportDataReady] = useState(false);
   const [showTotalPeopleTable, setShowTotalPeopleTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
   const [allPeople, setAllPeople] = useState([]);
@@ -155,17 +155,17 @@ function TotalPeopleReport(props) {
   }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
   useEffect(() => {
-    setDataReady(false);
+    setTotalPeopleReportDataReady(false);
     const controller = new AbortController();
     loadTimeEntriesForPeriod(controller).then(() => {
-      setDataLoading(false);
-      setDataReady(true);
+      setTotalPeopleReportDataLoading(false);
+      setTotalPeopleReportDataReady(true);
     });
     return () => controller.abort();
   }, [loadTimeEntriesForPeriod, startDate, endDate]);
 
   useEffect(() => {
-    if (!dataLoading && dataReady) {
+    if (!totalPeopleReportDataLoading && totalPeopleReportDataReady) {
       setShowMonthly(false);
       setShowYearly(false);
       const groupedUsers = Object.values(sumByUser(allTimeEntries, 'userId'));
@@ -173,7 +173,7 @@ function TotalPeopleReport(props) {
       setAllPeople(contributedUsers);
       checkPeriodForSummary();
     }
-  }, [dataLoading, dataReady, sumByUser, filterTenHourUser, allTimeEntries, checkPeriodForSummary]);
+  }, [totalPeopleReportDataLoading, totalPeopleReportDataReady, sumByUser, filterTenHourUser, allTimeEntries, checkPeriodForSummary]);
 
   const onClickTotalPeopleDetail = () => {
     setShowTotalPeopleTable(prevState => !prevState);
@@ -257,7 +257,7 @@ function TotalPeopleReport(props) {
 
   return (
     <div>
-      {!dataReady ? (
+      {!totalPeopleReportDataReady ? (
         <Loading align="center" darkMode={darkMode} />
       ) : (
         <div>
