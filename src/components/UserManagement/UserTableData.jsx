@@ -12,20 +12,25 @@ import { boxStyle } from 'styles';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import { updateUserProfile as updateUserProfileAction } from '../../actions/userProfile';
+
 /**
  * The body row of the user table
  */
-const UserTableData = React.memo(props => {
+const UserTableData = React.memo((props) => {
   const [isChanging, onReset] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Editing User Info
+  const [userProfile, setUserProfile] = useState(props.user); // Initial user data
+  const [saveTrigger, setSaveTrigger] = useState(false); // Trigger re-render
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  console.log('props',props)
 
   const onRoleSearch = (selectedRole) => {
-    // Add logic when select a role
-    console.log('Selected role:', selectedRole);
-    // Need to call update UserProfile's API
+    setUserProfile({
+      ...userProfile,
+      role: selectedRole,
+    });
   };
+
   /**
    * reset the changing state upon rerender with new isActive status
    */
@@ -33,6 +38,16 @@ const UserTableData = React.memo(props => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
+  /**
+   * Monitor saveTrigger to update component when save is successful
+   */
+  useEffect(() => {
+    if (saveTrigger) {
+      setSaveTrigger(false);
+      setIsEditing(false);
+      setUserProfile(props.user);
+    }
+  }, [saveTrigger, props.user]);
 
   /**
    * Checks whether users should be able to change the record of other users.
@@ -43,9 +58,33 @@ const UserTableData = React.memo(props => {
   const checkPermissionsOnOwner = () => {
     const recordEmail = props.user.email;
     const loginUserEmail = props.authEmail;
-    
-    return (props.user.role === 'Owner' && !canAddDeleteEditOwners) 
-      || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
+
+    return (props.user.role === 'Owner' && !canAddDeleteEditOwners) || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
+  };
+
+  /**
+   * Handles the save action and triggers component update
+   */
+  const handleSave = async () => {
+    try {
+      await props.updateUserProfile(userProfile);
+      setSaveTrigger(true); // Trigger re-render
+    } catch (err) {
+      console.error('An error occurred while saving the profile:', err);
+      alert('An error occurred while attempting to save this profile.');
+    }
+  };
+
+  /**
+   * Handles input change for the user profile fields
+   * @param {string} key - The key of the user profile field
+   * @param {any} value - The new value for the field
+   */
+  const handleChange = (key, value) => {
+    setUserProfile((prevProfile) => ({
+      ...prevProfile,
+      [key]: value,
+    }));
   };
 
   return (
@@ -59,28 +98,33 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
       </td>
-      <td className="usermanagement__active--input"> 
-          <button
-              type="button"
-              className="btn btn-outline-success btn-sm"
-              onClick={() => setIsEditing(prev => !prev)} 
-              style={boxStyle}
-            >
-              {EDIT_USER_INFO}
-            </button>
-        </td>
+      <td className="usermanagement__active--input">
+        <button
+          type="button"
+          className="btn btn-outline-success btn-sm"
+          onClick={() => {
+            if (isEditing) {
+              handleSave();
+            } else {
+              setIsEditing(true);
+            }
+          }}
+          style={boxStyle}
+        >
+          {isEditing ? 'Save' : EDIT_USER_INFO}
+        </button>
+      </td>
       <td className="email_cell">
-        {isEditing?(
+        {isEditing ? (
           <input
-            type = "text"
-            value = {props.user.firstName}
-            onChange={e => props.handleFirstNameChange(e.target.value, props.user._id)}
-            onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
-            style={{ width: '100%', display: 'inline-block' }} 
+            type="text"
+            value={userProfile.firstName}
+            onChange={(e) => handleChange('firstName', e.target.value)}
+            style={{ width: '100%', display: 'inline-block' }}
           />
-          ) : (
-            <a href={`/userprofile/${props.user._id}` }>{props.user.firstName} </a>
-          )}
+        ) : (
+          <a href={`/userprofile/${props.user._id}`}>{props.user.firstName}</a>
+        )}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -90,18 +134,17 @@ const UserTableData = React.memo(props => {
           }}
         />
       </td>
-       <td className="email_cell">
-        {isEditing?(
-            <input
-              type = "text"
-              value = {props.user.lastName}
-              onChange={e => props.handleLastNameChange(e.target.value, props.user._id)}
-              onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
-              style={{ width: '100%', display: 'inline-block' }} 
-            />
-            ) : (
-              <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
-          )}
+      <td className="email_cell">
+        {isEditing ? (
+          <input
+            type="text"
+            value={userProfile.lastName}
+            onChange={(e) => handleChange('lastName', e.target.value)}
+            style={{ width: '100%', display: 'inline-block' }}
+          />
+        ) : (
+          <a href={`/userprofile/${props.user._id}`}>{props.user.lastName}</a>
+        )}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -112,33 +155,30 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td>
-      {isEditing?(
-          // <td id="user_role">
+        {isEditing ? (
           <DropDownSearchBox
             id={'role_search'}
             items={props.roleList}
-            value={props.user.role}  // props.user.role is the selected role
-            searchCallback={onRoleSearch}  // call when select a role
-            placeholder={props.user.role}
-            width="100%" 
+            value={userProfile.role}
+            searchCallback={onRoleSearch}
+            placeholder={userProfile.role}
+            width="100%"
           />
-        // </td>        
-            ) : (
-              <>{props.user.role}</>
-          )}
+        ) : (
+          <>{props.user.role}</>
+        )}
       </td>
       <td className="email_cell">
-        {isEditing?(
-            <input
-              type = "text"
-              value = {props.user.email}
-              onChange={e => props.handleEmailChange(e.target.value, props.user._id)}
-              onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
-              style={{ width: '100%', display: 'inline-block' }} 
-            />
-            ) : (
-              <>{props.user.email}</>
-        )} 
+        {isEditing ? (
+          <input
+            type="text"
+            value={userProfile.email}
+            onChange={(e) => handleChange('email', e.target.value)}
+            style={{ width: '100%', display: 'inline-block' }}
+          />
+        ) : (
+          <>{props.user.email}</>
+        )}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -149,32 +189,28 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td>
-        {isEditing?(
-            <input
-              type = "text"
-              value = {props.user.weeklycommittedHours}
-              onChange={e => props.handleTimeChange(e.target.value, props.user._id)}
-              onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
-              style={{ maxWidth: '75px' }}
-            />
-            ) : (
-              <> {props.user.weeklycommittedHours}</>
-        )} 
+        {isEditing ? (
+          <input
+            type="text"
+            value={userProfile.weeklycommittedHours}
+            onChange={(e) => handleChange('weeklycommittedHours', e.target.value)}
+            style={{ maxWidth: '75px' }}
+          />
+        ) : (
+          <> {props.user.weeklycommittedHours}</>
+        )}
       </td>
       <td>
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
-          onClick={e => {
-            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
+          onClick={(e) => {
+            if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
             }
             onReset(true);
-            props.onPauseResumeClick(
-              props.user,
-              props.isActive ? UserStatus.InActive : UserStatus.Active,
-            );
+            props.onPauseResumeClick(props.user, props.isActive ? UserStatus.InActive : UserStatus.Active);
           }}
           style={boxStyle}
         >
@@ -183,10 +219,8 @@ const UserTableData = React.memo(props => {
       </td>
       <td className="centered-td">
         <button
-          className={`btn btn-outline-primary btn-sm${
-            props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
-          }`}
-          onClick={e => props.onLogTimeOffClick(props.user)}
+          className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''}`}
+          onClick={(e) => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
           style={boxStyle}
         >
@@ -197,7 +231,7 @@ const UserTableData = React.memo(props => {
             viewBox="0 0 448 512"
             className="requested-time-off-calender-svg"
           >
-            <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
+            <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272" />
           </svg>
         </button>
         {props.timeOffRequests?.length > 0 && (
@@ -209,29 +243,10 @@ const UserTableData = React.memo(props => {
               viewBox="0 0 512 512"
               className="requested-time-off-clock-icon-svg"
             >
-              <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+              <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM" />
             </svg>
           </i>
         )}
-      </td>
-      <td>
-        <button
-          type="button"
-          className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
-          onClick={e => {
-            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
-              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
-              return;
-            }
-            props.onFinalDayClick(
-              props.user,
-              props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
-            );
-          }}
-          style={boxStyle}
-        >
-          {props.isSet ? CANCEL : SET_FINAL_DAY}
-        </button>
       </td>
       <td>
         {props.user.isActive === false && props.user.reactivationDate
@@ -239,20 +254,19 @@ const UserTableData = React.memo(props => {
           : ''}
       </td>
       <td>
-        {isEditing?(
+        {isEditing ? (
           <input
-            type = "text"
-            value = {props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}
-            onChange={e => props.handleTimeChange(e.target.value, props.user._id)}
-            onBlur={() => setIsEditing(false)}  // Optional: turn off edit mode on blur
+            type="text"
+            value={userProfile.createdDate ? formatDate(userProfile.createdDate) : 'N/A'}
+            onChange={(e) => handleChange('createdDate', e.target.value)}
+            style={{ width: '100%', display: 'inline-block' }}
           />
-          ) : (
-            <> {props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</>
-        )} 
+        ) : (
+          <> {props.user.createdDate ? formatDate(props.user.createdDate) : 'N/A'}</>
+        )}
       </td>
-      
-       <td className="email_cell">
-      {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
+      <td className="email_cell">
+        {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -268,7 +282,7 @@ const UserTableData = React.memo(props => {
             <button
               type="button"
               className="btn btn-outline-danger btn-sm"
-              onClick={e => {
+              onClick={(e) => {
                 props.onDeleteClick(props.user, 'archive');
               }}
               style={boxStyle}
@@ -285,4 +299,8 @@ const UserTableData = React.memo(props => {
   );
 });
 
-export default connect(null, { hasPermission })(UserTableData);
+const mapDispatchToProps = {
+  updateUserProfile: updateUserProfileAction,
+};
+
+export default connect(null, { hasPermission, ...mapDispatchToProps })(UserTableData);

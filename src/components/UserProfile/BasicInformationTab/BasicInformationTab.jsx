@@ -286,7 +286,7 @@ const TimeZoneDifference = props => {
 
 const BasicInformationTab = props => {
   //check point
-  console.log('updateUserProfile in userprofile.js called')
+  console.log('BasicInformationTab.jsx is called')
   const {
     userProfile,
     setUserProfile,
