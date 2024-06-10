@@ -1,11 +1,12 @@
 /* eslint-disable no-console */
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import httpService from 'services/httpService';
 import { connect } from 'react-redux';
 import moment from 'moment-timezone';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../../utils/URL';
 // eslint-disable-next-line import/named
 import { getUserInfo } from '../../utils/permissions';
@@ -65,9 +66,14 @@ function WriteItForMeModal(props) {
   const [summary, setSummary] = useState();
   const [buttonText, setButtonText] = useState('Copy Text');
   const [buttonDisabled, setButtonDisabled] = useState(false);
+  const [clickCount, setClickCount] = useState(0);
+  const [isAIButtonDisabled, setIsAIButtonDisabled] = useState(false);
+  const timeoutRef = useRef(null);
+
   const toggle = () => setModal(!modal);
 
   const { displayUserProfile, darkMode } = props; // Access displayUserProfile and authUser from props
+
   const fetchSummary = async prompt => {
     // eslint-disable-next-line react/destructuring-assignment
     toggle();
@@ -98,6 +104,24 @@ function WriteItForMeModal(props) {
   };
 
   const handleFetchSummary = async () => {
+    setClickCount(prevCount => prevCount + 1);
+
+    if (clickCount + 1 >= 3) {
+      setIsAIButtonDisabled(true);
+      toast.info(
+        'You have clicked 3 times now, try again after 5 minutes. This is to limit API Usage.',
+      );
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        setIsAIButtonDisabled(false);
+        setClickCount(0);
+      }, 300000); // 300 seconds or 5 minutes
+    }
+
     try {
       setButtonText('Copy Text');
       setSummary();
@@ -146,13 +170,14 @@ function WriteItForMeModal(props) {
         color="info"
         onClick={handleFetchSummary}
         style={{ ...(darkMode ? boxStyleDark : boxStyle), width: '100%', marginTop: '5px' }}
+        disabled={isAIButtonDisabled}
       >
         Write It For Me
       </Button>
 
       <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
-          Generated Summary
+          Generated Summary | clicks left : {3 - clickCount}
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {summary || 'Taking a few minutes to load your summary'}
@@ -180,6 +205,7 @@ function WriteItForMeModal(props) {
 const mapStateToProps = state => ({
   displayUserProfile: state.userProfile,
   darkMode: state.theme.darkMode,
+  writeDisabled: state.writeButton ? state.writeButton.writeDisabled : false,
 });
 
 // export default WriteItForMeModal and connect to redux
