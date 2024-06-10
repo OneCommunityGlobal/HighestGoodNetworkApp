@@ -21,7 +21,6 @@ import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
 import Header from './components/Header';
 import TeamLocations from './components/TeamLocations';
-import Admin from './components/Admin';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
 import ForgotPassword from './components/Login/ForgotPassword';
@@ -38,7 +37,10 @@ import EquipmentDetail from './components/BMDashboard/Equipment/Detail/Equipment
 import UpdateEquipment from './components/BMDashboard/Equipment/Update/UpdateEquipment';
 import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
+import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
+// eslint-disable-next-line import/order, import/no-unresolved
+import LogTools from './components/BMDashboard/LogTools/LogTools';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -95,7 +97,6 @@ export default (
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
-        <ProtectedRoute path="/popupmanagement" component={Admin} />
         <ProtectedRoute path="/timelog/" exact component={Timelog} />
         <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
@@ -126,7 +127,7 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          routePermissions={[RoutePermissions.weeklySummariesReport]}
+          routePermissions={RoutePermissions.weeklySummariesReport}
         />
         <ProtectedRoute
           path="/reports"
@@ -201,8 +202,8 @@ export default (
           component={PermissionsManagement}
           fallback
           routePermissions={[
-            RoutePermissions.permissionsManagement,
-            RoutePermissions.userPermissionsManagement,
+            ...RoutePermissions.permissionsManagement,
+            ...RoutePermissions.userPermissionsManagement,
           ].flat()}
         />
         <ProtectedRoute
@@ -280,7 +281,9 @@ export default (
           path="/bmdashboard/tools/:equipmentId/update"
           component={UpdateEquipment}
         />
+        <BMProtectedRoute path="/bmdashboard/tools" exact component={Toolslist} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
+        <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
         <BMProtectedRoute path="/bmdashboard/tools/:toolId" component={ToolDetailPage} />
         <BMProtectedRoute path="/bmdashboard/lessonform/:projectId" component={LessonForm} />
         <BMProtectedRoute path="/bmdashboard/lessonform/" component={LessonForm} />

@@ -21,7 +21,17 @@ export const TeamMembersPopup = React.memo(props => {
   const [searchText, setSearchText] = useState('');
   const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
   const [memberList, setMemberList] = useState([]);
-  const [sortOrder, setSortOrder] = useState(0)
+  const [sortOrder, setSortOrder] = useState(0);
+  const [deletedPopup, setDeletedPopup] = useState(false);
+    
+  const closeDeletedPopup = () => {
+    setDeletedPopup(!deletedPopup);
+  }
+
+  const handleDelete = (id) => {
+    props.onDeleteClick(`${id}`)
+    setDeletedPopup(true);
+  }
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
@@ -192,7 +202,7 @@ export const TeamMembersPopup = React.memo(props => {
                       <td>
                         <Button
                           color="danger"
-                          onClick={() => props.onDeleteClick(`${user._id}`)}
+                          onClick={() => handleDelete(user._id)}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Delete
@@ -210,6 +220,12 @@ export const TeamMembersPopup = React.memo(props => {
             Close
           </Button>
         </ModalFooter>
+      </Modal>
+      <Modal isOpen={deletedPopup} toggle={closeDeletedPopup} className={darkMode ? 'dark-mode text-light' : ''}>
+        <ModalHeader toggle={closeDeletedPopup} className={`${darkMode ? 'bg-space-cadet' : ''} text-danger font-weight-bold`}>Member Deleted!</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <p>Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.</p>
+        </ModalBody>
       </Modal>
     </Container>
   );

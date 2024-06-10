@@ -7,6 +7,9 @@ import { getAllTitle } from '../../../actions/title';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './QuickSetupModal.css';
+import '../../Header/DarkMode.css'
+import { useSelector } from 'react-redux';
+import { boxStyle, boxStyleDark } from 'styles';
 
 function QuickSetupModal({
   canAddTitle,
@@ -18,6 +21,8 @@ function QuickSetupModal({
   handleSubmit,
   setSaved,
 }) {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
@@ -70,7 +75,7 @@ function QuickSetupModal({
 
       <div className="col text-center mt-3">
         {canAddTitle ? (
-          <Button color="primary" onClick={() => setShowAddTitle(true)}>
+          <Button color="primary" onClick={() => setShowAddTitle(true)} style={darkMode ? boxStyleDark : boxStyle}>
             Add A New Title
           </Button>
         ) : (
@@ -84,6 +89,7 @@ function QuickSetupModal({
             userProfile={userProfile}
             disabled={titleOnSet}
             setSaved={() => setSaved(true)}
+            darkMode={darkMode}
           />
         ) : (
           ''
@@ -119,10 +125,10 @@ function QuickSetupModal({
         ''
       )}
       {showMessage && (
-        <Modal isOpen={showMessage} toggle={() => setShowMessage(false)}>
-          <ModalHeader toggle={() => setShowMessage(false)}>{warningMessage.title}</ModalHeader>
-          <ModalBody>{warningMessage.content}</ModalBody>
-          <ModalFooter>
+        <Modal isOpen={showMessage} toggle={() => setShowMessage(false)} className={darkMode ? 'text-light dark-mode' : ''}>
+          <ModalHeader toggle={() => setShowMessage(false)} className={darkMode ? 'bg-space-cadet' : ''}>{warningMessage.title}</ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{warningMessage.content}</ModalBody>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button color="primary" onClick={() => setShowMessage(false)}>
               Close
             </Button>

@@ -22,8 +22,6 @@ src/components/common/**
 src/components/Header/**
 src/components/BMDashboard/BMHeader/**
 src/components/MonthlyEffort/**
-
-src/components/PermissionsManagement/**
 src/components/ProfileLinks/**
 src/components/Projects/**
 src/components/Reports/**
@@ -35,7 +33,6 @@ src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/TeamLocations/**
 src/components/Timelog/**
-src/components/UpdatePassword/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/Announcements/**

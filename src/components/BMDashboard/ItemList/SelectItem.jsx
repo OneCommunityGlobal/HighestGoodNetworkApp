@@ -1,6 +1,12 @@
 import { Form, FormGroup, Label, Input } from 'reactstrap';
 
-export default function SelectItem({ items, selectedProject, selectedItem, setSelectedItem }) {
+export default function SelectItem({
+  items,
+  selectedProject,
+  selectedItem,
+  setSelectedItem,
+  label,
+}) {
   let itemSet = [];
   if (items.length) {
     if (selectedProject === 'all') itemSet = [...new Set(items.map(m => m.itemType?.name))];
@@ -16,7 +22,7 @@ export default function SelectItem({ items, selectedProject, selectedItem, setSe
     <Form>
       <FormGroup className="select_input">
         <Label htmlFor="select-material" style={{ marginLeft: '10px' }}>
-          Material:
+          {label ? `${label}:` : 'Material:'}
         </Label>
         <Input
           id="select-item"

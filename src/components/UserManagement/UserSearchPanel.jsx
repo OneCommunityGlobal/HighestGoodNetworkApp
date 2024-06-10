@@ -26,7 +26,7 @@ const UserSearchPanel = ({hasPermission,handleNewUserSetupPopup, handleSetupHist
         {SEND_SETUP_LINK}
       </button>
       <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
-        <button type="button" className="btn btn-info mr-2" onClick={handleSetupHistoryPopup}>
+        <button type="button" className="btn btn-info mr-2" onClick={handleSetupHistoryPopup} style={darkMode ? boxStyleDark : boxStyle}>
           <FontAwesomeIcon
             className="bell_icon"
             icon={faBell}
