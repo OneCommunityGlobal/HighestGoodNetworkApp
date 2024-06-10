@@ -28,6 +28,9 @@ export default function Warning({ personId, username, userRole }) {
 
   const handleToggle = () => {
     setToggle(prev => !prev);
+    fetchUsersWarningsById();
+  };
+  const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
       if (res.error) {
         setError(res);
