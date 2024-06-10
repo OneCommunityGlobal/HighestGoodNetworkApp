@@ -306,6 +306,8 @@ const TeamMemberTask = React.memo(
                     );
                   })}
                 {canTruncate && (
+                  <tr key="truncate-button-row" className="task-break">
+                    <td className={`task-align`}>
                       <button type="button" onClick={handleTruncateTasksButtonClick} className={darkMode ? 'text-light' : ''}>
                         {isTruncated ? `Show All (${activeTasks.length}) Tasks` : 'Truncate Tasks'}
                       </button>

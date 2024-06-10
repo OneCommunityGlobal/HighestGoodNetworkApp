@@ -177,7 +177,7 @@ const Projects = function(props) {
               darkMode={darkMode}
             />
             </thead>
-            <tbody className={darkMode ? 'dark-mode' : ''}>{projectList}</tbody>
+            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
           </table>
         </div>
 
