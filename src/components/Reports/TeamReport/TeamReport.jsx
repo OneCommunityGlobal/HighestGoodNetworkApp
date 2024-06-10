@@ -1,11 +1,16 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState, useMemo } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { debounce } from 'lodash';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import { FiUsers } from 'react-icons/fi';
 import Dropdown from 'react-bootstrap/Dropdown';
 import axios from 'axios';
+import { persistReducer } from 'redux-persist';
+import storage from 'redux-persist/lib/storage';
+import { compressToUTF16, decompressFromUTF16 } from 'lz-string';
+import { rootReducers } from '../../../store.js';
 import { ENDPOINTS } from 'utils/URL';
 import { getTeamDetail } from '../../../actions/team';
 import {
@@ -22,6 +27,24 @@ import { getTeamReportData } from './selectors';
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
+
+const parser = (val) => {
+  try {
+    return JSON.parse(val);
+  } catch (error) {
+    console.error("Failed to parse state:", error);
+    return null;
+  }
+};
+
+const persistConfig = {
+  key: 'root',
+  storage,
+  serialize: (outboundState) => compressToUTF16(JSON.stringify(outboundState)),
+  deserialize: (inboundState) => parser(decompressFromUTF16(inboundState))
+};
+
+const persistedReducer = persistReducer(persistConfig, rootReducers);
 
 export function TeamReport({ match }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -91,27 +114,29 @@ export function TeamReport({ match }) {
     [],
   );
 
-  function handleSelectTeam(event, selectedTeam, index) {
+  const handleSelectTeam = useCallback((event, selectedTeam, index) => {
     if (event.target.checked) {
       if (selectedTeams.length < 4) {
         setSelectedTeams([...selectedTeams, { selectedTeam, index }]);
       }
     } else {
       setSelectedTeams(prevSelectedTeams =>
-        // eslint-disable-next-line no-shadow
         prevSelectedTeams.filter(team => team.selectedTeam._id !== selectedTeam._id),
       );
     }
-  }
+  }, [selectedTeams]);
 
-  function handleSearchByName(event) {
-    event.persist();
-
+  const debounceSearchByName = debounce((value) => {
     setSearchParams(prevParams => ({
       ...prevParams,
-      teamName: event.target.value,
+      teamName: value,
     }));
-  }
+   }, 300);
+   
+   function handleSearchByName(event) {
+     event.persist();
+     debounceSearchByName(event.target.value);
+   }
 
   function handleCheckboxChange(event) {
     const { id, checked } = event.target;
@@ -139,12 +164,9 @@ export function TeamReport({ match }) {
     }
   }
 
-  function handleSearch() {
-    // eslint-disable-next-line no-shadow
-    const searchResults = allTeams.filter(team => {
-      const isMatchedName = team.teamName
-        .toLowerCase()
-        .includes(searchParams.teamName.toLowerCase());
+  const memoizedSearchResults = useMemo(() => {
+    return allTeams.filter(team => {
+      const isMatchedName = team.teamName.toLowerCase().includes(searchParams.teamName.toLowerCase());
       const isMatchedCreatedDate = moment(team.createdDatetime).isSameOrAfter(
         moment(searchParams.createdAt).startOf('day'),
       );
@@ -153,12 +175,9 @@ export function TeamReport({ match }) {
       );
       const isActive = team.isActive === searchParams.isActive;
       const isInactive = team.isActive !== searchParams.isInactive;
-      return (
-        isMatchedName && isMatchedCreatedDate && isMatchedModifiedDate && (isActive || isInactive)
-      );
-    });
-    return searchResults;
-  }
+      return isMatchedName && isMatchedCreatedDate && isMatchedModifiedDate && (isActive || isInactive);
+    }).slice(0, 5);
+  }, [allTeams, searchParams]);
 
   function handleDate(date) {
     const formattedDates = {};
@@ -174,23 +193,38 @@ export function TeamReport({ match }) {
   }
 
   useEffect(() => {
+    let isMounted = true; // flag to check component mount status
+  
     if (match) {
       dispatch(getTeamDetail(match.params.teamId));
-      dispatch(getTeamMembers(match.params.teamId)).then(result => setTeamMembers([...result]));
+  
+      dispatch(getTeamMembers(match.params.teamId)).then(result => {
+        if (isMounted) { // Only update state if component is still mounted
+          setTeamMembers([...result]);
+        }
+      });
+  
       dispatch(getAllUserTeams())
         .then(result => {
-          setAllTeams([...result]);
+          if (isMounted) {
+            setAllTeams([...result]);
+          }
           return result;
         })
         .then(result => {
-          // eslint-disable-next-line no-shadow
           const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
           Promise.all(allTeamMembersPromises).then(results => {
-            setAllTeamsMembers([...results]);
+            if (isMounted) { // Only update state if component is still mounted
+              setAllTeamsMembers([...results]);
+            }
           });
         });
     }
-  }, []);
+  
+    return () => {
+      isMounted = false; // Set the flag as false when the component unmounts
+    };
+  }, [dispatch, match]); // include all dependencies in the dependency array  
 
   // Get Total Tangible Hours this week [main TEAM]
   const [teamMembersWeeklyEffort, setTeamMembersWeeklyEffort] = useState([]);
@@ -462,11 +496,10 @@ export function TeamReport({ match }) {
                       <input
                         type="checkbox"
                         onChange={event => handleSelectTeam(event, team, index)}
+                        checked={selectedTeams.some(st => st.selectedTeam._id === team._id)}
                         disabled={
                           selectedTeams.length === 4 &&
-                          !selectedTeams.some(
-                            selectedTeam => selectedTeam.selectedTeam.teamName === team.teamName,
-                          )
+                          !selectedTeams.some(st => st.selectedTeam._id === team._id)
                         }
                       />
                     </td>

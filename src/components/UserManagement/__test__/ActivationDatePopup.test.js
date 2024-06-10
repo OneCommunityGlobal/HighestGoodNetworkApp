@@ -1,13 +1,24 @@
 import React from 'react';
 import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import configureStore from 'redux-mock-store';
 import ActivationDatePopup from '../ActivationDatePopup';
+import { themeMock } from '__tests__/mockStates';
+import { renderWithProvider } from '__tests__/utils';
+import thunk from 'redux-thunk';
+
+const mockStore = configureStore([thunk]);
 
 describe('<ActivationDatePopup />', () => {
   const onClose = jest.fn();
   const onPause = jest.fn();
+  let store;
   beforeEach(() => {
-    render(<ActivationDatePopup open onClose={onClose} onPause={onPause} />);
+    store = mockStore({
+      theme: themeMock,
+    })
+
+    renderWithProvider(<ActivationDatePopup open onClose={onClose} onPause={onPause} />, {store});
   });
 
   it('should render text `pause until`', () => {

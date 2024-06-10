@@ -94,6 +94,7 @@ const SaveButton = props => {
         modalTitle={getMessage('title')}
         modalMessage={getMessage('message')}
         disabled={isLoading}
+        darkMode={darkMode}
       />
       <Button
         outline
