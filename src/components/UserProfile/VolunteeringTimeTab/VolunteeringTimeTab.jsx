@@ -9,7 +9,6 @@ import './timeTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY } from 'utils/formatDate';
 
-
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
@@ -36,7 +35,7 @@ const StartDate = props => {
       name="StartDate"
       id="startDate"
       className={startEndDateValidation(props) ? 'border-error-validation' : null}
-      value={props.userProfile.startDate}
+      value={props.userProfile.startDate.toLocaleString().split('T')[0]}
       min={formatDateYYYYMMDD(props.userProfile.createdDate)}
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
