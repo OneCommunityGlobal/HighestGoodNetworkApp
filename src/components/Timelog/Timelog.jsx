@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams } from 'react-router-dom';
 import {
   Container,
@@ -34,7 +34,7 @@ import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from 'components/TeamMemberTasks';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
-import { getUserProjects, getUserWBSs } from '../../actions/userProjects';
+import { getUserProjects } from '../../actions/userProjects';
 import { getAllRoles } from '../../actions/role';
 import TimeEntryForm from './TimeEntryForm';
 import TimeEntry from './TimeEntry';
@@ -96,7 +96,6 @@ const Timelog = props => {
     timeEntries,
     roles,
     displayUserProjects,
-    displayUserWBSs,
     disPlayUserTasks,
   } = props;
 
@@ -130,7 +129,7 @@ const Timelog = props => {
   const { userId = authUser.userid } = useParams();
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
-  const [viewingUser, setViewingUser] = useState(checkSessionStorage);
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [displayUserId, setDisplayUserId] = useState(
     viewingUser ? viewingUser.userId : userId,
   );
@@ -216,7 +215,6 @@ const Timelog = props => {
         props.getTimeEntriesForPeriod(userId, timeLogState.fromDate, timeLogState.toDate),
         props.getAllRoles(),
         props.getUserProjects(userId),
-        props.getUserWBSs(userId),
         props.getUserTasks(userId),
       ]);
       setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
@@ -333,25 +331,30 @@ const Timelog = props => {
       project.WBSObject = {};
       projectsObject[projectId] = project;
     });
-    displayUserWBSs.forEach(WBS => {
-      const { projectId, _id: wbsId } = WBS;
-      WBS.taskObject = [];
-      if(projectsObject[projectId]){
-        projectsObject[projectId].WBSObject[wbsId] = WBS;
-      }
-    })
     disPlayUserTasks.forEach(task => {
-      const { projectId, wbsId, _id: taskId, resources } = task;
-      const isTaskCompletedForTimeEntryUser = resources.find(resource => resource.userID === displayUserProfile._id)?.completedTask;
-      if (!isTaskCompletedForTimeEntryUser && projectsObject[projectId]) {
-        if (!projectsObject[projectId].WBSObject) {
-          projectsObject[projectId].WBSObject = {};
+      const { projectId, wbsId, _id: taskId, wbsName, projectName } = task;
+      if (!projectsObject[projectId]) {
+        projectsObject[projectId] = { 
+          projectName, 
+          WBSObject: {
+            [wbsId]: { 
+              wbsName, 
+              taskObject: {
+                [taskId]: task
+              } 
+            }
+          }
+        } 
+      } else if (!projectsObject[projectId].WBSObject[wbsId]) {
+        projectsObject[projectId].WBSObject[wbsId] = {
+          wbsName, 
+          taskObject: {
+            [taskId]: task
+          } 
         }
-        if (!projectsObject[projectId].WBSObject[wbsId]) {
-          projectsObject[projectId].WBSObject[wbsId] = { taskObject: {} };
-        }
+      } else {
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
-      }     
+      }
     });
     
     for (const [projectId, project] of Object.entries(projectsObject)) {
@@ -451,6 +454,7 @@ const Timelog = props => {
           fontSize={30}
           isPermissionPage={true}
           role={authUser.role}
+          darkMode={darkMode}
         />
         </Container>
    
@@ -483,6 +487,7 @@ const Timelog = props => {
                           fontSize={24}
                           isPermissionPage={true}
                           role={authUser.role} // Pass the 'role' prop to EditableInfoModal
+                          darkMode={darkMode}
                         />
                       
                         <span className="mr-2" style={{padding: '1px'}}>
@@ -576,15 +581,15 @@ const Timelog = props => {
                           </div>
                         )
                       )}
-                      <Modal isOpen={timeLogState.infoModal} toggle={openInfo}>
-                        <ModalHeader>Info</ModalHeader>
-                        <ModalBody>{timeLogState.information}</ModalBody>
-                        <ModalFooter>
-                          <Button onClick={openInfo} color="primary" style={boxStyle}>
+                      <Modal isOpen={timeLogState.infoModal} toggle={openInfo} className={darkMode ? 'text-light' : ''}>
+                        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
+                        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{timeLogState.information}</ModalBody>
+                        <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
+                          <Button onClick={openInfo} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                             Close
                           </Button>
                           {canEditTimeEntry ? (
-                            <Button onClick={openInfo} color="secondary">
+                            <Button onClick={openInfo} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
                               Edit
                             </Button>
                           ) : null}
@@ -786,7 +791,6 @@ const mapStateToProps = state => ({
   displayUserProfile: state.userProfile,
   timeEntries: state.timeEntries,
   displayUserProjects: state.userProjects.projects,
-  displayUserWBSs: state.userProjects.wbs,
   disPlayUserTasks: state.userTask,
   roles: state.role.roles,
 });
@@ -797,7 +801,6 @@ export default connect(mapStateToProps, {
   getTimeEntriesForPeriod,
   getUserProfile,
   getUserProjects,
-  getUserWBSs,
   getUserTasks,
   updateUserProfile,
   getAllRoles,

@@ -2,7 +2,7 @@ import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
-import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
+import { Table, Progress, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -17,6 +17,8 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import moment from 'moment-timezone';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
+import { boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -148,6 +150,7 @@ function LeaderBoard({
             areaTitle="Leaderboard"
             role={loggedInUser.role}
             fontSize={24}
+            darkMode={darkMode}
             isPermissionPage
           />
         </div>
@@ -161,6 +164,7 @@ function LeaderBoard({
               areaTitle="Leaderboard settings"
               role={loggedInUser.role}
               fontSize={24}
+              darkMode={darkMode}
               isPermissionPage
             />
           </div>
@@ -180,6 +184,7 @@ function LeaderBoard({
                     role={loggedInUser.role}
                     fontSize={18}
                     isPermissionPage
+                    darkMode={darkMode}
                     className="p-2" // Add Bootstrap padding class to the EditableInfoModal
                   />
                 </div>
@@ -242,13 +247,19 @@ function LeaderBoard({
                     <Modal
                       isOpen={isDashboardOpen === item.personId}
                       toggle={dashboardToggle}
-                      className="modal-personal-dashboard"
+                      className={darkMode ? 'text-light dark-mode' : ''}
+                      style={darkMode ? boxStyleDark : {}}
                     >
-                      <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
-                      <ModalBody>
+                      <ModalHeader
+                        toggle={dashboardToggle}
+                        className={darkMode ? 'bg-space-cadet' : ''}
+                      >
+                        Jump to personal Dashboard
+                      </ModalHeader>
+                      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
                       </ModalBody>
-                      <ModalFooter>
+                      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <Button variant="primary" onClick={() => showDashboard(item)}>
                           Ok
                         </Button>{' '}

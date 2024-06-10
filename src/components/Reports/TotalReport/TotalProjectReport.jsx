@@ -28,7 +28,7 @@ function TotalProjectReport(props) {
   const projectList = projects.map(proj => proj._id);
 
   const loadTimeEntriesForPeriod = async () => {
-    let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    let url = ENDPOINTS.TIME_ENTRIES_REPORTS;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
