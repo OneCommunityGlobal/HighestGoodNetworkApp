@@ -20,7 +20,7 @@ import {
   editWarningDescription,
 } from '../../../actions/warnings';
 
-// import reorder from '../reorder.svg';
+import reorder from '../reorder.svg';
 
 /**
  *
@@ -264,8 +264,7 @@ function WarningTrackerModal({
       <ModalBody>
         {warningDescriptions.map((warning, index) => (
           <div className="warnings__descriptions" key={warning._id}>
-            {/* <img src={reorder} alt="reorder" className="warning__reorder" /> */}
-            <img alt="reorder" className="warning__reorder" />
+            <img src={reorder} alt="reorder" className="warning__reorder" />
             {warning.activeWarning ? (
               <OverlayTrigger
                 placement="top"
