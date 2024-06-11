@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import './style.css';
@@ -47,16 +47,16 @@ const ReviewButton = ({
     }
   }
 
-  const reviewStatus = function() {
+  const reviewStatus = useMemo(() => {
     let status = "Unsubmitted";
-    for(let resource of task.resources) {
+    for (let resource of task.resources) {
       if (resource.userID === user.personId) {
         status = resource.reviewStatus ? resource.reviewStatus : "Unsubmitted"
         break;
       }
     }
     return status;
-  }();
+  }, [task, user]);
 
   const updReviewStat = (newStatus) => {
     const resources = [...task.resources];
@@ -85,12 +85,12 @@ const ReviewButton = ({
   };
 
   const buttonFormat = () => {
-    if (user.personId == myUserId && reviewStatus == "Unsubmitted") {
+    if (user.personId === myUserId && reviewStatus === "Unsubmitted") {
       return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={darkMode ? boxStyleDark : boxStyle}>
         Submit for Review
       </Button>;
-     } else if (reviewStatus == "Submitted")  {
-      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || userPermission) {
+     } else if (reviewStatus === "Submitted")  {
+      if (myRole === "Owner" ||myRole === "Administrator" || myRole === "Mentor" || myRole === "Manager" || userPermission) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
@@ -114,7 +114,7 @@ const ReviewButton = ({
             </DropdownMenu>
           </UncontrolledDropdown>
         );
-      } else if (user.personId == myUserId) {
+      } else if (user.personId === myUserId) {
         return <Button className='reviewBtn' color='info' disabled>
           Work Submitted and Awaiting Review
         </Button>;
@@ -149,6 +149,7 @@ const ReviewButton = ({
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
       <Button
             onClick={(e) => {
+              toggleVerify();
               if (selectedAction === 'More Work Needed') {
                 updReviewStat("Unsubmitted");
               } else if (reviewStatus === "Unsubmitted") {
@@ -157,13 +158,12 @@ const ReviewButton = ({
               } else {
                 updReviewStat("Reviewed");
               }
-              toggleVerify();
             }}
             color="primary"
             className="float-left"
             style={darkMode ? boxStyleDark : boxStyle}
           >
-            {reviewStatus == "Unsubmitted"
+            {reviewStatus === "Unsubmitted"
               ? `Submit`
               : `Complete`}
           </Button>
@@ -182,7 +182,7 @@ const ReviewButton = ({
           Change Review Status
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          {reviewStatus == "Unsubmitted" 
+          {reviewStatus === "Unsubmitted" 
             ? `Are you sure you want to submit for review?`
             : `Are you sure you have completed the review?`}
         </ModalBody>
@@ -197,7 +197,7 @@ const ReviewButton = ({
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             onClick={(e) => {
-              reviewStatus == "Unsubmitted"
+              reviewStatus === "Unsubmitted"
               ? (updReviewStat("Submitted"),
                 sendReviewReq(e))
               : updReviewStat("Reviewed");
@@ -206,7 +206,7 @@ const ReviewButton = ({
             className="float-left"
             style={darkMode ? boxStyleDark : boxStyle}
           >
-            {reviewStatus == "Unsubmitted"
+            {reviewStatus === "Unsubmitted"
               ? `Submit`
               : `Complete`}
           </Button>
