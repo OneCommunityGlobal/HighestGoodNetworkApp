@@ -26,10 +26,6 @@ export default function Warning({ personId, username, userRole }) {
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleToggle = () => {
-    setToggle(prev => !prev);
-    fetchUsersWarningsById();
-  };
   const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
       if (res.error) {
@@ -39,6 +35,11 @@ export default function Warning({ personId, username, userRole }) {
       }
       setUsersWarnings(res);
     });
+  };
+
+  const handleToggle = () => {
+    setToggle(prev => !prev);
+    fetchUsersWarningsById();
   };
 
   const handleDeleteWarning = async warningId => {
