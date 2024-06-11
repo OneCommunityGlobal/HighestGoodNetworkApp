@@ -117,24 +117,26 @@ const SetupHistoryPopup = props => {
   };
 
   useEffect(() => {
-    httpService
-        .get(ENDPOINTS.GET_SETUP_INVITATION())
-        .then(res => {
-          //  setSetupInvitationData(res.data);
-           setSetupInvitationData(prevData => {
-            const transformedData = transformedTableData(res.data)
-            setFilteredSetupInvitationData(transformedData);
-            setFilteredUserDataCount(transformedData.length && transformedData.length > 0 ? transformedData.length : 0);
-            return res.data;
-           });
-        })
-        .catch(err => {
-          toast.error(`Fetching error: Invitation History.`);
-        })
-        .finally( () =>{
-          setLoading(false);
-        });
-  }, []);
+    if(props.open){
+      httpService
+      .get(ENDPOINTS.GET_SETUP_INVITATION())
+      .then(res => {
+        //  setSetupInvitationData(res.data);
+         setSetupInvitationData(prevData => {
+          const transformedData = transformedTableData(res.data)
+          setFilteredSetupInvitationData(transformedData);
+          setFilteredUserDataCount(transformedData.length && transformedData.length > 0 ? transformedData.length : 0);
+          return res.data;
+         });
+      })
+      .catch(err => {
+        toast.error(`Fetching error: Invitation History.`);
+      })
+      .finally( () =>{
+        setLoading(false);
+      });
+    }
+  }, [props.open]);
 
   /**
    * Triggered data fetching when a new user invitation is sent or a record is updated.
