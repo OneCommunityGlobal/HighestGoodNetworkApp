@@ -1,4 +1,3 @@
-
 // eslint-disable-next-line react/function-component-definition
 const Image = ({ label, name, error, className, ...rest }) => {
   return (

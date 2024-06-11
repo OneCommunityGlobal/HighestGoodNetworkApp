@@ -37,6 +37,7 @@ import collaborationOptions from './collaborationSuggestionData';
 import Image from 'react-bootstrap/Image';
 import 'react-phone-input-2/lib/style.css';
 import './SetupProfileUserEntry.css';
+import { toast } from 'react-toastify';
 
 const SetupProfileUserEntry = ({ token, userEmail }) => {
   const dispatch = useDispatch();

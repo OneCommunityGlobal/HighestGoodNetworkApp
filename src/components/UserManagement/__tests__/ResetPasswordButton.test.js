@@ -3,13 +3,22 @@ import { screen, render, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import ResetPasswordButton from '../ResetPasswordButton';
 import * as services from '../../../services/userProfileService';
-import { userProfileMock } from '../../../__tests__/mockStates';
-import { toast } from 'react-toastify';
+import { themeMock, userProfileMock } from '../../../__tests__/mockStates';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+
+const mockStore = configureStore([]);
+const store = mockStore({theme: themeMock,}); 
+
 jest.mock('react-toastify');
 
 describe('reset password button ', () => {
   beforeEach(() => {
-    render(<ResetPasswordButton isSmallButton user={userProfileMock} />);
+    render(
+      <Provider store={store}> 
+        <ResetPasswordButton isSmallButton user={userProfileMock} />
+      </Provider>
+    );
   });
   describe('Structure', () => {
     it('should render a button', () => {
