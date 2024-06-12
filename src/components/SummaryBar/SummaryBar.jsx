@@ -659,7 +659,7 @@ const SummaryBar = props => {
                   </FormGroup>
                   {extraFieldForSuggestionForm === 'suggestion' && (
                     <FormGroup check>
-                      <Label check>
+                      <Label check className={fontColor}>
                         <Input
                           onChange={e => editRadioButtonSelected(e.target.value)}
                           type="radio"
@@ -715,7 +715,7 @@ const SummaryBar = props => {
                       >
                         {suggestionCategory.map((value, index) => (
                           <div
-                            className="sortable-content sortable-draggable"
+                            className={`sortable-content ${bodyBg} sortable-draggable`}
                             key={index}
                             draggable="true"
                             onDragStart={event => onDragToggleDraggingClass(event)}
