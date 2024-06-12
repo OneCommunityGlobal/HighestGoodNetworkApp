@@ -66,6 +66,7 @@ const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
+const WeeklyVolunteerSummary = lazy(() => import('./components/WeeklyVolunteerSummary'));
 const Reports = lazy(() => import('./components/Reports'));
 const PeopleReport = lazy(() => import('./components/Reports/PeopleReport'));
 const ProjectReport = lazy(() => import('./components/Reports/ProjectReport'));
@@ -230,6 +231,21 @@ export default (
           component={Announcements}
           allowedRoles={[UserRole.Administrator, UserRole.Owner]}
           routePermissions={RoutePermissions.projects}
+        />
+
+        <ProtectedRoute
+          path="/weeklyvolunteersummary"
+          exact
+          component={WeeklyVolunteerSummary}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRole.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          routePermissions={RoutePermissions.volunteerWeeklySummary}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}

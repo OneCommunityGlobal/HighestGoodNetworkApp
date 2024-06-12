@@ -39,6 +39,12 @@ export const permissionLabels = [
         description:
           'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
       },
+      {
+        label: 'See Volunteer Weekly Summaries',
+        key: 'getVolunteerWeeklySummary',
+        description:
+          'Makes ONLY the "Reports" -> "Volunteer Summary Reports" option appear/accessible.',
+      },
     ],
   },
   {
