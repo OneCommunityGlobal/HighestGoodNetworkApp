@@ -155,8 +155,8 @@ function LostTimeHistory(props) {
           <table 
           className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
           style={darkMode ? boxStyleDark : boxStyle}>
-          <thead className={darkMode ? 'bg-space-cadet text-light' : 'text-black'}>
-            <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+          <thead>
+            <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
               <th scope="col">
                 Name
               </th>
@@ -176,7 +176,7 @@ function LostTimeHistory(props) {
               }
             </tr>
           </thead>
-          <tbody>{entriesRow}</tbody>
+          <tbody className={darkMode ? 'dark-mode' : ''}>{entriesRow}</tbody>
         </table>
         )
       )}

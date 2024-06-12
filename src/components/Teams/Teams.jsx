@@ -123,7 +123,7 @@ class Teams extends React.PureComponent {
                 darkMode={darkMode}
               />
 
-              < table className="table table-bordered table-responsive-sm">
+              <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}>
                 <thead>
                   <TeamTableHeader 
                     onTeamNameSort={this.toggleTeamNameSort} 
@@ -135,9 +135,9 @@ class Teams extends React.PureComponent {
                 </thead>
                 {
                   this.state.teamNameSearchText === '' && this.state.wildCardSearchText === '' ? (
-                    <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>{this.state.teamsTable}</tbody>
+                    <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.teamsTable}</tbody>
                   ) : (
-                    <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>{this.state.teams}</tbody>
+                    <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.teams}</tbody>
                   )
                 }
               </table>

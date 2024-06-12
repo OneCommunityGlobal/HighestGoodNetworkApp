@@ -159,7 +159,7 @@ function Task(props) {
     setIsOpen(props.openAll);
   }, [props.openAll]);
 
-  const bgColorsDark = ['bg-yinmn-blue', 'bg-space-cadet'];
+  const bgColorsDark = ['bg-yinmn-blue', 'bg-yinmn-blue-light'];
   const bgColorsLight = ['bg-white', 'bg-light'];
   const bgColor = darkMode ? bgColorsDark[(props.level - 1) % bgColorsDark.length] : bgColorsLight[(props.level - 1) % bgColorsLight.length];
 

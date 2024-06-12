@@ -182,7 +182,9 @@ function BadgeDevelopmentTable(props) {
 
   return (
     <Container fluid>
-      <table className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+      <table
+        className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
+      >
         <thead>
           <BadgeTableHeader darkMode={darkMode} />
           <BadgeTableFilter
@@ -200,7 +202,7 @@ function BadgeDevelopmentTable(props) {
         </thead>
         <tbody>
           {filteredBadges.map(value => (
-            <tr key={value._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
                 <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />

@@ -97,7 +97,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
             setToDefault();
           }}
           disabled={!actualUserProfile}
-          style={boxStyle}
+          style={darkMode ? boxStyleDark : boxStyle}
         >
           Reset to Default
         </Button>

@@ -67,7 +67,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
 
   if (allTeams.length > 0) {
     TeamsList = allTeams.map((team, index) => (
-      <tr id={`tr_${team._id}`} key={team._id} className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <tr id={`tr_${team._id}`} key={team._id}>
         <th scope="row">
           <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
         </th>
@@ -95,8 +95,8 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
     <table 
       className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
       style={darkMode ? boxStyleDark : boxStyle}>
-      <thead className={darkMode ? "bg-space-cadet text-light" : ""}>
-        <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <thead>
+        <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
             #
           </th>
@@ -107,7 +107,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
           <th style={{width: '30%'}} scope="col">Team Code</th>
         </tr>
       </thead>
-      <tbody>{TeamsList}</tbody>
+      <tbody className={darkMode ? 'dark-mode' : ''}>{TeamsList}</tbody>
     </table>
   );
 }

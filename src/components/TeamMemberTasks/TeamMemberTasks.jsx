@@ -528,7 +528,7 @@ const TeamMemberTasks = React.memo(props => {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
             {isLoading ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
