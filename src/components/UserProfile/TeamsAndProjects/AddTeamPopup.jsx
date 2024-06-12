@@ -35,8 +35,8 @@ const AddTeamPopup = React.memo(props => {
       .replace(/\s+/g, '');
 
   const IfTheUserNotSelectedSuggestionAutoComplete = () => {
-    const filterTeamData = props.teamsData.allTeams.filter(item =>
-      format(item.teamName).includes(format(searchText)),
+    const filterTeamData = props.teamsData.allTeams.filter(
+      item => format(item.teamName) === format(searchText),
     );
 
     if (filterTeamData.length > 0) {
