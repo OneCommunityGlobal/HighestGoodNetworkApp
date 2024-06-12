@@ -51,6 +51,9 @@ const PurchaseMaterials = lazy(() =>
 const PurchaseReusables = lazy(() =>
   import('./components/BMDashboard/PurchaseRequests/ReusablePurchaseRequest'),
 );
+// const PurchaseEquipment = lazy(() =>
+//   import('./components/BMDashboard/PurchaseRequests/EquipmentPurchaseRequest'),
+// );
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
 );
@@ -60,6 +63,8 @@ const UpdateMaterialsBulk = lazy(() =>
 const PurchaseConsumable = lazy(() => import('./components/BMDashboard/ConsumablePurchaseRequest'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
 const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRequest'));
+const PurchaseEquipment = lazy(() => import('./components/BMDashboard/EquipmentPurchaseRequest'));
+
 const AddMaterial = lazy(() => import('./components/BMDashboard/AddMaterial/AddMaterial'));
 const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/AddConsumable'));
 // Code-Splitting
@@ -243,6 +248,11 @@ export default (
           path="/bmdashboard/reusables/purchase"
           fallback
           component={PurchaseReusables}
+        />
+        <BMProtectedRoute
+          path="/bmdashboard/equipment/purchase"
+          fallback
+          component={PurchaseEquipment}
         />
         <BMProtectedRoute path="/bmdashboard/tools/purchase" fallback component={PurchaseTools} />
         <BMProtectedRoute
