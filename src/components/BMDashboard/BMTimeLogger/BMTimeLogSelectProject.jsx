@@ -1,13 +1,11 @@
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
+import { Form, FormGroup, Col, Row, Label, Input } from 'reactstrap';
 import ErrorAlert from '../ErrorAlert';
 
-function BMTimeLogSelectProject() {
+function BMTimeLogSelectProject({ selectedProject, setSelectedProject }) {
   const projects = useSelector(state => state.bmProjects);
-  const history = useHistory();
-  const [selectedProjectId, setSelectedProjectId] = useState('');
+
   const [error, setError] = useState(false);
 
   const selectOptions = projects.map(project => {
@@ -20,17 +18,7 @@ function BMTimeLogSelectProject() {
 
   const handleOptionChange = event => {
     setError(false);
-    setSelectedProjectId(event.target.value);
-  };
-
-  const handleButtonClick = () => {
-    if (selectedProjectId) {
-      // navigate to a new page with information about the selected project
-      // console.log('selectedProjectId: ', selectedProjectId);
-      history.push(`/bmdashboard/timelogger/${selectedProjectId}`);
-    } else {
-      setError(true);
-    }
+    setSelectedProject(event.target.value);
   };
 
   return (
@@ -45,7 +33,7 @@ function BMTimeLogSelectProject() {
               id="projectSelect"
               name="select"
               type="select"
-              value={selectedProjectId}
+              value={selectedProject}
               onChange={handleOptionChange}
             >
               <option value="" default>
@@ -55,11 +43,6 @@ function BMTimeLogSelectProject() {
             </Input>
           </Col>
         </FormGroup>
-        <Col className="p-3">
-          <Button className="bm-dashboard__button w-100" onClick={handleButtonClick}>
-            Go to Project Dashboard
-          </Button>
-        </Col>
         <ErrorAlert error={error} message="Please select a project" />
       </Row>
     </Form>

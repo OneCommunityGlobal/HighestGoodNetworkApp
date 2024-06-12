@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+// import Select from 'react-select';
 import moment from 'moment';
 import { Row, Col, Card } from 'reactstrap';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
@@ -11,6 +12,7 @@ import './BMTimeLogger.css';
 function BMTimeLogger() {
   const date = moment();
   const [isError, setIsError] = useState(false);
+  const [selectedProject, setselectedProject] = useState();
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
@@ -19,6 +21,8 @@ function BMTimeLogger() {
   useEffect(() => {
     dispatch(fetchBMProjects());
   }, []);
+
+  useEffect(() => {}, [selectedProject]);
 
   // trigger an error state if there is an errors object
   useEffect(() => {
@@ -36,12 +40,15 @@ function BMTimeLogger() {
         <Row className="ml-0 gx-5 w-75 mx-auto" md="2" sm="1" xs="1">
           <Col className="p-3">Date: {date.format('MM/DD/YY')}</Col>
           <Col className="p-3">
-            <BMTimeLogSelectProject />
+            <BMTimeLogSelectProject
+              selectedProject={selectedProject}
+              setSelectedProject={setselectedProject}
+            />
           </Col>
         </Row>
       </header>
 
-      {isError ? <BMError errors={errors} /> : <BMTimeLogCard />}
+      {isError ? <BMError errors={errors} /> : <BMTimeLogCard selectedProject={selectedProject} />}
     </Card>
   );
 }
