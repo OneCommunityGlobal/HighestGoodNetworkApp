@@ -111,6 +111,7 @@ const SetupHistoryPopup = props => {
   const [ loading, setLoading ] = useState(true);
   const [ filteredUserDataCount, setFilteredUserDataCount ] = useState(0);
   const [ isButtonDisabled, setIsButtonDisabled ] = useState(false);
+  const [noDataMsg,setNoDataMsg] = useState("No Data");
   
   const closePopup = e => {
     props.onClose();
@@ -130,7 +131,13 @@ const SetupHistoryPopup = props => {
          });
       })
       .catch(err => {
-        toast.error(`Fetching error: Invitation History.`);
+         if(err?.response?.status==403){
+               const msg = err?.response?.data;
+               setNoDataMsg(msg);
+         }else{
+           toast.error(`Fetching error: Invitation History.`);
+           setNoDataMsg("No Data");
+         }
       })
       .finally( () =>{
         setLoading(false);
@@ -344,7 +351,7 @@ const SetupHistoryPopup = props => {
             />
           </>
         ) : (
-          <div>No Data</div>
+          <div>{noDataMsg}</div>
         )}
         </div>
       </ModalBody>
