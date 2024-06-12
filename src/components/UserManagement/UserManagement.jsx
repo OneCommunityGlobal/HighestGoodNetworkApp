@@ -51,7 +51,7 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: '',
       selectedPage: 1,
       pageSize: 10,
-      allSelected:undefined,
+      allSelected: undefined,
       isActive: undefined,
       isSet: undefined,
       activationDateOpen: false,
@@ -197,7 +197,6 @@ class UserManagement extends React.PureComponent {
     );
   };
 
-
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
@@ -255,35 +254,45 @@ class UserManagement extends React.PureComponent {
     return userProfiles.filter(user => {
       // console.log('user', user);
       // Applying the search filters before creating each table data element
+      const search = result => {
+        if (typeof result === 'string') {
+          return result
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '');
+        }
+        const numberToString = String(result)
+          .trim()
+          .replace(/\s+/g, '');
+        const stringToNumber = Number(numberToString);
+        return stringToNumber;
+      };
+
       return (
         // Check if the user matches the search criteria
-        (
-          // Regular search criteria
-          user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
-          user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
-          user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
-          user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
-          (this.state.weeklyHrsSearchText === '' || user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
-
-          // Check the isActive state only if 'all' is not selected
-          ((this.state.allSelected && true) || (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
-
-          // Check the isPaused state only if 'all' is not selected
-          ((this.state.allSelected && true) || (this.state.isPaused === false || (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
-        ) &&
-
-          (
-            searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
-            searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
-            user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-            user.weeklycommittedHours === Number(this.state.wildCardSearchText)
-          )
-        )
+        // Regular search criteria
+        search(user.firstName).indexOf(search(this.state.firstNameSearchText)) > -1 &&
+        search(user.lastName).indexOf(search(this.state.lastNameSearchText)) > -1 &&
+        search(user.role).indexOf(search(this.state.roleSearchText)) > -1 &&
+        search(user.email).indexOf(search(this.state.emailSearchText)) > -1 &&
+        (this.state.weeklyHrsSearchText === '' ||
+          search(user.weeklycommittedHours) === Number(search(this.state.weeklyHrsSearchText))) &&
+        // Check the isActive state only if 'all' is not selected
+        ((this.state.allSelected && true) ||
+          this.state.isActive === undefined ||
+          user.isActive === this.state.isActive) &&
+        // Check the isPaused state only if 'all' is not selected
+        ((this.state.allSelected && true) ||
+          this.state.isPaused === false ||
+          (user.reactivationDate && new Date(user.reactivationDate) > new Date())) &&
+        (searchWithAccent(search(user.firstName), search(this.state.wildCardSearchText)) ||
+          searchWithAccent(search(user.lastName), search(this.state.wildCardSearchText)) ||
+          search(user.role).indexOf(search(this.state.wildCardSearchText)) > -1 ||
+          search(user.email).indexOf(search(this.state.wildCardSearchText)) > -1 ||
+          search(user.weeklycommittedHours) === Number(search(this.state.wildCardSearchText)))
       );
     });
   };
-
 
   /**
    * reload user list and close user creation popup
@@ -316,22 +325,23 @@ class UserManagement extends React.PureComponent {
    */
   onLogTimeOffClick = user => {
     // Check if target user is Jae's related user and authroized to manage time off requests
-    if(cantUpdateDevAdminDetails(user.email , this.authEmail)){
+    if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
-    
-    const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
-    if(canManageTimeOffRequests || hasRolePermission){
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
+
+    const hasRolePermission =
+      this.props.state.auth.user.role === 'Administrator' ||
+      this.props.state.auth.user.role === 'Owner';
+    if (canManageTimeOffRequests || hasRolePermission) {
       this.setState({
         logTimeOffPopUpOpen: true,
         userForTimeOff: user,
       });
-    }else{
-      toast.warn(`You do not have permission to manage time-off requests.`)
+    } else {
+      toast.warn(`You do not have permission to manage time-off requests.`);
     }
-
   };
 
   /**
@@ -339,7 +349,7 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
-    if(cantUpdateDevAdminDetails(user.email , this.authEmail)) {
+    if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
@@ -567,7 +577,6 @@ class UserManagement extends React.PureComponent {
     let active = undefined;
     let paused = false;
     let allSelected = false;
-
 
     switch (value) {
       case 'active':
