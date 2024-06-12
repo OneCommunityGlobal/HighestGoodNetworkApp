@@ -17,6 +17,7 @@ import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
 
 const Projects = function(props) {
   const role = props.state.userProfile.role;
@@ -43,6 +44,7 @@ const Projects = function(props) {
     category: '',
   });
   const [projectList, setProjectList] = useState(null);
+  const [searchName, setSearchName] = useState("");
 
   const canPostProject = props.hasPermission('postProject');
 
@@ -145,6 +147,14 @@ const Projects = function(props) {
       }
   }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects]);
 
+  const onNameSearch = searchNameInput => {
+    setSearchName(searchNameInput);
+
+    if(searchNameInput !== ""){ 
+      console.log(projectList[0]);
+    }
+  }
+
 
   return (
     <>
@@ -163,7 +173,10 @@ const Projects = function(props) {
         </div>
 
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+
           {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
+
+          <SearchProjectByPerson onSearch={onNameSearch}/>
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
