@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
@@ -6,7 +6,7 @@ import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
 import { getProjectDetail } from '../../../actions/project';
 import {getTimeEntryByProjectSpecifiedPeriod} from '../../../actions/index'
 import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
-import { fetchAllTasks } from 'actions/task';
+import { fetchAllTasks} from '../../../actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -18,7 +18,7 @@ import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequire
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../../styles';
 import { PieChartByProject } from './PiechartByProject/PieChartByProject';
 
 
@@ -42,7 +42,10 @@ export function ProjectReport({ match }) {
   );
   const tasks = useSelector(state => state.tasks);
 
-  const projectId = match.params.projectId;
+  let projectId = '';
+  if (match && match.params) {
+  projectId = match.params.projectId;
+  }
 
   const [projectUsers, setProjectUsers] = useState([]);
   const [mergedProjectUsersArray, setMergedProjectUsersArray] = useState([]);
@@ -53,7 +56,7 @@ export function ProjectReport({ match }) {
   useEffect(() => {
     dispatch(getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate))
     .then(response => {
-      if (response) {
+      if (response && Array.isArray(response)) {
         setProjectUsers(response);
       } else {
         console.log('error on fetching data');

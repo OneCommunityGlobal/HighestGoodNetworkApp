@@ -1,7 +1,6 @@
 import React, { PureComponent, useEffect, useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
 import { useDispatch } from 'react-redux';
-import { getUserProfile } from 'actions/userProfile';
 import '../PiechartByProject/PieChartByProject.css';
 
 export function WbsPieChart({

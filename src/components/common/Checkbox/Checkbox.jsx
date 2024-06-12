@@ -1,3 +1,4 @@
+import React from 'react';
 import './Checkbox.css';
 
 // eslint-disable-next-line import/prefer-default-export, react/function-component-definition

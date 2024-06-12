@@ -4,7 +4,7 @@
  ******************************************************************************* */
 import axios from 'axios';
 import * as types from '../constants/projectMembership';
-import { searchWithAccent } from 'utils/search';
+
 import { ENDPOINTS } from '../utils/URL';
 /** *****************************************
  * ACTION CREATORS

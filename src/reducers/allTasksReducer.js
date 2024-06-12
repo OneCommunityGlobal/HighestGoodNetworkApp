@@ -1,5 +1,5 @@
-import { createOrUpdateTaskNotificationHTTP } from 'actions/taskNotification';
-import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
+import { createOrUpdateTaskNotificationHTTP } from '../actions/taskNotification';
+import { fetchTeamMembersTaskSuccess } from '../components/TeamMemberTasks/actions';
 import * as types from "../constants/task";
 
 const allTasksInital = {
