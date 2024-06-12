@@ -9,8 +9,7 @@ import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 
 function TotalPeopleReport(props) {
-  const { startDate, endDate, userProfiles } = props;
-
+  const { startDate, endDate, userProfiles, darkMode } = props;
   const [dataLoading, setDataLoading] = useState(true);
   const [dataRefresh, setDataRefresh] = useState(false);
   const [showTotalPeopleTable, setShowTotalPeopleTable] = useState(false);
@@ -26,27 +25,27 @@ function TotalPeopleReport(props) {
 
   const userList = userProfiles.map(user => user._id);
 
-  const loadTimeEntriesForPeriod = async () => {
-    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
-    const timeEntries = await axios
-      .post(url, { users: userList, fromDate, toDate })
-      .then(res => {
-        return res.data.map(entry => {
-          return {
-            userId: entry.personId,
-            hours: entry.hours,
-            minutes: entry.minutes,
-            isTangible: entry.isTangible,
-            date: entry.dateOfWork,
-          };
-        });
-      })
-      .catch(err => {
-        // eslint-disable-next-line no-console
-        console.log(err.message);
-      });
-    setAllTimeEntries(timeEntries);
+  const loadTimeEntriesForPeriod = async (controller) => {
+    try {
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+      const res = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal });
+      const timeEntries = res.data.map(entry => ({
+        userId: entry.personId,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      }));
+      setAllTimeEntries(timeEntries);
+    } catch (err) {
+      if (axios.isCancel(err)) {
+        console.log('Request canceled', err.message);
+      } else {
+        console.error("API error:", err.message);
+      }
+    }
   };
+  
 
   const sumByUser = (objectArray, property) => {
     return objectArray.reduce((acc, obj) => {
@@ -96,13 +95,15 @@ function TotalPeopleReport(props) {
       const allTangibleTimeLogged = element.tangibleHours + element.tangibleMinutes / 60.0;
       if (allTimeLogged >= 10) {
         const matchedUser = userProfiles.filter(user => user._id === element.userId)[0];
-        filteredUsers.push({
-          userId: element.userId,
-          firstName: matchedUser.firstName,
-          lastName: matchedUser.lastName,
-          totalTime: allTimeLogged.toFixed(2),
-          tangibleTime: allTangibleTimeLogged.toFixed(2),
-        });
+        if (matchedUser) {
+          filteredUsers.push({
+            userId: element.userId,
+            firstName: matchedUser.firstName,
+            lastName: matchedUser.lastName,
+            totalTime: allTimeLogged.toFixed(2),
+            tangibleTime: allTangibleTimeLogged.toFixed(2),
+          });
+        }
       }
     });
     return filteredUsers;
@@ -162,10 +163,12 @@ function TotalPeopleReport(props) {
   };
 
   useEffect(() => {
-    loadTimeEntriesForPeriod().then(() => {
+    const controller = new AbortController();
+    loadTimeEntriesForPeriod(controller).then(() => {
       setDataLoading(false);
       setDataRefresh(true);
     });
+    return () => controller.abort();
   }, [startDate, endDate]);
 
   useEffect(() => {
@@ -196,7 +199,7 @@ function TotalPeopleReport(props) {
               <div>{index + 1}</div>
             </th>
             <td>
-              <Link to={`/userProfile/${person.userId}`}>
+              <Link to={`/userProfile/${person.userId}`} className={darkMode ? 'text-light' : ''}>
                 {person.firstName} {person.lastName}
               </Link>
             </td>
@@ -226,8 +229,8 @@ function TotalPeopleReport(props) {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-container">
-        <div className="total-title">Total People Report</div>
+      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total People Report</div>
         <div className="total-period">
           In the period from {fromDate} to {toDate}:
         </div>
@@ -273,7 +276,7 @@ function TotalPeopleReport(props) {
   return (
     <div>
       {dataLoading ? (
-        <Loading />
+        <Loading align="center" darkMode={darkMode}/>
       ) : (
         <div>
           <div>{totalPeopleInfo(allPeople)}</div>

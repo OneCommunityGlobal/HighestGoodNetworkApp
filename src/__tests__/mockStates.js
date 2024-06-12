@@ -1062,6 +1062,10 @@ export const timeZoneAPIMock = {
   userAPIKey: '4ef937173ce546ad8ad6133c3d93321d',
 };
 
+export const themeMock = {
+  darkMode: true,
+}
+
 export const rolesMock = {
   fetching: false,
   fetched: true,
@@ -1105,6 +1109,7 @@ export const rolesMock = {
           'postUserProfile',
           'putUserProfile',
           'putUserProfileImportantInfo',
+          'manageAdminLinks',
           'changeUserStatus',
           'updatePassword',
           'deleteUserProfile',
@@ -1256,6 +1261,7 @@ export const rolesMock = {
           'putUserProfileImportantInfo',
           'deleteUserProfile',
           'infringementAuthorizer',
+          'manageAdminLinks',
           'postWbs',
           'deleteWbs',
           'getAllInvInProjectWBS',

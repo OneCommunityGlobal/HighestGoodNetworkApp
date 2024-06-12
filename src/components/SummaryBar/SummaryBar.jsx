@@ -8,15 +8,13 @@ import {
   Modal,
   ModalHeader,
   ModalBody,
-  ModalFooter,
   Progress,
   Form,
   FormGroup,
   Label,
-  Input,
-  FormText,
+  Input
 } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
 import './SummaryBar.css';
 import task_icon from './task_icon.png';
@@ -30,14 +28,13 @@ import axios from 'axios';
 
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
-import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 import { toast } from 'react-toastify';
 
 const SummaryBar = props => {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
-  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit } = props;
+  const { authUser, displayUserProfile, displayUserTask, isNotAllowedToEdit, darkMode } = props;
 
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;
@@ -165,6 +162,7 @@ const SummaryBar = props => {
   const [report, setBugReport] = useState(initialInfo);
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(displayUserProfile?.weeklySummaryOption === "Not Required");
 
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop
@@ -394,142 +392,159 @@ const SummaryBar = props => {
       setBadges(getBadges());
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(displayUserProfile));
+      setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === "Not Required");
     }
   }, [displayUserProfile, summaryBarData]);
 
-  return displayUserProfile !== undefined && summaryBarData !== undefined ? (
-    <Container
-      fluid
-      className={isAuthUser || canEditData() ? 'px-lg-0 bg--bar' : 'px-lg-0 bg--bar disabled-bar'}
-    >
-      <Row className="no-gutters row-eq-height">
-        <Col
-          className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
-          align="center"
+  const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
+  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
+  return (
+    displayUserProfile !== undefined && summaryBarData !== undefined
+    ? <Container
+          fluid
+          className={"px-lg-0 rounded " + (
+            isAuthUser || canEditData()
+              ? (darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'bg--bar text--black box-shadow-light')
+              : (darkMode ? 'bg-space-cadet disabled-bar text-light box-shadow-dark' : 'bg--bar disabled-bar text--black box-shadow-light'))
+          }
         >
-          <div>
-            <font className="text--black  align-middle" size="3">
-              {' '}
-              Activity for{' '}
-            </font>
-            <CardTitle className="text--black align-middle" tag="h3">
+          <Row className="no-gutters row-eq-height">
+            <Col
+              className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
+              align="center"
+            >
               <div>
-                {displayUserProfile.firstName + ' '}
-                {displayUserProfile.lastName}
-              </div>
-            </CardTitle>
-          </div>
-        </Col>
-        <Col className="d-flex col-lg-3 col-12 no-gutters">
-          <Row className="no-gutters w-100">
-            {totalEffort < weeklyCommittedHours && (
-              <div className="border-red col-4 bg--white-smoke">
-                <div className="py-1"> </div>
-                <p className="text-center large_text_summary text--black text-danger">!</p>
-                <font className="text-center text--black" size="3">
-                  HOURS
+                <font className="align-middle" size="3">
+                  {' '}
+                  Activity for{' '}
                 </font>
-                <div className="py-2"> </div>
+                <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
+                  <div className='font-weight-bold'>
+                    {displayUserProfile.firstName + ' '}
+                    {displayUserProfile.lastName}
+                  </div>
+                </CardTitle>
               </div>
-            )}
-            {totalEffort >= weeklyCommittedHours && (
-              <div className="border-green col-4 bg--dark-green">
-                <div className="py-1"> </div>
-                <p className="text-center large_text_summary text--black">✓</p>
-                <font className="text-center" size="3">
-                  HOURS
-                </font>
-                <div className="py-2"> </div>
-              </div>
-            )}
-
-            <div className="col-8 border-black bg--white-smoke d-flex justify-content-center align-items-center">
-              <div className="align-items-center" id="timelogweeklychart">
-                <div className="text--black align-items-center med_text_summary">
-                  Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
-                  <Progress
-                    value={getProgressValue(totalEffort, weeklyCommittedHours)}
-                    color={getProgressColor(totalEffort, weeklyCommittedHours)}
-                    striped={totalEffort < weeklyCommittedHours}
-                  />
-                </div>
-              </div>
-            </div>
-          </Row>
-        </Col>
-
-        <Col className="d-flex col-lg-3 col-12 no-gutters">
-          <Row className="no-gutters w-100">
-            {!weeklySummary ? (
-              <div className="border-red col-4 bg--white-smoke no-gutters">
-                <div className="py-1"> </div>
-                {isAuthUser || canEditData() ? (
-                  <p
-                    className={
-                      'text-center summary-toggle large_text_summary text--black text-danger'
-                    }
-                    onClick={props.toggleSubmitForm}
-                  >
-                    !
-                  </p>
-                ) : (
-                  <p
-                    className={
-                      'text-center summary-toggle large_text_summary text--black text-danger'
-                    }
-                  >
-                    !
-                  </p>
+            </Col>
+            <Col className="d-flex col-lg-3 col-12 no-gutters">
+              <Row className="no-gutters w-100">
+                {totalEffort < weeklyCommittedHours && (
+                  <div className={`border border-danger col-4 ${darkMode ? "bg-yinmn-blue" : "bg-white"}`}>
+                    <div className="py-1"> </div>
+                    <p className="text-center large_text_summary text-danger">!</p>
+                    <font className="text-center" size="3">
+                      HOURS
+                    </font>
+                    <div className="py-2"> </div>
+                  </div>
+                )}
+                {totalEffort >= weeklyCommittedHours && (
+                  <div className={`border-green col-4 bg--dark-green`}>
+                    <div className="py-1"> </div>
+                    <p className="text-center large_text_summary">✓</p>
+                    <font className="text-center" size="3">
+                      HOURS
+                    </font>
+                    <div className="py-2"> </div>
+                  </div>
                 )}
 
-                <font className="text-center text--black" size="3">
-                  SUMMARY
-                </font>
-                <div className="py-2"> </div>
-              </div>
-            ) : (
-              <div className="border-green col-4 bg--dark-green">
-                <div className="py-1"> </div>
-                <p
-                  onClick={props.toggleSubmitForm}
-                  className="text-center large_text_summary text--black summary-toggle"
-                >
-                  ✓
-                </p>
-                <font className="text-center text--black" size="3">
-                  SUMMARY
-                </font>
-                <div className="py-2"> </div>
-              </div>
-            )}
+                <div className={`col-8 d-flex justify-content-center align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                     style={{border: "1px solid black"}}>
+                  <div className="align-items-center" id="timelogweeklychart">
+                    <div className="align-items-center med_text_summary">
+                      Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
+                      <Progress
+                        value={getProgressValue(totalEffort, weeklyCommittedHours)}
+                        color={getProgressColor(totalEffort, weeklyCommittedHours)}
+                        striped={totalEffort < weeklyCommittedHours}
+                      />
+                    </div>
+                  </div>
+                </div>
+              </Row>
+            </Col>
 
-            <div className="col-8 border-black bg--white-smoke d-flex align-items-center">
-              <div className="m-auto p-2 text-center">
-                <font
-                  onClick={props.toggleSubmitForm}
-                  className="text--black med_text_summary align-middle summary-toggle"
-                  size="3"
-                >
-                  {weeklySummary || props.submittedSummary ? (
-                    'You have submitted your weekly summary.'
-                  ) : isAuthUser ? (
-                    <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                      You still need to complete the weekly summary. Click here to submit it.
-                    </span>
-                  ) : (
-                    <span className="summary-toggle">
-                      You still need to complete the weekly summary. Click here to submit it.
-                    </span>
-                  )}
-                </font>
-              </div>
-            </div>
-          </Row>
-        </Col>
-        
+            <Col className="d-flex col-lg-3 col-12 no-gutters">
+              <Row className="no-gutters w-100">
+                {!weeklySummary ? weeklySummaryNotReq ? (
+                <div className="border-black col-4 bg-super-awesome no-gutters d-flex justify-content-center align-items-center"
+                  align="center">
+                  <font className="text-center text-light" size="3">
+                    SUMMARY
+                  </font>
+                </div>
+              ) : (
+                  <div className={`border border-danger col-4 no-gutters ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}>
+                    <div className="py-1"> </div>
+                    { isAuthUser || canEditData()  ? (
+                      <p
+                        className={
+                          'text-center summary-toggle large_text_summary text-danger'
+                        }
+                        onClick={props.toggleSubmitForm}
+                      >
+                        !
+                      </p>
+                    ) : (
+                      <p
+                        className={
+                          'text-center summary-toggle large_text_summary text-danger'
+                        }
+                      >
+                        !
+                      </p>
+                    )}
 
-        <Col className="m-auto mt-2 col-lg-4 col-12 badge-list">
-          <div className="d-flex justify-content-around no-gutters">
+                    <font className="text-center" size="3">
+                      SUMMARY
+                    </font>
+                    <div className="py-2"> </div>
+                  </div>
+                ) : (
+                  <div className={`border-green col-4 bg--dark-green`}>
+                    <div className="py-1"> </div>
+                    <p onClick={props.toggleSubmitForm} className="text-center large_text_summary summary-toggle" >
+                      ✓
+                    </p>
+                    <font className="text-center" size="3">
+                      SUMMARY
+                    </font>
+                    <div className="py-2"> </div>
+                  </div>
+                )}
+
+                <div
+                  className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                  style={{border: "1px solid black"}}
+                >
+                  <div className="m-auto p-2 text-center">
+                    <font onClick={props.toggleSubmitForm} className="med_text_summary align-middle summary-toggle" size="3">
+                      {weeklySummary || props.submittedSummary ? (
+                        'You have submitted your weekly summary.'
+                        ) : isAuthUser ? (
+                          <span className="summary-toggle" onClick={props.toggleSubmitForm}>
+                          {weeklySummaryNotReq
+                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
+                        : "You still need to complete the weekly summary. Click here to submit it."}
+                        </span>
+                      ) : (
+                        <span className="summary-toggle">
+                        {weeklySummaryNotReq
+                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
+                        : "You still need to complete the weekly summary. Click here to submit it."}
+                        </span>
+                      )}
+                    </font>
+                  </div>
+                </div>
+              </Row>
+            </Col>
+
+        <Col className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? "bg-space-cadet" : ""}`}>
+          <div className={"d-flex justify-content-around no-gutters"}>
             &nbsp;&nbsp;
             <div className="image_frame">
               <div className="redBackgroup">
@@ -593,14 +608,13 @@ const SummaryBar = props => {
             </div>
           </div>
         </Col>
-
         <Modal
           isOpen={showSuggestionModal}
           onClosed={() => closeSuggestionModal()}
-          toggle={openSuggestionModal}
+          toggle={openSuggestionModal} className={darkMode ? 'text-light' : ''}
         >
-          <ModalHeader>User Suggestion</ModalHeader>
-          <ModalBody>
+          <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
+          <ModalBody className={bodyBg}>
             {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
               <FormGroup>
                 <Button
@@ -632,7 +646,7 @@ const SummaryBar = props => {
                 <FormGroup tag="fieldset" id="fieldsetinner">
                   <legend style={{ fontSize: '16px' }}>Select Action type:</legend>
                   <FormGroup check>
-                    <Label check>
+                    <Label check className={fontColor}>
                       <Input
                         onChange={e => editRadioButtonSelected(e.target.value)}
                         type="radio"
@@ -658,7 +672,7 @@ const SummaryBar = props => {
                     </FormGroup>
                   )}
                   <FormGroup check>
-                    <Label check>
+                    <Label check className={fontColor}>
                       <Input
                         onChange={e => editRadioButtonSelected(e.target.value)}
                         type="radio"
@@ -675,7 +689,7 @@ const SummaryBar = props => {
                 </FormGroup>
                 {editType !== '' && (
                   <FormGroup>
-                    <Label for="newField">
+                    <Label for="newField" className={fontColor}>
                       {extraFieldForSuggestionForm === 'suggestion' && categoryDescription}
                     </Label>
                     {editType !== 'edit' && (
@@ -738,173 +752,172 @@ const SummaryBar = props => {
             )}
             <Form onSubmit={sendUserSuggestion} id="suggestionForm">
               <FormGroup>
-                <Label for="suggestioncate">Please select a category of your suggestion:</Label>
+                <Label for="suggestioncate" className={fontColor}>Please select a category of your suggestion:</Label>
 
-                <Input
-                  onChange={() => setTakeInput(true)}
-                  type="select"
-                  name="suggestioncate"
-                  id="suggestioncate"
-                  defaultValue={''}
-                  required
-                >
-                  <option disabled value="" hidden>
-                    {' '}
-                    -- select an option --{' '}
-                  </option>
-                  {suggestionCategory.map((item, index) => {
-                    return <option key={index} value={item}>{`${index + 1}. ${item}`}</option>;
-                  })}
-                </Input>
-              </FormGroup>
-              {takeInput && (
-                <FormGroup>
-                  <Label for="suggestion"> Write your suggestion: </Label>
-                  <Input
-                    type="textarea"
-                    name="suggestion"
-                    id="suggestion"
-                    placeholder="I suggest ..."
-                    required
-                  />
-                </FormGroup>
-              )}
-              {inputFiled.length > 0 &&
-                inputFiled.map((item, index) => (
-                  <FormGroup key={index}>
-                    <Label for="title">{item} </Label>
-                    <Input type="textbox" name={item} id={item} placeholder="" required />
+                    <Input
+                      onChange={() => setTakeInput(true)}
+                      type="select"
+                      name="suggestioncate"
+                      id="suggestioncate"
+                      defaultValue={''}
+                      required
+                    >
+                      <option disabled value="" hidden>
+                        {' '}
+                        -- select an option --{' '}
+                      </option>
+                      {suggestionCategory.map((item, index) => {
+                        return <option key={index} value={item}>{`${index + 1}. ${item}`}</option>;
+                      })}
+                    </Input>
                   </FormGroup>
-                ))}
-              <FormGroup tag="fieldset" id="fieldset">
-                <legend style={{ fontSize: '16px' }}>
-                  Would you like a followup/reply regarding this feedback?
-                </legend>
-                <FormGroup check>
-                  <Label check>
-                    <Input type="radio" name="confirm" value={'yes'} required /> Yes
-                  </Label>
-                </FormGroup>
-                <FormGroup check>
-                  <Label check>
-                    <Input type="radio" name="confirm" value={'no'} required /> No
-                  </Label>
-                </FormGroup>
-              </FormGroup>
-              <FormGroup>
-                <Button type="submit" color="primary" size="lg">
-                  Submit
-                </Button>{' '}
-                &nbsp;&nbsp;&nbsp;
-                <Button
-                  onClick={() => setShowSuggestionModal(prev => !prev)}
-                  color="danger"
-                  size="lg"
-                >
-                  Close
-                </Button>
-              </FormGroup>
-            </Form>
-          </ModalBody>
-        </Modal>
+                  {takeInput && (
+                    <FormGroup>
+                      <Label for="suggestion" className={fontColor}> Write your suggestion: </Label>
+                      <Input
+                        type="textarea"
+                        name="suggestion"
+                        id="suggestion"
+                        placeholder="I suggest ..."
+                        required
+                      />
+                    </FormGroup>
+                  )}
+                  {inputFiled.length > 0 &&
+                    inputFiled.map((item, index) => (
+                      <FormGroup key={index}>
+                        <Label for="title" className={fontColor}>{item} </Label>
+                        <Input type="textbox" name={item} id={item} placeholder="" required />
+                      </FormGroup>
+                    ))}
+                  <FormGroup tag="fieldset" id="fieldset">
+                    <legend style={{ fontSize: '16px' }}>
+                      Would you like a followup/reply regarding this feedback?
+                    </legend>
+                    <FormGroup check>
+                      <Label check className={fontColor}>
+                        <Input type="radio" name="confirm" value={'yes'} required /> Yes
+                      </Label>
+                    </FormGroup>
+                    <FormGroup check>
+                      <Label check className={fontColor}>
+                        <Input type="radio" name="confirm" value={'no'} required /> No
+                      </Label>
+                    </FormGroup>
+                  </FormGroup>
+                  <FormGroup>
+                    <Button type="submit" color="primary" size="lg">
+                      Submit
+                    </Button>{' '}
+                    &nbsp;&nbsp;&nbsp;
+                    <Button
+                      onClick={() => setShowSuggestionModal(prev => !prev)}
+                      color="danger"
+                      size="lg"
+                    >
+                      Close
+                    </Button>
+                  </FormGroup>
+                </Form>
+              </ModalBody>
+            </Modal>
 
-        <Modal isOpen={report.in} toggle={openReport}>
-          <ModalHeader>Bug Report</ModalHeader>
-          <ModalBody>
-            <Form onSubmit={sendBugReport} id="bugReportForm">
-              <FormGroup>
-                <Label for="title">[Feature Name] Bug Title </Label>
-                <Input
-                  type="textbox"
-                  name="title"
-                  id="title"
-                  required
-                  placeholder="Provide Concise Sumary Title..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="environment">
-                  {' '}
-                  Environment (OS/Device/App Version/Connection/Time etc){' '}
-                </Label>
-                <Input
-                  type="textarea"
-                  name="environment"
-                  id="environment"
-                  required
-                  placeholder="Environment Info..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="reproduction">
-                  Steps to reproduce (Please Number, Short Sweet to the point){' '}
-                </Label>
-                <Input
-                  type="textarea"
-                  name="reproduction"
-                  id="reproduction"
-                  required
-                  placeholder="1. Click on the UserProfile Button in the Header..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="expected">Expected Result (Short Sweet to the point) </Label>
-                <Input
-                  type="textarea"
-                  name="expected"
-                  id="expected"
-                  required
-                  placeholder="What did you expect to happen?..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="actual">Actual Result (Short Sweet to the point) </Label>
-                <Input
-                  type="textarea"
-                  name="actual"
-                  id="actual"
-                  required
-                  placeholder="What actually happened?.."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="visual">Visual Proof (screenshots, videos, text) </Label>
-                <Input
-                  type="textarea"
-                  name="visual"
-                  id="visual"
-                  required
-                  placeholder="Links to screenshots etc..."
-                />
-              </FormGroup>
-              <FormGroup>
-                <Label for="severity">Severity/Priority (How Bad is the Bug?) </Label>
-                <Input type="select" name="severity" id="severity" defaultValue={''} required>
-                  <option hidden value="" disabled>
-                    {' '}
-                    -- select an option --{' '}
-                  </option>
-                  <option>1. High/Critical </option>
-                  <option>2. Medium </option>
-                  <option>3. Minor</option>
-                </Input>
-              </FormGroup>
-              <FormGroup>
-                <Button type="submit" color="primary" size="lg">
-                  Submit
-                </Button>{' '}
-                &nbsp;&nbsp;&nbsp;
-                <Button onClick={openReport} color="danger" size="lg">
-                  Close
-                </Button>
-              </FormGroup>
-            </Form>
-          </ModalBody>
-        </Modal>
-      </Row>
-    </Container>
-  ) : (
-    <div>Loading</div>
+            <Modal isOpen={report.in} toggle={openReport} className={fontColor}>
+              <ModalHeader className={headerBg}>Bug Report</ModalHeader>
+              <ModalBody className={bodyBg}>
+                <Form onSubmit={sendBugReport} id="bugReportForm">
+                  <FormGroup>
+                    <Label for="title" className={fontColor}>[Feature Name] Bug Title </Label>
+                    <Input
+                      type="textbox"
+                      name="title"
+                      id="title"
+                      required
+                      placeholder="Provide Concise Sumary Title..."
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="environment" className={fontColor}>
+                      {' '}
+                      Environment (OS/Device/App Version/Connection/Time etc){' '}
+                    </Label>
+                    <Input
+                      type="textarea"
+                      name="environment"
+                      id="environment"
+                      required
+                      placeholder="Environment Info..."
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="reproduction" className={fontColor}>
+                      Steps to reproduce (Please Number, Short Sweet to the point){' '}
+                    </Label>
+                    <Input
+                      type="textarea"
+                      name="reproduction"
+                      id="reproduction"
+                      required
+                      placeholder="1. Click on the UserProfile Button in the Header..."
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="expected" className={fontColor}>Expected Result (Short Sweet to the point) </Label>
+                    <Input
+                      type="textarea"
+                      name="expected"
+                      id="expected"
+                      required
+                      placeholder="What did you expect to happen?..."
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="actual" className={fontColor}>Actual Result (Short Sweet to the point) </Label>
+                    <Input
+                      type="textarea"
+                      name="actual"
+                      id="actual"
+                      required
+                      placeholder="What actually happened?.."
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="visual" className={fontColor}>Visual Proof (screenshots, videos, text) </Label>
+                    <Input
+                      type="textarea"
+                      name="visual"
+                      id="visual"
+                      required
+                      placeholder="Links to screenshots etc..."
+                    />
+                  </FormGroup>
+                  <FormGroup>
+                    <Label for="severity" className={fontColor}>Severity/Priority (How Bad is the Bug?) </Label>
+                    <Input type="select" name="severity" id="severity" defaultValue={''} required>
+                      <option hidden value="" disabled>
+                        {' '}
+                        -- select an option --{' '}
+                      </option>
+                      <option>1. High/Critical </option>
+                      <option>2. Medium </option>
+                      <option>3. Minor</option>
+                    </Input>
+                  </FormGroup>
+                  <FormGroup>
+                    <Button type="submit" color="primary" size="lg">
+                      Submit
+                    </Button>{' '}
+                    &nbsp;&nbsp;&nbsp;
+                    <Button onClick={openReport} color="danger" size="lg">
+                      Close
+                    </Button>
+                  </FormGroup>
+                </Form>
+              </ModalBody>
+            </Modal>
+          </Row>
+        </Container>
+      : <div>Loading</div>
   );
 };
 
@@ -912,6 +925,7 @@ const mapStateToProps = state => ({
   authUser: state.auth.user,
   displayUserProfile: state.userProfile,
   displayUserTask: state.userTask,
-});
+  darkMode: state.theme.darkMode,
+})
 
 export default connect(mapStateToProps, { hasPermission })(SummaryBar);

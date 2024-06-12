@@ -1,23 +1,23 @@
-import { useEffect, useState, useCallback } from 'react';
+/* eslint-disable react/function-component-definition */
+import { useState } from 'react';
 import './DragAndDrop.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 
-const DragAndDrop = ({updateUploadedFiles}) => {
-
+const DragAndDrop = ({ updateUploadedFiles }) => {
   const [dragActive, setDragActive] = useState(false);
 
-  const handleDrag = function (e) {
+  const handleDrag = function handleFileDrag(e) {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
+    if (e.type === 'dragenter' || e.type === 'dragover') {
       setDragActive(true);
-    } else if (e.type === "dragleave") {
+    } else if (e.type === 'dragleave') {
       setDragActive(false);
     }
   };
 
-  const handleDrop = function (e) {
+  const handleDrop = function handleFileDrop(e) {
     e.preventDefault();
     e.stopPropagation();
     setDragActive(false);
@@ -27,18 +27,18 @@ const DragAndDrop = ({updateUploadedFiles}) => {
       updateUploadedFiles(prev => [...prev, ...newFiles]);
     }
   };
-  
-  const handleChange = function (e) {
+
+  const handleChange = function handleFileChange(e) {
     e.preventDefault();
     const selectedFiles = e.target.files;
     if (selectedFiles && selectedFiles[0]) {
       const newFiles = Array.from(selectedFiles);
       updateUploadedFiles(prev => [...prev, ...newFiles]);
     }
-  }
+  };
 
   return (
-    <div id="file-upload-form" onDragEnter={handleDrag} onSubmit={(e) => e.preventDefault()}>
+    <div id="file-upload-form" onDragEnter={handleDrag} onSubmit={e => e.preventDefault()}>
       <input
         id="file-upload-input"
         type="file"
@@ -50,16 +50,26 @@ const DragAndDrop = ({updateUploadedFiles}) => {
       <label
         htmlFor="file-upload-input"
         id="file-upload-label"
-        className={dragActive ? "drag-active" : ""}>
-          <div>
-              <FontAwesomeIcon icon={faImage} className="file-upload-icon" />
-                <p>Drag and drop your picture here </p>
-              </div>
+        className={dragActive ? 'drag-active' : ''}
+      >
+        <div>
+          <FontAwesomeIcon icon={faImage} className="file-upload-icon" />
+          <p>Drag and drop your picture here </p>
+        </div>
+        <input type="file" id="file-upload-input" className="file-upload-input" />
       </label>
       {/* invisible element to cover the entire form when dragActive is true so that dragleave event is not triggeredwhen drag goes over other elements in the form. */}
-      {dragActive && <div id="drag-file-element" onDragEnter={handleDrag} onDragLeave={handleDrag} onDragOver={handleDrag} onDrop={handleDrop}></div>}
+      {dragActive && (
+        <div
+          id="drag-file-element"
+          onDragEnter={handleDrag}
+          onDragLeave={handleDrag}
+          onDragOver={handleDrag}
+          onDrop={handleDrop}
+        />
+      )}
     </div>
-  )
-}
+  );
+};
 
 export default DragAndDrop;

@@ -1,7 +1,10 @@
 import React from 'react';
+import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 
-const UserLinks = ({ links = [] }) => (
+const UserLinks = ({ links = [] }) => {
+  const darkMode = useSelector(state => state.theme.darkMode)
+  return (
   <>
     <div className="linkContainer" data-testid="testLinkContainer">
       {links.map((item, index) => {
@@ -10,7 +13,7 @@ const UserLinks = ({ links = [] }) => (
           if (item.Link.trim() !== '') {
             return (
               <React.Fragment key={item.Name}>
-                <a key={item.link} href={item.Link} target="_blank" rel="noreferrer" data-testid="testHyperLink">
+                <a className={darkMode ? 'text-light' : ''} key={item.link} href={item.Link} target="_blank" rel="noreferrer" data-testid="testHyperLink">
                   {item.Name.toUpperCase()}
                 </a>
                 <br />
@@ -22,7 +25,7 @@ const UserLinks = ({ links = [] }) => (
           if (item.Link.trim() !== '') {
             return (
               <React.Fragment key={item.Name}>
-                <Link key={item.link} to={item.Link} target="_blank" data-testid="testLink">
+                <Link className={darkMode ? 'text-light' : ''} key={item.link} to={item.Link} target="_blank" data-testid="testLink">
                   {item.Name.toUpperCase()}
                 </Link>
                 <br />
@@ -33,6 +36,6 @@ const UserLinks = ({ links = [] }) => (
       })}
     </div>
   </>
-);
+)};
 
 export default UserLinks;
