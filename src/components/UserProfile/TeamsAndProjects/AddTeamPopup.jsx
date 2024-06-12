@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Spinner } from 'reactstrap';
 import AddTeamsAutoComplete from './AddTeamsAutoComplete';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import '../../Header/DarkMode.css'
+import '../../Header/DarkMode.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
 
 const AddTeamPopup = React.memo(props => {
-  const {darkMode} = props;
+  const { darkMode } = props;
 
   const dispatch = useDispatch();
   const closePopup = () => {
@@ -24,9 +24,9 @@ const AddTeamPopup = React.memo(props => {
   const [newTeamName, setNewTeamName] = useState('');
   const [newTeamIsActive, setNewTeamIsActive] = useState(true);
   const [isDuplicateTeam, setDuplicateTeam] = useState(false);
-  const [isNotDisplayToast, setIsNotDisplayToast] = useState(false);
   const [isNotDisplayAlert, setIsNotDisplayAlert] = useState(false);
   const [autoComplete, setAutoComplete] = useState(null);
+  const [isloading, setIsLoading] = useState(false);
 
   const format = result =>
     result
@@ -54,7 +54,6 @@ const AddTeamPopup = React.memo(props => {
     const condition = {
       TEAM_NAME: autoComplete === 0,
       obj: autoComplete === 1,
-      isNotDisplayToast: isNotDisplayToast,
       selectedTeam: selectedTeam,
     };
 
@@ -62,8 +61,6 @@ const AddTeamPopup = React.memo(props => {
       onValidation(false);
       return;
     }
-
-    isNotDisplayToast && toast.warn('Please wait for the team to be created to add your user.');
 
     if (condition && processEnvNodeEnv) {
       const userId = props.userProfile._id;
@@ -88,6 +85,8 @@ const AddTeamPopup = React.memo(props => {
 
     if (condition && some) {
       props.onSelectAssignTeam(condition.TEAM_NAME ? selectedTeam : condition.obj ? result : null);
+      setSearchText('');
+      onValidation(true);
       toast.success('Team assigned successfully'); //toast notification
     } else {
       // when the user typed something but didn't select a team
@@ -104,17 +103,17 @@ const AddTeamPopup = React.memo(props => {
 
   const onCreateTeam = async () => {
     if (newTeamName !== '') {
-      setIsNotDisplayToast(true);
+      setIsLoading(true);
       const response = await dispatch(postNewTeam(newTeamName, newTeamIsActive));
       try {
         if (response.status === 200) {
-          toast.success('Team created successfully');
           setNewTeamName('');
           setNewTeamIsActive(true);
           setDuplicateTeam(false);
 
           // Get updated teams list and select the new team
           await dispatch(getAllUserTeams());
+          toast.success('Team created successfully');
           const newTeam = response.data; // Assuming response contains the new team data
           onSelectTeam(newTeam);
           setSearchText(newTeam.teamName); // Update search text to reflect new team name
@@ -122,11 +121,12 @@ const AddTeamPopup = React.memo(props => {
       } catch (error) {
         if (response.status === 400) {
           setDuplicateTeam(true);
+          setIsLoading(false);
         } else {
           toast.error('Error occurred while creating team');
         }
       } finally {
-        setIsNotDisplayToast(false);
+        setIsLoading(false);
       }
     } else {
       onNewTeamValidation(false);
@@ -143,10 +143,19 @@ const AddTeamPopup = React.memo(props => {
   }, [newTeamName, newTeamIsActive, dispatch]);
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Add Team</ModalHeader>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      autoFocus={false}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        Add Team
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
-        <label className={darkMode ? 'text-light' : ''} style={{textAlign: 'left'}}>Add to Team</label>
+        <label className={darkMode ? 'text-light' : ''} style={{ textAlign: 'left' }}>
+          Add to Team
+        </label>
         <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
           <AddTeamsAutoComplete
             teamsData={props.teamsData}
@@ -172,8 +181,9 @@ const AddTeamPopup = React.memo(props => {
                 onValidation(false);
               }
             }}
+            disabled={isloading}
           >
-            Confirm
+            {isloading ? <Spinner color="light" size="sm" /> : 'Confirm'}
           </Button>
         </div>
         {!isValidTeam && searchText && isNotDisplayAlert && !selectedTeam && (
