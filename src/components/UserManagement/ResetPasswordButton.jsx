@@ -36,6 +36,10 @@ class ResetPasswordButton extends React.PureComponent {
   }
 
   onResetClick = () => {
+    if(!this.props.canResetPassword){
+      toast.warn('You do not have permission to perform this action.');
+      return;
+    }
     if (cantUpdateDevAdminDetails(this.props.user.email, this.props.authEmail)) {
       alert(
         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +

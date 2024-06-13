@@ -320,7 +320,7 @@ class UserManagement extends React.PureComponent {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests') || this.props.hasPermission('userManagementFullFunctionality'); 
     
     const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
     if(canManageTimeOffRequests || hasRolePermission){
@@ -411,7 +411,7 @@ class UserManagement extends React.PureComponent {
    */
   onActiveInactiveClick = user => {
     const authRole = this?.props?.state?.auth?.user.role || user.role;
-    const canChangeUserStatus = hasPermission('changeUserStatus');
+    // const canChangeUserStatus = hasPermission('changeUserStatus');
     if (cantDeactivateOwner(user, authRole)) {
       //Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');

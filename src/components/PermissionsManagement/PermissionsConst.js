@@ -96,6 +96,12 @@ export const permissionLabels = [
         key: 'changeUserRehireableStatus',
         description: 'Gives the user permission to change the user status of rehireable or not.',
       },
+      {
+        label: 'See User Management Tab (Full Functionality)',
+        key: 'userManagementFullFunctionality',
+        description:
+          'Make the "Other Links" -> "User Management" button appear/accessible and with the abillity to interact with every button/option there (Send setup link, create user, delete user, make activate/inactive, reset password, set final day, pause, request time off, etc',
+      },
     ],
   },
   {

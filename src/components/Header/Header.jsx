@@ -72,7 +72,8 @@ export function Header(props) {
   const canGetReports = props.hasPermission('getReports');
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
   // Users
-  const canAccessUserManagement = props.hasPermission('postUserProfile')
+  const canAccessUserManagement = props.hasPermission('userManagementFullFunctionality') 
+    || props.hasPermission('postUserProfile')
     || props.hasPermission('deleteUserProfile')
     || props.hasPermission('changeUserStatus')
     || props.hasPermission('getUserProfiles');

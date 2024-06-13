@@ -42,12 +42,14 @@ const UserTableData = React.memo(props => {
       || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
 
+  const hasFullFunctionality = props.hasPermission('userManagementFullFunctionality');
+  const canChangeUserStatus = props.hasPermission('changeUserStatus');
   return (
     <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : '' }`} id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
-          canChange={true}
+          canChange={hasFullFunctionality || canChangeUserStatus}
           key={`active_cell${props.index}`}
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
@@ -93,6 +95,11 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
+            if(!hasFullFunctionality){
+              toast.warn('You do not have permission to perform this action.');
+              return;
+            }
+
             if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
@@ -146,6 +153,10 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
+            if(!hasFullFunctionality){
+              toast.warn('You do not have permission to perform this action.');
+              return;
+            }
             if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
@@ -184,6 +195,10 @@ const UserTableData = React.memo(props => {
               type="button"
               className="btn btn-outline-danger btn-sm"
               onClick={e => {
+                if(!hasFullFunctionality){
+                  toast.warn('You do not have permission to perform this action.');
+                  return;
+                }
                 props.onDeleteClick(props.user, 'archive');
               }}
               style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"} : boxStyle}
@@ -193,7 +208,7 @@ const UserTableData = React.memo(props => {
             </button>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton />
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton canResetPassword={hasFullFunctionality} />
           </span>
         </td>
       )}
