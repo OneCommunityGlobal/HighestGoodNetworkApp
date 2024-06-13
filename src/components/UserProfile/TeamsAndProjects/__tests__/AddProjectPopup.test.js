@@ -1,47 +1,47 @@
 import { render, fireEvent, waitFor } from '@testing-library/react';
 import AddProjectPopup from '../AddProjectPopup';
-
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 /** TEST DATA **/
 
 const onCloseMock = jest.fn();
 const onSelectAssignProjectMock = jest.fn();
 const handleSubmitMock = jest.fn();
 
-
 const projectsMock = [{ _id: 'proj1', projectName: 'Project 1' }];
 const userProjectsByIdMock = [];
 
-
 const props = {
-    open: true,
-    onClose: onCloseMock,
-    onSelectAssignProject: onSelectAssignProjectMock,
-    userProjectsById: userProjectsByIdMock,
-    projects: projectsMock,
-    handleSubmit: handleSubmitMock,
+  open: true,
+  onClose: onCloseMock,
+  onSelectAssignProject: onSelectAssignProjectMock,
+  userProjectsById: userProjectsByIdMock,
+  projects: projectsMock,
+  handleSubmit: handleSubmitMock,
+};
 
-  };
+const mockStore = configureStore([]);
+const store = mockStore({});
 
-  const renderComponent=(props)=>
-  {
-    return(
-      render(<AddProjectPopup {...props} />)
-    );
-  };
+const renderComponent = props => {
+  return render(
+    <Provider store={store}>
+      <AddProjectPopup {...props} />
+    </Provider>,
+  );
+};
 
 /** TEST CASE **/
 
 describe('AddProjectPopup component Unit test case', () => {
-  
   it('Test 1 : Expected  UI elements are present', () => {
-    const { getByText }=renderComponent(props);
+    const { getByText } = renderComponent(props);
     const closeBtn = getByText('Close');
     const confirmBtn = getByText('Confirm');
     const addProjectText = getByText('Add Project');
     expect(closeBtn).toBeInTheDocument();
     expect(confirmBtn).toBeInTheDocument();
     expect(addProjectText).toBeInTheDocument();
-
   });
 
   it('Test 2 : Calls onClose when Close button is clicked', () => {
@@ -50,8 +50,6 @@ describe('AddProjectPopup component Unit test case', () => {
     fireEvent.click(closeButton);
     expect(onCloseMock).toHaveBeenCalled();
   });
-
-
 
   it('Test 3 : Calls onSelectAssignProject and resets selectedProject when Confirm button is clicked', async () => {
     const { getByText } = renderComponent(props);
@@ -63,8 +61,6 @@ describe('AddProjectPopup component Unit test case', () => {
     });
   });
 
-  
-
   it('Test 4 : Shows error alert when attempting to confirm without selecting a project', () => {
     const { getByText } = renderComponent(props);
     const confirmButton = getByText('Confirm');
@@ -72,6 +68,4 @@ describe('AddProjectPopup component Unit test case', () => {
     const errorAlert = getByText('Hey, You need to pick a project first!');
     expect(errorAlert).toBeInTheDocument();
   });
-
-
 });
