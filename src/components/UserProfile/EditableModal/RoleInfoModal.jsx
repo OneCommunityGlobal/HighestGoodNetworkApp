@@ -98,7 +98,7 @@ const RoleInfoModal = ({ info, auth}) => {
           data-toggle="tooltip"
           data-placement="right"
           title="Click for user class information"
-          style={{ fontSize: 24, cursor: 'pointer', color: '#00CCFF', marginLeft: '5px'}}
+          style={{ fontSize: 24, cursor: 'pointer', color: '#00CCFF', marginLeft: '12px'}}
           aria-hidden="true"
           className="fa fa-info-circle"
           onClick={handleMouseOver}

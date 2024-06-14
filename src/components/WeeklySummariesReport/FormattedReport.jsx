@@ -656,16 +656,21 @@ function Index({ summary, weekIndex, allRoleInfo, auth }) {
         {summary.firstName} {summary.lastName}
       </Link>
 
-      <GoogleDocIcon link={googleDocLink} />
-      <span>
-        <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
-      </span>
-      {summary.role !== 'Volunteer' && (
-        <RoleInfoModal
-          info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
-          auth={auth}
-        />
-      )}
+      <div style={{ display: 'inline-block' }}>
+        <div style={{ display: 'flex' }}>
+          <GoogleDocIcon link={googleDocLink} />
+          <span>
+            <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+          </span>
+          {summary.role !== 'Volunteer' && (
+            <RoleInfoModal
+              info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
+              auth={auth}
+            />
+          )}
+        </div>
+      </div>
+
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"
