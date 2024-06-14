@@ -44,11 +44,6 @@
   text-align: center;
 }
 
-.profile-img img {
-  width: 70%;
-  height: 100%;
-}
-
 .profile-img .file {
   position: relative;
   overflow: hidden;
@@ -183,8 +178,12 @@
 }
 
 .profilePicture {
-  width: 150px;
-  height: 150px;
+  display: flex;
+  max-width: 240px;
+  max-height: 240px;
+  width: auto;
+  height: auto;
+  margin: auto;
 }
 
 .whoSection {
