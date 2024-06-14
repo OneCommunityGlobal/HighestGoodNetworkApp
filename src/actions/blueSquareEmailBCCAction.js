@@ -1,4 +1,4 @@
-import * as types from '../constants/BluequareEmailBccConstatnts';
+import * as types from '../constants/BluequareEmailBccConstants';
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 import { toast } from 'react-toastify';

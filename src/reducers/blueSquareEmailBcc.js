@@ -1,4 +1,4 @@
-import * as types from '../constants/BluequareEmailBccConstatnts';
+import * as types from '../constants/BluequareEmailBccConstants';
 
 const initialState = {
   emailAssignment: [],
