@@ -114,11 +114,6 @@ const RoleInfoModal = ({ info, auth}) => {
                 dangerouslySetInnerHTML={{ __html: infoContentModal }}
                 onClick={() => setIsEditing(true)}
               />}
-              {canEditInfoModal && (
-                <div style={{ paddingLeft: '20px' }}>
-                  <p>Click above to edit this content. (Note: Only works on Permissions Management Page)</p>
-                </div>
-              )}
             </ModalBody>
             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
               <Row className="no-gutters" style={{ gap: '10px', justifyContent: 'flex-end' }}>
