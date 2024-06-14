@@ -125,6 +125,7 @@ const UserProfileModal = props => {
     } else if (event.target.id === 'summary') {
       setSummary(event.target.value);
       checkFields(dateStamp, summary);
+      adjustTextareaHeight(event.target);
     } else if (event.target.id === 'date') {
       setDateStamp(event.target.value);
       setSummaryFieldView(false);
@@ -141,6 +142,11 @@ const UserProfileModal = props => {
       setAddButton(true);
     }
   }
+
+  const adjustTextareaHeight = (textarea) => {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
 
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
   const fontColor = darkMode ? 'text-light' : '';
@@ -315,7 +321,14 @@ const UserProfileModal = props => {
 
             <FormGroup hidden={summaryFieldView}>
               <Label className={fontColor} for="report">Summary</Label>
-              <Input type="textarea" id="summary" onChange={handleChange} />
+              <Input 
+                type="textarea" 
+                id="summary" 
+                onChange={handleChange} 
+                value={summary} 
+                style={{ minHeight: '200px', overflow: 'hidden'}} 
+                onInput={e => adjustTextareaHeight(e.target)} 
+              />
             </FormGroup>
           </>
         )}
@@ -334,7 +347,14 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
-              <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} />
+              <Input 
+                type="textarea" 
+                id="summary" 
+                onChange={handleChange} 
+                value={summary} 
+                style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
+                onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
+              />
             </FormGroup>
           </>
         )}
