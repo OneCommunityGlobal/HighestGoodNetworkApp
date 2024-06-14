@@ -31,11 +31,11 @@ const TeamsTab = props => {
   const [removedTeams, setRemovedTeams] = useState([]);
 
   useEffect(() => {
-    if(saved && removedTeams.length > 0){
+    if (saved && removedTeams.length > 0) {
       removedTeams.forEach(teamId => {
         deleteTeamMember(teamId, userProfile._id);
         setRemovedTeams([]);
-      })
+      });
     }
   }, [saved]);
 
@@ -49,13 +49,13 @@ const TeamsTab = props => {
   const onSelectDeleteTeam = teamId => {
     setRemovedTeams([...removedTeams, teamId]);
     onDeleteTeam(teamId);
-    if(isTeamSaved) isTeamSaved(false);
+    if (isTeamSaved) isTeamSaved(false);
   };
 
   const onSelectAssignTeam = team => {
-    if(userProfile._id){
+    if (userProfile._id) {
       addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-      if(isTeamSaved) isTeamSaved(true);
+      if (isTeamSaved) isTeamSaved(false);
     }
     onAssignTeam(team);
     setRenderedOn(Date.now());

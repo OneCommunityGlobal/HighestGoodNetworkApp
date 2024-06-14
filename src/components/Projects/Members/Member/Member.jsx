@@ -42,7 +42,7 @@ const Member = props => {
                   props.lastName,
                 )
               }
-              style={boxStyle}
+              style={darkMode ? {} : boxStyle}
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>

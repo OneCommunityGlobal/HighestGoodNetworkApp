@@ -55,6 +55,7 @@ class Teams extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
     if (prevState.sortedTeams !== this.state.sortedTeams) {
       // This will run whenever sortedTeams changes
       const teamsTable = this.state.sortedTeams.map(team => {
@@ -101,7 +102,6 @@ class Teams extends React.PureComponent {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
 
-    this.state.teams = this.teamTableElements(allTeams, darkMode);
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
 
@@ -450,9 +450,6 @@ class Teams extends React.PureComponent {
    */
   onDeleteTeamMember = deletedUserId => {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
-    alert(
-      'Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.',
-    );
   };
 
   sortTeamsByModifiedDate = () => {

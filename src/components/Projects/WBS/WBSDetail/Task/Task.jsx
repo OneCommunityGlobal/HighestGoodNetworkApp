@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { Modal, ModalBody, Button } from 'reactstrap';
+import { Modal, ModalBody, Button, ModalHeader } from 'reactstrap';
 import { BsFillCaretDownFill, BsFillCaretUpFill, BsFillCaretLeftFill } from 'react-icons/bs';
 import ControllerRow from '../ControllerRow';
 import {
@@ -11,6 +11,7 @@ import {
 } from '../../../../../actions/task.js';
 import './tagcolor.css';
 import './task.css';
+import '../../../../Header/DarkMode.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -52,7 +53,7 @@ function Task(props) {
   /*
    * -------------------------------- functions --------------------------------
    */
-  const toggleModel = () => setModal(!modal);
+  const toggleModal = () => setModal(!modal);
 
   const openChild = () => {
     setIsOpen(!isOpen);
@@ -158,6 +159,10 @@ function Task(props) {
     setIsOpen(props.openAll);
   }, [props.openAll]);
 
+  const bgColorsDark = ['bg-yinmn-blue', 'bg-space-cadet'];
+  const bgColorsLight = ['bg-white', 'bg-light'];
+  const bgColor = darkMode ? bgColorsDark[(props.level - 1) % bgColorsDark.length] : bgColorsLight[(props.level - 1) % bgColorsLight.length];
+
   return (
     <>
       {props.taskId ? (
@@ -169,7 +174,7 @@ function Task(props) {
               props.isNew ? 'newTask' : ''
             } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${
               props.parentId3
-            } mother_${props.mother} lv_${props.level} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+            } mother_${props.mother} lv_${props.level} ${bgColor}`}
             id={props.taskId}
           >
             <td
@@ -324,16 +329,17 @@ function Task(props) {
               {props.links.map((link, i) =>
                 link.length > 1 ? (
                   <a key={i} href={link} target="_blank" data-tip={link} rel="noreferrer">
-                    <i className="fa fa-link" aria-hidden="true" />
+                    <i className={`fa fa-link ${darkMode ? 'text-azure' : ''}`} aria-hidden="true" />
                   </a>
                 ) : null,
               )}
             </td>
-            <td className="desktop-view" onClick={toggleModel}>
+            <td className="desktop-view" onClick={toggleModal}>
               <i className="fa fa-book" aria-hidden="true" data-tip="More info" />
             </td>
-            <Modal isOpen={modal} toggle={toggleModel}>
-              <ModalBody>
+            <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
+              <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}></ModalHeader>
+              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <h6>WHY THIS TASK IS IMPORTANT:</h6>
                 <Editor
                   tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -432,6 +438,7 @@ function Task(props) {
 
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
+  darkMode: state.theme.darkMode,
 });
 
 const ConnectedTask = connect(mapStateToProps, {
