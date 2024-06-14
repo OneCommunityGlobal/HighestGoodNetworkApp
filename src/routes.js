@@ -248,7 +248,8 @@ export default (
             UserRole.Owner,
             UserRole.Mentor,
           ]}
-          routePermissions={RoutePermissions.volunteerWeeklySummary}
+          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
+          routePermissions={RoutePermissions.weeklySummariesReport}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
