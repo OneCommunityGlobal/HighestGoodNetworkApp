@@ -1,22 +1,41 @@
 // import { useParams } from 'react-router-dom';
 // import { Container, Row, Col } from 'reactstrap';
-import { Container, Row, Col, Label } from 'reactstrap';
 import { useState, useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { Container, Row } from 'reactstrap';
+// import { useState, useEffect } from 'react';
+// import { useSelector } from 'react-redux';
 // import LogBar from './LogBar';
 // import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
 // import MaterialsDisplay from './Materials/MaterialsDisplay';
 // import ProjectLog from './ProjectLog';
 // import './ProjectDetails.css';
 
-function BMTimeLogCard({ selectedProject }) {
-  const projects = useSelector(state => state.bmProjects);
+import { fetchAllMembers } from '../../../actions/projectMembers';
 
-  console.log('projects: ', projects);
+// function BMTimeLogCard({ selectedProject }) {
+function BMTimeLogCard(props) {
+  // const state = useSelector();
+  const [membersList, setMembersList] = useState();
+  // console.log('props.state: ', state);
+  console.log('props.selectedProject: ', props.selectedProject);
 
-  const selectedProjectForDisplay = projects.filter(project => project._id === selectedProject);
+  useEffect(() => {
+    fetchAllMembers(props.selectedProject);
+  }, [props.selectedProject]);
 
-  console.log('selectedProjectForDisplay: ', selectedProjectForDisplay);
+  useEffect(() => {
+    setMembersList(props.selectedProject);
+  }, [props.selectedProject]);
+
+  console.log('membersList: ', membersList);
+
+  // const selectedProjectForDisplay = projects.filter(project => project._id === selectedProject);
+
+  // console.log('selectedProjectForDisplay: ', selectedProjectForDisplay);
+
+  // if (selectedProjectForDisplay.length > 0) {
+  //   console.log('members: ', selectedProjectForDisplay[0].members);
+  // }
 
   // const { members } = selectedProject;
 
@@ -39,7 +58,7 @@ function BMTimeLogCard({ selectedProject }) {
   return (
     <Container className="project-details" fluid>
       <Row className="mx-auto">
-        <h1>TimeLogger for {selectedProject}</h1>
+        <h1>TimeLogger for {props.selectedProject}</h1>
       </Row>
 
       {/* <Row className="mx-auto">
