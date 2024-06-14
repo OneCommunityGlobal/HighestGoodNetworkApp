@@ -1,10 +1,30 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
 
-function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuffix}) {
+function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuffix }) {
   const [isOpen, setOpen] = useState(false);
-  cssSuffix = cssSuffix ? cssSuffix : "";
+  cssSuffix = cssSuffix ? cssSuffix : '';
   const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
+
+  const [badgeSpan, setBadgeSpan] = useState(null);
+
+  useEffect(() => {
+    if (badgeData.type === 'Personal Max') {
+      setBadgeSpan(
+        <span className={'badge_count_personalmax' + cssSuffix}>
+          {Math.floor(personalBestMaxHrs)}
+        </span>,
+      );
+    } else {
+      if (count < 100) {
+        setBadgeSpan(<span className={'badge_count' + cssSuffix}>{Math.round(count)}</span>);
+      } else {
+        setBadgeSpan(
+          <span className={'badge_count_3_digit' + cssSuffix}>{Math.round(count)}</span>,
+        );
+      }
+    }
+  }, []);
 
   return (
     <>
@@ -17,16 +37,7 @@ function BadgeImage({ badgeData, time, index, personalBestMaxHrs, count, cssSuff
             loading="lazy"
           />
         </div>
-
-        {badgeData.type === 'Personal Max' && (
-          <span className={"badge_count_personalmax" + cssSuffix}>{Math.floor(personalBestMaxHrs)}</span>
-        )}
-        {badgeData.type !== 'Personal Max' && count < 100 && (
-          <span className={"badge_count" + cssSuffix}>{Math.round(count)}</span>
-        )}
-        {badgeData.type !== 'Personal Max' && count >= 100 && (
-          <span className={"badge_count_3_digit" + cssSuffix}>{Math.round(count)}</span>
-        )}
+        {badgeSpan}
       </div>
       <Popover
         trigger="hover"
