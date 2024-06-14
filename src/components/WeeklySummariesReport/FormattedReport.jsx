@@ -345,7 +345,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
@@ -362,8 +362,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
 
   const handleCodeChange = e => {
     const { value } = e.target;
-
-    if (value.length <= 5) {
+    if (value.length <= 7) {
       const regexTest = fullCodeRegex.test(value);
       if (regexTest) {
         setHasError(false);
@@ -402,7 +401,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
       </div>
       {hasError ? (
         <Alert className="code-alert" color="danger">
-          NOT SAVED! The code format must be A-AAA or AAAAA.
+          NOT SAVED! The code format must be A-AAA1A or AAA2AAA.
         </Alert>
       ) : null}
     </>

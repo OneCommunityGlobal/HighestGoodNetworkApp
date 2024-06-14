@@ -23,6 +23,7 @@ import TeamMembersPopup from './TeamMembersPopup';
 import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
+import lo from 'lodash';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -40,7 +41,6 @@ class Teams extends React.PureComponent {
       selectedTeamCode: '',
       teams: [],
       sortedTeams: [],
-      teamsTable: [],
       sortTeamNameState: 'none', // 'none', 'ascending', 'descending'
       sortTeamActiveState: 'none', // 'none', 'ascending', 'descending'
     };
@@ -48,29 +48,27 @@ class Teams extends React.PureComponent {
 
   componentDidMount() {
     // Initiating the teams fetch action.
-
+    const initialTeams = this.teamTableElements(this.props.state.allTeamsData.allTeams);
+    this.setState({ teams: initialTeams });
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();
     this.sortTeamsByModifiedDate();
   }
 
   componentDidUpdate(prevProps, prevState) {
-    if (prevState.sortedTeams !== this.state.sortedTeams) {
-      // This will run whenever sortedTeams changes
-      const teamsTable = this.state.sortedTeams.map(team => {
-        return team;
-      });
-
-      this.setState({ teamsTable });
+    if (
+      !lo.isEqual(prevProps.state.allTeamsData.allTeams, this.props.state.allTeamsData.allTeams) || 
+      prevState.teamNameSearchText !== this.state.teamNameSearchText || 
+      prevState.wildCardSearchText !== this.state.wildCardSearchText
+    ) {
+     this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
+     this.sortTeamsByModifiedDate();
     }
-
-    // if (prevProps.state.allTeamsData.allTeams !== this.props.state.allTeamsData.allTeams) {
-    //   // Teams have changed, update or re-fetch them
-
-    //   this.props.getAllUserTeams();
-    //   this.props.getAllUserProfile();
-    // }
-
+    if (!lo.isEqual(prevState.sortedTeams, this.state.sortedTeams)) {
+      // This will run whenever sortedTeams changes
+      const teams = [...this.state.sortedTeams];
+      this.setState({ teams });
+    }
     if (
       prevProps.state.allTeamsData.allTeams.length !== this.props.state.allTeamsData.allTeams.length
     ) {
@@ -101,7 +99,6 @@ class Teams extends React.PureComponent {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
 
-    this.state.teams = this.teamTableElements(allTeams, darkMode);
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
 
@@ -133,13 +130,9 @@ class Teams extends React.PureComponent {
                     darkMode={darkMode}
                     />
                 </thead>
-                {
-                  this.state.teamNameSearchText === '' && this.state.wildCardSearchText === '' ? (
-                    <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>{this.state.teamsTable}</tbody>
-                  ) : (
-                    <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>{this.state.teams}</tbody>
-                  )
-                }
+                  <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}> 
+                    {this.state.teams}
+                  </tbody>
               </table>
               </div>
           </React.Fragment>
@@ -199,7 +192,6 @@ class Teams extends React.PureComponent {
       }
       return false;
     });
-
     return filteredList;
   };
   /**
