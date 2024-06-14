@@ -814,7 +814,7 @@ function UserProfile(props) {
               </Alert>
             ) : null}
             {!codeValid ? (
-              <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
+              <Alert color="danger">The code format should be A-AAAAA or AA1AAAA.</Alert>
             ) : null}
             <div className="profile-head">
               <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
