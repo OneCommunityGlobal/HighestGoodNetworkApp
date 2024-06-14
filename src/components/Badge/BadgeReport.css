@@ -17,18 +17,3 @@
   overflow-y: scroll;
   overflow: auto;
 }
-
-.badge_count_personalmax {
-	padding-top: 4px;
-	border-radius: 45%;
-	width: 19px;
-	height: 19px;
-	background: #800080;
-	color: #fff;
-	text-align: center;
-	font: 11px Arial, sans-serif;
-	position: absolute;
-	right: 28px;
-	bottom: 3px;
-	z-index: 10;
-}
