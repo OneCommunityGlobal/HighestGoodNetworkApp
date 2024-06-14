@@ -74,7 +74,7 @@ describe('WeeklySummary Redux related actions', () => {
       server.use(
         rest.put(url, (req, res, ctx) => {
           const { userId } = req.params;
-          return res(ctx.json({ _id: userId }), ctx.status(200));
+          return res(ctx.json({ _id: '1' }), ctx.status(200));
         }),
       );
       const response = await store.dispatch(updateWeeklySummaries('1', weeklySummariesMockData));

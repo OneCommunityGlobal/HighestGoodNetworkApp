@@ -50,32 +50,16 @@ const AddTeamPopup = React.memo(props => {
   };
 
   const onAssignTeam = result => {
-    const processEnvNodeEnv = process.env.NODE_ENV !== 'test';
     const condition = {
       TEAM_NAME: autoComplete === 0,
       obj: autoComplete === 1,
       selectedTeam: selectedTeam,
+      result: result,
     };
 
     if (!searchText) {
       onValidation(false);
       return;
-    }
-
-    if (condition && processEnvNodeEnv) {
-      const userId = props.userProfile._id;
-
-      const usersTeam = condition.obj
-        ? result.members.map(item => item.userId)
-        : condition.TEAM_NAME
-        ? selectedTeam.members.map(item => item.userId)
-        : null;
-
-      const userIsAlreadyInATeam = usersTeam.includes(userId);
-      userIsAlreadyInATeam &&
-        toast.error(
-          'Your user has been found in this team. Please select another team to add your user.',
-        );
     }
     const some = condition.obj
       ? !props.userTeamsById.some(x => x._id === result._id)
@@ -90,8 +74,9 @@ const AddTeamPopup = React.memo(props => {
       toast.success('Team assigned successfully'); //toast notification
     } else {
       // when the user typed something but didn't select a team
-      onValidation(false);
-      setIsNotDisplayAlert(false);
+      toast.error(
+        'Your user has been found in this team. Please select another team to add your user.',
+      );
     }
   };
 
