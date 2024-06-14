@@ -612,6 +612,7 @@ class PeopleReport extends Component {
                       <BadgeSummaryPreview
                         badges={userProfile.badgeCollection}
                         darkMode={darkMode}
+                        personalBestMaxHrs={userProfile.personalBestMaxHrs}
                       />
                     </div>
                   </div>

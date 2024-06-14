@@ -3,25 +3,19 @@ import { Button } from 'react-bootstrap';
 import {
   Table,
   Button as ReactStrapButton,
-  Card,
-  CardTitle,
-  CardBody,
-  CardImg,
-  CardText,
   DropdownToggle,
   Modal,
   ModalHeader,
   ModalBody,
   ModalFooter,
   UncontrolledDropdown,
-  UncontrolledPopover,
   DropdownMenu,
   DropdownItem,
   UncontrolledTooltip,
 } from 'reactstrap';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
-import './BadgeSummaryViz.css';
+import './BadgeSummaryViz.css'; 
 import BadgeImage from 'components/Badge/BadgeImage';
 import { useSelector } from 'react-redux';
 
@@ -93,6 +87,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                                   badgeData={value.badge}
                                   index={index}
                                   key={index}
+                                  cssSuffix={'_viz'}
                                 />
                               </td>
                               <td>{value.badge.badgeName}</td>
@@ -175,38 +170,20 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                     {badges && badges.length ? (
                       sortedBadges &&
                       sortedBadges.map(
-                        value =>
+                        (value, index) =>
                           value && (
                             <tr key={value._id}>
                               <td className="badge_image_sm">
                                 {' '}
-                                <img
-                                  src={value?.badge.imageUrl}
-                                  id={`popover_${value._id}`}
-                                  alt="badge"
+                                <BadgeImage
+                                  personalBestMaxHrs={personalBestMaxHrs}
+                                  count={value.count}
+                                  badgeData={value.badge}
+                                  index={index}
+                                  key={index}
+                                  cssSuffix={'_viz'}
                                 />
                               </td>
-                              <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                                <Card className="text-center">
-                                  <CardImg
-                                    className="badge_image_lg"
-                                    src={value?.badge?.imageUrl}
-                                  />
-                                  <CardBody>
-                                    <CardTitle
-                                      style={{
-                                        fontWeight: 'bold',
-                                        fontSize: 18,
-                                        color: '#285739',
-                                        marginBottom: 15,
-                                      }}
-                                    >
-                                      {value?.badge?.badgeName}
-                                    </CardTitle>
-                                    <CardText>{value?.badge?.description}</CardText>
-                                  </CardBody>
-                                </Card>
-                              </UncontrolledPopover>
                               <td>{value?.badge?.badgeName}</td>
                               <td>
                                 {typeof value.lastModified === 'string'
