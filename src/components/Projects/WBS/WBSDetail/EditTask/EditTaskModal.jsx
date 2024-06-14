@@ -55,6 +55,7 @@ function EditTaskModal(props) {
   const [startedDate, setStartedDate] = useState();
   const [dueDate, setDueDate] = useState();
   const [dateWarning, setDateWarning] = useState(false);
+  const [currentMode, setCurrentMode] = useState("");
 
   const res = [...(resourceItems || [])];
   const categoryOptions = [
@@ -87,6 +88,12 @@ function EditTaskModal(props) {
   * -------------------------------- functions --------------------------------
   */
   const toggle = () => setModal(!modal);
+  
+  // set different mode while show modal through different button
+  const handleModalShow = (mode) => {
+    setCurrentMode(mode);
+    toggle();
+  }
 
   const removeResource = userID => {
     const newResource = resourceItems.filter(item => item.userID !== userID);
@@ -195,11 +202,15 @@ function EditTaskModal(props) {
       endstateInfo,
       category,
     };
+
+    const updateTaskDirectly = (currentMode === "Edit");
+    console.log({canSuggestTask, canUpdateTask, updateTaskDirectly});
+
     props.setIsLoading?.(true);
     await props.updateTask(
       props.taskId,
       updatedTask,
-      canUpdateTask,
+      updateTaskDirectly,
       oldTask,
     );
     props.setTask?.(updatedTask);
@@ -268,7 +279,7 @@ function EditTaskModal(props) {
       <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'dark-mode text-light' : ''}>
         <ReactTooltip delayShow={300}/>
         <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
-          {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
+          {currentMode}
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <table
@@ -699,9 +710,24 @@ function EditTaskModal(props) {
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-        {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
-      </Button>
+      {
+        canUpdateTask &&
+        <Button className='mr-1' color="primary" size="sm" onClick={e => handleModalShow("Edit")} style={darkMode ? boxStyleDark : boxStyle}>
+        Edit
+        </Button>
+      }
+      {
+        canSuggestTask &&
+        <Button className='mr-1' color="primary" size="sm" onClick={e => handleModalShow("Suggest")} style={darkMode ? boxStyleDark : boxStyle}>
+        Suggest
+        </Button>
+      }
+      {
+        !canUpdateTask && !canSuggestTask &&
+        <Button className='mr-1' color="primary" size="sm" onClick={e => handleModalShow("View")} style={darkMode ? boxStyleDark : boxStyle}>
+        View
+        </Button>
+      }
     </div>
   );
 };

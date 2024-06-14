@@ -181,6 +181,18 @@ function EmailsList({ summaries, auth }) {
   return null;
 }
 
+function getTextColorForHoursLogged(hoursLogged, promisedHours) {
+  const percentage = (hoursLogged / promisedHours) * 100;
+
+  if (percentage < 50) {
+    return 'red';
+  }
+  if (percentage < 100) {
+    return '#0B6623';
+  }
+  return 'black';
+}
+
 function ReportDetails({
   summary,
   weekIndex,
@@ -243,18 +255,17 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
-              {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-                <p style={{ color: 'red' }}>
-                  Hours logged: {''}
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              )}
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-                <p>
-                  Hours logged: {''}
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              )}
+              <p
+                style={{
+                  color: getTextColorForHoursLogged(
+                    hoursLogged,
+                    summary.promisedHoursByWeek[weekIndex],
+                  ),
+                  fontWeight: 'bold',
+                }}
+              >
+                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+              </p>
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
@@ -335,7 +346,7 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
     const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
@@ -352,8 +363,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
 
   const handleCodeChange = e => {
     const { value } = e.target;
-
-    if (value.length <= 5) {
+    if (value.length <= 7) {
       const regexTest = fullCodeRegex.test(value);
       if (regexTest) {
         setHasError(false);
@@ -392,7 +402,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
       </div>
       {hasError ? (
         <Alert className="code-alert" color="danger">
-          NOT SAVED! The code format must be A-AAA or AAAAA.
+          NOT SAVED! The code format must be A-AAA1A or AAA2AAA.
         </Alert>
       ) : null}
     </>
