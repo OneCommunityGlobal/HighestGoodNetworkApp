@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import {
   Container,
   Row,
@@ -20,10 +20,11 @@ import OldBadges from './OldBadges';
 import { WEEK_DIFF } from '../../constants/badge';
 
 function Badge(props) {
+  const { darkMode } = props;
+
   // const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   // const toggle = () => {
   //   if (isOpen) {
@@ -144,9 +145,11 @@ function Badge(props) {
           icon to learn more about the different types of badges.
         </p>
       </UncontrolledTooltip>
-      <Modal isOpen={isOpenTypes} toggle={toggleTypes}>
-        <ModalHeader toggle={toggleTypes}>Badge Types and Assignment</ModalHeader>
-        <ModalBody>
+      <Modal isOpen={isOpenTypes} toggle={toggleTypes} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggleTypes}>
+          Badge Types and Assignment
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p className="badge_info_icon_text">
             No Infringement Streak: Not recieving any infringement for a certain number of months.{' '}
           </p>
@@ -191,6 +194,7 @@ function Badge(props) {
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps)(Badge);

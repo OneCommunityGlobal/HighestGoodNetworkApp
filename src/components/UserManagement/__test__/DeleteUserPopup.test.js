@@ -6,7 +6,7 @@ import DeleteUserPopup from '../DeleteUserPopup';
 import { UserDeleteType } from '../../../utils/enums';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
+import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
 import {
   USER_DELETE_CONFIRMATION_FIRST_LINE,
@@ -33,6 +33,7 @@ beforeEach(() => {
     auth: authMock,
     userProfile: userProfileMock,
     role: rolesMock.role,
+    theme: themeMock,
     ...defaultProps,
   });
 });

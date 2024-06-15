@@ -177,7 +177,7 @@ class ReportsPage extends Component {
           searchWithAccent(userProfile.lastName, this.state.wildCardSearchText))
       ) {
         return (
-          new Date(Date.parse(userProfile.createdDate)) >= this.state.startDate &&
+          new Date(Date.parse(userProfile.startDate)) >= this.state.startDate &&
           this.state.startDate <= new Date(Date.parse(userProfile?.endDate)) <= this.state.endDate
         );
       }
@@ -395,9 +395,15 @@ class ReportsPage extends Component {
     if (this.state.startDate != null && this.state.endDate != null) {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
+
+    const isOxfordBlue = darkMode ? 'bg-oxford-blue' : '';
+    const isYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
+    const textColor = darkMode ? 'text-light' : '';
+    const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
     return (
-      <Container fluid className={`mb-5 container-component-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-        <div className={`category-data-container ${darkMode ? 'bg-oxford-blue' : ''} ${this.state.showPeople || this.state.showProjects || this.state.showTeams || this.state.showTotalProject || this.state.showTotalPeople || this.state.showTotalTeam || this.state.showAddTimeForm || this.state.showAddPersonHistory || this.state.showAddTeamHistory || this.state.showAddProjHistory ? '' : 'no-active-selection'}`}>
+      <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
+        <div className={`category-data-container ${isOxfordBlue} ${this.state.showPeople || this.state.showProjects || this.state.showTeams || this.state.showTotalProject || this.state.showTotalPeople || this.state.showTotalTeam || this.state.showAddTimeForm || this.state.showAddPersonHistory || this.state.showAddTeamHistory || this.state.showAddProjHistory ? '' : 'no-active-selection'}`}>
         <div className="container-component-category">
         <h2 className="mt-3 mb-5">
           <div className="d-flex align-items-center">
@@ -412,14 +418,14 @@ class ReportsPage extends Component {
             />
           </div>
         </h2>
-          <div className={darkMode ? 'text-light' : ''}>
+          <div className={textColor}>
             <p>Select a Category</p>
           </div>
           <div className="container-box-shadow">
             <div className="category-container">
               <button
-                className={`card-category-item ${this.state.showProjects ? 'selected' : ''} ${darkMode ? 'bg-yinmn-blue' : ''}`}
-                style={darkMode ? boxStyleDark : boxStyle}
+                className={`card-category-item ${this.state.showProjects ? 'selected' : ''} ${isYinmnBlue}`}
+                style={boxStyling}
                 onClick={this.showProjectTable}
               >
                 <h3 className="card-category-item-title"> Projects</h3>
@@ -427,8 +433,8 @@ class ReportsPage extends Component {
                 <img src={projectsImage} alt="Image that representes the projects" />
               </button>
               <button
-                className={`card-category-item ${this.state.showPeople ? 'selected' : ''} ${darkMode ? 'bg-yinmn-blue' : ''}`}
-                style={darkMode ? boxStyleDark : boxStyle}
+                className={`card-category-item ${this.state.showPeople ? 'selected' : ''} ${isYinmnBlue}`}
+                style={boxStyling}
                 onClick={this.showPeopleTable}
               >
                 <h3 className="card-category-item-title"> People </h3>
@@ -436,8 +442,8 @@ class ReportsPage extends Component {
                 <img src={peopleImage} alt="Image that representes the people" />
               </button>
               <button
-                className={`card-category-item ${this.state.showTeams ? 'selected' : ''} ${darkMode ? 'bg-yinmn-blue' : ''}`}
-                style={darkMode ? boxStyleDark : boxStyle}
+                className={`card-category-item ${this.state.showTeams ? 'selected' : ''} ${isYinmnBlue}`}
+                style={boxStyling}
                 onClick={this.showTeamsTable}
               >
                 <h3 className="card-category-item-title"> Teams </h3>
@@ -507,7 +513,7 @@ class ReportsPage extends Component {
               </div>
               <div className="date-picker-container">
                 <div id="task_startDate" className="date-picker-item">
-                  <label htmlFor="task_startDate" className={`date-picker-label ${darkMode ? 'text-light' : ''}`}>
+                  <label htmlFor="task_startDate" className={`date-picker-label ${textColor}`}>
                     {' '}
                     Start Date
                   </label>
@@ -525,7 +531,7 @@ class ReportsPage extends Component {
                   />
                 </div>
                 <div id="task_EndDate" className="date-picker-item">
-                  <label htmlFor="task_EndDate" className={`date-picker-label ${darkMode ? 'text-light' : ''}`}>
+                  <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`}>
                     {' '}
                     End Date
                   </label>
