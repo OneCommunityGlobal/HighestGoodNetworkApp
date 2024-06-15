@@ -83,6 +83,7 @@ describe('User Table Data: Non-Jae related Account', () => {
             onActiveInactiveClick={onActiveInactiveClick}
             onPauseResumeClick={onPauseResumeClick}
             onDeleteClick={onDeleteClick}
+            userId={nonJaeAccountMock._id}
             canChangeUserStatus={true}
           />
         </tbody>
@@ -176,6 +177,7 @@ describe('User Table Data: Jae protected account record and login as Jae related
             onActiveInactiveClick={onActiveInactiveClick}
             onPauseResumeClick={onPauseResumeClick}
             onDeleteClick={onDeleteClick}
+            userId={jaeAccountMock._id}
             canChangeUserStatus={true}
           />
         </tbody>
