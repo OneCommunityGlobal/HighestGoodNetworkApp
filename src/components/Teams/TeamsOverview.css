@@ -1,0 +1,17 @@
+.card#card_team {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
+  }
+  
+  .card#card_active {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
+  }

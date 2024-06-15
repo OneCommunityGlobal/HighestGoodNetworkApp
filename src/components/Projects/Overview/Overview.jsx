@@ -5,6 +5,7 @@
  ********************************************************************************/
 import React from 'react';
 import { PROJECTS, ACTIVE_PROJECTS } from './../../../languages/en/ui';
+import "./Overview.css"
 
 const Overview = props => {
   return (
