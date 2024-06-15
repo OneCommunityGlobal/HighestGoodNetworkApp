@@ -62,7 +62,6 @@ import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
-
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -704,7 +703,6 @@ function UserProfile(props) {
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
   const canSeeQSC = props.hasPermission('seeQSC');
-
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
  
   const canEditUserProfile = targetIsDevAdminUneditable
