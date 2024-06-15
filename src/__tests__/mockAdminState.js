@@ -1632,6 +1632,7 @@ export default {
             'updatePassword',
             'deleteUserProfile',
             'infringementAuthorizer',
+            'manageAdminLinks',
             // WBS
             'postWbs',
             'deleteWbs',
@@ -1796,6 +1797,7 @@ export default {
             'getTimeZoneAPIKey',
             'checkLeadTeamOfXplus',
             'editTeamCode',
+            'manageAdminLinks',
           ],
         },
       ]
