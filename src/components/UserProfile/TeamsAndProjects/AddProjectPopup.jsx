@@ -53,15 +53,32 @@ const AddProjectPopup = React.memo(props => {
     onValidation(true);
   }, [props.open]);
 
+  const finishFetch = status => {
+    setIsOpenDropdown(false);
+    toast.success(
+      status === 200
+        ? 'Project created successfully'
+        : 'Project created successfully, but it is not possible to retrieve the new project.',
+    );
+    setDropdownText(dropdownText);
+  };
+
   const onCreateNewProject = async () => {
     if (searchText !== '' && dropdownText !== '') {
       try {
         await dispatch(postNewProject(searchText, dropdownText));
-        await dispatch(fetchAllProjects());
-        onInputChange('');
-        setDropdownText(dropdownText);
-        setIsOpenDropdown(false);
-        toast.success('Project created successfully');
+        const url = ENDPOINTS.PROJECTS;
+        const res = await axios.get(url);
+        const status = res.status;
+        const projects = res.data;
+        if (status === 200) {
+          const findNewProject = projects.filter((item, i) => i === 0)[0];
+          selectProject(findNewProject);
+          finishFetch(status);
+        } else {
+          onInputChange('');
+          finishFetch(status);
+        }
       } catch (e) {}
     } else toast.error('project creation failed');
   };
