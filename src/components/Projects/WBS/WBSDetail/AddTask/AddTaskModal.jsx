@@ -474,8 +474,8 @@ function AddTaskModal(props) {
                   Hours
                 </span>
                 <span className="add_new_task_form-input_area">
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className={`text-nowrap mr-3 w-25 mr-auto ${fontColor}`} style={{ fontWeight: 'normal' }}>
+                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
+                    <label htmlFor="bestCase" className={`text-nowrap align-self-center ${fontColor}`} style={{ fontWeight: 'normal' }}>
                       Best-case
                     </label>
                     <input
@@ -486,7 +486,8 @@ function AddTaskModal(props) {
                       onChange={e => setHoursBest(e.target.value)}
                       onBlur={() => calHoursEstimate()}
                       id="bestCase"
-                      className="w-50 ml-2"
+                      className=""
+                      style={{width:"20%"}}
                     />
                     
                   </div>
@@ -495,8 +496,8 @@ function AddTaskModal(props) {
                         ? 'The number of hours must be less than other cases'
                         : ''}
                   </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className={`text-nowrap mr-2 w-25 mr-auto ${fontColor}`} style={{ fontWeight: 'normal' }}>
+                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
+                    <label htmlFor="worstCase" className={`text-nowrap align-self-center ${fontColor}`} style={{ fontWeight: 'normal' }}>
                       Worst-case
                     </label>
                     <input
@@ -506,7 +507,7 @@ function AddTaskModal(props) {
                       value={hoursWorst}
                       onChange={e => setHoursWorst(e.target.value)}
                       onBlur={() => calHoursEstimate('hoursWorst')}
-                      className="w-50 ml-2"
+                      style={{width:"20%"}}
                     />
                     
                   </div>
@@ -516,8 +517,8 @@ function AddTaskModal(props) {
                         ? 'The number of hours must be higher than other cases'
                         : ''}
                     </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className={`text-nowrap mr-2 w-25 mr-auto ${fontColor}`} style={{ fontWeight: 'normal' }}>
+                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
+                    <label htmlFor="mostCase" className={`text-nowrap align-self-center ${fontColor}`} style={{ fontWeight: 'normal' }}>
                       Most-case
                     </label>
                     <input
@@ -527,7 +528,7 @@ function AddTaskModal(props) {
                       value={hoursMost}
                       onChange={e => setHoursMost(e.target.value)}
                       onBlur={() => calHoursEstimate('hoursMost')}
-                      className="w-50 ml-2"
+                      style={{width:"20%"}}
                     />
                     
                   </div>
@@ -536,8 +537,8 @@ function AddTaskModal(props) {
                         ? 'The number of hours must range between best and worst cases'
                         : ''}
                     </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className={`text-nowrap mr-2 w-25 mr-auto ${fontColor}`} style={{ fontWeight: 'normal' }}>
+                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
+                    <label htmlFor="Estimated" className={`text-nowrap align-self-center ${fontColor}`} style={{ fontWeight: 'normal' }}>
                       Estimated
                     </label>
                     <input
@@ -546,7 +547,7 @@ function AddTaskModal(props) {
                       max="500"
                       value={hoursEstimate}
                       onChange={e => setHoursEstimate(e.target.value)}
-                      className="w-50 ml-2"
+                      style={{width:"20%"}}
                     />
                   </div>
                 </span>
