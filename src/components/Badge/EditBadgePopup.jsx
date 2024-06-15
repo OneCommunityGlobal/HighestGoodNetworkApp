@@ -15,12 +15,15 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { updateBadge, closeAlert } from '../../actions/badgeManagement';
 import badgeTypes from './BadgeTypes';
+import '../Header/DarkMode.css';
 
 function EditBadgePopup(props) {
   // eslint-disable-next-line
+  const { darkMode } = props;
+
   const [badgeValues, setBadgeValues] = useState('');
   const [badgeId, setBadgeId] = useState('');
   const [badgeName, setBadgeName] = useState('');
@@ -177,13 +180,23 @@ function EditBadgePopup(props) {
     });
   };
 
+  const fontColor = darkMode ? 'text-light' : '';
+
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>Edit Badge</ModalHeader>
-      <ModalBody>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        Edit Badge
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form id="badgeEdit">
           <FormGroup>
-            <Label for="badgeName">Name</Label>
+            <Label for="badgeName" className={fontColor}>
+              Name
+            </Label>
             <Input
               type="name"
               name="name"
@@ -196,7 +209,9 @@ function EditBadgePopup(props) {
             <FormFeedback>Badge name is required and must be unique.</FormFeedback>
           </FormGroup>
           <FormGroup>
-            <Label for="imageUrl">Image URL</Label>
+            <Label for="imageUrl" className={fontColor}>
+              Image URL
+            </Label>
             <Input
               type="url"
               name="url"
@@ -206,13 +221,15 @@ function EditBadgePopup(props) {
               placeholder="Image URL"
               invalid={imageUrl.length === 0}
             />
-            <FormText color="muted">
+            <FormText color={darkMode ? 'white' : 'muted'}>
               For Dropbox URL that ends with &quot;dl=0&quot;, please replace with
               &quot;raw=1&quot;.
             </FormText>
           </FormGroup>
           <FormGroup>
-            <Label for="badgeDescription">Description</Label>
+            <Label for="badgeDescription" className={fontColor}>
+              Description
+            </Label>
             <Input
               type="textarea"
               name="text"
@@ -224,7 +241,9 @@ function EditBadgePopup(props) {
           </FormGroup>
 
           <FormGroup>
-            <Label for="badgeType">Type</Label>
+            <Label for="badgeType" className={fontColor}>
+              Type
+            </Label>
             <i className="fa fa-info-circle ml-1" id="TypeInfo" />
             <UncontrolledTooltip placement="right" target="TypeInfo" className="badgeTooltip">
               <p className="badge_info_icon_text">
@@ -249,7 +268,9 @@ function EditBadgePopup(props) {
 
           {showCategory ? (
             <FormGroup>
-              <Label for="category">Category</Label>
+              <Label for="category" className={fontColor}>
+                Category
+              </Label>
               <i className="fa fa-info-circle ml-1" id="CategoryInfo" />
               <UncontrolledTooltip placement="right" target="CategoryInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -283,7 +304,9 @@ function EditBadgePopup(props) {
 
           {showTotalHrs ? (
             <FormGroup>
-              <Label for="badgeTotalHrs">Hours</Label>
+              <Label for="badgeTotalHrs" className={fontColor}>
+                Hours
+              </Label>
               <i className="fa fa-info-circle ml-1" id="TotalHrsInfo" />
               <UncontrolledTooltip placement="right" target="TotalHrsInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -306,7 +329,9 @@ function EditBadgePopup(props) {
 
           {showWeeks ? (
             <FormGroup>
-              <Label for="badgeWeeks">Weeks</Label>
+              <Label for="badgeWeeks" className={fontColor}>
+                Weeks
+              </Label>
               <i className="fa fa-info-circle ml-1" id="WeeksInfo" />
               <UncontrolledTooltip placement="right" target="WeeksInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -329,7 +354,9 @@ function EditBadgePopup(props) {
 
           {showMonths ? (
             <FormGroup>
-              <Label for="badgeMonths">Months </Label>
+              <Label for="badgeMonths" className={fontColor}>
+                Months{' '}
+              </Label>
               <i className="fa fa-info-circle ml-1" id="MonthsInfo" />
               <UncontrolledTooltip placement="right" target="MonthsInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -352,7 +379,9 @@ function EditBadgePopup(props) {
 
           {showMultiple ? (
             <FormGroup>
-              <Label for="badgeMultiple">Multiple </Label>
+              <Label for="badgeMultiple" className={fontColor}>
+                Multiple{' '}
+              </Label>
               <i className="fa fa-info-circle ml-1" id="MultipleInfo" />
               <UncontrolledTooltip placement="right" target="MultipleInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -375,7 +404,9 @@ function EditBadgePopup(props) {
 
           {showPeople ? (
             <FormGroup>
-              <Label for="badgePeople">People</Label>
+              <Label for="badgePeople" className={fontColor}>
+                People
+              </Label>
               <i className="fa fa-info-circle ml-1" id="PeopleInfo" />
               <UncontrolledTooltip placement="right" target="PeopleInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -397,7 +428,9 @@ function EditBadgePopup(props) {
           )}
 
           <FormGroup>
-            <Label for="badgeRanking">Ranking</Label>
+            <Label for="badgeRanking" className={fontColor}>
+              Ranking
+            </Label>
             <i className="fa fa-info-circle ml-1" id="RankingInfo" />
             <UncontrolledTooltip placement="right" target="RankingInfo" className="badgeTooltip">
               <p className="badge_info_icon_text">
@@ -429,11 +462,16 @@ function EditBadgePopup(props) {
           </FormGroup>
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button color="info" onClick={handleSubmit} disabled={enableButton} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button
+          color="info"
+          onClick={handleSubmit}
+          disabled={enableButton}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
           Update
         </Button>{' '}
-        <Button color="primary" onClick={closePopup} style={boxStyle}>
+        <Button color="primary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Cancel
         </Button>
       </ModalFooter>
@@ -442,10 +480,7 @@ function EditBadgePopup(props) {
 }
 
 const mapStateToProps = state => ({
-  allProjects: state.allProjects.projects,
-  message: state.badge.message,
-  alertVisible: state.badge.alertVisible,
-  color: state.badge.color,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

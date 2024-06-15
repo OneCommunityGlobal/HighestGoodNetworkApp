@@ -2,11 +2,13 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import Loading from 'components/common/Loading';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditHistoryModal from './EditHistoryModal';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 
 function LostTimeHistory(props) {
+  const darkMode = props.darkMode;
 
   const [entriesRow, setEntriesRow] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
@@ -98,7 +100,7 @@ function LostTimeHistory(props) {
     let entriesRow = [];
     if (timeEntries.length > 0) {
       entriesRow = timeEntries.map((entry) => (
-        <tr id={`tr_${entry._id}`} key={entry._id}>
+        <tr id={`tr_${entry._id}`} key={entry._id}  className={darkMode ? 'hover-effect-reports-page-dark-mode text-light' : ''}>
           <td>
             {entry.name}
           </td>
@@ -131,6 +133,7 @@ function LostTimeHistory(props) {
                 entryType={entry.entryType}
                 allData={props.allData}
                 reload={reload}
+                darkMode={darkMode}
               />
             </td>
           }
@@ -147,11 +150,13 @@ function LostTimeHistory(props) {
     <div className="table-data-container mt-5">
       {isOpen && (
         dataLoading? (
-          <Loading/>
+          <Loading align="center" darkMode={darkMode}/>
         ): (
-          <table className="table table-bordered">
-          <thead>
-            <tr>
+          <table 
+          className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
+          style={darkMode ? boxStyleDark : boxStyle}>
+          <thead className={darkMode ? 'bg-space-cadet text-light' : 'text-black'}>
+            <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
               <th scope="col">
                 Name
               </th>
