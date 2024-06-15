@@ -211,7 +211,7 @@ const TeamMemberTasks = React.memo(props => {
     if(usersWithTasks.length > 0) {
       usersWithTasks.forEach(user => {
         // temporary changes to work on other issues. please fix this.
-        const teamNames = user.teams!==undefined?user.teams.map(team => team.teamName):["tasks"];
+        const teamNames = user.teams.map(team => team.teamName)
         const code = user.teamCode || 'noCodeLabel';
         const color = user.weeklySummaryOption || 'noColorLabel';
 
