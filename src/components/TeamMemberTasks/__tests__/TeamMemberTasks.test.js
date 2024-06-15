@@ -22,24 +22,38 @@ const auth={user: {
 
 
 const teamMemberTasks={isLoading:false,
-                        usersWithTasks:[{name:'bb',personId:"user123", tasks:[{deadlineCount: 1,
-                          dueDatetime: '2023-12-08T08:00:00.000Z',
-                          estimatedHours: 20,
-                          hoursBest: 20,
-                          hoursLogged: 17.55,
-                          hoursMost: 20,
-                          hoursWorst: 20,
-                          isAssigned: true,
-                          num: '1',
-                          projectId: 'project1234',
-                          resources: [],
-                          status: 'Started',
-                          taskName: 'Task 1',
-                          taskNotifications: [],
-                          wbsId: 'wbs1234',
-                          __v: 0,
-                          _id: 'task11234',}]},{name:'aa',personId:"user456",tasks:[]}],
-                        usersWithTimeEntries:[{personId:'user123',_id:'entry123',userProfile:[]}]
+  usersWithTasks: [{
+    name: 'bb',
+    personId: "user123",
+    tasks: [{
+      deadlineCount: 1,
+      dueDatetime: '2023-12-08T08:00:00.000Z',
+      estimatedHours: 20,
+      hoursBest: 20,
+      hoursLogged: 17.55,
+      hoursMost: 20,
+      hoursWorst: 20,
+      isAssigned: true,
+      num: '1',
+      projectId: 'project1234',
+      resources: [],
+      status: 'Started',
+      taskName: 'Task 1',
+      taskNotifications: [],
+      wbsId: 'wbs1234',
+      __v: 0,
+      _id: 'task11234',
+    }],
+    teams: [{teamName: 'mockTeamName', _id: 'team123'}]
+    },
+    {
+      name: 'aa',
+      personId: "user456",
+      tasks: [],
+      teams: [{teamName: 'mockTeamName', _id: 'team123'}]
+    }],
+    usersWithTimeEntries: [{ personId: 'user123', _id: 'entry123', userProfile: [] }],
+                         
                       }
 const userProfile = {
   _id: 'user123',
