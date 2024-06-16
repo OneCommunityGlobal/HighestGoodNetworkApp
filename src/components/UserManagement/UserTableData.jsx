@@ -18,11 +18,17 @@ import { updateUserProfile as updateUserProfileAction } from '../../actions/user
  * The body row of the user table
  */
 const UserTableData = React.memo((props) => {
+  console.log('props', props)
   const [isChanging, onReset] = useState(false);
   const [isEditing, setIsEditing] = useState(false); // Editing User Info
   const [userProfile, setUserProfile] = useState(props.user); // Initial user data
   const [saveTrigger, setSaveTrigger] = useState(false); // Trigger re-render
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+
+  // Synchronize userProfile state with props.user when props.user changes
+  useEffect(() => {
+    setUserProfile(props.user);
+  }, [props.user]);
 
   const onRoleSearch = (selectedRole) => {
     setUserProfile({
