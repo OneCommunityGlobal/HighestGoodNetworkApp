@@ -443,12 +443,12 @@ function EditTaskModal(props) {
                 )}
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours - Best-case">
+                <td scope="col">
                   Hours
                 </td>
-                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                <td scope="col" className="w-100">
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                    <label htmlFor="bestCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Best-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -460,20 +460,20 @@ function EditTaskModal(props) {
                         onChange={e => setHoursBest(e.target.value)}
                         onBlur={() => calHoursEstimate()}
                         id="bestCase"
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursBest,
                       {componentOnly:true}
                     )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
+                  </div>
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'The number of hours must be less than other cases'
+                      : ''}
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                    <label htmlFor="worstCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Worst-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -484,20 +484,20 @@ function EditTaskModal(props) {
                         value={hoursWorst}
                         onChange={e => setHoursWorst(e.target.value)}
                         onBlur={() => calHoursEstimate('hoursWorst')}
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursWorst,
                       {componentOnly:true}
                     )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
+                  </div>
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'The number of hours must be higher than other cases'
+                      : ''}
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                    <label htmlFor="mostCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Most-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -508,20 +508,20 @@ function EditTaskModal(props) {
                         value={hoursMost}
                         onChange={e => setHoursMost(e.target.value)}
                         onBlur={() => calHoursEstimate('hoursMost')}
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursMost,
                       {componentOnly:true}
                     )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
+                  </div>
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'The number of hours must range between best and worst cases'
+                      : ''}
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                    <label htmlFor="Estimated" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Estimated
                     </label>
                     {ReadOnlySectionWrapper(
@@ -531,7 +531,7 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursEstimate}
                         onChange={e => setHoursEstimate(e.target.value)}
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursEstimate,
