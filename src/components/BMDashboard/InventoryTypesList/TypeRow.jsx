@@ -17,18 +17,17 @@ export function TypeRow(props) {
   });
 
   const handleEdit = async () => {
-    // TODO:
     const { category, _id: id } = itemType;
     const { name, description } = updatedType;
     await dispatch(updateBuildingInventoryType({ category, id, name, description }));
     setEditMode(false);
-    dispatch(fetchInvTypeByType(`${category}s`));
+    dispatch(fetchInvTypeByType(`${category}`));
   };
 
   const handleDelete = async () => {
     const { category, _id: id } = itemType;
     await dispatch(deleteBuildingInventoryType({ category, id }));
-    dispatch(fetchInvTypeByType(`${category}s`));
+    dispatch(fetchInvTypeByType(`${category}`));
   };
 
   const handleChangeInput = e => {
