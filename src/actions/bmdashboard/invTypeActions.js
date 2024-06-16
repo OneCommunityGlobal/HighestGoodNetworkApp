@@ -195,6 +195,51 @@ export const resetPostBuildingInventoryTypeResult = () => {
   }
 }
 
+export const setDeleteInvTypeResult = (payload) => {
+  return {
+    type: DELETE_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const setDeleteInvTypeError = (payload) => {
+  return {
+    type: DELETE_ERROR_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const resetDeleteInvTypeResult = () => {
+  return {
+    type: RESET_DELETE_BUILDING_INVENTORY_TYPE
+  }
+}
+
+export const setUpdateInvTypeResult = (payload) => {
+  return {
+    type: UPDATE_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const setUpdateInvTypeError = (payload) => {
+  return {
+    type: UPDATE_ERROR_BUILDING_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const resetUpdateInvTypeResult = () => {
+  return {
+    type: RESET_UPDATE_BUILDING_INVENTORY_TYPE
+  }
+}
+
+export const resetPostBuildingConsumableTypeResult = () => {
+  return {
+    type: RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  };
+};
 
 export const setMaterialTypes = payload => {
   return {

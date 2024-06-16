@@ -264,7 +264,6 @@ export default (
         <BMProtectedRoute path="/bmdashboard/materials/purchase" fallback component={PurchaseMaterials} />
         <BMProtectedRoute path="/bmdashboard/materials/update" fallback component={UpdateMaterialsBulk} />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
-        <BMProtectedRoute path="/bmdashboard/materials" fallback component={MaterialsList} />
 
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute
