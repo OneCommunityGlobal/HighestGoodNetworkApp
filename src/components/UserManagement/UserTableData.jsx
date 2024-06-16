@@ -19,6 +19,7 @@ const UserTableData = React.memo(props => {
 
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  // const canChangeUserStatus = props.hasPermission('changeUserStatus');
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -47,7 +48,7 @@ const UserTableData = React.memo(props => {
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
-          canChange={true}
+          canChange={props.canChangeUserStatus}
           key={`active_cell${props.index}`}
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
@@ -93,6 +94,10 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
+            if(!props.canChangeUserStatus) {
+              toast.warn('You Do not have permissions to update this user’s status! ');
+              return;
+            }
             if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
