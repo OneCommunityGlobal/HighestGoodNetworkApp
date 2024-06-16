@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 
 export const CreateNewTeamPopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   const [newTeam, setNewName] = useState('');
   const closePopup = () => {
     props.onClose();
@@ -12,12 +16,12 @@ export const CreateNewTeamPopup = React.memo(props => {
     setNewName(props.teamName);
   }, [props.open, props.teamName]);
   return (
-    <Modal autoFocus={false} isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>
+    <Modal autoFocus={false} isOpen={props.open} toggle={closePopup} className={darkMode ? 'dark-mode text-light' : ''}>
+      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>
         {props.isEdit ? 'Update Team Name' : 'Create New Team'}
       </ModalHeader>
-      <ModalBody style={{ textAlign: 'start' }}>
-        <label>Name of the Team</label>
+      <ModalBody style={{ textAlign: 'start' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <label className={darkMode ? 'text-light' : ''}>Name of the Team</label>
         <Input
           autoFocus
           id="teamName"
@@ -31,8 +35,8 @@ export const CreateNewTeamPopup = React.memo(props => {
         />
         {isValidTeam === false ? <Alert color="danger">Please enter a team name.</Alert> : <></>}
       </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
         <Button
@@ -44,7 +48,7 @@ export const CreateNewTeamPopup = React.memo(props => {
               onValidation(false);
             }
           }}
-          style={boxStyle}
+          style={darkMode ? boxStyleDark : boxStyle}
         >
           OK
         </Button>

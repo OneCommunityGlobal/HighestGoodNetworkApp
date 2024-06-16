@@ -15,19 +15,17 @@ import {
 import { toast } from 'react-toastify';
 import cs from 'classnames';
 import css from './Timer.module.css';
+import '../Header/DarkMode.css';
 import { ENDPOINTS } from '../../utils/URL';
 import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 
-export default function Timer() {
+export default function Timer({ darkMode }) {
   const WSoptions = {
-    share: true,
+    share: false,
     protocols: localStorage.getItem(config.tokenKey),
-    shouldReconnect: () => true,
-    reconnectAttempts: 5,
-    reconnectInterval: 5000,
   };
   /**
    * Expected message format: {
@@ -41,7 +39,7 @@ export default function Timer() {
    * }
    */
 
-  const { sendMessage, lastJsonMessage, readyState } = useWebSocket(
+  const { sendMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
     WSoptions,
   );
@@ -57,6 +55,7 @@ export default function Timer() {
     REMOVE_GOAL: 'REMOVE_FROM_GOAL=',
     ACK_FORCED: 'ACK_FORCED',
     START_CHIME: 'START_CHIME=',
+    HEARTBEAT: 'ping',
   };
 
   const defaultMessage = {
@@ -84,6 +83,7 @@ export default function Timer() {
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
+  const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
 
@@ -91,19 +91,22 @@ export default function Timer() {
   const logHours = timeToLog.hours();
   const logMinutes = timeToLog.minutes();
 
+  const sendMessageNoQueue = useCallback(msg => sendMessage(msg, false), [sendMessage]);
+
   const wsMessageHandler = useMemo(
     () => ({
-      sendStart: () => sendMessage(action.START_TIMER),
-      sendPause: () => sendMessage(action.PAUSE_TIMER),
-      sendClear: () => sendMessage(action.CLEAR_TIMER),
-      sendStop: () => sendMessage(action.STOP_TIMER),
-      sendAckForced: () => sendMessage(action.ACK_FORCED),
-      sendStartChime: state => sendMessage(action.START_CHIME.concat(state)),
-      sendSetGoal: timerGoal => sendMessage(action.SET_GOAL.concat(timerGoal)),
-      sendAddGoal: duration => sendMessage(action.ADD_GOAL.concat(duration)),
-      sendRemoveGoal: duration => sendMessage(action.REMOVE_GOAL.concat(duration)),
+      sendStart: () => sendMessageNoQueue(action.START_TIMER),
+      sendPause: () => sendMessageNoQueue(action.PAUSE_TIMER),
+      sendClear: () => sendMessageNoQueue(action.CLEAR_TIMER),
+      sendStop: () => sendMessageNoQueue(action.STOP_TIMER),
+      sendAckForced: () => sendMessageNoQueue(action.ACK_FORCED),
+      sendStartChime: state => sendMessageNoQueue(action.START_CHIME.concat(state)),
+      sendSetGoal: timerGoal => sendMessageNoQueue(action.SET_GOAL.concat(timerGoal)),
+      sendAddGoal: duration => sendMessageNoQueue(action.ADD_GOAL.concat(duration)),
+      sendRemoveGoal: duration => sendMessageNoQueue(action.REMOVE_GOAL.concat(duration)),
+      sendHeartbeat: () => sendMessageNoQueue(action.HEARTBEAT),
     }),
-    [sendMessage],
+    [sendMessageNoQueue],
   );
 
   const {
@@ -115,6 +118,7 @@ export default function Timer() {
     sendStartChime,
     sendAddGoal,
     sendRemoveGoal,
+    sendHeartbeat,
   } = wsMessageHandler;
 
   const toggleLogTimeModal = () => {
@@ -207,6 +211,11 @@ export default function Timer() {
   };
 
   useEffect(() => {
+    // Exclude heartbeat message
+    if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
+      isWSOpenRef.current = 0;
+      return;
+    }
     /**
      * This useEffect is to make sure that all the states will be updated before taking effects,
      * so that message state and other states like running, inacMoal ... will be updated together
@@ -223,6 +232,25 @@ export default function Timer() {
     setInacModal(forcedPauseLJM);
     setTimeIsOverModalIsOpen(chimingLJM);
   }, [lastJsonMessage]);
+
+  useEffect(() => {
+    // This useEffect is to make sure that the WS is open and send a heartbeat every 60 seconds
+    const interval = setInterval(() => {
+      if (running) {
+        isWSOpenRef.current += 1;
+        sendHeartbeat();
+        setTimeout(() => {
+          if (isWSOpenRef.current > 3) {
+            setRunning(false);
+            setInacModal(true);
+            getWebSocket().close();
+          }
+        }, 10000); // close the WS if no response after 10 seconds
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [running]);
 
   useEffect(() => {
     /**
@@ -270,9 +298,13 @@ export default function Timer() {
     }
   }, [inacModal]);
 
+  const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
+  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
   return (
     <div className={css.timerContainer}>
-      <button type="button" onClick={toggleTimer}>
+      <button type="button" onClick={toggleTimer} className={css.btnDiv}>
         <BsAlarmFill
           className={cs(css.transitionColor, css.btn)}
           fontSize="2rem"
@@ -378,17 +410,35 @@ export default function Timer() {
           sendStop={sendStop}
         />
       )}
-      <audio ref={timeIsOverAudioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
-      <audio ref={forcedPausedAudioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3" />
+      <audio
+        ref={timeIsOverAudioRef}
+        loop
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
+      />
+      <audio
+        ref={forcedPausedAudioRef}
+        loop
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
+      />
       <Modal
         isOpen={confirmationResetModal}
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
         centered
         size="md"
+        className={`${fontColor} dark-mode`}
       >
-        <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset Time</ModalHeader>
-        <ModalBody>Are you sure you want to reset your time?</ModalBody>
-        <ModalFooter>
+        <ModalHeader
+          className={darkMode ? 'bg-space-cadet' : ''}
+          toggle={() => setConfirmationResetModal(false)}
+        >
+          Reset Time
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          Are you sure you want to reset your time?
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             color="primary"
             onClick={() => {
@@ -400,14 +450,23 @@ export default function Timer() {
           </Button>{' '}
         </ModalFooter>
       </Modal>
-      <Modal size="md" isOpen={inacModal} toggle={() => setInacModal(!inacModal)} centered>
-        <ModalHeader toggle={() => setInacModal(!inacModal)}>Timer Paused</ModalHeader>
-        <ModalBody>
+      <Modal
+        className={`${fontColor} dark-mode`}
+        size="md"
+        isOpen={inacModal}
+        toggle={() => setInacModal(!inacModal)}
+        centered
+      >
+        <ModalHeader className={headerBg} toggle={() => setInacModal(!inacModal)}>
+          Timer Paused
+        </ModalHeader>
+        <ModalBody className={bodyBg}>
           The user timer has been paused due to inactivity or a lost in connection to the server.
-          This is to ensure that our resources are being used efficiently and to improve performance
-          for all of our users.
+          Please check your internet connection and refresh the page to continue. This is to ensure
+          that our resources are being used efficiently and to improve performance for all of our
+          users.
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={bodyBg}>
           <Button
             color="primary"
             onClick={() => {
@@ -419,12 +478,20 @@ export default function Timer() {
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={timeIsOverModalOpen} toggle={toggleTimeIsOver} centered size="md">
-        <ModalHeader toggle={toggleTimeIsOver}>Time Complete!</ModalHeader>
-        <ModalBody>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
+      <Modal
+        className={`${fontColor} dark-mode`}
+        isOpen={timeIsOverModalOpen}
+        toggle={toggleTimeIsOver}
+        centered
+        size="md"
+      >
+        <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
+          Time Complete!
+        </ModalHeader>
+        <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
           logMinutes ? ` ${logMinutes} minutes` : ''
         }. Click below if you’d like to add time or Log Time.`}</ModalBody>
-        <ModalFooter>
+        <ModalFooter className={bodyBg}>
           <Button
             color="primary"
             onClick={() => {
