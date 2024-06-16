@@ -4,5 +4,5 @@ export const boxStyle = {
 };
 
 export const boxStyleDark = {
-  boxShadow: '2px 2px 4px 1px black',
+  boxShadow: '0.5px 0.5px 5px black',
 };

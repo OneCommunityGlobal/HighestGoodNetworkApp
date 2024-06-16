@@ -20,8 +20,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
-import { getUserProjects, getUserWBSs } from '../../../actions/userProjects';
-import { getUserProfile, updateUserProfile } from 'actions/userProfile';
+import { getUserProfile } from 'actions/userProfile';
 
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -71,7 +70,7 @@ const TINY_MCE_INIT_OPTIONS = {
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile, darkMode } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
 
@@ -142,7 +141,6 @@ const TimeEntryForm = props => {
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
 // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-  const canUserEditDate = canEditTimeEntry && canPutUserProfileImportantInfo;
   const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry || isSameDayAuthUserEdit) ;
 
   /*---------------- methods -------------- */
@@ -372,27 +370,30 @@ const TimeEntryForm = props => {
       project.WBSObject = {};
       projectsObject[projectId] = project;
     });
-    timeEntryFormUserWBSs.forEach(WBS => {
-      const { projectId, _id: wbsId } = WBS;
-      WBS.taskObject = {};
-      if(projectsObject[projectId]){
-        projectsObject[projectId].WBSObject[wbsId] = WBS;
-      }
-    });
     timeEntryFormUserTasks.forEach(task => {
-      const { projectId, wbsId, _id: taskId, resources } = task;
-      const isTaskCompletedForTimeEntryUser = resources.find(
-        resource => resource.userID === timeEntryUserId,
-      ).completedTask;
-      if (!isTaskCompletedForTimeEntryUser && projectsObject[projectId]) {
-        if (!projectsObject[projectId].WBSObject) {
-          projectsObject[projectId].WBSObject = {};
-        }
-        if (!projectsObject[projectId].WBSObject[wbsId]) {
-          projectsObject[projectId].WBSObject[wbsId] = { taskObject: {} };
-        }
+      const { projectId, wbsId, _id: taskId, wbsName, projectName } = task;
+      if (!projectsObject[projectId]) {
+        projectsObject[projectId] = {
+          projectName,
+          WBSObject: {
+            [wbsId]: {
+              wbsName,
+              taskObject: {
+                [taskId]: task,
+              },
+            },
+          },
+        };
+      } else if (!projectsObject[projectId].WBSObject[wbsId]) {
+        projectsObject[projectId].WBSObject[wbsId] = {
+          wbsName,
+          taskObject: {
+            [taskId]: task,
+          },
+        };
+      } else {
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
-      }   
+      }
     });
 
     for (const [projectId, project] of Object.entries(projectsObject)) {
@@ -432,23 +433,19 @@ const TimeEntryForm = props => {
     try {
       const profileURL = ENDPOINTS.USER_PROFILE(timeEntryUserId);
       const projectURL = ENDPOINTS.USER_PROJECTS(timeEntryUserId);
-      const wbsURL = ENDPOINTS.WBS_USER(timeEntryUserId);
       const taskURL = ENDPOINTS.TASKS_BY_USERID(timeEntryUserId);
 
       const profilePromise = axios.get(profileURL);
       const projectPromise = axios.get(projectURL);
-      const wbsPromise = axios.get(wbsURL);
       const taskPromise = axios.get(taskURL);
 
-      const [userProfileRes, userProjectsRes, userWBSsRes, userTasksRes] = await Promise.all([
+      const [userProfileRes, userProjectsRes, userTasksRes] = await Promise.all([
         profilePromise,
         projectPromise,
-        wbsPromise,
         taskPromise,
       ]);
       setTimeEntryFormUserProfile(userProfileRes.data);
       setTimeEntryFormUserProjects(userProjectsRes.data);
-      setTimeEntryFormUserWBSs(userWBSsRes.data);
       setTimeEntryFormUserTasks(userTasksRes.data);
       setIsAsyncDataLoaded(true);
     } catch (e) {
@@ -482,8 +479,8 @@ const TimeEntryForm = props => {
 
   return (
     <>
-      <Modal className={`${fontColor} dark-mode`} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
-        <ModalHeader toggle={toggle} className={`${headerBg} text-light`}>
+      <Modal className={darkMode ? `${fontColor} dark-mode` : ''} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
+        <ModalHeader toggle={toggle} className={`${headerBg}`}>
           <div>
             {edit ? 'Edit ' : 'Add '}
             {formValues.isTangible ? (
@@ -661,16 +658,12 @@ TimeEntryForm.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
-  userProfile: state.userProfile,
   darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {
   hasPermission,
   getUserProfile,
-  updateUserProfile,
-  getUserProjects,
-  getUserWBSs,
   editTimeEntry,
   postTimeEntry,
   getTimeEntriesForWeek,
