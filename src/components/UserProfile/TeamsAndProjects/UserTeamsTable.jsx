@@ -37,7 +37,7 @@ const UserTeamsTable = props => {
 
   return (
     <div>
-      <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+      <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`} data-testid='userTeamTest'>
         <div className="container" style={{paddingLeft: '4px', paddingRight: '4px'}}>
           {props.canEditVisibility && (
             <div className="row" >
