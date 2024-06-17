@@ -3,30 +3,10 @@ import PropTypes from 'prop-types';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Col, Row} from 'reactstrap';
 import { updateInfoCollection } from '../../../actions/information'
-import { Editor } from '@tinymce/tinymce-react';
 import { boxStyle, boxStyleDark } from 'styles';
 import { useEffect } from 'react';
 import { toast } from 'react-toastify';
-
-const RichTextEditor = ({ disabled, value, onEditorChange }) => (
-  <Editor
-    tinymceScriptSrc="/tinymce/tinymce.min.js"
-    init={{
-      license_key: 'gpl',
-      menubar: false,
-      placeholder: 'Please input infos',
-      plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-      toolbar: 'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-      branding: false,
-      min_height: 180,
-      max_height: 500,
-      autoresize_bottom_margin: 1,
-    }}
-    disabled={disabled}
-    value={value}
-    onEditorChange={onEditorChange}
-  />
-);
+import RichTextEditor from './RichTextEditor';
 
 const RoleInfoModal = ({ info, auth}) => {
   const darkMode = useSelector(state => state.theme.darkMode);
