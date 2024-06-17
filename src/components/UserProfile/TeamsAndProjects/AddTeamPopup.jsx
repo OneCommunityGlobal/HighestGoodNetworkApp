@@ -6,14 +6,11 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../Header/DarkMode.css';
 import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
-
+import axios from 'axios';
 const AddTeamPopup = React.memo(props => {
   const { darkMode } = props;
 
   const dispatch = useDispatch();
-  const closePopup = () => {
-    props.onClose();
-  };
 
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [isValidTeam, onValidation] = useState(true);
@@ -26,7 +23,11 @@ const AddTeamPopup = React.memo(props => {
   const [isDuplicateTeam, setDuplicateTeam] = useState(false);
   const [isNotDisplayAlert, setIsNotDisplayAlert] = useState(false);
   const [autoComplete, setAutoComplete] = useState(null);
-  const [isloading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const closePopup = () => {
+    props.onClose();
+  };
 
   const format = result =>
     result
@@ -86,32 +87,39 @@ const AddTeamPopup = React.memo(props => {
     setAutoComplete(0);
   };
 
+  const axiosResponseExceededTimeout = source => {
+    setIsLoading(false);
+    source.cancel();
+  };
+
   const onCreateTeam = async () => {
     if (newTeamName !== '') {
-      setIsLoading(true);
-      const response = await dispatch(postNewTeam(newTeamName, newTeamIsActive));
-      try {
-        if (response.status === 200) {
-          setNewTeamName('');
-          setNewTeamIsActive(true);
-          setDuplicateTeam(false);
+      const CancelToken = axios.CancelToken;
+      const source = CancelToken.source();
+      const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
 
-          // Get updated teams list and select the new team
-          await dispatch(getAllUserTeams());
-          toast.success('Team created successfully');
-          const newTeam = response.data; // Assuming response contains the new team data
-          onSelectTeam(newTeam);
-          setSearchText(newTeam.teamName); // Update search text to reflect new team name
-        }
-      } catch (error) {
-        if (response.status === 400) {
-          setDuplicateTeam(true);
-          setIsLoading(false);
-        } else {
-          toast.error('Error occurred while creating team');
-        }
-      } finally {
+      setIsLoading(true);
+      const response = await dispatch(postNewTeam(newTeamName, newTeamIsActive, source));
+      clearTimeout(timeout);
+      if (response.status === 200) {
+        setNewTeamName('');
+        setNewTeamIsActive(true);
+        setDuplicateTeam(false);
+
+        // Get updated teams list and select the new team
+        await dispatch(getAllUserTeams());
+        toast.success('Team created successfully');
+        const newTeam = response.data; // Assuming response contains the new team data
+        onSelectTeam(newTeam);
+        setSearchText(newTeam.teamName); // Update search text to reflect new team name
         setIsLoading(false);
+      } else {
+        setIsLoading(false);
+        const messageToastError =
+          response.status === 500
+            ? 'No response received from the server'
+            : 'Error occurred while creating team';
+        response.status === 403 ? setDuplicateTeam(true) : toast.error(messageToastError);
       }
     } else {
       onNewTeamValidation(false);
@@ -166,9 +174,9 @@ const AddTeamPopup = React.memo(props => {
                 onValidation(false);
               }
             }}
-            disabled={isloading}
+            disabled={isLoading}
           >
-            {isloading ? <Spinner color="light" size="sm" /> : 'Confirm'}
+            {isLoading ? <Spinner color="light" size="sm" /> : 'Confirm'}
           </Button>
         </div>
         {!isValidTeam && searchText && isNotDisplayAlert && !selectedTeam && (
