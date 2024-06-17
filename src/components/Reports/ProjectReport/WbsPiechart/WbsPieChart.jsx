@@ -141,7 +141,7 @@ const renderActiveShape = (props) => {
   return (
     <g>
       <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-        {payload.lastName} {payload.value} of {payload.totalHoursCalculated.toFixed(1)}hrs
+        {payload.lastName.substring(0, 5)} {payload.value.toFixed(1)} of {payload.totalHoursCalculated.toFixed(1)}hrs
       </text>
       <Sector
         cx={cx}
