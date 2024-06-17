@@ -15,11 +15,10 @@ import TextSearchBox from 'components/UserManagement/TextSearchBox';
 import { boxStyle, boxStyleDark } from 'styles';
 import { TasksDetail } from '../TasksDetail';
 
-export function TasksTable({ WbsTasksID, darkMode }) {
-  const { get_tasks } = useSelector(state => getTasksTableData(state, { WbsTasksID }));
-
+export function TasksTable({ darkMode, tasks }) {
   const [isActive, setActive] = useState(true);
   const [isAssigned, setAssigned] = useState(true);
+  const [toggleEditTasks, setToggleEditTasks] = useState(false);
   const [filters, setFilters] = useState({
     status: '',
     priority: '',
@@ -43,7 +42,7 @@ export function TasksTable({ WbsTasksID, darkMode }) {
   };
 
   function FilterOptions({ filterName, width }) {
-    const filtersOptions = [...Array.from(new Set(get_tasks.map(item => item[filterName]))).sort()];
+    const filtersOptions = [...Array.from(new Set(tasks.map(item => item[filterName]))).sort()];
     return (
       <DropDownSearchBox
         items={filtersOptions}
@@ -79,7 +78,7 @@ export function TasksTable({ WbsTasksID, darkMode }) {
       </div>
       <div className="tasks-table-filters-wrapper">
         <div className="tasks-table-filters">
-          <UserOptions tasks={get_tasks} />
+          <UserOptions tasks={tasks} />
           <FilterOptions filterName="classification" width="180px" />
           <FilterOptions filterName="priority" />
           <FilterOptions filterName="status" />
@@ -106,24 +105,36 @@ export function TasksTable({ WbsTasksID, darkMode }) {
           />
         </div>
 
-        <button
-          className="tasks-table-clear-filter-button"
-          onClick={() => resetAllFilters()}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Clear filters
-        </button>
+        <div className='d-flex'>
+          <button
+            className="tasks-table-edit-tasks-button"
+            onClick={() => setToggleEditTasks(!toggleEditTasks)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Edit Tasks
+          </button>
+
+          <button
+            className="tasks-table-clear-filter-button"
+            onClick={() => resetAllFilters()}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Clear filters
+          </button>
+        </div>
+        
       </div>
 
       <TasksDetail
-        tasks_filter={get_tasks}
+        tasks_filter={tasks}
+        toggleEditTasks={toggleEditTasks}
+        darkMode={darkMode}
         isAssigned={isAssigned}
         isActive={isActive}
         priority={filters.priority}
         status={filters.status}
         classification={filters.classification}
         users={filters.users}
-        darkMode={darkMode}
       />
     </div>
   );
