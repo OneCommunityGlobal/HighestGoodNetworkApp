@@ -16,6 +16,7 @@ import {
   NavItem,
   NavLink,
   Button,
+  Input,
 } from 'reactstrap';
 import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
@@ -647,6 +648,17 @@ export class WeeklySummariesReport extends Component {
             </div>
           </Col>
         </Row>
+        {selectedCodes.length > 0 && (
+          <Row style={{ marginBottom: '10px' }}>
+            <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+              Replace With
+              <Input type="string" placeholder="replace" />
+              <Button className="mr-1 mt-1 btn-bottom" color="primary">
+                Replace
+              </Button>
+            </Col>
+          </Row>
+        )}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
