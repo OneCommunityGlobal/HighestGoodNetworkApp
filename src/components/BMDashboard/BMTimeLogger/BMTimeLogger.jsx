@@ -13,6 +13,7 @@ function BMTimeLogger() {
   const date = moment();
   const [isError, setIsError] = useState(false);
   const [selectedProject, setselectedProject] = useState();
+  const [isProjectSelected, setIsProjectSelected] = useState(false);
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
@@ -23,6 +24,12 @@ function BMTimeLogger() {
   }, []);
 
   useEffect(() => {}, [selectedProject]);
+
+  useEffect(() => {
+    if (selectedProject) {
+      setIsProjectSelected(true);
+    }
+  }, [selectedProject]);
 
   // trigger an error state if there is an errors object
   useEffect(() => {
@@ -47,8 +54,8 @@ function BMTimeLogger() {
           </Col>
         </Row>
       </header>
-
-      {isError ? <BMError errors={errors} /> : <BMTimeLogCard selectedProject={selectedProject} />}
+      {isProjectSelected ? <BMTimeLogCard selectedProject={selectedProject} /> : null}
+      {isError ? <BMError errors={errors} /> : null}
     </Card>
   );
 }

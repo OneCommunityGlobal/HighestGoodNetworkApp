@@ -37,6 +37,7 @@ import { followUpReducer } from "./followUpReducer";
 import { materialsReducer } from './bmdashboard/materialsReducer';
 import { reusablesReducer } from './bmdashboard/reusablesReducer';
 import { bmProjectReducer } from './bmdashboard/projectReducer';
+import { bmProjectMemberReducer } from './bmdashboard/projectMemberReducer';
 import { bmInvTypeReducer } from './bmdashboard/inventoryTypeReducer';
 import { lessonsReducer } from './bmdashboard/lessonsReducer';
 import { bmProjectByIdReducer } from './bmdashboard/projectByIdReducer';
@@ -78,6 +79,7 @@ const localReducers = {
   materials: materialsReducer,
   tools: toolReducer,
   bmProjects: bmProjectReducer,
+  bmProjectMembers: bmProjectMemberReducer,  
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,
   lessons: lessonsReducer,

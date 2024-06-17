@@ -1,77 +1,42 @@
-// import { useParams } from 'react-router-dom';
-// import { Container, Row, Col } from 'reactstrap';
 import { useState, useEffect } from 'react';
 import { Container, Row } from 'reactstrap';
-// import { useState, useEffect } from 'react';
-// import { useSelector } from 'react-redux';
-// import LogBar from './LogBar';
-// import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
-// import MaterialsDisplay from './Materials/MaterialsDisplay';
-// import ProjectLog from './ProjectLog';
-// import './ProjectDetails.css';
-
-import { fetchAllMembers } from '../../../actions/projectMembers';
+import { useSelector, useDispatch } from 'react-redux';
+import BMError from '../shared/BMError';
+import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
+import BMTimeLogMembers from './BMTimeLogMembers';
 
 // function BMTimeLogCard({ selectedProject }) {
 function BMTimeLogCard(props) {
   // const state = useSelector();
-  const [membersList, setMembersList] = useState();
+  const [isError, setIsError] = useState(false);
+
+  const dispatch = useDispatch();
+  const errors = useSelector(state => state.errors);
+
   // console.log('props.state: ', state);
   console.log('props.selectedProject: ', props.selectedProject);
 
   useEffect(() => {
-    fetchAllMembers(props.selectedProject);
+    dispatch(fetchBMProjectMembers(props.selectedProject));
   }, [props.selectedProject]);
 
+  // trigger an error state if there is an errors object
   useEffect(() => {
-    setMembersList(props.selectedProject);
-  }, [props.selectedProject]);
-
-  console.log('membersList: ', membersList);
-
-  // const selectedProjectForDisplay = projects.filter(project => project._id === selectedProject);
-
-  // console.log('selectedProjectForDisplay: ', selectedProjectForDisplay);
-
-  // if (selectedProjectForDisplay.length > 0) {
-  //   console.log('members: ', selectedProjectForDisplay[0].members);
-  // }
-
-  // const { members } = selectedProject;
-
-  // const [windowWidth, setWindowWidth] = useState(window.innerWidth);
-
-  // useEffect(() => {
-  //   const handleResize = () => {
-  //     setWindowWidth(window.innerWidth);
-  //   };
-
-  //   window.addEventListener('resize', handleResize);
-
-  //   return () => {
-  //     window.removeEventListener('resize', handleResize);
-  //   };
-  // }, []);
-
-  // const summaryLabelCol = windowWidth < 700 ? '6' : '4';
+    if (Object.entries(errors).length) {
+      setIsError(true);
+    }
+  }, [errors]);
 
   return (
     <Container className="project-details" fluid>
       <Row className="mx-auto">
         <h1>TimeLogger for {props.selectedProject}</h1>
       </Row>
-
-      {/* <Row className="mx-auto">
-        <h1>projects: {projects}</h1>
-      </Row> */}
-      {/* <Row className="project-summary_item mx-auto">
-        <Col xs={summaryLabelCol}>
-          <Label className="project-summary_label">Total members:</Label>
-        </Col>
-        <Col xs="3">
-          <span className="project-summary_span">{members.length}</span>
-        </Col>
-      </Row> */}
+      {isError ? (
+        <BMError errors={errors} />
+      ) : (
+        <BMTimeLogMembers selectedProject={props.selectedProject} />
+      )}
     </Container>
   );
 }
