@@ -36,7 +36,8 @@ export function InventoryTypesList(props) {
 
   useEffect(() => {
     if (deleteInvTypeResult.error) {
-      toast.error(`Error deleting type.`);
+      // trigger error according to the error object
+      toast.error(deleteInvTypeResult.result.error || `Error deleting type.`);
       dispatch(resetDeleteInvTypeResult());
     } else if (deleteInvTypeResult.success) {
       toast.success(`Type deleted.`);
@@ -46,7 +47,8 @@ export function InventoryTypesList(props) {
 
   useEffect(() => {
     if (updateInvTypeResult.error) {
-      toast.error(`Error updating type.`);
+      // trigger error according to the error object
+      toast.error(updateInvTypeResult.result.error || `Error updating type.`);
       dispatch(resetUpdateInvTypeResult());
     } else if (updateInvTypeResult.success) {
       toast.success(`Type updated.`);

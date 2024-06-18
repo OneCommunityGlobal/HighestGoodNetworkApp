@@ -119,7 +119,7 @@ export const deleteBuildingInventoryType = (payload) => {
         dispatch(setInvTypesByType({ type: category, data: res.data }))
       })
       .catch(err => {
-        dispatch(setDeleteInvTypeError(err))
+        dispatch(setDeleteInvTypeError(err.response.data))
       })
   }
 }
@@ -134,7 +134,7 @@ export const updateBuildingInventoryType = (payload) => {
         dispatch(setInvTypesByType({ type: category, data: res.data }))
       })
       .catch(err => {
-        dispatch(setUpdateInvTypeError(err))
+        dispatch(setUpdateInvTypeError(err.response.data))
       })
   }
 }

@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Button } from 'react-bootstrap';
 import {
@@ -8,7 +8,7 @@ import {
 } from 'actions/bmdashboard/invTypeActions';
 
 export function TypeRow(props) {
-  const { itemType, rowID, dispatch } = props;
+  const { updateInvTypeResult, deleteInvTypeResult, itemType, rowID, dispatch } = props;
 
   const [editMode, setEditMode] = useState(false);
   const [updatedType, setUpdatedType] = useState({
@@ -36,6 +36,13 @@ export function TypeRow(props) {
   };
 
   const toggleEditMode = () => setEditMode(!editMode);
+
+  useEffect(() => {
+    // reset updated type if there is an error
+    if (updateInvTypeResult.error || deleteInvTypeResult.error) {
+      setUpdatedType({ name: itemType.name, description: itemType.description });
+    }
+  }, [updateInvTypeResult, deleteInvTypeResult, setUpdatedType]);
 
   if (editMode) {
     return (
@@ -96,4 +103,9 @@ export function TypeRow(props) {
   );
 }
 
-export default connect()(TypeRow);
+const mapStateToProps = state => ({
+  deleteInvTypeResult: state.bmInvTypes.deletedResult,
+  updateInvTypeResult: state.bmInvTypes.updatedResult,
+});
+
+export default connect(mapStateToProps)(TypeRow);
