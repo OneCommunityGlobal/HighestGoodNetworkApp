@@ -55,12 +55,12 @@ describe("AddProject component structure", () => {
 
 describe('AddProject component state handlers', () => {
   
-  //mock the addNewProject function
+  //mock the onAddNewProject function
 
   const mockAddNewProject = jest.fn();
 
   beforeEach(() => {
-    render(<AddProject addNewProject={mockAddNewProject} />)
+    render(<AddProject onAddNewProject={mockAddNewProject} />)
   });
 
   test("Input change handler updates state correctly", () => {
@@ -77,7 +77,7 @@ describe('AddProject component state handlers', () => {
     expect(selectElement.value).toBe('Food');
   })
 
-  test('Button click handler calls addNewProject with correct arguments', () => {
+  test('Button click handler calls onAddNewProject with correct arguments', () => {
     const inputField = screen.getByRole('textbox');
     const selectElement = screen.getByRole('combobox');
 
