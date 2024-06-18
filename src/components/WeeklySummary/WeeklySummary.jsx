@@ -180,9 +180,7 @@ export class WeeklySummary extends Component {
       summaries,
       fetchError,
       loading,
-      displayUserEmail,
     } = this.props;
-    debugger;
     await getWeeklySummaries(displayUserId || currentUser.userid);
 
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = summaries;
