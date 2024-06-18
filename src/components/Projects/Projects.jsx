@@ -143,7 +143,7 @@ const Projects = function(props) {
           hasInactiveBtn: false,
         });
       }
-  }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects]);
+  }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
 
 
   return (
