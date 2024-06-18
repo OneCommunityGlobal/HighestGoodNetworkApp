@@ -709,7 +709,8 @@ function UserProfile(props) {
                 src={profilePic || '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
-                className="profilePicture"
+                className="profilePicture bg-white"
+                style={profilePic ? {} : { width: '240px', height: '240px' }}
               />
               {canEdit ? (
                 <div className="image-button file btn btn-lg btn-primary" style={boxStyle}>
@@ -733,7 +734,7 @@ function UserProfile(props) {
               </Alert>
             ) : null}
             {!codeValid ? (
-              <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
+              <Alert color="danger">The code format should be A-AAAAA or AA1AAAA.</Alert>
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>

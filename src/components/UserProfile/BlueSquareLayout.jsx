@@ -7,11 +7,19 @@ import ScheduleReasonModal from './ScheduleReasonModal/ScheduleReasonModal';
 import TimeOffRequestsTable from './TimeOffRequestsTable/TimeOffRequestsTable';
 import hasPermission from '../../utils/permissions';
 import BlueSquaresTable from './BlueSquaresTable/BlueSquaresTable';
+import BluequareEmailAssignmentPopUp from './BluequareEmailBBCPopUp';
 import './UserProfile.scss';
 import './UserProfileEdit/UserProfileEdit.scss';
 
 
-const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, canEdit, user, darkMode }) => {
+const BlueSquareLayout = ({
+  userProfile,
+  handleUserProfile,
+  handleBlueSquare,
+  canEdit,
+  user,
+  darkMode,
+}) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
   const canManageTimeOffRequests = dispatch(hasPermission('manageTimeOffRequests'));
@@ -19,6 +27,8 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
+  const [showEmailBCCModal, setShowEmailBCCModal] = useState(false);
+  const hasBlueSquareEmailBCCRolePermission = user.role === 'Owner';
 
   const handleOpen = () => {
     setShow(true);
@@ -36,6 +46,8 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
   const closeExplanationModal = () => {
     setShowExplanation(false);
   };
+
+  const toggleEmailBCCModal = () => setShowEmailBCCModal(false);
 
   const checkIfUserCanScheduleTimeOff = () => {
     let scheduledVacation = 0;
@@ -63,7 +75,11 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
           handleBlueSquare={handleBlueSquare}
           darkMode={darkMode}
         />
-        <TimeOffRequestsTable requests={allRequests[userProfile._id]} openModal={handleOpen} darkMode={darkMode}/>
+        <TimeOffRequestsTable
+          requests={allRequests[userProfile._id]}
+          openModal={handleOpen}
+          darkMode={darkMode}
+        />
         {/* Replaces Schedule Blue Square button when there are more than 5 blue squares or scheduled reasons - by Sucheta */}
         <div className="mt-4 w-100">
           {!checkIfUserCanScheduleTimeOff() ? (
@@ -94,18 +110,44 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
               )}
             </>
           ) : (
-            <Button
-              variant="primary"
-              onClick={handleOpen}
-              className="w-100"
-              size="md"
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Schedule Blue Square Reason
-            </Button>
+            <>
+              <Button
+                variant="primary"
+                onClick={handleOpen}
+                className="w-100"
+                size="md"
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Schedule Blue Square Reason
+              </Button>
+              {hasBlueSquareEmailBCCRolePermission && (
+                <div className="Blue-Square-Email-BCC-div">
+                  <Button
+                    variant="primary"
+                    onClick={() => setShowEmailBCCModal(true)}
+                    className="mt-3 w-100 Blue-Square-Email-BCC-button"
+                    size="md"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    Blue Square Email BCCs
+                  </Button>
+                  <div className="Blue-Square-Email-BCC-tooltip">
+                    This designates who gets a copy of the blue square emails. It includes ONLY
+                    sending to active team members, so we don’t have to remove people from the list
+                    if they are made inactive. It doesn’t include getting copies of the time-off
+                    requests, those already go to any Managers for the teams they are on.
+                  </div>
+                </div>
+              )}
+            </>
           )}
         </div>
-        <Modal show={showExplanation} onHide={closeExplanationModal} className={darkMode ? 'text-light dark-mode' : ''}>
+        <BluequareEmailAssignmentPopUp
+          isOpen={showEmailBCCModal}
+          onClose={toggleEmailBCCModal}
+          darkMode={darkMode}
+        />
+        <Modal show={showExplanation} onHide={closeExplanationModal}>
           <ScheduleExplanationModal
             onHide={closeExplanationModal}
             handleClose={closeExplanationModal}
@@ -134,16 +176,16 @@ const BlueSquareLayout = ({ userProfile, handleUserProfile, handleBlueSquare, ca
   }
   return (
     <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">
-       <BlueSquaresTable
-          userProfile={userProfile}
-          canEdit={canEdit}
-          isPrivate={privacySettings?.blueSquares}
-          handleUserProfile={handleUserProfile}
-          handleBlueSquare={handleBlueSquare}
-        />
+      <BlueSquaresTable
+        userProfile={userProfile}
+        canEdit={canEdit}
+        isPrivate={privacySettings?.blueSquares}
+        handleUserProfile={handleUserProfile}
+        handleBlueSquare={handleBlueSquare}
+      />
       <TimeOffRequestsTable requests={allRequests[userProfile._id]} />
     </div>
-  )
+  );
 };
 
 export default BlueSquareLayout;
