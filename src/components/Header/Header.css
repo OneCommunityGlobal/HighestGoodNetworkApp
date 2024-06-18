@@ -60,7 +60,6 @@
 
 .dropdown-item-hover:hover{
   background-color: #2f4157 !important;
-  color: white;
 }
 
 @media (max-width: 1400px) {

@@ -263,7 +263,7 @@ export function Header(props) {
     }
   }, [lastDismissed, userId, userDashboardProfile]);
 
-  const fontColor = darkMode ? 'text-light dropdown-item-hover' : '';
+  const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
   return (
     <div className="header-wrapper">
@@ -414,7 +414,7 @@ export function Header(props) {
                     </span>
                   </DropdownToggle>
                   <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                    <DropdownItem header className={darkMode ? 'text-light' : ''}>Hello {firstName}</DropdownItem>
+                    <DropdownItem header className={darkMode ? 'text-custom-grey' : ''}>Hello {firstName}</DropdownItem>
                     <DropdownItem divider />
                     <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor}>
                       {VIEW_PROFILE}

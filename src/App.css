@@ -134,7 +134,11 @@ body {
 }
 
 .text-dark-green{
-  background-color: #193D31 !important;
+  color: #193D31 !important;
+}
+
+.text-custom-grey{
+  color: rgb(192, 192, 192) !important;
 }
 
 .box-shadow-dark {
