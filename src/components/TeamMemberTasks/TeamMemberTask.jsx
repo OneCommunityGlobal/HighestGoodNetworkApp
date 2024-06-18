@@ -185,7 +185,7 @@ const TeamMemberTask = React.memo(
           <td colSpan={3} className={darkMode ? "bg-yinmn-blue" : ""}>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
-                {user.tasks && activeTasks && activeTasks.slice(0, numTasksToShow).map((task, index) => {
+              {(user.tasks && activeTasks ? activeTasks.slice(0, numTasksToShow) : []).map((task, index) => {
                     return (
                       <tr key={`${task._id}${index}`} className="task-break">
                         <td data-label="Task(s)" className={`task-align  ${darkMode ? "bg-yinmn-blue" : ""}`}>
