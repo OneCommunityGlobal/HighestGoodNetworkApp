@@ -48,10 +48,12 @@ export const postNewProject = (projectName, projectCategory) => {
         isActive: true,
       };
       dispatch(addNewProject({ newProject, status }));
+      return status;
     } catch (err) {
       status = err.response.status;
       error = err.response.data;
       dispatch(addNewProject({ status, error }));
+      return status;
     }
   };
 };

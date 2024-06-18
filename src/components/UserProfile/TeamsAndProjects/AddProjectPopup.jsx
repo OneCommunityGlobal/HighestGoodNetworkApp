@@ -3,7 +3,7 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Input } from
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css';
-import { postNewProject, fetchAllProjects } from '../../../../src/actions/projects';
+import { postNewProject } from '../../../../src/actions/projects';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -36,6 +36,7 @@ const AddProjectPopup = React.memo(props => {
     if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
       await props.onSelectAssignProject(selectedProject);
       onSelectProject(undefined);
+      toast.success('Project assigned successfully');
     } else {
       onValidation(false);
     }
@@ -63,24 +64,36 @@ const AddProjectPopup = React.memo(props => {
     setDropdownText(dropdownText);
   };
 
+  const format = result => result.toLowerCase();
+
+  const validationProjectName = () =>
+    props.projects.find(project => format(project.projectName) === format(searchText));
+
   const onCreateNewProject = async () => {
-    if (searchText !== '' && dropdownText !== '') {
-      try {
-        await dispatch(postNewProject(searchText, dropdownText));
-        const url = ENDPOINTS.PROJECTS;
-        const res = await axios.get(url);
-        const status = res.status;
-        const projects = res.data;
-        if (status === 200) {
-          const findNewProject = projects.filter((item, i) => i === 0)[0];
-          selectProject(findNewProject);
-          finishFetch(status);
-        } else {
-          onInputChange('');
-          finishFetch(status);
-        }
-      } catch (e) {}
-    } else toast.error('project creation failed');
+    const validateProjectName = validationProjectName();
+    // prettier-ignore
+    if (validateProjectName) { toast.error('This project already exists.'); return;}
+
+    // prettier-ignore
+    if (searchText === '') {onValidation(false); onSelectProject(undefined); return;}
+
+    const responseAddNewProject = await dispatch(postNewProject(searchText, dropdownText));
+
+    // prettier-ignore
+    if (responseAddNewProject !== 201) {toast.error('project creation failed'); return;}
+
+    const url = ENDPOINTS.PROJECTS;
+    const res = await axios.get(url);
+    const status = res.status;
+    const projects = res.data;
+    if (status === 200) {
+      const findNewProject = projects.filter((item, i) => i === 0)[0];
+      selectProject(findNewProject);
+      finishFetch(status);
+    } else {
+      onInputChange('');
+      finishFetch(status);
+    }
   };
 
   return (
@@ -105,7 +118,7 @@ const AddProjectPopup = React.memo(props => {
               onInputChange={onInputChange}
             />
             <Button
-              color="primary"
+              color={'primary'}
               style={darkMode ? {} : { ...boxStyle, marginLeft: '5px' }}
               onClick={isOpenDropdown ? onCreateNewProject : onAssignProject}
             >
