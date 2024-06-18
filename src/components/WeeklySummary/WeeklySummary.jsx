@@ -37,6 +37,11 @@ import { toast } from 'react-toastify';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
 import { boxStyle, boxStyleDark } from 'styles';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import SkeletonLoading from '../common/SkeletonLoading';
 import DueDateTime from './DueDateTime';
@@ -175,8 +180,9 @@ export class WeeklySummary extends Component {
       summaries,
       fetchError,
       loading,
+      displayUserEmail,
     } = this.props;
-
+    debugger;
     await getWeeklySummaries(displayUserId || currentUser.userid);
 
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = summaries;
@@ -319,7 +325,7 @@ export class WeeklySummary extends Component {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
       // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     const { moveSelect, formElements, activeTab, movePopup } = this.state;
@@ -592,10 +598,15 @@ export class WeeklySummary extends Component {
   };
 
   handleMoveSave = async event => {
-    const { isNotAllowedToEdit } = this.props;
+    const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (event) {
@@ -610,10 +621,15 @@ export class WeeklySummary extends Component {
   };
 
   handleSave = async event => {
-    const { isNotAllowedToEdit } = this.props;
+    const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (event) {
