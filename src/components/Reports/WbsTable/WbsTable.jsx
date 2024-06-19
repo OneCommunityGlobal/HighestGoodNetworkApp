@@ -46,8 +46,7 @@ export function WbsTable({ wbs, skip, take, match, canViewWBS, darkMode }) {
         WBS
       </h5>
       <div
-        style={{ marginBottom: "0px" }}
-        className={`reports-table-head wbs-table-row ${darkMode ? 'bg-space-cadet' : ''}`}
+        className={`reports-table-head-wbs ${darkMode ? 'bg-space-cadet' : ''}`}
       >
         <div className="wbs-table-cell">#</div>
         <div className="wbs-table-cell">Name</div>

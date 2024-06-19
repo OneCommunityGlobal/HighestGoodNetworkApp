@@ -149,7 +149,7 @@ describe('WbsTable Component', () => {
     );
     const tableRows = container.querySelectorAll('.wbs-table-row');
 
-    expect(tableRows.length).toBe(3); // Ensure all WBS items are rendered
+    expect(tableRows.length).toBe(2); // Ensure all WBS items are rendered
   });
 
   it('renders "Active" icon for active WBS item', () => {
