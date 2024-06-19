@@ -76,6 +76,35 @@ const SkeletonLoading = ({ template, className }) => {
             </div>
           </Container>
         );
+      case 'WeeklyVolunteerSummaries':
+        for (let i = 0; i < 10; i++) {
+          reportItems.push(
+            <div key={i} className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item mt-5" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <div className="skeleton-loading-weekly-summaries-report-item" />
+              <hr />
+            </div>,
+          );
+        }
+
+        return (
+          <Container fluid>
+            <div style={{ marginTop: '2rem', marginLeft: '12rem', marginRight: '5rem' }}>
+              <h3 style={{ textAlign: 'left', paddingBottom: '2rem' }}>
+                Weekly Volunteer Summaries
+              </h3>
+              <div className={`skeleton-loading-weekly-summaries-report ${className}`}>
+                {reportItems}
+              </div>
+            </div>
+          </Container>
+        );
       case 'UserProfile':
         return (
           <Container
