@@ -120,6 +120,12 @@ const SkeletonLoading = ({ template, className }) => {
           );
         }
         return <div>{userManagementItems}</div>;
+      case 'WeeklyVolunteerSummary':
+        return (
+          <Container fluid="sm" className={darkMode ? 'bg-space-cadet' : ''}>
+            <div className="skeleton-loading-weekly-summary" />
+          </Container>
+        );
       default:
         return null;
     }
