@@ -25,6 +25,7 @@ const AddProjectsAutoComplete = React.memo(props => {
         onChange={e => {
           props.onInputChange(e.target.value);
           toggle(true);
+          props.isSetUserIsNotSelectedAutoComplete(true);
         }}
       />
 

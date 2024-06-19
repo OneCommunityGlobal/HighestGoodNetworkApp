@@ -17,12 +17,15 @@ const AddProjectPopup = React.memo(props => {
   const closePopup = () => {
     props.onClose();
     setIsOpenDropdown(false);
+    isSetShowAlert(false);
   };
 
   const [selectedProject, onSelectProject] = useState(undefined);
   const [isValidProject, onValidation] = useState(true);
+  const [isShowAlert, isSetShowAlert] = useState(false);
   const [itemsDropdown, setItemsDropdown] = useState([]);
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
+  const [isUserIsNotSelectedAutoComplete, isSetUserIsNotSelectedAutoComplete] = useState(false);
   const [dropdownText, setDropdownText] = useState('Unspecified');
   const [searchText, onInputChange] = useState('');
 
@@ -33,6 +36,16 @@ const AddProjectPopup = React.memo(props => {
   }, [props.projects]);
 
   const onAssignProject = async () => {
+    if (isUserIsNotSelectedAutoComplete) {
+      const validateProjectName = validationProjectName();
+
+      if (!validateProjectName) {
+        isSetShowAlert(true);
+        setIsOpenDropdown(true);
+        return;
+      }
+    }
+
     if (selectedProject && !props.userProjectsById.some(x => x._id === selectedProject._id)) {
       await props.onSelectAssignProject(selectedProject);
       onSelectProject(undefined);
@@ -48,6 +61,7 @@ const AddProjectPopup = React.memo(props => {
   const selectProject = project => {
     onSelectProject(project);
     onValidation(true);
+    isSetUserIsNotSelectedAutoComplete(false);
   };
 
   useEffect(() => {
@@ -70,6 +84,8 @@ const AddProjectPopup = React.memo(props => {
     props.projects.find(project => format(project.projectName) === format(searchText));
 
   const onCreateNewProject = async () => {
+    if (isShowAlert) isSetShowAlert(false);
+
     // prettier-ignore
     if (searchText === '') {onValidation(false); onSelectProject(undefined); return;}
 
@@ -116,6 +132,7 @@ const AddProjectPopup = React.memo(props => {
               setIsOpenDropdown={setIsOpenDropdown}
               searchText={searchText}
               onInputChange={onInputChange}
+              isSetUserIsNotSelectedAutoComplete={isSetUserIsNotSelectedAutoComplete}
             />
             <Button
               color={isOpenDropdown ? 'success' : 'primary'}
@@ -155,13 +172,15 @@ const AddProjectPopup = React.memo(props => {
         </>
         <div>
           {!isValidProject && selectedProject && (
-            <Alert color="danger">Great idea, but they already have that one! Pick another!</Alert>
+            <Alert color="danger">Great idea, but they already have that one! Pick another! </Alert>
           )}
           {!isValidProject && !selectedProject && (
             <Alert color="danger">
               Hey, You need to {isOpenDropdown ? 'write the name of' : 'pick'} a project first!
             </Alert>
           )}
+
+          {isShowAlert && <Alert color="danger">This project does not exist.</Alert>}
         </div>
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
