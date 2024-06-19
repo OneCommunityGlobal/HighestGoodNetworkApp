@@ -70,17 +70,17 @@ const AddProjectPopup = React.memo(props => {
     props.projects.find(project => format(project.projectName) === format(searchText));
 
   const onCreateNewProject = async () => {
+    // prettier-ignore
+    if (searchText === '') {onValidation(false); onSelectProject(undefined); return;}
+
     const validateProjectName = validationProjectName();
     // prettier-ignore
     if (validateProjectName) { toast.error('This project already exists.'); return;}
 
-    // prettier-ignore
-    if (searchText === '') {onValidation(false); onSelectProject(undefined); return;}
-
     const responseAddNewProject = await dispatch(postNewProject(searchText, dropdownText));
 
     // prettier-ignore
-    if (responseAddNewProject !== 201) {toast.error('project creation failed'); return;}
+    if (responseAddNewProject !== 201) {toast.error('Project creation failed'); return;}
 
     const url = ENDPOINTS.PROJECTS;
     const res = await axios.get(url);
@@ -104,7 +104,7 @@ const AddProjectPopup = React.memo(props => {
       className={darkMode ? 'text-light dark-mode' : ''}
     >
       <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
-        Add Project{' '}
+        {isOpenDropdown ? 'Create' : '  Add'} Project{' '}
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
         <>
@@ -118,11 +118,11 @@ const AddProjectPopup = React.memo(props => {
               onInputChange={onInputChange}
             />
             <Button
-              color={'primary'}
+              color={isOpenDropdown ? 'success' : 'primary'}
               style={darkMode ? {} : { ...boxStyle, marginLeft: '5px' }}
               onClick={isOpenDropdown ? onCreateNewProject : onAssignProject}
             >
-              Confirm
+              {isOpenDropdown ? 'Create' : 'Confirm'}
             </Button>
           </div>
 
@@ -148,7 +148,7 @@ const AddProjectPopup = React.memo(props => {
                 }}
                 style={{ width: '100%' }}
               >
-                Close dropdown
+                Assign Project
               </Button>
             </div>
           )}
@@ -158,7 +158,9 @@ const AddProjectPopup = React.memo(props => {
             <Alert color="danger">Great idea, but they already have that one! Pick another!</Alert>
           )}
           {!isValidProject && !selectedProject && (
-            <Alert color="danger">Hey, You need to pick a project first!</Alert>
+            <Alert color="danger">
+              Hey, You need to {isOpenDropdown ? 'write the name of' : 'pick'} a project first!
+            </Alert>
           )}
         </div>
       </ModalBody>
