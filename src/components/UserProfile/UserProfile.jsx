@@ -56,6 +56,15 @@ import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import { toast } from 'react-toastify';
+import { GiConsoleController } from 'react-icons/gi';
+import { setCurrentUser } from '../../actions/authActions'
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
+import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 
 function UserProfile(props) {
   /* Constant values */
@@ -437,6 +446,14 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
+    if (targetIsDevAdminUneditable) {
+      if (userProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
+      return;
+    }
     setType(type);
     setShowModal(status);
 
@@ -734,7 +751,7 @@ function UserProfile(props) {
               </Alert>
             ) : null}
             {!codeValid ? (
-              <Alert color="danger">The code format should be A-AAAAA or AA1AAAA.</Alert>
+              <Alert color="danger">NOT SAVED! The code must be between 5 and 7 characters long</Alert>
             ) : null}
             <div className="profile-head">
               <h5>{`${firstName} ${lastName}`}</h5>
