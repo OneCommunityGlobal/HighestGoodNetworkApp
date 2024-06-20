@@ -58,10 +58,8 @@
   align-items: center;
 }
 
-@media (max-width: 1400px) {
-  .nav-links{
-    flex-direction: column !important;
-  }
+.flex-row {
+  flex-direction: row !important;
 }
 
 @media (max-width: 1500px) {

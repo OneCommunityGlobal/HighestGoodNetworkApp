@@ -9,6 +9,7 @@ import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
+  LOGO,
   DASHBOARD,
   TIMELOG,
   REPORTS,
@@ -23,6 +24,7 @@ import {
   VIEW_PROFILE,
   UPDATE_PASSWORD,
   LOGOUT,
+  POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
 } from '../../languages/en/ui';
@@ -30,6 +32,7 @@ import {
   Collapse,
   Navbar,
   NavbarToggler,
+  NavbarBrand,
   Nav,
   NavItem,
   NavLink,
@@ -37,6 +40,7 @@ import {
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
+  Container,
   Modal,
   ModalHeader,
   ModalBody,
