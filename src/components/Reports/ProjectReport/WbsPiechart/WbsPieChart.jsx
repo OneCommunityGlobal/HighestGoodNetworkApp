@@ -88,7 +88,7 @@ export function WbsPieChart({
   };
   return (
     <div className={darkMode ? 'text-light' : ''}>
-      <div><h5> Owners, Mangers and Admins in {projectName} </h5></div>
+      <div><h5> Owners, Managers and Admins in {projectName} </h5></div>
       <div className= "pie-chart-title" >
         <div>
           <label style={{
