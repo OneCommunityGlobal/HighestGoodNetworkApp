@@ -370,25 +370,25 @@ export const permissionLabels = [
     ],
   },
   {
-    label:"Quick Setup Functions",
-    description:"",
+    label:'Quick Setup Functions',
+    description:'Category for permissions related to Quick Setup functions.',
     subperms:[
       {
-        label:"Add New Title",
-        key:"addNewTitle",
-        description:"Gives user permission to add new title in quick setup functions.",
+        label:'Add New Title',
+        key:'addNewTitle',
+        description:'Gives user permission to add new title in quick setup functions.',
       },
       {
-        label:"Edit Title",
-        key:"assignTitle",
-        description:"Gives user permission to edit existing title in quick setup functions.",
+        label:'Edit Title',
+        key:'assignTitle',
+        description:'Gives user permission to edit existing title in quick setup functions.',
       },
       {
-        label:"View Titles",
-        key:"viewTitle",
-        description:"Gives user permission to view existing title in quick setup functions.",
-      }
-    ]
+        label:'View Titles',
+        key:'viewTitle',
+        description:'Gives user permission to view existing title in quick setup functions.',
+      },
+    ],
   },
   {
     label: 'Misc/Unsorted',
@@ -405,7 +405,7 @@ export const permissionLabels = [
         key: 'seeUsersInDashboard',
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
-      }
+      },
     ],
   },
 ];
