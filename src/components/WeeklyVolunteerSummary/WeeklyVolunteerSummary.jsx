@@ -1,7 +1,6 @@
 /* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
 import { useSelector } from 'react-redux';
-import PropTypes from 'prop-types';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import hasPermission from 'utils/permissions';
 import { getWeeklyVolunteerSummaries } from 'actions/weeklyVolunteerSummary';
@@ -38,23 +37,21 @@ function WeeklyVolunteerSummary({ error, loading }) {
   }
   return (
     <Container>
-      <h1>Weekly Summary Report</h1>
+      <h1>Weekly Volunteer Summary</h1>
     </Container>
   );
 }
 
-WeeklyVolunteerSummary.propTypes = {
-  // eslint-disable-next-line react/forbid-prop-types, react/require-default-props
-  error: PropTypes.any,
-  loading: PropTypes.bool.isRequired,
-  // eslint-disable-next-line react/no-unused-prop-types
-  volunteerstats: PropTypes.array.isRequired,
-};
+// WeeklyVolunteerSummary.propTypes = {
+//   error: PropTypes.any,
+//   loading: PropTypes.bool.isRequired,
+//   volunteerstats: PropTypes.array.isRequired,
+// };
 
 const mapStateToProps = state => ({
-  error: state.WeeklyVolunteerSummary.error,
-  loading: state.WeeklyVolunteerSummary.loading,
-  volunteerstats: state.WeeklyVolunteerSummary.volunteerstats,
+  error: state.error,
+  loading: state.loading,
+  volunteerstats: state.volunteerstats,
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
@@ -65,5 +62,4 @@ const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
-// export default WeeklyVolunteerSummary;
 export default connect(mapStateToProps, mapDispatchToProps)(WeeklyVolunteerSummary);
