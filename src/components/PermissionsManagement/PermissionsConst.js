@@ -370,23 +370,23 @@ export const permissionLabels = [
     ],
   },
   {
-    label:'Quick Setup Functions',
-    description:'Category for permissions related to Quick Setup functions.',
+    label: 'Quick Setup Functions',
+    description: 'Category for permissions related to Quick Setup functions.',
     subperms:[
       {
-        label:'Add New Title',
+        label: 'Add New Title',
         key:'addNewTitle',
         description:'Gives user permission to add new title in quick setup functions.',
       },
       {
-        label:'Edit Title',
-        key:'assignTitle',
-        description:'Gives user permission to edit existing title in quick setup functions.',
+        label: 'Edit Title',
+        key: 'assignTitle',
+        description: 'Gives user permission to edit existing title in quick setup functions.',
       },
       {
-        label:'View Titles',
-        key:'viewTitle',
-        description:'Gives user permission to view existing title in quick setup functions.',
+        label: 'View Titles',
+        key: 'viewTitle',
+        description: 'Gives user permission to view existing title in quick setup functions.',
       },
     ],
   },
