@@ -402,7 +402,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
       </div>
       {hasError ? (
         <Alert className="code-alert" color="danger">
-          NOT SAVED! The code format must be A-AAA1A or AAA2AAA.
+          NOT SAVED! The code must be between 5 and 7 characters long.
         </Alert>
       ) : null}
     </>
