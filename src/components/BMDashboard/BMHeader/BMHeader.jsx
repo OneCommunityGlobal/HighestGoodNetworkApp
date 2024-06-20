@@ -2,12 +2,11 @@ import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../../Timer/Timer';
 import OwnerMessage from '../../OwnerMessage/OwnerMessage';
 import {
-  // LOGO,
   DASHBOARD,
   BM_DASHBOARD,
   BM_PROJECT,
@@ -39,7 +38,6 @@ import {
   Collapse,
   Navbar,
   NavbarToggler,
-  NavbarBrand,
   Nav,
   NavItem,
   NavLink,
@@ -57,6 +55,7 @@ export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
+  const location = useLocation();
 
   // Reports
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
@@ -108,6 +107,7 @@ export const Header = props => {
     setLogoutPopup(true);
   };
 
+  if (location.pathname === '/login') return null;
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="xl">
