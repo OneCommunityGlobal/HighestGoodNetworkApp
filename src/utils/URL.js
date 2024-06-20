@@ -182,7 +182,7 @@ export const ENDPOINTS = {
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
-  BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/project/${projectId}/users`,
+  BM_PROJECT_MEMBERS: projectId => `${APIEndpoint}/bm/timelogger/${projectId}/users`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,  
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,

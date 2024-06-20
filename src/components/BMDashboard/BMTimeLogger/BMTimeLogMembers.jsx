@@ -1,9 +1,9 @@
-import { Container, Row } from 'reactstrap';
+import { Container } from 'reactstrap';
 // import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 
 // function BMTimeLogCard({ selectedProject }) {
-function BMTimeLogMembers(props) {
+function BMTimeLogMembers() {
   const membersList = useSelector(state => state.bmProjectMembers);
 
   console.log('membersList: ', membersList);
