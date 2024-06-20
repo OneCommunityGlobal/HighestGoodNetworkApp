@@ -6,7 +6,14 @@ import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
 
 // eslint-disable-next-line import/prefer-default-export, react/function-component-definition
-export const PieChart = ({ data, dataLegend, chartLegend, pieChartId, dataLegendHeader, darkMode }) => {
+export const PieChart = ({
+  data,
+  dataLegend,
+  chartLegend,
+  pieChartId,
+  dataLegendHeader,
+  darkMode,
+}) => {
   const [totalHours, setTotalHours] = useState(0);
   const [colors] = useState(generateArrayOfUniqColors(Object.keys(data).length));
   // create the pie chart
@@ -27,9 +34,11 @@ export const PieChart = ({ data, dataLegend, chartLegend, pieChartId, dataLegend
 
     return svg;
   };
-  const color = d3.scaleOrdinal().range(colors);
+  let color = d3.scaleOrdinal().range(colors);
   const pie = d3.pie().value(d => d[1]);
   useEffect(() => {
+    color = d3.scaleOrdinal().range(colors);
+
     // eslint-disable-next-line camelcase
     const data_ready = pie(Object.entries(data));
 
