@@ -45,6 +45,7 @@ import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer"
+import { weeklyVolunteerSummariesReducer } from './weeklyVolunteerSummaryReducer';
 
 
 const localReducers = {
@@ -73,6 +74,7 @@ const localReducers = {
   weeklySummaryRecipients:weeklySummaryRecipientsReducer,
   notification: notificationReducer,
   userFollowUp : followUpReducer,
+  weeklyVolunteerSummariesReducer: weeklyVolunteerSummariesReducer,
 
   // bmdashboard
   materials: materialsReducer,

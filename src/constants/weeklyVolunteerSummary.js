@@ -1,13 +1,3 @@
-// export const comparisonPeriod = [
-//   'Compared to Last Week',
-//   'Compared to same Week last month',
-//   'Compared to same week last Year',
-//   'Do not show comparison data',
-// ];
-
-// export const dateFilterOptions = [
-//     'CurrentWeek',
-//     'LastWeek',
-//     'Week Before Last',
-//     'Select Date Range'
-// ];
+export const FETCH_VOLUNTEER_SUMMARIES_REPORT_BEGIN = 'FETCH_SUMMARIES_REPORT_BEGIN';
+export const FETCH_VOLUNTEER_SUMMARIES_REPORT_SUCCESS = 'FETCH_SUMMARIES_REPORT_SUCCESS';
+export const FETCH_VOLUNTEER_SUMMARIES_REPORT_ERROR = 'FETCH_SUMMARIES_REPORT_ERROR';
