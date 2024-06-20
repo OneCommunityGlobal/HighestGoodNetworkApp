@@ -372,11 +372,11 @@ export const permissionLabels = [
   {
     label: 'Quick Setup Functions',
     description: 'Category for permissions related to Quick Setup functions.',
-    subperms:[
+    subperms: [
       {
         label: 'Add New Title',
-        key:'addNewTitle',
-        description:'Gives user permission to add new title in quick setup functions.',
+        key: 'addNewTitle',
+        description: 'Gives user permission to add new title in quick setup functions.',
       },
       {
         label: 'Edit Title',
