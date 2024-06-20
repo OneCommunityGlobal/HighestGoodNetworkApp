@@ -96,7 +96,11 @@ export const postNewWarning = newWarning => {
       const response = await dispatch(postNewWarningAction(res.data));
       return response.payload;
     } catch (error) {
-      return { error: 'warning already exists' };
+      if (error.response.status === 422) {
+        return { error: error.response.data.error };
+      }
+
+      return { error: 'error occured' };
     }
   };
 };
@@ -124,6 +128,9 @@ export const editWarningDescription = editedWarning => {
       const response = await dispatch(editWarningDescriptionAction(res.data));
       return response.payload;
     } catch (error) {
+      if (error.response.status === 422) {
+        return { error: error.response.data.error };
+      }
       return { error: error.message };
     }
   };

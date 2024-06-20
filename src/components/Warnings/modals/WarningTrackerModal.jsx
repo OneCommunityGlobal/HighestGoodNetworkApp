@@ -165,12 +165,15 @@ function WarningTrackerModal({
     dispatch(editWarningDescription(editedWarning)).then(res => {
       if (res.error) {
         setError(res.error);
+        setWarningEdited(false);
+        setEditedWarning(null);
+        fetchWarningDescriptions();
         return;
       }
       setWarningEdited(false);
       setEditedWarning(null);
-      getUsersWarnings();
       setError(null);
+      getUsersWarnings();
       fetchWarningDescriptions();
       setWarningWasEdited(true);
     });
