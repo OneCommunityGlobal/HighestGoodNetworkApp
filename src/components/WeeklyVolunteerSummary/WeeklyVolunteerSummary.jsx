@@ -1,44 +1,69 @@
-// import { useSelector } from 'react-redux';
-// import { Alert, Col, Container, Row } from 'reactstrap';
-// import SkeletonLoading from '../common/SkeletonLoading';
+/* eslint-disable react/forbid-prop-types */
+import { connect } from 'react-redux';
+import { useSelector } from 'react-redux';
+import PropTypes from 'prop-types';
+import { Alert, Col, Container, Row } from 'reactstrap';
+import hasPermission from 'utils/permissions';
+import { getWeeklyVolunteerSummaries } from 'actions/weeklyVolunteerSummary';
+import SkeletonLoading from '../common/SkeletonLoading';
 
-// function WeeklyVolunteerSummary() {
-//   const darkMode = useSelector(state => state.theme.darkMode);
+function WeeklyVolunteerSummary({ error, loading }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+  if (error) {
+    return (
+      <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <Row
+          className="align-self-center pt-2"
+          data-testid="error"
+          style={{ width: '30%', margin: '0 auto' }}
+        >
+          <Col>
+            <Alert color="danger">Error! {error.message}</Alert>
+          </Col>
+        </Row>
+      </Container>
+    );
+  }
+  if (loading) {
+    return (
+      <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
+        <Row className="text-center" data-testid="loading">
+          <SkeletonLoading
+            template="WeeklySummariesReport"
+            className={darkMode ? 'bg-yinmn-blue' : ''}
+          />
+        </Row>
+      </Container>
+    );
+  }
+  return (
+    <Container>
+      <h1>Weekly Summary Report</h1>
+    </Container>
+  );
+}
 
-//   if (error) {
-//     return (
-//       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-//         <Row
-//           className="align-self-center pt-2"
-//           data-testid="error"
-//           style={{ width: '30%', margin: '0 auto' }}
-//         >
-//           <Col>
-//             <Alert color="danger">Error! {error.message}</Alert>
-//           </Col>
-//         </Row>
-//       </Container>
-//     );
-//   }
+WeeklyVolunteerSummary.propTypes = {
+  // eslint-disable-next-line react/forbid-prop-types, react/require-default-props
+  error: PropTypes.any,
+  loading: PropTypes.bool.isRequired,
+  // eslint-disable-next-line react/no-unused-prop-types
+  volunteerstats: PropTypes.array.isRequired,
+};
 
-//   if (loading) {
-//     return (
-//       <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
-//         <Row className="text-center" data-testid="loading">
-//           <SkeletonLoading
-//             template="WeeklySummariesReport"
-//             className={darkMode ? 'bg-yinmn-blue' : ''}
-//           />
-//         </Row>
-//       </Container>
-//     );
-//   }
+const mapStateToProps = state => ({
+  error: state.WeeklyVolunteerSummary.error,
+  loading: state.WeeklyVolunteerSummary.loading,
+  volunteerstats: state.WeeklyVolunteerSummary.volunteerstats,
+  role: state.auth.user.role,
+  auth: state.auth,
+  darkMode: state.theme.darkMode,
+});
 
-//   return (
-//     <Container>
-//       <h1>Weekly Summary Report</h1>
-//     </Container>
-//   );
-// }
+const mapDispatchToProps = dispatch => ({
+  getWeeklyVolunteerSummary: () => dispatch(getWeeklyVolunteerSummaries()),
+  hasPermission: permission => dispatch(hasPermission(permission)),
+});
 
 // export default WeeklyVolunteerSummary;
+export default connect(mapStateToProps, mapDispatchToProps)(WeeklyVolunteerSummary);

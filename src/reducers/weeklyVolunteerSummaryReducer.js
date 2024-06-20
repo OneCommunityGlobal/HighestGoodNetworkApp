@@ -6,23 +6,23 @@ const initialState = {
   error: null,
 };
 
-export const weeklyVolunteerSummariesReducer = (state = initialState, action) => {
+export const weeklyVolunteerSummaryReducer = (state = initialState, action) => {
   switch (action.type) {
-    case actions.FETCH_VOLUNTEER_SUMMARIES_REPORT_BEGIN:
+    case actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_BEGIN:
       return {
         ...state,
         loading: true,
         error: null,
       };
 
-    case actions.FETCH_VOLUNTEER_SUMMARIES_REPORT_SUCCESS:
+    case actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_SUCCESS:
       return {
         ...state,
         loading: false,
         volunteerstats: action.payload.volunteerstats,
       };
 
-    case actions.FETCH_VOLUNTEER_SUMMARIES_REPORT_ERROR:
+    case actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_ERROR:
       return {
         ...state,
         loading: false,

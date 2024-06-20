@@ -5,17 +5,17 @@ import { ENDPOINTS } from '../utils/URL';
 /**
  * Action to set the 'loading' flag to true.
  */
-export const fetchWeeklySummariesReportBegin = () => ({
-  type: actions.FETCH_VOLUNTEER_SUMMARIES_REPORT_BEGIN,
+export const fetchWeeklyVolunteerSummariesReportBegin = () => ({
+  type: actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_BEGIN,
 });
 
 /**
- * This action is used to set the weekly summaries reports in store.
+ * This action is used to set the volunteer weekly summaries in store.
  *
  * @param {array} volunteerstats An array of all active users.
  */
-export const fetchWeeklySummariesReportSuccess = volunteerstats => ({
-  type: actions.FETCH_VOLUNTEER_SUMMARIES_REPORT_SUCCESS,
+export const fetchWeeklyVolunteerSummariesReportSuccess = volunteerstats => ({
+  type: actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_SUCCESS,
   payload: { volunteerstats },
 });
 
@@ -24,7 +24,22 @@ export const fetchWeeklySummariesReportSuccess = volunteerstats => ({
  *
  * @param {Object} error The error object.
  */
-export const fetchWeeklySummariesReportError = error => ({
-  type: actions.FETCH_VOLUNTEER_SUMMARIES_REPORT_ERROR,
+export const fetchWeeklyVolunteerSummariesReportError = error => ({
+  type: actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_ERROR,
   payload: { error },
 });
+
+export const getWeeklyVolunteerSummaries = () => {
+  const url = ENDPOINTS.WEEKLY_VOLUNTEER_SUMMARY();
+  return async dispatch => {
+    dispatch(fetchWeeklyVolunteerSummariesReportBegin());
+    try {
+      const response = await axios.get(url);
+      dispatch(fetchWeeklyVolunteerSummariesReportSuccess(response.data));
+      return {status: response.status, data: response.data};
+    } catch (error) {
+      dispatch(fetchWeeklyVolunteerSummariesReportError(error));
+      return error.response.status;
+    }
+  };
+};
