@@ -702,7 +702,6 @@ function UserProfile(props) {
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
-  const canSeeQSC = props.hasPermission('seeQSC');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
  
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -792,8 +791,9 @@ function UserProfile(props) {
               ) : null}
             </div>
 
-            {canSeeQSC && (
+            {/* {canSeeQSC && ( */}
               <QuickSetupModal
+                canViewTitle={props.hasPermission('viewTitle')}
                 canAddTitle={props.hasPermission('addNewTitle')}
                 canAssignTitle={props.hasPermission('assignTitle')}
                 setSaved={setSaved}
@@ -804,7 +804,7 @@ function UserProfile(props) {
                 teamsData={props?.allTeams?.allTeamsData || []}
                 projectsData={props?.allProjects?.projects || []}
               />
-            )}
+            {/* )} */}
           </Col>
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || (!isTeamsEqual && !isTeamSaved) || !isProjectsEqual ? (

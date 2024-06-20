@@ -20,9 +20,9 @@ function QuickSetupModal({
   setUserProfile,
   handleSubmit,
   setSaved,
+  canViewTitle
 }) {
   const darkMode = useSelector(state => state.theme.darkMode)
-
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
@@ -64,6 +64,7 @@ function QuickSetupModal({
 
   return (
     <div className="container pt-3">
+      {canViewTitle &&
       <QuickSetupCodes
         setSaved={setSaved}
         userProfile={userProfile}
@@ -71,7 +72,7 @@ function QuickSetupModal({
         titles={titles}
         setShowAssignModal={setShowAssignModal}
         setTitleOnClick={setTitleOnClick}
-      />
+      />}
 
       <div className="col text-center mt-3">
         {canAddTitle ? (

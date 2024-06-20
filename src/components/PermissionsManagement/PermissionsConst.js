@@ -379,9 +379,14 @@ export const permissionLabels = [
         description:"Gives user permission to add new title in quick setup functions.",
       },
       {
-        label:"Assign New Title",
+        label:"Edit Title",
         key:"assignTitle",
         description:"Gives user permission to edit existing title in quick setup functions.",
+      },
+      {
+        label:"View Titles",
+        key:"viewTitle",
+        description:"Gives user permission to view existing title in quick setup functions.",
       }
     ]
   },
@@ -400,13 +405,7 @@ export const permissionLabels = [
         key: 'seeUsersInDashboard',
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
-      },
-      {
-        label: 'Quick Setup Functions',
-        key: 'seeQSC',
-        description:
-          'Lets the user create quick setup functions',
-      },
+      }
     ],
   },
 ];
