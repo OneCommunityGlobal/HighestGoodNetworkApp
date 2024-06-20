@@ -12,6 +12,7 @@ import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/
 import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css'
 import TagsSearch from '../components/TagsSearch';
+import './AddTaskModal.css';
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -33,6 +34,31 @@ function AddTaskModal(props) {
   */
   // props from store 
   const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
+
+  const handleBestHoursChange = (e) => {
+    setHoursBest(e.target.value);
+  };
+  const handleWorstHoursChange = (e) => {
+    setHoursWorst(e.target.value);
+  };
+  const handleMostHoursChange = (e) => {
+    setHoursMost(e.target.value);
+  };
+  const handleEstimateHoursChange = (e) => {
+    setHoursEstimate(e.target.value);
+  };
+
+  const handleBestHoursBlur = () => {
+    calHoursEstimate();
+  };
+
+  const handleWorstHoursBlur = () => {
+    calHoursEstimate('hoursWorst');
+  };
+
+  const handleMostHoursBlur = () => {
+    calHoursEstimate('hoursMost');
+  };
 
   // states from hooks
   const defaultCategory = useMemo(() => {
@@ -475,7 +501,7 @@ function AddTaskModal(props) {
                 </span>
                 <span className="add_new_task_form-input_area">
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
-                    <label htmlFor="bestCase" className={`text-nowrap align-self-center ${fontColor}`} style={{ fontWeight: 'normal' }}>
+                    <label htmlFor="bestCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
                       Best-case
                     </label>
                     <input
@@ -483,11 +509,10 @@ function AddTaskModal(props) {
                       min="0"
                       max="500"
                       value={hoursBest}
-                      onChange={e => setHoursBest(e.target.value)}
-                      onBlur={() => calHoursEstimate()}
-                      id="bestCase"
-                      className=""
-                      style={{width:"20%"}}
+                      onChange={handleBestHoursChange}
+                      onBlur={handleBestHoursBlur}
+                      id="bestCaseInput"
+                      className='hours-input'
                     />
                     
                   </div>
@@ -497,7 +522,7 @@ function AddTaskModal(props) {
                         : ''}
                   </div>
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
-                    <label htmlFor="worstCase" className={`text-nowrap align-self-center ${fontColor}`} style={{ fontWeight: 'normal' }}>
+                    <label htmlFor="worstCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
                       Worst-case
                     </label>
                     <input
@@ -505,9 +530,10 @@ function AddTaskModal(props) {
                       min={hoursBest}
                       max="500"
                       value={hoursWorst}
-                      onChange={e => setHoursWorst(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursWorst')}
-                      style={{width:"20%"}}
+                      onChange={handleWorstHoursChange}
+                      onBlur={handleWorstHoursBlur}
+                      id='worstCaseInput'
+                      className='hours-input'
                     />
                     
                   </div>
@@ -518,7 +544,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
-                    <label htmlFor="mostCase" className={`text-nowrap align-self-center ${fontColor}`} style={{ fontWeight: 'normal' }}>
+                    <label htmlFor="mostCaseInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
                       Most-case
                     </label>
                     <input
@@ -526,9 +552,10 @@ function AddTaskModal(props) {
                       min="0"
                       max="500"
                       value={hoursMost}
-                      onChange={e => setHoursMost(e.target.value)}
-                      onBlur={() => calHoursEstimate('hoursMost')}
-                      style={{width:"20%"}}
+                      onChange={handleMostHoursChange}
+                      onBlur={handleMostHoursBlur}
+                      id='mostCaseInput'
+                      className='hours-input'
                     />
                     
                   </div>
@@ -538,7 +565,7 @@ function AddTaskModal(props) {
                         : ''}
                     </div>
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
-                    <label htmlFor="Estimated" className={`text-nowrap align-self-center ${fontColor}`} style={{ fontWeight: 'normal' }}>
+                    <label htmlFor="estimatedInput" className={`hours-label text-nowrap align-self-center ${fontColor}`}>
                       Estimated
                     </label>
                     <input
@@ -546,8 +573,9 @@ function AddTaskModal(props) {
                       min="0"
                       max="500"
                       value={hoursEstimate}
-                      onChange={e => setHoursEstimate(e.target.value)}
-                      style={{width:"20%"}}
+                      onChange={handleEstimateHoursChange}
+                      id='estimatedInput'
+                      className='hours-input'
                     />
                   </div>
                 </span>
@@ -572,7 +600,7 @@ function AddTaskModal(props) {
                       onClick={addLink}
                     >
                       <i className={`fa fa-plus ${fontColor}`} aria-hidden="true" />
-                    </button>
+                    </button> 
                   </div>
                   <div>
                     {links.map((link, i) =>
@@ -643,7 +671,7 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div className="d-flex border">
-                <span scope="col" style={{width: "30%"}} className={`p-1 ${fontColor}`}>Start Date</span>
+                <span scope="col" className={`form-date p-1 ${fontColor}`}>Start Date</span>
                 <span scope="col" className="border-left p-1">
                   <div>
                     <DayPickerInput
@@ -660,7 +688,7 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="d-flex border align-items-center">
-                <span scope="col" style={{width: "30%"}} className={`p-1 ${fontColor}`}>End Date</span>
+                <span scope="col" className={`form-date p-1 ${fontColor}`}>End Date</span>
                 <span scope="col" className='border-left p-1'>
                   <DayPickerInput
                     format={FORMAT}

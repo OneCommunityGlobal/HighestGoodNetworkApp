@@ -48,11 +48,9 @@ class Teams extends React.PureComponent {
 
   componentDidMount() {
     // Initiating the teams fetch action.
-    const initialTeams = this.teamTableElements(this.props.state.allTeamsData.allTeams);
-    this.setState({ teams: initialTeams });
+    this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams)});
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();
-    this.sortTeamsByModifiedDate();
   }
 
   componentDidUpdate(prevProps, prevState) {
@@ -62,12 +60,13 @@ class Teams extends React.PureComponent {
       prevState.wildCardSearchText !== this.state.wildCardSearchText
     ) {
      this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
-     this.sortTeamsByModifiedDate();
     }
-    if (!lo.isEqual(prevState.sortedTeams, this.state.sortedTeams)) {
-      // This will run whenever sortedTeams changes
-      const teams = [...this.state.sortedTeams];
-      this.setState({ teams });
+    if (
+      prevState.teams !== this.state.teams || 
+      prevState.sortTeamNameState !== this.state.sortTeamNameState || 
+      prevState.sortTeamActiveState !== this.state.sortTeamActiveState
+    ) {
+      this.sortTeams();
     }
     if (
       prevProps.state.allTeamsData.allTeams.length !== this.props.state.allTeamsData.allTeams.length
@@ -131,7 +130,7 @@ class Teams extends React.PureComponent {
                     />
                 </thead>
                   <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}> 
-                    {this.state.teams}
+                    {this.state.sortedTeams}
                   </tbody>
               </table>
               </div>
@@ -444,93 +443,68 @@ class Teams extends React.PureComponent {
     this.props.deleteTeamMember(this.state.selectedTeamId, deletedUserId);
   };
 
-  sortTeamsByModifiedDate = () => {
-    const { teams } = this.state;
-
+  sortTeams = () => {
+    const { teams, sortTeamNameState, sortTeamActiveState } = this.state;
     const sortedTeams = [...teams].sort((a, b) => {
       const dateA = new Date(a.props.team.modifiedDatetime);
       const dateB = new Date(b.props.team.modifiedDatetime);
-
-      if (dateA < dateB) {
-        return 1;
+      const nameA = a.props.name;
+      const nameB = b.props.name;
+      const activeA = a.props.active;
+      const activeB = b.props.active;
+      if (sortTeamNameState === 'ascending') {
+        return nameA.localeCompare(nameB);
+      } else if (sortTeamNameState === 'descending') {
+        return nameB.localeCompare(nameA);
+      } else if (sortTeamActiveState === 'ascending') {
+        return activeA - activeB;
+      } else if (sortTeamActiveState === 'descending') {
+        return activeB - activeA;
+      } else {
+        return dateB - dateA;
       }
-      if (dateA > dateB) {
-        return -1;
-      }
-      return 0; // Sort in descending order
-    });
-
+    })
+    .map((team, index) => ({
+      ...team,
+      props: { ...team.props, index },
+    }));
     this.setState({ sortedTeams });
   };
 
   toggleTeamNameSort = () => {
-    const { teams, sortTeamNameState } = this.state;
-
-    let sortedTeams;
     let newSortState;
-
-    switch (sortTeamNameState) {
+    switch(this.state.sortTeamNameState) {
       case 'none':
-        sortedTeams = [...teams].sort((a, b) => a.props.name.localeCompare(b.props.name));
         newSortState = 'ascending';
         break;
       case 'ascending':
-        sortedTeams = [...teams].sort((a, b) => b.props.name.localeCompare(a.props.name));
         newSortState = 'descending';
         break;
-      default:
-        sortedTeams = [...teams].sort((a, b) => {
-          const dateA = new Date(a.props.team.modifiedDatetime);
-          const dateB = new Date(b.props.team.modifiedDatetime);
-          return dateB - dateA;
-        });
+      case 'descending':
         newSortState = 'none';
         break;
+      default:
+        throw new Error('Invalid sort state');
     }
-
-    if (sortedTeams) {
-      sortedTeams = sortedTeams.map((team, index) => ({
-        ...team,
-        props: { ...team.props, index },
-      }));
-    }
-
-    this.setState({ sortedTeams, sortTeamNameState: newSortState, sortTeamActiveState: 'none' });
+    this.setState({ sortTeamNameState: newSortState, sortTeamActiveState: 'none' });
   };
 
   toggleTeamActiveSort = () => {
-    const { teams, sortTeamActiveState } = this.state;
-
-    let sortedTeams;
     let newSortState;
-
-    switch (sortTeamActiveState) {
+    switch (this.state.sortTeamActiveState) {
       case 'none':
-        sortedTeams = [...teams].sort((a, b) => a.props.active - b.props.active);
         newSortState = 'ascending';
         break;
       case 'ascending':
-        sortedTeams = [...teams].sort((a, b) => b.props.active - a.props.active);
         newSortState = 'descending';
         break;
-      default:
-        sortedTeams = [...teams].sort((a, b) => {
-          const dateA = new Date(a.props.team.modifiedDatetime);
-          const dateB = new Date(b.props.team.modifiedDatetime);
-          return dateB - dateA;
-        });
+      case 'descending':
         newSortState = 'none';
         break;
+      default:
+        throw new Error('Invalid sort state');
     }
-
-    if (sortedTeams) {
-      sortedTeams = sortedTeams.map((team, index) => ({
-        ...team,
-        props: { ...team.props, index },
-      }));
-    }
-
-    this.setState({ sortedTeams, sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
+    this.setState({ sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
   };
 }
 const mapStateToProps = state => ({ state });
