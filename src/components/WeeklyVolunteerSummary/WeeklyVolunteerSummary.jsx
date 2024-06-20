@@ -1,13 +1,20 @@
 /* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
-import { useSelector } from 'react-redux';
+import { useEffect } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import hasPermission from 'utils/permissions';
 import { getWeeklyVolunteerSummaries } from 'actions/weeklyVolunteerSummary';
 import SkeletonLoading from '../common/SkeletonLoading';
+import '../Header/DarkMode.css';
 
-function WeeklyVolunteerSummary({ error, loading }) {
-  const darkMode = useSelector(state => state.theme.darkMode);
+function WeeklyVolunteerSummary(props) {
+  const { darkMode, loading, error } = props;
+
+  useEffect(() => {
+    props.getWeeklyVolunteerSummary();
+    props.hasPermission();
+  }, []);
+
   if (error) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
@@ -24,11 +31,12 @@ function WeeklyVolunteerSummary({ error, loading }) {
     );
   }
   if (loading) {
+    <h1>Weekly Volunteer Summary Loading</h1>;
     return (
       <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
         <Row className="text-center" data-testid="loading">
           <SkeletonLoading
-            template="WeeklySummariesReport"
+            template="WeeklyVolunteerSummaries"
             className={darkMode ? 'bg-yinmn-blue' : ''}
           />
         </Row>
