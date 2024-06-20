@@ -55,15 +55,15 @@ class Teams extends React.PureComponent {
 
   componentDidUpdate(prevProps, prevState) {
     if (
-      !lo.isEqual(prevProps.state.allTeamsData.allTeams, this.props.state.allTeamsData.allTeams) || 
-      prevState.teamNameSearchText !== this.state.teamNameSearchText || 
+      !lo.isEqual(prevProps.state.allTeamsData.allTeams, this.props.state.allTeamsData.allTeams) ||
+      prevState.teamNameSearchText !== this.state.teamNameSearchText ||
       prevState.wildCardSearchText !== this.state.wildCardSearchText
     ) {
      this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
     }
     if (
-      prevState.teams !== this.state.teams || 
-      prevState.sortTeamNameState !== this.state.sortTeamNameState || 
+      prevState.teams !== this.state.teams ||
+      prevState.sortTeamNameState !== this.state.sortTeamNameState ||
       prevState.sortTeamActiveState !== this.state.sortTeamActiveState
     ) {
       this.sortTeams();
@@ -121,15 +121,15 @@ class Teams extends React.PureComponent {
 
               < table className="table table-bordered table-responsive-sm">
                 <thead>
-                  <TeamTableHeader 
-                    onTeamNameSort={this.toggleTeamNameSort} 
-                    onTeamActiveSort={this.toggleTeamActiveSort} 
+                  <TeamTableHeader
+                    onTeamNameSort={this.toggleTeamNameSort}
+                    onTeamActiveSort={this.toggleTeamActiveSort}
                     sortTeamNameState={this.state.sortTeamNameState}
-                    sortTeamActiveState={this.state.sortTeamActiveState} 
+                    sortTeamActiveState={this.state.sortTeamActiveState}
                     darkMode={darkMode}
                     />
                 </thead>
-                  <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}> 
+                  <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
                     {this.state.sortedTeams}
                   </tbody>
               </table>

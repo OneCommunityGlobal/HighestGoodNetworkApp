@@ -23,7 +23,7 @@ export const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
-    
+
   const closeDeletedPopup = () => {
     setDeletedPopup(!deletedPopup);
   }
@@ -34,7 +34,7 @@ export const TeamMembersPopup = React.memo(props => {
   }
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-
+  console.log("selectedUser",selectedUser,'memberList',memberList)
 
 
   const onAddUser = () => {

@@ -12,6 +12,7 @@ import {
   FETCH_TEAM_USERS_ERROR,
   TEAM_MEMBER_DELETE,
   TEAM_MEMBER_ADD,
+  UPDATE_TEAM_MEMBER_VISIBILITY
 } from '../constants/allTeamsConstants';
 
 /**
@@ -121,6 +122,16 @@ export const getAllUserTeams = () => {
 };
 
 /**
+ * updating team member visibility
+ */
+export const updateVisibilityAction = (visibility, userId, teamId) => ({
+  type: UPDATE_TEAM_MEMBER_VISIBILITY,
+  visibility,
+  userId,
+  teamId,
+});
+
+/**
  * posting new team
 */
 export const postNewTeam = (name, status) => {
@@ -141,7 +152,7 @@ export const postNewTeam = (name, status) => {
           return { status: 500, message: error.message };
         }
       });
-  }; 
+  };
 };
 
 
