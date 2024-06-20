@@ -28,6 +28,7 @@ const AddProjectPopup = React.memo(props => {
   const [isUserIsNotSelectedAutoComplete, isSetUserIsNotSelectedAutoComplete] = useState(false);
   const [dropdownText, setDropdownText] = useState('Unspecified');
   const [searchText, onInputChange] = useState('');
+  const [userRole, setUserRole] = useState(props.role);
 
   useEffect(() => {
     const categoriesProjects = props.projects.map(item => item.category);
@@ -148,24 +149,26 @@ const AddProjectPopup = React.memo(props => {
               className="input-group-prepend"
               style={{ marginBottom: '10px', display: 'flex', flexDirection: 'row', gap: '10px' }}
             >
-              <Input
-                type="select"
-                onChange={e => setDropdownText(e.target.value)}
-                value={dropdownText}
-              >
-                {itemsDropdown.map(item => {
-                  return <option key={item}>{item}</option>;
-                })}
-              </Input>
+              {userRole === 'Owner' && (
+                <Input
+                  type="select"
+                  onChange={e => setDropdownText(e.target.value)}
+                  value={dropdownText}
+                >
+                  {itemsDropdown.map(item => {
+                    return <option key={item}>{item}</option>;
+                  })}
+                </Input>
+              )}
 
               <Button
                 color="danger"
                 onClick={() => {
-                  setIsOpenDropdown(false), onInputChange('');
+                  setIsOpenDropdown(false), isSetShowAlert(false), onInputChange('');
                 }}
                 style={{ width: '100%' }}
               >
-                Assign Project
+                Cancel project creation
               </Button>
             </div>
           )}
