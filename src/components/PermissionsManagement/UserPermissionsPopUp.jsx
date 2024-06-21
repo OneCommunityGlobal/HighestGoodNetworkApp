@@ -20,6 +20,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
+  const [selectedAccount, setSelectedAccount] = useState('');
 
   const setToDefault = () => {
     setUserPermissions([]);
@@ -34,6 +35,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
     setActualUserProfile(allUserInfo);
+    setSelectedAccount(`${allUserInfo.firstName} ${allUserInfo.lastName}`);
   };
 
   useEffect(() => {
@@ -86,7 +88,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
   return (
     <>
       {modalStatus && (
-        <ReminderModal setReminderModal={setReminderModal} reminderModal={reminderModal} updateProfileOnSubmit={updateProfileOnSubmit} />
+        <ReminderModal setReminderModal={setReminderModal} reminderModal={reminderModal} updateProfileOnSubmit={updateProfileOnSubmit} changedAccount={selectedAccount} />
       )}
       <Form
         id="manage__user-permissions"

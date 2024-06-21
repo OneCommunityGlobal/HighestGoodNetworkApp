@@ -63,7 +63,6 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
         console.error('Error fetching change logs:', error)
       }
     }
-
     getChangeLogs()
   }, []);
 

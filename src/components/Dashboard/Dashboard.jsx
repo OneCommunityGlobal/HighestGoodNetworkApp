@@ -21,7 +21,7 @@ export function Dashboard(props) {
   const [actualUserProfile, setActualUserProfile] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-
+  
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
@@ -61,18 +61,25 @@ export function Dashboard(props) {
 
     try {
       const url = ENDPOINTS.USER_PROFILE(authUser.userid);
-      const allUserInfo = await axios.get(url).then(res => res.data)
+      const allUserInfo = await axios.get(url).then(res => res.data);
 
-      if (allUserInfo.permissions.frontPermissions.includes('showModal')) {
+      const userType = authUser.role.toLowerCase();
+      const permissionsKey = `permissions_${userType}`;
+      const storedPermissions = JSON.parse(localStorage.getItem(permissionsKey)) || [];
+      const currentPermissions = allUserInfo.permissions.frontPermissions;
+      const hasPermissionsChanged = JSON.stringify(storedPermissions) !== JSON.stringify(currentPermissions);
+
+
+      if (currentPermissions.includes('showModal') && hasPermissionsChanged) {
         setShowModal(true);
         setActualUserProfile(allUserInfo);
+        localStorage.setItem(permissionsKey, JSON.stringify(currentPermissions));
       }
 
     } catch (error) {
-      console.error("Erro", error);
+      console.error("Error", error);
     }
-
-  }
+  };
 
   const handleCloseModal = async () => {
     if (actualUserProfile) {
@@ -88,17 +95,15 @@ export function Dashboard(props) {
 
         setActualUserProfile(null);
       } catch (error) {
-        console.error("Erro", error);
+        console.error("Error", error);
       }
     }
     setShowModal(false);
   };
 
   useEffect(() => {
-
     getUserData()
-
-  }, [authUser.userid])
+  }, [authUser.userid]);
 
 
 
@@ -113,7 +118,7 @@ export function Dashboard(props) {
         </ModalHeader>
         <ModalBody id="modal-body_new-role--padding">
           Your permissions have been updated. Please log out and log back in for the changes to take effect.
-          <Button color="primary" className="mt-3" onClick={handleCloseModal}>Closer</Button>
+          <Button color="primary" className="mt-3" onClick={handleCloseModal}>Close</Button>
         </ModalBody>
       </Modal>
       <SummaryBar

@@ -39,6 +39,7 @@
 #modal-content__new-role {
   width: 100%;
   max-width: 700px;
+  right: 7%;
 }
 
 #modal-body_new-role--padding {
@@ -156,7 +157,7 @@
   height: 250px;
   position: fixed;  
   top: 50%;
-  left: 50%;
+  left: 82%;
   transform: translate(-50%, -50%);
   background-color: white;
   z-index: 11111;
@@ -197,27 +198,27 @@
   align-items: center;
   padding: 5px 0;
   padding-left: 15px;
-  
+  gap: 20px;
 }
 .ReminderButton button:first-child{
- background-color: red;
- color: #fff;
- height: 80%;
- width: 70px;
- margin-right: 25px;
- border-radius: 5px;
- cursor: pointer;
- font-weight: 500;
- 
-}
-.ReminderButton button:nth-child(2){
   height: 80%;
   width: 140px;
- background-color: #007bff;
- color: #fff;
- border-radius: 5px;
- cursor: pointer;
- font-weight: 500;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.ReminderButton button:nth-child(2){
+  background-color: red;
+  color: #fff;
+  height: 80%;
+  width: 70px;
+  margin-right: 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
 }
 
  
