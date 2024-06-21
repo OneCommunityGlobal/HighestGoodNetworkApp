@@ -5,6 +5,8 @@ import {
   EDIT_FIRST_NAME,
   EDIT_USER_PROFILE,
   CLEAR_USER_PROFILE,
+  GET_PROJECT_BY_USER_NAME,
+  USER_NOT_FOUND_ERROR
 } from '../constants/userProfile';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -72,6 +74,37 @@ export const updateUserProfileProperty = (userProfile, key, value) => {
     return res.status;
   };
 };
+
+export const getProjectsByUsersName = searchName => {
+  const url = ENDPOINTS.GET_PROJECT_BY_PERSON(searchName);
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+      if (res.status === 400) {
+        await dispatch(userNotFoundError(res.data.message));
+        toast.error("No Projects were found");
+      }
+      if (res.status === 200) {
+        await dispatch(getProjectsByPersonActionCreator(res.data));
+      }
+      return res.data.allProjects;
+    } catch (error) {
+      await dispatch(userNotFoundError(error.message));
+      await dispatch(getProjectsByPersonActionCreator([]));
+      toast.error("Could not find user or project, please try again");
+    }
+  };
+};
+
+export const getProjectsByPersonActionCreator = data => ({
+  type: GET_PROJECT_BY_USER_NAME,
+  payload: data
+});
+
+const userNotFoundError = (error) =>({
+  type: USER_NOT_FOUND_ERROR,
+  payload: error,
+});
 
 export const getUserProfileActionCreator = data => ({
   type: GET_USER_PROFILE,
