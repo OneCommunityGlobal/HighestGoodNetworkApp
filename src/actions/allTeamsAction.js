@@ -234,3 +234,22 @@ export const addTeamMember = (teamId, userId, firstName, lastName, role, addDate
     });
   };
 };
+
+/**
+ * Updated team member visibility
+ */
+
+export const updateTeamVisibility = (visibility,userId,teamId) => {
+  const requestData = { teamId, userId, visibility };
+  const updateVisibilityPromise = axios.post(ENDPOINTS.TEAM, requestData);
+  return async (dispatch) => {
+    updateVisibilityPromise.then((res) => {
+      if (res.status === 200) {
+        dispatch(updateVisibilityAction(res.data.updatedTeam));
+      }
+    }).catch((error) => {
+      console.error('Error updating team visibility:', error);
+      dispatch(updateTeamMemberVisibilityFailureAction(error.message));
+    });
+  };
+};

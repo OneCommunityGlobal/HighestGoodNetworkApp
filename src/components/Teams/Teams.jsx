@@ -98,7 +98,7 @@ class Teams extends React.PureComponent {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
 
-    const numberOfTeams = allTeams.length;
+    const numberOfTeams = allTeams?.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
 
     return (
