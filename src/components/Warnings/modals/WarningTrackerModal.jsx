@@ -136,11 +136,6 @@ function WarningTrackerModal({
     });
   };
 
-  // const handleChange = e => {
-  //   const value = e.target.value;
-  //   setNewWarning(value);
-  // };
-
   const handleEditWarningDescription = (e, warningId) => {
     setWarningEdited(true);
 
