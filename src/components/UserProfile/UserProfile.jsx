@@ -65,7 +65,6 @@ import {
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
 
-
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -330,9 +329,7 @@ function UserProfile(props) {
         await loadSummaryIntroDetails(teamId, response.data);
       }
 
-      const startDate = newUserProfile.startDate
-        ? newUserProfile?.startDate.split('T')[0]
-        : String(newUserProfile.createdDate).split('T')[0];
+      const startDate = newUserProfile?.startDate.split('T')[0];
 
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
@@ -725,7 +722,7 @@ function UserProfile(props) {
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
-  const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
+  const canManageAdminLinks = props.hasPermission('manageAdminLinks');
   const canSeeQSC = props.hasPermission('seeQSC');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
@@ -844,19 +841,23 @@ function UserProfile(props) {
               </Alert>
             ) : null}
             {!codeValid ? (
-              <Alert color="danger">NOT SAVED! The code must be between 5 and 7 characters long</Alert>
+              <Alert color="danger">
+                NOT SAVED! The code must be between 5 and 7 characters long
+              </Alert>
             ) : null}
             <div className="profile-head">
-              <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
-              <div style={{marginTop: '6px'}} >
-              <EditableInfoModal
-                areaName="UserProfileInfoModal"
-                areaTitle="User Profile"
-                fontSize={24}
-                isPermissionPage={true}
-                role={requestorRole} // Pass the 'role' prop to EditableInfoModal
-                darkMode={darkMode}
-              />
+              <h5
+                className={`mr-2 ${darkMode ? 'text-light' : ''}`}
+              >{`${firstName} ${lastName}`}</h5>
+              <div style={{ marginTop: '6px' }}>
+                <EditableInfoModal
+                  areaName="UserProfileInfoModal"
+                  areaTitle="User Profile"
+                  fontSize={24}
+                  isPermissionPage={true}
+                  role={requestorRole} // Pass the 'role' prop to EditableInfoModal
+                  darkMode={darkMode}
+                />
               </div>
               <span className="mr-2">
                 <ActiveCell
@@ -1198,18 +1199,39 @@ function UserProfile(props) {
               >
                 Basic Information
               </Button>
-              <Modal isOpen={showConfirmDialog} toggle={handleCancelChange} className={darkMode ? 'text-light dark-mode' : ''}>
-                <ModalHeader toggle={handleCancelChange} className={darkMode ? 'bg-space-cadet' : ''}>Confirm Status Change</ModalHeader>
+              <Modal
+                isOpen={showConfirmDialog}
+                toggle={handleCancelChange}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
+                <ModalHeader
+                  toggle={handleCancelChange}
+                  className={darkMode ? 'bg-space-cadet' : ''}
+                >
+                  Confirm Status Change
+                </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'}?`}
+                  {`Are you sure you want to change the user status to ${
+                    pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'
+                  }?`}
                 </ModalBody>
-                <ModalFooter  className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Button color="primary" onClick={handleConfirmChange}>Confirm</Button>{' '}
-                  <Button color="secondary" onClick={handleCancelChange}>Cancel</Button>
+                <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  <Button color="primary" onClick={handleConfirmChange}>
+                    Confirm
+                  </Button>{' '}
+                  <Button color="secondary" onClick={handleCancelChange}>
+                    Cancel
+                  </Button>
                 </ModalFooter>
               </Modal>
-              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Basic Information</ModalHeader>
+              <Modal
+                isOpen={menuModalTabletScreen === 'Basic Information'}
+                toggle={toggle}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+                  Basic Information
+                </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <BasicInformationTab
                     role={requestorRole}
@@ -1313,8 +1335,14 @@ function UserProfile(props) {
               >
                 Volunteering Times
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Volunteering Times'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Volunteering Times</ModalHeader>
+              <Modal
+                isOpen={menuModalTabletScreen === 'Volunteering Times'}
+                toggle={toggle}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+                  Volunteering Times
+                </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <VolunteeringTimeTab
                     userProfile={userProfile}
@@ -1381,8 +1409,14 @@ function UserProfile(props) {
               >
                 Teams
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Teams</ModalHeader>
+              <Modal
+                isOpen={menuModalTabletScreen === 'Teams'}
+                toggle={toggle}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+                  Teams
+                </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
@@ -1467,8 +1501,14 @@ function UserProfile(props) {
               >
                 Projects
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Projects</ModalHeader>
+              <Modal
+                isOpen={menuModalTabletScreen === 'Projects'}
+                toggle={toggle}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+                  Projects
+                </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <ProjectsTab
                     userProjects={userProfile.projects || []}
@@ -1544,8 +1584,14 @@ function UserProfile(props) {
               >
                 Edit History
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Edit History</ModalHeader>
+              <Modal
+                isOpen={menuModalTabletScreen === 'Edit History'}
+                toggle={toggle}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+                  Edit History
+                </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <TimeEntryEditHistory
                     userProfile={userProfile}
