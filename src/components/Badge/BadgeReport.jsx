@@ -34,6 +34,7 @@ import hasPermission from '../../utils/permissions';
 import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function BadgeReport(props) {
@@ -668,9 +669,7 @@ function BadgeReport(props) {
             style={{ margin: 5 }}
             onClick={e => {
               if (props.isRecordBelongsToJaeAndUneditable) {
-                alert(
-                  'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
-                );
+                alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
               }
               saveChanges();
             }}
