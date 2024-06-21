@@ -7,9 +7,9 @@ const AddTeamsAutoComplete = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
 
   React.useEffect(() => {
-    if (!props.selectedTeam && props.setIsNotDisplayAlert) props.setSearchText('');
+    if (!props.selectedTeam) props.setSearchText('');
     else props.setSearchText(props.selectedTeam.teamName);
-  }, [props.selectedTeam, props.setSearchText, props.setIsNotDisplayAlert]);
+  }, [props.selectedTeam, props.setSearchText]);
 
   return (
     <Dropdown

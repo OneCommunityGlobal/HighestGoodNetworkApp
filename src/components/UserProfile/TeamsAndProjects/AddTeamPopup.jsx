@@ -21,12 +21,13 @@ const AddTeamPopup = React.memo(props => {
   const [newTeamName, setNewTeamName] = useState('');
   const [newTeamIsActive, setNewTeamIsActive] = useState(true);
   const [isDuplicateTeam, setDuplicateTeam] = useState(false);
-  const [isNotDisplayAlert, setIsNotDisplayAlert] = useState(false);
+  const [isNotDisplayAlert, setIsNotDisplayAlert] = useState(true);
   const [autoComplete, setAutoComplete] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
 
   const closePopup = () => {
     props.onClose();
+    !isNotDisplayAlert && setIsNotDisplayAlert(true);
   };
 
   const format = result =>
@@ -36,18 +37,17 @@ const AddTeamPopup = React.memo(props => {
       .replace(/\s+/g, '');
 
   const IfTheUserNotSelectedSuggestionAutoComplete = () => {
+    // prettier-ignore
+    if(searchText === '')  {onValidation(false);  return;}
+
     const filterTeamData = props.teamsData.allTeams.filter(
       item => format(item.teamName) === format(searchText),
-    );
+    )[0];
 
-    if (filterTeamData.length > 0) {
-      const arrayToObj = filterTeamData.reduce((obj, item) => (obj = item), {});
-      onAssignTeam(arrayToObj);
-    } else {
-      setIsNotDisplayAlert(true);
-      onValidation(false);
-      return;
-    }
+    if (filterTeamData) {
+      onAssignTeam(filterTeamData);
+      !isNotDisplayAlert && setIsNotDisplayAlert(true);
+    } else setIsNotDisplayAlert(false);
   };
 
   const onAssignTeam = result => {
@@ -160,7 +160,6 @@ const AddTeamPopup = React.memo(props => {
             newTeamName={newTeamName}
             setSearchText={setSearchText} // Added setSearchText prop
             setAutoComplete={setAutoComplete}
-            setIsNotDisplayAlert={setIsNotDisplayAlert}
           />
           <Button
             color="primary"
@@ -179,7 +178,7 @@ const AddTeamPopup = React.memo(props => {
             {isLoading ? <Spinner color="light" size="sm" /> : 'Confirm'}
           </Button>
         </div>
-        {!isValidTeam && searchText && isNotDisplayAlert && !selectedTeam && (
+        {!isNotDisplayAlert && (
           <Alert color="danger">Oops, this team does not exist! Create it if you want it.</Alert>
         )}
 
