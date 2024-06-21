@@ -13,8 +13,7 @@ import PropTypes from 'prop-types';
 const Member = props => {
   const {darkMode} = props;
   const canGetUserProfiles = props.hasPermission('getUserProfiles');
-  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+  const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   return (
     <React.Fragment>
       <tr className={`members__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}>
@@ -28,7 +27,7 @@ const Member = props => {
             props.fullName
           )}
         </td>
-        {canUnassignUserInProject ? (
+        {canAssignProjectToUsers ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"
