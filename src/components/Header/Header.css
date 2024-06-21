@@ -58,10 +58,6 @@
   align-items: center;
 }
 
-.flex-row {
-  flex-direction: row !important;
-}
-
 @media (max-width: 1500px) {
   .dashboard-text-link {
     font-size: 14px;
