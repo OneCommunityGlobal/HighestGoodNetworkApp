@@ -81,10 +81,10 @@ export const permissionLabels = [
           'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
       {
-        label: 'Manage Admin Links in User Profile',
-        key: 'manageAdminLinks',
+        label: 'Edit Summary Submit Requirement (Others)',
+        key: 'updateSummaryRequirements',
         description:
-          'Gives the user permission to edit the links of any user on the user profile page. "User Profile" -> "Links button"',
+          'Gives the user permission to change the requirement to the user to submit a summary.',
       },
       {
         label: 'Manage Time Off Requests',
