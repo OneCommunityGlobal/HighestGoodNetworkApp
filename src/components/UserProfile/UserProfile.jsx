@@ -787,6 +787,7 @@ function UserProfile(props) {
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
+                //this line below should fix the image formatting issue
                 style={profilePic ? {} : { width: '240px', height: '240px' }}
               />
               {canEdit ? (
