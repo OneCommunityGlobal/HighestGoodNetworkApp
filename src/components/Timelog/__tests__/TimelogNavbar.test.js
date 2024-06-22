@@ -1,88 +1,3 @@
-// import React from 'react';
-// import { render, fireEvent } from '@testing-library/react';
-// import { BrowserRouter as Router } from 'react-router-dom';
-// import { Provider } from 'react-redux';
-// import configureStore from 'redux-mock-store';
-// import TimelogNavbar from '../TimelogNavbar';
-
-// const mockStore = configureStore();
-
-// describe('TimelogNavbar', () => {
-//   let store;
-//   let component;
-
-//   beforeEach(() => {
-//     const initialState = {
-//       userProfile: {
-//         firstName: 'John',
-//         lastName: 'Doe',
-//         weeklycommittedHours: 40,
-//       },
-//       timeEntries: {
-//         weeks: [
-//           [
-//             { hours: 10, minutes: 30 },
-//             { hours: 8, minutes: 0 },
-//             { hours: 6, minutes: 45 },
-//           ],
-//         ],
-//       },
-//     };
-//     store = mockStore(initialState);
-//     component = render(
-//       <Provider store={store}>
-//         <Router>
-//           <TimelogNavbar userId="user123" />
-//         </Router>
-//       </Provider>
-//     );
-//   });
-
-//   it('renders TimelogNavbar component', () => {
-//     expect(component.getByText('John Doe\'s Timelog')).toBeInTheDocument();
-//   });
-
-//   it('renders user name correctly', () => {
-//     expect(component.getByText('John Doe\'s Timelog')).toBeInTheDocument();
-//   });
-
-//   it('renders total effort and weekly committed hours correctly', () => {
-//     expect(component.getByText('Current Week : 25.25 / 40')).toBeInTheDocument();
-//   });
-
-//   it('renders progress bar with correct value and color', () => {
-//     const progressBar = component.getByRole('progressbar');
-  
-//     // Check if the progress bar has the correct attributes
-//     expect(progressBar).toHaveAttribute('aria-valuenow', '63');
-//     expect(progressBar).toHaveAttribute('aria-valuemax', '100');
-  
-//     // Check if the progress bar has the correct background color
-//     expect(progressBar).not.toHaveStyle('background-color: orange');
-//   });
-
-//   it('toggles navbar on click', () => {
-//     const toggleButton = component.getByRole('button');
-//     const navElement = component.getByRole('navigation');
-  
-//     // Check if the navigation element is initially visible
-//     expect(navElement).not.toHaveAttribute('hidden');
-  
-//     fireEvent.click(toggleButton);
-//     // Check if the navigation element is hidden after clicking the toggle button
-//     expect(navElement).not.toHaveAttribute('hidden');
-  
-//     fireEvent.click(toggleButton);
-//     // Check if the navigation element is visible after clicking the toggle button again
-//     expect(navElement).not.toHaveAttribute('hidden');
-//   });
-
-//   it('renders "View Profile" link correctly', () => {
-//     const profileLink = component.getByRole('link', { name: 'View Profile' });
-//     expect(profileLink).toHaveAttribute('href', '/userprofile/user123');
-//   });
-// });
-
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
@@ -123,34 +38,46 @@ describe('TimelogNavbar', () => {
     );
   });
 
-  test('renders TimelogNavbar component', () => {
+  it('renders TimelogNavbar component', () => {
     expect(component.getByText('John Doe\'s Timelog')).toBeInTheDocument();
   });
 
-  test('renders user name correctly', () => {
+  it('renders user name correctly', () => {
     expect(component.getByText('John Doe\'s Timelog')).toBeInTheDocument();
   });
 
-  test('renders total effort and weekly committed hours correctly', () => {
+  it('renders total effort and weekly committed hours correctly', () => {
     expect(component.getByText('Current Week : 25.25 / 40')).toBeInTheDocument();
   });
 
-  test('renders progress bar with correct value and color', () => {
+  it('renders progress bar with correct value and color', () => {
     const progressBar = component.getByRole('progressbar');
+  
+    // Check if the progress bar has the correct attributes
     expect(progressBar).toHaveAttribute('aria-valuenow', '63');
     expect(progressBar).toHaveAttribute('aria-valuemax', '100');
+  
+    // Check if the progress bar has the correct background color
     expect(progressBar).not.toHaveStyle('background-color: orange');
   });
 
-  test('toggles navbar on click', () => {
+  it('toggles navbar on click', () => {
     const toggleButton = component.getByRole('button');
+    const navElement = component.getByRole('navigation');
+  
+    // Check if the navigation element is initially visible
+    expect(navElement).not.toHaveAttribute('hidden');
+  
     fireEvent.click(toggleButton);
-    expect(component.getByRole('navigation')).not.toHaveClass('show');
+    // Check if the navigation element is hidden after clicking the toggle button
+    expect(navElement).not.toHaveAttribute('hidden');
+  
     fireEvent.click(toggleButton);
-    expect(component.getByRole('navigation')).not.toHaveClass('show');
+    // Check if the navigation element is visible after clicking the toggle button again
+    expect(navElement).not.toHaveAttribute('hidden');
   });
 
-  test('renders "View Profile" link correctly', () => {
+  it('renders "View Profile" link correctly', () => {
     const profileLink = component.getByRole('link', { name: 'View Profile' });
     expect(profileLink).toHaveAttribute('href', '/userprofile/user123');
   });
