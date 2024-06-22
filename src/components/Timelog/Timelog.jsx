@@ -769,6 +769,7 @@ const Timelog = props => {
                       <></>
                     ) : (
                       <EffortBar
+                        userProfile={displayUserProfile}
                         activeTab={timeLogState.activeTab}
                         projectsSelected={timeLogState.projectsSelected}
                         roles={roles}

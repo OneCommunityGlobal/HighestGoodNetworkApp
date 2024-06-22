@@ -1,7 +1,7 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
 
-const EffortBar = ({ activeTab, projectsSelected }) => {
+const EffortBar = ({ activeTab, projectsSelected, userProfile }) => {
   const data = useSelector(state =>
     activeTab === 4 ? state.timeEntries.period : state.timeEntries.weeks[activeTab - 1],
   );
@@ -17,8 +17,10 @@ const EffortBar = ({ activeTab, projectsSelected }) => {
     return filteredData.reduce(reducer, 0);
   };
 
-  const tangibleTime = calculateTotalTime(data, true);
-  const intangibleTime = calculateTotalTime(data, false);
+  // const tangibleTime = calculateTotalTime(data, true);
+  // const intangibleTime = calculateTotalTime(data, false);
+  const { totalIntangibleHrs: intangibleTime, hoursByCategory } = userProfile;
+  const tangibleTime = Object.values(hoursByCategory).reduce((sum, value) => sum + value, 0);
   const totalTime = tangibleTime + intangibleTime;
 
   return (
