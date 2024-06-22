@@ -2,7 +2,7 @@ import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import moment from 'moment';
-import SetUpFinalDayPopUp from '../../components/UserManagement/SetUpFinalDayPopUp';
+import SetUpFinalDayPopUp from '../SetUpFinalDayPopUp';
 
 describe('SetUpFinalDayPopUp', () => {
   it('renders without crashing', () => {
