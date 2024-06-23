@@ -192,7 +192,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects);
+
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -353,6 +353,7 @@ function UserProfile(props) {
       });
       setUserStartDate(newUserProfile?.startDate.split('T')[0]);
       checkIsProjectsEqual();
+      // isTeamSaved(true);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -758,7 +759,6 @@ function UserProfile(props) {
   const handleEndDate = async endDate => {
     setUserEndDate(endDate);
   };
-
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{minHeight: "100%"}}>
       <ActiveInactiveConfirmationPopup
@@ -829,7 +829,7 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || (!isTeamsEqual && !isTeamSaved) || !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '} 
               </Alert>
             ) : null}
             {!codeValid ? (
