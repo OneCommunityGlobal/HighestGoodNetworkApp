@@ -27,12 +27,16 @@ const hasPermission = (action) => {
  * @returns {boolean} true if the user is not allowed to update the devadmin details
  */
 export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
-  const protectedEmails = ['jae@onecommunityglobal.org',
-                           'one.community@me.com',
-                           'jsabol@me.com',
-                           'devadmin@hgn.net'
-                          ]
-  return protectedEmails.includes(devAdminEmail) && !protectedEmails.includes(authEmail);
+  const allowedEmails = ['jae@onecommunityglobal.org',
+  'one.community@me.com',
+  'jsabol@me.com'
+ ]
+const protectedEmails = ['jae@onecommunityglobal.org',
+    'one.community@me.com',
+    'jsabol@me.com',
+    'devadmin@hgn.net'
+   ]
+return protectedEmails.includes(devAdminEmail) && !allowedEmails.includes(authEmail);
 };
 
 
