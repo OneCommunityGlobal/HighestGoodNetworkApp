@@ -59,6 +59,12 @@ import { GiConsoleController } from 'react-icons/gi';
 import { setCurrentUser } from '../../actions/authActions'
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
+
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -472,8 +478,12 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
-    if (targetIsDevAdminUneditable){
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+    if (targetIsDevAdminUneditable) {
+      if (userProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     setType(type);
@@ -708,6 +718,7 @@ function UserProfile(props) {
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
+  const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
   const canSeeQSC = props.hasPermission('seeQSC');
 
@@ -783,6 +794,8 @@ function UserProfile(props) {
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
+                //this line below should fix the image formatting issue
+                style={profilePic ? {} : { width: '240px', height: '240px' }}
               />
               {canEdit ? (
                 <div className="image-button file btn btn-lg btn-primary" style={darkMode ? boxStyleDark : boxStyle}>
@@ -820,7 +833,7 @@ function UserProfile(props) {
               </Alert>
             ) : null}
             {!codeValid ? (
-              <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
+              <Alert color="danger">NOT SAVED! The code must be between 5 and 7 characters long</Alert>
             ) : null}
             <div className="profile-head">
               <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
@@ -1062,6 +1075,7 @@ function UserProfile(props) {
                     onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
                     canEdit={canEditUserProfile}
+                    canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
                     darkMode={darkMode}
                   />
@@ -1249,7 +1263,8 @@ function UserProfile(props) {
                     isUserSelf={isUserSelf}
                     role={requestorRole}
                     onEndDate={handleEndDate}
-                    canEdit={canEdit}
+                    canEdit={canEditUserProfile}
+                    canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
                     darkMode={darkMode}
                   />
