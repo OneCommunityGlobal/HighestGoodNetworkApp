@@ -14,7 +14,7 @@ const UserTeamsTable = props => {
   const [teamCode, setTeamCode] = useState(props.userProfile? props.userProfile.teamCode: props.teamCode);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = e => {
@@ -96,7 +96,7 @@ const UserTeamsTable = props => {
                   id="teamCode"
                   value={teamCode}
                   onChange={handleCodeChange}
-                  placeholder="X-XXX"
+                  placeholder="X-XXXXX"
                 />
               ) : (
                 <div style={{fontSize: "12px" ,textAlign: 'center'}}>
