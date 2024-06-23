@@ -39,10 +39,11 @@ export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
     'jsabol@me.com'
   ]
   const protectedEmails = ['jae@onecommunityglobal.org',
-    'one.community@me.com',
-    'jsabol@me.com',
-    'devadmin@hgn.net'
-  ]
+                           'one.community@me.com',
+                           'jsabol@me.com',
+                           'devadmin@hgn.net',
+                           'testcorepp@gmail.com'
+                          ]
   return protectedEmails.includes(devAdminEmail) && !allowedEmails.includes(authEmail);
 };
 

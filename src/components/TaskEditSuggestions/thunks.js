@@ -20,7 +20,7 @@ export const fetchTaskEditSuggestions = () => async (dispatch, getState) => {
   try {
     dispatch(fetchTaskEditSuggestionsBegin());
     const response = await getTaskEditSuggestionsHTTP();
-    dispatch(fetchTaskEditSuggestionsSuccess(response.data));
+    dispatch(fetchTaskEditSuggestionsSuccess(response));
   } catch (error) {
     dispatch(fetchTaskEditSuggestionsError());
   }

@@ -44,7 +44,7 @@ const BlueSquare = props => {
                     {blueSquare.description !== undefined && (
                       <div className="summary">
                         {blueSquare.createdDate !== undefined && blueSquare.createdDate !== null
-                          ? `${formatCreatedDate(blueSquare.createdDate)}: ${
+                          ? `Added on ${formatCreatedDate(blueSquare.createdDate)}: ${
                               blueSquare.description
                             }`
                           : blueSquare.description}
