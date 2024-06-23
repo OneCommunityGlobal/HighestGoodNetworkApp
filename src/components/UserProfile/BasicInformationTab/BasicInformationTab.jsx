@@ -19,11 +19,9 @@ import { isString } from 'lodash';
 import { toast } from 'react-toastify';
 
 
-const Name = props => {
+export const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
-
   const { firstName, lastName } = userProfile;
-
   if (canEdit) {
     return (
       <>
@@ -33,6 +31,7 @@ const Name = props => {
               type="text"
               name="firstName"
               id="firstName"
+              data-testid='firstName'
               value={firstName}
               // className={styleProfile.profileText}
               onChange={e => {
@@ -51,6 +50,7 @@ const Name = props => {
               type="text"
               name="lastName"
               id="lastName"
+              data-testid='lastName'
               value={lastName}
               // className={styleProfile.profileText}
               onChange={e => {
@@ -76,7 +76,7 @@ const Name = props => {
   );
 };
 
-const Title = props => {
+export const Title = props => {
   const { userProfile, setUserProfile, canEdit, desktopDisplay, darkMode } = props;
 
   const { jobTitle } = userProfile;
@@ -90,6 +90,7 @@ const Title = props => {
               type="text"
               name="title"
               id="jobTitle"
+              data-testid="jobTitle"
               value={jobTitle}
               onChange={e => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
@@ -110,9 +111,8 @@ const Title = props => {
   );
 };
 
-const Email = props => {
+export const Email = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
-
   const { email, privacySettings, emailSubscriptions } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
@@ -124,6 +124,7 @@ const Email = props => {
           <FormGroup>
             <ToggleSwitch
               switchType="email"
+              id="emailPrivacy"
               state={privacySettings?.email}
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
@@ -131,6 +132,7 @@ const Email = props => {
 
             <ToggleSwitch
               switchType="email-subcription"
+              id="emailSubscription"
               state={emailSubscriptions? emailSubscriptions : false}
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
@@ -140,6 +142,7 @@ const Email = props => {
               type="email"
               name="email"
               id="email"
+              data-testid="email"
               value={email}
               onChange={e => {
                 setUserProfile({ ...userProfile, email: e.target.value });
@@ -165,7 +168,7 @@ const Email = props => {
   );
 };
 
-const formatPhoneNumber = str => {
+export const formatPhoneNumber = str => {
   // Filter only numbers from the input
   const cleaned = `${str}`.replace(/\D/g, '');
   if (cleaned.length === 10) {
@@ -195,8 +198,8 @@ const formatPhoneNumber = str => {
   // Unconventional
   return str;
 };
-const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay, darkMode} = props;
+export const Phone = props => {
+  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay ,darkMode} = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
     return (
@@ -205,6 +208,7 @@ const Phone = props => {
           <FormGroup>
             <ToggleSwitch
               switchType="phone"
+              id="phone"
               state={privacySettings?.phoneNumber}
               handleUserProfile={handleUserProfile}
               darkMode={darkMode}
@@ -212,6 +216,8 @@ const Phone = props => {
             <PhoneInput
               inputClass="phone-input-style"
               country={'us'}
+              data-testid="ph-input-style"
+              id="ph-input-style"
               value={phoneNumber}
               onChange={phoneNumber => {
                 setUserProfile({ ...userProfile, phoneNumber: phoneNumber.trim() });
@@ -233,9 +239,8 @@ const Phone = props => {
   );
 };
 
-const TimeZoneDifference = props => {
+export const TimeZoneDifference = props => {
   const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay, darkMode } = props;
-
   const [signedOffset, setSignedOffset] = useState('');
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -488,6 +493,7 @@ const BasicInformationTab = props => {
               type="text"
               name="collaborationPreference"
               id="collaborationPreference"
+              data-testid="collaborationPreference"
               value={userProfile.collaborationPreference}
               onChange={e => {
                 setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
@@ -523,7 +529,7 @@ const BasicInformationTab = props => {
               name="role"
               className="form-control"
             >
-              {roles.map(({ roleName }) => {
+              {roles.map(( roleName ) => {
                 if (roleName === 'Owner') return;
                 return (
                   <option key={roleName} value={roleName}>
@@ -566,6 +572,7 @@ const BasicInformationTab = props => {
               <Row className="ml-0">
                 <Col className="p-0" style={{ marginRight: '10px' }}>
                   <Input
+                    data-testid="location"
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
                   />
@@ -585,7 +592,7 @@ const BasicInformationTab = props => {
             </Col>
           ) : (
             <Col className="cols">
-              <Input onChange={handleLocation} value={userProfile.location.userProvided || ''} />
+              <Input data-testid="location" onChange={handleLocation} value={userProfile.location.userProvided || ''} />
               <div>
                 <Button color="secondary" block size="sm" onClick={onClickGetTimeZone} className="mt-2">
                   Get Time Zone
