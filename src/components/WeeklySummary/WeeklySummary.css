@@ -131,6 +131,10 @@
   background-color: #0056b3; /* Darker blue color on hover */
 }
 
+.copy-prompt-btn {
+  font-size: 14px;
+}
+
 @media screen and (min-width: 992px) {
   .left-col-dashboard {
     margin-top: -200px;

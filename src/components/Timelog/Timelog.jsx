@@ -454,19 +454,20 @@ const Timelog = props => {
           <br />
         </Container>
       ) : (
-      
-        <Container fluid="md" style={{textAlign: 'right'}}>
-       
-        <EditableInfoModal
-          areaName="DashboardTimelog"
-          areaTitle="Timelog"
-          fontSize={30}
-          isPermissionPage={true}
-          role={authUser.role}
-          darkMode={darkMode}
-        />
+        <Container fluid="md" style={{textAlign: 'right', minWidth: '100%'}}>
+          {
+            props.isDashboard ? 
+              <></> : 
+              <EditableInfoModal
+                areaName="DashboardTimelog"
+                areaTitle="Timelog"
+                fontSize={30}
+                isPermissionPage={true}
+                role={authUser.role}
+                darkMode={darkMode}
+              /> 
+          }
         </Container>
-   
       )}
 
       {timeLogState.isTimeEntriesLoading ? (
@@ -480,9 +481,8 @@ const Timelog = props => {
               </div>
             </div>
           ) : null}
-
           <Row>
-            <Col md={12}>
+            <Col md={12} className='pl-0 ml-0'>
               <Card className={darkMode ? 'border-0' : ''}>
                 <CardHeader className={darkMode ? 'card-header-shadow-dark bg-space-cadet text-light' : 'card-header-shadow'}>
                   <Row>

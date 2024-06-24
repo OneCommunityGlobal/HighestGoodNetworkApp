@@ -715,6 +715,7 @@ export class WeeklySummary extends Component {
     return (
       <Container
         fluid={!!isModal}
+        style={{ minWidth: '100%' }}
         className={`py-3 mb-5 ${
           darkMode ? 'bg-space-cadet text-azure box-shadow-dark' : 'bg--white-smoke'
         }`}
@@ -766,56 +767,58 @@ export class WeeklySummary extends Component {
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
-                          {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
-                            <UncontrolledDropdown>
-                              <DropdownToggle
-                                className="px-5 mr-2 btn--dark-sea-green"
-                                caret
-                                style={boxStyling}
-                              >
-                                Move This Summary
-                              </DropdownToggle>
-                              <DropdownMenu className={darkMode ? 'bg-oxford-blue' : ''}>
-                                <DropdownItem
-                                  disabled={activeTab === '1'}
-                                  onClick={() => this.handleMoveSelect('1')}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={fontColor}
+                          <div className="d-flex flex-column">
+                            <CurrentPromptModal
+                              userRole={userRole}
+                              userId={displayUserId}
+                              darkMode={darkMode}
+                            />
+                            {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
+                              <UncontrolledDropdown>
+                                <DropdownToggle
+                                  className="px-5 mr-2 btn--dark-sea-green w-100"
+                                  caret
+                                  style={boxStyling}
                                 >
-                                  This Week
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '2'}
-                                  onClick={() => this.handleMoveSelect('2')}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={fontColor}
-                                >
-                                  Last Week
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '3'}
-                                  onClick={() => this.handleMoveSelect('3')}
-                                  className={fontColor}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                >
-                                  Week Before Last
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '4'}
-                                  onClick={() => this.handleMoveSelect('4')}
-                                  className={fontColor}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                >
-                                  Three Weeks Ago
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </UncontrolledDropdown>
-                          )}
-                          <CurrentPromptModal
-                            userRole={userRole}
-                            userId={displayUserId}
-                            darkMode={darkMode}
-                          />
+                                  Move This Summary
+                                </DropdownToggle>
+                                <DropdownMenu className={darkMode ? 'bg-oxford-blue' : ''}>
+                                  <DropdownItem
+                                    disabled={activeTab === '1'}
+                                    onClick={() => this.handleMoveSelect('1')}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                    className={fontColor}
+                                  >
+                                    This Week
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '2'}
+                                    onClick={() => this.handleMoveSelect('2')}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                    className={fontColor}
+                                  >
+                                    Last Week
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '3'}
+                                    onClick={() => this.handleMoveSelect('3')}
+                                    className={fontColor}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  >
+                                    Week Before Last
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '4'}
+                                    onClick={() => this.handleMoveSelect('4')}
+                                    className={fontColor}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  >
+                                    Three Weeks Ago
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                            )}
+                          </div>
                         </Label>
                         <Editor
                           tinymceScriptSrc="/tinymce/tinymce.min.js"

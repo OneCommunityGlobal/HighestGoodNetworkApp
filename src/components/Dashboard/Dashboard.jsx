@@ -1,6 +1,6 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
@@ -30,11 +30,11 @@ export function Dashboard(props) {
 
   const toggle = () => {
     if (isNotAllowedToEdit) {
-      if (viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
-      } else {
-        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
-      }
+      const warningMessage =
+        viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
+          ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
+          : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
+      alert(warningMessage);
       return;
     }
     setPopup(!popup);
@@ -70,8 +70,8 @@ export function Dashboard(props) {
       />
 
       <Row>
-        <Col lg={{ size: 7 }}>&nbsp;</Col>
-        <Col lg={{ size: 5 }}>
+        <Col lg={7}></Col>
+        <Col lg={5}>
           <div className="row justify-content-center">
             <div
               role="button"
@@ -94,27 +94,25 @@ export function Dashboard(props) {
         </Col>
       </Row>
       <Row>
-        <Col lg={{ size: 5 }} className="order-sm-12">
+        <Col lg={5} className="order-lg-2 order-1">
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
           />
         </Col>
-        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-          {popup ? (
-            <div className="my-2">
-              <div id="weeklySum">
-                <WeeklySummary
-                  displayUserId={displayUserId}
-                  setPopup={setPopup}
-                  userRole={authUser.role}
-                  isNotAllowedToEdit={isNotAllowedToEdit}
-                  darkMode={darkMode}
-                />
-              </div>
+        <Col lg={7} className="left-col-dashboard order-lg-1 order-2">
+          {popup && (
+            <div className="my-2" id="weeklySum">
+              <WeeklySummary
+                displayUserId={displayUserId}
+                setPopup={setPopup}
+                userRole={authUser.role}
+                isNotAllowedToEdit={isNotAllowedToEdit}
+                darkMode={darkMode}
+              />
             </div>
-          ) : null}
+          )}
           <div className="my-2" id="wsummary">
             <Timelog
               isDashboard
@@ -122,11 +120,13 @@ export function Dashboard(props) {
               isNotAllowedToEdit={isNotAllowedToEdit}
             />
           </div>
-          <Badge
-            userId={displayUserId}
-            role={authUser.role}
-            isNotAllowedToEdit={isNotAllowedToEdit}
-          />
+          <div className="my-5">
+            <Badge
+              userId={displayUserId}
+              role={authUser.role}
+              isNotAllowedToEdit={isNotAllowedToEdit}
+            />
+          </div>
         </Col>
       </Row>
       <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />

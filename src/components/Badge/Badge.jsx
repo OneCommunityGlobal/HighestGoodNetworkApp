@@ -79,7 +79,10 @@ function Badge(props) {
   }, [props.userProfile.badgeCollection, totalBadge]);
   return (
     <>
-      <Container className={`p-0 ${darkMode ? 'badge-box-shadow-dark' : 'bagde-box-shadow'}`}>
+      <Container
+        style={{ minWidth: '100%' }}
+        className={`p-0 ${darkMode ? 'badge-box-shadow-dark' : 'bagde-box-shadow'}`}
+      >
         <Row>
           <Col md={12}>
             <Card
