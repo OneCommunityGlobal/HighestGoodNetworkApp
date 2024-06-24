@@ -70,7 +70,7 @@ const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
-const WeeklyVolunteerSummary = lazy(() => import('./components/WeeklyVolunteerSummary'));
+const TotalOrgSummary = lazy(() => import('./components/TotalOrgSummary'));
 const Reports = lazy(() => import('./components/Reports'));
 const PeopleReport = lazy(() => import('./components/Reports/PeopleReport'));
 const ProjectReport = lazy(() => import('./components/Reports/ProjectReport'));
@@ -237,9 +237,9 @@ export default (
         />
 
         <ProtectedRoute
-          path="/weeklyvolunteersummary"
+          path="/totalorgsummary"
           exact
-          component={WeeklyVolunteerSummary}
+          component={TotalOrgSummary}
           fallback
           allowedRoles={[
             UserRole.Administrator,

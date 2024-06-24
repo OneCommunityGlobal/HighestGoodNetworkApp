@@ -1,12 +1,12 @@
 import axios from 'axios';
-import * as actions from '../constants/weeklyVolunteerSummary';
+import * as actions from '../constants/totalOrgSummary';
 import { ENDPOINTS } from '../utils/URL';
 
 /**
  * Action to set the 'loading' flag to true.
  */
 export const fetchWeeklyVolunteerSummariesReportBegin = () => ({
-  type: actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_BEGIN,
+  type: actions.FETCH_TOTAL_ORG_SUMMARY_BEGIN,
 });
 
 /**
@@ -15,7 +15,7 @@ export const fetchWeeklyVolunteerSummariesReportBegin = () => ({
  * @param {array} volunteerstats An array of all active users.
  */
 export const fetchWeeklyVolunteerSummariesReportSuccess = volunteerstats => ({
-  type: actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_SUCCESS,
+  type: actions.FETCH_TOTAL_ORG_SUMMARY_SUCCESS,
   payload: { volunteerstats },
 });
 
@@ -25,7 +25,7 @@ export const fetchWeeklyVolunteerSummariesReportSuccess = volunteerstats => ({
  * @param {Object} error The error object.
  */
 export const fetchWeeklyVolunteerSummariesReportError = error => ({
-  type: actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_ERROR,
+  type: actions.FETCH_TOTAL_ORG_SUMMARY_ERROR,
   payload: { error },
 });
 

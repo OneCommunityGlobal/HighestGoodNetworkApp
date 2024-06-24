@@ -28,7 +28,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   VOLUNTEER_SUMMARY_REPORT,
-  WEEKLY_VOLUNTEER_SUMMARIES,
+  TOTAL_ORG_SUMMARY
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -334,8 +334,8 @@ export function Header(props) {
                         </DropdownItem>
                       )}
                       {canGetWeeklyVolunteerSummary && (
-                        <DropdownItem tag={Link} to="/weeklyvolunteersummary">
-                          {WEEKLY_VOLUNTEER_SUMMARIES}
+                        <DropdownItem tag={Link} to="/totalorgsummary">
+                          {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
                       <DropdownItem tag={Link} to="/teamlocations">

@@ -3,11 +3,11 @@ import { connect } from 'react-redux';
 import { useEffect } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import hasPermission from 'utils/permissions';
-import { getWeeklyVolunteerSummaries } from 'actions/weeklyVolunteerSummary';
+import { getWeeklyVolunteerSummaries } from 'actions/totalOrgSummary';
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 
-function WeeklyVolunteerSummary(props) {
+function TotalOrgSummary(props) {
   const { darkMode, loading, error } = props;
 
   useEffect(() => {
@@ -31,7 +31,7 @@ function WeeklyVolunteerSummary(props) {
     );
   }
   if (loading) {
-    <h1>Weekly Volunteer Summary Loading</h1>;
+    <h1>Total Org Summary Loading</h1>;
     return (
       <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
         <Row className="text-center" data-testid="loading">
@@ -45,7 +45,7 @@ function WeeklyVolunteerSummary(props) {
   }
   return (
     <Container>
-      <h1>Weekly Volunteer Summary</h1>
+      <h1>Total Org Summary</h1>
     </Container>
   );
 }
@@ -70,4 +70,4 @@ const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(WeeklyVolunteerSummary);
+export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);

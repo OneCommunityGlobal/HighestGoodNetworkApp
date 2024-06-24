@@ -44,8 +44,8 @@ import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
-import { timeOffRequestsReducer } from "./timeOffRequestReducer"
-import { weeklyVolunteerSummaryReducer } from './weeklyVolunteerSummaryReducer';
+import { timeOffRequestsReducer } from "./timeOffRequestReducer";
+import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 
 
 const localReducers = {
@@ -74,7 +74,7 @@ const localReducers = {
   weeklySummaryRecipients:weeklySummaryRecipientsReducer,
   notification: notificationReducer,
   userFollowUp : followUpReducer,
-  weeklyVolunteerSummaryReducer: weeklyVolunteerSummaryReducer,
+  totalOrgSummaryReducer: totalOrgSummaryReducer,
 
   // bmdashboard
   materials: materialsReducer,

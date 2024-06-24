@@ -1,4 +1,4 @@
-import * as actions from '../constants/weeklyVolunteerSummary';
+import * as actions from '../constants/totalOrgSummary';
 
 const initialState = {
   volunteerstats: [],
@@ -6,23 +6,23 @@ const initialState = {
   error: null,
 };
 
-export const weeklyVolunteerSummaryReducer = (state = initialState, action) => {
+export const totalOrgSummaryReducer = (state = initialState, action) => {
   switch (action.type) {
-    case actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_BEGIN:
+    case actions.FETCH_TOTAL_ORG_SUMMARY_BEGIN:
       return {
         ...state,
         loading: true,
         error: null,
       };
 
-    case actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_SUCCESS:
+    case actions.FETCH_TOTAL_ORG_SUMMARY_SUCCESS:
       return {
         ...state,
         loading: false,
         volunteerstats: action.payload.volunteerstats,
       };
 
-    case actions.FETCH_WEEKLY_VOLUNTEER_SUMMARIES_ERROR:
+    case actions.FETCH_TOTAL_ORG_SUMMARY_ERROR:
       return {
         ...state,
         loading: false,
