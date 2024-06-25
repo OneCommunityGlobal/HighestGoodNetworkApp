@@ -37,9 +37,9 @@
 }
 
 #modal-content__new-role {
+  position: relative;
   width: 100%;
   max-width: 700px;
-  right: 7%;
 }
 
 #modal-body_new-role--padding {
@@ -156,11 +156,11 @@
   width: 400px;
   height: 250px;
   position: fixed;  
-  top: 50%;
-  left: 82%;
-  transform: translate(-50%, -50%);
+  top: 30%;
+  right: 15%;
+  transform: translateX(50%);
   background-color: white;
-  z-index: 11111;
+  z-index: 1000;
   border: 1px solid #ccc;
   border-radius: 10px;
   justify-content: space-between;
@@ -222,10 +222,75 @@
 }
 
  
-
-
-@media only screen and (max-width: 1199px) {
+@media only screen and (max-width: 1110px) {
   .permissions-management__header {
     flex-direction: column;
+  }
+}
+
+@media only screen and (min-width: 600px) {
+  .ContainerReminder {
+    position: absolute;
+    width: 400px;
+    top: 100%;
+    right: 50%;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .ContainerReminder {
+    position: fixed;
+    width: 200px;
+    top: 35%;
+    right: 11%;
+  }
+  .ReminderTitle{
+    display: flex;
+    justify-content: center;
+    flex: 10;
+    padding-left: 10px;
+  }
+  .ReminderButton button:first-child{
+    height: 100%;
+    width: 140px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+}
+
+@media only screen and (min-width: 1400px) {
+  .ContainerReminder {
+    width: 300px;
+    right: 13%;
+  }
+  .ReminderTitle{
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    padding-left: 20px;
+  }
+}
+
+@media only screen and (min-width: 1600px) {
+  .ContainerReminder {
+    width: 400px;
+    right: 15%;
+  }
+
+  .ReminderTitle{
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    padding-left: 1px;
+  }
+}
+
+@media only screen and (min-width: 1900px) {
+  .ContainerReminder {
+    right: 20%;
   }
 }
