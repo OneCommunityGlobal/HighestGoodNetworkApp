@@ -5,10 +5,10 @@ import './TeamsAndProjects.css';
 const AddTeamsAutoComplete = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
 
-  React.useEffect(() => {
-    if (!props.selectedTeam) props.setSearchText('');
-    else props.setSearchText(props.selectedTeam.teamName);
-  }, [props.selectedTeam, props.setSearchText]);
+  //!React.useEffect(() => {
+  //!if (!props.selectedTeam) props.setSearchText('');
+  //!else props.setSearchText(props.selectedTeam.teamName);
+  //!}, [props.selectedTeam, props.setSearchText]);
 
   return (
     <Dropdown
@@ -48,17 +48,16 @@ const AddTeamsAutoComplete = React.memo(props => {
               <div
                 key={item._id}
                 className="team-auto-complete"
-                key={item._id}
                 onClick={() => {
                   props.setSearchText(item.teamName);
                   toggle(false);
-                  props.onDropDownSelect(item);
+                  //!props.onDropDownSelect(item);
+                  !props.isNotDisplayAlert && props.setIsNotDisplayAlert(true);
                 }}
               >
                 {item.teamName}
               </div>
             ))}
-
 
           {props.teamsData.allTeams.every(
             team => team.teamName.toLowerCase() !== props.searchText.toLowerCase(),
@@ -73,8 +72,6 @@ const AddTeamsAutoComplete = React.memo(props => {
               Create new team: {props.searchText}
             </div>
           )}
-            
-            
         </div>
       ) : (
         <></>
