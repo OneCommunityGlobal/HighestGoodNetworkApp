@@ -5,7 +5,7 @@ import { ENDPOINTS } from '../utils/URL';
 /**
  * Action to set the 'loading' flag to true.
  */
-export const fetchWeeklyVolunteerSummariesReportBegin = () => ({
+export const fetchTotalOrgSummaryReportBegin = () => ({
   type: actions.FETCH_TOTAL_ORG_SUMMARY_BEGIN,
 });
 
@@ -14,31 +14,30 @@ export const fetchWeeklyVolunteerSummariesReportBegin = () => ({
  *
  * @param {array} volunteerstats An array of all active users.
  */
-export const fetchWeeklyVolunteerSummariesReportSuccess = volunteerstats => ({
+export const fetchTotalOrgSummaryReportSuccess = volunteerstats => ({
   type: actions.FETCH_TOTAL_ORG_SUMMARY_SUCCESS,
   payload: { volunteerstats },
 });
-
 /**
  * Handle the error case.
  *
  * @param {Object} error The error object.
  */
-export const fetchWeeklyVolunteerSummariesReportError = error => ({
+export const fetchTotalOrgSummaryReportError = error => ({
   type: actions.FETCH_TOTAL_ORG_SUMMARY_ERROR,
   payload: { error },
 });
 
-export const getWeeklyVolunteerSummaries = () => {
-  const url = ENDPOINTS.WEEKLY_VOLUNTEER_SUMMARY();
+export const getTotalOrgSummary = (startDate, endDate) => {
+  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate);
   return async dispatch => {
-    dispatch(fetchWeeklyVolunteerSummariesReportBegin());
+    dispatch(fetchTotalOrgSummaryReportBegin());
     try {
       const response = await axios.get(url);
-      dispatch(fetchWeeklyVolunteerSummariesReportSuccess(response.data));
+      dispatch(fetchTotalOrgSummaryReportSuccess(response.data));
       return {status: response.status, data: response.data};
     } catch (error) {
-      dispatch(fetchWeeklyVolunteerSummariesReportError(error));
+      dispatch(fetchTotalOrgSummaryReportError(error));
       return error.response.status;
     }
   };
