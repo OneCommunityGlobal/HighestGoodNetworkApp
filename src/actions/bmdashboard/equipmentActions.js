@@ -40,7 +40,7 @@ export const addEquipmentType = async (body) => {
 
 export const setEquipment = payload => {
   return {
-    type: GET_EQUIPMENT_BY_ID,
+    type: SET_EQUIPMENTS,
     payload
   }
 }
