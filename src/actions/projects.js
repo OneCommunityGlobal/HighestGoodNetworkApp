@@ -38,7 +38,7 @@ export const postNewProject = (projectName, projectCategory) => {
     let status, error;
     dispatch(setProjectsStart());
     try {
-      const res = await axios.post(url, { projectName, projectCategory, isActive: true });
+      const res = await axios.post(url, { projectName, projectCategory });
       const _id = res.data._id;
       status = res.status;
       const newProject = {
@@ -48,12 +48,10 @@ export const postNewProject = (projectName, projectCategory) => {
         isActive: true,
       };
       dispatch(addNewProject({ newProject, status }));
-      return status;
     } catch (err) {
       status = err.response.status;
       error = err.response.data;
       dispatch(addNewProject({ status, error }));
-      return status;
     }
   };
 };

@@ -3,7 +3,6 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Input } from
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css';
-import { postNewProject } from '../../../../src/actions/projects';
 import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
@@ -11,8 +10,6 @@ import { ENDPOINTS } from '../../../utils/URL';
 
 const AddProjectPopup = React.memo(props => {
   const { darkMode } = props;
-
-  const dispatch = useDispatch();
 
   const closePopup = () => {
     props.onClose();
@@ -94,22 +91,31 @@ const AddProjectPopup = React.memo(props => {
     // prettier-ignore
     if (validateProjectName) { toast.error('This project already exists.'); return;}
 
-    const responseAddNewProject = await dispatch(postNewProject(searchText, dropdownText));
+    const urlCreateProject = ENDPOINTS.PROJECTS;
 
-    // prettier-ignore
-    if (responseAddNewProject !== 201) {toast.error('Project creation failed'); return;}
+    const newProject = {
+      projectName: searchText,
+      category: dropdownText,
+      isActive: true,
+    };
 
-    const url = ENDPOINTS.PROJECTS;
-    const res = await axios.get(url);
-    const status = res.status;
-    const projects = res.data;
-    if (status === 200) {
-      const findNewProject = projects.filter((item, i) => i === 0)[0];
-      selectProject(findNewProject);
-      finishFetch(status);
-    } else {
+    try {
+      await axios.post(urlCreateProject, newProject);
+      const url = ENDPOINTS.PROJECTS;
+      const res = await axios.get(url);
+      const status = res.status;
+      const projects = res.data;
+      if (status === 200) {
+        const findNewProject = projects.filter((item, i) => i === 0)[0];
+        selectProject(findNewProject);
+        finishFetch(status);
+      } else {
+        onInputChange('');
+        finishFetch(status);
+      }
+    } catch (err) {
+      toast.error('Project creation failed');
       onInputChange('');
-      finishFetch(status);
     }
   };
 
