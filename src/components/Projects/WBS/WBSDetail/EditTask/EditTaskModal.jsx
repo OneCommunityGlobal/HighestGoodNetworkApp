@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from 'languages/en/messages';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../../src/languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
-import { updateTask } from 'actions/task';
+import { updateTask } from '../../../../../../src/actions/task';
 import { Editor } from '@tinymce/tinymce-react';
-import hasPermission from 'utils/permissions';
+import hasPermission from '../../../../../../src/utils/permissions';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { boxStyle, boxStyleDark } from 'styles';
+import { ENDPOINTS } from '../../../../../../src/utils/URL';
+import { boxStyle, boxStyleDark } from '../../../../../../src/styles';
 import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
@@ -70,7 +70,7 @@ function EditTaskModal(props) {
     { value: 'Other', label: 'Other' },
   ];
   const FORMAT = 'MM/dd/yy';
-  
+
   const EditorInit = {
       license_key: 'gpl',
       menubar: false,
@@ -88,7 +88,7 @@ function EditTaskModal(props) {
   * -------------------------------- functions --------------------------------
   */
   const toggle = () => setModal(!modal);
-  
+
   // set different mode while show modal through different button
   const handleModalShow = (mode) => {
     setCurrentMode(mode);
@@ -284,7 +284,7 @@ function EditTaskModal(props) {
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <table
             className={`table table-bordered responsive
-            ${canUpdateTask || canSuggestTask ? null : 'disable-div'} 
+            ${canUpdateTask || canSuggestTask ? null : 'disable-div'}
             ${darkMode ? 'text-light' : ''}`}
           >
             <tbody>
@@ -304,7 +304,7 @@ function EditTaskModal(props) {
                     onChange={e => setTaskName(e.target.value)}
                     onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
-                  />, 
+                  />,
                   editable,
                   taskName
                 )}
