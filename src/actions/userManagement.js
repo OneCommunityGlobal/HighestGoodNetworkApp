@@ -163,7 +163,25 @@ export const updateUserFinalDayStatus = (user, status, finalDayDate) => {
     userProfile.endDate = moment(finalDayDate).format('YYYY-MM-DD');
     patchData.endDate = moment(finalDayDate).format('YYYY-MM-DD');
   }
-
+  if (patchData.endDate != null) {
+    try {
+      console.log('firstname'+user.firstName)
+      console.log('lastname'+user.lastName)
+      console.log('date'+new Date().toISOString().split('T')[0])
+      const response = axios.post(ENDPOINTS.SEND_DEACTIVE_EMAIL, {
+        firstName: user.firstName,
+        lastName: user.lastName,
+        date: new Date().toISOString().split('T')[0] // Today's date in YYYY-MM-DD format
+      });
+      if (response.status === 200) {
+        console.log('Deactivation email sent successfully');
+      } else {
+        console.error('Failed to send deactivation email');
+      }
+    } catch (error) {
+      console.error('Error sending deactivation email:', error);
+    }
+  }
   const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
   return async dispatch => {
     updateProfilePromise.then(res => {
