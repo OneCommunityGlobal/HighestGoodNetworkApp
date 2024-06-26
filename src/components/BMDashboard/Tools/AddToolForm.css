@@ -55,6 +55,10 @@ font-size: .8em;
   justify-content: flex-start;
 }
 
+.field-required{
+  color: red;
+}
+
 @media screen and (max-width: 640px) {
   .add-tool-flex-group {
     display: block;

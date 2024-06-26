@@ -198,7 +198,9 @@ export default function AddToolForm() {
         </Input>
       </FormGroup> */}
       <FormGroup>
-        <Label for="tool">Tool name</Label>
+        <Label for="tool">
+          Tool name <span className="field-required">*</span>
+        </Label>
         <Input
           id="tool"
           type="text"
@@ -215,7 +217,9 @@ export default function AddToolForm() {
         )}
       </FormGroup>
       <FormGroup>
-        <Label for="invoice-number">Invoice Number or ID</Label>
+        <Label for="invoice-number">
+          Invoice Number or ID <span className="field-required">*</span>
+        </Label>
         <Input
           id="invoice-number"
           type="text"
@@ -233,7 +237,9 @@ export default function AddToolForm() {
       </FormGroup>
       <div className="add-tool-flex-group">
         <FormGroup>
-          <Label for="unit-price">Unit Price (excl.taxes & shipping)</Label>
+          <Label for="unit-price">
+            Unit Price (excl.taxes & shipping) <span className="field-required">*</span>
+          </Label>
           <Input
             id="unit-price"
             type="number"
@@ -263,7 +269,9 @@ export default function AddToolForm() {
           </Input>
         </FormGroup>
         <FormGroup>
-          <Label for="quantity">Total quantity</Label>
+          <Label for="quantity">
+            Total quantity <span className="field-required">*</span>
+          </Label>
           <Input
             id="quantity"
             type="number"
@@ -399,7 +407,9 @@ export default function AddToolForm() {
         />
       </FormGroup>
       <FormGroup>
-        <Label for="description">Tool/Equipment Description</Label>
+        <Label for="description">
+          Tool/Equipment Description <span className="field-required">*</span>
+        </Label>
         <Input
           type="textarea"
           rows="4"
@@ -421,25 +431,12 @@ export default function AddToolForm() {
           {totalPriceWithShipping} {formData.currency}
         </div>
       </div>
-      {errors && (
-        <div>
-          <div className="toolFormError">
-            <p>{errors.name} </p>
-          </div>
-          <div className="toolFormError">
-            <p>{errors.description} </p>
-          </div>
-          <div className="toolFormError">
-            <p>{errors.invoice} </p>
-          </div>
-          <div className="toolFormError">
-            <p>{errors.quantity} </p>
-          </div>
-          <div className="toolFormError">
-            <p>{errors.unitPrice} </p>
-          </div>
-        </div>
-      )}
+      {errors &&
+        (errors.name ||
+          errors.description ||
+          errors.invoice ||
+          errors.quantity ||
+          errors.unitPrice) && <div className="toolFormError"> Missing Required Field </div>}
       <div className="add-tool-buttons">
         <Button outline style={boxStyle} onClick={handleCancelClick}>
           Cancel
