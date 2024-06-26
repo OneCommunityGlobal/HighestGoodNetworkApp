@@ -54,7 +54,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
                 invalid={hasError}
               />
               <FormFeedback>
-              The code format must be A-AAAAA or A12AAAA.
+                 NOT SAVED! The code must be between 5 and 7 characters long
               </FormFeedback>
             </FormGroup>
           </div>

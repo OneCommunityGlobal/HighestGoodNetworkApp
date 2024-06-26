@@ -1,7 +1,7 @@
 import {
   FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
   POST_BUILDING_MATERIAL_INVENTORY_UNIT, RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT
-} from "constants/bmdashboard/inventoryTypeConstants";
+} from "../../constants/bmdashboard/inventoryTypeConstants";
 
 const defaultState = {
   list: [],
