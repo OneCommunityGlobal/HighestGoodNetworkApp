@@ -6,11 +6,6 @@ import { toast } from 'react-toastify';
 const AddTeamsAutoComplete = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
 
-  React.useEffect(() => {
-    if (!props.selectedTeam) props.setSearchText('');
-    else props.setSearchText(props.selectedTeam.teamName);
-  }, [props.selectedTeam, props.setSearchText]);
-
   return (
     <Dropdown
       isOpen={isOpen}
@@ -24,9 +19,7 @@ const AddTeamsAutoComplete = React.memo(props => {
         value={props.searchText}
         autoFocus={true}
         onChange={e => {
-          props.setAutoComplete(1);
           props.setSearchText(e.target.value);
-          props.setNewTeamName(e.target.value);
           toggle(true);
         }}
       />
@@ -54,7 +47,6 @@ const AddTeamsAutoComplete = React.memo(props => {
                     onClick={() => {
                       props.setSearchText(item.teamName);
                       toggle(false);
-                      props.onDropDownSelect(item);
                     }}
                   >
                     {item.teamName}
