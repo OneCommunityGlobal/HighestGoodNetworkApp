@@ -1,10 +1,12 @@
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
+import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
 import { getProjectDetail } from '../../../actions/project';
+import {getTimeEntryByProjectSpecifiedPeriod} from '../../../actions/index'
 import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
-import { fetchAllTasks } from 'actions/task';
+import { fetchAllTasks} from '../../../actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -16,7 +18,9 @@ import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequire
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../../styles';
+import { PieChartByProject } from './PiechartByProject/PieChartByProject';
+
 
 // eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
@@ -34,17 +38,57 @@ export function ProjectReport({ match }) {
   const canViewWBS = isAdmin || checkAnyPermission(viewWBSpermissionsRequired);
 
   const { wbs, projectMembers, isActive, projectName, wbsTasksID } = useSelector(
-    projectReportViewData,
+    projectReportViewData
   );
   const tasks = useSelector(state => state.tasks);
 
+  let projectId = '';
+  if (match && match.params) {
+  projectId = match.params.projectId;
+  }
+
+  const [projectUsers, setProjectUsers] = useState([]);
+  const [mergedProjectUsersArray, setMergedProjectUsersArray] = useState([]);
+
+  const fromDate = '2016-01-01';
+  const toDate = new Date().toISOString().split('T')[0];
+
+  useEffect(() => {
+    dispatch(getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate))
+    .then(response => {
+      if (response && Array.isArray(response)) {
+        setProjectUsers(response);
+      } else {
+        console.log('error on fetching data');
+      }
+    }).catch(() => {
+      console.log('error on fetching data');
+    });
+  }, [projectId, fromDate, toDate, dispatch]);
+
+  useEffect(() => {
+    const mergedProjectUsers = projectUsers.reduce((acc, curr) => {
+      if (curr.personId && !acc[curr.personId._id]) {
+        // Si el usuario no existe en el acumulador, lo inicializamos con el objeto actual
+        acc[curr.personId._id] = {...curr};
+      } else if (curr.personId) {
+        // Si el usuario ya existe, sumamos totalSeconds al existente
+        acc[curr.personId._id].totalSeconds += curr.totalSeconds;
+      }
+      return acc;
+    }, {});
+    setMergedProjectUsersArray(Object.values(mergedProjectUsers));    // console.log('merged project users', mergedProjectUsersArray);
+    // console.log('length of merged project users', mergedProjectUsersArray.length);
+  }, [projectUsers]);
+
   useEffect(() => {
     if (match) {
-      dispatch(getProjectDetail(match.params.projectId));
-      dispatch(fetchAllWBS(match.params.projectId));
-      dispatch(fetchAllMembers(match.params.projectId));
+      dispatch(getProjectDetail(projectId));
+      dispatch(fetchAllWBS(projectId));
+      dispatch(fetchAllMembers(projectId));
     }
-  }, []);
+  }, [dispatch, projectId]);
+
 
   useEffect(() => {
     if (wbs.fetching === false) {
@@ -56,7 +100,7 @@ export function ProjectReport({ match }) {
 
   useEffect(() => {
     if (tasks.taskItems.length > 0) {
-      setHoursCommitted(tasks.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
+      setHoursCommitted(tasks.taskItems.reduce((total, task) => total + task.hoursLogged, 0));
     }
   }, [tasks]);
 
@@ -79,42 +123,45 @@ export function ProjectReport({ match }) {
 
   return (
     <div className={`container-project-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-    <ReportPage
-      renderProfile={() => (
-        <ReportPage.ReportHeader
-          isActive={isActive}
-          avatar={<FiBox />}
-          name={projectName}
-          counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
-          hoursCommitted={hoursCommitted.toFixed(0)}
-          darkMode={darkMode}
-        />
-      )}
-      darkMode={darkMode}
-    >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div> 
-      <div className="wbs-and-members-blocks-wrapper">
-        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
-          <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
-            <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} darkMode={darkMode}/>
-          </Paging>
-        </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
-          <Paging totalElementsCount={memberCount} darkMode={darkMode}>
-            <ProjectMemberTable
-              projectMembers={projectMembers}
-              handleMemberCount={handleMemberCount}
-              darkMode={darkMode}
-            />
-          </Paging>
-        </ReportPage.ReportBlock>
-      </div>
-      <div className="tasks-block">
+      <ReportPage
+        renderProfile={() => (
+          <ReportPage.ReportHeader
+            isActive={isActive}
+            avatar={<FiBox />}
+            name={projectName}
+            counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
+            hoursCommitted={hoursCommitted.toFixed(0)}
+            darkMode={darkMode}
+          />
+        )}
+        darkMode={darkMode}
+      >
+        <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
+        <div className="wbs-and-members-blocks-wrapper">
+          <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
+            <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
+              <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} darkMode={darkMode}/>
+            </Paging>
+          </ReportPage.ReportBlock>
+          <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
+            <Paging totalElementsCount={memberCount} darkMode={darkMode}>
+              <ProjectMemberTable
+                projectMembers={projectMembers}
+                handleMemberCount={handleMemberCount}
+                darkMode={darkMode}
+              />
+            </Paging>
+          </ReportPage.ReportBlock>
+        </div>
         <ReportPage.ReportBlock darkMode={darkMode}>
-          <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
+            <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
         </ReportPage.ReportBlock>
-      </div>
-    </ReportPage>
+        <ReportPage.ReportBlock darkMode={darkMode}>
+          <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>
+          <div style={{ marginTop: '40px' }}></div>
+          <WbsPieChart projectMembers={projectMembers} projectName={projectName} darkMode={darkMode}/>
+        </ReportPage.ReportBlock>
+      </ReportPage>
     </div>
   );
 }
