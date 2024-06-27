@@ -346,11 +346,20 @@
   margin-top: 5px;
 }
 
+.task_table-container{
+  max-height: 1025px;
+  width: 100%;
+  overflow-y: scroll;
+}
+
 @media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
   .team-task-progress {
     width: 100%; /* or any other value that fits your design */
     min-width: auto;
     max-width: none;
+  }
+  .task-table{
+    max-height: 900px;
   }
 }
 
@@ -361,7 +370,7 @@
 
   .team-member-tasks h1 {
     color: black;
-    font-size: 20px;
+    font-size: 12px;
     text-align: center;
   }
 
@@ -370,7 +379,7 @@
     justify-content: space-between;
     align-items: center;
     min-width: 165px;
-    padding: 0 15%;
+    padding: 0 5%;
   }
 
   .card-body {
@@ -402,6 +411,11 @@
   .table-row {
     border: solid #e9ecef 2px;
     background: #faf7fc;
+    font-size: 0.75rem !important;
+  }
+
+  .table-row td{
+    padding: 2px !important;
   }
 
   .spacer {
@@ -425,4 +439,21 @@
   }
 }
 
+@media only screen and (max-width: 530px) {
+  .hours-btn-container{
+    min-width: none;
+    padding: 0;
+  }
+}
 
+@media only screen and (max-width: 440px) {
+  .hours-btn-container{
+    column-gap: 0.2em;
+  }
+}
+
+@media only screen and (max-width: 544px) {
+  .responsive-font-size{
+    font-size: 0.75rem !important;
+  }
+}

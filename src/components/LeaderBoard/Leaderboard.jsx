@@ -183,7 +183,7 @@ function LeaderBoard({
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <Table className={`leaderboard table-fixed ${darkMode ? 'text-light' : ''}`}>
-          <thead>
+          <thead className="responsive-font-size">
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
               <th>
@@ -223,7 +223,7 @@ function LeaderBoard({
               </th>
             </tr>
           </thead>
-          <tbody className="my-custome-scrollbar">
+          <tbody className="my-custome-scrollbar responsive-font-size">
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td />
               <th scope="row" className="leaderboard-totals-container">
@@ -234,6 +234,7 @@ function LeaderBoard({
                   </span>
                 )}
               </th>
+              <td className="align-middle" />
               <td className="align-middle" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>

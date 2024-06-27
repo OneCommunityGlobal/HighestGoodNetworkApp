@@ -69,7 +69,7 @@ export function Dashboard(props) {
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
 
-      <Row>
+      <Row className="w-100 ml-1">
         <Col lg={7}></Col>
         <Col lg={5}>
           <div className="row justify-content-center">
@@ -93,15 +93,15 @@ export function Dashboard(props) {
           </div>
         </Col>
       </Row>
-      <Row>
-        <Col lg={5} className="order-lg-2 order-1">
+      <Row className="w-100 ml-1">
+        <Col lg={5} className="order-lg-2 order-2">
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
           />
         </Col>
-        <Col lg={7} className="left-col-dashboard order-lg-1 order-2">
+        <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
           {popup && (
             <div className="my-2" id="weeklySum">
               <WeeklySummary

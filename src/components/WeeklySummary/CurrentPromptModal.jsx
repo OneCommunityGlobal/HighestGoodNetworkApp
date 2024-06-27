@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
+import './WeeklySummary.css';
 import {
   updateDashboardData,
   updateCopiedPromptDate,
@@ -126,7 +127,7 @@ function CurrentPromptModal(props) {
     <div>
       {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
         <Button
-          className="p-1 mb-1 w-100"
+          className="p-1 mb-1 current-prompt-btn"
           color="info"
           onClick={toggle}
           style={darkMode ? boxStyleDark : boxStyle}
@@ -145,7 +146,7 @@ function CurrentPromptModal(props) {
         </Button>
       ) : (
         <Button
-          className="p-1 mb-1 w-100"
+          className="p-1 mb-1 current-prompt-btn"
           color="info"
           onClick={toggle}
           style={darkMode ? boxStyleDark : boxStyle}
