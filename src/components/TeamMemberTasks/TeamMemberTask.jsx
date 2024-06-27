@@ -184,16 +184,15 @@ const TeamMemberTask = React.memo(
           <td colSpan={3} className={darkMode ? "bg-yinmn-blue" : ""}>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
-                {user.tasks &&
-                  activeTasks.slice(0, numTasksToShow).map((task, index) => {
-                    return (
+                {(user.tasks && Array.isArray(activeTasks) ? activeTasks : []).map((task, index) => {
+                     return (
                       <tr key={`${task._id}${index}`} className="task-break">
                         <td data-label="Task(s)" className={`task-align  ${darkMode ? "bg-yinmn-blue" : ""}`}>
                           <div className="team-member-tasks-content">
                             <Link
                               to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                               data-testid={`${task.taskName}`}
-                              style={{color: darkMode ? "#007BFF" : undefined}} 
+                              style={{color: darkMode ? "#007BFF" : undefined}}
                             >
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
@@ -277,7 +276,7 @@ const TeamMemberTask = React.memo(
                             )}
                             <div className="team-task-progress-container">
                               <span
-                                data-testid={`times-${task.taskName}`} 
+                                data-testid={`times-${task.taskName}`}
                                 className={darkMode ? 'text-light ' : '' + (canSeeFollowUpCheckButton ? "team-task-progress-time" : "team-task-progress-time-volunteers")}
                               >
                                 {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
@@ -304,7 +303,8 @@ const TeamMemberTask = React.memo(
                         )}
                       </tr>
                     );
-                  })}
+                  })
+                }
                 {canTruncate && (
                   <tr key="truncate-button-row" className="task-break">
                     <td className={`task-align  ${darkMode ? "bg-yinmn-blue" : ""}`}>
