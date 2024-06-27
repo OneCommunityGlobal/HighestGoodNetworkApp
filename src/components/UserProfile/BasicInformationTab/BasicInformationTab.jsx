@@ -12,7 +12,7 @@ import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { formatDate } from 'utils/formatDate';
+import { formatDateLocal } from 'utils/formatDate';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
@@ -642,7 +642,7 @@ const BasicInformationTab = props => {
       <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
         <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
           {userProfile.endDate
-            ? 'End Date ' + formatDate(userProfile.endDate)
+            ? 'End Date ' + formatDateLocal(userProfile.endDate)
             : 'End Date ' + 'N/A'}
         </Label>
         {canEdit && !desktopDisplay && (
@@ -681,7 +681,7 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
                 : 'Inactive'}
             </Label>
             &nbsp;
@@ -705,7 +705,7 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                  ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
                   : 'Inactive'}
               </Label>
               &nbsp;
