@@ -477,10 +477,12 @@ export class WeeklySummariesReport extends Component {
           .filter(Boolean);
 
         if (!selectedCodes.find(code => code.value === newTeamCode)) {
-          selectedCodes.push({
-            label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
-            value: newTeamCode,
-          });
+          if (newTeamCode !== undefined && newTeamCode.length > 0) {
+            selectedCodes.push({
+              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
+              value: newTeamCode,
+            });
+          }
         }
 
         // Sort teamCodes by label
