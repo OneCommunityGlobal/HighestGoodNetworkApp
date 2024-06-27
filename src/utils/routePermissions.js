@@ -31,5 +31,6 @@ export const RoutePermissions = {
     'deleteTask',
     'resolveTask',
     'putReviewStatus',
-  ],
+    'suggestTask'
+  ]
 };

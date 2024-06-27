@@ -12,7 +12,7 @@ export const getProjectDetail = projectId => {
       }
     });
     if (!loggedOut) {
-      await dispatch(setProjectDetail(res.data));
+      return dispatch(setProjectDetail(res.data));
     }
   };
 };

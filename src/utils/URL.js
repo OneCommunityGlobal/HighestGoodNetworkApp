@@ -1,3 +1,4 @@
+
 const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
 
@@ -207,6 +208,8 @@ export const ENDPOINTS = {
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
   UPDATE_TIME_OFF_REQUEST: id => `${APIEndpoint}/updateTimeOffRequest/${id}`,
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
+  BLUE_SQUARE_EMAIL_BCC : () => `${APIEndpoint}/AssignBlueSquareEmail`,
+  DELETE_BLUE_SQUARE_EMAIL_BCC : id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
 };
 
 export const ApiEndpoint = APIEndpoint;

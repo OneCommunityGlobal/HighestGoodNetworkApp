@@ -59,12 +59,13 @@ const TeamMemberTask = React.memo(
       return total;
     }, 0);
 
-    const activeTasks = user.tasks.filter(
+    const activeTasks = user.tasks
+    ? user.tasks.filter(
       task =>
         !task.resources?.some(
           resource => resource.userID === user.personId && resource.completedTask,
         ),
-    );
+    ): [];
 
     const canTruncate = activeTasks.length > NUM_TASKS_SHOW_TRUNCATE;
     const [isTruncated, setIsTruncated] = useState(canTruncate);
@@ -184,8 +185,8 @@ const TeamMemberTask = React.memo(
           <td colSpan={3} className={darkMode ? "bg-yinmn-blue" : ""}>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
-                {(user.tasks && Array.isArray(activeTasks) ? activeTasks : []).map((task, index) => {
-                     return (
+              {(user.tasks && activeTasks ? activeTasks.slice(0, numTasksToShow) : []).map((task, index) => {
+                    return (
                       <tr key={`${task._id}${index}`} className="task-break">
                         <td data-label="Task(s)" className={`task-align  ${darkMode ? "bg-yinmn-blue" : ""}`}>
                           <div className="team-member-tasks-content">
