@@ -49,6 +49,24 @@ const Projects = function(props) {
   const [searchName, setSearchName] = useState("");
   const [allProjects, setAllProjects] = useState(null);
 
+  const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+  
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+  
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+  
+    return debouncedValue;
+  };
+
+  const debouncedSearchName = useDebounce(searchName, 300);
+
   const canPostProject = props.hasPermission('postProject');
 
   const onClickArchiveBtn = (projectData) => {
@@ -151,28 +169,28 @@ const Projects = function(props) {
       }
   }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects]);
 
-  const handleSearchName = async searchNameInput => {
-    if(searchNameInput !== ""){ 
-
-     setSearchName(searchNameInput);
-     const projects = await props.getProjectsByUsersName(searchNameInput);
-
-     if(projects != undefined) {
-      const newProjectList = projectList.filter( project => {
-        for(let i = 0; i < projects.length - 1; i++){
-          if(projects[i] === project.key){
-            return project;
-          }
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (debouncedSearchName) {
+        const projects = await props.getProjectsByUsersName(debouncedSearchName);
+        if (projects) {
+          const newProjectList = allProjects.filter(project => 
+            projects.some(p => p === project.key)
+          );
+          setProjectList(newProjectList);
+        }else{
+          setProjectList(allProjects);
         }
-      });
+      } else {
+        setProjectList(allProjects);
+      }
+    };
+    fetchProjects();
+  }, [debouncedSearchName]);
 
-      setProjectList(newProjectList);
-     }
-    }else{  
-      setProjectList(allProjects);
-    }
-  }
-
+  const handleSearchName = (searchNameInput) => {
+    setSearchName(searchNameInput);
+  };
 
   return (
     <>

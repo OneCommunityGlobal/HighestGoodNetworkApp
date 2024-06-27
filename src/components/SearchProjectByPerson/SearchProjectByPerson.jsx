@@ -7,7 +7,7 @@ export default function SearchProjectByPerson({ onSearch }) {
       <input
         type="text"
         className="form-control"
-        placeholder="Person Name"
+        placeholder="Person's Name"
         onChange={e => {
           onSearch(e.target.value);
         }}

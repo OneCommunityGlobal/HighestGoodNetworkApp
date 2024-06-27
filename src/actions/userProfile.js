@@ -9,6 +9,7 @@ import {
   USER_NOT_FOUND_ERROR
 } from '../constants/userProfile';
 import { ENDPOINTS } from '../utils/URL';
+import { toast } from 'react-toastify';
 
 export const getUserProfile = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
@@ -80,13 +81,7 @@ export const getProjectsByUsersName = searchName => {
   return async dispatch => {
     try {
       const res = await axios.get(url);
-      if (res.status === 400) {
-        await dispatch(userNotFoundError(res.data.message));
-        toast.error("No Projects were found");
-      }
-      if (res.status === 200) {
-        await dispatch(getProjectsByPersonActionCreator(res.data));
-      }
+      await dispatch(getProjectsByPersonActionCreator(res.data));
       return res.data.allProjects;
     } catch (error) {
       await dispatch(userNotFoundError(error.message));
