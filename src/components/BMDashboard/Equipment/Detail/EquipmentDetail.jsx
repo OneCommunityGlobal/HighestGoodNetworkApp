@@ -53,6 +53,8 @@ function DashedLineItem() {
 }
 
 function EquipmentDetail() {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const history = useHistory();
   const { equipmentId } = useParams();
 
@@ -157,25 +159,27 @@ function EquipmentDetail() {
     }
   };
   return (
-    <Container className="EquipmentDetailPage justify-content-center align-items-center mw-80 px-4">
-      <header className="EquipmentDetailPage__header">
-        <h1>Equipment Detail Page</h1>
-      </header>
-      <main className="EquipmentDetailPage__content">
-        <p>
-          <img src={equipment?.imageUrl} alt="" className="EquipmentDetailPage__image" />
-        </p>
-        {details.filter(Boolean).map(renderDetails)}
-        <Button
-          className="back-btn"
-          style={{ color: 'black', borderWidth: '2px', borderRadius: '9px' }}
-          outline
-          onClick={() => history.push('/bmdashboard/equipment')}
-        >
-          Back to List
-        </Button>
-      </main>
-    </Container>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+      <Container className="EquipmentDetailPage justify-content-center align-items-center mw-80 px-4">
+        <header className="EquipmentDetailPage__header">
+          <h1>Equipment Detail Page</h1>
+        </header>
+        <main className="EquipmentDetailPage__content">
+          <p>
+            <img src={equipment?.imageUrl} alt="" className="EquipmentDetailPage__image" />
+          </p>
+          {details.filter(Boolean).map(renderDetails)}
+          <Button
+            className="back-btn"
+            style={{ color: darkMode ? 'white' : 'black', borderWidth: '2px', borderRadius: '9px' }}
+            outline
+            onClick={() => history.push('/bmdashboard/equipment')}
+          >
+            Back to List
+          </Button>
+        </main>
+      </Container>
+    </div>
   );
 }
 

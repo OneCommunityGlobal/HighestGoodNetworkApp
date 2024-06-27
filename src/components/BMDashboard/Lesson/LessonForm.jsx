@@ -15,6 +15,7 @@ const style = {
 };
 function LessonForm() {
   const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
   const user = useSelector(state => state.auth.user); // grab user from store
   const userId = user ? user.userid : null; // get userID from user object
   const roles = useSelector(state => state.role.roles); // grab all roles from store
@@ -183,13 +184,26 @@ function LessonForm() {
       toast.error('Error Adding Lesson', error.message || 'Unknown error');
     }
   };
+
+  let selectedFileClass = '';
+
+  if (selectedFile) {
+    if (darkMode) {
+      selectedFileClass = 'fileSelected-dark';
+    } else {
+      selectedFileClass = 'fileSelected';
+    }
+  }
+
   return (
-    <div className="MasterContainer">
+    <div className={`MasterContainer ${darkMode ? 'bg-oxford-blue text-light' : ''}`}>
       <div className="FormContainer">
         <Form onSubmit={LessonFormSubmit}>
           <div className="WriteLessonAndTagDiv">
             <Form.Group className="LessonFrom" controlId="exampleForm.ControlTextarea1">
-              <Form.Label className="LessonLabel">Lesson Title</Form.Label>
+              <Form.Label className={`LessonLabel ${darkMode ? 'text-light' : ''}`}>
+                Lesson Title
+              </Form.Label>
               <Form.Control
                 required
                 className="LessonTitle"
@@ -200,7 +214,9 @@ function LessonForm() {
               />
             </Form.Group>
             <Form.Group className="LessonForm" controlId="exampleForm.ControlTextarea1">
-              <Form.Label className="LessonLabel">Write a Lesson</Form.Label>
+              <Form.Label className={`LessonLabel ${darkMode ? 'text-light' : ''}`}>
+                Write a Lesson
+              </Form.Label>
               <Form.Control
                 required
                 className="LessonPlaceholderText"
@@ -211,7 +227,7 @@ function LessonForm() {
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>Add tag</Form.Label>
+              <Form.Label className={darkMode ? 'text-light' : ''}>Add tag</Form.Label>
               <div className="input-group">
                 <input
                   type="text"
@@ -230,10 +246,10 @@ function LessonForm() {
                 {LessonFormtags.map((tag, index) => {
                   const key = `${tag}_${index}`;
                   return (
-                    <div className="Tag" key={key}>
+                    <div className={`Tag ${darkMode ? 'Tag-dark' : ''}`} key={key}>
                       <span className="TagSpan">{tag}</span>
                       <button
-                        className="removeTagBTN"
+                        className={`removeTagBTN ${darkMode ? 'text-light' : ''}`}
                         type="button"
                         onClick={() => removeTag(index)}
                       >
@@ -248,7 +264,7 @@ function LessonForm() {
           <div className="FormSelectContainer">
             <div className="SingleFormSelect">
               <Form.Group controlId="Form.ControlSelect1">
-                <Form.Label>Belongs to</Form.Label>
+                <Form.Label className={darkMode ? 'text-light' : ''}>Belongs to</Form.Label>
                 <FormControl
                   onChange={handleProjectChange}
                   as="select"
@@ -267,7 +283,7 @@ function LessonForm() {
             </div>
             <div className="SingleFormSelect">
               <Form.Group controlId="Form.ControlSelect2">
-                <Form.Label>View by</Form.Label>
+                <Form.Label className={darkMode ? 'text-light' : ''}>View by</Form.Label>
                 <FormControl
                   as="select"
                   aria-label="Default select example"
@@ -285,7 +301,7 @@ function LessonForm() {
           </div>
           <div className="DragAndDropFormGroup">
             <Form.Group controlId="exampleForm.ControlFile1">
-              <Form.Label>Upload Appendix</Form.Label>
+              <Form.Label className={darkMode ? 'text-light' : ''}>Upload Appendix</Form.Label>
               <input
                 type="file"
                 id="fileInput"
@@ -299,7 +315,7 @@ function LessonForm() {
                 onKeyPress={handleKeyPress}
                 onDragOver={handleDragOver}
                 onDrop={handleDrop}
-                className={`dragAndDropStyle ${selectedFile ? 'fileSelected' : ''}`}
+                className={`dragAndDropStyle ${selectedFileClass}`}
               >
                 {selectedFile ? (
                   <p>Selected File: {selectedFile.name}</p>

@@ -1,7 +1,7 @@
 .bm-dashboard__header h1 {
   font-size: 1.5em;
   text-align: center;
-  margin-top: 2em;
+  padding-top: 2em;
 }
 
 .bm-dashboard__button.btn.btn-secondary {
@@ -23,7 +23,7 @@
   max-height: 80vh;
   overflow-x: hidden;
   overflow-y: auto;
-  padding:0;
+  padding: 0;
 }
 
 .project-summary {
@@ -58,6 +58,11 @@
 
 .project-summary_label {
   margin-right: 1px;
+}
+
+.project-summary_label-dark {
+  margin-right: 1px;
+  color: white;
 }
 
 .project-summary_span {
@@ -141,6 +146,6 @@
 }
 
 .form-footer {
-font-size: 0.875em;
-margin-top:3px;
+  font-size: 0.875em;
+  margin-top: 3px;
 }
