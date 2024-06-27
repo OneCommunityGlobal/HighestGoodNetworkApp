@@ -162,6 +162,10 @@
   padding-right: 10px;
 }
 
+.profileEditButtonContainer {
+  margin-top: 20px;
+}
+
 .profileEditButton {
   border: none;
   border-radius: 1.5rem;
@@ -386,4 +390,12 @@
   .detailSection {
     width: 240px;
   }
+}
+
+.btn-outline-primary:disabled {
+  margin-right:5px;
+}
+
+button.btn.btn-outline-primary {
+  margin-right:5px;
 }
