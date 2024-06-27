@@ -60,10 +60,7 @@
   margin-right: 1px;
 }
 
-.project-summary_span {
-  color: #3ea0cb;
-  font-weight: bold;
-  /* margin-left: 1em; */
+.display-inline {
   display: inline-block;
   white-space: no-wrap;
 }

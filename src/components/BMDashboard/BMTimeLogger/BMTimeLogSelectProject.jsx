@@ -1,9 +1,11 @@
 import { useState } from 'react';
 import { useSelector } from 'react-redux';
-import { Form, FormGroup, Col, Row, Label, Input } from 'reactstrap';
+import moment from 'moment';
+import { Form, Col, Row, Input } from 'reactstrap';
 import ErrorAlert from '../ErrorAlert';
 
 function BMTimeLogSelectProject({ selectedProject, setSelectedProject }) {
+  const date = moment();
   const projects = useSelector(state => state.bmProjects);
 
   const [error, setError] = useState(false);
@@ -22,30 +24,50 @@ function BMTimeLogSelectProject({ selectedProject, setSelectedProject }) {
   };
 
   return (
-    <Form className="w-100 p-3  text-center">
-      <Row className="ml-0 gx-5 w-75 mx-auto" md="2" sm="1" xs="1">
-        <FormGroup>
-          <Col className="p-3">
-            <Label for="projectSelect" hidden>
-              Select
-            </Label>
-            <Input
-              id="projectSelect"
-              name="select"
-              type="select"
-              value={selectedProject}
-              onChange={handleOptionChange}
-            >
-              <option value="" default>
-                Select a project
-              </option>
-              {selectOptions}
-            </Input>
-          </Col>
-        </FormGroup>
-        <ErrorAlert error={error} message="Please select a project" />
+    <Form>
+      <Row>
+        <Col>Date: {date.format('MM/DD/YY')}</Col>
+
+        <Col>Project:</Col>
+        <Col>
+          <Input
+            id="projectSelect"
+            name="select"
+            type="select"
+            value={selectedProject}
+            onChange={handleOptionChange}
+          >
+            filter={selectOptions}
+          </Input>
+        </Col>
       </Row>
+      <ErrorAlert error={error} message="Please select a project" />
     </Form>
+
+    // <Form>
+    //   <Row>
+    //     <Col>Date: {date.format('MM/DD/YY')}</Col>
+    //     <Col>
+    //       <Col md="3" className="text-md-right">
+    //         <Label>Project:</Label>
+    //       </Col>
+    //       <Col md="8">
+    //         <FormGroup>
+    //           {/* <Input
+    //             id="projectSelect"
+    //             name="select"
+    //             type="select"
+    //             value={selectedProject}
+    //             onChange={handleOptionChange}
+    //           > */}
+    //             filter={selectOptions}
+    //           </Input>
+    //         </FormGroup>
+    //       </Col>
+    //     </Col>
+    //   </Row>
+    //   <ErrorAlert error={error} message="Please select a project" />
+    // </Form>
   );
 }
 

@@ -1,8 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 // import Select from 'react-select';
-import moment from 'moment';
-import { Row, Col, Card } from 'reactstrap';
+
+import { Row, Container } from 'reactstrap';
 import { fetchBMProjects } from '../../../actions/bmdashboard/projectActions';
 import BMTimeLogSelectProject from './BMTimeLogSelectProject';
 import BMTimeLogCard from './BMTimeLogCard';
@@ -10,7 +10,6 @@ import BMError from '../shared/BMError';
 import './BMTimeLogger.css';
 
 function BMTimeLogger() {
-  const date = moment();
   const [isError, setIsError] = useState(false);
   const [selectedProject, setselectedProject] = useState();
   const [isProjectSelected, setIsProjectSelected] = useState(false);
@@ -39,24 +38,21 @@ function BMTimeLogger() {
   }, [errors]);
 
   return (
-    <Card className="justify-content-center mw-50 px-5">
+    <Container className="justify-content-center mw-50 px-5">
       <header className="bm-timelogger__header">
-        <Row className="ml-0 gx-5 w-75 mx-auto" md="2" sm="1" xs="1">
+        <Row className="mx-auto">
           <h1>Member Group Check In</h1>
         </Row>
-        <Row className="ml-0 gx-5 w-75 mx-auto" md="2" sm="1" xs="1">
-          <Col className="p-3">Date: {date.format('MM/DD/YY')}</Col>
-          <Col className="p-3">
-            <BMTimeLogSelectProject
-              selectedProject={selectedProject}
-              setSelectedProject={setselectedProject}
-            />
-          </Col>
+        <Row className="mx-auto">
+          <BMTimeLogSelectProject
+            selectedProject={selectedProject}
+            setSelectedProject={setselectedProject}
+          />
         </Row>
       </header>
       {isProjectSelected ? <BMTimeLogCard selectedProject={selectedProject} /> : null}
       {isError ? <BMError errors={errors} /> : null}
-    </Card>
+    </Container>
   );
 }
 
