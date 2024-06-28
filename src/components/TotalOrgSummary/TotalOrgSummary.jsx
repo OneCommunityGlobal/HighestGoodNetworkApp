@@ -3,17 +3,20 @@ import { connect } from 'react-redux';
 import { useEffect } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import hasPermission from 'utils/permissions';
-import { getWeeklyVolunteerSummaries } from 'actions/totalOrgSummary';
+import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
+
+const startDate = '2016-01-01';
+const endDate = new Date().toISOString().split('T')[0];
 
 function TotalOrgSummary(props) {
   const { darkMode, loading, error } = props;
 
   useEffect(() => {
-    props.getWeeklyVolunteerSummary();
+    props.getTotalOrgSummary(startDate, endDate);
     props.hasPermission();
-  }, []);
+  }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
 
   if (error) {
     return (
@@ -31,7 +34,6 @@ function TotalOrgSummary(props) {
     );
   }
   if (loading) {
-    <h1>Total Org Summary Loading</h1>;
     return (
       <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
         <Row className="text-center" data-testid="loading">
@@ -66,7 +68,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getWeeklyVolunteerSummary: () => dispatch(getWeeklyVolunteerSummaries()),
+  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(startDate, endDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
