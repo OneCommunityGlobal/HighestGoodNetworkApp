@@ -5,6 +5,7 @@ import { Alert, Col, Container, Row } from 'reactstrap';
 import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import SkeletonLoading from '../common/SkeletonLoading';
+import StatisticsTab from './StatisticsTab';
 import '../Header/DarkMode.css';
 
 const startDate = '2016-01-01';
@@ -46,8 +47,48 @@ function TotalOrgSummary(props) {
     );
   }
   return (
-    <Container>
+    <Container fluid>
       <h1>Total Org Summary</h1>
+
+      <section
+        className="volunteer-status"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          width: '100%',
+          padding: '6rem',
+        }}
+      >
+        <StatisticsTab
+          title="Active Volunteers"
+          number={150}
+          percentageChange={5}
+          type="active-volunteers"
+          isIncreased={true}
+        />
+        <StatisticsTab
+          title="New Volunteers"
+          number={30}
+          percentageChange={10}
+          type="new-volunteers"
+          isIncreased={true}
+        />
+        <StatisticsTab
+          title="Deactivated Volunteers"
+          number={5}
+          percentageChange={2}
+          type="deactivated-volunteers"
+          isIncreased={false}
+        />
+        <StatisticsTab
+          title="Total Hours Worked"
+          number={1000}
+          percentageChange={8}
+          type="total-hours-worked"
+          isIncreased={true}
+        />
+      </section>
     </Container>
   );
 }
