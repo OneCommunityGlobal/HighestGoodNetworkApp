@@ -1,6 +1,5 @@
-import { Container } from 'reactstrap';
-// import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
+import { Row, Col } from 'reactstrap';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
 
 // function BMTimeLogCard({ selectedProject }) {
@@ -10,15 +9,18 @@ function BMTimeLogMembers() {
   console.log('membersList: ', membersList);
 
   return (
-    <Container className="project-details" fluid>
+    <Row>
       {membersList.map((value, index) => (
-        <BMTimeLogDisplayMember
-          firstName={value.user.firstName}
-          lastName={value.user.lastName}
-          index={index}
-        />
+        <Col md={4}>
+          <BMTimeLogDisplayMember
+            firstName={value.user.firstName}
+            lastName={value.user.lastName}
+            role={value.user.role}
+            index={index}
+          />
+        </Col>
       ))}
-    </Container>
+    </Row>
   );
 }
 

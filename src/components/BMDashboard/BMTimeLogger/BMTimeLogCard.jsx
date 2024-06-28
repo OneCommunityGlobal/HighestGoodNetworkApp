@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Container, Row } from 'reactstrap';
+import { Container } from 'reactstrap';
 import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
@@ -28,10 +28,7 @@ function BMTimeLogCard(props) {
   }, [errors]);
 
   return (
-    <Container className="project-details" fluid>
-      <Row className="mx-auto">
-        <h1>TimeLogger for {props.selectedProject}</h1>
-      </Row>
+    <Container fluid>
       {isError ? (
         <BMError errors={errors} />
       ) : (

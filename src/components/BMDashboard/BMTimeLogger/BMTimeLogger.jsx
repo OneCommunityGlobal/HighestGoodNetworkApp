@@ -38,18 +38,17 @@ function BMTimeLogger() {
   }, [errors]);
 
   return (
-    <Container className="justify-content-center mw-50 px-5">
+    <Container className="justify-content-center px-5">
       <header className="bm-timelogger__header">
         <Row className="mx-auto">
           <h1>Member Group Check In</h1>
         </Row>
-        <Row className="mx-auto">
-          <BMTimeLogSelectProject
-            selectedProject={selectedProject}
-            setSelectedProject={setselectedProject}
-          />
-        </Row>
       </header>
+      <BMTimeLogSelectProject
+        selectedProject={selectedProject}
+        setSelectedProject={setselectedProject}
+      />
+
       {isProjectSelected ? <BMTimeLogCard selectedProject={selectedProject} /> : null}
       {isError ? <BMError errors={errors} /> : null}
     </Container>
