@@ -58,6 +58,12 @@
   align-items: center;
 }
 
+@media (max-width: 1400px) {
+  .nav-links{
+    flex-direction: column !important;
+  }
+}
+
 @media (max-width: 1500px) {
   .dashboard-text-link {
     font-size: 14px;
@@ -77,5 +83,11 @@
 
   .owner-message {
     display: none;
+  }
+}
+
+@media (max-width: 760px) {
+  .nav-item {
+    margin-inline: 5px;
   }
 }

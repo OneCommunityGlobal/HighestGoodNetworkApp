@@ -315,7 +315,7 @@ export function Header(props) {
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries ? (
-                  <UncontrolledDropdown nav inNavbar>
+                  <UncontrolledDropdown nav>
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
@@ -358,7 +358,7 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar>
+                  <UncontrolledDropdown nav>
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
