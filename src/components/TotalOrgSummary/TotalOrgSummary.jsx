@@ -65,14 +65,14 @@ function TotalOrgSummary(props) {
           number={150}
           percentageChange={5}
           type="active-volunteers"
-          isIncreased={true}
+          isIncreased
         />
         <StatisticsTab
           title="New Volunteers"
           number={30}
           percentageChange={10}
           type="new-volunteers"
-          isIncreased={true}
+          isIncreased
         />
         <StatisticsTab
           title="Deactivated Volunteers"
@@ -86,7 +86,7 @@ function TotalOrgSummary(props) {
           number={1000}
           percentageChange={8}
           type="total-hours-worked"
-          isIncreased={true}
+          isIncreased
         />
       </section>
     </Container>
