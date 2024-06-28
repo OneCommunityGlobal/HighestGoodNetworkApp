@@ -5,7 +5,12 @@ import { Alert, Col, Container, Row } from 'reactstrap';
 import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import SkeletonLoading from '../common/SkeletonLoading';
+import StatisticsTab from './StatisticsTab/StatisticsTab';
 import '../Header/DarkMode.css';
+import {
+  VOLUNTEER_STATUS_TAB as volunteerStatusTabs,
+  VOLUNTEER_ACTIVITIES_TAB as volunteerActivitiesTab,
+} from '../../constants/totalOrgSummary';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
@@ -46,8 +51,72 @@ function TotalOrgSummary(props) {
     );
   }
   return (
-    <Container>
+    <Container fluid>
       <h1>Total Org Summary</h1>
+
+      <section
+        className="volunteer-status"
+        style={{
+          display: 'flex',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          width: '100%',
+          padding: '6rem',
+          flexDirection: 'column',
+        }}
+      >
+        <h2>Volunteer Status</h2>
+        <article
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            width: '100%',
+            alignItems: 'center',
+            marginTop: '2rem',
+            marginBottom: '2rem',
+          }}
+        >
+          {volunteerStatusTabs.map(volunteerStatusTab => (
+            <StatisticsTab
+              title={volunteerStatusTab.title}
+              number={volunteerStatusTab.number}
+              percentageChange={volunteerStatusTab.percentageChange}
+              type={volunteerStatusTab.type}
+              isIncreased={volunteerStatusTab.isIncreased}
+              tabBackgroundColor={volunteerStatusTab.tabBackgroundColor}
+              shapeBackgroundColor={volunteerStatusTab.shapeBackgroundColor}
+              key={volunteerStatusTab.type}
+            />
+          ))}
+        </article>
+
+        <h2>Volunteer Activity</h2>
+
+        <article
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            width: '100%',
+            alignItems: 'center',
+            marginTop: '2rem',
+          }}
+        >
+          {volunteerActivitiesTab.map(volunteerActivityTab => (
+            <StatisticsTab
+              title={volunteerActivityTab.title}
+              number={volunteerActivityTab.number}
+              percentageChange={volunteerActivityTab.percentageChange}
+              type={volunteerActivityTab.type}
+              isIncreased={volunteerActivityTab.isIncreased}
+              tabBackgroundColor={volunteerActivityTab.tabBackgroundColor}
+              shapeBackgroundColor={volunteerActivityTab.shapeBackgroundColor}
+              key={volunteerActivityTab.type}
+            />
+          ))}
+        </article>
+      </section>
     </Container>
   );
 }
