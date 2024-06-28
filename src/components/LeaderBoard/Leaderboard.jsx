@@ -37,6 +37,17 @@ function useDeepEffect(effectFunc, deps) {
   }, deps);
 }
 
+function displayDaysLeft(lastDay) {
+  if (lastDay) {
+    const today = new Date();
+    const endDate = new Date(lastDay);
+    const differenceInTime = endDate.getTime() - today.getTime();
+    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+    return -differenceInDays;
+  }
+  return null; // or any other appropriate default value
+}
+
 function LeaderBoard({
   getLeaderboardData,
   getOrgData,
@@ -189,6 +200,7 @@ function LeaderBoard({
                   />
                 </div>
               </th>
+              <th>Days Left</th>
               <th>Time Off</th>
               <th>
                 <span className="d-sm-none">Tan. Time</span>
@@ -213,7 +225,7 @@ function LeaderBoard({
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <td />
+              <td aria-label="Empty cell" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
@@ -222,12 +234,13 @@ function LeaderBoard({
                   </span>
                 )}
               </th>
-              <td className="align-middle" />
+              <td className="align-middle" aria-label="Empty cell" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
               <td className="align-middle">
                 <Progress
+                  aria-label={`TangibleEffort: ${organizationData.tangibletime} hours`}
                   title={`TangibleEffort: ${organizationData.tangibletime} hours`}
                   value={organizationData.barprogress}
                   color={organizationData.barcolor}
@@ -374,10 +387,16 @@ function LeaderBoard({
                   )}
                 </th>
                 <td className="align-middle">
+                  <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
+                    {displayDaysLeft(item.endDate)}
+                  </span>
+                </td>
+                <td className="align-middle">
                   {allRequests && allRequests[item.personId]?.length > 0 && (
                     <div>
                       <button
                         type="button"
+                        aria-label="Open time off modal"
                         onClick={() => {
                           const data = {
                             requests: [...allRequests[item.personId]],
@@ -420,6 +439,7 @@ function LeaderBoard({
                   <Link
                     to={`/timelog/${item.personId}`}
                     title={`TangibleEffort: ${item.tangibletime} hours`}
+                    aria-label={`TangibleEffort: ${item.tangibletime} hours`}
                   >
                     <Progress value={item.barprogress} color={item.barcolor} />
                   </Link>

@@ -2,18 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import ReactTooltip from 'react-tooltip';
-import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from 'languages/en/messages';
+import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../../src/languages/en/messages';
 import DayPickerInput from 'react-day-picker/DayPickerInput';
 import { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
-import { updateTask } from 'actions/task';
+import { updateTask } from '../../../../../../src/actions/task';
 import { Editor } from '@tinymce/tinymce-react';
-import hasPermission from 'utils/permissions';
+import hasPermission from '../../../../../../src/utils/permissions';
 import axios from 'axios';
-import { ENDPOINTS } from 'utils/URL';
-import { boxStyle, boxStyleDark } from 'styles';
+import { ENDPOINTS } from '../../../../../../src/utils/URL';
+import { boxStyle, boxStyleDark } from '../../../../../../src/styles';
 import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
@@ -70,7 +70,7 @@ function EditTaskModal(props) {
     { value: 'Other', label: 'Other' },
   ];
   const FORMAT = 'MM/dd/yy';
-  
+
   const EditorInit = {
       license_key: 'gpl',
       menubar: false,
@@ -88,7 +88,7 @@ function EditTaskModal(props) {
   * -------------------------------- functions --------------------------------
   */
   const toggle = () => setModal(!modal);
-  
+
   // set different mode while show modal through different button
   const handleModalShow = (mode) => {
     setCurrentMode(mode);
@@ -284,7 +284,7 @@ function EditTaskModal(props) {
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <table
             className={`table table-bordered responsive
-            ${canUpdateTask || canSuggestTask ? null : 'disable-div'} 
+            ${canUpdateTask || canSuggestTask ? null : 'disable-div'}
             ${darkMode ? 'text-light' : ''}`}
           >
             <tbody>
@@ -304,7 +304,7 @@ function EditTaskModal(props) {
                     onChange={e => setTaskName(e.target.value)}
                     onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
-                  />, 
+                  />,
                   editable,
                   taskName
                 )}
@@ -443,12 +443,12 @@ function EditTaskModal(props) {
                 )}
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours - Best-case">
+                <td scope="col">
                   Hours
                 </td>
-                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                <td scope="col" className="w-100">
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                    <label htmlFor="bestCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Best-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -460,20 +460,20 @@ function EditTaskModal(props) {
                         onChange={e => setHoursBest(e.target.value)}
                         onBlur={() => calHoursEstimate()}
                         id="bestCase"
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursBest,
                       {componentOnly:true}
                     )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
+                  </div>
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'The number of hours must be less than other cases'
+                      : ''}
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                    <label htmlFor="worstCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Worst-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -484,20 +484,20 @@ function EditTaskModal(props) {
                         value={hoursWorst}
                         onChange={e => setHoursWorst(e.target.value)}
                         onBlur={() => calHoursEstimate('hoursWorst')}
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursWorst,
                       {componentOnly:true}
                     )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
+                  </div>
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'The number of hours must be higher than other cases'
+                      : ''}
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                    <label htmlFor="mostCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Most-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -508,20 +508,20 @@ function EditTaskModal(props) {
                         value={hoursMost}
                         onChange={e => setHoursMost(e.target.value)}
                         onBlur={() => calHoursEstimate('hoursMost')}
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursMost,
                       {componentOnly:true}
                     )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
+                  </div>
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'The number of hours must range between best and worst cases'
+                      : ''}
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className={`text-nowrap mr-2 w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                    <label htmlFor="Estimated" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Estimated
                     </label>
                     {ReadOnlySectionWrapper(
@@ -531,7 +531,7 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursEstimate}
                         onChange={e => setHoursEstimate(e.target.value)}
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursEstimate,
