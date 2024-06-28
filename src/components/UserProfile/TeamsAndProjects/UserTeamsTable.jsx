@@ -28,7 +28,7 @@ const UserTeamsTable = props => {
   const refDropdown = useRef();
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = (e, autoComplete) => {
@@ -154,7 +154,7 @@ const UserTeamsTable = props => {
                     darkMode={darkMode}
                   />
                 ) : (
-                  <div style={{ paddingTop: '6px', textAlign: 'center' }}>
+                  <div style={{ paddingTop: '12px', textAlign: 'center' }}>
                     {teamCode == '' ? 'No assigned team code' : teamCode}
                   </div>
                 )}

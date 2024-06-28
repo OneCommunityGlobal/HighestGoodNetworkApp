@@ -133,7 +133,12 @@ export default function ItemsTable({
                       <td key={label}>{getNestedValue(el, key)}</td>
                     ))}
                     <td className="items_cell">
-                      <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'Update')}
+                        aria-label="Update record"
+                      >
+                        {' '}
                         <BiPencil />
                       </button>
                       <Button
