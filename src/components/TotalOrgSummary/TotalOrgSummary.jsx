@@ -5,8 +5,12 @@ import { Alert, Col, Container, Row } from 'reactstrap';
 import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import SkeletonLoading from '../common/SkeletonLoading';
-import StatisticsTab from './StatisticsTab';
+import StatisticsTab from './StatisticsTab/StatisticsTab';
 import '../Header/DarkMode.css';
+import {
+  VOLUNTEER_STATUS_TAB as volunteerStatusTabs,
+  VOLUNTEER_ACTIVITIES_TAB as volunteerActivitiesTab,
+} from '../../constants/totalOrgSummary';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
@@ -58,36 +62,42 @@ function TotalOrgSummary(props) {
           flexWrap: 'wrap',
           width: '100%',
           padding: '6rem',
+          flexDirection: 'column',
         }}
       >
-        <StatisticsTab
-          title="Active Volunteers"
-          number={150}
-          percentageChange={5}
-          type="active-volunteers"
-          isIncreased
-        />
-        <StatisticsTab
-          title="New Volunteers"
-          number={30}
-          percentageChange={10}
-          type="new-volunteers"
-          isIncreased
-        />
-        <StatisticsTab
-          title="Deactivated Volunteers"
-          number={5}
-          percentageChange={2}
-          type="deactivated-volunteers"
-          isIncreased={false}
-        />
-        <StatisticsTab
-          title="Total Hours Worked"
-          number={1000}
-          percentageChange={8}
-          type="total-hours-worked"
-          isIncreased
-        />
+        <h2>Volunteer Status</h2>
+        <article
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            width: '100%',
+            alignItems: 'center',
+            marginTop: '2rem',
+            marginBottom: '2rem',
+          }}
+        >
+          {volunteerStatusTabs.map((volunteerStatusTab, volunteerStatusTabIndex) => (
+            <StatisticsTab {...volunteerStatusTab} key={volunteerStatusTab.type} />
+          ))}
+        </article>
+
+        <h2>Volunteer Activity</h2>
+
+        <article
+          style={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            flexWrap: 'wrap',
+            width: '100%',
+            alignItems: 'center',
+            marginTop: '2rem',
+          }}
+        >
+          {volunteerActivitiesTab.map((volunteerActivityTab, volunteerActivityTabIndex) => (
+            <StatisticsTab {...volunteerActivityTab} key={volunteerActivityTab.title} />
+          ))}
+        </article>
       </section>
     </Container>
   );

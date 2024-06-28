@@ -1,3 +1,4 @@
+/* COLOR CONSTANTS TO BE REMOVED - INCLUDING THEIR CLASSES */
 :root {
   --color-active-volunteers-tab-bg: #e8e8ff;
   --color-active-volunteers-shape-bg: #cbcbfe;
@@ -26,11 +27,13 @@
   box-sizing: border-box;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
   border: 1px solid #e0e0e0;
+  margin: 0.5rem;
 }
 
 .statistics-title {
   color: #000000;
   font-size: larger;
+  text-align: center;
 }
 
 .statistics-number-shape {

@@ -1,14 +1,20 @@
 import './StatisticsTab.css';
 
 function StatisticsTab(props) {
-  const { title, number, percentageChange, type, isIncreased } = props;
-
-  const tabClass = `${type}-tab-bg-color`;
-  const shapeClass = `${type}-shape-bg-color`;
+  const {
+    title,
+    number,
+    percentageChange,
+    type,
+    isIncreased,
+    tabBackgroundColor,
+    shapeBackgroundColor,
+  } = props;
 
   return (
     <div
-      className={`statistics-tab-holder ${tabClass}`}
+      className="statistics-tab-holder"
+      style={{ backgroundColor: tabBackgroundColor }}
       role="region"
       aria-labelledby={`${type}-title`}
     >
@@ -16,7 +22,8 @@ function StatisticsTab(props) {
         {title}
       </h3>
       <div
-        className={`statistics-number-shape ${shapeClass}`}
+        className="statistics-number-shape"
+        style={{ backgroundColor: shapeBackgroundColor }}
         role="figure"
         aria-labelledby={`${type}-number`}
       >
