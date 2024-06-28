@@ -1,6 +1,10 @@
 export default function SearchProjectByPerson({ onSearch }) {
+  const handleSubmit = e => {
+    e.preventDefault();
+  };
+
   return (
-    <form className="input-group mb-2">
+    <form className="input-group mb-2" onSubmit={handleSubmit}>
       <div className="input-group-prepend">
         <span className="input-group-text search-field-container">Search</span>
       </div>
