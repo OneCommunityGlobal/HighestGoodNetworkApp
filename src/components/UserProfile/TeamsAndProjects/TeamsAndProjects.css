@@ -46,6 +46,7 @@
 
 .project-auto-complete:hover {
   background: #1d62f0;
+  color: #fafafa;
 }
 
 .team-auto-complete {
@@ -59,11 +60,11 @@
 #myTabContent {
   margin-top: 20px;
   padding-top: 4px;
-  border-color: #dee2e6 
+  border-color: #dee2e6;
 }
 @media (max-width: 1024px) {
   #myTabContent {
     padding-top: 0px;
-    border-color: #fff #dee2e6 #dee2e6 
+    border-color: #fff #dee2e6 #dee2e6;
   }
 }
