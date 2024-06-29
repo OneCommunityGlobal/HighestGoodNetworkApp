@@ -225,7 +225,7 @@ function LeaderBoard({
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <td aria-label="Empty cell" />
+              <td />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
@@ -234,13 +234,12 @@ function LeaderBoard({
                   </span>
                 )}
               </th>
-              <td className="align-middle" aria-label="Empty cell" />
+              <td className="align-middle" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
               <td className="align-middle">
                 <Progress
-                  aria-label={`TangibleEffort: ${organizationData.tangibletime} hours`}
                   title={`TangibleEffort: ${organizationData.tangibletime} hours`}
                   value={organizationData.barprogress}
                   color={organizationData.barcolor}
@@ -396,7 +395,6 @@ function LeaderBoard({
                     <div>
                       <button
                         type="button"
-                        aria-label="Open time off modal"
                         onClick={() => {
                           const data = {
                             requests: [...allRequests[item.personId]],
@@ -439,7 +437,6 @@ function LeaderBoard({
                   <Link
                     to={`/timelog/${item.personId}`}
                     title={`TangibleEffort: ${item.tangibletime} hours`}
-                    aria-label={`TangibleEffort: ${item.tangibletime} hours`}
                   >
                     <Progress value={item.barprogress} color={item.barcolor} />
                   </Link>

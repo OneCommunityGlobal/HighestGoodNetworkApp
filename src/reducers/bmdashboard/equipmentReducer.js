@@ -1,4 +1,4 @@
-import { GET_EQUIPMENT_BY_ID, SET_EQUIPMENTS } from "../../constants/bmdashboard/equipmentConstants";
+import { GET_EQUIPMENT_BY_ID, SET_EQUIPMENTS } from "constants/bmdashboard/equipmentConstants";
 
 const defaultState = {
   equipmentslist: [],
@@ -18,6 +18,6 @@ export const equipmentReducer = (state = defaultState, action) => {
         equipmentslist: action.payload
       };
     default:
-      return state;
+      return state; 
   }
 };
