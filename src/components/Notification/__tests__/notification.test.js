@@ -3,7 +3,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import NotificationCard from '../NotificationCard';
+import NotificationCard from '../notificationCard';
 import * as actions from '../../../actions/notificationAction';
 
 const mockStore = configureStore([thunk]);
@@ -58,8 +58,8 @@ describe('NotificationCard', () => {
 
     fireEvent.click(screen.getByText('Mark as Read'));
 
-    // 打印出 dispatch 的所有调用
-    console.log(store.dispatch.mock.calls);
+    // // 打印出 dispatch 的所有调用
+    // console.log(store.dispatch.mock.calls);
 
     expect(store.dispatch).toHaveBeenCalledWith(mockAction);
   });
