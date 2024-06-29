@@ -20,7 +20,7 @@ function BMTimeLogDisplayMember({ firstName, lastName, role }) {
     cardColor = '#d59797'; // light red
   }
 
-  let borderProperty = '1px solid ';
+  let borderProperty = '2px solid ';
   borderProperty += cardColor;
 
   return (

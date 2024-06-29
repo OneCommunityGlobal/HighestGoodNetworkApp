@@ -38,26 +38,29 @@
 }
 
 .member-stopwatch {
-  background-color: #4b5055;
+  background-color: #4b5055 !important;
+  border-radius: 15px !important;
   width: 100%;
   height: 4rem;
 }
 
 .member-start {
-  background-color: #01987a;  
+  background-color: #01987a !important;  
+  border-radius: 10px !important;    
   width: 5rem;
 }
 
 .member-stop {
-  background-color: #980101;  
+  background-color: #980101 !important;  
+  border-radius: 10px !important;    
   width: 5rem;  
 }
 
 .member-clear {
-  background-color: #a9b7be;    
+  background-color: #a9b7be !important;    
+  border-radius: 10px !important;  
   width: 5rem;  
 }
-
 /* project summaries */
 .projects-list {
   width: 80%;
