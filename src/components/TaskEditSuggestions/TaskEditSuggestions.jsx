@@ -6,6 +6,7 @@ import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
 import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
 import { getTaskEditSuggestionsData } from './selectors';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
+import { fetchTaskEditSuggestions } from './thunks';
 
 export const TaskEditSuggestions = () => {
   const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
@@ -19,9 +20,12 @@ export const TaskEditSuggestions = () => {
     userRole,
     darkMode
   } = useSelector(getTaskEditSuggestionsData);
-  
 
   const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(fetchTaskEditSuggestions());
+  }, [])
 
   const handleToggleTaskEditSuggestionModal = currentTaskEditSuggestion => {
     setCurrentTaskEditSuggestion(currentTaskEditSuggestion);
