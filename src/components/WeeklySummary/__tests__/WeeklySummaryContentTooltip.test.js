@@ -1,5 +1,5 @@
 import { render, fireEvent, screen } from '@testing-library/react';
-import { WeeklySummaryContentTooltip, MediaURLTooltip } from '../../components/WeeklySummary/WeeklySummaryTooltips'; // Adjust the import path as needed
+import { WeeklySummaryContentTooltip, MediaURLTooltip } from '../WeeklySummaryTooltips'; // Adjust the import path as needed
 
 describe('WeeklySummaryContentTooltip Component Tests', () => {
   it('renders without crashing', () => {
@@ -10,7 +10,7 @@ describe('WeeklySummaryContentTooltip Component Tests', () => {
   it('toggles tooltip on icon click', () => {
     render(<WeeklySummaryContentTooltip tabId="testId" />);
     const icon = screen.getByTestId('summary-content-tooltip-icon');
-    fireEvent.mouseOver(icon)
+    fireEvent.mouseOver(icon);
   });
 });
 

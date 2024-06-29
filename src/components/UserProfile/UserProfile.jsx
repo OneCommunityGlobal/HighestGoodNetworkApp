@@ -712,6 +712,7 @@ function UserProfile(props) {
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
+  const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
   const canSeeQSC = props.hasPermission('seeQSC');
 
@@ -787,6 +788,7 @@ function UserProfile(props) {
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
+                //this line below should fix the image formatting issue
                 style={profilePic ? {} : { width: '240px', height: '240px' }}
               />
               {canEdit ? (
@@ -825,7 +827,7 @@ function UserProfile(props) {
               </Alert>
             ) : null}
             {!codeValid ? (
-              <Alert color="danger">The code format should be A-AAAAA or AA1AAAA.</Alert>
+              <Alert color="danger">NOT SAVED! The code must be between 5 and 7 characters long</Alert>
             ) : null}
             <div className="profile-head">
               <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
@@ -1067,6 +1069,7 @@ function UserProfile(props) {
                     onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
                     canEdit={canEditUserProfile}
+                    canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
                     darkMode={darkMode}
                   />
@@ -1254,7 +1257,8 @@ function UserProfile(props) {
                     isUserSelf={isUserSelf}
                     role={requestorRole}
                     onEndDate={handleEndDate}
-                    canEdit={canEdit}
+                    canEdit={canEditUserProfile}
+                    canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
                     darkMode={darkMode}
                   />
