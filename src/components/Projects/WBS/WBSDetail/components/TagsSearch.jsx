@@ -7,11 +7,13 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [searchWord, setSearchWord] = useState(''); 
   const [isFocused, setIsFocused] = useState(false);
 
   const handleClick = (event, member) => {
     addResources(member._id, member.firstName, member.lastName);
     event.target.closest(".my-element").previousElementSibling.value = '';
+    setSearchWord('');
     setFilteredData([]);
   };
 
@@ -52,13 +54,14 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
 
   const handleFilter = event => {
     const searchWord = event.target.value;
+    setSearchWord(searchWord);
     const newFilter = sortByStartingWith(searchWord);
     setFilteredData(newFilter);
   };
 
   const handleFocus = () => {
     setIsFocused(true);
-    setFilteredData(sortByStartingWith(''));
+    setFilteredData(sortByStartingWith(searchWord));
   };
 
   const handleBlur = () => {
