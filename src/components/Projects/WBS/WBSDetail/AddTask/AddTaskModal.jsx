@@ -218,6 +218,8 @@ function AddTaskModal(props) {
     setIntentInfo('');
     setEndstateInfo('');
     setCategory(defaultCategory);
+    setStartDateError(false);
+    setEndDateError(false);
   };
 
   const paste = () => {
