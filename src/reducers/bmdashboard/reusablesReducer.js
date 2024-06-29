@@ -1,6 +1,6 @@
 import {
   SET_REUSABLES
-} from "../../constants/bmdashboard/reusableConstants"
+} from "constants/bmdashboard/reusableConstants"
 
 const defaultState = {
   reusablesList: [],

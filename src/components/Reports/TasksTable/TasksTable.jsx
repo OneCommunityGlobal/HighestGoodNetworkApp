@@ -2,17 +2,17 @@
 /* eslint-disable react/no-unstable-nested-components */
 /* eslint-disable camelcase */
 /* eslint-disable import/prefer-default-export */
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { useSelector } from 'react-redux';
 import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
 // eslint-disable-next-line import/order
 import { getTasksTableData } from './selectors';
 import './TasksTable.css';
-import DropDownSearchBox from '../../../components/UserManagement/DropDownSearchBox';
-import { Checkbox } from '../../../components/common/Checkbox';
-import TextSearchBox from '../../../components/UserManagement/TextSearchBox';
-import { boxStyle, boxStyleDark } from '../../../../src/styles';
+import DropDownSearchBox from 'components/UserManagement/DropDownSearchBox';
+import { Checkbox } from 'components/common/Checkbox';
+import TextSearchBox from 'components/UserManagement/TextSearchBox';
+import { boxStyle, boxStyleDark } from 'styles';
 import { TasksDetail } from '../TasksDetail';
 
 export function TasksTable({ WbsTasksID, darkMode }) {

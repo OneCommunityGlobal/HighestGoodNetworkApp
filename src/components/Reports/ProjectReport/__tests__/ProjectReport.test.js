@@ -6,11 +6,11 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import ProjectReport from '..';
 import axios from 'axios';
-import { getProjectDetail } from '../../../../actions/project';
-import { fetchAllMembers, getProjectActiveUser } from '../../../../actions/projectMembers';
-import { fetchAllWBS } from '../../../../actions/wbs';
-import viewWBSpermissionsRequired from '../../../../utils/viewWBSpermissionsRequired';
-import { themeMock } from '../../../../__tests__/mockStates';
+import { getProjectDetail } from 'actions/project';
+import { fetchAllMembers, foundUsers, getProjectActiveUser } from 'actions/projectMembers';
+import { fetchAllWBS } from 'actions/wbs';
+import viewWBSpermissionsRequired from 'utils/viewWBSpermissionsRequired';
+import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 const store = mockStore({
@@ -49,7 +49,7 @@ describe('ProjectReport component', () => {
       </Provider>,
     );
   });
-  it('should render the project name three times', async () => {
+  it('should render the project name twice', async () => {
     axios.get.mockResolvedValue({
       status: 200,
     });
@@ -61,7 +61,7 @@ describe('ProjectReport component', () => {
     );
 
     const projectNameElements = screen.getAllByText('project 1');
-    expect(projectNameElements).toHaveLength(3);
+    expect(projectNameElements).toHaveLength(2);
   });
   it('check if getProjectDetail works as expected', async () => {
     const mockProjectDetail = { projectId: 'abc456', projectName: 'project 2', isActive: false };
