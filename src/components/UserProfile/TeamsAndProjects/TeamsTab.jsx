@@ -24,6 +24,10 @@ const TeamsTab = props => {
     setCodeValid,
     saved,
     isTeamSaved,
+    inputAutoComplete,
+    inputAutoStatus,
+    isLoading,
+    fetchTeamCodeAllUsers,
     darkMode,
   } = props;
   const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
@@ -89,6 +93,10 @@ const TeamsTab = props => {
         codeValid={codeValid}
         setCodeValid={setCodeValid}
         onAssignTeamCode={onAssignTeamCode}
+        inputAutoComplete={inputAutoComplete}
+        inputAutoStatus={inputAutoStatus}
+        isLoading={isLoading}
+        fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
         darkMode={darkMode}
       />
     </React.Fragment>

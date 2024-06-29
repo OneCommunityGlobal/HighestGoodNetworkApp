@@ -28,7 +28,6 @@ import hasPermission, {
   cantUpdateDevAdminDetails,
 } from '../../utils/permissions';
 import ActiveCell from '../UserManagement/ActiveCell';
-import { ENDPOINTS } from '../../utils/URL';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserProfileModal from './UserProfileModal';
 import './UserProfile.scss';
@@ -65,6 +64,7 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
+import { ENDPOINTS } from '../../utils/URL';
 
 function UserProfile(props) {
   /* Constant values */
@@ -118,12 +118,37 @@ function UserProfile(props) {
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
 
+  const [inputAutoComplete, setInputAutoComplete] = useState([]);
+  const [inputAutoStatus, setInputAutoStatus] = useState();
+  const [isLoading, setIsLoading] = useState(false);
+
   /* useEffect functions */
   useEffect(() => {
     loadUserProfile();
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
+    fetchTeamCodeAllUsers();
   }, []);
+
+  const fetchTeamCodeAllUsers = async () => {
+    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+    try {
+      setIsLoading(true);
+      const response = await axios.get(url);
+      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
+      const stringNoRepeat = stringWithValue
+        .map(item => item)
+        .filter((item, index, array) => array.indexOf(item) === index);
+      setInputAutoComplete(stringNoRepeat);
+      setInputAutoStatus(response.status);
+      setIsLoading(false);
+    } catch (error) {
+      console.log(error);
+      setIsLoading(false);
+      toast.error(`It was not possible to retrieve the team codes. 
+      Please try again by clicking the icon inside the input auto complete.`);
+    }
+  };
 
   useEffect(() => {
     userProfileRef.current = userProfile;
@@ -1009,6 +1034,12 @@ function UserProfile(props) {
                   codeValid={codeValid}
                   setCodeValid={setCodeValid}
                   saved={saved}
+                  inputAutoComplete={inputAutoComplete}
+                  inputAutoStatus={inputAutoStatus}
+                  isLoading={isLoading}
+                  fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
+                  isTeamSaved={(isSaved) => setIsTeamSaved(isSaved)}
+                  darkMode={darkMode}
                 />
               </TabPane>
               <TabPane tabId="4">
@@ -1229,6 +1260,11 @@ function UserProfile(props) {
                     userProfile={userProfile}
                     codeValid={codeValid}
                     setCodeValid={setCodeValid}
+                    inputAutoComplete={inputAutoComplete}
+                    inputAutoStatus={inputAutoStatus}
+                    isLoading={isLoading}
+                    fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
+                    darkMode={darkMode}
                   />
                 </ModalBody>
                 <ModalFooter>
