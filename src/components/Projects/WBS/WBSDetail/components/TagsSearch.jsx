@@ -7,11 +7,14 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleClick = (event, member) => {
     addResources(member._id, member.firstName, member.lastName);
-    setIsHidden(!isHidden);
+    setIsHidden(true);
+    setIsFocused(false);
     event.target.closest(".my-element").previousElementSibling.value = '';
+    setFilteredData([]);
   };
 
   // sorting using the input letter, giving highest priority to first name starting with that letter,
@@ -52,12 +55,12 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   const handleFilter = event => {
     const searchWord = event.target.value;
     if (searchWord === '') {
-      setFilteredData([]);
+      setFilteredData(isFocused ? members : []);
     } else {
       const newFilter = sortByStartingWith(searchWord);
-      setIsHidden(false);
       setFilteredData(newFilter);
     }
+    setIsHidden(false);
   };
 
   return (
@@ -70,20 +73,25 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
               placeholder={placeholder}
               className="border border-dark rounded form-control px-2"
               onChange={handleFilter}
+              onFocus={() => {
+                setIsFocused(true);
+                setFilteredData(members);
+                setIsHidden(false);
+              }}
+              onBlur={() => {
+                setTimeout(() => {
+                  setIsFocused(false);
+                  setIsHidden(true);
+                }, 200);
+              }}
             />,
             !disableInput,
             null,
             {componentOnly:true}
           )}
-          {filteredData.length !== 0 ? (
-            <ul
-              className={`my-element ${
-                isHidden
-                  ? 'd-none'
-                  : 'dropdown-menu d-flex flex-column align-items-start justify-content-start w-auto scrollbar shadow-lg rounded-3 position-absolute top-8 start-0 z-3 bg-light'
-              }`}
-            >
-              {filteredData.slice(0, 10).map((member, index) => (
+          {isFocused && filteredData.length !== 0 ? (
+            <ul className={`my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 scrollbar shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light scrollable-menu ${isHidden ? 'd-none' : ''}`}>
+              {filteredData.map((member, index) => (
                 <a key={member._id} className="text-decoration-none w-100">
                   <li
                     className={
