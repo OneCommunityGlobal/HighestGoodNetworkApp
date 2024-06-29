@@ -131,7 +131,7 @@ const Email = props => {
 
             <ToggleSwitch
               switchType="email-subcription"
-              state={emailSubscriptions? emailSubscriptions : false}
+              state={emailSubscriptions ? emailSubscriptions : false}
               handleUserProfile={props.handleUserProfile}
               darkMode={darkMode}
             />
@@ -196,7 +196,7 @@ const formatPhoneNumber = str => {
   return str;
 };
 const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay, darkMode} = props;
+  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay, darkMode } = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
     return (
@@ -335,10 +335,10 @@ const BasicInformationTab = props => {
 
     axios.get(ENDPOINTS.TIMEZONE_LOCATION(userProfile.location.userProvided)).then(res => {
       if (res.status === 200) {
-        const {timezone, currentLocation } = res.data;
+        const { timezone, currentLocation } = res.data;
         setTimeZoneFilter(timezone);
         setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
-      } 
+      }
     }).catch(err => {
       toast.error(`An error occurred : ${err.response.data}`);
       if (errorOccurred) setErrorOccurred(false);
@@ -676,13 +676,13 @@ const BasicInformationTab = props => {
           <Col md="8" className="mr-5">
             <Label className={darkMode ? 'text-light' : ''}>Status</Label>
           </Col>
-          <Col md="6">
+          <Col>
             <Label className={darkMode ? 'text-light' : ''}>
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + formatDate(userProfile.reactivationDate)
-                : 'Inactive'}
+                  ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                  : 'Inactive'}
             </Label>
             &nbsp;
             {canEdit && (
@@ -705,8 +705,8 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + formatDate(userProfile.reactivationDate)
-                  : 'Inactive'}
+                    ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                    : 'Inactive'}
               </Label>
               &nbsp;
               {canEdit && (
