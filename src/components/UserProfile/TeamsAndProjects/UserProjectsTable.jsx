@@ -6,6 +6,9 @@ import styles from './UserProjectsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { NavItem, UncontrolledTooltip } from 'reactstrap';
+import { Link } from 'react-router-dom';
 
 const UserProjectsTable = React.memo(props => {
   const {darkMode} = props;
@@ -15,6 +18,7 @@ const UserProjectsTable = React.memo(props => {
   const canUpdateTask = props.hasPermission('updateTask');
   const canDeleteProjects = props.hasPermission('deleteProject');
   const canDeleteTasks = props.hasPermission('deleteTask')
+  const canPostTask = props.hasPermission('postTask');
 
   const userProjects = props.userProjectsById;
   const userTasks = props.userTasks;
@@ -142,6 +146,21 @@ const UserProjectsTable = React.memo(props => {
                   <tr className={darkMode ? 'bg-space-cadet' : ''}>
                     <th className='table-header'>#</th>
                     <th>Project Name</th>
+                    {canPostTask && 
+                    <th style={{width: '100px'}}>
+                      <div className="d-flex align-items-center">
+                        <span className="mr-2">WBS</span>
+                          <EditableInfoModal
+                            areaName="ProjectTableHeaderWBS"
+                            areaTitle="WBS"
+                            fontSize={24}
+                            isPermissionPage={true}
+                            role={props.role}
+                            className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                            darkMode={darkMode}
+                          />
+                      </div>
+                    </th>}
                     {canAssignProjectToUsers ? <th style={{ width: '100px' }}>{}</th> : null}
                   </tr>
                 )}
@@ -152,6 +171,18 @@ const UserProjectsTable = React.memo(props => {
                     <tr key={project._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>{index + 1}</td>
                       <td>{project.projectName}</td>
+                      {props.role && canPostTask && (
+                        <td className='table-cell'>
+                          <NavItem tag={Link} to={`/project/wbs/${project._id}` } id={`wbs-tooltip-${project._id}`}>
+                            <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+                              <i className="fa fa-tasks" aria-hidden="true"></i>
+                            </button>
+                          </NavItem>
+                          <UncontrolledTooltip placement="left" target={`wbs-tooltip-${project._id}`}>
+                            Click to access the Work Breakdown Structures &#40;WBSs&#41; for this project
+                          </UncontrolledTooltip>
+                        </td>
+                      )}
                       {props.edit && props.role && canDeleteProjects &&(
                         <td className='table-cell'>
                           <Button
