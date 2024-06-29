@@ -22,7 +22,7 @@ const auth={user: {
 
 
 const teamMemberTasks={isLoading:false,
-                        usersWithTasks:[{
+                        usersWithTasks: [{
                           name: 'bb',
                           personId: "user123",
                           tasks: [{
