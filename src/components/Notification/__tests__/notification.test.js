@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import NotificationCard from '../NotificationCard';
-import * as actions from '../../../actions/notificationAction'; // 请根据实际文件路径调整
+import * as actions from '../../../actions/notificationAction';
 
 const mockStore = configureStore([thunk]);
 
@@ -14,9 +14,7 @@ describe('NotificationCard', () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({
-      // 初始模拟状态，如果需要的话
-    });
+    store = mockStore({});
 
     store.dispatch = jest.fn();
   });
