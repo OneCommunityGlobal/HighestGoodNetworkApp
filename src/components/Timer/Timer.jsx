@@ -304,12 +304,7 @@ export default function Timer({ darkMode }) {
 
   return (
     <div className={css.timerContainer}>
-      <button
-        type="button"
-        onClick={toggleTimer}
-        className={css.btnDiv}
-        aria-label="Open timer dropdown"
-      >
+      <button type="button" onClick={toggleTimer} className={css.btnDiv}>
         <BsAlarmFill
           className={cs(css.transitionColor, css.btn)}
           fontSize="2rem"
@@ -333,26 +328,20 @@ export default function Timer({ darkMode }) {
             handleAddButton(15);
           }}
           title="Add 15min"
-          aria-label="Add 15 minutes"
         >
           <FaPlusCircle
             className={cs(css.transitionColor, checkBtnAvail(15) ? css.btn : css.btnDisabled)}
             fontSize="1.5rem"
           />
         </button>
-        <button
-          type="button"
-          onClick={() => handleSubtractButton(15)}
-          title="Subtract 15min"
-          aria-label="Subtract 15 minutes"
-        >
+        <button type="button" onClick={() => handleSubtractButton(15)} title="Subtract 15min">
           <FaMinusCircle
             className={cs(css.transitionColor, checkBtnAvail(-15) ? css.btn : css.btnDisabled)}
             fontSize="1.5rem"
           />
         </button>
         {!started || paused ? (
-          <button type="button" onClick={handleStartButton} aria-label="Start timer">
+          <button type="button" onClick={handleStartButton}>
             <FaPlayCircle
               className={cs(css.transitionColor, remaining !== 0 ? css.btn : css.btnDisabled)}
               fontSize="1.5rem"
@@ -360,7 +349,7 @@ export default function Timer({ darkMode }) {
             />
           </button>
         ) : (
-          <button type="button" onClick={sendPause} aria-label="Pause timer">
+          <button type="button" onClick={sendPause}>
             <FaPauseCircle
               className={cs(css.btn, css.transitionColor)}
               fontSize="1.5rem"
@@ -373,7 +362,6 @@ export default function Timer({ darkMode }) {
           onClick={handleStopButton}
           disable={`${!started}`}
           title="Stop timer and log time"
-          aria-label="Stop timer and log time"
         >
           <FaStopCircle
             className={cs(
@@ -383,12 +371,7 @@ export default function Timer({ darkMode }) {
             fontSize="1.5rem"
           />
         </button>
-        <button
-          type="button"
-          onClick={() => setConfirmationResetModal(true)}
-          title="Reset timer"
-          aria-label="Reset timer"
-        >
+        <button type="button" onClick={() => setConfirmationResetModal(true)} title="Reset timer">
           <FaUndoAlt className={cs(css.transitionColor, css.btn)} fontSize="1.3rem" />
         </button>
       </div>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Stub } from "../../common/Stub/Stub";
+import { Stub } from "components/common/Stub";
 import "./WbsTable.css";
 
 // eslint-disable-next-line import/prefer-default-export
