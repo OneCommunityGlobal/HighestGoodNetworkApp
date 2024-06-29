@@ -1,23 +1,23 @@
-import { CardHeader, CardBody, Card, Row, Col, Button, Container } from 'reactstrap';
+import { CardHeader, CardBody, Card, Row, Button, Container } from 'reactstrap';
 import './BMTimeLogCard.css';
 
 // function BMTimeLogCard({ selectedProject }) {
 function BMTimeLogDisplayMember({ firstName, lastName, role }) {
-  let cardColor = '#9fd0e5'; // default = volunteer
+  let cardColor = '#97d5c8'; // default = volunteer
 
   if (role.includes('Volunteer') || role.includes('volunteer')) {
-    cardColor = '#9fd0e5';
+    cardColor = '#97d5c8'; // light green
   } else if (role.includes('Core') || role.includes('core')) {
-    cardColor = '#d59797';
+    cardColor = '#f2c897'; // light orange
   } else if (
     role.includes('Manager') ||
     role.includes('manager') ||
     role.includes('Mentor') ||
-    role.includes('mentor') ||
-    role.includes('Owner') ||
-    role.includes('ownder')
+    role.includes('mentor')
   ) {
-    cardColor = '#f2c897';
+    cardColor = '#9fd0e5'; // light blue
+  } else if (role.includes('Owner') || role.includes('ownder')) {
+    cardColor = '#d59797'; // light red
   }
 
   let borderProperty = '1px solid ';
@@ -33,19 +33,17 @@ function BMTimeLogDisplayMember({ firstName, lastName, role }) {
         </CardHeader>
         <CardBody>
           <Container>
-            <Row>STOPWATCH TIMER</Row>
             <Row>
-              <Col>
-                <Button>START</Button>
-              </Col>
-              <Col>
-                <Button>STOP</Button>
-              </Col>
+              <Button className="member-stopwatch mb-2 px-5">STOPWATCH TIMER</Button>
             </Row>
-            <Row>Start at: </Row>
-            <Row>Task: </Row>
-            <Row>
-              <Button>CLEAR</Button>
+            <Row className="justify-content-between mb-1">
+              <Button className="member-start">START</Button>
+              <Button className="member-stop">STOP</Button>
+            </Row>
+            <Row className="mb-1">Start at: </Row>
+            <Row className="mb-2">Task: </Row>
+            <Row className="justify-content-center">
+              <Button className="member-clear">CLEAR</Button>
             </Row>
           </Container>
         </CardBody>

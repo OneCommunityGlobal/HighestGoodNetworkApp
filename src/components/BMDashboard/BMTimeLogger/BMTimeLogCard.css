@@ -37,6 +37,27 @@
   color: white;
 }
 
+.member-stopwatch {
+  background-color: #4b5055;
+  width: 100%;
+  height: 4rem;
+}
+
+.member-start {
+  background-color: #01987a;  
+  width: 5rem;
+}
+
+.member-stop {
+  background-color: #980101;  
+  width: 5rem;  
+}
+
+.member-clear {
+  background-color: #a9b7be;    
+  width: 5rem;  
+}
+
 /* project summaries */
 .projects-list {
   width: 80%;
