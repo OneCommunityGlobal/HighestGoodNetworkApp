@@ -18,7 +18,6 @@ import "../../Header/DarkMode.css"
 
 function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData, setWarningMessage, setShowMessage }) {
   const darkMode = useSelector(state => state.theme.darkMode)
-
   const [titleData, setTitleData] = useState({
     titleName: '',
     mediaFolder: '',
