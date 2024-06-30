@@ -6,17 +6,21 @@ import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
+import RoleDistributionPieChart from './components/RoleDistributionPieChart';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
 
 function TotalOrgSummary(props) {
-  const { darkMode, loading, error } = props;
+  const { darkMode, loading, error, volunteerstats } = props;
 
   useEffect(() => {
+    console.log('Fetching...');
     props.getTotalOrgSummary(startDate, endDate);
     props.hasPermission();
   }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
+
+  console.log('props: ', props);
 
   if (error) {
     return (
@@ -48,6 +52,9 @@ function TotalOrgSummary(props) {
   return (
     <Container>
       <h1>Total Org Summary</h1>
+      <div>
+        <RoleDistributionPieChart data={volunteerstats} />
+      </div>
     </Container>
   );
 }
