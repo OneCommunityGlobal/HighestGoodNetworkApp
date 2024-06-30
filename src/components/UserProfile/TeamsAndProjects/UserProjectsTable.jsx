@@ -156,7 +156,7 @@ const UserProjectsTable = React.memo(props => {
                             fontSize={24}
                             isPermissionPage={true}
                             role={props.role}
-                            className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                            className="p-2"
                             darkMode={darkMode}
                           />
                       </div>
