@@ -105,12 +105,13 @@ export const deleteTimeEntry = timeEntry => {
   const url = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntry._id);
   return async dispatch => {
     try {
-      await axios.delete(url);
+      const res = await axios.delete(url);
       if (timeEntry.entryType === 'default') {
         dispatch(updateTimeEntries(timeEntry));
       }
-    } catch (error) {
-      return error;
+      return res.status;
+    } catch (e) {
+      return e.response.status;
     }
   };
 };
