@@ -30,6 +30,20 @@ function EquipmentsTable({ equipment, project }) {
   }, [equipments]);
 
   const handleSort = column => {
+    let _equipments;
+    let _equipmentsViewData;
+    if (project.value === '0' && equipment.value === '0') {
+      _equipments = [...equipments];
+    } else if (project.value !== '0' && equipment.value === '0') {
+      _equipments = equipments.filter(rec => rec.project?._id === project.value);
+    } else if (project.value === '0' && equipment.value !== '0') {
+      _equipments = equipments.filter(rec => rec.itemType?.name === equipment.value);
+    } else {
+      _equipments = equipments.filter(
+        rec => rec.project?._id === project.value && rec.itemType?.name === equipment.value,
+      );
+      _equipmentsViewData = _equipments;
+    }
     if (!column || equipments.length === 0) return;
     switch (column) {
       case 'project': {
@@ -39,7 +53,7 @@ function EquipmentsTable({ equipment, project }) {
           project: iconToDisplay.project === faSortUp ? faSortDown : faSortUp,
         });
         const factor = sortOrder.project === 'asc' ? 1 : -1;
-        const _equipmentsViewData = [...equipments].sort((a, b) => {
+        _equipmentsViewData = [..._equipments].sort((a, b) => {
           return factor * a.project.name.localeCompare(b.project.name);
         });
         setEquipmentsViewData(_equipmentsViewData);
@@ -52,7 +66,7 @@ function EquipmentsTable({ equipment, project }) {
           itemType: iconToDisplay.itemType === faSortUp ? faSortDown : faSortUp,
         });
         const factor = sortOrder.itemType === 'asc' ? 1 : -1;
-        const _equipmentsViewData = [...equipments].sort((a, b) => {
+        _equipmentsViewData = [..._equipments].sort((a, b) => {
           return factor * a.itemType.name.localeCompare(b.itemType.name);
         });
         setEquipmentsViewData(_equipmentsViewData);
