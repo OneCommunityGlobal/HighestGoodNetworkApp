@@ -6,6 +6,7 @@ import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
+import { useEffect } from 'react';
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
@@ -14,8 +15,14 @@ const UserTeamsTable = props => {
   const [teamCode, setTeamCode] = useState(props.userProfile ? props.userProfile.teamCode : props.teamCode);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
+  const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
+
+  useEffect(() => {
+    if (props.userProfile?.teamCode) {
+      setTeamCode(props.userProfile.teamCode);
+    }
+  }, [props.userProfile.teamCode]);
 
   const handleCodeChange = e => {
     let value = e.target.value;
@@ -122,6 +129,7 @@ const UserTeamsTable = props => {
             <tbody>
               {props.userTeamsById.length > 0 ? (
                 props.userTeamsById.map((team, index) => (
+                  !team ? null :
                   <tr key={index} className="tr">
                     <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
                     <td className={darkMode ? 'bg-yinmn-blue' : ''}>{`${team.teamName}`}</td>
@@ -240,6 +248,7 @@ const UserTeamsTable = props => {
             <tbody className={darkMode ? 'text-light' : ''}>
               {props.userTeamsById.length > 0 ? (
                 props.userTeamsById.map((team, index) => (
+                  !team ? null :
                   <tr key={index} className="tr">
                     <td>{index + 1}</td>
                     <td>{`${team.teamName}`}</td>
