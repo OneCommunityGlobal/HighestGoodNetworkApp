@@ -13,6 +13,7 @@ import {
 import { addTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
+import AssignTeamCodeField from './AssignTeamCodeField';
 import { useSelector } from 'react-redux';
 import "../../Header/DarkMode.css"
 
@@ -37,6 +38,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   }
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
+  const [selectedTeamCode, onSelectTeamCode] = useState(undefined);
   const [isValidProject, onValidation] = useState(false);
   const [searchText, setSearchText] = useState(''); // For addTeamAutoComplete
 
@@ -52,6 +54,14 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     }));
     onValidation(true);
   };
+
+  const selectTeamCode = teamCode => {
+    onSelectTeamCode(teamCode);
+    setTitleData(prev => ({
+      ...prev,
+      teamCode: teamCode,
+    }));
+  };  
 
   const cleanProjectAssign = () => {
     setTitleData(prev => ({
@@ -70,6 +80,13 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
       },
     }));
     onValidation(true);
+  };
+
+  const cleanTeamCodeAssign = () => {
+    setTitleData(prev => ({
+      ...prev,
+      teamCode: "",
+    }));
   };
 
   const cleanTeamAssigned = () => {
@@ -176,7 +193,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               }}
             />
             <Label className={fontColor}>Team Code<span className='qsm-modal-required'>*</span>:</Label>
-            <Input
+            {/* <Input
               type="text"
               placeholder="X-XXX OR XXXXX"
               onChange={e => {
@@ -184,7 +201,16 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
                 setTitleData(prev => ({ ...prev, teamCode: e.target.value }));
               }}
               onBlur={(e) => onTeamCodeValidation(e.target.value)}
+            /> */}
+
+            <AssignTeamCodeField
+              teamCodeData={existTeamCodes}
+              onDropDownSelect={selectTeamCode}
+              selectedTeamCode={selectedTeamCode}
+              cleanTeamCodeAssign={cleanTeamCodeAssign}
+              onSelectTeamCode={onSelectTeamCode}
             />
+
             <Label className={fontColor}>Project Assignment<span className='qsm-modal-required'>*</span>:</Label>
             <AssignProjectField
               projectsData={projectsData}
