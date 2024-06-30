@@ -430,7 +430,7 @@ class PeopleReport extends Component {
 
     const renderProfileInfo = () => {
       const { isRehireable, bioStatus, authRole } = this.state;
-      const { profilePic, role, jobTitle, endDate, _id, createdDate, startDate} = userProfile;
+      const { profilePic, role, jobTitle, endDate, _id, createdDate, startDate } = userProfile;
 
       return (
         <ReportPage.ReportHeader

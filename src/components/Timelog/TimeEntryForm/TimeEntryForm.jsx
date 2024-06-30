@@ -20,7 +20,6 @@ import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
-import { getUserProjects, getUserWBSs } from '../../../actions/userProjects';
 import { getUserProfile } from 'actions/userProfile';
 
 import AboutModal from './AboutModal';
@@ -29,7 +28,25 @@ import ReminderModal from './ReminderModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../../Header/DarkMode.css'
+
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  placeholder: 'Description (10-word minimum) and reference link',
+  plugins:
+    'advlist autolink autoresize lists link charmap table paste help wordcount',
+  toolbar:
+    'bold italic underline link removeformat | bullist numlist outdent indent |\
+                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                    subscript superscript charmap  | help',
+  branding: false,
+  min_height: 180,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+  content_style: 'body { cursor: text !important; }',
+};
 
 /**
  * Modal used to submit and edit tangible and intangible time entries.
@@ -53,8 +70,7 @@ import { boxStyle } from 'styles';
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile } = props;
-
+  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
 
@@ -358,27 +374,30 @@ const TimeEntryForm = props => {
       project.WBSObject = {};
       projectsObject[projectId] = project;
     });
-    timeEntryFormUserWBSs.forEach(WBS => {
-      const { projectId, _id: wbsId } = WBS;
-      WBS.taskObject = {};
-      if(projectsObject[projectId]){
-        projectsObject[projectId].WBSObject[wbsId] = WBS;
-      }
-    });
     timeEntryFormUserTasks.forEach(task => {
-      const { projectId, wbsId, _id: taskId, resources } = task;
-      const isTaskCompletedForTimeEntryUser = resources.find(
-        resource => resource.userID === timeEntryUserId,
-      ).completedTask;
-      if (!isTaskCompletedForTimeEntryUser && projectsObject[projectId]) {
-        if (!projectsObject[projectId].WBSObject) {
-          projectsObject[projectId].WBSObject = {};
-        }
-        if (!projectsObject[projectId].WBSObject[wbsId]) {
-          projectsObject[projectId].WBSObject[wbsId] = { taskObject: {} };
-        }
+      const { projectId, wbsId, _id: taskId, wbsName, projectName } = task;
+      if (!projectsObject[projectId]) {
+        projectsObject[projectId] = {
+          projectName,
+          WBSObject: {
+            [wbsId]: {
+              wbsName,
+              taskObject: {
+                [taskId]: task,
+              },
+            },
+          },
+        };
+      } else if (!projectsObject[projectId].WBSObject[wbsId]) {
+        projectsObject[projectId].WBSObject[wbsId] = {
+          wbsName,
+          taskObject: {
+            [taskId]: task,
+          },
+        };
+      } else {
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
-      }   
+      }
     });
 
     for (const [projectId, project] of Object.entries(projectsObject)) {
@@ -418,23 +437,19 @@ const TimeEntryForm = props => {
     try {
       const profileURL = ENDPOINTS.USER_PROFILE(timeEntryUserId);
       const projectURL = ENDPOINTS.USER_PROJECTS(timeEntryUserId);
-      const wbsURL = ENDPOINTS.WBS_USER(timeEntryUserId);
       const taskURL = ENDPOINTS.TASKS_BY_USERID(timeEntryUserId);
 
       const profilePromise = axios.get(profileURL);
       const projectPromise = axios.get(projectURL);
-      const wbsPromise = axios.get(wbsURL);
       const taskPromise = axios.get(taskURL);
 
-      const [userProfileRes, userProjectsRes, userWBSsRes, userTasksRes] = await Promise.all([
+      const [userProfileRes, userProjectsRes, userTasksRes] = await Promise.all([
         profilePromise,
         projectPromise,
-        wbsPromise,
         taskPromise,
       ]);
       setTimeEntryFormUserProfile(userProfileRes.data);
       setTimeEntryFormUserProjects(userProjectsRes.data);
-      setTimeEntryFormUserWBSs(userWBSsRes.data);
       setTimeEntryFormUserTasks(userTasksRes.data);
       setIsAsyncDataLoaded(true);
     } catch (e) {
@@ -462,14 +477,18 @@ const TimeEntryForm = props => {
     setFormValues({ ...formValues, ...data})
   }, [data])
 
+  const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
+  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+
   return (
     <>
-      <Modal isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal">
-        <ModalHeader toggle={toggle}>
+      <Modal className={darkMode ? `${fontColor} dark-mode` : ''} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
+        <ModalHeader toggle={toggle} className={`${headerBg}`}>
           <div>
             {edit ? 'Edit ' : 'Add '}
             {formValues.isTangible ? (
-              <span style={{ color: 'blue' }}>Tangible </span>
+              <span style={{ color: darkMode ? '#007BFF' : 'blue' }}>Tangible </span>
             ) : (
               <span style={{ color: 'orange' }}>Intangible </span>
             )}
@@ -488,10 +507,10 @@ const TimeEntryForm = props => {
             Click this icon to learn about this time entry form
           </ReactTooltip>
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={bodyBg}>
           <Form>
             <FormGroup>
-              <Label for="dateOfWork">Date</Label>
+              <Label for="dateOfWork" className={fontColor}>Date</Label>
               <Input
                 type="date"
                 name="dateOfWork"
@@ -508,7 +527,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="timeSpent">Time (HH:MM)</Label>
+              <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
               <Row form>
                 <Col>
                   <Input
@@ -544,7 +563,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="project">Project/Task</Label>
+              <Label for="project" className={fontColor}>Project/Task</Label>
               <Input
                 type="select"
                 name="projectOrTask"
@@ -561,23 +580,10 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="notes">Notes</Label>
+              <Label for="notes" className={fontColor}>Notes</Label>
               <Editor
-                init={{
-                  menubar: false,
-                  placeholder: 'Description (10-word minimum) and reference link',
-                  plugins:
-                    'advlist autolink autoresize lists link charmap table paste help wordcount',
-                  toolbar:
-                    'bold italic underline link removeformat | bullist numlist outdent indent |\
-                                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                                    subscript superscript charmap  | help',
-                  branding: false,
-                  min_height: 180,
-                  max_height: 300,
-                  autoresize_bottom_margin: 1,
-                  content_style: 'body { cursor: text !important; }',
-                }}
+                tinymceScriptSrc="/tinymce/tinymce.min.js"
+                init={TINY_MCE_INIT_OPTIONS}
                 id="notes"
                 name="notes"
                 className="form-control"
@@ -593,7 +599,7 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup check>
-              <Label check>
+              <Label check className={fontColor}>
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -617,12 +623,12 @@ const TimeEntryForm = props => {
             </FormGroup>
           </Form>
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={bodyBg}>
           <small className="mr-auto">* All the fields are required</small>
-          <Button onClick={clearForm} color="danger" style={boxStyle}>
+          <Button onClick={clearForm} color="danger" style={darkMode ? boxStyleDark : boxStyle}>
             Clear Form
           </Button>
-          <Button color="primary" onClick={handleSubmit} style={boxStyle} disabled={submitting}>
+          <Button color="primary" onClick={handleSubmit} style={darkMode ? boxStyleDark : boxStyle} disabled={submitting}>
             {edit ? (submitting ? 'Saving...' : 'Save') : submitting ? 'Submitting...' : 'Submit'}
           </Button>
         </ModalFooter>
@@ -630,8 +636,9 @@ const TimeEntryForm = props => {
       <TangibleInfoModal
         visible={isTangibleInfoModalVisible}
         setVisible={setTangibleInfoModalVisibility}
+        darkMode={darkMode}
       />
-      <AboutModal visible={isAboutModalVisible} setVisible={setAboutModalVisible} />
+      <AboutModal visible={isAboutModalVisible} setVisible={setAboutModalVisible} darkMode={darkMode}/>
       <ReminderModal
         inputs={formValues}
         data={data}
@@ -640,6 +647,7 @@ const TimeEntryForm = props => {
         visible={reminder.openModal}
         setVisible={toggleRemainder}
         cancelChange={cancelChange}
+        darkMode={darkMode}
       />
     </>
   );
@@ -655,14 +663,12 @@ TimeEntryForm.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
-  userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {
   hasPermission,
   getUserProfile,
-  getUserProjects,
-  getUserWBSs,
   editTimeEntry,
   postTimeEntry,
   getTimeEntriesForWeek,

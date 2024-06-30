@@ -19,7 +19,7 @@ const getRandomMessage = () => {
 };
 
 const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab';
-const validTeamCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+const validTeamCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
 const stillSavingMessage = 'Saving, will take just a second...';
 
 /**
@@ -94,12 +94,14 @@ const SaveButton = props => {
         modalTitle={getMessage('title')}
         modalMessage={getMessage('message')}
         disabled={isLoading}
+        darkMode={darkMode}
       />
       <Button
         outline
         color='primary'
         // to={`/userprofile/${this.state.userProfile._id}`}
-        className='btn btn-outline-primary mr-1 bg-white'
+        //the line below caused the mouse over issue, so I commented it out
+        //className='btn btn-outline-primary mr-1 bg-white'
         onClick={handleSave}
         disabled={disabled}
         style={darkMode ? boxStyleDark : boxStyle}

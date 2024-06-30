@@ -1,9 +1,11 @@
 /* eslint-disable no-plusplus */
 
+import { useSelector } from 'react-redux';
 import './SkeletonLoading.css';
 import { Container } from 'reactstrap';
 
 const SkeletonLoading = ({ template, className }) => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const renderSkeletonTemplate = () => {
     const rows = [];
     const reportItems = [];
@@ -12,7 +14,7 @@ const SkeletonLoading = ({ template, className }) => {
       case 'Timelog':
         return (
           <Container fluid="sm">
-            <div className="skeleton-loading-timelog">
+            <div className={`skeleton-loading-timelog ${darkMode ? 'bg-space-cadet' : ''}`}>
               <div className="skeleton-loading-item-timelog" />
               <div className="skeleton-loading-item-timelog" />
               <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
@@ -23,7 +25,7 @@ const SkeletonLoading = ({ template, className }) => {
         );
       case 'TimelogFilter':
         return (
-          <div className="skeleton-loading-timelog-filter">
+          <div className={`skeleton-loading-timelog-filter ${darkMode ? 'bg-space-cadet' : ''}`}>
             <div className="skeleton-loading-timelog-filter-item" />
             <div className="skeleton-loading-timelog-filter-item" />
             <div className="skeleton-loading-timelog-filter-item" />
@@ -41,14 +43,14 @@ const SkeletonLoading = ({ template, className }) => {
         return rows;
       case 'WeeklySummary':
         return (
-          <Container fluid="sm">
+          <Container fluid="sm" className={darkMode ? 'bg-space-cadet' : ''}>
             <div className="skeleton-loading-weekly-summary" />
           </Container>
         );
       case 'WeeklySummariesReport':
         for (let i = 0; i < 10; i++) {
           reportItems.push(
-            <div key={i}>
+            <div key={i} className={darkMode ? 'bg-yinmn-blue' : ''}>
               <div className="skeleton-loading-weekly-summaries-report-item" />
               <div className="skeleton-loading-weekly-summaries-report-item mt-5" />
               <div className="skeleton-loading-weekly-summaries-report-item" />
@@ -76,7 +78,15 @@ const SkeletonLoading = ({ template, className }) => {
         );
       case 'UserProfile':
         return (
-          <Container fluid style={{ display: 'flex', justifyContent: 'center' }}>
+          <Container
+            fluid
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              backgroundColor: darkMode ? '#1B2A41' : '',
+              minHeight: '100vh',
+            }}
+          >
             <div style={{ margin: '3rem 3rem 0 16rem' }}>
               <div
                 className="skeleton-loading-user-profile-picture"

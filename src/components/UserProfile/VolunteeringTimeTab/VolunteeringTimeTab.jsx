@@ -9,6 +9,7 @@ import './timeTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY  } from 'utils/formatDate';
 
+
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
@@ -242,7 +243,7 @@ const TotalIntangibleHours = props => {
  * @returns
  */
 const ViewTab = props => {
-  const { userProfile, setUserProfile, role, canEdit, darkMode } = props;
+  const { userProfile, setUserProfile, role, canEdit, canUpdateSummaryRequirements, darkMode } = props;
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
@@ -347,10 +348,10 @@ const ViewTab = props => {
     <div data-testid="volunteering-time-tab">
       <Row className="volunteering-time-row">
         <Col md="6">
-          <Label className="hours-label">Account Created Date</Label>
+          <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
         </Col>
         <Col md="6">
-        <p>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+        <p className={darkMode ? 'text-azure' : ''}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
@@ -403,7 +404,7 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            canEdit={canEdit}
+            canEdit={canEdit && canUpdateSummaryRequirements}
             darkMode={darkMode}
           />
         </Col>

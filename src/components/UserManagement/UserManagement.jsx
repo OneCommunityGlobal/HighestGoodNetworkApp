@@ -25,7 +25,7 @@ import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
 import { searchWithAccent } from '../../utils/search'
-
+import SetupHistoryPopup from './SetupHistoryPopup';
 import DeleteUserPopup from './DeleteUserPopup';
 import ActiveInactiveConfirmationPopup from './ActiveInactiveConfirmationPopup';
 import { Container } from 'reactstrap';
@@ -36,6 +36,11 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { toast } from 'react-toastify';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -59,6 +64,8 @@ class UserManagement extends React.PureComponent {
       isPaused: false,
       finalDayDateOpen: false,
       setupNewUserPopupOpen: false,
+      setupHistoryPopupOpen: false,
+      shouldRefreshInvitationHistory: false,
       logTimeOffPopUpOpen: false,
       userForTimeOff: '',
     };
@@ -90,6 +97,7 @@ class UserManagement extends React.PureComponent {
               onActiveFiter={this.onActiveFiter}
               onNewUserClick={this.onNewUserClick}
               handleNewUserSetupPopup={this.handleNewUserSetupPopup}
+              handleSetupHistoryPopup={this.handleSetupHistoryPopup}
               darkMode={darkMode}
             />
             <div className="table-responsive" id="user-management-table">
@@ -177,6 +185,13 @@ class UserManagement extends React.PureComponent {
         <SetupNewUserPopup
           open={this.state.setupNewUserPopupOpen}
           onClose={this.handleNewUserSetupPopup}
+          handleShouldRefreshInvitationHistory={this.handleShouldRefreshInvitationHistory}
+        />
+        <SetupHistoryPopup
+          open={this.state.setupHistoryPopupOpen}
+          onClose={this.handleSetupHistoryPopup}
+          shouldRefreshInvitationHistory={this.state.shouldRefreshInvitationHistory}
+          handleShouldRefreshInvitationHistory={this.handleShouldRefreshInvitationHistory}
         />
         <LogTimeOffPopUp
           open={this.state.logTimeOffPopUpOpen}
@@ -202,8 +217,8 @@ class UserManagement extends React.PureComponent {
        */
       return usersSearchData
         .sort((a, b) => {
-          if (a.startDate >= b.startDate) return -1;
-          if (a.startDate < b.startDate) return 1;
+          if (a.createdDate >= b.createdDate) return -1;
+          if (a.createdDate < b.createdDate) return 1;
           return 0;
         })
         .slice(
@@ -306,8 +321,12 @@ class UserManagement extends React.PureComponent {
    */
   onLogTimeOffClick = user => {
     // Check if target user is Jae's related user and authroized to manage time off requests
-    if(cantUpdateDevAdminDetails(user.email , this.authEmail)){
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+    if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
+      if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
@@ -330,7 +349,11 @@ class UserManagement extends React.PureComponent {
 
   onFinalDayClick = (user, status) => {
     if(cantUpdateDevAdminDetails(user.email , this.authEmail)) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (status === FinalDay.NotSetFinalDay) {
@@ -608,6 +631,23 @@ class UserManagement extends React.PureComponent {
   };
 
   /**
+   * When a new invitation send to user. We should update the state
+   * and re-fecth the invitation history.
+   */
+  handleShouldRefreshInvitationHistory = () => {
+    this.setState(prevState => ({
+      shouldRefreshInvitationHistory: !prevState.shouldRefreshInvitationHistory,
+    }));
+  };
+  /**
+   * Setup invitation history popup modal
+   */
+  handleSetupHistoryPopup = () => {
+    this.setState(prevState => ({
+      setupHistoryPopupOpen: !prevState.setupHistoryPopupOpen,
+    }));
+  };
+  /**
    * New user popup close button click
    */
   onUserPopupClose = () => {
@@ -615,6 +655,7 @@ class UserManagement extends React.PureComponent {
       newUserPopupOpen: false,
     });
   };
+  
 }
 
 const mapStateToProps = state => {
