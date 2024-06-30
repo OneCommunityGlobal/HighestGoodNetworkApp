@@ -17,7 +17,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
 
     const [teamCode, setTeamCode] = useState(team.teamCode);
     const [hasError, setHasError] = useState(false);
-    const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
+    const fullCodeRegex = /^.{5,7}$/;
 
     const handleOnChange = (value, team) => {
       updateTeam(team.teamName, team._id, team.isActive, value);
