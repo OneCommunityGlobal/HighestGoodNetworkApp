@@ -5,7 +5,7 @@ import { Dropdown, Input } from 'reactstrap';
 const AssignTeamCodeField = React.memo(props => {
   const [searchText, onInputChange] = useState('');
   const [isOpen, toggle] = useState(false);
-  debugger;
+
   useEffect(() => {
     if (props.selectedTeamCode && props.selectedTeamCode !== searchText) {
       props.onSelectTeamCode(undefined);
