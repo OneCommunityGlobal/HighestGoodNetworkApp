@@ -253,16 +253,6 @@ export const permissionLabels = [
     description: 'Category for all permissions related to team management',
     subperms: [
       {
-        label: 'See Teams Management Tab',
-        key: 'seeTeams',
-        description: 'Make the "Other Links" -> "Teams" button appear',
-      },
-      {
-        label: 'Create Team',
-        key: 'postTeam',
-        description: 'Gives the user permission to create a team.',
-      },
-      {
         label: 'Edit Team',
         key: 'putTeam',
         description: 'Gives the user permission to Edit a team.',
@@ -273,10 +263,21 @@ export const permissionLabels = [
         description: 'Gives the user permission to delete a team.',
       },
       {
-        label: 'Assign Users to Team',
-        key: 'assignTeamToUsers',
-        description:
-          'Gives the user permission to add users to teams. "Other Links" -> "Teams" -> "Members" -> "Add Input"',
+        label: 'Create/assign teams',
+        description: 'Quality of life bundling of two permissions commonly used together',
+        subperms: [
+          {
+            label: 'Create Team',
+            key: 'postTeam',
+            description: 'Gives the user permission to create a team.',
+          },
+          {
+            label: 'Assign Users to Team',
+            key: 'assignTeamToUsers',
+            description:
+              'Gives the user permission to add users to teams. "Other Links" -> "Teams" -> "Members" -> "Add Input"',
+          },
+        ],
       },
     ],
   },
@@ -284,6 +285,12 @@ export const permissionLabels = [
     label: 'Timelog Management',
     description: 'Category for all permissions related to timelog management',
     subperms: [
+      {
+        label: 'Toggle Tangible Time Self',
+        key: 'toggleTangibleTime',
+        description:
+          'Gives the user permission to toggle the Tangible check when editing their own time entry.',
+      },
       {
         label: 'Timelog Management (Others)',
         description: 'Category for all permissions related to timelog management',
@@ -295,41 +302,35 @@ export const permissionLabels = [
               'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button". Currently not implemented.',
           },
           {
-            label: 'Toggle Tangible Time Self',
-            key: 'toggleTangibleTime',
-            description:
-              'Gives the user permission to toggle the Tangible check when editing their own time entry.',
-          },
-          {
             label: 'Delete Time Entry (Others)',
             key: 'deleteTimeEntry',
             description:
               'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
           },
           {
-            label: 'Edit Time Entries',
-            description: 'Category for all permissions related to timelog management',
+            label: 'Editing Time Entries',
+            description: 'Category for all permissions related to editing timelogs',
             subperms: [
               {
                 label: 'Edit Timelog Time',
-                key: 'editTimeEntry',
+                key: 'editTimeEntryTime',
                 description: 'Gives the user permission to edit the time of any time log entry.',
               },
               {
                 label: 'Edit Timelog Description',
-                key: 'editTimeEntry',
+                key: 'editTimeEntryDescription',
                 description:
                   'Gives the user permission to edit the description of any time log entry.',
               },
               {
                 label: 'Toggle Tangible Time Others',
-                key: 'editTimeEntry',
+                key: 'editTimeEntryToggleTangible',
                 description:
                   'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
               },
               {
                 label: 'Change Time Entry Date',
-                key: 'editTimelogDate',
+                key: 'editTimeEntryDate',
                 description:
                   'Gives the user permission to edit the date when adding an intangible time entry.',
               },

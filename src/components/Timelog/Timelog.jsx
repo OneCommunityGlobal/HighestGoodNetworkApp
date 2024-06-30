@@ -97,7 +97,6 @@ const Timelog = props => {
   }
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
 
   // access the store states
   const {
@@ -604,11 +603,9 @@ const Timelog = props => {
                           <Button onClick={openInfo} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                             Close
                           </Button>
-                          {canEditTimeEntry ? (
-                            <Button onClick={openInfo} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
-                              Edit
-                            </Button>
-                          ) : null}
+                          <Button onClick={openInfo} color="secondary">
+                            Edit
+                          </Button>
                         </ModalFooter>
                       </Modal>
                       {/* This TimeEntryForm is for adding intangible time throught the add intangible time enty button */}
