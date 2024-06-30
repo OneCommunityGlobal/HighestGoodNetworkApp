@@ -141,11 +141,12 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
             isOpen={isNewRolePopUpOpen}
             toggle={togglePopUpNewRole}
             id="modal-content__new-role"
+            className="dark-mode"
           >
             <ModalHeader
               toggle={togglePopUpNewRole}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet' : ''}
+              className={darkMode ? 'bg-space-cadet text-light' : ''}
             >
               Create New Role
             </ModalHeader>
