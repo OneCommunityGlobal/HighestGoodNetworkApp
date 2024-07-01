@@ -36,7 +36,7 @@ import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
-
+const fullCodeRegex = /^.{5,7}$/;
 export class WeeklySummariesReport extends Component {
   weekDates = Array.from({ length: 4 }).map((_, index) => ({
     fromDate: moment()
@@ -72,6 +72,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      replaceCode: '',
       // weeklyRecipientAuthPass: '',
     };
   }
@@ -139,6 +140,7 @@ export class WeeklySummariesReport extends Component {
         teamCodes.push({
           value: code,
           label: `${code} (${teamCodeGroup[code].length})`,
+          _ids: teamCodeGroup[code].map(item => item._id),
         });
       }
     });
@@ -484,6 +486,17 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
+  handleAllTeamCodeReplace = () => {
+    // try {
+    const { replaceCode } = this.state;
+    fullCodeRegex.test(replaceCode);
+    //   if (boolean) {
+    //     const userIds = [];
+    //   } else {
+    //   }
+    // } catch (error) {}
+  };
+
   render() {
     const { role, darkMode } = this.props;
     const {
@@ -499,6 +512,7 @@ export class WeeklySummariesReport extends Component {
       colorOptions,
       teamCodes,
       auth,
+      replaceCode,
     } = this.state;
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -652,8 +666,19 @@ export class WeeklySummariesReport extends Component {
           <Row style={{ marginBottom: '10px' }}>
             <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
               Replace With
-              <Input type="string" placeholder="replace" />
-              <Button className="mr-1 mt-1 btn-bottom" color="primary">
+              <Input
+                type="string"
+                placeholder="replace"
+                value={replaceCode}
+                onChange={e => {
+                  this.setState({ replaceCode: e.target.value });
+                }}
+              />
+              <Button
+                className="mr-1 mt-3 btn-bottom"
+                color="primary"
+                onClick={this.handleAllTeamCodeReplace}
+              >
                 Replace
               </Button>
             </Col>
