@@ -1,6 +1,6 @@
 import {useState} from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import './DarkModeButton.css';
+import './DarkMode.css';
 import { Tooltip } from 'reactstrap';
 
 const DarkModeButton = () => {
@@ -30,7 +30,7 @@ const DarkModeButton = () => {
         className={`dark-mode-button ${darkMode ? 'dark-mode' : ''}`} 
         onClick={toggleDarkMode}
         id="darkModeTooltip">
-      <span className="icon">{darkMode ? '🌞' : '🌜'}</span>
+      <span className="icon">{darkMode ? 'Dark Mode Off' : 'Dark Mode On'}</span>
       </button>
 
     </>

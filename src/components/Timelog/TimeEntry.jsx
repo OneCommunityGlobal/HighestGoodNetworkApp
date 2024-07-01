@@ -10,7 +10,6 @@ import TimeEntryForm from './TimeEntryForm';
 import DeleteModal from './DeleteModal';
 
 import { editTimeEntry, getTimeEntriesForWeek } from '../../actions/timeEntries';
-import { getUserProfile, updateUserProfile } from '../../actions/userProfile';
 import { editTeamMemberTimeEntry } from '../../actions/task';
 import hasPermission from 'utils/permissions';
 import { hrsFilterBtnColorMap } from 'constants/colors';
@@ -37,60 +36,47 @@ const TimeEntry = (props) => {
 
   const { _id: timeEntryUserId } = timeEntryUserProfile;
   const { _id: timeEntryId } = data;
-
-  const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const dispatch = useDispatch();
-
   const { 
     dateOfWork, 
     isTangible, 
     hours,
     minutes,
-    projectId,
+    projectName,
+    taskName,
     taskId,
     notes,
   } = data;
 
-  let projectName, projectCategory, taskName, taskClassification;
+  const [timeEntryFormModal, setTimeEntryFormModal] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [filteredColor,setFilteredColor] = useState(hrsFilterBtnColorMap[7]);
+  const dispatch = useDispatch();
 
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
 
-  if (from === 'TaskTab') {
-    // Time Entry rendered under Tasks tab
-    ({ projectName, projectCategory, taskName, taskClassification } = data)
-  } else {
-    // Time Entry rendered under weekly tabs
-    const timeEntryProject = displayUserProjects.find(project => project.projectId === projectId);
-    ({ projectName, projectCategory } = timeEntryProject);
-    if (taskId) {
-      const timeEntryTask = displayUserTasks.find(task => task._id === taskId);
-      console.log('timeEntryTask', timeEntryTask)
-      if (timeEntryTask) ({ taskName, taskClassification = '' } = timeEntryTask); // temporary fix for timeentry of tasks not have current user as resource
-    }
-  }
-  
   const toggle = () => setTimeEntryFormModal(modal => !modal);
 
   const isAuthUser = timeEntryUserId === authUser.userid;
   const isSameDay = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === dateOfWork;
-      
+
   //default permission: auth use can edit own sameday timelog entry, but not tangibility
   const isAuthUserAndSameDayEntry = isAuthUser && isSameDay;
 
   //permission to edit any time log entry (from other user's Dashboard
     // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-  const canEdit = (dispatch(hasPermission('editTimelogInfo')) 
-    //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission('editTimeEntry'))) && !cantEditJaeRelatedRecord;
+  const canEditTangibility = (
+    isAuthUser ?
+      dispatch(hasPermission('toggleTangibleTime')):
+      dispatch(hasPermission('editTimeEntryToggleTangible'))
+    ) && !cantEditJaeRelatedRecord;
 
   //permission to Delete time entry from other user's Dashboard
-  const canDelete = (dispatch(hasPermission('deleteTimeEntryOthers')) ||
+  const canDelete = (dispatch(hasPermission('deleteTimeEntryOthers')) && !cantEditJaeRelatedRecord) ||
     //permission to delete any time entry on their own time logs tab
-    (isAuthUser && dispatch(hasPermission('deleteTimeEntry'))) ||
+    dispatch(hasPermission('deleteTimeEntry')) ||
     //default permission: delete own sameday tangible entry
-    isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord;;
-
+    isAuthUserAndSameDayEntry;
+  
   const toggleTangibility = async () => {
     setIsProcessing(true);
     const newData = {
@@ -109,24 +95,37 @@ const TimeEntry = (props) => {
     }
     setIsProcessing(false);
   };
-  let filteredColor;
-  const daysPast = moment().diff(dateOfWork, 'days');
-  switch (true) {
-    case daysPast === 0:
-      filteredColor = hrsFilterBtnColorMap[1];
-      break;
-    case daysPast === 1:
-      filteredColor = hrsFilterBtnColorMap[2];
-      break;
-    case daysPast === 2:
-      filteredColor = hrsFilterBtnColorMap[3];
-      break;
-    case daysPast === 3:
-      filteredColor = hrsFilterBtnColorMap[4];
-      break;
-    default:
-      filteredColor = hrsFilterBtnColorMap[7];
+
+  const editFilteredColor = () => {
+    try {
+      const daysPast = moment().diff(dateOfWork, 'days');
+      let choosenColor = "";
+      switch (daysPast) {
+        case 0:
+            choosenColor = hrsFilterBtnColorMap[1]
+            break;
+        case 1:
+            choosenColor = hrsFilterBtnColorMap[2];
+            break;
+        case 2:
+            choosenColor = hrsFilterBtnColorMap[3];
+            break;
+        case 3:
+            choosenColor = hrsFilterBtnColorMap[4];
+            break;
+        default:
+            choosenColor = hrsFilterBtnColorMap[7];
+      }
+      setFilteredColor(choosenColor);
+    } catch (error) {
+      console.log(error);
+    }
   }
+  
+  
+  useEffect(() => {
+    editFilteredColor();
+  }, [])
 
   return (
     <div style={{ display: "flex" }}>
@@ -134,7 +133,7 @@ const TimeEntry = (props) => {
         style={{
           width: '12px',
           marginBottom: '4px',
-          border: `5px solid ${filteredColor}` ,
+          border: `5px solid ${filteredColor}`,
           backgroundColor: taskId ? filteredColor : 'white',
         }}
       ></div>
@@ -161,7 +160,7 @@ const TimeEntry = (props) => {
             </p>
             <div className='mb-3'>
             {
-              canEdit 
+              canEditTangibility
                 ? ( 
                     <>
                       <span className="text-muted">Tangible:&nbsp;</span>
@@ -169,27 +168,27 @@ const TimeEntry = (props) => {
                           type="checkbox"
                           name="isTangible"
                           checked={isTangible}
-                          disabled={!canEdit || isProcessing}
+                          disabled={isProcessing}
                           onChange={toggleTangibility}
                       />
-                      { isProcessing ? <span> Processing... </span> : null }
+                      {isProcessing ? <span> Processing... </span> : null}
                     </>
                   )
-                : <span className="font-italic">{isTangible ? 'Tangible' : 'Intangible'}</span> 
-            }
+                  : <span className="font-italic">{isTangible ? 'Tangible' : 'Intangible'}</span>
+              }
             </div>
           </Col>
           <Col md={5} className="pl-2 pr-0">
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {((canEdit || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
+              {((true || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
                 && from === 'WeeklyTab' 
                 && (
                   <button className="mr-3 text-primary">
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
                   </button>
-              )}
+                )}
               {canDelete && from === 'WeeklyTab' && (
                 <button className='text-primary'>
                   <DeleteModal timeEntry={data} />

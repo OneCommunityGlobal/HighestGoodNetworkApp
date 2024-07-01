@@ -42,21 +42,28 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.updateRecord.map(data => {
-            return (
-              <tr key={data._id}>
-                <td>{moment.utc(data.date).format('LL')}</td>
-                <td>{`${data.quantityUsed} ${record.itemType?.unit || 'Unit'}` || '-'}</td>
-                <td>{`${data.quantityWasted} ${record.itemType?.unit || 'Unit'}` || '-'}</td>
-                <td>
-                  <a href={`/userprofile/${data.createdBy._id}`}>
-                    {`${data.createdBy?.firstName || 'Unknown'} 
-                    ${data.createdBy?.lastName || 'Unknown'}`}
-                  </a>
-                </td>
-              </tr>
-            );
-          })}
+          {record?.updateRecord && record?.updateRecord.length ? (
+            record.updateRecord.map(data => {
+              return (
+                <tr key={data._id}>
+                  <td>{moment.utc(data.date).format('LL')}</td>
+                  <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
+                  <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
+                  <td>
+                    <a href={`/userprofile/${data.createdBy._id}`}>
+                      {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
+                    </a>
+                  </td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan={4} style={{ fontWeight: 'bold' }}>
+                There are no updates for this item.
+              </td>
+            </tr>
+          )}
         </tbody>
       </>
     );
@@ -75,22 +82,30 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record.map(({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
-            return (
-              <tr key={_id}>
-                <td>{priority}</td>
-                <td>{brandPref}</td>
-                <td>{quantity || '-'}</td>
-                <td>
-                  <a href={`/userprofile/${requestedBy?._id}`}>
-                    {`${requestedBy?.firstName || 'Unknown'} ${requestedBy?.lastName || 'User'}`}
-                  </a>
-                </td>
-                <td>{moment(date).format('MM/DD/YY')}</td>
-                <td>{status}</td>
-              </tr>
-            );
-          })}
+          {record?.purchaseRecord && record?.purchaseRecord.length ? (
+            record.map(({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
+              return (
+                <tr key={_id}>
+                  <td>{priority}</td>
+                  <td>{brandPref}</td>
+                  <td>{quantity || '-'}</td>
+                  <td>
+                    <a href={`/userprofile/${requestedBy._id}`}>
+                      {`${requestedBy.firstName} ${requestedBy.lastName}`}
+                    </a>
+                  </td>
+                  <td>{moment(date).format('MM/DD/YY')}</td>
+                  <td>{status}</td>
+                </tr>
+              );
+            })
+          ) : (
+            <tr>
+              <td colSpan={6} style={{ fontWeight: 'bold' }}>
+                There are no purchase records.
+              </td>
+            </tr>
+          )}
         </tbody>
       </>
     );

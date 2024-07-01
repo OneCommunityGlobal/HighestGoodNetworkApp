@@ -25,7 +25,20 @@ export const fetchMaterialTypes = () => {
   }
 }
 
+export const fetchEquipmentTypes = () => {
+  return async dispatch => {
+    axios.get(ENDPOINTS.BM_EQUIPMENT_TYPES)
+      .then(res => {
+        dispatch(setEquipmentTypes(res.data))
+      })
+      .catch(err => {
+        dispatch(setErrors(err))
+      })
+  }
+}
+
 export const fetchReusableTypes = () => {
+  console.log("fetchReusableTypes");
   return async dispatch => {
     axios.get(ENDPOINTS.BM_REUSABLE_TYPES)
       .then(res => {
@@ -42,9 +55,11 @@ export const fetchToolTypes = () => {
     axios
       .get(ENDPOINTS.BM_TOOL_TYPES)
       .then(res => {
+        // console.log("tool types: ", res)
         dispatch(setToolTypes(res.data));
       })
       .catch(err => {
+        // console.log("fetchToolTypes err: ", err)
         dispatch(setErrors(err));
       });
   };
@@ -199,6 +214,13 @@ export const setMaterialTypes = payload => {
   }
 }
 
+export const setEquipmentTypes = payload => {
+  return {
+    type: GET_EQUIPMENT_TYPES,
+    payload
+  }
+}
+
 export const setReusableTypes = payload => {
   return {
     type: GET_REUSABLE_TYPES,
@@ -226,5 +248,42 @@ export const setErrors = payload => {
     payload
   }
 };
+// 
+export const postToolsLog = payload => {
+  return async dispatch => {
+    axios
+      .post(ENDPOINTS.BM_LOG_TOOLS, payload)
+      .then(res => {
+        // eslint-disable-next-line no-console
+        // eslint-disable-next-line no-use-before-define
+        dispatch(setToolsLogResult(res.data));
+      })
+      .catch(err => {
+        dispatch(
+          // setPostErrorToolsLog(JSON.stringify(err.response.data) || 'Sorry! Some error occurred!'),
+          // eslint-disable-next-line no-use-before-define
+          setPostErrorToolsLog(err.response.data || 'Sorry! Some error occurred!'),
+        );
+      });
+  };
+};
 
+export const setToolsLogResult = payload => {
+  return {
+    type: POST_TOOLS_LOG,
+    payload,
+  };
+};
 
+export const setPostErrorToolsLog = payload => {
+  return {
+    type: POST_ERROR_TOOLS_LOG,
+    payload,
+  };
+};
+
+export const resetPostToolsLog = () => {
+  return {
+    type: RESET_POST_TOOLS_LOG,
+  };
+};
