@@ -62,6 +62,7 @@ const TINY_MCE_INIT_OPTIONS = {
   min_height: 180,
   max_height: 500,
   autoresize_bottom_margin: 1,
+  content_style: 'body { font-size: 14px; }',
 };
 
 // Need this export here in order for automated testing to work.
@@ -715,24 +716,29 @@ export class WeeklySummary extends Component {
     return (
       <Container
         fluid={!!isModal}
+        style={{ minWidth: '100%' }}
         className={`py-3 mb-5 ${
           darkMode ? 'bg-space-cadet text-azure box-shadow-dark' : 'bg--white-smoke'
         }`}
       >
         <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
-        <Row>
-          <Col md="9">
+        <Row className="w-100 ml-1">
+          <Col className="pl-0">
             Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
-          <Col md="3">
-            <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyling}>
+          <Col className="text-right pr-0">
+            <Button
+              className="btn--dark-sea-green responsive-font-size"
+              onClick={this.handleClose}
+              style={boxStyling}
+            >
               Close this window
             </Button>
           </Col>
         </Row>
         <Form className="mt-4">
-          <Nav tabs className="border-0">
+          <Nav tabs className="border-0 responsive-font-size">
             {Object.values(summariesLabels).map((weekName, i) => {
               const tId = String(i + 1);
               return (
@@ -758,64 +764,66 @@ export class WeeklySummary extends Component {
               const tId = String(i + 1);
               return (
                 <TabPane tabId={tId} key={tId}>
-                  <Row>
+                  <Row className="w-100 ml-1">
                     <Col>
                       <FormGroup>
                         <Label for={summaryName} className="summary-instructions-row">
-                          <div className={fontColor}>
+                          <div className={`${fontColor} responsive-font-size`}>
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
-                          {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
-                            <UncontrolledDropdown>
-                              <DropdownToggle
-                                className="px-5 mr-2 btn--dark-sea-green"
-                                caret
-                                style={boxStyling}
-                              >
-                                Move This Summary
-                              </DropdownToggle>
-                              <DropdownMenu className={darkMode ? 'bg-oxford-blue' : ''}>
-                                <DropdownItem
-                                  disabled={activeTab === '1'}
-                                  onClick={() => this.handleMoveSelect('1')}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={fontColor}
+                          <div className="d-flex flex-column text-right">
+                            <CurrentPromptModal
+                              userRole={userRole}
+                              userId={displayUserId}
+                              darkMode={darkMode}
+                            />
+                            {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
+                              <UncontrolledDropdown className="summary-dropdown">
+                                <DropdownToggle
+                                  className="btn--dark-sea-green w-100 responsive-font-size"
+                                  caret
+                                  style={boxStyling}
                                 >
-                                  This Week
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '2'}
-                                  onClick={() => this.handleMoveSelect('2')}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={fontColor}
-                                >
-                                  Last Week
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '3'}
-                                  onClick={() => this.handleMoveSelect('3')}
-                                  className={fontColor}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                >
-                                  Week Before Last
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '4'}
-                                  onClick={() => this.handleMoveSelect('4')}
-                                  className={fontColor}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                >
-                                  Three Weeks Ago
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </UncontrolledDropdown>
-                          )}
-                          <CurrentPromptModal
-                            userRole={userRole}
-                            userId={displayUserId}
-                            darkMode={darkMode}
-                          />
+                                  Move This Summary
+                                </DropdownToggle>
+                                <DropdownMenu className={darkMode ? 'bg-oxford-blue' : ''}>
+                                  <DropdownItem
+                                    disabled={activeTab === '1'}
+                                    onClick={() => this.handleMoveSelect('1')}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                    className={fontColor}
+                                  >
+                                    This Week
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '2'}
+                                    onClick={() => this.handleMoveSelect('2')}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                    className={fontColor}
+                                  >
+                                    Last Week
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '3'}
+                                    onClick={() => this.handleMoveSelect('3')}
+                                    className={fontColor}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  >
+                                    Week Before Last
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '4'}
+                                    onClick={() => this.handleMoveSelect('4')}
+                                    className={fontColor}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  >
+                                    Three Weeks Ago
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                            )}
+                          </div>
                         </Label>
                         <Editor
                           tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -840,12 +848,12 @@ export class WeeklySummary extends Component {
                 </TabPane>
               );
             })}
-            <Row>
+            <Row className="w-100 ml-1">
               <Col>
                 {formElements.mediaUrl && !mediaFirstChange ? (
                   <FormGroup className="media-url">
                     <FontAwesomeIcon icon={faExternalLinkAlt} className=" text--silver" />
-                    <Label for="mediaUrl" className="mt-1 ml-2">
+                    <Label for="mediaUrl" className="mt-1 ml-2 responsive-font-size">
                       <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
                         Your DropBox Media Files Link (Share your files here)
                       </a>
@@ -855,7 +863,7 @@ export class WeeklySummary extends Component {
                 ) : (
                   <Col>
                     <Row>
-                      <Label for="mediaUrl" className={`mt-1 ${fontColor}`}>
+                      <Label for="mediaUrl" className={`mt-1 ${fontColor} responsive-font-size`}>
                         Dropbox link to your weekly media files. (required)
                         <MediaURLTooltip />
                       </Label>
@@ -863,6 +871,7 @@ export class WeeklySummary extends Component {
                     <Row>
                       <FormGroup>
                         <Input
+                          className="responsive-font-size"
                           type="url"
                           name="mediaUrl"
                           id="mediaUrl"
@@ -877,7 +886,7 @@ export class WeeklySummary extends Component {
                           <FormGroup className="media-url">
                             <FontAwesomeIcon
                               icon={faExternalLinkAlt}
-                              className="mx-1 text--silver"
+                              className="mx-1 text--silver responsive-font-size"
                             />
                             <a
                               href={formElements.mediaUrl}
@@ -935,7 +944,7 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex">
+                    <FormGroup className="d-flex responsive-font-size">
                       <CustomInput
                         id="mediaConfirm"
                         data-testid="mediaConfirm"
@@ -960,7 +969,7 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex">
+                    <FormGroup className="d-flex responsive-font-size">
                       <CustomInput
                         id="editorConfirm"
                         data-testid="editorConfirm"
@@ -984,7 +993,7 @@ export class WeeklySummary extends Component {
                 </Row>
                 <Row>
                   <Col>
-                    <FormGroup className="d-flex">
+                    <FormGroup className="d-flex responsive-font-size">
                       <CustomInput
                         id="proofreadConfirm"
                         name="proofreadConfirm"

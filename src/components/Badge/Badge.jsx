@@ -79,11 +79,18 @@ function Badge(props) {
   }, [props.userProfile.badgeCollection, totalBadge]);
   return (
     <>
-      <Container className={`p-0 ${darkMode ? 'badge-box-shadow-dark' : 'bagde-box-shadow'}`}>
-        <Row>
-          <Col md={12}>
+      <Container
+        style={{ minWidth: '100%', paddingRight: '0' }}
+        className={`${darkMode ? 'badge-box-shadow-dark bg-space-cadet' : 'bagde-box-shadow'}`}
+      >
+        <Row className="px-0 mr-0" style={{ minWidth: '100%' }}>
+          <Col className="px-0 mr-0">
             <Card
-              style={{ backgroundColor: darkMode ? '#1C2541' : '#fafafa', borderRadius: 0 }}
+              style={{
+                backgroundColor: darkMode ? '#1C2541' : '#fafafa',
+                borderRadius: 0,
+                minWidth: '100%',
+              }}
               id="badgesearned"
             >
               <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
@@ -106,6 +113,7 @@ function Badge(props) {
                     fontSize: 18,
                     color: darkMode ? '#007BFF' : '#285739',
                   }}
+                  className="responsive-font-size"
                 >
                   {generateBadgeText(
                     totalBadge,

@@ -120,7 +120,7 @@ const TeamMemberTask = React.memo(
 
     return (
       <>
-        <tr ref={ref} className={`table-row  ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
+        <tr ref={ref} className={`table-row ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
           <td colSpan={1} className={darkMode ? "bg-yinmn-blue" : ""}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -159,6 +159,7 @@ const TeamMemberTask = React.memo(
                           currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                             ? 'rgba(128, 128, 128, 0.5)'
                             : darkMode ? "#007BFF" : undefined,
+                        fontSize: '20px'
                       }}
                     >{`${user.name}`}</Link>
                     {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}

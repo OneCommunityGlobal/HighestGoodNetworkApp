@@ -170,7 +170,7 @@ const WeeklySummaries = ({ userProfile }) => {
   };
 
   return (
-    <div className={"p-2 " + (darkMode ? 'bg-yinmn-blue text-light' : '')}>
+    <div className={`responsive-font-size p-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
       {renderSummary("This week's summary", userProfile.weeklySummaries[0]?.summary, 0)}
       {renderSummary("Last week's summary", userProfile.weeklySummaries[1]?.summary, 1)}
       {renderSummary("The week before last's summary",userProfile.weeklySummaries[2]?.summary,2)}

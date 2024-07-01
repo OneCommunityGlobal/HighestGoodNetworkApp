@@ -481,7 +481,7 @@ const TeamMemberTasks = React.memo(props => {
         </Row>
       }
       <div className="task_table-container">
-        <Table>
+        <Table className='task-table'>
           <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
               {/* Empty column header for hours completed icon */}
