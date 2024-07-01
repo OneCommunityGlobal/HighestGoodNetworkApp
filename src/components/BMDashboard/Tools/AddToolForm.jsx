@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import DragAndDrop from 'components/common/DragAndDrop/DragAndDrop';
-import { PhoneInput } from 'components/common/PhoneInput/PhoneInput';
+import PhoneInput from 'react-phone-input-2';
 import { toast } from 'react-toastify';
 
 import { useDispatch, useSelector } from 'react-redux';
@@ -9,15 +9,11 @@ import Joi from 'joi';
 import { boxStyle } from 'styles';
 import './AddToolForm.css';
 
-// import { fetchInvUnits } from '../../../actions/bmdashboard/invUnitActions';
-
 import {
   fetchToolTypes,
   postBuildingToolType,
   resetPostBuildingToolTypeResult,
 } from '../../../actions/bmdashboard/invTypeActions';
-
-// import { addTools } from 'actions/bmdashboard/toolActions';
 
 const initialFormState = {
   project: 'Project1',
@@ -45,7 +41,6 @@ export default function AddToolForm() {
   const [areaCode, setAreaCode] = useState('1');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
-  // const [validationError, setValidationError] = useState('');
   const [errors, setErrors] = useState({});
   const dispatch = useDispatch();
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
@@ -82,6 +77,18 @@ export default function AddToolForm() {
     unitPrice: Joi.number()
       .min(1)
       .required(),
+    fromDate: Joi.date().required(),
+    toDate: Joi.date()
+      .when('purchaseRental', {
+        is: 'rental',
+        then: Joi.date()
+          .greater(Joi.ref('fromDate'))
+          .required(),
+      })
+      .when('purchaseRental', {
+        is: 'Purchase',
+        then: Joi.date().allow(''),
+      }),
   };
 
   const schema = Joi.object(validationObj).unknown();
@@ -98,21 +105,6 @@ export default function AddToolForm() {
   };
 
   const handleInputChange = (name, value) => {
-    // const inputName = name;
-    // const inputValue = value;
-
-    // const errorsList = {};
-    // const validation = validationObj[inputName].validate(inputValue);
-    // if (validation.error) {
-    //   validation.error.details.forEach(error => {
-    //     errorsList[inputName] = error.message;
-    //     // errorsList[detail.path[0]] = detail.message;
-    //   });
-    // } else {
-    //   errorsList[inputName] = '';
-    // }
-
-    // setErrors({ ...errors, ...errorsList });
     setFormData(prevData => ({
       ...prevData,
       [name]: value,
@@ -138,29 +130,30 @@ export default function AddToolForm() {
   const totalTax = calculateTotalTax(Number(taxes), totalPrice);
   const totalPriceWithShipping = (totalPrice + totalTax + Number(shippingFee)).toFixed(2);
 
+  const phoneChange = (name, phone) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: phone,
+    }));
+  };
+
   const handleSubmit = async event => {
     event.preventDefault();
-    // eslint-disable-next-line no-console
-    // console.log(errors);
-    // const validation = schema.validate(formData);
     const validationErrors = validate(formData);
     setErrors(validationErrors || {});
 
     if (validationErrors) {
       return;
     }
-    // if (!validation.error) {
     const imageURL = uploadedFiles.map(file => URL.createObjectURL(file));
     const updatedFormData = {
       ...formData,
       category: 'Tool',
-      // images: uploadedFiles,
       images: imageURL[0],
       areaCode,
       phoneNumber,
       totalPriceWithShipping,
     };
-    // eslint-disable-next-line no-console
     dispatch(postBuildingToolType(updatedFormData));
     setFormData(initialFormState);
     setUploadedFiles([]);
@@ -184,19 +177,6 @@ export default function AddToolForm() {
 
   return (
     <Form className="add-tool-form container" onSubmit={handleSubmit}>
-      {/* <FormGroup>
-        <Label for="select-project">Project</Label>
-        <Input
-          id="select-project"
-          name="project"
-          type="select"
-          value={formData.project}
-          onChange={event => handleInputChange('project', event.target.value)}
-        >
-          <option value="Project1">Project 1</option>
-          <option value="Project2">Project 2</option>
-        </Input>
-      </FormGroup> */}
       <FormGroup>
         <Label for="tool">
           Tool name <span className="field-required">*</span>
@@ -230,7 +210,6 @@ export default function AddToolForm() {
         />
         {errors.invoice && (
           <Label for="toolInvoiceErr" sm={12} className="toolFormError">
-            {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
             {errors.invoice}
           </Label>
         )}
@@ -249,7 +228,6 @@ export default function AddToolForm() {
           />
           {errors.unitPrice && (
             <Label for="toolUnitPriceErr" sm={12} className="toolFormError">
-              {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
               {errors.unitPrice}
             </Label>
           )}
@@ -281,7 +259,6 @@ export default function AddToolForm() {
           />
           {errors.quantity && (
             <Label for="toolQuantityErr" sm={12} className="toolFormError">
-              {/* Tool &quot;description&quot; length must be at least 4 characters that are not space. */}
               {errors.quantity}
             </Label>
           )}
@@ -317,7 +294,9 @@ export default function AddToolForm() {
       </div>
       <div className="add-tool-flex-group">
         <FormGroup>
-          <Label for="from-date">Purchase/Rental Date</Label>
+          <Label for="from-date">
+            Purchase/Rental Date <span className="field-required">*</span>
+          </Label>
           <Input
             id="from-date"
             type="date"
@@ -325,6 +304,11 @@ export default function AddToolForm() {
             value={formData.fromDate}
             onChange={event => handleInputChange('fromDate', event.target.value)}
           />
+          {errors.fromDate && (
+            <Label for="fromDateErr" sm={12} className="toolFormError">
+              Enter Date
+            </Label>
+          )}
         </FormGroup>
         <FormGroup>
           <Label for="to-date">Return date (if rented)</Label>
@@ -336,6 +320,11 @@ export default function AddToolForm() {
             onChange={event => handleInputChange('toDate', event.target.value)}
             disabled={isPurchased}
           />
+          {errors.toDate && (
+            <Label for="toDateErr" sm={12} className="toolFormError">
+              Return Date must be after Rental Date
+            </Label>
+          )}
         </FormGroup>
       </div>
       <div className="add-tool-flex-group">
@@ -363,15 +352,14 @@ export default function AddToolForm() {
         </FormGroup>
       </div>
 
-      {/* <PhoneInput onPhoneNumberChange={handlePhoneNumberChange} /> */}
-
       <PhoneInput
-        areaCode={areaCode}
-        setAreaCode={setAreaCode}
-        phoneNumber={phoneNumber}
-        setPhoneNumber={setPhoneNumber}
+        country="US"
+        regions={['america', 'europe', 'asia', 'oceania', 'africa']}
+        limitMaxLength="true"
+        value={formData.phoneNumber}
+        onChange={phone => phoneChange('phoneNumber', phone)}
+        inputStyle={{ height: 'auto', width: '40%', fontSize: 'inherit' }}
       />
-
       <FormGroup>
         <Label for="imageUpload">Upload Tool/Equipment Picture</Label>
         <DragAndDrop
@@ -436,16 +424,14 @@ export default function AddToolForm() {
           errors.description ||
           errors.invoice ||
           errors.quantity ||
-          errors.unitPrice) && <div className="toolFormError"> Missing Required Field </div>}
+          errors.unitPrice ||
+          errors.toDate ||
+          errors.fromDate) && <div className="toolFormError"> Missing Required Field </div>}
       <div className="add-tool-buttons">
         <Button outline style={boxStyle} onClick={handleCancelClick}>
           Cancel
         </Button>
-        <Button
-          id="submit-button"
-          style={boxStyle}
-          // disabled={!formData.name || !formData.description}
-        >
+        <Button id="submit-button" style={boxStyle}>
           Submit
         </Button>
       </div>
