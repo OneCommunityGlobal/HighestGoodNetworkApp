@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow } from 'enzyme';
-import { render, screen} from '@testing-library/react';
+import { render, screen, waitFor} from '@testing-library/react';
 import userEvent from '@testing-library/user-event'
 import WeeklySummaryModal from '../WeeklySummaryModal';
 import configureMockStore from "redux-mock-store";
@@ -27,5 +27,26 @@ describe('WeeklySummaryModal Component', () => {
     );
     expect(wrapper.exists()).toBe(true);
   });
-});
 
+  it('should toggle the modal when clicked', async () => {
+    render(
+      <Provider store={store}>
+        <WeeklySummaryModal />
+      </Provider>
+    );
+
+    // The button/div that triggers the modal toggle
+    const triggerElement = screen.getByRole('button', { name: /toggle weekly summary/i });
+
+    // Initial state: Modal should not be in the document
+    expect(screen.queryByText(/weekly summary/i)).not.toBeInTheDocument();
+
+    // Click to open the modal
+    userEvent.click(triggerElement);
+
+    // After click: Modal should be in the document
+    expect(await screen.findByText(/weekly summary/i)).toBeInTheDocument();
+
+  });
+
+});
