@@ -104,6 +104,13 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
     dispatch(fetchAllReusables());
   };
 
+  const handleKeyDown = e => {
+    // Prevents the characters +, -, and e
+    if (e.key === '+' || e.key === '-' || e.key === 'e') {
+      e.preventDefault();
+    }
+  };
+
   const changeRecordHandler = e => {
     const { value } = e.target;
     if (e.target.name === 'quantityWasted' || e.target.name === 'quantityUsed') {
@@ -160,11 +167,12 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
           <Input
             id="updateReusableQuantityUsed"
             name="quantityUsed"
-            placeholder="Used"
+            placeholder="0"
             type="number"
             value={updateRecord.quantityUsed}
             onChange={e => changeRecordHandler(e)}
             min={0}
+            onKeyDown={handleKeyDown}
           />
           {validations.quantityUsed !== '' && (
             <div className="reusableFormTableError">{validations.quantityUsed}</div>
@@ -187,10 +195,11 @@ function UpdateReusable({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
             id="updateReusablequantityWasted"
             name="quantityWasted"
             type="number"
-            placeholder="Wasted"
+            placeholder="0"
             value={updateRecord.quantityWasted}
             onChange={e => changeRecordHandler(e)}
             min={0}
+            onKeyDown={handleKeyDown}
           />
           {validations.quantityWasted !== '' && (
             <div className="reusableFormTableError">{validations.quantityWasted}</div>
