@@ -7,6 +7,7 @@ import { assignBadgesByUserID, clearNameAndSelected } from '../../actions/badgeM
 import { ENDPOINTS } from '../../utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
 
 function AssignBadgePopup(props) {
   const {darkMode} = props;
@@ -22,7 +23,7 @@ function AssignBadgePopup(props) {
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
     if(props.isRecordBelongsToJaeAndUneditable){
-      alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.");
+      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     try {
