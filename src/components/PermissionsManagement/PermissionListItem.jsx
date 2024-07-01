@@ -153,7 +153,7 @@ function PermissionListItem(props) {
                 props.onChange();
               }}
               // eslint-disable-next-line react/destructuring-assignment
-              disabled={!props.hasPermission('putRole')}
+              disabled={!(props.hasPermission('putRole') || props.hasPermission('postRole'))}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -167,7 +167,8 @@ function PermissionListItem(props) {
               }}
               disabled={
                 // eslint-disable-next-line react/destructuring-assignment
-                !props.hasPermission('putRole') || immutablePermissions.includes(permission)
+                !(props.hasPermission('putRole') || props.hasPermission('postRole')) ||
+                immutablePermissions.includes(permission)
               }
               style={darkMode ? boxStyleDark : boxStyle}
             >
