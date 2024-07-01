@@ -2,10 +2,15 @@
 import { connect } from 'react-redux';
 import { useEffect } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
+
 import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
+
+import { ReportPage } from '../Reports/sharedComponents/ReportPage/ReportPage';
+
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
+import './TotalOrgSummary.css';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
@@ -46,9 +51,12 @@ function TotalOrgSummary(props) {
     );
   }
   return (
-    <Container>
-      <h1>Total Org Summary</h1>
-    </Container>
+    <div className={`container-total-org-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+      <Container>
+        <h1>Total Org Summary</h1>
+        <ReportPage.ReportBlock darkMode={darkMode}> algo </ReportPage.ReportBlock>
+      </Container>
+    </div>
   );
 }
 
