@@ -47,6 +47,18 @@ font-size: .8em;
   margin-top: 1rem;
 }
 
+.toolFormError {
+  font-weight: 500;
+  font-size: 11px !important;
+  color: red;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.field-required{
+  color: red;
+}
+
 @media screen and (max-width: 640px) {
   .add-tool-flex-group {
     display: block;
