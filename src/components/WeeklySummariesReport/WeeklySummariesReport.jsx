@@ -25,6 +25,8 @@ import 'moment-timezone';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { toast } from 'react-toastify';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -73,6 +75,7 @@ export class WeeklySummariesReport extends Component {
       selectedOverTime: false,
       selectedBioStatus: false,
       replaceCode: '',
+      replaceCodeError: false,
       // weeklyRecipientAuthPass: '',
     };
   }
@@ -140,7 +143,7 @@ export class WeeklySummariesReport extends Component {
         teamCodes.push({
           value: code,
           label: `${code} (${teamCodeGroup[code].length})`,
-          _ids: teamCodeGroup[code].map(item => item._id),
+          _ids: teamCodeGroup[code]?.map(item => item._id),
         });
       }
     });
@@ -157,6 +160,7 @@ export class WeeklySummariesReport extends Component {
       .push({
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+        _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
       });
     this.setState({
       loading,
@@ -486,15 +490,30 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
-  handleAllTeamCodeReplace = () => {
-    // try {
-    const { replaceCode } = this.state;
-    fullCodeRegex.test(replaceCode);
-    //   if (boolean) {
-    //     const userIds = [];
-    //   } else {
-    //   }
-    // } catch (error) {}
+  handleAllTeamCodeReplace = async () => {
+    try {
+      const { replaceCode } = this.state;
+      const boolean = fullCodeRegex.test(replaceCode);
+      if (boolean) {
+        const userIds = this.state.selectedCodes.flatMap(item => item._ids);
+        const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
+        const payload = {
+          userIds,
+          replaceCode,
+        };
+        const data = await axios.patch(url, payload);
+        if (data?.data) {
+          userIds.forEach(id => {
+            this.handleTeamCodeChange('', replaceCode, id);
+          });
+        }
+        this.setState({ replaceCode: '', replaceCodeError: true });
+      } else {
+        this.setState({ replaceCodeError: true });
+      }
+    } catch (error) {
+      this.setState({ replaceCode: '' });
+    }
   };
 
   render() {
@@ -513,6 +532,7 @@ export class WeeklySummariesReport extends Component {
       teamCodes,
       auth,
       replaceCode,
+      replaceCodeError,
     } = this.state;
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -681,6 +701,11 @@ export class WeeklySummariesReport extends Component {
               >
                 Replace
               </Button>
+              {replaceCodeError && (
+                <Alert className="code-alert" color="danger">
+                  NOT SAVED! The code must be between 5 and 7 characters long.
+                </Alert>
+              )}
             </Col>
           </Row>
         )}
