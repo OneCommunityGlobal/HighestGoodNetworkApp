@@ -43,6 +43,7 @@ const TeamMemberTask = React.memo(
     showWhoHasTimeOff,
     onTimeOff,
     goingOnTimeOff,
+    lastModifiedUser
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const ref = useRef(null);
@@ -120,7 +121,7 @@ const TeamMemberTask = React.memo(
 
     return (
       <>
-        <tr ref={ref} className={`table-row  ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
+        <tr ref={lastModifiedUser} className={`table-row  ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
           <td colSpan={1} className={darkMode ? "bg-yinmn-blue" : ""}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -147,7 +148,7 @@ const TeamMemberTask = React.memo(
           <td colSpan={2} className={darkMode ? "bg-yinmn-blue" : ""}>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
-                <tr className={darkMode ? "bg-yinmn-blue" : ""}>
+                <tr  ref={ref} className={darkMode ? "bg-yinmn-blue" : ""} key={user.personId}>
                   <td className="team-member-tasks-user-name">
                     <Link
                       to={`/userprofile/${user.personId}`}
@@ -247,6 +248,8 @@ const TeamMemberTask = React.memo(
                                 icon={faTimes}
                                 title="Remove User from Task"
                                 onClick={() => {
+                                  event.stopPropagation(); // Prevent refreshing the entire page
+                                  console.log("Icon clicked");
                                   handleRemoveFromTaskModal(user.personId, task);
                                   handleTaskModalOption('XMark');
                                 }}

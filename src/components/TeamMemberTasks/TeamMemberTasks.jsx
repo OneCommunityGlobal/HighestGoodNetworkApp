@@ -50,6 +50,10 @@ const TeamMemberTasks = React.memo(props => {
   const [selectedCodes, setSelectedCodes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
 
+  //remember the last modified user id
+  const userRef = React.useRef();
+  const lastModifiedUserId = useSelector(state => state.teamMemberTasks.lastModifiedUserId);
+
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -112,6 +116,9 @@ const TeamMemberTasks = React.memo(props => {
     setCurrentUserId(userId);
     setCurrentTask(task);
     setClickedToShowModal(true);
+    //remember the last modified user id
+    userRef.current = userId;
+    console.log('userRef.current', userRef.current);
   }, []);
 
   const handleTaskModalOption = useCallback(option => {
@@ -284,9 +291,23 @@ const TeamMemberTasks = React.memo(props => {
     if (!isLoading) {
       renderTeamsList();
       closeMarkAsDone();
+      //print the user id of the last modified user
+      if (userRef.current) {
+        console.log('lastModifiedUserId', userRef.current);
+      }
+      // Scroll to the last modified user's element
+      if (userRef.current) {
+        /*
+        //NEED HELP HERE: receive the error "userRef.current.scrollIntoView is not a function"
+        //here I want to scroll to the last modified user's element after re-rendering, so that the user do not need to look for the target user again
+        window.HTMLElement.prototype.scrollIntoView = function() {};
+        userRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        */
+      }
       if(['Administrator', 'Owner', 'Manager', 'Mentor'].some( role => role === displayUser.role)) {
         renderFilters();
       }
+      
     }
   }, [usersWithTasks]);
 
@@ -534,8 +555,12 @@ const TeamMemberTasks = React.memo(props => {
             ) : (
               teamList.filter((user) => filterByUserFeatures(user)).map(user => {
                 if (!isTimeFilterActive) {
+                  const isLastModifiedUser = user.personId === lastModifiedUserId;
                   return (
+                    <React.Fragment key={user.personId}>
                     <TeamMemberTask
+                      //Pass the ref to the TeamMemberTask component
+                      lastModifiedUser={isLastModifiedUser ? lastModifiedUserRef : null}
                       user={user}
                       userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
                         'putReviewStatus',
@@ -552,6 +577,7 @@ const TeamMemberTasks = React.memo(props => {
                       onTimeOff={userOnTimeOff[user.personId]}
                       goingOnTimeOff={userGoingOnTimeOff[user.personId]}
                     />
+                    </React.Fragment>
                   );
                 } else {
                   return (
