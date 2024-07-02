@@ -16,7 +16,7 @@ export const fetchEquipmentById = (equipmentId) => {
   }
 }
 
-export const fetchAllEQUIPMENTS = () => {
+export const fetchAllEquipments = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_EQUIPMENTS)
       .then(res => {
