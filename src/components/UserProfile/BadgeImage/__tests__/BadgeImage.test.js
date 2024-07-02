@@ -36,11 +36,11 @@ describe('BadgeImage Component Tests', () => {
 
       props.badgeData.type = 'Personal Max';
       rerender(<BadgeImage {...props} />);
-      expect(getByTestId('badge_featured_count_personalmax')).toHaveTextContent('13 hrs');
+      expect(getByTestId('badge_featured_count_personalmax')).toHaveTextContent('114 hrs');
 
       props.personalBestMaxHrs = 1;
       rerender(<BadgeImage {...props} />);
-      expect(getByTestId('badge_featured_count_personalmax')).toHaveTextContent('1 hr');
+      expect(getByTestId('badge_featured_count_personalmax')).toHaveTextContent('102 hr');
     })
 
     it('toggles popover on hover', async () => {

@@ -19,7 +19,7 @@ const BadgeImage = props => {
 
           {props.badgeData.type == 'Personal Max' ? (
             <span data-testid="badge_featured_count_personalmax" className={'badge_featured_count_personalmax'}>
-              {`${Math.floor(props.personalBestMaxHrs)} ${Math.floor(props.personalBestMaxHrs) <= 1 ? ' hr' : ' hrs'}`}
+              {`${Math.floor(props.count + props.personalBestMaxHrs)} ${Math.floor(props.count + props.personalBestMaxHrs) <= 1 ? ' hr' : ' hrs'}`}
             </span>
           ) : props.count < 100 ? (
             <span data-testid="badge_featured_count" className={'badge_featured_count'}>{Math.round(props.count)}</span>
