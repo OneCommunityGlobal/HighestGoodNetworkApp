@@ -6,6 +6,7 @@ import WeeklySummaryModal from '../WeeklySummaryModal';
 import configureMockStore from "redux-mock-store";
 import { Provider } from "react-redux";
 import mockState from '../../../__tests__/mockAdminState.js';
+import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureMockStore();
 const store = mockStore({
@@ -15,6 +16,7 @@ const store = mockStore({
   userProjects: mockState.userProjects,
   weeklySummaries: mockState.weeklySummaries,
   role: mockState.role,
+  theme: themeMock,
 });
 
 describe('WeeklySummaryModal Component', () => {
