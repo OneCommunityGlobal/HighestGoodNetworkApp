@@ -1,0 +1,24 @@
+.scrollAutoComplete::-webkit-scrollbar {
+  width: 5px;
+}
+
+.scrollAutoComplete::-webkit-scrollbar-track {
+  background-color: black;
+  /* Esta cor fica boa no dark mode: #006fca  */
+}
+
+.scrollAutoComplete::-webkit-scrollbar-thumb {
+  background: rgb(0, 140, 255);
+  border-radius: 8px;
+}
+
+.scrollAutoComplete::-webkit-scrollbar-thumb:hover {
+  background: rgb(221, 221, 221);
+}
+
+@-moz-document url-prefix() {
+  .scrollAutoComplete {
+    scrollbar-width: thin;
+    scrollbar-color: rgb(0, 140, 255) black;
+  }
+}

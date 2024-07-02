@@ -1,5 +1,14 @@
 import { React, useState, useEffect, useRef } from 'react';
-import { Button, Col, Tooltip } from 'reactstrap';
+import {
+  Button,
+  Col,
+  Tooltip,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+} from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
@@ -21,6 +30,8 @@ const UserTeamsTable = props => {
 
   const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState([]);
 
+  const [isOpenModalTeamCode, setIsOpenModalTeamCode] = useState(false);
+
   const [teamCode, setTeamCode] = useState(
     props.userProfile ? props.userProfile.teamCode : props.teamCode,
   );
@@ -28,10 +39,15 @@ const UserTeamsTable = props => {
   const refDropdown = useRef();
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
+  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = (e, autoComplete) => {
+    //prettier-ignore
+    if( e === true ) { setIsOpenModalTeamCode(true); return;}
+    //prettier-ignore
+    else isOpenModalTeamCode && autoComplete && setIsOpenModalTeamCode(false)
+
     setAutoComplete(autoComplete);
     const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
     if (regexTest) {
@@ -59,7 +75,7 @@ const UserTeamsTable = props => {
     } else {
       setArrayInputAutoComplete(props.inputAutoComplete);
     }
-  }, [teamCode, props.inputAutoComplete, autoComplete]);
+  }, [teamCode, props.inputAutoComplete, autoComplete, isOpenModalTeamCode]);
 
   const filterInputAutoComplete = result => {
     return result
@@ -75,22 +91,25 @@ const UserTeamsTable = props => {
     <div>
       {innerWidth >= 1025 ? (
         <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-          <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
+          <div
+            className="container"
+            style={{ paddingLeft: '4px', paddingRight: '4px', marginBottom: '2rem' }}
+          >
             {props.canEditVisibility && (
-                <div className="row">
-                  <Col md="7">
-                    <span className="teams-span">Visibility</span>
-                  </Col>
-                  <Col md="5">
-                    <ToggleSwitch
-                      switchType="visible"
-                      state={props.isVisible}
-                      handleUserProfile={props.onUserVisibilitySwitch}
-                      darkMode={darkMode}
-                    />
-                  </Col>
-                </div>
-              )}
+              <div className="row">
+                <Col md="7">
+                  <span className="teams-span">Visibility</span>
+                </Col>
+                <Col md="5">
+                  <ToggleSwitch
+                    switchType="visible"
+                    state={props.isVisible}
+                    handleUserProfile={props.onUserVisibilitySwitch}
+                    darkMode={darkMode}
+                  />
+                </Col>
+              </div>
+            )}
             <div className="row" style={{ margin: '0 auto' }}>
               <Col
                 md={canAssignTeamToUsers ? '7' : '10'}
@@ -141,20 +160,53 @@ const UserTeamsTable = props => {
               )}
               <Col md="2" style={{ padding: '0' }}>
                 {props.canEditTeamCode ? (
-                  <AutoCompleteTeamCode
-                    refDropdown={refDropdown}
-                    teamCode={teamCode}
-                    showDropdown={showDropdown}
-                    handleCodeChange={handleCodeChange}
-                    setShowDropdown={setShowDropdown}
-                    arrayInputAutoComplete={arrayInputAutoComplete}
-                    inputAutoStatus={props.inputAutoStatus}
-                    isLoading={props.isLoading}
-                    fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
-                    darkMode={darkMode}
-                  />
+                  <>
+                    {!isOpenModalTeamCode ? (
+                      <AutoCompleteTeamCode
+                        refDropdown={refDropdown}
+                        teamCode={teamCode}
+                        showDropdown={showDropdown}
+                        handleCodeChange={handleCodeChange}
+                        setShowDropdown={setShowDropdown}
+                        arrayInputAutoComplete={arrayInputAutoComplete}
+                        inputAutoStatus={props.inputAutoStatus}
+                        isLoading={props.isLoading}
+                        fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                        darkMode={darkMode}
+                        isOpenModalTeamCode={isOpenModalTeamCode}
+                        setIsOpenModalTeamCode={setIsOpenModalTeamCode}
+                      />
+                    ) : (
+                      <>
+                        <Input value={teamCode} placeholder="X-XXX" />
+
+                        <Modal
+                          isOpen={isOpenModalTeamCode}
+                          toggle={() => setIsOpenModalTeamCode(false)}
+                        >
+                          <ModalHeader toggle={() => setIsOpenModalTeamCode(false)}></ModalHeader>
+                          <ModalBody>
+                            <AutoCompleteTeamCode
+                              refDropdown={refDropdown}
+                              teamCode={teamCode}
+                              showDropdown={showDropdown}
+                              handleCodeChange={handleCodeChange}
+                              setShowDropdown={setShowDropdown}
+                              arrayInputAutoComplete={arrayInputAutoComplete}
+                              inputAutoStatus={props.inputAutoStatus}
+                              isLoading={props.isLoading}
+                              fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                              darkMode={darkMode}
+                              isOpenModalTeamCode={isOpenModalTeamCode}
+                              setIsOpenModalTeamCode={setIsOpenModalTeamCode}
+                            />
+                          </ModalBody>
+                        </Modal>
+                      </>
+                    )}
+                  </>
                 ) : (
-                  <div style={{ paddingTop: '12px', textAlign: 'center' }}>
+                  <div style={{ paddingTop: '6px', textAlign: 'center' }}>
                     {teamCode == '' ? 'No assigned team code' : teamCode}
                   </div>
                 )}

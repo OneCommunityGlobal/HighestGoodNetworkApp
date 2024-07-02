@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { Spinner, Input, ListGroup, ListGroupItem } from 'reactstrap';
 import { IoReload } from 'react-icons/io5';
+import './autoComplete.css';
 
 export const AutoCompleteTeamCode = props => {
   const {
@@ -14,6 +15,7 @@ export const AutoCompleteTeamCode = props => {
     isLoading,
     fetchTeamCodeAllUsers,
     darkMode,
+    isOpenModalTeamCode,
   } = props;
 
   useEffect(() => {
@@ -27,7 +29,9 @@ export const AutoCompleteTeamCode = props => {
     }
   }, [refDropdown, showDropdown]);
 
-  const classNameStyleP = `m-0 pb-1 pt-1 d-flex justify-content-center  align-items-center  list-group-item-action`;
+  const classNameStyleP = `m-0 d-flex justify-content-center  align-items-center  list-group-item-action
+  ${isOpenModalTeamCode ? 'p-2' : 'p-1'}`;
+
   const styleP = { border: '1px solid #ccc', backgroundColor: '#fff' };
   const borderBottomRadius = { borderBottomRightRadius: '10px', borderBottomLeftRadius: '10px' };
   const styleSection = { ...styleP, ...borderBottomRadius };
@@ -44,27 +48,36 @@ export const AutoCompleteTeamCode = props => {
     border: 'none',
   };
 
+  const heightAutoComplete = isOpenModalTeamCode ? '42rem' : '7rem';
+
+  const validationIsOpenModalTeamCode = Array.isArray(arrayInputAutoComplete)
+    ? !isOpenModalTeamCode
+      ? arrayInputAutoComplete.length <= 3
+      : arrayInputAutoComplete.length <= 16
+    : false;
+
   let autoComplete = false;
 
   return (
-    <section ref={refDropdown}>
+    <section>
       <Input
         id="teamCode"
         value={teamCode}
         onChange={handleCodeChange}
         style={darkMode ? colordark : null}
         placeholder="X-XXX"
-        onFocus={() => setShowDropdown(true)}
+        onFocus={() => !showDropdown && setShowDropdown(true)}
       />
 
       {showDropdown ? (
         <div
+          ref={refDropdown}
           style={
-            arrayInputAutoComplete.length <= 3 && inputAutoStatus === 200
+            validationIsOpenModalTeamCode && inputAutoStatus === 200
               ? { height: 'auto', width: 'auto' }
-              : { height: '6rem', width: 'auto' }
+              : { height: heightAutoComplete, width: 'auto' }
           }
-          className=" overflow-auto mb-2"
+          className="overflow-auto mb-2 scrollAutoComplete"
         >
           {!isLoading ? (
             arrayInputAutoComplete.length === 0 ? (
@@ -85,9 +98,22 @@ export const AutoCompleteTeamCode = props => {
                 </ListGroupItem>
               </ListGroup>
             ) : (
-              arrayInputAutoComplete.map(item => {
+              arrayInputAutoComplete.map((item, i) => {
                 return (
                   <div key={item}>
+                    {i === 0 && !isOpenModalTeamCode && (
+                      <p
+                        className={classNameStyleP}
+                        style={
+                          darkMode
+                            ? { ...styleP, ...colordarkWithBorder, cursor: 'pointer' }
+                            : { ...styleP, cursor: 'pointer' }
+                        }
+                        onClick={() => handleCodeChange(true, (autoComplete = true))}
+                      >
+                        Open modal
+                      </p>
+                    )}
                     <p
                       className={classNameStyleP}
                       style={
