@@ -243,7 +243,7 @@ const TotalIntangibleHours = props => {
  * @returns
  */
 const ViewTab = props => {
-  const { userProfile, setUserProfile, role, canEdit, darkMode } = props;
+  const { userProfile, setUserProfile, role, canEdit, canUpdateSummaryRequirements, darkMode } = props;
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
@@ -404,7 +404,7 @@ const ViewTab = props => {
             role={role}
             userProfile={userProfile}
             setUserProfile={setUserProfile}
-            canEdit={canEdit}
+            canEdit={canEdit && canUpdateSummaryRequirements}
             darkMode={darkMode}
           />
         </Col>
