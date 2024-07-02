@@ -178,14 +178,31 @@ const UserTeamsTable = props => {
                       />
                     ) : (
                       <>
-                        <Input value={teamCode} placeholder="X-XXX" />
+                        <Input
+                          value={teamCode}
+                          placeholder="X-XXX"
+                          style={
+                            darkMode
+                              ? {
+                                  backgroundColor: '#1c2541',
+                                  color: '#fff',
+                                  outline: 'none',
+                                  border: 'none',
+                                }
+                              : null
+                          }
+                        />
 
                         <Modal
                           isOpen={isOpenModalTeamCode}
                           toggle={() => setIsOpenModalTeamCode(false)}
+                          className={darkMode ? 'dark-mode' : ''}
                         >
-                          <ModalHeader toggle={() => setIsOpenModalTeamCode(false)}></ModalHeader>
-                          <ModalBody>
+                          <ModalHeader
+                            toggle={() => setIsOpenModalTeamCode(false)}
+                            className={darkMode && `bg-space-cadet border-white text-light`}
+                          ></ModalHeader>
+                          <ModalBody className={darkMode && `bg-yinmn-blue`}>
                             <AutoCompleteTeamCode
                               refDropdown={refDropdown}
                               teamCode={teamCode}
