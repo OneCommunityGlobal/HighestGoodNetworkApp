@@ -232,7 +232,7 @@ export default function Countdown({
                 <button
                   type="button"
                   onClick={handleStopButton}
-                  aria-label="Stop timer and log time"
+                  aria-label="Stop timer and log timer"
                 >
                   <BsStopFill
                     className={cs(css.transitionColor, css.operator)}

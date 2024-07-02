@@ -159,7 +159,7 @@ export default function ToolItemsTable({
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'Update')}
-                        aria-label="Update record"
+                        aria-label="Edit Record"
                       >
                         <BiPencil />
                       </button>
