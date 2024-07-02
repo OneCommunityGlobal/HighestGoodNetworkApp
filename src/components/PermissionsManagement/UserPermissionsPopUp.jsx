@@ -1,18 +1,22 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button, Dropdown, Form, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { useEffect, useState, useRef } from 'react';
+import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { addNewRole, getAllRoles } from '../../actions/role';
 import { getAllUserProfile } from 'actions/userManagement';
-import PermissionList from './PermissionList';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
+import PermissionList from './PermissionList';
+import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
-const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, authUser }) => {
-
+function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -22,9 +26,9 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
 
   const setToDefault = () => {
     setUserPermissions([]);
-  }
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
   }, [actualUserProfile]);
 
@@ -46,21 +50,26 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
 
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
-    debugger;
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (actualUserProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     const userId = actualUserProfile?._id;
 
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = { ...allUserInfo, permissions: {frontPermissions: userPermissions} };
+    const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
 
     await axios
       .put(url, newUserInfo)
-      .then(res => {
+      .then(() => {
         const SUCCESS_MESSAGE = `
         Permission has been updated successfully. Be sure to tell them that you are changing these
         permissions and for that they need to log out and log back in for their new permissions to take
@@ -70,13 +79,12 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
         });
       })
       .catch(err => {
-        console.log(err);
         const ERROR_MESSAGE = `
         Permission updated failed. ${err}
-        `
+        `;
         toast.error(ERROR_MESSAGE, {
           autoClose: 10000,
-        })
+        });
       });
     getAllUsers();
   };
@@ -84,22 +92,21 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
     refInput.current.focus();
   }, []);
   return (
-    <>
     <Form
       id="manage__user-permissions"
       onSubmit={e => {
         updateProfileOnSubmit(e);
       }}
     >
-      <div style={{display: 'flex', justifyContent: 'space-between', paddingBottom: '5px'}}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}>
         <h4 className="user-permissions-pop-up__title">User name:</h4>
         <Button
           type="button"
           color="success"
-          onClick={e => {
+          onClick={() => {
             setToDefault();
           }}
-          disabled={actualUserProfile ? false : true}
+          disabled={!actualUserProfile}
           style={boxStyle}
         >
           Reset to Default
@@ -116,7 +123,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
           type="text"
           value={searchText}
           innerRef={refInput}
-          onFocus={e => {
+          onFocus={() => {
             setIsInputFocus(true);
             setIsOpen(true);
           }}
@@ -147,6 +154,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
                     return user;
                   }
                 }
+                return null;
               })
               .map(user => (
                 <div
@@ -163,9 +171,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
                 </div>
               ))}
           </div>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </Dropdown>
       <div>
         <h4 className="user-permissions-pop-up__title">Permissions:</h4>
@@ -175,6 +181,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
             immutablePermissions={actualUserRolePermission}
             editable={!!actualUserProfile}
             setPermissions={setUserPermissions}
+            darkMode={darkMode}
           />
         </ul>
       </div>
@@ -184,20 +191,22 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
         color="primary"
         size="lg"
         block
-        style={{ ...boxStyle, marginTop: '1rem' }}
+        style={
+          darkMode ? { ...boxStyleDark, marginTop: '1rem' } : { ...boxStyle, marginTop: '1rem' }
+        }
       >
         Submit
       </Button>
     </Form>
-    </>
   );
-};
+}
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   roles: state.role.roles,
   allUserProfiles: state.allUserProfiles.userProfiles,
   permissionsUser: state.auth.permissions,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({
