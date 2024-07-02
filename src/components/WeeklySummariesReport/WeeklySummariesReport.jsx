@@ -387,7 +387,8 @@ export class WeeklySummariesReport extends Component {
 
       const isOverHours =
         !selectedOverTime ||
-        (hoursLogged > 0 &&
+        (summary.weeklycommittedHours > 0 &&
+          hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
       return (
