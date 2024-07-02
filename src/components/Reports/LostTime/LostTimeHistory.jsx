@@ -19,7 +19,6 @@ function LostTimeHistory(props) {
   const toDate = props.endDate.toLocaleDateString('en-CA');
 
   const idList = props.allData.map(data => data._id);
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
 
   useEffect(() => {
     loadLostTimeEntries(type, idList, fromDate, toDate);
@@ -121,22 +120,20 @@ function LostTimeHistory(props) {
               </div>
             )}
           </td>
-          {canEditTimeEntry &&
-            <td>
-              <EditHistoryModal
-                _id={entry._id}
-                dataId={entry.dataId}
-                dateOfWork={entry.date}
-                hours={entry.hours}
-                minutes={entry.minutes}
-                isTangible={entry.isTangible}
-                entryType={entry.entryType}
-                allData={props.allData}
-                reload={reload}
-                darkMode={darkMode}
-              />
-            </td>
-          }
+          <td>
+            <EditHistoryModal
+              _id={entry._id}
+              dataId={entry.dataId}
+              dateOfWork={entry.date}
+              hours={entry.hours}
+              minutes={entry.minutes}
+              isTangible={entry.isTangible}
+              entryType={entry.entryType}
+              allData={props.allData}
+              reload={reload}
+              darkMode={darkMode}
+            />
+          </td>
         </tr>
       ));
     }
@@ -169,11 +166,9 @@ function LostTimeHistory(props) {
               <th scope="col">
                 Tangible
               </th>
-              {canEditTimeEntry && 
-                <th scope="col">
-                  Action
-                </th>
-              }
+              <th scope="col">
+                Action
+              </th>
             </tr>
           </thead>
           <tbody>{entriesRow}</tbody>
