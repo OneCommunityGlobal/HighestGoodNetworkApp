@@ -59,6 +59,12 @@ import { GiConsoleController } from 'react-icons/gi';
 import { setCurrentUser } from '../../actions/authActions'
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
+
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -107,7 +113,7 @@ function UserProfile(props) {
   const [summaryIntro, setSummaryIntro] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
-  const [isRehireable, setIsRehireable] = useState(null); 
+  const [isRehireable, setIsRehireable] = useState(null);
 
   const userProfileRef = useRef();
 
@@ -262,37 +268,6 @@ function UserProfile(props) {
       .catch(err => console.log(err));
   };
 
-  // const loadSummaryIntroDetails = async teamId => {
-  //   const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
-  //   const { data } = res;
-
-  //   const memberSubmitted = [];
-  //   const memberNotSubmitted = [];
-  //   let manager = '';
-
-  //   data.forEach(member => {
-  //     if (member.role === 'Manager') {
-  //       manager = `${member.firstName} ${member.lastName}`;
-  //     }
-  //     member.weeklySummaries[0].summary !== ''
-  //       ? memberSubmitted.push(`${member.firstName} ${member.lastName}`)
-  //       : memberNotSubmitted.push(`${member.firstName} ${member.lastName}`);
-  //   });
-
-  //   manager = manager === '' ? '<Your Name>' : manager;
-  //   const memberSubmittedString =
-  //     memberSubmitted.length !== 0
-  //       ? memberSubmitted.join(', ')
-  //       : '<list all team members names included in the summary>.';
-  //   const memberDidntSubmitString =
-  //     memberNotSubmitted.length !== 0
-  //       ? memberSubmitted.join(', ')
-  //       : '<list all team members names NOT included in the summary>';
-
-  //   const summaryIntroString = `This week’s summary was managed by ${manager} and includes ${memberSubmittedString} These people did NOT provide a summary ${memberDidntSubmitString}. <Insert the proofread and single-paragraph summary created by ChatGPT>`;
-
-  //   setSummaryIntro(summaryIntroString);
-  // };
 
   const getCurretLoggedinUserEmail = async () => {
     const userId = props?.auth?.user?.userid;
@@ -466,8 +441,12 @@ function UserProfile(props) {
   };
 
   const handleBlueSquare = (status = true, type = 'message', blueSquareID = '') => {
-    if (targetIsDevAdminUneditable){
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+    if (targetIsDevAdminUneditable) {
+      if (userProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     setType(type);
@@ -534,7 +513,7 @@ function UserProfile(props) {
     }
     try {
       await props.updateUserProfile(userProfileRef.current);
-      
+
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -542,13 +521,14 @@ function UserProfile(props) {
       await loadUserTasks();
       setSaved(false);
     } catch (err) {
+      console.log(err);
       alert('An error occurred while attempting to save this profile.');
       return err.message;
     }
   };
- 
-  // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit. 
-  // AssignBadgePopup already has onSubmit action to call an API to update the user badges. 
+
+  // Changing onSubmit for Badges component from handleSubmit to handleBadgeSubmit.
+  // AssignBadgePopup already has onSubmit action to call an API to update the user badges.
   // Using handleSubmit will trigger actopms to call the assignBadge API and updateUserProfile API, which is redundant.
   const handleBadgeSubmit = async () => {
     try {
@@ -613,7 +593,7 @@ function UserProfile(props) {
   };
 
   useEffect(() => {
-    getTeamMembersWeeklySummary(); 
+    getTeamMembersWeeklySummary();
     loadUserProfile();
   }, []);
 
@@ -701,10 +681,12 @@ function UserProfile(props) {
   const canUpdatePassword = props.hasPermission('updatePassword');
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
+  const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
+  const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
   const canSeeQSC = props.hasPermission('seeQSC');
 
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
- 
+
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner'
@@ -775,6 +757,8 @@ function UserProfile(props) {
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
+                //this line below should fix the image formatting issue
+                style={profilePic ? {} : { width: '240px', height: '240px' }}
               />
               {canEdit ? (
                 <div className="image-button file btn btn-lg btn-primary" style={darkMode ? boxStyleDark : boxStyle}>
@@ -812,7 +796,7 @@ function UserProfile(props) {
               </Alert>
             ) : null}
             {!codeValid ? (
-              <Alert color="danger">The code format should be A-AAA or AAAAA.</Alert>
+              <Alert color="danger">NOT SAVED! The code must be between 5 and 7 characters long</Alert>
             ) : null}
             <div className="profile-head">
               <h5 className={`mr-2 ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</h5>
@@ -823,6 +807,7 @@ function UserProfile(props) {
                 fontSize={24}
                 isPermissionPage={true}
                 role={requestorRole} // Pass the 'role' prop to EditableInfoModal
+                darkMode={darkMode}
               />
               </div>
               <span className="mr-2">
@@ -861,11 +846,11 @@ function UserProfile(props) {
               )}
               {canChangeRehireableStatus && (
                 <span className='mr-2'>
-                  <i 
+                  <i
                     className={isRehireable ? "fa fa-check-square-o": "fa fa-square-o"}
                     aria-hidden="true"
-                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }} 
-                    title="Click to change rehirable status" 
+                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                    title="Click to change rehirable status"
                     onClick={handleRehireableChange}
                   />
                 </span>
@@ -953,7 +938,7 @@ function UserProfile(props) {
                 handleLinkModel={props.handleLinkModel}
                 handleSubmit={handleSubmit}
                 role={requestorRole}
-                canEdit={canEdit}
+                canEdit={canEdit || canManageAdminLinks}
                 darkMode={darkMode}
               />
               <BlueSquareLayout
@@ -1053,6 +1038,7 @@ function UserProfile(props) {
                     onEndDate={handleEndDate}
                     loadUserProfile={loadUserProfile}
                     canEdit={canEditUserProfile}
+                    canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
                     darkMode={darkMode}
                   />
@@ -1088,7 +1074,7 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="4">
-                <ProjectsTab 
+                <ProjectsTab
                   userProjects={userProfile.projects || []}
                   userTasks={tasks}
                   projectsData={props?.allProjects?.projects || []}
@@ -1118,6 +1104,70 @@ function UserProfile(props) {
                 />
               </TabPane>
             </TabContent>
+            <div className="profileEditButtonContainer">
+              {canUpdatePassword && canEdit && !isUserSelf && (
+                <ResetPasswordButton
+                  className="mr-1 btn-bottom"
+                  user={userProfile}
+                  authEmail={authEmail}
+                />
+              )}
+              {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
+                <Link
+                  to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
+                  onClick={() => {
+                    if (targetIsDevAdminUneditable) {
+                      alert(
+                        'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
+                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                      );
+                      return `#`;
+                    }
+                  }}
+                >
+                  <Button className="mr-1 btn-bottom" color="primary" style={darkMode ? boxStyleDark : boxStyle}>
+                    {' '}
+                    Update Password
+                  </Button>
+                </Link>
+              )}
+              {canEdit && (activeTab) && (
+                <>
+                  <SaveButton
+                    className="mr-1 btn-bottom"
+                    handleSubmit={async () => await handleSubmit()}
+                    disabled={
+                      !formValid.firstName ||
+                      !formValid.lastName ||
+                      !formValid.email ||
+                      !codeValid ||
+                      (userStartDate > userEndDate && userEndDate !== '') ||
+                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
+                      isTeamSaved
+                    }
+                    userProfile={userProfile}
+                    setSaved={() => setSaved(true)}
+                    darkMode={darkMode}
+                  />
+                  {activeTab !== '3' && (
+                    <span
+                      onClick={() => {
+                        setUserProfile(originalUserProfile);
+                        setTasks(originalTasks);
+                        setTeams(originalTeams);
+                        setProjects(resetProjects);
+                      }}
+                      className="btn btn-outline-danger mr-1 btn-bottom"
+                      style={darkMode ? boxStyleDark : boxStyle}
+                    >
+                      Cancel
+                    </span>
+                  )}
+                </>
+              )}
+            </div>
+
           </Col>
           <Col md="8" className="profile-functions-tablet">
             <List className="profile-functions-list">
@@ -1129,18 +1179,18 @@ function UserProfile(props) {
               >
                 Basic Information
               </Button>
-              <Modal isOpen={showConfirmDialog} toggle={handleCancelChange}>
-                <ModalHeader toggle={handleCancelChange}>Confirm Status Change</ModalHeader>
-                <ModalBody>
+              <Modal isOpen={showConfirmDialog} toggle={handleCancelChange} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalHeader toggle={handleCancelChange} className={darkMode ? 'bg-space-cadet' : ''}>Confirm Status Change</ModalHeader>
+                <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'}?`}
                 </ModalBody>
-                <ModalFooter>
+                <ModalFooter  className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Button color="primary" onClick={handleConfirmChange}>Confirm</Button>{' '}
                   <Button color="secondary" onClick={handleCancelChange}>Cancel</Button>
                 </ModalFooter>
               </Modal>
-              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Basic Information</ModalHeader>
+              <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Basic Information</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <BasicInformationTab
                   role={requestorRole}
@@ -1231,8 +1281,8 @@ function UserProfile(props) {
               >
                 Volunteering Times
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Volunteering Times'} toggle={toggle}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Volunteering Times</ModalHeader>
+              <Modal isOpen={menuModalTabletScreen === 'Volunteering Times'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Volunteering Times</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <VolunteeringTimeTab
                     userProfile={userProfile}
@@ -1240,7 +1290,8 @@ function UserProfile(props) {
                     isUserSelf={isUserSelf}
                     role={requestorRole}
                     onEndDate={handleEndDate}
-                    canEdit={canEdit}
+                    canEdit={canEditUserProfile}
+                    canUpdateSummaryRequirements={canUpdateSummaryRequirements}
                     onStartDate={handleStartDate}
                     darkMode={darkMode}
                   />
@@ -1287,8 +1338,8 @@ function UserProfile(props) {
               <Button className="list-button" onClick={() => toggle('Teams')} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
                 Teams
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Teams</ModalHeader>
+              <Modal isOpen={menuModalTabletScreen === 'Teams'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Teams</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
@@ -1359,8 +1410,8 @@ function UserProfile(props) {
               <Button className="list-button" onClick={() => toggle('Projects')} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
                 Projects
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Projects</ModalHeader>
+              <Modal isOpen={menuModalTabletScreen === 'Projects'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Projects</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <ProjectsTab
                     userProjects={userProfile.projects || []}
@@ -1429,8 +1480,8 @@ function UserProfile(props) {
               >
                 Edit History
               </Button>
-              <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle}>
-                <ModalHeader toggle={toggle} className={darkMode ? 'bg-azure text-light' : ''}>Edit History</ModalHeader>
+              <Modal isOpen={menuModalTabletScreen === 'Edit History'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Edit History</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <TimeEntryEditHistory userProfile={userProfile} setUserProfile={setUserProfile} darkMode={darkMode} tabletView={true}/>
                 </ModalBody>
@@ -1478,71 +1529,8 @@ function UserProfile(props) {
         </Row>
         <Row>
           <Col md="4"></Col>
-          <Col md="8" className="desktop-panel">
-            <div className="profileEditButtonContainer">
-              {canUpdatePassword && canEdit && !isUserSelf && (
-                <ResetPasswordButton
-                  className="mr-1 btn-bottom"
-                  user={userProfile}
-                  authEmail={authEmail}
-                />
-              )}
-              {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
-                <Link
-                  to={targetIsDevAdminUneditable ? `#` : `/updatepassword/${userProfile._id}`}
-                  onClick={() => {
-                    if (targetIsDevAdminUneditable) {
-                      alert(
-                        'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
-                      );
-                      return `#`;
-                    }
-                  }}
-                >
-                  <Button className="mr-1 btn-bottom" color="primary" style={darkMode ? boxStyleDark : boxStyle}>
-                    {' '}
-                    Update Password
-                  </Button>
-                </Link>
-              )}
-              {canEdit && (activeTab) && (
-                <>
-                  <SaveButton
-                    className="mr-1 btn-bottom"
-                    handleSubmit={async () => await handleSubmit()}
-                    disabled={
-                      !formValid.firstName ||
-                      !formValid.lastName ||
-                      !formValid.email ||
-                      !codeValid ||
-                      (userStartDate > userEndDate && userEndDate !== '') ||
-                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
-                      isTeamSaved
-                    }
-                    userProfile={userProfile}
-                    setSaved={() => setSaved(true)}
-                    darkMode={darkMode}
-                  />
-                  {activeTab !== '3' && (
-                    <span
-                      onClick={() => {
-                        setUserProfile(originalUserProfile);
-                        setTasks(originalTasks);
-                        setTeams(originalTeams);
-                        setProjects(resetProjects);
-                      }}
-                      className="btn btn-outline-danger mr-1 btn-bottom"
-                      style={darkMode ? boxStyleDark : boxStyle}
-                    >
-                      Cancel
-                    </span>
-                  )}
-                </>
-              )}
-            </div>
-          </Col>
+          {/* <Col md="8" className="desktop-panel">
+          </Col> */}
         </Row>
       </Container>
     </div>

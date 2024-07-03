@@ -8,18 +8,19 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
 
 const UserTeamsTable = props => {
-  const {darkMode} = props;
+  const { darkMode } = props;
 
   const [tooltipOpen, setTooltip] = useState(false);
-  const [teamCode, setTeamCode] = useState(props.userProfile? props.userProfile.teamCode: props.teamCode);
+  const [teamCode, setTeamCode] = useState(props.userProfile ? props.userProfile.teamCode : props.teamCode);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = e => {
     let value = e.target.value;
-    
+
+
     const regexTest = fullCodeRegex.test(value);
     if (regexTest) {
       props.setCodeValid(true);
@@ -38,7 +39,7 @@ const UserTeamsTable = props => {
   return (
     <div>
       <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-        <div className="container" style={{paddingLeft: '4px', paddingRight: '4px'}}>
+        <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
           {props.canEditVisibility && (
             <div className="row" >
               <Col md="7">
@@ -54,11 +55,12 @@ const UserTeamsTable = props => {
               </Col>
             </div>
           )}
-          <div className="row" style={{ margin: '0 auto'}}>
+          <div className="row" style={{ margin: '0 auto' }}>
             <Col
               md={canAssignTeamToUsers ? '7' : '10'}
               style={{
-                backgroundColor:  darkMode ? '#1C2541' : '#e9ecef',
+                backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
+                backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 border: '1px solid #ced4da',
                 marginBottom: '10px',
               }}
@@ -66,7 +68,7 @@ const UserTeamsTable = props => {
               <span className="teams-span">Teams</span>
             </Col>
             {props.edit && props.role && canAssignTeamToUsers && (
-              <Col md="3" style={{padding: '0'}}>
+              <Col md="3" style={{ padding: '0' }}>
                 {props.disabled ? (
                   <>
                     <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignteam" toggle={toggleTooltip}>
@@ -84,23 +86,23 @@ const UserTeamsTable = props => {
                       props.onButtonClick();
                     }}
                     style={darkMode ? {} : boxStyle}
-                   >
+                  >
                     Assign Team
                   </Button>
                 )}
               </Col>
             )}
-            <Col md="2" style={{padding: '0'}}>
+            <Col md="2" style={{ padding: '0' }}>
               {props.canEditTeamCode ? (
                 <Input
                   id="teamCode"
                   value={teamCode}
                   onChange={handleCodeChange}
-                  placeholder="X-XXX"
+                  placeholder="X-XXXXX"
                 />
               ) : (
-                <div style={{fontSize: "12px" ,textAlign: 'center'}}>
-                  {teamCode == ''? "No assigned team code": teamCode}
+                <div style={{ fontSize: "12px", textAlign: 'center' }}>
+                  {teamCode == '' ? "No assigned team code" : teamCode}
                 </div>
               )}
             </Col>
@@ -108,11 +110,12 @@ const UserTeamsTable = props => {
         </div>
         <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
           <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
-            <thead>
+            <thead className={darkMode ? 'bg-space-cadet' : ''}>
               {props.role && (
-                <tr>
-                  <th>#</th>
-                  {canAssignTeamToUsers ? <th style={{ width: '100px' }}>Team Name</th> : null}
+                <tr style={{ textAlign: 'center' }}>
+                  <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '10%' }} >#</th>
+                  {canAssignTeamToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>Team Name</th> : null}
+                  {props.userTeamsById.length > 0 ? <th className={darkMode ? 'bg-space-cadet' : ''}></th> : null}
                 </tr>
               )}
             </thead>
@@ -120,10 +123,10 @@ const UserTeamsTable = props => {
               {props.userTeamsById.length > 0 ? (
                 props.userTeamsById.map((team, index) => (
                   <tr key={index} className="tr">
-                    <td style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
-                    <td>{`${team.teamName}`}</td>
+                    <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
+                    <td className={darkMode ? 'bg-yinmn-blue' : ''}>{`${team.teamName}`}</td>
                     {props.edit && props.role && (
-                      <td style={{ textAlign: 'center', width: '20%' }}>
+                      <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '20%' }}>
                         <Button
                           disabled={!canAssignTeamToUsers}
                           color="danger"
@@ -149,17 +152,17 @@ const UserTeamsTable = props => {
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {props.canEditVisibility && (
             <>
-              <Col 
-                md='12' 
+              <Col
+                md='12'
                 style={{
                   backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                   border: '1px solid #ced4da',
                   marginBottom: '10px',
                 }}
               >
-              <span className="teams-span">Visibility</span>
+                <span className="teams-span">Visibility</span>
               </Col>
-              <Col md='12' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <Col md='12' style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <ToggleSwitch
                   switchType="visible"
                   state={props.isVisible}
@@ -182,18 +185,18 @@ const UserTeamsTable = props => {
               <span className="teams-span">Teams</span>
             </Col>
             <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
-                {props.canEditTeamCode ? (
-                  <Input
-                    id="teamCode"
-                    value={teamCode}
-                    onChange={handleCodeChange}
-                    placeholder="X-XXX"
-                  />
-                ) : (
-                  <div style={{paddingTop: '6px', textAlign: 'center'}}>
-                    {teamCode == ''? "No assigned team code": teamCode}
-                  </div>
-                )}
+              {props.canEditTeamCode ? (
+                <Input
+                  id="teamCode"
+                  value={teamCode}
+                  onChange={handleCodeChange}
+                  placeholder="X-XXX"
+                />
+              ) : (
+                <div style={{ paddingTop: '6px', textAlign: 'center' }}>
+                  {teamCode == '' ? "No assigned team code" : teamCode}
+                </div>
+              )}
             </Col>
           </div>
           {props.edit && props.role && (
@@ -230,7 +233,7 @@ const UserTeamsTable = props => {
                 <tr>
                   <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
                   <th className={darkMode ? 'bg-space-cadet' : ''}>Team Name</th>
-                  {canAssignTeamToUsers ? <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>{}</th> : null}
+                  {canAssignTeamToUsers ? <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>{ }</th> : null}
                 </tr>
               )}
             </thead>

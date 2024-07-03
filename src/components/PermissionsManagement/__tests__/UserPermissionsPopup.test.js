@@ -8,6 +8,7 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -58,6 +59,7 @@ beforeEach(() => {
         },
       ],
     },
+    theme: themeMock,
   });
 });
 

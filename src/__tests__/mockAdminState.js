@@ -1628,9 +1628,11 @@ export default {
             'postUserProfile',
             'putUserProfile',
             'putUserProfileImportantInfo',
+            'updateSummaryRequirements',
             'updatePassword',
             'deleteUserProfile',
             'infringementAuthorizer',
+            'manageAdminLinks',
             // WBS
             'postWbs',
             'deleteWbs',
@@ -1795,6 +1797,7 @@ export default {
             'getTimeZoneAPIKey',
             'checkLeadTeamOfXplus',
             'editTeamCode',
+            'manageAdminLinks',
           ],
         },
       ]

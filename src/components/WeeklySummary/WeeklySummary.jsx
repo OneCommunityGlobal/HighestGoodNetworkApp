@@ -17,8 +17,8 @@ import {
   NavItem,
   NavLink,
   Modal,
-  ModalBody,
   ModalHeader,
+  ModalBody,
   ModalFooter,
   UncontrolledDropdown,
   DropdownMenu,
@@ -37,6 +37,11 @@ import { toast } from 'react-toastify';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
 import { boxStyle, boxStyleDark } from 'styles';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import SkeletonLoading from '../common/SkeletonLoading';
 import DueDateTime from './DueDateTime';
@@ -176,7 +181,6 @@ export class WeeklySummary extends Component {
       fetchError,
       loading,
     } = this.props;
-
     await getWeeklySummaries(displayUserId || currentUser.userid);
 
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = summaries;
@@ -319,7 +323,7 @@ export class WeeklySummary extends Component {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
       // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     const { moveSelect, formElements, activeTab, movePopup } = this.state;
@@ -592,10 +596,15 @@ export class WeeklySummary extends Component {
   };
 
   handleMoveSave = async event => {
-    const { isNotAllowedToEdit } = this.props;
+    const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (event) {
@@ -610,10 +619,15 @@ export class WeeklySummary extends Component {
   };
 
   handleSave = async event => {
-    const { isNotAllowedToEdit } = this.props;
+    const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (event) {
@@ -663,8 +677,10 @@ export class WeeklySummary extends Component {
         : moment(dueDateThreeWeeksAgo).format('YYYY-MMM-DD'),
     };
 
+    const fontColor = darkMode ? 'text-light' : '';
+    const headerBg = darkMode ? 'bg-space-cadet' : '';
+    const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
-
     if (fetchError) {
       return (
         <Container>
@@ -746,7 +762,7 @@ export class WeeklySummary extends Component {
                     <Col>
                       <FormGroup>
                         <Label for={summaryName} className="summary-instructions-row">
-                          <div className={darkMode ? 'text-light' : ''}>
+                          <div className={fontColor}>
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
@@ -764,7 +780,7 @@ export class WeeklySummary extends Component {
                                   disabled={activeTab === '1'}
                                   onClick={() => this.handleMoveSelect('1')}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                 >
                                   This Week
                                 </DropdownItem>
@@ -772,14 +788,14 @@ export class WeeklySummary extends Component {
                                   disabled={activeTab === '2'}
                                   onClick={() => this.handleMoveSelect('2')}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                 >
                                   Last Week
                                 </DropdownItem>
                                 <DropdownItem
                                   disabled={activeTab === '3'}
                                   onClick={() => this.handleMoveSelect('3')}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
                                 >
                                   Week Before Last
@@ -787,7 +803,7 @@ export class WeeklySummary extends Component {
                                 <DropdownItem
                                   disabled={activeTab === '4'}
                                   onClick={() => this.handleMoveSelect('4')}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
                                 >
                                   Three Weeks Ago
@@ -839,7 +855,7 @@ export class WeeklySummary extends Component {
                 ) : (
                   <Col>
                     <Row>
-                      <Label for="mediaUrl" className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
+                      <Label for="mediaUrl" className={`mt-1 ${fontColor}`}>
                         Dropbox link to your weekly media files. (required)
                         <MediaURLTooltip />
                       </Label>
@@ -876,14 +892,14 @@ export class WeeklySummary extends Component {
                     </Row>
                     <Row form>
                       <Col md={8}>
-                        <Modal isOpen={editPopup}>
-                          <ModalHeader> Warning!</ModalHeader>
-                          <ModalBody>
+                        <Modal isOpen={editPopup} className={fontColor}>
+                          <ModalHeader className={headerBg}> Warning!</ModalHeader>
+                          <ModalBody className={bodyBg}>
                             Whoa Tiger! Are you sure you want to do that? This link needs to be
                             added by an Admin when you were set up as a member of the team. Only
                             Update this if you are SURE your new link is correct.
                           </ModalBody>
-                          <ModalFooter>
+                          <ModalFooter className={bodyBg}>
                             <Button onClick={this.handleMediaChange} style={boxStyling}>
                               Confirm
                             </Button>
@@ -902,10 +918,12 @@ export class WeeklySummary extends Component {
                 )}
 
                 <Row form>
-                  <Modal isOpen={movePopup} toggle={this.toggleMovePopup}>
-                    <ModalHeader> Warning!</ModalHeader>
-                    <ModalBody>Are you SURE you want to move the summary?</ModalBody>
-                    <ModalFooter>
+                  <Modal isOpen={movePopup} toggle={this.toggleMovePopup} className={fontColor}>
+                    <ModalHeader className={headerBg}> Warning!</ModalHeader>
+                    <ModalBody className={bodyBg}>
+                      Are you SURE you want to move the summary?
+                    </ModalBody>
+                    <ModalFooter className={bodyBg}>
                       <Button onClick={this.handleMoveSave} style={boxStyling}>
                         Confirm and Save
                       </Button>

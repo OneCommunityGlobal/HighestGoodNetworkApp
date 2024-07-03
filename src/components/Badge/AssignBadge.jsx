@@ -27,6 +27,7 @@ import {
   getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
+import '../Header/DarkMode.css';
 
 function AssignBadge(props) {
   const { darkMode } = props;
@@ -217,9 +218,16 @@ function AssignBadge(props) {
         >
           Assign Badge
         </Button>
-        <Modal isOpen={isOpen} toggle={toggle} backdrop="static">
-          <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
-          <ModalBody>
+        <Modal
+          isOpen={isOpen}
+          toggle={toggle}
+          backdrop="static"
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
+            Assign Badge
+          </ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <AssignBadgePopup
               allBadgeData={props.allBadgeData}
               submit={submit}
