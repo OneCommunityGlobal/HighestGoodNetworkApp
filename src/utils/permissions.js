@@ -19,7 +19,13 @@ const hasPermission = (action) => {
   }
 };
 
-// others cannot change the details for devadmin@hgn.net
+
+/**
+ * Return true if the user is not allowed to update the protected accounts
+ * @param {String} devAdminEmail target user email
+ * @param {String} authEmail logged in user email
+ * @returns {boolean} true if the user is not allowed to update the devadmin details
+ */
 export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
   const allowedEmails = ['jae@onecommunityglobal.org',
                          'one.community@me.com',
@@ -28,7 +34,7 @@ export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
   const protectedEmails = ['jae@onecommunityglobal.org',
                            'one.community@me.com',
                            'jsabol@me.com',
-                           'devadmin@hgn.net'
+                           'devadmin@hgn.net',
                           ]
   return protectedEmails.includes(devAdminEmail) && !allowedEmails.includes(authEmail);
 };

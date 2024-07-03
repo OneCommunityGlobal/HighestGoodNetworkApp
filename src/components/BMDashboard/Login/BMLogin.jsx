@@ -14,17 +14,21 @@ function BMLogin(props) {
   const [validationError, setValidationError] = useState(null);
   const [hasAccess, setHasAccess] = useState(false);
 
+  // get the previous location from the state if available
+  // If access login page from URL directly, redirect to BM Dashboard
+  const prevLocation = location.state?.from || { pathname: '/bmdashboard' };
+
   // push to dashboard if user is authenticated
   useEffect(() => {
     if (auth.user.access && auth.user.access.canAccessBMPortal) {
-      history.push('/bmdashboard');
+      history.push(prevLocation.pathname);
     }
   }, []);
   useEffect(() => {
     if (hasAccess) {
-      history.push('/bmdashboard');
+      history.push(prevLocation.pathname);
     }
-  }, [hasAccess]);
+  }, [hasAccess, history, prevLocation.pathname]);
 
   // Note: email input type="text" to validate with Joi
   const schema = Joi.object({
