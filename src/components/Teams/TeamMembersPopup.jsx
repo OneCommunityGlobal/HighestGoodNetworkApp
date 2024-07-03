@@ -16,10 +16,6 @@ import InfoModal from './InfoModal';
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const closePopup = () => {
-    props.onClose();
-    setSortOrder(0)
-  };
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
