@@ -12,7 +12,7 @@ import {
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
-  updateTeamMemeberVisiblity,
+  updateTeamMemeberVisibility,
 } from '../../actions/allTeamsAction';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Loading from '../common/Loading';
@@ -99,7 +99,6 @@ class Teams extends React.PureComponent {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
 
-    this.state.teams = this.teamTableElements(allTeams);
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
 
@@ -214,11 +213,9 @@ class Teams extends React.PureComponent {
           onDeleteClick={this.onDeleteTeamMember}
           usersdata={this.props.state ? this.props.state.allUserProfiles : []}
           onAddUser={this.onAddUser}
-          // NEW CODE
           teamData= {selectedTeamData}
-          onUpdateTeamMemberVisiblity={this.onUpdateTeamMemberVisiblity}
+          onUpdateTeamMemberVisibility={this.onUpdateTeamMemberVisibility}
           selectedTeamName={this.state.selectedTeam}
-          //
         />
         <CreateNewTeamPopup
           open={this.state.createNewTeamPopupOpen}
@@ -259,10 +256,10 @@ class Teams extends React.PureComponent {
   };
 
    /** NEW CODE
-   * Update Team member visiblity by making a Redux action call
+   * Update Team member visibility by making a Redux action call
    */
-   onUpdateTeamMemberVisiblity = (userid, visiblity) => {
-    this.props.updateTeamMemeberVisiblity(this.state.selectedTeamId, userid, visiblity);
+   onUpdateTeamMemberVisibility = (userid, visibility) => {
+    this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userid, visibility);
   };
 
   /**
@@ -524,5 +521,5 @@ export default connect(mapStateToProps, {
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
-  updateTeamMemeberVisiblity,
+  updateTeamMemeberVisibility,
 })(Teams);

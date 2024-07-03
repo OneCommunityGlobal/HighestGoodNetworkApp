@@ -1,24 +1,23 @@
 import { useState } from 'react';
 import style from './ToggleSwitch.module.scss';
 
-function ToggleSwitch({ switchType, UpdateTeamMembersVisiblity, userId, getChoice }) {    
-  const choice = getChoice(userId);
-  const [visiblity, setVisiblity] = useState(choice); 
+function ToggleSwitch({ switchType, UpdateTeamMembersVisibility, userId, choice }) {    
+  const [visibility, setVisibility] = useState(choice); 
+  
   switch (switchType) {
-    case 'limit-visiblity':
+    case 'limit-visibility':
       return (
         <div className={style.switchSection}>
           <div className={style.switchContainer}>
             <input
-              id="teamVisiblity"
+              id="teamVisibility"
               type="checkbox"
               className={style.toggleTeamsVisibility}
-              checked={visiblity} // Assuming visiblity is a string
+              checked={visibility} // Assuming visibility is a string
               onChange={event => {
-                const isChecked = !visiblity;
-                setVisiblity(isChecked);
-                // console.log('new value', isChecked);
-                UpdateTeamMembersVisiblity(userId, isChecked);
+                const isChecked = !visibility;
+                setVisibility(isChecked);
+                UpdateTeamMembersVisibility(userId, isChecked);
               }}
             />
           </div>

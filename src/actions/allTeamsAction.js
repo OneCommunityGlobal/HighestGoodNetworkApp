@@ -233,13 +233,12 @@ export const addTeamMember = (teamId, userId, firstName, lastName, role, addDate
   };
 };
 
-export const updateTeamMemeberVisiblity = (teamId, userId, visibility) => {
-  console.log("comping here actions ");
+export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
   const updateData = { visibility, userId, teamId };
-  const updateVisiblityPromise = axios.put(ENDPOINTS.TEAM, updateData);
+  const updateVisibilityPromise = axios.put(ENDPOINTS.TEAM, updateData);
 
   return async dispatch => {
-    updateVisiblityPromise
+    updateVisibilityPromise
       .then(res => {
         dispatch(updateVisibilityAction(visibility, userId, teamId));
       })
