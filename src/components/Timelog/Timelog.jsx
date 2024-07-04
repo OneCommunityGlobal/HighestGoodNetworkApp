@@ -302,14 +302,14 @@ const Timelog = props => {
       return <></>;
     } else if (timeLogState.activeTab === 4) {
       return (
-        <p className={"ml-1 " + (darkMode ? "text-light" : "")}>
+        <p className={`ml-1 responsive-font-size ${darkMode ? "text-light" : ""}`}>
           Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
           <b>{formatDate(timeLogState.toDate)}</b>
         </p>
       );
     } else {
       return (
-        <p className={"ml-1 " + (darkMode ? "text-light" : "")}>
+        <p className={`ml-1 responsive-font-size ${darkMode ? "text-light" : ""}`}>
           Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
           <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
         </p>
@@ -699,11 +699,12 @@ const Timelog = props => {
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
                       <Form inline className="mb-2">
-                        <FormGroup className="mr-2">
-                          <Label for="fromDate" className={"mr-2 ml-1 " + (darkMode ? "text-light" : "")}>
+                        <FormGroup className="mr-2 date-selector-form">
+                          <Label for="fromDate" className={`responsive-font-size mr-2 ml-1 ${darkMode ? "text-light" : ""}`}>
                             From
                           </Label>
                           <Input
+                            className='responsive-font-size'
                             type="date"
                             name="fromDate"
                             id="fromDate"
@@ -712,10 +713,11 @@ const Timelog = props => {
                           />
                         </FormGroup>
                         <FormGroup>
-                          <Label for="toDate" className={"mr-2 " + (darkMode ? "text-light" : "")}>
+                          <Label for="toDate" className={`responsive-font-size mr-2 ${darkMode ? "text-light" : ""}`}>
                             To
                           </Label>
                           <Input
+                            className='responsive-font-size'
                             type="date"
                             name="toDate"
                             id="toDate"
@@ -726,7 +728,7 @@ const Timelog = props => {
                         <Button
                           color="primary"
                           onClick={handleSearch}
-                          className="ml-2 mt-3"
+                          className="search-time-entries-btn"
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Search

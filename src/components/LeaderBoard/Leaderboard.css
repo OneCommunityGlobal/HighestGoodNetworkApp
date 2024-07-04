@@ -13,9 +13,7 @@
 }
 
 .leaderboard thead th {
-  position: sticky;
   top: 0;
-  background-color: #1c2541;
   border-top: 10px solid #dee2e6;
   border-top-width: 1px;
   border-top-style: solid;
@@ -39,9 +37,7 @@
   }
 
   .leaderboard thead th {
-    position: sticky;
     top: 0;
-    background-color: #1c2541;
     border-top: 10px solid #dee2e6;
     border-top-width: 1px;
     border-top-style: solid;

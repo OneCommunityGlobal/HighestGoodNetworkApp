@@ -179,7 +179,7 @@
 }
 
 /* Large devices (landscape phones, 544px and down) */
-@media (max-width: 992px) {
+@media (max-width: 991px) {
   .large_text_summary {
     font-size: 2rem;
   }

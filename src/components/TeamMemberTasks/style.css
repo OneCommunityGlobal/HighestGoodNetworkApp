@@ -347,7 +347,7 @@
 }
 
 .task_table-container{
-  max-height: 1025px;
+  max-height: 800px;
   width: 100%;
   overflow-y: scroll;
 }
@@ -454,6 +454,40 @@
 
 @media only screen and (max-width: 544px) {
   .responsive-font-size{
+    font-size: 0.75rem !important;
+  }
+  .multi-select-filter{
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 1075px) and (min-width: 992px) {
+  .header-box h1{
+    font-size: 1.25rem !important;
+    margin-right: 10px;
+  }
+  .team-member-task-remove{
+    margin: 0;
+  }
+}
+
+@media screen and (max-width: 1200px) and (min-width: 992px) {
+  .team-member-tasks-user-name-link{
+    font-size: 14px !important;
+  }
+  .hours-completed-column{
+    width: 50px;
+  }
+  .team-clocks{
+    font-size: 0.75rem !important;
+  }
+  .team-member-tasks-content-link{
+    font-size: 0.75rem !important;
+  }
+  .team-task-progress-time{
+    font-size: 0.75rem !important;
+  }
+  .team-task-progress-time-volunteers{
     font-size: 0.75rem !important;
   }
 }
