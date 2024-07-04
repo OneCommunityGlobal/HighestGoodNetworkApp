@@ -285,7 +285,6 @@ export function Header(props) {
           <Collapse isOpen={isOpen} navbar>
             <Nav className="ml-auto nav-links" navbar>
               <div className='d-flex justify-content-center align-items-center' style={{width: '100%'}}>
-                <DarkModeButton />
                 {canUpdateTask && (
                   <NavItem>
                     <NavLink tag={Link} to="/taskeditsuggestions">
@@ -424,6 +423,9 @@ export function Header(props) {
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
+                    <DropdownItem>
+                      <DarkModeButton />
+                    </DropdownItem>
                     <DropdownItem divider />
                     <DropdownItem onClick={openModal} className={fontColor}>{LOGOUT}</DropdownItem>
                   </DropdownMenu>
