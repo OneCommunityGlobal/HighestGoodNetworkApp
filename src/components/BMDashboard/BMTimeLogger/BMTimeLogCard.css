@@ -42,7 +42,11 @@
   border-radius: 15px !important;
   width: 100%;
   height: 4rem;
-  font-size: 20rem;
+  font-size: 2rem !important;
+}
+
+.font-color-gray {  
+  color: #4b5055;
 }
 
 .member-start {

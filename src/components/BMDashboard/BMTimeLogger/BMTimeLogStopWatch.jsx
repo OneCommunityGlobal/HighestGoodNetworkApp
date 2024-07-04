@@ -1,4 +1,4 @@
-import { Button, CardBody, Row, Container } from 'reactstrap';
+import { Button, CardBody, Row, Col, Container } from 'reactstrap';
 import { useState } from 'react';
 import moment from 'moment';
 import './BMTimeLogCard.css';
@@ -43,7 +43,11 @@ function BMTimeLogStopWatch() {
         const hour = date.hours();
         const min = date.minutes();
         const sec = date.seconds();
-        const ctime = `${hour} : ${min} : ${sec}`;
+        const ampm = hour >= 12 ? 'PM' : 'AM';
+        const hour12 = hour >= 12 ? hour - 12 : hour;
+        const ctime = `${hour12 < 10 ? 0 : ''}${hour12} : ${min < 10 ? 0 : ''}${min} : ${
+          sec < 10 ? 0 : ''
+        }${sec} ${ampm}`;
         setCurrentTime(ctime);
       }
     }
@@ -56,6 +60,7 @@ function BMTimeLogStopWatch() {
 
   const clear = () => {
     clearInterval(intervalId);
+    setIntervalId('');
     setTime({
       sec: 0,
       min: 0,
@@ -68,26 +73,31 @@ function BMTimeLogStopWatch() {
     <CardBody style={{ width: '90%' }}>
       <Container>
         <Row>
-          <Button className="member-stopwatch mb-2 px-5">
-            {`${time.hr < 10 ? 0 : ''}${time.hr} : ${time.min < 10 ? 0 : ''}${time.min} : ${
+          <Button className="member-stopwatch mb-2 px-5 btn-font-size-lg">
+            <b>{`${time.hr < 10 ? 0 : ''}${time.hr} : ${time.min < 10 ? 0 : ''}${time.min} : ${
               time.sec < 10 ? 0 : ''
-            }${time.sec}`}
+            }${time.sec}`}</b>
           </Button>
         </Row>
 
         <Row className="justify-content-between mb-1">
           <Button className="member-start" onClick={start}>
-            START
+            <b>START</b>
           </Button>
           <Button className="member-stop" onClick={stop}>
-            STOP
+            <b>STOP</b>
           </Button>
         </Row>
-        <Row className="mb-1">Start at: {currentTime}</Row>
+        <Row className="mb-1">
+          Start at:
+          <Col>
+            <b className="font-color-gray">{currentTime}</b>
+          </Col>
+        </Row>
         <Row className="mb-2">Task: </Row>
         <Row className="justify-content-center">
           <Button className="member-clear" onClick={clear}>
-            CLEAR
+            <b>CLEAR</b>
           </Button>
         </Row>
       </Container>
