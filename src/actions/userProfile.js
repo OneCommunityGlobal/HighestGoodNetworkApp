@@ -81,11 +81,11 @@ export const getProjectsByUsersName = searchName => {
   return async dispatch => {
     try {
       const res = await axios.get(url);
-      await dispatch(getProjectsByPersonActionCreator(res.data));
+      dispatch(getProjectsByPersonActionCreator(res.data));
       return res.data.allProjects;
     } catch (error) {
-      await dispatch(userNotFoundError(error.message));
-      await dispatch(getProjectsByPersonActionCreator([]));
+      dispatch(userNotFoundError(error.message));
+      dispatch(getProjectsByPersonActionCreator([]));
       toast.error("Could not find user or project, please try again");
     }
   };
