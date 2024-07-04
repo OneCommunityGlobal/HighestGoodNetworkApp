@@ -28,7 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import {updateRehireableStatus} from '../../../actions/userManagement'
+import { updateRehireableStatus } from '../../../actions/userManagement'
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -47,7 +47,7 @@ class PeopleReport extends Component {
       // eslint-disable-next-line react/no-unused-state
       isAssigned: '',
       isActive: '',
-      isRehireable: false,
+      isRehireable: true,
       // eslint-disable-next-line react/no-unused-state
       priority: '',
       // eslint-disable-next-line react/no-unused-state
@@ -441,10 +441,10 @@ class PeopleReport extends Component {
         >
           <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
             <p>
-              <Link to={`/userProfile/${_id}`} 
-                    title="View Profile" 
-                    className={darkMode ? 'text-light font-weight-bold' : ''}
-                    style={{fontSize: "24px"}}>
+              <Link to={`/userProfile/${_id}`}
+                title="View Profile"
+                className={darkMode ? 'text-light font-weight-bold' : ''}
+                style={{ fontSize: "24px" }}>
                 {firstName} {lastName}
               </Link>
             </p>
@@ -452,16 +452,16 @@ class PeopleReport extends Component {
             <p>Title: {jobTitle}</p>
 
             {/* {endDate ? ( */}
-              <div className="rehireable">
-                <Checkbox
-                  value={isRehireable}
-                  onChange={() => this.setRehireable(!isRehireable)}
-                  label="Rehireable"
-                  darkMode={darkMode}
-                  backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
-                  textColorCN={darkMode ? "text-light" : ""}
-                />
-              </div>
+            <div className="rehireable">
+              <Checkbox
+                value={isRehireable}
+                onChange={() => this.setRehireable(!isRehireable)}
+                label="Rehireable"
+                darkMode={darkMode}
+                backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
+                textColorCN={darkMode ? "text-light" : ""}
+              />
+            </div>
             {/* ) : (
               ''
             )} */}
@@ -516,7 +516,7 @@ class PeopleReport extends Component {
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
-          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper": ""}`}>
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -561,10 +561,10 @@ class PeopleReport extends Component {
             </ReportPage.ReportBlock>
           </div>
 
-          <PeopleTasksPieChart darkMode={darkMode}/>
+          <PeopleTasksPieChart darkMode={darkMode} />
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
-              <div className={`intro_date ${darkMode? 'text-light' : ''}`}>
+              <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
                 <h4>Tasks contributed</h4>
               </div>
 
@@ -580,7 +580,7 @@ class PeopleReport extends Component {
                     timeEntries={timeEntries}
                   />
                   <div className="visualizationDiv">
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode}/>
+                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
                   </div>
                   <div className="visualizationDiv">
                     <InfringementsViz
@@ -599,7 +599,7 @@ class PeopleReport extends Component {
                       />
                     </div>
                     <div className="BadgeSummaryPreviewDiv">
-                      <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode}/>
+                      <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
                     </div>
                   </div>
                 </div>

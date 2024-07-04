@@ -193,3 +193,24 @@
 
   }
 }
+
+
+.add_new_task_form-group{
+  width: 100%;
+  padding: 0;
+  display: flex;
+  border: .01em solid #cdcbcb;
+}
+
+.add_new_task_form-label{
+  width: 30%;
+  padding: .5em .25em;
+  margin-left: .25em;
+}
+.add_new_task_form-input_area{
+  width: 70%;
+  padding: 0;
+  margin: .25em;
+  border-left: 1px solid #bbb;
+  padding-left: .25em;
+}
