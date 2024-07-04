@@ -13,15 +13,20 @@ import { ENDPOINTS } from 'utils/URL';
 import './Dashboard.css';
 import axios from 'axios';
 import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
+
   const [actualUserProfile, setActualUserProfile] = useState(null);
   const [showModal, setShowModal] = useState(false);
 
-  
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
@@ -32,7 +37,11 @@ export function Dashboard(props) {
 
   const toggle = () => {
     if (isNotAllowedToEdit) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     setPopup(!popup);
@@ -145,6 +154,7 @@ export function Dashboard(props) {
                 isPopup={popup}
                 userRole={authUser.role}
                 displayUserId={displayUserId}
+                displayUserEmail={viewingUser?.email}
                 isNotAllowedToEdit={isNotAllowedToEdit}
                 darkMode={darkMode}
               />
@@ -175,7 +185,11 @@ export function Dashboard(props) {
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            <Timelog isDashboard passSummaryBarData={setSummaryBarData} isNotAllowedToEdit={isNotAllowedToEdit} />
+            <Timelog
+              isDashboard
+              passSummaryBarData={setSummaryBarData}
+              isNotAllowedToEdit={isNotAllowedToEdit}
+            />
           </div>
           <Badge
             userId={displayUserId}
