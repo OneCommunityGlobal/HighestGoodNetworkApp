@@ -10,32 +10,11 @@ import {
   Col,
 } from 'reactstrap';
 import Select from 'react-select'
-import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
 import { boxStyle, boxStyleDark } from 'styles';
-
-// New RichTextEditor component
-const RichTextEditor = ({ disabled, value, onEditorChange }) => (
-  <Editor
-    tinymceScriptSrc="/tinymce/tinymce.min.js"
-    init={{
-      license_key: 'gpl',
-      menubar: false,
-      placeholder: 'Please input infos',
-      plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-      toolbar: 'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-      branding: false,
-      min_height: 180,
-      max_height: 500,
-      autoresize_bottom_margin: 1,
-    }}
-    disabled={disabled}
-    value={value}
-    onEditorChange={onEditorChange}
-  />
-);
+import RichTextEditor from './RichTextEditor';
 
 const options = [
   { value: '0', label: 'All (default)' },

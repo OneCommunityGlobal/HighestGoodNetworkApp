@@ -17,7 +17,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
 
     const [teamCode, setTeamCode] = useState(team.teamCode);
     const [hasError, setHasError] = useState(false);
-    const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+    const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
 
     const handleOnChange = (value, team) => {
       updateTeam(team.teamName, team._id, team.isActive, value);
@@ -54,7 +54,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
                 invalid={hasError}
               />
               <FormFeedback>
-              The code format must be A-AAA or AAAAA.
+                 NOT SAVED! The code must be between 5 and 7 characters long
               </FormFeedback>
             </FormGroup>
           </div>

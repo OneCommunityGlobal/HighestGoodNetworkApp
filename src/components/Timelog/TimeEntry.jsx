@@ -63,10 +63,12 @@ const TimeEntry = (props) => {
   const isAuthUserAndSameDayEntry = isAuthUser && isSameDay;
 
   //permission to edit any time log entry (from other user's Dashboard
-  // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
-  const canEdit = (dispatch(hasPermission('editTimelogInfo'))
-    //permission to edit any time entry on their own time logs tab
-    || dispatch(hasPermission('editTimeEntry'))) && !cantEditJaeRelatedRecord;
+    // For Administrator/Owner role, hasPermission('editTimelogInfo') should be true by default
+  const canEditTangibility = (
+    isAuthUser ?
+      dispatch(hasPermission('toggleTangibleTime')):
+      dispatch(hasPermission('editTimeEntryToggleTangible'))
+    ) && !cantEditJaeRelatedRecord;
 
   //permission to Delete time entry from other user's Dashboard
   const canDelete = (dispatch(hasPermission('deleteTimeEntryOthers')) && !cantEditJaeRelatedRecord) ||
@@ -157,17 +159,17 @@ const TimeEntry = (props) => {
               {taskName && `\u2003 ↳ ${taskName}`} 
             </p>
             <div className='mb-3'>
-              {
-                canEdit
-                  ? (
+            {
+              canEditTangibility
+                ? ( 
                     <>
                       <span className="text-muted">Tangible:&nbsp;</span>
                       <input
-                        type="checkbox"
-                        name="isTangible"
-                        checked={isTangible}
-                        disabled={!canEdit || isProcessing}
-                        onChange={toggleTangibility}
+                          type="checkbox"
+                          name="isTangible"
+                          checked={isTangible}
+                          disabled={isProcessing}
+                          onChange={toggleTangibility}
                       />
                       {isProcessing ? <span> Processing... </span> : null}
                     </>
@@ -180,8 +182,8 @@ const TimeEntry = (props) => {
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {((canEdit || isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord)
-                && from === 'WeeklyTab'
+              {((true || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
+                && from === 'WeeklyTab' 
                 && (
                   <button className="mr-3 text-primary">
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
