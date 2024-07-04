@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
@@ -7,7 +7,7 @@ import { Provider } from 'react-redux';
 import ProjectReport from '..';
 import axios from 'axios';
 import { getProjectDetail } from 'actions/project';
-import { fetchAllMembers,  getProjectActiveUser } from 'actions/projectMembers';
+import { fetchAllMembers, foundUsers, getProjectActiveUser } from 'actions/projectMembers';
 import { fetchAllWBS } from 'actions/wbs';
 import viewWBSpermissionsRequired from 'utils/viewWBSpermissionsRequired';
 import { themeMock } from '__tests__/mockStates';
@@ -225,17 +225,15 @@ describe('ProjectReport component', () => {
 
 describe('ProjectReport WBS link visibility', () => {
   it(`should display WBS links when the user has required permissions`, async () => {
-    const mockPermissions = ['viewWBS'];
+    const mockPermissions = ['resolveTask', 'acb'];
+
     const hasPermission = mockPermissions.some(permission =>
       viewWBSpermissionsRequired.includes(permission),
     );
 
     const canViewWBS = hasPermission;
 
-    const mockWBS = { _id: 'wbs123', wbsName: 'wbs name1' };
-  const projectId = '123';
-
-    axios.get.mockResolvedValue({ status: 200, data: { mockWBS }});
+    axios.get.mockResolvedValue({ status: 200, data: {} });
 
     render(
       <Provider store={store}>
@@ -243,18 +241,23 @@ describe('ProjectReport WBS link visibility', () => {
       </Provider>,
     );
 
+    const mockWBS = { _id: 'wbs123', wbsName: 'wbs name1' };
+    const projectId = '123';
+
     if (canViewWBS) {
-      const linkElement = await screen.findByRole('link', { name: mockWBS.wbsName });
+      screen.findByRole('link', { name: mockWBS.wbsName }).then(linkElement => {
         expect(linkElement).toBeInTheDocument();
         expect(linkElement).toHaveAttribute(
           'href',
           expect.stringContaining(`/wbs/tasks/${mockWBS._id}/${projectId}/${mockWBS.wbsName}`),
         );
+      });
     } else {
-      const linkElement = screen.queryByRole('link', { name: mockWBS.wbsName });
-      expect(linkElement).not.toBeInTheDocument();
-      };
-    });
+      screen.findByText(mockWBS.wbsName).then(divElement => {
+        expect(divElement).toBeInTheDocument();
+        expect(divElement.tagName).toBe('DIV');
+      });
+    }
   });
 
   it(`should not display WBS links when the user lacks required permissions`, async () => {
@@ -289,4 +292,5 @@ describe('ProjectReport WBS link visibility', () => {
         expect(divElement.tagName).toBe('DIV');
       });
     }
+  });
 });

@@ -57,7 +57,7 @@ const renderActiveShape = (props) => {
   );
 };
 
-export function ProjectPieChart  ({ userData, windowSize }) {
+export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const onPieEnter = (_, index) => {
@@ -70,7 +70,7 @@ export function ProjectPieChart  ({ userData, windowSize }) {
   }
 
   return (
-    <>
+    <div className={darkMode ? 'text-light' : ''}>
       <ResponsiveContainer maxWidth={640} maxHeight={640} minWidth={350} minHeight={350}>
         <PieChart>
           <Pie
@@ -87,6 +87,6 @@ export function ProjectPieChart  ({ userData, windowSize }) {
             />
           </PieChart>
         </ResponsiveContainer>
-      </>
+      </div>
   );
 }

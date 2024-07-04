@@ -106,7 +106,7 @@ export function WbsPieChart({
 
       </div>)}
       {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
-        <ProjectPieChart userData={userData} windowSize={windowSize.width} />
+        <ProjectPieChart userData={userData} windowSize={windowSize.width} darkMode={darkMode}/>
       </div>)}
     </div>
   )

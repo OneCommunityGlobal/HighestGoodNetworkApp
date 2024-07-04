@@ -121,11 +121,11 @@ export function PieChartByProject({
 
   return (
     <div className={darkMode ? 'text-light' : ''}>
-      <div className='pie-chart-title'><h4>PieCharts</h4></div>
+      <div className='pie-chart-title'><h4>Pie Charts</h4></div>
       <div><h5>{projectName}</h5></div>
       <div className= "pie-chart-description" >
         <div>
-          <label style={{
+          <label className={darkMode ? 'text-light' : ''} style={{
             paddingRight: '1rem'
           }}>{isChecked ? 'All-Time Total Hours by All Member (Hide PieChart)' : 'All-Time Total Hours by Member (Show PieChart)'}</label>
           <input
@@ -139,12 +139,12 @@ export function PieChartByProject({
         <p style={{textAlign:'center'}}>{showMembers === null ? 'All members' : ''}</p>
         <div className={style.switchSection}>
             <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}} className={style.switchContainer}>
-              <span style={{color: 'blue'}}> Inactive Members</span>
+              <span className={darkMode ? 'text-light' : 'blue'}> Inactive Members</span>
               <TriMembersStateToggleSwitch
               value={showMembers}
               onChange={handleShowMembersChange}
             />
-              <span style={{color: 'green'}}> Active Members</span>
+              <span className={darkMode ? 'text-light' : 'green'}> Active Members</span>
             </div>
         </div>
           <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  <span> - Hrs Applied: { globalactiveHours.toFixed(2) } </span> </p>
@@ -154,7 +154,7 @@ export function PieChartByProject({
         </div>)}
       </div>
         {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
-        <ProjectPieChart userData={userData} windowSize={windowSize.width} />
+        <ProjectPieChart userData={userData} windowSize={windowSize.width} darkMode={darkMode} />
       </div>)}
     </div>
   )
