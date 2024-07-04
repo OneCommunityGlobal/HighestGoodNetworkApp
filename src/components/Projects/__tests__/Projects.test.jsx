@@ -1,6 +1,6 @@
 import React from 'react';
 import { shallow, mount } from 'enzyme';
-import { Projects } from './Projects';
+import { Projects } from '../Projects';
 import { createMemoryHistory } from 'history';
 import {
   PROJECTS,
@@ -9,7 +9,7 @@ import {
   ACTIVE,
   MEMBERS,
   WBS,
-} from './../../languages/en/ui';
+} from '../../../languages/en/ui';
 
 import { Router } from 'react-router-dom';
 
