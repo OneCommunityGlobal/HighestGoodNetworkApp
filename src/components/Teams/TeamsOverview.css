@@ -1,0 +1,31 @@
+/* TeamsOverview.css */
+
+.teams__overview--top {
+  display: flex;
+  gap: 10px; /* Add gap between cards */
+  background-color: transparent; /* Ensure the background is transparent */
+}
+
+.teams__overview--top .card {
+  flex: 1; /* Ensure cards take up equal space */
+  background-color: white; /* Ensure card background is white */
+  box-shadow: none; /* Remove any box shadow */
+  border: none; /* Remove any border */
+}
+
+@media (max-width: 479px) {
+  .teams__overview--top .card {
+    flex: 1 1 45%; /* Adjust card size to prevent stacking */
+    margin: 5px 0;
+  }
+
+  .teams__overview--top {
+    justify-content: space-between; /* Ensure cards are spaced correctly */
+  }
+}
+
+@media (max-width: 768px) {
+  .teams__overview--top .card {
+    padding: 10px; /* Add padding to the cards at 768px and below */
+  }
+}

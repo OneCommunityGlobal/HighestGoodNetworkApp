@@ -1,5 +1,7 @@
 import React from 'react';
 import { TOTAL_TEAMS, ACTIVE_TEAMS } from '../../languages/en/ui';
+// Sai Sarath Kumar Alavakonda working on TEAMS UI , 3 july 2024
+import './TeamsOverview.css';   //added by me
 
 export const TeamsOverview = ({numberOfTeams, numberOfActiveTeams}) => {
   return (
