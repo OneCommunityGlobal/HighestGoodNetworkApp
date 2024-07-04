@@ -26,12 +26,12 @@ function BMTimeLogSelectProject({ selectedProject, setSelectedProject }) {
   return (
     <Form>
       <Row>
-        <Col>Date: {date.format('MM/DD/YY')}</Col>
+        <Col xs="3">Date: {date.format('MM/DD/YY')}</Col>
 
         <Col xs="1">
           <p>Project:</p>
         </Col>
-        <Col xs="4">
+        <Col xs="3">
           <Input
             id="projectSelect"
             name="select"
@@ -39,6 +39,9 @@ function BMTimeLogSelectProject({ selectedProject, setSelectedProject }) {
             value={selectedProject}
             onChange={handleOptionChange}
           >
+            <option value="" default>
+              Select a project
+            </option>
             filter={selectOptions}
           </Input>
         </Col>

@@ -1,4 +1,5 @@
-import { CardHeader, CardBody, Card, Row, Button, Container } from 'reactstrap';
+import { CardHeader, Card } from 'reactstrap';
+import BMTimeLogStopWatch from './BMTimeLogStopWatch';
 import './BMTimeLogCard.css';
 
 // function BMTimeLogCard({ selectedProject }) {
@@ -31,22 +32,8 @@ function BMTimeLogDisplayMember({ firstName, lastName, role }) {
             {firstName} {lastName}
           </h6>
         </CardHeader>
-        <CardBody>
-          <Container>
-            <Row>
-              <Button className="member-stopwatch mb-2 px-5">STOPWATCH TIMER</Button>
-            </Row>
-            <Row className="justify-content-between mb-1">
-              <Button className="member-start">START</Button>
-              <Button className="member-stop">STOP</Button>
-            </Row>
-            <Row className="mb-1">Start at: </Row>
-            <Row className="mb-2">Task: </Row>
-            <Row className="justify-content-center">
-              <Button className="member-clear">CLEAR</Button>
-            </Row>
-          </Container>
-        </CardBody>
+
+        <BMTimeLogStopWatch />
       </Card>
     </div>
   );
