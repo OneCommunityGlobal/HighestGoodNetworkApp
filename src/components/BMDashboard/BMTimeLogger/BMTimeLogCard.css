@@ -55,6 +55,13 @@
   width: 5rem;
 }
 
+.member-pause {
+  background-color: #168dc0 !important;  
+  border-radius: 10px !important;    
+  width: 5rem;
+}
+
+
 .member-stop {
   background-color: #980101 !important;  
   border-radius: 10px !important;    

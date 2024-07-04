@@ -4,21 +4,21 @@ import './BMTimeLogCard.css';
 
 // function BMTimeLogCard({ selectedProject }) {
 function BMTimeLogDisplayMember({ firstName, lastName, role }) {
-  let cardColor = '#97d5c8'; // default = volunteer
+  let cardColor = '#78bdda'; // default = volunteer
 
   if (role.includes('Volunteer') || role.includes('volunteer')) {
-    cardColor = '#97d5c8'; // light green
+    cardColor = '#78bdda'; // light blue
   } else if (role.includes('Core') || role.includes('core')) {
-    cardColor = '#f2c897'; // light orange
+    cardColor = '#ecb16c'; // light orange
   } else if (
     role.includes('Manager') ||
     role.includes('manager') ||
     role.includes('Mentor') ||
     role.includes('mentor')
   ) {
-    cardColor = '#9fd0e5'; // light blue
+    cardColor = '#6cc3b2'; // light green
   } else if (role.includes('Owner') || role.includes('ownder')) {
-    cardColor = '#d59797'; // light red
+    cardColor = '#c36c6c'; // light red
   }
 
   let borderProperty = '2px solid ';
@@ -28,9 +28,9 @@ function BMTimeLogDisplayMember({ firstName, lastName, role }) {
     <div>
       <Card className="member-card rounded-8 mr-3 my-3" style={{ border: borderProperty }}>
         <CardHeader className="member-card-header" style={{ backgroundColor: cardColor }}>
-          <h6 className="member-card-name">
+          <h5 className="member-card-name">
             {firstName} {lastName}
-          </h6>
+          </h5>
         </CardHeader>
 
         <BMTimeLogStopWatch />
