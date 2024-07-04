@@ -48,7 +48,6 @@ export const TeamMembersPopup = React.memo(props => {
         props.onAddUser(selectedUser);
         setSearchText('');
         setDuplicateUserAlert(false);
-        updateCache();
       } else {
         setSearchText('');
         setDuplicateUserAlert(true);
@@ -233,9 +232,8 @@ export const TeamMembersPopup = React.memo(props => {
               </tr>
             </thead>
             <tbody>
-              {props.members.teamMembers.length > 0 &&
+              {props.members.teamMembers.length > 0 && props.members.fetching === false && props.members.fetched && 
                 memberList.toSorted().map((user, index) => {
-                  // console.log("Render area :"+cache[user._id]);
 
                   return (
                     <tr key={`team_member_${index}`} className={darkMode ? 'bg-yinmn-blue' : ''}>
