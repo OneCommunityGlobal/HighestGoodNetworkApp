@@ -56,7 +56,7 @@ export const TasksDetail = props => {
   }
 
   tasksList = tasks.map((task, index) => (
-    <div key={task._id} className="tasks-detail-grid">
+    <div key={task._id} className="tasks-detail-grid tasks-detail-table-row">
       <div>
         <EditTaskModal
           key={`updateTask_${task._id}`}
@@ -109,7 +109,7 @@ export const TasksDetail = props => {
   return (
     <div>
       <div className="tasks-detail-total">Total: {tasksList.length}</div>
-      <div className={`tasks-detail-grid ${darkMode ? 'bg-space-cadet' : ''}`}>   
+      <div className={`tasks-detail-grid tasks-detail-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>   
         <div></div>     
         <div className="tasks-detail-center-cells">#</div>
         <div>Task</div>
