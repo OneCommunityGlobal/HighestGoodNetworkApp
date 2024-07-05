@@ -29,6 +29,18 @@ function RolePermissions(props) {
   const [showPresetModal, setShowPresetModal] = useState(false);
   const userProfile = useSelector(state => state.userProfile);
 
+  const [infoRoleModal, setinfoRoleModal] = useState(false);
+  const [modalContent, setContent] = useState(null);
+
+  const handleModalOpen = (description) => {
+    setContent(description);
+    setinfoRoleModal(true);
+  };
+
+  const toggleInfoRoleModal = () => {
+    setinfoRoleModal(!infoRoleModal);
+  };
+
   const isEditableRole =
     props.role === 'Owner'
       ? props.hasPermission('addDeleteEditOwners')
@@ -194,7 +206,7 @@ function RolePermissions(props) {
                     className="fa fa-info-circle"
                     onClick={() => {
                       // eslint-disable-next-line no-undef
-                      handleModalOpen('Create New Preset');
+                      handleModalOpen('Save Role changes');
                     }}
                   />
                   <i
@@ -205,7 +217,7 @@ function RolePermissions(props) {
                     className="fa fa-info-circle"
                     onClick={() => {
                       // eslint-disable-next-line no-undef
-                      handleModalOpen('Load Presets');
+                      handleModalOpen('Delete Role ');
                     }}
                   />
                 </div>
@@ -297,6 +309,21 @@ function RolePermissions(props) {
             onApply={perms => setPermissions(perms)}
           />
         </ModalBody>
+      </Modal>
+      <Modal
+        isOpen={infoRoleModal}
+        toggle={toggleInfoRoleModal}
+        id="#modal2-body_new-role--padding"
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader toggle={toggleInfoRoleModal}>Role Info</ModalHeader>
+        <ModalBody>{modalContent}</ModalBody>
+        <ModalFooter>
+          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+            {' '}
+            Ok{' '}
+          </Button>
+        </ModalFooter>
       </Modal>
     </>
   );
