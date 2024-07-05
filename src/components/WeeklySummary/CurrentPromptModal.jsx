@@ -126,7 +126,7 @@ function CurrentPromptModal(props) {
     <div>
       {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
         <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-          View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} /> AI
+          View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} />{''}AI
           Prompt
           <i
             className="fa fa-info-circle"

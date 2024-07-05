@@ -88,7 +88,6 @@ class UserProfileAdd extends Component {
       formErrors: {
         firstName: 'First Name is required',
         lastName: 'Last Name is required',
-        jobTitle: 'Job Title is required',
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
         actualEmail: 'Actual Email is required',
@@ -204,11 +203,7 @@ class UserProfileAdd extends Component {
                         placeholder="Job Title"
                         invalid={!!this.state.formErrors.jobTitle}
                       />
-<<<<<<< HEAD
-                      <FormFeedback>{this.state.formErrors.jobTitle}</FormFeedback>
-=======
                       <FormFeedback className={fontWeight}>{this.state.formErrors.jobTitle}</FormFeedback>
->>>>>>> 3cab4abd92829f68fdc954423b4af3e10d2ad220
                     </FormGroup>
                   </Col>
                 </Row>
@@ -636,7 +631,7 @@ class UserProfileAdd extends Component {
     }
 
     axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if (res.status === 200) {
+      if(res.status === 200) {
         const { timezone, currentLocation } = res.data;
         this.setState({
           ...this.state,
