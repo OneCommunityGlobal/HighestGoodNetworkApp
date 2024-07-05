@@ -5,23 +5,20 @@
 
 .tasks-table-filters-wrapper {
   display: flex;
-  justify-content: space-between;
+  flex-direction: column;
 }
 
 .tasks-table-filters {
   display: flex;
   flex-wrap: wrap;
   margin-bottom: 24px;
+  gap: 10px;
 }
 
 .tasks-table-filter-item {
-  display: flex;
-  align-items: center;
   border-radius: 4px;
   padding: 4px 10px;
   height: 30px;
-  margin-right: 8px;
-  margin-bottom: 12px;
 }
 
 .tasks-table-filter-input {
@@ -36,11 +33,11 @@
   outline-color: #e7b1ef;
   color: #ca50db;
   border-radius: 4px;
-  margin-left: 40px;
   width: 100px;
   min-width: 100px;
   height: 30px;
   cursor: pointer;
+  margin-bottom: 24px;
 }
 
 .tasks-table-clear-filter-button:hover,
@@ -48,4 +45,15 @@
 .tasks-table-clear-filter-button:active {
   border-color: #ca50db;
   outline-color: #ca50db;
+}
+
+@media (min-width: 1300px) {
+  .tasks-table-filters-wrapper {
+    flex-direction: row;
+    justify-content: space-between;
+  }
+
+  .tasks-table-clear-filter-button{
+    margin-bottom: 0;
+  }
 }

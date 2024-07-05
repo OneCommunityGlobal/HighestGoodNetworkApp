@@ -93,13 +93,13 @@ export function ProjectReport({ match }) {
       darkMode={darkMode}
     >
       <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div> 
-      <div className="wbs-and-members-blocks-wrapper">
-        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
+      <div className="blocks-wrapper">
+        <ReportPage.ReportBlock darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
             <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} darkMode={darkMode}/>
           </Paging>
         </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
+        <ReportPage.ReportBlock darkMode={darkMode}>
           <Paging totalElementsCount={memberCount} darkMode={darkMode}>
             <ProjectMemberTable
               projectMembers={projectMembers}
@@ -108,9 +108,7 @@ export function ProjectReport({ match }) {
             />
           </Paging>
         </ReportPage.ReportBlock>
-      </div>
-      <div className="tasks-block">
-        <ReportPage.ReportBlock darkMode={darkMode}>
+        <ReportPage.ReportBlock className="tasks-block" darkMode={darkMode}>
           <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
         </ReportPage.ReportBlock>
       </div>
