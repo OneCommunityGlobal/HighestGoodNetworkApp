@@ -16,9 +16,7 @@ import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequire
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
-import { boxStyle, boxStyleDark } from 'styles';
 
-// eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [memberCount, setMemberCount] = useState(0);
@@ -90,9 +88,9 @@ export function ProjectReport({ match }) {
           darkMode={darkMode}
         />
       )}
+      projectName={projectName}
       darkMode={darkMode}
     >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div> 
       <div className="blocks-wrapper">
         <ReportPage.ReportBlock darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
