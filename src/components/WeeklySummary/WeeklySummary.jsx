@@ -769,7 +769,7 @@ export class WeeklySummary extends Component {
                           {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
                             <UncontrolledDropdown>
                               <DropdownToggle
-                                className="px-5 mr-2 btn--dark-sea-green"
+                                className="px-3 btn--dark-sea-green"
                                 caret
                                 style={boxStyling}
                               >

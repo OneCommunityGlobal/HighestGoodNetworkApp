@@ -20,7 +20,7 @@ function CurrentPromptModal(props) {
   const [prompt, setPrompt] = useState('');
   // const [promptModifiedDate, setPromptModifiedDate] = useState('');
   const [updatedPromptDate, setUpdatedPromptDate] = useState('');
-  const [updatedCopiedDate, setUpdatedCopiedDate] = useState('');
+  const [copiedDate, setCopiedDate] = useState('');
   const [isPromptUpdated, setIsPromptUpdated] = useState(false);
   const [isPromptCopied, setIsPromptCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -74,13 +74,13 @@ function CurrentPromptModal(props) {
     dispatch(getCopiedDateOfPrompt(userId))
       .then(response => {
         if (response) {
-          setUpdatedCopiedDate(response);
+          setCopiedDate(response);
         }
       })
       .catch(() => {
         toast.error('There was an error');
       });
-  }, [isPromptCopied]);
+  }, [isPromptCopied, copiedDate]);
   // =================================================================
 
   const handleCopyToClipboard = async () => {
@@ -100,7 +100,6 @@ function CurrentPromptModal(props) {
         setIsPromptUpdated(true);
       })
       .catch(() => {
-        // console.error('Error updating AI prompt:', error);
         toast.error('Failed to update prompt.');
       })
       .finally(() => {
@@ -124,9 +123,9 @@ function CurrentPromptModal(props) {
 
   return (
     <div>
-      {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
+      {new Date(`${updatedPromptDate}`).getTime() > new Date(`${copiedDate}`).getTime() ? (
         <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-          View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} /> AI
+          View and Copy <img src={iconNew} alt="new" style={{ width: '1.5em', height: '1.5em' }} /> AI
           Prompt
           <i
             className="fa fa-info-circle"
