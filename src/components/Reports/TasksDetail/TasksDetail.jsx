@@ -56,7 +56,7 @@ export const TasksDetail = props => {
   }
 
   tasksList = tasks.map((task, index) => (
-    <div key={task._id} className="tasks-detail-table-row">
+    <div key={task._id} className="tasks-detail-grid">
       <div>
         <EditTaskModal
           key={`updateTask_${task._id}`}
@@ -70,13 +70,13 @@ export const TasksDetail = props => {
           level={task.level}
         />
       </div>
-      <div>
-        <div>{index + 1}</div>
+      <div className="tasks-detail-center-cells">
+        {index + 1}
       </div>
       <div className="tasks-detail-task-name">{task.taskName}</div>
       <div>{task.priority}</div>
       <div>{task.status}</div>
-      <div className="tasks-detail-center-cells">
+      <div>
         {task.resources.length <= 2 ? (
           task.resources.map(resource => <div key={resource._id}>{resource.name}</div>)
         ) : (
@@ -96,29 +96,30 @@ export const TasksDetail = props => {
         )}
       </div>
 
-      <div className="tasks-detail-center-cells">
+      <div className='tasks-detail-center-cells'>
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
       </div>
-      <div className="tasks-detail-center-cells">{task.classification}</div>
-      <div className="tasks-detail-center-cells">{task.estimatedHours.toFixed(2)}</div>
-      <div>{task.startedDatetime}</div>
-      <div>{task.dueDatetime}</div>
+      <div className='tasks-detail-center-cells'>{task.classification}</div>
+      <div className='tasks-detail-center-cells'>{task.estimatedHours.toFixed(2)}</div>
+      <div>{task.startedDatetime ? task.startedDatetime : ''}</div>
+      <div>{task.dueDatetime ? task.dueDatetime : ''}</div>
     </div>
   ));
 
   return (
     <div>
       <div className="tasks-detail-total">Total: {tasksList.length}</div>
-      <div className={`tasks-detail-table-row tasks-detail-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>        
-        <div>#</div>
+      <div className={`tasks-detail-grid ${darkMode ? 'bg-space-cadet' : ''}`}>   
+        <div></div>     
+        <div className="tasks-detail-center-cells">#</div>
         <div>Task</div>
         <div>Priority</div>
         <div>Status</div>
-        <div className="tasks-detail-center-cells">Resources</div>
+        <div>Resources</div>
         <div className="tasks-detail-center-cells">Active</div>
         <div className="tasks-detail-center-cells">Assign</div>
         <div className="tasks-detail-center-cells">Class</div>
-        <div className="tasks-detail-center-cells">Estimated Hours</div>
+        <div className="tasks-detail-center-cells" >Estimated Hours</div>
         <div>Start Date</div>
         <div>End Date</div>
       </div>
