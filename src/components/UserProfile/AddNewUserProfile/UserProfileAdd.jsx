@@ -204,11 +204,7 @@ class UserProfileAdd extends Component {
                         placeholder="Job Title"
                         invalid={!!this.state.formErrors.jobTitle}
                       />
-<<<<<<< HEAD
                       <FormFeedback>{this.state.formErrors.jobTitle}</FormFeedback>
-=======
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.jobTitle}</FormFeedback>
->>>>>>> 3cab4abd92829f68fdc954423b4af3e10d2ad220
                     </FormGroup>
                   </Col>
                 </Row>
