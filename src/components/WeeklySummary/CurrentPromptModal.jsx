@@ -4,7 +4,6 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'react
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
 import {
   updateDashboardData,
   updateCopiedPromptDate,
