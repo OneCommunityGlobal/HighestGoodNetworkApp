@@ -11,7 +11,7 @@ function BMTimeLogMembers() {
   return (
     <Row>
       {membersList.map((value, index) => (
-        <Col md={4}>
+        <Col md={4} key={value.user._id}>
           <BMTimeLogDisplayMember
             firstName={value.user.firstName}
             lastName={value.user.lastName}

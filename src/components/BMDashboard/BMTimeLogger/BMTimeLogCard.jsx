@@ -8,13 +8,15 @@ import BMTimeLogMembers from './BMTimeLogMembers';
 // function BMTimeLogCard({ selectedProject }) {
 function BMTimeLogCard(props) {
   // const state = useSelector();
+
   const [isError, setIsError] = useState(false);
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
 
-  // console.log('props.state: ', state);
-  console.log('props.selectedProject: ', props.selectedProject);
+  // // console.log('props.state: ', state);
+  // console.log('selectedProject: ', props.selectedProject);
+  // dispatch(fetchBMProjectMembers(props.selectedProject));
 
   useEffect(() => {
     dispatch(fetchBMProjectMembers(props.selectedProject));
