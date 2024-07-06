@@ -99,29 +99,3 @@ button.send-button:hover {
     /* Reduce margin top on smaller screens */
   }
 }
-/* Responsive design: Adjust the layout for smaller screens */
-@media (max-width: 800px) {
-  .email-update-container {
-      display: flex;
-      flex-direction: column;
-      padding: 20px;
-  }
-  .editor {
-      width: 100%;
-      margin-right: 0;
-      margin-bottom: 20px;
-  }
-  .emails {
-      width: 100%;
-      margin-top: 20px;
-      padding: 20px 0;
-  }
-  .send-button {
-      width: 100%;
-      margin-bottom: 10px;
-  }
-  .input-text-for-announcement,
-  textarea {
-      width: 100%;
-  }
-}
