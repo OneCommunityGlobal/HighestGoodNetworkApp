@@ -6,6 +6,7 @@ import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
+import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
@@ -46,8 +47,10 @@ function TotalOrgSummary(props) {
     );
   }
   return (
-    <Container>
+    <Container fluid>
       <h1>Total Org Summary</h1>
+
+      <BlueSquareStats />
     </Container>
   );
 }

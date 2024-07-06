@@ -1,0 +1,22 @@
+.blue-square-stats {
+  width: 100%;
+}
+
+.blue-square-stats-pie-chart {
+  margin-top: 3rem;
+  width: 50%; /* Adjust as needed */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.blue-square-stats-pie-chart .legend rect {
+  width: 12px; /* Adjust as needed */
+  height: 12px; /* Adjust as needed */
+  margin-right: 5px;
+}
+
+.blue-square-stats-pie-chart .legend text {
+  font-size: 12px;
+  text-anchor: start;
+}
