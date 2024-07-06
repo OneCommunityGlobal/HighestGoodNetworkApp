@@ -1,7 +1,7 @@
-import React from 'react';
+import { BLUE_SQUARE_STATS, BLUE_SQUARE_STATS_COLORS } from 'constants/totalOrgSummary';
 import DonutChart from './DonutChart';
 import './BlueSquareStats.css';
-import { BLUE_SQUARE_STATS, BLUE_SQUARE_STATS_COLORS } from 'constants/totalOrgSummary';
+
 function BlueSquareStats() {
   return (
     <section className="blue-square-stats">

@@ -1,19 +1,19 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
-const DonutChart = ({ data, width, height, innerRadius, outerRadius, totalText, colors }) => {
-  const ref = useRef();
+function DonutChart({ data, width, height, innerRadius, outerRadius, totalText, colors }) {
+  const svgRef = useRef();
 
   useEffect(() => {
     // Clear any previous svg elements
-    d3.select(ref.current)
+    d3.select(svgRef.current)
       .selectAll('*')
       .remove();
 
     const expandedRadius = outerRadius + 10;
 
     const svg = d3
-      .select(ref.current)
+      .select(svgRef.current)
       .attr('viewBox', `0 0 ${width + 200} ${height + 100}`)
       .attr('preserveAspectRatio', 'xMidYMid meet')
       .append('g')
@@ -21,61 +21,66 @@ const DonutChart = ({ data, width, height, innerRadius, outerRadius, totalText, 
 
     const colorScale = d3
       .scaleOrdinal()
-      .domain(data.map(d => d.label))
+      .domain(data.map(colorScaleD => colorScaleD.label))
       .range(colors);
 
-    const pie = d3.pie().value(d => d.value);
-
-    const arc = d3
+    const pieGenerator = d3.pie().value(pieGeneratorD => pieGeneratorD.value);
+    const arcGenerator = d3
       .arc()
       .innerRadius(innerRadius)
       .outerRadius(outerRadius);
 
     const arcs = svg
-      .selectAll('arc')
-      .data(pie(data))
+      .selectAll('g.arc')
+      .data(pieGenerator(data))
       .enter()
       .append('g')
       .attr('class', 'arc');
 
     arcs
       .append('path')
-      .attr('d', arc)
-      .attr('fill', (d, i) => colorScale(d.data.label))
-      .on('mouseover', function(event, d) {
-        d3.select(this)
+      .attr('d', arcDPath => arcGenerator(arcDPath))
+      .attr('fill', arcFill => colorScale(arcFill.data.label))
+      .on('mouseover', function handleMouseOver() {
+        const currentPath = d3.select(this);
+        currentPath
           .transition()
           .duration(200)
-          .attr(
-            'd',
+          .attr('d', currentPathD =>
             d3
               .arc()
               .innerRadius(innerRadius)
-              .outerRadius(expandedRadius),
+              .outerRadius(expandedRadius)(currentPathD),
           );
       })
-      .on('mouseout', function(event, d) {
+      .on('mouseout', function handleMouseOut() {
         d3.select(this)
           .transition()
           .duration(200)
-          .attr('d', arc);
+          .attr('d', arcGenD => arcGenerator(arcGenD));
       });
 
     arcs
       .append('text')
-      .attr('transform', d => `translate(${arc.centroid(d)})`)
+      .attr('transform', arcTransformD => `translate(${arcGenerator.centroid(arcTransformD)})`)
       .attr('text-anchor', 'middle')
       .attr('dy', '-0.5em')
       .style('font-size', `${Math.min(width, height) * 0.03}px`)
-      .text(d => d.data.value);
+      .text(arcTextD => arcTextD.data.value);
 
     arcs
       .append('text')
-      .attr('transform', d => `translate(${arc.centroid(d)})`)
+      .attr(
+        'transform',
+        arcTransformTextD => `translate(${arcGenerator.centroid(arcTransformTextD)})`,
+      )
       .attr('text-anchor', 'middle')
       .attr('dy', '1.0em')
       .style('font-size', `${Math.min(width, height) * 0.025}px`)
-      .text(d => `(${((d.data.value / d3.sum(data, d => d.value)) * 100).toFixed(2)}%)`);
+      .text(
+        arcD =>
+          `(${((arcD.data.value / d3.sum(data, sumArcD => sumArcD.value)) * 100).toFixed(2)}%)`,
+      );
 
     // Append the total text in the center
     svg
@@ -92,7 +97,7 @@ const DonutChart = ({ data, width, height, innerRadius, outerRadius, totalText, 
       .enter()
       .append('g')
       .attr('class', 'legend')
-      .attr('transform', (d, i) => `translate(${outerRadius + 50}, ${i * 25 - height / 4 + 20})`);
+      .attr('transform', (_, i) => `translate(${outerRadius + 50}, ${i * 25 - height / 4 + 20})`);
 
     legend
       .append('rect')
@@ -100,7 +105,7 @@ const DonutChart = ({ data, width, height, innerRadius, outerRadius, totalText, 
       .attr('y', 0)
       .attr('width', 18)
       .attr('height', 18)
-      .style('fill', (d, i) => colorScale(d.label));
+      .style('fill', rectFill => colorScale(rectFill.label));
 
     legend
       .append('text')
@@ -109,10 +114,10 @@ const DonutChart = ({ data, width, height, innerRadius, outerRadius, totalText, 
       .attr('dy', '.35em')
       .style('text-anchor', 'start')
       .style('font-size', '12px')
-      .text(d => d.label);
+      .text(textLabel => textLabel.label);
   }, [data, width, height, innerRadius, outerRadius, totalText, colors]);
 
-  return <svg ref={ref} style={{ maxWidth: '100%', height: 'auto' }} />;
-};
+  return <svg ref={svgRef} style={{ maxWidth: '100%', height: 'auto' }} />;
+}
 
 export default DonutChart;
