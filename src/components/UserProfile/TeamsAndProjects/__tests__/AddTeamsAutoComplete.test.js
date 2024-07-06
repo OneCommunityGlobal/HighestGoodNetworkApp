@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import '@testing-library/jest-dom/extend-expect';
 import AddTeamsAutoComplete from '../AddTeamsAutoComplete';
 
+
 // Mock props
 const mockTeamsData = {
   allTeams: [
