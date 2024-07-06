@@ -225,7 +225,7 @@ function LeaderBoard({
           </thead>
           <tbody className="my-custome-scrollbar">
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <td />
+              <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
@@ -234,11 +234,11 @@ function LeaderBoard({
                   </span>
                 )}
               </th>
-              <td className="align-middle" />
+              <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
-              <td className="align-middle">
+              <td className="align-middle" aria-label="Description">
                 <Progress
                   title={`TangibleEffort: ${organizationData.tangibletime} hours`}
                   value={organizationData.barprogress}
@@ -404,6 +404,7 @@ function LeaderBoard({
                           handleTimeOffModalOpen(data);
                         }}
                         style={{ width: '35px', height: 'auto' }}
+                        aria-label="View Time Off Requests"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -433,7 +434,7 @@ function LeaderBoard({
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
                 </td>
-                <td className="align-middle">
+                <td className="align-middle" aria-label="Description or purpose of the cell">
                   <Link
                     to={`/timelog/${item.personId}`}
                     title={`TangibleEffort: ${item.tangibletime} hours`}
