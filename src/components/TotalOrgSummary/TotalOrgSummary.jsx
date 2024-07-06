@@ -2,10 +2,17 @@
 import { connect } from 'react-redux';
 import { useEffect } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
+
 import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
+
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
+import './TotalOrgSummary.css';
+
+// components
+import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
+import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import RoleDistributionPieChart from './components/RoleDistributionPieChart';
 
 const startDate = '2016-01-01';
@@ -17,7 +24,7 @@ function TotalOrgSummary(props) {
   useEffect(() => {
     console.log('Fetching...');
     props.getTotalOrgSummary(startDate, endDate);
-    props.hasPermission();
+    props.hasPermission('');
   }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
 
   console.log('props: ', props);
@@ -50,20 +57,114 @@ function TotalOrgSummary(props) {
     );
   }
   return (
-    <Container>
-      <h1>Total Org Summary</h1>
-      <div>
-        <RoleDistributionPieChart data={volunteerstats} />
-      </div>
+    <Container
+      fluid
+      className={`container-total-org-wrapper py-3 mb-5 ${
+        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
+      }`}
+    >
+      <Row>
+        <Col lg={{ size: 12 }}>
+          <h3 className="mt-3 mb-5">Total Org Summary</h3>
+        </Col>
+      </Row>
+      <hr />
+      <AccordianWrapper title="Volunteer Status">
+        <Row>
+          <Col lg={{ size: 12 }}>
+            <div className="component-container">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Activities">
+        <Row>
+          <Col lg={{ size: 12 }}>
+            <div className="component-container">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 3 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 3 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Engagement Trends and Milestones">
+        <Row>
+          <Col lg={{ size: 7 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 5 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 7 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 5 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
     </Container>
   );
 }
-
-// WeeklyVolunteerSummary.propTypes = {
-//   error: PropTypes.any,
-//   loading: PropTypes.bool.isRequired,
-//   volunteerstats: PropTypes.array.isRequired,
-// };
 
 const mapStateToProps = state => ({
   error: state.error,
