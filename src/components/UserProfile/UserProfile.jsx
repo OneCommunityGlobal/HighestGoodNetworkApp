@@ -50,7 +50,7 @@ import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
 import { boxStyle } from 'styles';
-import { connect, useDispatch } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
 import { fetchAllProjects } from '../../actions/projects';
@@ -67,6 +67,7 @@ import {
 } from 'utils/constants';
 
 function UserProfile(props) {
+  // console.log(props)
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -108,7 +109,7 @@ function UserProfile(props) {
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
-
+  const darkMode=useSelector(state=>state.theme.darkMode)
   const userProfileRef = useRef();
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
@@ -743,7 +744,6 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-             {canSeeQSC && ( 
               <QuickSetupModal
                 canViewTitle={props.hasPermission('viewTitle')}
                 canAddTitle={props.hasPermission('addNewTitle')}
@@ -756,7 +756,7 @@ function UserProfile(props) {
                 teamsData={props?.allTeams?.allTeamsData || []}
                 projectsData={props?.allProjects?.projects || []}
               />
-            )} 
+             
           </Col>
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || !isTeamsEqual || !isProjectsEqual ? (
@@ -898,14 +898,14 @@ function UserProfile(props) {
                 canEdit={canEdit || canManageAdminLinks}
                 darkMode={darkMode}
               />
-              <BlueSquareLayout
+               <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
                 handleBlueSquare={handleBlueSquare}
                 isUserSelf={isUserSelf}
                 canEdit={canEdit}
-              />
+              /> 
             </div>
           </Col>
           <Col md="8" className="profile-functions-desktop">
@@ -1062,7 +1062,7 @@ function UserProfile(props) {
               >
                 Basic Information
               </Button>
-              <Modal isOpen={showConfirmDialog} toggle={handleCancelChange} className={darkMode ? 'text-light dark-mode' : ''}>
+              {/* <Modal isOpen={showConfirmDialog} toggle={handleCancelChange} className={darkMode ? 'text-light dark-mode' : ''}>
                 <ModalHeader toggle={handleCancelChange} className={darkMode ? 'bg-space-cadet' : ''}>Confirm Status Change</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'}?`}
@@ -1071,7 +1071,7 @@ function UserProfile(props) {
                   <Button color="primary" onClick={handleConfirmChange}>Confirm</Button>{' '}
                   <Button color="secondary" onClick={handleCancelChange}>Cancel</Button>
                 </ModalFooter>
-              </Modal>
+              </Modal> */}
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
                 <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Basic Information</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
