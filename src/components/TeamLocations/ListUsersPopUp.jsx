@@ -16,7 +16,7 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
           {userProfiles.length > 0 ? (
             <table className={`table table-bordered table-responsive-md ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
               <thead>
-                <tr>
+                <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   <th style={{ width: '70px' }}>#</th>
                   <th>Name</th>
                   <th>Location</th>

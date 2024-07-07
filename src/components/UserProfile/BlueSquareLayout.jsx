@@ -56,7 +56,7 @@ const BlueSquareLayout = ({
     });
     const blueSquares = Number(userProfile.infringements?.length) || 0;
     const infringementAndTimeOff = scheduledVacation + blueSquares;
-    const hasRolePermission = user && (user.role === 'Administrator' || user.role === 'Owner');
+    const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
     if (infringementAndTimeOff >= 4 && !hasRolePermission && !canManageTimeOffRequests) {
       return false;
     }
