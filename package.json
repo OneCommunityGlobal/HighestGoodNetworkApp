@@ -29,6 +29,7 @@
     "html-to-pdfmake": "^2.0.6",
     "jest": "26.6.0",
     "joi": "^14.0.6",
+    "jspdf": "^2.5.1",
     "jwt-decode": "^2.2.0",
     "leaflet": "^1.9.4",
     "lodash": "^4.17.21",

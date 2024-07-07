@@ -1,5 +1,8 @@
-import { useEffect } from 'react';
+/* eslint-disable no-console */
+/* eslint-disable prettier/prettier */
+/* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
+import { useEffect } from 'react';
 import { Alert, Button, Col, Container, Row } from 'reactstrap';
 import jsPDF from 'jspdf';
 
@@ -36,7 +39,9 @@ function TotalOrgSummary(props) {
     doc.save('TotalOrgSummary.pdf');
 
     // Share the PDF
+    // You can use navigator.share() if on a mobile device or similar sharing mechanism
     if (navigator.share) {
+      // eslint-disable-next-line prettier/prettier
       navigator
         .share({
           title: 'Total Org Summary',
@@ -44,12 +49,11 @@ function TotalOrgSummary(props) {
           files: [new File([doc.output()], 'TotalOrgSummary.pdf', { type: 'application/pdf' })],
         })
         .then(() => {
-          // eslint-disable-next-line no-console
           console.log('Successful share');
+          // eslint-disable-next-line no-shadow
         })
         // eslint-disable-next-line no-shadow
         .catch(error => {
-          // eslint-disable-next-line no-console
           console.error('Error sharing', error);
         });
     } else {
@@ -94,17 +98,15 @@ function TotalOrgSummary(props) {
     >
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
-          <div className="d-flex justify-content-between align-items-center">
-            <h3 className="mt-3 mb-5">Total Org Summary</h3>
-            <Button style={{ backgroundColor: 'black', color: 'white' }} onClick={handleSharePDF}>
-              Share PDF
-            </Button>
-          </div>
+          <h3 className="mt-3 mb-5">Total Org Summary</h3>
         </Col>
       </Row>
       <Row>
         <Col lg={{ size: 10, offset: 1 }}>
           <h2 style={{ color: 'black' }}>Volunteer Workload and Task Completion Analysis</h2>
+          <Button color="primary" onClick={handleSharePDF}>
+            Share PDF
+          </Button>
         </Col>
       </Row>
       <hr />
