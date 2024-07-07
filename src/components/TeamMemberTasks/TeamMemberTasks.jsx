@@ -136,7 +136,7 @@ const TeamMemberTasks = React.memo(props => {
       .tz('America/Los_Angeles')
       .subtract(2, 'days')
       .format('YYYY-MM-DD');
-
+    
     const threeDaysAgo = moment()
       .tz('America/Los_Angeles')
       .subtract(3, 'days')
@@ -208,7 +208,7 @@ const TeamMemberTasks = React.memo(props => {
     const teamCodeOptions = [];
     const colorOptions = [];
 
-    if (Array.isArray(usersWithTasks) && usersWithTasks.length > 0) {
+    if(usersWithTasks.length > 0) {
       usersWithTasks.forEach(user => {
         const teamNames = user.teams.map(team => team.teamName);
         const code = user.teamCode || 'noCodeLabel';
@@ -400,7 +400,7 @@ const TeamMemberTasks = React.memo(props => {
               areaTitle="Team Member Task Time Filter"
               fontSize={22}
               isPermissionPage={true}
-              role={authUser.role}
+              role={authUser.role} 
               darkMode={darkMode}
             />
           </div>
@@ -494,9 +494,9 @@ const TeamMemberTasks = React.memo(props => {
                         Team Member
                       </th>
                       <th className={`team-member-tasks-headers team-clocks team-clocks-header ${darkMode ? "bg-space-cadet" : ""}`}>
-                        <FontAwesomeIcon
-                          style={{color: darkMode ? 'lightgray' : ''}}
-                          icon={faClock}
+                        <FontAwesomeIcon 
+                          style={{color: darkMode ? 'lightgray' : ''}} 
+                          icon={faClock} 
                           title="Weekly Committed Hours" />
                         /
                         <FontAwesomeIcon

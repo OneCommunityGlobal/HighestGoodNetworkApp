@@ -301,7 +301,6 @@ function LogTools() {
                   <td>{toolType.using}</td>
                   <td>
                     <Select
-                      aria-label="Select Tool"
                       ref={selectRefs.current[index]}
                       options={toolType.items}
                       isMulti

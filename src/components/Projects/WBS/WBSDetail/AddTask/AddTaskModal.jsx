@@ -63,11 +63,15 @@ function AddTaskModal(props) {
   // states from hooks
   const defaultCategory = useMemo(() => {
     if (props.taskId) {
-      return tasks.find(({ _id }) => _id === props.taskId).category;
-    } 
-    return allProjects.projects.find(({ _id }) => _id === props.projectId);
-      
-  }, []);
+      const task =  tasks.find(({ _id }) => _id === props.taskId);
+      return task.category? task.category : 'Unspecified';
+    } else if (props.projectId) {
+      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
+      return project.category? project.category : 'Unspecified';
+    }
+    return 'Unspecified';
+  }, [props.taskId, props.projectId, tasks, allProjects.projects]);
+
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
   const [resourceItems, setResourceItems] = useState([]);
