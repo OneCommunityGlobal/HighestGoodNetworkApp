@@ -120,7 +120,7 @@ class Teams extends React.PureComponent {
                 darkMode={darkMode}
               />
 
-              < table className="table table-bordered table-responsive-sm">
+              <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}>
                 <thead>
                   <TeamTableHeader 
                     onTeamNameSort={this.toggleTeamNameSort} 
@@ -130,7 +130,7 @@ class Teams extends React.PureComponent {
                     darkMode={darkMode}
                     />
                 </thead>
-                  <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}> 
+                  <tbody className={darkMode ? 'dark-mode' : ''}> 
                     {this.state.sortedTeams}
                   </tbody>
               </table>

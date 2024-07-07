@@ -207,7 +207,7 @@ export const TeamMembersPopup = React.memo(props => {
             <></>
           )}
 
-          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
+          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode text-light' : ''}`}>
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <th>Active</th>
@@ -236,7 +236,7 @@ export const TeamMembersPopup = React.memo(props => {
                 memberList.toSorted().map((user, index) => {
 
                   return (
-                    <tr key={`${props.selectedTeamName}-${user.id}-${index}`} className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
                       <td>
                         <span className={user.isActive ? 'isActive' : 'isNotActive'}>
                           <i className="fa fa-circle" aria-hidden="true" />
