@@ -22,7 +22,7 @@ const initialFormState = {
   unitPrice: '',
   currency: 'USD',
   quantity: '',
-  purchaseRental: 'Purchase',
+  purchaseRental: 'purchase',
   condition: 'New',
   fromDate: '',
   toDate: '',
@@ -86,7 +86,7 @@ export default function AddToolForm() {
           .required(),
       })
       .when('purchaseRental', {
-        is: 'Purchase',
+        is: 'purchase',
         then: Joi.date().allow(''),
       }),
   };
