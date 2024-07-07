@@ -427,7 +427,6 @@ export const permissionLabels = [
       },
     ],
   },
-
 ];
 
 // returns an array of all the keys for permissions
