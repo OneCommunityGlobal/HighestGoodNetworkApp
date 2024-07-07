@@ -38,7 +38,7 @@ const WBS = props => {
 
           <AddWBS projectId={projectId} />
 
-          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light' : '' }`}>
+          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : '' }`}>
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <th scope="col" id="members__order">
@@ -59,7 +59,6 @@ const WBS = props => {
                     wbsId={item._id}
                     projectId={projectId}
                     name={item.wbsName}
-                    darkMode={darkMode}
                   />
                 ) : null,
               )}

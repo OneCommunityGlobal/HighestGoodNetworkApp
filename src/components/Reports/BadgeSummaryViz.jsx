@@ -31,18 +31,23 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
   const [sortedBadges, setSortedBadges] = useState([]);
 
   useEffect(() => {
-    if (badges && badges.length) {
-      const sortBadges = [...badges].sort((a, b) => {
-        if (a.badge.ranking === 0) return 1;
-        if (b.badge.ranking === 0) return -1;
-        if (a.badge.ranking > b.badge.ranking) return 1;
-        if (a.badge.ranking < b.badge.ranking) return -1;
-        if (a.badge.badgeName > b.badge.badgeName) return 1;
-        if (a.badge.badgeName < b.badge.badgeName) return -1;
-        return 0;
-      });
-      setSortedBadges(sortBadges);
+    try {
+      if (badges && badges.length) {
+        const sortBadges = [...badges].sort((a, b) => {
+          if (a?.badge?.ranking === 0) return 1;
+          if (b?.badge?.ranking === 0) return -1;
+          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
+          return 0;
+        });
+        setSortedBadges(sortBadges);
+      }
+    } catch (error) {
+       console.log(error);
     }
+   
   }, [badges]);
 
   const toggle = () => setIsOpen(prev => !prev);
@@ -63,9 +68,9 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             {/* --- DESKTOP VERSION OF MODAL --- */}
             <div className="desktop">
               <div style={{ overflowY: 'scroll', height: '75vh' }}>
-                <Table className={darkMode ? 'text-light' : ''}>
+                <Table className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }}>
+                    <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
                       <th style={{ width: '93px' }}>Badge</th>
                       <th>Name</th>
                       <th style={{ width: '110px' }}>Modified</th>
@@ -74,9 +79,9 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {badges && badges.length ? (
+                    {badges && badges.length>0 ? (
                       sortedBadges &&
-                      sortedBadges.map(value => (
+                      sortedBadges.map(value => value &&(
                         <tr key={value.badge._id}>
                           <td className="badge_image_sm">
                             {' '}
@@ -129,7 +134,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                   ))}
                                 </DropdownMenu>
                               </UncontrolledDropdown>
-                              {value.hasBadgeDeletionImpact && value.hasBadgeDeletionImpact === true ?
+                              {value?.hasBadgeDeletionImpact && value?.hasBadgeDeletionImpact === true ?
                               (<>
                                 <span id="mismatchExplainationTooltip" style={{paddingLeft: '3px'}}>
                                   {'  '} *
@@ -164,9 +169,9 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             {/* --- TABLET VERSION OF MODAL --- */}
             <div className="tablet">
               <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table  className={darkMode ? 'text-light' : ''}>
+                <Table  className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }}>
+                    <tr style={{ zIndex: '10' }}  className={darkMode ? 'bg-space-cadet' : ''}>
                       <th style={{ width: '25%' }}>Badge</th>
                       <th style={{ width: '25%' }}>Name</th>
                       <th style={{ width: '25%' }}>Modified</th>
@@ -176,12 +181,12 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                   <tbody>
                     {badges && badges.length ? (
                       sortedBadges &&
-                      sortedBadges.map(value => (
+                      sortedBadges.map(value => value &&(
                         <tr key={value._id}>
                           <td className="badge_image_sm">
                             {' '}
                             <img
-                              src={value.badge.imageUrl}
+                              src={value?.badge.imageUrl}
                               id={`popover_${value._id}`}
                               alt="badge"
                             />
@@ -198,19 +203,19 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                     marginBottom: 15,
                                   }}
                                 >
-                                  {value.badge?.badgeName}
+                                  {value?.badge?.badgeName}
                                 </CardTitle>
-                                <CardText>{value.badge?.description}</CardText>
+                                <CardText>{value?.badge?.description}</CardText>
                               </CardBody>
                             </Card>
                           </UncontrolledPopover>
-                          <td>{value.badge.badgeName}</td>
+                          <td>{value?.badge?.badgeName}</td>
                           <td>
                             {typeof value.lastModified === 'string'
                               ? value.lastModified.substring(0, 10)
                               : value.lastModified.toLocaleString().substring(0, 10)}
                           </td>
-                          <td>{value.count}</td>
+                          <td>{value?.count}</td>
                         </tr>
                       ))
                     ) : (
