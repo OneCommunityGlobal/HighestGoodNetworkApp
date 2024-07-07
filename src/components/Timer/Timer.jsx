@@ -333,7 +333,7 @@ export default function Timer({ darkMode }) {
             handleAddButton(15);
           }}
           title="Add 15min"
-          aria-label="Add 15 minutes"
+          aria-label="Add 15min"
         >
           <FaPlusCircle
             className={cs(css.transitionColor, checkBtnAvail(15) ? css.btn : css.btnDisabled)}
@@ -344,7 +344,7 @@ export default function Timer({ darkMode }) {
           type="button"
           onClick={() => handleSubtractButton(15)}
           title="Subtract 15min"
-          aria-label="Subtract 15 minutes"
+          aria-label="Subtract 15min"
         >
           <FaMinusCircle
             className={cs(css.transitionColor, checkBtnAvail(-15) ? css.btn : css.btnDisabled)}

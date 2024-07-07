@@ -12,6 +12,7 @@ import './TotalOrgSummary.css';
 
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
+import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
@@ -93,32 +94,107 @@ function TotalOrgSummary(props) {
       }`}
     >
       <Row>
-        <Col lg={{ size: 10, offset: 1 }}>
-          <div className="d-flex justify-content-between align-items-center">
-            <h3 className="mt-3 mb-5">Total Org Summary</h3>
-            <Button style={{ backgroundColor: 'black', color: 'white' }} onClick={handleSharePDF}>
-              Share PDF
-            </Button>
-          </div>
-        </Col>
-      </Row>
-      <Row>
-        <Col lg={{ size: 10, offset: 1 }}>
-          <h2 style={{ color: 'black' }}>Volunteer Workload and Task Completion Analysis</h2>
+        <Col lg={{ size: 12 }}>
+          <h3 className="mt-3 mb-5">Total Org Summary</h3>
+          <Button style={{ backgroundColor: 'black', color: 'white' }} onClick={handleSharePDF}>
+            Share PDF
+          </Button>
         </Col>
       </Row>
       <hr />
-      <Row>
-        <Col lg={{ size: 4, offset: 1 }}>
-          <VolunteerHoursDistribution />
-        </Col>
-        <Col lg={{ size: 2, offset: 1 }}>
-          <VolunteerHoursDistribution />
-        </Col>
-        <Col lg={{ size: 2, offset: 1 }}>
-          <VolunteerHoursDistribution />
-        </Col>
-      </Row>
+      <AccordianWrapper title="Volunteer Status">
+        <Row>
+          <Col lg={{ size: 12 }}>
+            <div className="component-container">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Activities">
+        <Row>
+          <Col lg={{ size: 12 }}>
+            <div className="component-container">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 3 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 3 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Engagement Trends and Milestones">
+        <Row>
+          <Col lg={{ size: 7 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 5 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 7 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 5 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
     </Container>
   );
 }
