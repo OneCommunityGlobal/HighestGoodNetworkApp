@@ -101,7 +101,7 @@ class UserManagement extends React.PureComponent {
               darkMode={darkMode}
             />
             <div className="table-responsive" id="user-management-table">
-              <Table className={`table table-bordered noWrap ${darkMode ? 'text-light' : ''}`}>
+              <Table className={`table table-bordered noWrap ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
                 <thead>
                   <UserTableHeader
                     authRole={this.props.state.auth.user.role}
@@ -120,7 +120,7 @@ class UserManagement extends React.PureComponent {
                     darkMode={darkMode}
                   />
                 </thead>
-                <tbody>{userTable}</tbody>
+                <tbody className={darkMode ? 'dark-mode' : ''}>{userTable}</tbody>
               </Table>
             </div>
             <UserTableFooter
