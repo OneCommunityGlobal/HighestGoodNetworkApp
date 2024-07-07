@@ -236,7 +236,7 @@ export const TeamMembersPopup = React.memo(props => {
                 memberList.toSorted().map((user, index) => {
 
                   return (
-                    <tr key={`team_member_${index}`} className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <tr key={`${props.selectedTeamName}-${user.id}-${index}`} className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <td>
                         <span className={user.isActive ? 'isActive' : 'isNotActive'}>
                           <i className="fa fa-circle" aria-hidden="true" />
