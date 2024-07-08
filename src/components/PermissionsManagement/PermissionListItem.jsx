@@ -19,6 +19,7 @@ function PermissionListItem(props) {
     depth,
     setPermissions,
     darkMode,
+    isEditing,
   } = props;
 
   const isCategory = !!subperms;
@@ -147,13 +148,14 @@ function PermissionListItem(props) {
               className="icon-button"
               color={getColor()}
               onClick={() => {
+                // eslint-disable-next-line no-debugger
                 // const state = howManySubpermsInRole !== 'None';
                 setSubpermissions(subperms, howManySubpermsInRole !== 'All');
                 // eslint-disable-next-line react/destructuring-assignment
                 props.onChange();
               }}
               // eslint-disable-next-line react/destructuring-assignment
-              disabled={!(props.hasPermission('putRole') || props.hasPermission('postRole'))}
+              disabled={!props.hasPermission('putRole')}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -167,7 +169,9 @@ function PermissionListItem(props) {
               }}
               disabled={
                 // eslint-disable-next-line react/destructuring-assignment
-                !(props.hasPermission('putRole') || props.hasPermission('postRole')) ||
+                !(props.isEditing
+                  ? props.hasPermission('putRole')
+                  : props.hasPermission('putRole') || props.hasPermission('postRole')) ||
                 immutablePermissions.includes(permission)
               }
               style={darkMode ? boxStyleDark : boxStyle}
@@ -186,6 +190,7 @@ function PermissionListItem(props) {
           }}
         >
           <PermissionList
+            isEditing={isEditing}
             rolePermissions={rolePermissions}
             permissionsList={subperms}
             immutablePermissions={immutablePermissions}

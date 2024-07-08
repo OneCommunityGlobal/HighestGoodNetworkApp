@@ -93,6 +93,7 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode }) {
         <PermissionList
           rolePermissions={permissionsChecked}
           editable
+          isEditing={false}
           setPermissions={setPermissionsChecked}
           darkMode={darkMode}
         />
