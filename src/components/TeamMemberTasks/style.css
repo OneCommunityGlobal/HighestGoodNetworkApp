@@ -8,6 +8,7 @@
 }
 
 .task_table-container {
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -95,7 +96,7 @@
   font-size: 15px;
   width: 25px;
   top: 3px;
-  right: -13px;
+  right: -11px;
 }
 
 .team-clocks {
@@ -421,6 +422,10 @@
   .spacer {
     height: 20px;
   }
+
+  .deadlineCount {
+    right: 2px;
+  }
 }
 
 @media only screen and (min-width: 768px) {
@@ -431,9 +436,7 @@
   .header-box {
     flex-direction: unset;
   }
-}
 
-@media only screen and (min-width: 768px) {
   .team-member-tasks h1 {
     font-size: 28px;
   }

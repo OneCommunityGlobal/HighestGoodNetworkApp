@@ -79,11 +79,11 @@ function Badge(props) {
   }, [props.userProfile.badgeCollection, totalBadge]);
   return (
     <>
-      <Container
-        style={{ minWidth: '100%', paddingRight: '0' }}
-        className={`${darkMode ? 'badge-box-shadow-dark bg-space-cadet' : 'bagde-box-shadow'}`}
-      >
-        <Row className="px-0 mr-0" style={{ minWidth: '100%' }}>
+      <div style={{ minWidth: '100%', paddingRight: '0' }}>
+        <Row
+          className={`${darkMode ? 'badge-box-shadow-dark bg-space-cadet' : 'bagde-box-shadow'}`}
+          style={{ minWidth: '100%', marginLeft: '2px' }}
+        >
           <Col className="px-0 mr-0">
             <Card
               style={{
@@ -127,7 +127,7 @@ function Badge(props) {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </div>
       <UncontrolledTooltip
         placement="auto"
         target="CountInfo"

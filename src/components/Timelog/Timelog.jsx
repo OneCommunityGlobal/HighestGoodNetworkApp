@@ -699,7 +699,7 @@ const Timelog = props => {
                     </NavItem>
                   </Nav>
 
-                  <TabContent activeTab={timeLogState.activeTab} className={darkMode ? "bg-yinmn-blue" : ""}>
+                  <TabContent activeTab={timeLogState.activeTab} className={darkMode ? "bg-space-cadet" : ""}>
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
                       <Form inline className="mb-2">

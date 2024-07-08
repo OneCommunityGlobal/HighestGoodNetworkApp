@@ -190,7 +190,7 @@ const TeamMemberTask = React.memo(
                   activeTasks.slice(0, numTasksToShow).map((task, index) => {
                     return (
                       <tr key={`${task._id}${index}`} className="task-break">
-                        <td data-label="Task(s)" className={`task-align  ${darkMode ? "bg-yinmn-blue" : ""}`}>
+                        <td data-label="Task(s)" className={`task-align  ${darkMode ? "bg-yinmn-blue text-light" : ""}`}>
                           <div className="team-member-tasks-content">
                             <Link
                               className='team-member-tasks-content-link'
@@ -268,7 +268,7 @@ const TeamMemberTask = React.memo(
                           </div>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
-                          <td data-label="Progress" className={`team-task-progress  ${darkMode ? "bg-yinmn-blue" : ""}`}>
+                          <td data-label="Progress" className={`team-task-progress  ${darkMode ? "bg-yinmn-blue text-light" : ""}`}>
                             {isAllowedToSeeDeadlineCount && (
                               <span
                                 className="deadlineCount"
