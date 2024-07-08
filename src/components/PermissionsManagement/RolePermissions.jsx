@@ -34,17 +34,17 @@ function RolePermissions(props) {
 
   const handleModalOpen = description => {
     let content = '';
-    if (description === 'save'){
-      content =  `<div>
+    if (description === 'save') {
+      content = (<div>
           <p>Here you can create new presets and save your changes</p>
           <ul>
           <li> <b> Create New Presets: </b> Click this button to save the current settings as a new preset that can be accessed with
           the “Load Presets” button. </li>
           <li> <b> Save: </b> Click this button to save any changes you’ve made. </li>
           </ul>
-        </div>`;
-    }else if (description === 'delete'){
-      content =   `<div>
+        </div>);
+    } else if (description === 'delete') {
+      content = (<div>
       <p>Here you can load saved presets and delete the current role.</p>
       <ul>
         <li>
@@ -54,8 +54,8 @@ function RolePermissions(props) {
           <b>Delete Role:</b> Click this button to delete the current Role. <b>WARNING: This action cannot be undone.</b>
         </li>
       </ul>
-    </div>`;
-    };
+    </div>);
+    }
     setContent(content);
     setinfoRoleModal(true);
   };
@@ -334,9 +334,7 @@ function RolePermissions(props) {
         className={darkMode ? 'text-light dark-mode' : ''}
       >
         <ModalHeader toggle={toggleInfoRoleModal}>Role Info</ModalHeader>
-        <ModalBody>
-         {modalContent}
-        </ModalBody>
+        <ModalBody>{modalContent}</ModalBody>
         <ModalFooter>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
             {' '}
