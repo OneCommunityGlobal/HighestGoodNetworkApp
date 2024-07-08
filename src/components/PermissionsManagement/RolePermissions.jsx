@@ -35,26 +35,39 @@ function RolePermissions(props) {
   const handleModalOpen = description => {
     let content = '';
     if (description === 'save') {
-      content = (<div>
+      content = (
+        <div>
           <p>Here you can create new presets and save your changes</p>
           <ul>
-          <li> <b> Create New Presets: </b> Click this button to save the current settings as a new preset that can be accessed with
-          the “Load Presets” button. </li>
-          <li> <b> Save: </b> Click this button to save any changes you’ve made. </li>
+            <li>
+              {' '}
+              <b> Create New Presets: </b> Click this button to save the current settings as a new
+              preset that can be accessed with the “Load Presets” button.{' '}
+            </li>
+            <li>
+              {' '}
+              <b> Save: </b> Click this button to save any changes you’ve made.{' '}
+            </li>
           </ul>
-        </div>);
+        </div>
+      );
     } else if (description === 'delete') {
-      content = (<div>
-      <p>Here you can load saved presets and delete the current role.</p>
-      <ul>
-        <li>
-          <b>Load Presets:</b> Click this button to see all previously saved presets. From there, you can choose one to load and replace the current set of permissions. Remember to “Save” if you do this.
-        </li>
-        <li>
-          <b>Delete Role:</b> Click this button to delete the current Role. <b>WARNING: This action cannot be undone.</b>
-        </li>
-      </ul>
-    </div>);
+      content = (
+        <div>
+          <p>Here you can load saved presets and delete the current role.</p>
+          <ul>
+            <li>
+              <b>Load Presets:</b> Click this button to see all previously saved presets. From
+              there, you can choose one to load and replace the current set of permissions. Remember
+              to “Save” if you do this.
+            </li>
+            <li>
+              <b>Delete Role:</b> Click this button to delete the current Role.{' '}
+              <b>WARNING: This action cannot be undone.</b>
+            </li>
+          </ul>
+        </div>
+      );
     }
     setContent(content);
     setinfoRoleModal(true);
