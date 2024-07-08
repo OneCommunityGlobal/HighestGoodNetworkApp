@@ -2,6 +2,22 @@ import React from 'react';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { TaskDifferenceModal } from '../TaskDifferenceModal';
+import { Provider } from 'react-redux';
+import thunk from 'redux-thunk';
+import configureStore from 'redux-mock-store';
+
+const mockStore = configureStore([thunk]);
+
+const theme={darkMode:false}
+
+let store;
+
+beforeEach(() => {
+  store = mockStore({
+    theme:theme,
+  })
+});
+
 
 const onApproveMock = jest.fn();
 const toggleMock = jest.fn();
@@ -40,6 +56,7 @@ const loggedInUserId = 'abc123';
 
 const renderComponent = (isOpen, userId, taskNotificationsMock) => {
   return render(
+    <Provider store={store}>
     <TaskDifferenceModal
       taskNotifications={taskNotificationsMock}
       task={task}
@@ -48,7 +65,9 @@ const renderComponent = (isOpen, userId, taskNotificationsMock) => {
       isOpen={isOpen}
       toggle={toggleMock}
       loggedInUserId={loggedInUserId}
-    />,
+      darkMode={theme}
+    />
+    </Provider>,
   );
 };
 
@@ -74,11 +93,11 @@ describe('TaskDifferenceModal component', () => {
   });
   it('check if modal body does get displayed when task notification user id is same as user id', () => {
     renderComponent(true, 'abc123', taskNotifications);
-    expect(screen.queryByText('Black Bold = No Changes')).toBeInTheDocument();
+    expect(screen.queryByText('White Bold = No Changes')).toBeInTheDocument();
   });
   it('check if modal body does not get displayed when task notification user id is not same as user id', () => {
     renderComponent(true, 'ghi123', taskNotifications);
-    expect(screen.queryByText('Black Bold = No Changes')).not.toBeInTheDocument();
+    expect(screen.queryByText('White Bold = No Changes')).not.toBeInTheDocument();
   });
   it('check if modal body gets displayed when old task is not present', () => {
     const mockNotifications = [{ userId: 'def123', _id: 'id456', taskId: 'task456' }];
