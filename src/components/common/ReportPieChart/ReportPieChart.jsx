@@ -57,7 +57,7 @@ const renderActiveShape = (props) => {
   );
 };
 
-export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
+export function ReportPieChart  ({ userData, windowSize, darkMode }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const onPieEnter = (_, index) => {
