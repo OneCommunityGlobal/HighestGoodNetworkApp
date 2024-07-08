@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 import { addTeamMember, deleteTeamMember } from 'actions/allTeamsAction';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const TeamsTab = props => {
   const {
@@ -22,43 +24,30 @@ const TeamsTab = props => {
     userProfile,
     codeValid,
     setCodeValid,
-    saved,
-    isTeamSaved,
     darkMode,
   } = props;
-  const [addTeamPopupOpen, setaddTeamPopupOpen] = useState(false);
-  const [renderedOn, setRenderedOn] = useState(0);
-  const [removedTeams, setRemovedTeams] = useState([]);
+  const [addTeamPopupOpen, setAddTeamPopupOpen] = useState(false);
 
-  useEffect(() => {
-    if (saved && removedTeams.length > 0) {
-      removedTeams.forEach(teamId => {
-        deleteTeamMember(teamId, userProfile._id);
-        setRemovedTeams([]);
-      });
-    }
-  }, [saved]);
+  const notifySuccess = (message) => {
+    toast.success(message, { position: toast.POSITION.TOP_RIGHT });
+  };
 
   const onAddTeamPopupShow = () => {
-    setaddTeamPopupOpen(true);
+    setAddTeamPopupOpen(true);
   };
 
   const onAddTeamPopupClose = () => {
-    setaddTeamPopupOpen(false);
+    setAddTeamPopupOpen(false);
   };
+
   const onSelectDeleteTeam = teamId => {
-    setRemovedTeams([...removedTeams, teamId]);
+    deleteTeamMember(teamId, userProfile._id);
     onDeleteTeam(teamId);
-    if (isTeamSaved) isTeamSaved(false);
   };
 
   const onSelectAssignTeam = team => {
-    if (userProfile._id) {
-      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-      if (isTeamSaved) isTeamSaved(false);
-    }
+    addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
     onAssignTeam(team);
-    setRenderedOn(Date.now());
   };
 
   return (
@@ -79,7 +68,6 @@ const TeamsTab = props => {
         onUserVisibilitySwitch={onUserVisibilitySwitch}
         canEditVisibility={canEditVisibility}
         isVisible={isVisible}
-        renderedOn={renderedOn}
         edit={edit}
         role={role}
         disabled={disabled}
@@ -94,4 +82,5 @@ const TeamsTab = props => {
     </React.Fragment>
   );
 };
+
 export default TeamsTab;
