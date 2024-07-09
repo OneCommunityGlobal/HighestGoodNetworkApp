@@ -91,7 +91,9 @@ const localReducers = {
   bmEquipments: equipmentReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
-  bmReusables: reusablesReducer
+  bmReusables: reusablesReducer,
+  totalOrgSummary: totalOrgSummaryReducer
+
 };
 
 const sessionReducers = {

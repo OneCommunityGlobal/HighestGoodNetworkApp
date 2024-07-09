@@ -1,6 +1,7 @@
 /* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
-import { useEffect } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 
 import hasPermission from 'utils/permissions';
@@ -14,16 +15,32 @@ import './TotalOrgSummary.css';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 
-const startDate = '2016-01-01';
-const endDate = new Date().toISOString().split('T')[0];
+const startDate = '2024-06-30';
+// const endDate = new Date().toISOString().split('T')[0];
+const endDate = '2024-07-36';
 
 function TotalOrgSummary(props) {
+  const dispatch = useDispatch();
+  const [hoursWorked, setHoursWorked] = useState(0);
+
+  const totalOrgSummary = useSelector(state => state.totalOrgSummary);
+
+  // eslint-disable-next-line no-console
+  console.log('props', props);
   const { darkMode, loading, error } = props;
 
-  useEffect(() => {
-    props.getTotalOrgSummary(startDate, endDate);
-    props.hasPermission('');
-  }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
+  // const [ hoursWorked, setHoursWorked ] = useState(0);
+
+  useEffect(async () => {
+    await dispatch(getTotalOrgSummary(startDate, endDate));
+    setHoursWorked(totalOrgSummary.volunteerstats.totalHoursWorked);
+    // props.hasPermission('');
+  }, [startDate, endDate]);
+
+  // eslint-disable-next-line no-console
+  console.log('totalOrgSummary', totalOrgSummary);
+  // eslint-disable-next-line no-console
+  console.log('hoursWorked', hoursWorked);
 
   if (error) {
     return (
@@ -101,17 +118,17 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <VolunteerHoursDistribution darkMode={darkMode} hoursWorked={5} />
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <span> task Completed</span>
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <span>hours completed </span>
             </div>
           </Col>
         </Row>
