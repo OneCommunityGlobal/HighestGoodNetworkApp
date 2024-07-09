@@ -24,9 +24,9 @@ function PermissionListItem(props) {
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
+
   const hasThisPermission =
     rolePermissions.includes(permission) || immutablePermissions.includes(permission);
-
   const handleModalOpen = () => {
     setContent(description);
     setinfoRoleModal(true);
@@ -36,7 +36,7 @@ function PermissionListItem(props) {
     setinfoRoleModal(!infoRoleModal);
   };
 
-  const togglePermission = () => {
+  const togglePermission = permission => {
     if (rolePermissions.includes(permission) || immutablePermissions.includes(permission)) {
       setPermissions(previous => previous.filter(perm => perm !== permission));
     } else {
@@ -46,16 +46,20 @@ function PermissionListItem(props) {
     props.onChange();
   };
 
-  const setSubpermissions = adding => {
-    subperms.forEach(subperm => {
-      if (subperm.subperms) {
-        setSubpermissions(subperm.subperms, adding);
-      } else if (adding !== rolePermissions.includes(subperm.key)) {
-        togglePermission(subperm.key);
-      }
-    });
-  };
-
+  const handleAllpermissions = () => {
+    if(howManySubpermsInRole === 'All'){
+      setPermissions([]);
+    }else{
+      setPermissions(previousPermissions => {
+        const updatedPermissions = new Set(previousPermissions);
+        subperms.forEach(subperm => {
+          updatedPermissions.add(subperm.key);
+        });
+        return Array.from(updatedPermissions);
+      });
+    }
+    props.onChange();
+  }
   // returns 'All', 'None', or 'Some' depending on if that role has that selection of permissions
   const checkSubperms = () => {
     if (!subperms) {
@@ -114,7 +118,7 @@ function PermissionListItem(props) {
     }
     return 'success';
   };
-
+  
   return (
     <>
       <li className="user-role-tab__permissions pr-2" key={permission} data-testid={permission}>
@@ -146,14 +150,16 @@ function PermissionListItem(props) {
             <Button
               className="icon-button"
               color={getColor()}
-              onClick={() => {
-                // const state = howManySubpermsInRole !== 'None';
-                setSubpermissions(subperms, howManySubpermsInRole !== 'All');
-                // eslint-disable-next-line react/destructuring-assignment
-                props.onChange();
-              }}
               // eslint-disable-next-line react/destructuring-assignment
-              disabled={!props.hasPermission('putRole')}
+              disabled={
+                !props.hasPermission('putRole')
+              }
+              onClick={() => {
+                handleAllpermissions(subperms)
+                // const state = howManySubpermsInRole !== 'None';
+                // handleSubpermissions(subperms, howManySubpermsInRole !== 'All');
+                // eslint-disable-next-line react/destructuring-assignment
+              }}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
