@@ -90,14 +90,9 @@ const endOfWeek = offset => {
 const Timelog = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
   const location = useLocation();
-  function displayUserIdRoute() {
-   const path =  location.pathname
-   const id = path.split('/').pop()
-   return id;
-  }
+ 
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
 
   // access the store states
   const {
@@ -109,6 +104,15 @@ const Timelog = props => {
     disPlayUserTasks,
   } = props;
 
+  function displayUserIdRoute() {
+    const path =  location.pathname
+    const id = path.split('/').pop()
+    if(id.includes("dashboard")||id.includes("users")){
+      return authUser?.userid
+    }
+    return id;
+   }
+   displayUserIdRoute();
   const initialState = {
     timeEntryFormModal: false,
     summary: false,
@@ -141,9 +145,9 @@ const Timelog = props => {
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId : displayUserIdRoute()||userId
+    viewingUser ? viewingUser.userId :  displayUserIdRoute() || userId 
   );
-
+  
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
@@ -604,11 +608,9 @@ const Timelog = props => {
                           <Button onClick={openInfo} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                             Close
                           </Button>
-                          {canEditTimeEntry ? (
-                            <Button onClick={openInfo} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
-                              Edit
-                            </Button>
-                          ) : null}
+                          <Button onClick={openInfo} color="secondary">
+                            Edit
+                          </Button>
                         </ModalFooter>
                       </Modal>
                       {/* This TimeEntryForm is for adding intangible time throught the add intangible time enty button */}
