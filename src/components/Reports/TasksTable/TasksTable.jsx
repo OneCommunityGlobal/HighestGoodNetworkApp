@@ -71,7 +71,7 @@ export function TasksTable({ darkMode, tasks }) {
         <h4 className="tasks-table-header">Tasks</h4>
       </div>
       <div className="tasks-table-filters-wrapper">
-        <div className="tasks-table-filters">
+        <div className={`tasks-table-filters ${darkMode ? 'text-dark' : ''}`}>
           <Select
             ref={userRef}
             options={getUserOptions()}
