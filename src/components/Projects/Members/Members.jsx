@@ -28,7 +28,6 @@ const Members = props => {
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
   const [lastTimeoutId, setLastTimeoutId] = useState(null);
 
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
@@ -95,7 +94,7 @@ const Members = props => {
               <div id="member_project__name">PROJECTS {props.projectId}</div>
             </ol>
           </nav>
-          {canGetProjectMembers ? (
+          {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
                 <span className="input-group-text">Find user</span>
@@ -181,7 +180,7 @@ const Members = props => {
             handleUserProfile={handleToggle}
           />
 
-          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
+          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''}`}>
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <th scope="col" id="members__order">
@@ -195,7 +194,7 @@ const Members = props => {
               {displayedMembers.map((member, i) => (
                 <Member
                   index={i}
-                  key={member._id}
+                  key={member._id ?? i}
                   projectId={projectId}
                   uid={member._id}
                   fullName={member.firstName + ' ' + member.lastName}
