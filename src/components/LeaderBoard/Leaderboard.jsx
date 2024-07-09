@@ -182,7 +182,11 @@ function LeaderBoard({
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-        <Table className={`leaderboard table-fixed ${darkMode ? 'text-light' : ''}`}>
+        <Table
+          className={`leaderboard table-fixed ${
+            darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+          }`}
+        >
           <thead>
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
@@ -224,7 +228,7 @@ function LeaderBoard({
             </tr>
           </thead>
           <tbody className="my-custome-scrollbar">
-            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <tr>
               <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
@@ -252,7 +256,7 @@ function LeaderBoard({
               </td>
             </tr>
             {leaderBoardData.map(item => (
-              <tr key={item.personId} className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
                     <Modal
