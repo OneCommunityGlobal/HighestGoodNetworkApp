@@ -10,8 +10,19 @@ import GET_MATERIAL_TYPES, {
   DELETE_ERROR_BUILDING_INVENTORY_TYPE,
   UPDATE_BUILDING_INVENTORY_TYPE,
   RESET_UPDATE_BUILDING_INVENTORY_TYPE,
-  UPDATE_ERROR_BUILDING_INVENTORY_TYPE
-, GET_TOOL_TYPES ,GET_CONSUMABLE_TYPES, GET_EQUIPMENT_TYPES, GET_REUSABLE_TYPES } from "constants/bmdashboard/inventoryTypeConstants";
+  UPDATE_ERROR_BUILDING_INVENTORY_TYPE,
+  GET_TOOL_TYPES,
+  GET_CONSUMABLE_TYPES,
+  GET_EQUIPMENT_TYPES,
+  GET_REUSABLE_TYPES,
+  RESET_POST_BUILDING_TOOL_INVENTORY_TYPE,
+  RESET_POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+  POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+  POST_BUILDING_TOOL_INVENTORY_TYPE,
+  POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE, 
+} from "constants/bmdashboard/inventoryTypeConstants";
 import { POST_TOOLS_LOG, POST_ERROR_TOOLS_LOG, RESET_POST_TOOLS_LOG } from 'constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from "constants/errors";
 
@@ -97,6 +108,23 @@ export const postBuildingConsumableType = payload => {
   };
 };
 
+export const postBuildingToolType = payload => {
+  return async dispatch => {
+    axios
+      .post(ENDPOINTS.BM_TOOLS, payload)
+      .then(res => {
+        dispatch(setPostBuildingToolTypeResult(res.data));
+      })
+      .catch(err => {
+        dispatch(
+          setPostErrorBuildingToolTypeResult(
+            JSON.stringify(err.response.data) || 'Sorry! Some error occurred!',
+          ),
+        );
+      });
+  };
+};
+
 export const postBuildingInventoryType = (payload) => {
   return async dispatch => {
     axios.post(ENDPOINTS.BM_MATERIAL_TYPE, payload)
@@ -154,6 +182,13 @@ export const setPostBuildingConsumableTypeResult = payload => {
   };
 };
 
+export const setPostBuildingToolTypeResult = payload => {
+  return {
+    type: POST_BUILDING_TOOL_INVENTORY_TYPE,
+    payload,
+  };
+};
+
 
 export const setPostErrorBuildingInventoryTypeResult = (payload) => {
   return {
@@ -185,6 +220,13 @@ export const setConsumableTypes = payload => {
 export const setPostErrorBuildingConsumableTypeResult = payload => {
   return {
     type: POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const setPostErrorBuildingToolTypeResult = payload => {
+  return {
+    type: POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE,
     payload,
   };
 };
@@ -240,6 +282,13 @@ export const resetPostBuildingConsumableTypeResult = () => {
     type: RESET_POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
   };
 };
+
+export const resetPostBuildingToolTypeResult = () => {
+  return {
+    type: RESET_POST_BUILDING_TOOL_INVENTORY_TYPE,
+  };
+};
+
 
 export const setMaterialTypes = payload => {
   return {
