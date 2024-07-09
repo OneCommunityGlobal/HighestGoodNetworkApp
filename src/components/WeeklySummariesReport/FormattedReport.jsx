@@ -14,7 +14,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
-import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
+import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModalnn';
 import {
   Input,
   ListGroup,
