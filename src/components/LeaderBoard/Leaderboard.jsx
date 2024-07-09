@@ -37,6 +37,17 @@ function useDeepEffect(effectFunc, deps) {
   }, deps);
 }
 
+function displayDaysLeft(lastDay) {
+  if (lastDay) {
+    const today = new Date();
+    const endDate = new Date(lastDay);
+    const differenceInTime = endDate.getTime() - today.getTime();
+    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+    return -differenceInDays;
+  }
+  return null; // or any other appropriate default value
+}
+
 function LeaderBoard({
   getLeaderboardData,
   getOrgData,
@@ -171,7 +182,11 @@ function LeaderBoard({
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-        <Table className={`leaderboard table-fixed ${darkMode ? 'text-light' : ''}`}>
+        <Table
+          className={`leaderboard table-fixed ${
+            darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+          }`}
+        >
           <thead>
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
@@ -189,6 +204,7 @@ function LeaderBoard({
                   />
                 </div>
               </th>
+              <th>Days Left</th>
               <th>Time Off</th>
               <th>
                 <span className="d-sm-none">Tan. Time</span>
@@ -212,8 +228,8 @@ function LeaderBoard({
             </tr>
           </thead>
           <tbody className="my-custome-scrollbar">
-            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <td />
+            <tr>
+              <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
@@ -222,11 +238,11 @@ function LeaderBoard({
                   </span>
                 )}
               </th>
-              <td className="align-middle" />
+              <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
-              <td className="align-middle">
+              <td className="align-middle" aria-label="Description">
                 <Progress
                   title={`TangibleEffort: ${organizationData.tangibletime} hours`}
                   value={organizationData.barprogress}
@@ -240,7 +256,7 @@ function LeaderBoard({
               </td>
             </tr>
             {leaderBoardData.map(item => (
-              <tr key={item.personId} className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
                     <Modal
@@ -374,6 +390,11 @@ function LeaderBoard({
                   )}
                 </th>
                 <td className="align-middle">
+                  <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
+                    {displayDaysLeft(item.endDate)}
+                  </span>
+                </td>
+                <td className="align-middle">
                   {allRequests && allRequests[item.personId]?.length > 0 && (
                     <div>
                       <button
@@ -387,6 +408,7 @@ function LeaderBoard({
                           handleTimeOffModalOpen(data);
                         }}
                         style={{ width: '35px', height: 'auto' }}
+                        aria-label="View Time Off Requests"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -416,7 +438,7 @@ function LeaderBoard({
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
                 </td>
-                <td className="align-middle">
+                <td className="align-middle" aria-label="Description or purpose of the cell">
                   <Link
                     to={`/timelog/${item.personId}`}
                     title={`TangibleEffort: ${item.tangibletime} hours`}
