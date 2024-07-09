@@ -14,7 +14,7 @@
     column-gap: 40px;
   }
 
-  .tasks-block{
+  .block-span{
     grid-column-start: span 2;
   }
 }
