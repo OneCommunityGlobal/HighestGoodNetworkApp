@@ -104,21 +104,21 @@ export function TasksTable({ WbsTasksID, darkMode }) {
           />
           <TextSearchBox
             placeholder="Estimated hours"
-            className="tasks-table-text-search-box"
+            className="tasks-table-filter-item tasks-table-text-search-box"
             searchCallback={() => { }}
           />
           <Checkbox
             value={isActive}
             onChange={() => setActive(!isActive)}
             id="active_checkbox"
-            wrapperClassname="tasks-table-filter-item"
+            wrapperClassname="tasks-table-filter-item check_box_items"
             label="Active"
           />
           <Checkbox
             value={isAssigned}
             onChange={() => setAssigned(!isAssigned)}
             id="assign_checkbox"
-            wrapperClassname="tasks-table-filter-item"
+            wrapperClassname="tasks-table-filter-item check_box_items"
             label="Assign"
           />
         </div>
