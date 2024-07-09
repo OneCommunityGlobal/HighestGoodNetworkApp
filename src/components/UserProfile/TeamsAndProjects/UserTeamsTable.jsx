@@ -6,10 +6,6 @@ import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
-toast.configure();
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
@@ -18,11 +14,13 @@ const UserTeamsTable = props => {
   const [teamCode, setTeamCode] = useState(props.userProfile ? props.userProfile.teamCode : props.teamCode);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
+  const fullCodeRegex = /^.{5,7}$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = e => {
     let value = e.target.value;
+
+
     const regexTest = fullCodeRegex.test(value);
     if (regexTest) {
       props.setCodeValid(true);
@@ -38,16 +36,12 @@ const UserTeamsTable = props => {
     }
   };
 
-  const notifySuccess = (message) => {
-    toast.success(message, { position: toast.POSITION.TOP_RIGHT });
-  };
-
   return (
     <div>
       <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
         <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
           {props.canEditVisibility && (
-            <div className="row">
+            <div className="row" >
               <Col md="7">
                 <span className="teams-span">Visibility</span>
               </Col>
@@ -66,6 +60,7 @@ const UserTeamsTable = props => {
               md={canAssignTeamToUsers ? '7' : '10'}
               style={{
                 backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
+                backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 border: '1px solid #ced4da',
                 marginBottom: '10px',
               }}
@@ -74,16 +69,27 @@ const UserTeamsTable = props => {
             </Col>
             {props.edit && props.role && canAssignTeamToUsers && (
               <Col md="3" style={{ padding: '0' }}>
-                <Button
-                  className="btn-addteam"
-                  color="primary"
-                  onClick={() => {
-                    props.onButtonClick();
-                  }}
-                  style={darkMode ? {} : boxStyle}
-                >
-                  Assign Team
-                </Button>
+                {props.disabled ? (
+                  <>
+                    <Tooltip placement="bottom" isOpen={tooltipOpen} target="btn-assignteam" toggle={toggleTooltip}>
+                      Please save changes before assign team
+                    </Tooltip>
+                    <Button className="btn-addteam" id='btn-assignteam' color="primary" style={darkMode ? {} : boxStyle} disabled>
+                      Assign Team
+                    </Button>
+                  </>
+                ) : (
+                  <Button
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                    style={darkMode ? {} : boxStyle}
+                  >
+                    Assign Team
+                  </Button>
+                )}
               </Col>
             )}
             <Col md="2" style={{ padding: '0' }}>
@@ -96,7 +102,7 @@ const UserTeamsTable = props => {
                 />
               ) : (
                 <div style={{ fontSize: "12px", textAlign: 'center' }}>
-                  {teamCode === '' ? "No assigned team code" : teamCode}
+                  {teamCode == '' ? "No assigned team code" : teamCode}
                 </div>
               )}
             </Col>
@@ -107,7 +113,7 @@ const UserTeamsTable = props => {
             <thead className={darkMode ? 'bg-space-cadet' : ''}>
               {props.role && (
                 <tr style={{ textAlign: 'center' }}>
-                  <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '10%' }}>#</th>
+                  <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '10%' }} >#</th>
                   {canAssignTeamToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>Team Name</th> : null}
                   {props.userTeamsById.length > 0 ? <th className={darkMode ? 'bg-space-cadet' : ''}></th> : null}
                 </tr>
@@ -122,10 +128,10 @@ const UserTeamsTable = props => {
                     {props.edit && props.role && (
                       <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '20%' }}>
                         <Button
+                          disabled={!canAssignTeamToUsers}
                           color="danger"
                           onClick={e => {
                             props.onDeleteClick(team._id);
-                            notifySuccess('Team deleted successfully');
                           }}
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
@@ -142,7 +148,7 @@ const UserTeamsTable = props => {
           </table>
         </div>
       </div>
-      <div className={`teamtable-container tablet ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+      <div className={`teamtable-container tablet  ${darkMode ? 'bg-yinmn-blue' : ''}`}>
         <div style={{ display: 'flex', flexDirection: 'column' }}>
           {props.canEditVisibility && (
             <>
@@ -188,7 +194,7 @@ const UserTeamsTable = props => {
                 />
               ) : (
                 <div style={{ paddingTop: '6px', textAlign: 'center' }}>
-                  {teamCode === '' ? "No assigned team code" : teamCode}
+                  {teamCode == '' ? "No assigned team code" : teamCode}
                 </div>
               )}
             </Col>
@@ -198,15 +204,25 @@ const UserTeamsTable = props => {
               md="12"
               style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
-              <Button
-                className="btn-addteam"
-                color="primary"
-                onClick={() => {
-                  props.onButtonClick();
-                }}
-              >
-                Assign Team
-              </Button>
+              {canAssignTeamToUsers ? (
+                props.disabled ? (
+                  <Button className="btn-addteam" color="primary" disabled>
+                    Assign Team
+                  </Button>
+                ) : (
+                  <Button
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                  >
+                    Assign Team
+                  </Button>
+                )
+              ) : (
+                <></>
+              )}
             </Col>
           )}
         </div>
@@ -237,10 +253,10 @@ const UserTeamsTable = props => {
                           }}
                         >
                           <Button
+                            disabled={!canAssignTeamToUsers}
                             color="danger"
                             onClick={e => {
                               props.onDeleteClick(team._id);
-                              notifySuccess('Team deleted successfully');
                             }}
                           >
                             Delete
@@ -260,5 +276,4 @@ const UserTeamsTable = props => {
     </div>
   );
 };
-
 export default connect(null, { hasPermission })(UserTeamsTable);
