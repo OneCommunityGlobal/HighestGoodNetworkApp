@@ -43,6 +43,7 @@ const TeamsTab = props => {
   const onSelectDeleteTeam = teamId => {
     deleteTeamMember(teamId, userProfile._id);
     onDeleteTeam(teamId);
+    notifySuccess('Team deleted successfully');
   };
 
   const onSelectAssignTeam = team => {
