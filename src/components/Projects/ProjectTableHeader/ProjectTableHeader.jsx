@@ -13,7 +13,7 @@ import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown} from '@fortawesome/free-solid-svg-icons';
+import { faArrowUp, faArrowDown, faSortDown} from '@fortawesome/free-solid-svg-icons';
 import { Dropdown,DropdownButton, Divider } from 'react-bootstrap';
 
 // import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -65,10 +65,20 @@ const ProjectTableHeader = props => {
        </span> 
       </th>
       <th scope="col" id="projects__inv">
-        {INVENTORY}
+        <span className='d-flex justify-content-between'>
+          {INVENTORY}
+          <Button size='sm' className='ml-2' id='SortingByRecentEditedInventory' onClick={props.handleSort}>
+            <FontAwesomeIcon icon={faSortDown} pointerEvents="none"/>
+          </Button>
+        </span>
       </th>
       <th scope="col" id="projects__members">
-        {MEMBERS}
+        <span className='d-flex justify-content-between'>
+          {MEMBERS}
+          <Button size='sm' className='ml-2' id='SortingByRecentEditedMembers' onClick={props.handleSort}>
+            <FontAwesomeIcon icon={faSortDown} pointerEvents="none"/>
+          </Button>
+        </span>
       </th>
       <th scope="col" id="projects__wbs">
         <div className="d-flex align-items-center">
