@@ -31,6 +31,7 @@ export function ProjectReport({ match }) {
   const [activeMemberCount, setActiveMemberCount] = useState(0);
   const [nonActiveMemberCount, setNonActiveMemberCount] = useState(0);
   const [hoursCommitted, setHoursCommitted] = useState(0);
+  const [tasks, setTasks] = useState([]);
   const dispatch = useDispatch();
 
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator';
@@ -86,6 +87,7 @@ export function ProjectReport({ match }) {
       dispatch(getProjectDetail(projectId));
       dispatch(fetchAllWBS(projectId));
       dispatch(fetchAllMembers(projectId));
+      setTasks([]);
     }
 
     return ()  => {   
@@ -102,7 +104,7 @@ export function ProjectReport({ match }) {
         dispatch(fetchAllTasks(wbsitems._id));
       });
     }
-  }, [wbs]);
+  }, [dispatch, wbs]);
 
   useEffect(() => {
 
@@ -125,7 +127,7 @@ export function ProjectReport({ match }) {
       setActiveMemberCount(activeCount);
       setNonActiveMemberCount(nonActiveCount);
     }
-  }, [projectMembers.members]);
+  }, [dispatch, projectMembers.members]);
 
   const handleMemberCount = elementCount => {
     setMemberCount(elementCount);
@@ -133,38 +135,39 @@ export function ProjectReport({ match }) {
 
   return (
     <div className={`container-project-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-      <ReportPage
-        renderProfile={() => (
-          <ReportPage.ReportHeader
-            isActive={isActive}
-            avatar={<FiBox />}
-            name={projectName}
-            counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
-            hoursCommitted={hoursCommitted.toFixed(0)}
-            darkMode={darkMode}
-          />
-        )}
-        darkMode={darkMode}
-      >
-        <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
-        <div className="wbs-and-members-blocks-wrapper">
-          <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
-            <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
-              <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} darkMode={darkMode}/>
-            </Paging>
-          </ReportPage.ReportBlock>
-          <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
-            <Paging totalElementsCount={memberCount} darkMode={darkMode}>
-              <ProjectMemberTable
-                projectMembers={projectMembers}
-                handleMemberCount={handleMemberCount}
-                darkMode={darkMode}
-              />
-            </Paging>
-          </ReportPage.ReportBlock>
-        </div>
+    <ReportPage
+      renderProfile={() => (
+        <ReportPage.ReportHeader
+          isActive={isActive}
+          avatar={<FiBox />}
+          name={projectName}
+          counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
+          hoursCommitted={hoursCommitted.toFixed(0)}
+          darkMode={darkMode}
+        />
+      )}
+      darkMode={darkMode}
+    >
+      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div> 
+      <div className="wbs-and-members-blocks-wrapper">
+        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
+          <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
+            <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} darkMode={darkMode}/>
+          </Paging>
+        </ReportPage.ReportBlock>
+        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
+          <Paging totalElementsCount={memberCount} darkMode={darkMode}>
+            <ProjectMemberTable
+              projectMembers={projectMembers}
+              handleMemberCount={handleMemberCount}
+              darkMode={darkMode}
+              counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
+            />
+          </Paging>
+        </ReportPage.ReportBlock>
+      </div>
         <ReportPage.ReportBlock darkMode={darkMode}>
-            <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
+          <TasksTable darkMode={darkMode} tasks={tasks}/>
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock darkMode={darkMode}>
           <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>
