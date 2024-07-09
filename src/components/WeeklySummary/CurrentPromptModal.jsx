@@ -80,7 +80,7 @@ function CurrentPromptModal(props) {
       .catch(() => {
         toast.error('There was an error');
       });
-    }, [isPromptCopied]);
+  }, [isPromptCopied]);
   // =================================================================
 
   const handleCopyToClipboard = async () => {
@@ -100,7 +100,7 @@ function CurrentPromptModal(props) {
         setIsPromptUpdated(true);
       })
       .catch(() => {
-         // console.error('Error updating AI prompt:', error);
+        // console.error('Error updating AI prompt:', error);
         toast.error('Failed to update prompt.');
       })
       .finally(() => {
@@ -124,7 +124,7 @@ function CurrentPromptModal(props) {
 
   return (
     <div>
-      {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ?(
+      {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
         <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
           View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} /> AI
           Prompt
