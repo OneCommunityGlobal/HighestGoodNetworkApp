@@ -94,7 +94,8 @@ const Projects = function(props) {
   }
 
   const handleSort = (e) => {
-    setSortedByName(e.target.id);
+    const clickedId = e.target.id;
+    setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
   }
 
   const onUpdateProject = async (updatedProject) => {
@@ -139,8 +140,7 @@ const Projects = function(props) {
         // FIXME: 
         return a.modifiedDatetime < b.modifiedDatetime ? 1 : -1;
       } else if (sortedByName === "SortingByRecentEditedMembers") {
-        // FIXME: 
-        return a.modifiedDatetime < b.modifiedDatetime ? 1 : -1;
+        return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
       } else {
         return 0;
       }
