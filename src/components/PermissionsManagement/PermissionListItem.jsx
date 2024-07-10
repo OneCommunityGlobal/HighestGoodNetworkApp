@@ -80,7 +80,15 @@ function PermissionListItem(props) {
 
   const handleAllpermissions = () => {
     if (howManySubpermsInRole === 'All') {
-      setPermissions([]);
+      setPermissions(previousPermissions => {
+        const updatedPermissions = new Set(previousPermissions);
+        subperms.forEach(subperm => {
+          if (updatedPermissions.has(subperm.key)) {
+            updatedPermissions.delete(subperm.key); // Delete the key if it exists
+          }
+        });
+        return Array.from(updatedPermissions);
+      });
     } else {
       setPermissions(previousPermissions => {
         const updatedPermissions = new Set(previousPermissions);
@@ -151,6 +159,7 @@ function PermissionListItem(props) {
             <Button
               className="icon-button"
               color={getColor()}
+              key={permission}
               // eslint-disable-next-line react/destructuring-assignment
               disabled={!props.hasPermission('putRole')}
               onClick={() => {
