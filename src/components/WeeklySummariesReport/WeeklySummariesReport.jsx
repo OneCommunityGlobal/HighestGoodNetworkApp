@@ -449,6 +449,12 @@ export class WeeklySummariesReport extends Component {
           }
           return summary;
         });
+        let noTeamCodeCount = 0;
+        summaries.forEach(summary => {
+          if (summary.teamCode.length <= 0) {
+            noTeamCodeCount += 1;
+          }
+        });
         // Count the occurrences of each team code
         const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
           acc[teamCode] = (acc[teamCode] || 0) + 1;
@@ -467,6 +473,9 @@ export class WeeklySummariesReport extends Component {
         selectedCodes = selectedCodes
           .map(selected => {
             const count = teamCodeCounts[selected.value];
+            if (selected?.label.includes('Select All With NO Code')) {
+              return { ...selected, label: `Select All With NO Code (${noTeamCodeCount || 0})` };
+            }
             if (count !== undefined && count > 0) {
               return { ...selected, label: `${selected.value} (${count})` };
             }
@@ -475,14 +484,21 @@ export class WeeklySummariesReport extends Component {
           .filter(Boolean);
 
         if (!selectedCodes.find(code => code.value === newTeamCode)) {
-          selectedCodes.push({
-            label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
-            value: newTeamCode,
-          });
+          if (newTeamCode !== undefined && newTeamCode.length > 0) {
+            selectedCodes.push({
+              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
+              value: newTeamCode,
+            });
+          }
         }
 
         // Sort teamCodes by label
-        teamCodes.sort((a, b) => a.label.localeCompare(b.label));
+        teamCodes
+          .sort((a, b) => a.label.localeCompare(b.label))
+          .push({
+            value: '',
+            label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+          });
         return { summaries, teamCodes, selectedCodes };
       });
     } catch (error) {

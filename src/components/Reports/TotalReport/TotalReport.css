@@ -50,3 +50,9 @@
 .team_table{
     border-collapse: collapse;
 }
+
+@media screen and (max-width: 550px) {
+    .total-container{
+        padding: 15px 15px;
+    }
+}
