@@ -81,19 +81,17 @@ export function ProjectReport({ match }) {
 
   useEffect(() => {
 
+    setMemberCount(0);
+    setActiveMemberCount(0);
+    setNonActiveMemberCount(0);
+    setHoursCommitted(0);
+
     if (match) {
       const { projectId } = match.params;
       dispatch(getProjectDetail(projectId));
       dispatch(fetchAllWBS(projectId));
       dispatch(fetchAllMembers(projectId));
       setTasks([]);
-    }
-
-    return ()  => {   
-      setMemberCount(0);
-      setActiveMemberCount(0);
-      setNonActiveMemberCount(0);
-      setHoursCommitted(0);
     }
   }, [match?.params.projectId]);
 
