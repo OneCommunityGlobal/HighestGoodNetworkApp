@@ -155,6 +155,31 @@
   width: 150px;
 }
 
+.permission-change-log-table--cell {
+  vertical-align: top;
+}
+
+.permission-change-log-table--cell.permissions {
+  width: 400px;
+}
+
+.permission-change-log-table--cell.expanded {
+  white-space: normal;
+}
+
+.permissions-cell {
+  display: flex;
+  align-items: center;
+}
+
+.toggle-button {
+  background: none;
+  border: none;
+  cursor: pointer;
+  margin-left: 10px;
+  color: inherit;
+}
+
 @media only screen and (max-width: 683px) {
   .responsive-font-size {
     font-size: 0.75rem !important;

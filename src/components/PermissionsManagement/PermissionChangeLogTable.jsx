@@ -1,10 +1,11 @@
 import { useState } from 'react';
 import './PermissionChangeLogTable.css';
-import { FiChevronLeft, FiChevronRight } from 'react-icons/fi';
+import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { formatDate, formattedAmPmTime } from 'utils/formatDate';
 
 function PermissionChangeLogTable({ changeLogs, darkMode }) {
   const [currentPage, setCurrentPage] = useState(1);
+  const [expandedRows, setExpandedRows] = useState({});
   const itemsPerPage = 20;
   const totalPages = Math.ceil(changeLogs.length / itemsPerPage);
   const indexOfLastItem = currentPage * itemsPerPage;
@@ -56,6 +57,13 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
     });
   };
 
+  const toggleExpandRow = rowId => {
+    setExpandedRows(prevState => ({
+      ...prevState,
+      [rowId]: !prevState[rowId],
+    }));
+  };
+
   return (
     <>
       <div className="table-responsive">
@@ -87,8 +95,22 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
                   {log.roleName}
                 </td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue} text-wrap`}>
-                  {log.permissions.join(', ')}
+                <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
+                  <div className="permissions-cell">
+                    {expandedRows[log._id]
+                      ? log.permissions.join(', ')
+                      : log.permissions.slice(0, 5).join(', ') +
+                        (log.permissions.length > 5 ? ', ...' : '')}
+                    {log.permissions.length > 5 && (
+                      <button
+                        className="toggle-button"
+                        onClick={() => toggleExpandRow(log._id)}
+                        type="button"
+                      >
+                        {expandedRows[log._id] ? <FiChevronUp /> : <FiChevronDown />}
+                      </button>
+                    )}
+                  </div>
                 </td>
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
                   {log.permissionsAdded.join(', ')}
