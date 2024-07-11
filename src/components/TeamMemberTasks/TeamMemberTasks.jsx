@@ -339,7 +339,7 @@ const TeamMemberTasks = React.memo(props => {
 
 
   return (
-    <div className={`container team-member-tasks ${darkMode ? " bg-space-cadet" : ""}`}>
+    <div className={`container team-member-tasks ${darkMode ? " bg-space-cadet border-left border-right border-secondary" : ""}`}>
       <header className="header-box">
         <h1 className={darkMode ? "text-light" : ""}>Team Member Tasks</h1>
 
