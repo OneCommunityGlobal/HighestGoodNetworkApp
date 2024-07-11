@@ -153,7 +153,11 @@ function Badge(props) {
           icon to learn more about the different types of badges.
         </p>
       </UncontrolledTooltip>
-      <Modal isOpen={isOpenTypes} toggle={toggleTypes} className={darkMode ? 'text-light' : ''}>
+      <Modal
+        isOpen={isOpenTypes}
+        toggle={toggleTypes}
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggleTypes}>
           Badge Types and Assignment
         </ModalHeader>

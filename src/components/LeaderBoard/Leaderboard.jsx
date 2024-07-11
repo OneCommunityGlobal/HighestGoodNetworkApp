@@ -182,7 +182,11 @@ function LeaderBoard({
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-        <Table className={`leaderboard table-fixed ${darkMode ? 'text-light' : ''}`}>
+        <Table
+          className={`leaderboard table-fixed ${
+            darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+          }`}
+        >
           <thead className="responsive-font-size">
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
@@ -225,7 +229,7 @@ function LeaderBoard({
           </thead>
           <tbody className="my-custome-scrollbar responsive-font-size">
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <td />
+              <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
@@ -234,12 +238,11 @@ function LeaderBoard({
                   </span>
                 )}
               </th>
-              <td className="align-middle" />
-              <td className="align-middle" />
+              <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
-              <td className="align-middle">
+              <td className="align-middle" aria-label="Description">
                 <Progress
                   title={`TangibleEffort: ${organizationData.tangibletime} hours`}
                   value={organizationData.barprogress}
@@ -253,7 +256,7 @@ function LeaderBoard({
               </td>
             </tr>
             {leaderBoardData.map(item => (
-              <tr key={item.personId} className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
                     <Modal
@@ -405,6 +408,7 @@ function LeaderBoard({
                           handleTimeOffModalOpen(data);
                         }}
                         style={{ width: '35px', height: 'auto' }}
+                        aria-label="View Time Off Requests"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -434,7 +438,7 @@ function LeaderBoard({
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
                 </td>
-                <td className="align-middle">
+                <td className="align-middle" aria-label="Description or purpose of the cell">
                   <Link
                     to={`/timelog/${item.personId}`}
                     title={`TangibleEffort: ${item.tangibletime} hours`}

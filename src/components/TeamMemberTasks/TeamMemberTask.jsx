@@ -144,10 +144,10 @@ const TeamMemberTask = React.memo(
               </Link>
             </div>
           </td>
-          <td colSpan={2} className={darkMode ? "bg-yinmn-blue" : ""}>
+          <td colSpan={2}>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
-                <tr className={darkMode ? "bg-yinmn-blue" : ""}>
+                <tr>
                   <td className="team-member-tasks-user-name">
                     <Link
                       className='team-member-tasks-user-name-link'
@@ -183,7 +183,7 @@ const TeamMemberTask = React.memo(
               </tbody>
             </Table>
           </td>
-          <td colSpan={3} className={darkMode ? "bg-yinmn-blue" : ""}>
+          <td colSpan={3}>
             <Table borderless className="team-member-tasks-subtable">
               <tbody>
                 {user.tasks &&
@@ -310,7 +310,7 @@ const TeamMemberTask = React.memo(
                   })}
                 {canTruncate && (
                   <tr key="truncate-button-row" className="task-break">
-                    <td className={`task-align  ${darkMode ? "bg-yinmn-blue" : ""}`}>
+                    <td className={`task-align`}>
                       <button type="button" onClick={handleTruncateTasksButtonClick} className={darkMode ? 'text-light' : ''}>
                         {isTruncated ? `Show All (${activeTasks.length}) Tasks` : 'Truncate Tasks'}
                       </button>
