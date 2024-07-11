@@ -34,7 +34,7 @@ function PermissionList(props) {
           subperms={permission.subperms}
           description={permission.description}
           editable={editable}
-          isEditing={props.isEditing}
+          useCase={props.useCase}
           depth={depth}
           // eslint-disable-next-line react/destructuring-assignment
           darkMode={props.darkMode}

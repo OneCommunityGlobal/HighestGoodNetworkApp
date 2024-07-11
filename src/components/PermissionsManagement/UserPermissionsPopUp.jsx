@@ -180,7 +180,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
             rolePermissions={userPermissions}
             immutablePermissions={actualUserRolePermission}
             editable={!!actualUserProfile}
-            isEditing
+            useCase="editRole"
             setPermissions={setUserPermissions}
             darkMode={darkMode}
           />

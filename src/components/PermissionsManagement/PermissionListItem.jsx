@@ -19,7 +19,7 @@ function PermissionListItem(props) {
     depth,
     setPermissions,
     darkMode,
-    isEditing,
+    useCase,
   } = props;
 
   const isCategory = !!subperms;
@@ -156,7 +156,7 @@ function PermissionListItem(props) {
               }}
               // eslint-disable-next-line react/destructuring-assignment
               disabled={
-                !(props.isEditing
+                !(props.useCase === 'editRole'
                   ? props.hasPermission('putRole')
                   : props.hasPermission('postRole')) || immutablePermissions.includes(permission)
               }
@@ -173,7 +173,7 @@ function PermissionListItem(props) {
               }}
               disabled={
                 // eslint-disable-next-line react/destructuring-assignment
-                !(props.isEditing
+                !(props.useCase === 'editRole'
                   ? props.hasPermission('putRole')
                   : props.hasPermission('postRole')) || immutablePermissions.includes(permission)
               }
@@ -193,7 +193,7 @@ function PermissionListItem(props) {
           }}
         >
           <PermissionList
-            isEditing={isEditing}
+            isEditing={useCase}
             rolePermissions={rolePermissions}
             permissionsList={subperms}
             immutablePermissions={immutablePermissions}
