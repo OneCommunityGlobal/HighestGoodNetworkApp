@@ -19,16 +19,8 @@ const hasPermission = (action) => {
   }
 };
 
-export const getUserInfo = (action) => {
-  return (dispatch, getState) => {
-    const state = getState()
-    return state.auth.user;
-  }
-}
-
-// others cannot change the details for devadmin@hgn.net
 /**
- * 
+ * Return true if the user is not allowed to update the protected accounts
  * @param {String} devAdminEmail target user email
  * @param {String} authEmail logged in user email
  * @returns {boolean} true if the user is not allowed to update the devadmin details
@@ -42,7 +34,6 @@ export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
                            'one.community@me.com',
                            'jsabol@me.com',
                            'devadmin@hgn.net',
-                           'testcorepp@gmail.com'
                           ]
   return protectedEmails.includes(devAdminEmail) && !allowedEmails.includes(authEmail);
 };

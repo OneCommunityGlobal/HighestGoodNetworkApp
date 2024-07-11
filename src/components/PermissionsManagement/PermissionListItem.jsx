@@ -203,9 +203,11 @@ function PermissionListItem(props) {
         id="#modal2-body_new-role--padding"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
-        <ModalBody>{modalContent}</ModalBody>
-        <ModalFooter>
+        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Permission Info
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalContent}</ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
             {' '}
             Ok{' '}
