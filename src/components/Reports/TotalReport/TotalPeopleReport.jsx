@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './TotalReport.css';
@@ -9,10 +9,9 @@ import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
 
 function TotalPeopleReport(props) {
-  const { startDate, endDate, userProfiles } = props;
-
-  const [dataLoading, setDataLoading] = useState(true);
-  const [dataRefresh, setDataRefresh] = useState(false);
+  const { startDate, endDate, userProfiles, darkMode } = props;
+  const [totalPeopleReportDataLoading, setTotalPeopleReportDataLoading] = useState(true);
+  const [totalPeopleReportDataReady, setTotalPeopleReportDataReady] = useState(false);
   const [showTotalPeopleTable, setShowTotalPeopleTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
   const [allPeople, setAllPeople] = useState([]);
@@ -21,34 +20,33 @@ function TotalPeopleReport(props) {
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
 
-  const fromDate = startDate.toLocaleDateString('en-CA');
-  const toDate = endDate.toLocaleDateString('en-CA');
+  const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
+  const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
 
-  const userList = userProfiles.map(user => user._id);
+  const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
 
-  const loadTimeEntriesForPeriod = async () => {
-    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
-    const timeEntries = await axios
-      .post(url, { users: userList, fromDate, toDate })
-      .then(res => {
-        return res.data.map(entry => {
-          return {
-            userId: entry.personId,
-            hours: entry.hours,
-            minutes: entry.minutes,
-            isTangible: entry.isTangible,
-            date: entry.dateOfWork,
-          };
-        });
-      })
-      .catch(err => {
-        // eslint-disable-next-line no-console
-        console.log(err.message);
-      });
-    setAllTimeEntries(timeEntries);
-  };
+  const loadTimeEntriesForPeriod = useCallback(async (controller) => {
+    try {
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+      const res = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal });
+      const timeEntries = res.data.map(entry => ({
+        userId: entry.personId,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      }));
+      setAllTimeEntries(timeEntries);
+    } catch (err) {
+      if (axios.isCancel(err)) {
+        console.log('Request canceled', err.message);
+      } else {
+        console.error("API error:", err.message);
+      }
+    }
+  }, [fromDate, toDate, userList]);
 
-  const sumByUser = (objectArray, property) => {
+  const sumByUser = useCallback((objectArray, property) => {
     return objectArray.reduce((acc, obj) => {
       const key = obj[property];
       if (!acc[key]) {
@@ -68,16 +66,15 @@ function TotalPeopleReport(props) {
       acc[key].minutes += Number(obj.minutes);
       return acc;
     }, {});
-  };
+  }, []);
 
-  const groupByTimeRange = (objectArray, timeRange) => {
+  const groupByTimeRange = useCallback((objectArray, timeRange) => {
     let range = 0;
     if (timeRange === 'month') {
       range = 7;
     } else if (timeRange === 'year') {
       range = 4;
     } else {
-      // eslint-disable-next-line no-console
       console.log('The time range should be month or year.');
     }
     return objectArray.reduce((acc, obj) => {
@@ -87,66 +84,62 @@ function TotalPeopleReport(props) {
       acc[key] = month;
       return acc;
     }, {});
-  };
+  }, []);
 
-  const filterTenHourUser = userTimeList => {
-    const filteredUsers = [];
-    userTimeList.forEach(element => {
-      const allTimeLogged = element.hours + element.minutes / 60.0;
-      const allTangibleTimeLogged = element.tangibleHours + element.tangibleMinutes / 60.0;
-      if (allTimeLogged >= 10) {
-        const matchedUser = userProfiles.filter(user => user._id === element.userId)[0];
-        filteredUsers.push({
-          userId: element.userId,
-          firstName: matchedUser.firstName,
-          lastName: matchedUser.lastName,
-          totalTime: allTimeLogged.toFixed(2),
-          tangibleTime: allTangibleTimeLogged.toFixed(2),
-        });
-      }
-    });
-    return filteredUsers;
-  };
+  const filterTenHourUser = useCallback(userTimeList => {
+    return userTimeList
+      .filter(element => {
+        const allTimeLogged = element.hours + element.minutes / 60.0;
+        return allTimeLogged >= 10;
+      })
+      .map(element => {
+        const matchedUser = userProfiles.find(user => user._id === element.userId);
+        if (matchedUser) {
+          const allTangibleTimeLogged = element.tangibleHours + element.tangibleMinutes / 60.0;
+          return {
+            userId: element.userId,
+            firstName: matchedUser.firstName,
+            lastName: matchedUser.lastName,
+            totalTime: (element.hours + element.minutes / 60.0).toFixed(2),
+            tangibleTime: allTangibleTimeLogged.toFixed(2),
+          };
+        }
+        return null;
+      })
+      .filter(Boolean);
+  }, [userProfiles]);
 
-  const summaryOfTimeRange = timeRange => {
+  const summaryOfTimeRange = useCallback(timeRange => {
     const groupedEntries = Object.entries(groupByTimeRange(allTimeEntries, timeRange));
-    const summaryOfTime = [];
-    groupedEntries.forEach(element => {
-      const groupedUsersOfTime = Object.values(sumByUser(element[1], 'userId'));
+    return groupedEntries.map(([key, entries]) => {
+      const groupedUsersOfTime = Object.values(sumByUser(entries, 'userId'));
       const contributedUsersOfTime = filterTenHourUser(groupedUsersOfTime);
-      summaryOfTime.push({ timeRange: element[0], usersOfTime: contributedUsersOfTime });
+      return { timeRange: key, usersOfTime: contributedUsersOfTime };
     });
-    return summaryOfTime;
-  };
+  }, [allTimeEntries, groupByTimeRange, sumByUser, filterTenHourUser]);
 
-
-  const generateBarData = (groupedDate, isYear = false) => {
+  const generateBarData = useCallback((groupedDate, isYear = false) => {
     if (isYear) {
       const startMonth = startDate.getMonth();
       const endMonth = endDate.getMonth();
-      const sumData = groupedDate.map(range => {
-        return {
-          label: range.timeRange,
-          value: range.usersOfTime.length,
-          months: 12,
-        };
-      });
+      const sumData = groupedDate.map(range => ({
+        label: range.timeRange,
+        value: range.usersOfTime.length,
+        months: 12,
+      }));
       if (sumData.length > 1) {
         sumData[0].months = 12 - startMonth;
         sumData[sumData.length - 1].months = endMonth + 1;
       }
       return sumData;
     }
-    const sumData = groupedDate.map(range => {
-      return {
-        label: range.timeRange,
-        value: range.usersOfTime.length,
-      };
-    });
-    return sumData;
-  };
+    return groupedDate.map(range => ({
+      label: range.timeRange,
+      value: range.usersOfTime.length,
+    }));
+  }, [startDate, endDate]);
 
-  const checkPeriodForSummary = () => {
+  const checkPeriodForSummary = useCallback(() => {
     const oneMonth = 1000 * 60 * 60 * 24 * 31;
     const diffDate = endDate - startDate;
     if (diffDate > oneMonth) {
@@ -159,77 +152,69 @@ function TotalPeopleReport(props) {
         setShowYearly(true);
       }
     }
-  };
+  }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
   useEffect(() => {
-    loadTimeEntriesForPeriod().then(() => {
-      setDataLoading(false);
-      setDataRefresh(true);
+    setTotalPeopleReportDataReady(false);
+    const controller = new AbortController();
+    loadTimeEntriesForPeriod(controller).then(() => {
+      setTotalPeopleReportDataLoading(false);
+      setTotalPeopleReportDataReady(true);
     });
-  }, [startDate, endDate]);
+    return () => controller.abort();
+  }, [loadTimeEntriesForPeriod, startDate, endDate]);
 
   useEffect(() => {
-    if (!dataLoading && dataRefresh) {
+    if (!totalPeopleReportDataLoading && totalPeopleReportDataReady) {
       setShowMonthly(false);
       setShowYearly(false);
       const groupedUsers = Object.values(sumByUser(allTimeEntries, 'userId'));
       const contributedUsers = filterTenHourUser(groupedUsers);
       setAllPeople(contributedUsers);
       checkPeriodForSummary();
-      setDataRefresh(false);
     }
-  }, [dataRefresh]);
+  }, [totalPeopleReportDataLoading, totalPeopleReportDataReady, sumByUser, filterTenHourUser, allTimeEntries, checkPeriodForSummary]);
 
   const onClickTotalPeopleDetail = () => {
-    const showDetail = showTotalPeopleTable;
-    setShowTotalPeopleTable(!showDetail);
+    setShowTotalPeopleTable(prevState => !prevState);
   };
 
-  const totalPeopleTable = totalPeople => {
-    let PeopleList = [];
-    if (totalPeople.length > 0) {
-      PeopleList = totalPeople
-        .sort((a, b) => a.firstName.localeCompare(b.firstName))
-        .map((person, index) => (
-          <tr className="teams__tr" id={`tr_${person.userId}`} key={person.userId}>
-            <th className="teams__order--input" scope="row">
-              <div>{index + 1}</div>
-            </th>
-            <td>
-              <Link to={`/userProfile/${person.userId}`}>
-                {person.firstName} {person.lastName}
-              </Link>
-            </td>
-            <td>{person.totalTime}</td>
-          </tr>
-        ));
-    }
-
-    return (
-      <table className="table table-bordered table-responsive-sm">
-        <thead>
-          <tr>
-            <th scope="col" id="projects__order">
-              #
-            </th>
-            <th scope="col">Person Name</th>
-            <th scope="col">Total Logged Time (Hrs) </th>
-          </tr>
-        </thead>
-        <tbody>{PeopleList}</tbody>
-      </table>
-    );
-  };
+  const totalPeopleTable = totalPeople => (
+    <table className="table table-bordered table-responsive-sm">
+      <thead>
+        <tr>
+          <th scope="col" id="projects__order">#</th>
+          <th scope="col">Person Name</th>
+          <th scope="col">Total Logged Time (Hrs)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {totalPeople
+          .sort((a, b) => a.firstName.localeCompare(b.firstName))
+          .map((person, index) => (
+            <tr className="teams__tr" id={`tr_${person.userId}`} key={person.userId}>
+              <th className="teams__order--input" scope="row">
+                <div>{index + 1}</div>
+              </th>
+              <td>
+                <Link to={`/userProfile/${person.userId}`} className={darkMode ? 'text-light' : ''}>
+                  {person.firstName} {person.lastName}
+                </Link>
+              </td>
+              <td>{person.totalTime}</td>
+            </tr>
+          ))}
+      </tbody>
+    </table>
+  );
 
   const totalPeopleInfo = totalPeople => {
-    const totalTangibleTime = totalPeople.reduce((acc, obj) => {
-      return acc + Number(obj.tangibleTime);
-    }, 0);
+    const totalTangibleTime = totalPeople.reduce((acc, obj) => acc + Number(obj.tangibleTime), 0);
     return (
-      <div className="total-container">
-        <div className="total-title">Total People Report</div>
+      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total People Report</div>
         <div className="total-period">
-          In the period from {fromDate} to {toDate}:
+        In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
         </div>
         <div className="total-item">
           <div className="total-number">{allPeople.length}</div>
@@ -249,7 +234,7 @@ function TotalPeopleReport(props) {
         </div>
         {allPeople.length ? (
           <div className="total-detail">
-            <Button onClick={() => onClickTotalPeopleDetail()}>
+            <Button onClick={onClickTotalPeopleDetail}>
               {showTotalPeopleTable ? 'Hide Details' : 'Show Details'}
             </Button>
             <i
@@ -272,8 +257,8 @@ function TotalPeopleReport(props) {
 
   return (
     <div>
-      {dataLoading ? (
-        <Loading />
+      {!totalPeopleReportDataReady ? (
+        <Loading align="center" darkMode={darkMode} />
       ) : (
         <div>
           <div>{totalPeopleInfo(allPeople)}</div>
@@ -283,4 +268,5 @@ function TotalPeopleReport(props) {
     </div>
   );
 }
+
 export default TotalPeopleReport;

@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
-import { connect } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
@@ -9,22 +9,32 @@ import SummaryBar from '../SummaryBar/SummaryBar';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
-  
+
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
     viewingUser ? viewingUser.userId : authUser.userid,
   );
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const toggle = () => {
     if (isNotAllowedToEdit) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     setPopup(!popup);
@@ -50,7 +60,7 @@ export function Dashboard(props) {
   }, []);
 
   return (
-    <Container fluid>
+    <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -75,7 +85,9 @@ export function Dashboard(props) {
                 isPopup={popup}
                 userRole={authUser.role}
                 displayUserId={displayUserId}
+                displayUserEmail={viewingUser?.email}
                 isNotAllowedToEdit={isNotAllowedToEdit}
+                darkMode={darkMode}
               />
             </div>
           </div>
@@ -83,7 +95,11 @@ export function Dashboard(props) {
       </Row>
       <Row>
         <Col lg={{ size: 5 }} className="order-sm-12">
-          <Leaderboard displayUserId={displayUserId} isNotAllowedToEdit={isNotAllowedToEdit} />
+          <Leaderboard
+            displayUserId={displayUserId}
+            isNotAllowedToEdit={isNotAllowedToEdit}
+            darkMode={darkMode}
+          />
         </Col>
         <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
           {popup ? (
@@ -94,12 +110,17 @@ export function Dashboard(props) {
                   setPopup={setPopup}
                   userRole={authUser.role}
                   isNotAllowedToEdit={isNotAllowedToEdit}
+                  darkMode={darkMode}
                 />
               </div>
             </div>
           ) : null}
           <div className="my-2" id="wsummary">
-            <Timelog isDashboard passSummaryBarData={setSummaryBarData} isNotAllowedToEdit={isNotAllowedToEdit} />
+            <Timelog
+              isDashboard
+              passSummaryBarData={setSummaryBarData}
+              isNotAllowedToEdit={isNotAllowedToEdit}
+            />
           </div>
           <Badge
             userId={displayUserId}

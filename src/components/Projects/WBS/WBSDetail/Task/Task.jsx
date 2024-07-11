@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
 import { connect } from 'react-redux';
-import { Modal, ModalBody, Button } from 'reactstrap';
+import { Modal, ModalBody, Button, ModalHeader } from 'reactstrap';
 import { BsFillCaretDownFill, BsFillCaretUpFill, BsFillCaretLeftFill } from 'react-icons/bs';
 import ControllerRow from '../ControllerRow';
 import {
@@ -11,17 +11,28 @@ import {
 } from '../../../../../actions/task.js';
 import './tagcolor.css';
 import './task.css';
+import '../../../../Header/DarkMode.css'
 import { Editor } from '@tinymce/tinymce-react';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
+
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  toolbar: false,
+  branding: false,
+  min_height: 80,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+};
 
 function Task(props) {
   /*
    * -------------------------------- variable declarations --------------------------------
    */
   // props from store
-  const { tasks } = props;
+  const { tasks, darkMode } = props;
 
   const names = props.resources.map(element => element.name);
   const colors_objs = assignColorsToInitials(names);
@@ -42,7 +53,7 @@ function Task(props) {
   /*
    * -------------------------------- functions --------------------------------
    */
-  const toggleModel = () => setModal(!modal);
+  const toggleModal = () => setModal(!modal);
 
   const openChild = () => {
     setIsOpen(!isOpen);
@@ -148,6 +159,10 @@ function Task(props) {
     setIsOpen(props.openAll);
   }, [props.openAll]);
 
+  const bgColorsDark = ['bg-yinmn-blue', 'bg-yinmn-blue-light'];
+  const bgColorsLight = ['bg-white', 'bg-light'];
+  const bgColor = darkMode ? bgColorsDark[(props.level - 1) % bgColorsDark.length] : bgColorsLight[(props.level - 1) % bgColorsLight.length];
+
   return (
     <>
       {props.taskId ? (
@@ -159,7 +174,7 @@ function Task(props) {
               props.isNew ? 'newTask' : ''
             } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${
               props.parentId3
-            } mother_${props.mother} lv_${props.level}`}
+            } mother_${props.mother} lv_${props.level} ${bgColor}`}
             id={props.taskId}
           >
             <td
@@ -168,7 +183,7 @@ function Task(props) {
               } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <Button color="primary" size="sm" onClick={activeController} style={boxStyle}>
+              <Button color="primary" size="sm" onClick={activeController} style={darkMode ? boxStyleDark : boxStyle}>
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
@@ -314,54 +329,37 @@ function Task(props) {
               {props.links.map((link, i) =>
                 link.length > 1 ? (
                   <a key={i} href={link} target="_blank" data-tip={link} rel="noreferrer">
-                    <i className="fa fa-link" aria-hidden="true" />
+                    <i className={`fa fa-link ${darkMode ? 'text-azure' : ''}`} aria-hidden="true" />
                   </a>
                 ) : null,
               )}
             </td>
-            <td className="desktop-view" onClick={toggleModel}>
+            <td className="desktop-view" onClick={toggleModal}>
               <i className="fa fa-book" aria-hidden="true" data-tip="More info" />
             </td>
-            <Modal isOpen={modal} toggle={toggleModel}>
-              <ModalBody>
+            <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
+              <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}></ModalHeader>
+              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <h6>WHY THIS TASK IS IMPORTANT:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.whyInfo}
                 />
 
                 <h6>THE DESIGN INTENT:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.intentInfo}
                 />
 
                 <h6>ENDSTATE:</h6>
                 <Editor
-                  init={{
-                    menubar: false,
-                    toolbar: false,
-                    branding: false,
-                    min_height: 80,
-                    max_height: 300,
-                    autoresize_bottom_margin: 1,
-                  }}
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
                   disabled
                   value={props.endstateInfo}
                 />
@@ -440,6 +438,7 @@ function Task(props) {
 
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
+  darkMode: state.theme.darkMode,
 });
 
 const ConnectedTask = connect(mapStateToProps, {

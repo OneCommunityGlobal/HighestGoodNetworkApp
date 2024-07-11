@@ -20,6 +20,8 @@ import OldBadges from './OldBadges';
 import { WEEK_DIFF } from '../../constants/badge';
 
 function Badge(props) {
+  const { darkMode } = props;
+
   // const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
@@ -77,10 +79,13 @@ function Badge(props) {
   }, [props.userProfile.badgeCollection, totalBadge]);
   return (
     <>
-      <Container className="right-padding-temp-fix bagde-box-shadow">
+      <Container className={`p-0 ${darkMode ? 'badge-box-shadow-dark' : 'bagde-box-shadow'}`}>
         <Row>
           <Col md={12}>
-            <Card style={{ backgroundColor: '#fafafa', borderRadius: 0 }} id="badgesearned">
+            <Card
+              style={{ backgroundColor: darkMode ? '#1C2541' : '#fafafa', borderRadius: 0 }}
+              id="badgesearned"
+            >
               <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
                 Badges <i className="fa fa-info-circle" id="BadgeInfo" />
               </CardHeader>
@@ -88,16 +93,18 @@ function Badge(props) {
                 <NewBadges
                   personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
                   badges={props.userProfile.badgeCollection || []}
+                  darkMode={darkMode}
                 />
                 <OldBadges
                   personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
                   badges={props.userProfile.badgeCollection || []}
+                  darkMode={darkMode}
                 />
                 <CardText
                   style={{
                     fontWeight: 'bold',
                     fontSize: 18,
-                    color: '#285739',
+                    color: darkMode ? '#007BFF' : '#285739',
                   }}
                 >
                   {generateBadgeText(
@@ -138,9 +145,15 @@ function Badge(props) {
           icon to learn more about the different types of badges.
         </p>
       </UncontrolledTooltip>
-      <Modal isOpen={isOpenTypes} toggle={toggleTypes}>
-        <ModalHeader toggle={toggleTypes}>Badge Types and Assignment</ModalHeader>
-        <ModalBody>
+      <Modal
+        isOpen={isOpenTypes}
+        toggle={toggleTypes}
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggleTypes}>
+          Badge Types and Assignment
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p className="badge_info_icon_text">
             No Infringement Streak: Not recieving any infringement for a certain number of months.{' '}
           </p>
@@ -185,6 +198,7 @@ function Badge(props) {
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps)(Badge);

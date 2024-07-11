@@ -14,22 +14,29 @@
     display: relative;
   }
 
-  thead th {
+  .leaderboard thead th {
     position: sticky;
     top: 0;
-    background-color: aliceblue;
-    border-top: 1px solid #dee2e6;
+    background-color: #1c2541;
+    border-top: 10px solid #dee2e6;
     border-top-width: 1px;
     border-top-style: solid;
     border-top-color: rgb(222, 226, 230);
   }
 }
+.row{
+  width: 97%;
+}
+
+.table-fixed tbody td {
+  white-space: normal; /* Allow text wrapping within cells */
+}
+.table-fixed{
+  font-size: 0.93rem;
+}
 
 .animation {
   animation: l-animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-}
-.modal-personal-dashboard {
-  box-shadow: 2px 2px 4px 1px rgb(105, 105, 105);
 }
 @keyframes l-animation {
   0% {

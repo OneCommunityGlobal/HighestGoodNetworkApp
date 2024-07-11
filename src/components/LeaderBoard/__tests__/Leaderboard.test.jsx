@@ -15,7 +15,7 @@ describe('Leaderboard page structure', () => {
     props.organizationData = { weeklyCommittedHours: 0, tangibletime: 0, totaltime: 0 };
     props.getLeaderboardData = jest.fn();
     props.loggedInUser = jest.fn();
-    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    mountedLeaderboard = shallow(<Leaderboard {...props} darkMode={true} />);
   });
 
   it('should be rendered with a table', () => {
@@ -27,7 +27,7 @@ describe('Leaderboard page structure', () => {
     const tableHeader = mountedLeaderboard.find('thead');
     expect(tableHeader.length).toBe(1);
     const tableHeads = tableHeader.find('th');
-    expect(tableHeads.length).toBe(6);
+    expect(tableHeads.length).toBe(7);
   });
 
   it('should be rendered with mock Leaderboard data', () => {
