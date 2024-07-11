@@ -16,6 +16,7 @@ const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile 
               fontSize={20}
               isPermissionPage
               role={userProfile.role}
+              darkMode={darkMode}
             />
           </div>
         </div>
