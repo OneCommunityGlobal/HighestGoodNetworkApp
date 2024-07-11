@@ -213,8 +213,11 @@ describe("Projects component",()=>{
     fireEvent.click(deleteButton)
     const modalElement=screen.getByRole("dialog")
     expect(modalElement).toBeInTheDocument();
+
+    expect(screen.getByText("Confirm Deletion")).toBeInTheDocument();
+    expect(screen.getByText("project content 1")).toBeInTheDocument();
   })
-  it('check if msg modal is closed when showModalMsg is set to false',()=>{
+  it('check if message modal is closed when showModalMsg is set to false',()=>{
     axios.get.mockResolvedValue({
       status: 200,
       data: [],
@@ -222,7 +225,7 @@ describe("Projects component",()=>{
     render(<Provider store={store}><Projects /></Provider>)
     expect(screen.queryByRole('document')).not.toBeInTheDocument()
   })
-  it('check if msg modal is open when showModalMsg is set to true',()=>{
+  it('check if message modal is open when showModalMsg is set to true',async ()=>{
     axios.get.mockResolvedValue({
       status: 200,
       data:[]
@@ -257,6 +260,8 @@ describe("Projects component",()=>{
     fireEvent.click(plusElement)
     const modalElement=screen.getByRole("dialog")
     expect(modalElement).toBeInTheDocument();
+    expect(screen.getByText('Notice')).toBeInTheDocument();
+    expect(screen.getByText('This project name is already taken')).toBeInTheDocument()
   })
   it('check if active projects are getting displayed as expected',()=>{
     axios.get.mockResolvedValue({
@@ -306,4 +311,5 @@ describe("Projects component",()=>{
     const attributeElement=colorElement.getAttribute('color')
     expect(attributeElement).toBe('#dee2e6')
   })
+  
 })
