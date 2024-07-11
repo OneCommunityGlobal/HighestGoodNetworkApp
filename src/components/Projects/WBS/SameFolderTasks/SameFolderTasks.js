@@ -11,11 +11,12 @@ import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 function SameFolderTasks(props) {
   const { taskId } = props.match.params;
 
+  let isMounted = true;
+
   const [task, setTask] = useState({});
   const [wbsId, setWBSId] = useState('');
 
   const [allTasks, setAllTasks] = useState([]);
-  const [WBS, setWBS] = useState({});
   const [loading, setLoading] = useState(false);
 
   const [projectId, setProjectId] = useState('');
@@ -25,22 +26,29 @@ function SameFolderTasks(props) {
     const fetchTaskData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_TASK(taskId));
-        setTask(res?.data || {});
-        setWBSId(res?.data.wbsId || '');
+        if (isMounted) {
+          setTask(res?.data || {});
+          setWBSId(res?.data.wbsId || '');
+        }
       } catch (error) {
         console.log(error);
       }
     };
     fetchTaskData();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   useEffect(() => {
     const fetchWBSData = async () => {
       try {
         const res = await axios.get(ENDPOINTS.GET_WBS(wbsId));
-        setWBS(res?.data || {});
-        setProjectId(res?.data?.projectId);
-        setWbsName(res?.data?.wbsName);
+        if (isMounted) {
+          setProjectId(res?.data?.projectId);
+          setWbsName(res?.data?.wbsName);
+        }
       } catch (error) {
         console.log(error);
       }
@@ -48,12 +56,19 @@ function SameFolderTasks(props) {
 
     fetchAllTasks();
     fetchWBSData();
+
+    return () => {
+      isMounted = false;
+    };
   }, [wbsId]);
 
   const fetchAllTasks = async () => {
     try {
       const res = await axios.get(ENDPOINTS.TASKS(task.wbsId, task.level, task.mother));
-      setAllTasks(res?.data || []);
+      if (isMounted) {
+        if (JSON.stringify(res?.data) === '{}') setAllTasks([]);
+        else setAllTasks(res?.data || []);
+      }
       setLoading(false);
     } catch (error) {
       console.log(error);
