@@ -123,6 +123,7 @@
 .icon-button {
   /* This is the new class */
   height: 40px; /* You can adjust this value */
+  width: 80px;
   line-height: 40px; /* This should be the same as the height */
   padding: 0px 10px; /* Optional: Adds some padding inside the button */
 }
@@ -159,7 +160,7 @@
     font-size: 0.75rem !important;
   }
   .user-role-tab__h1 {
-    font-size: 1.5rem !important;
+    font-size: 1.65rem !important;
     width: 70%;
   }
   .name-container__role-name {
@@ -188,5 +189,12 @@
   }
   .user-role-tab__permissions {
     padding-right: 15px;
+  }
+}
+
+@media only screen and (max-width: 455px) {
+  .user-role-tab__h1 {
+    font-size: 1.25rem !important;
+    width: 70%;
   }
 }
