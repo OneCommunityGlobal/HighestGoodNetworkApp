@@ -127,7 +127,7 @@ function CurrentPromptModal(props) {
     <div>
       {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
         <Button
-          className="p-1 mb-1 current-prompt-btn"
+          className="p-1 mb-1 responsive-font-size"
           color="info"
           onClick={toggle}
           style={darkMode ? boxStyleDark : boxStyle}
@@ -146,7 +146,7 @@ function CurrentPromptModal(props) {
         </Button>
       ) : (
         <Button
-          className="p-1 mb-1 current-prompt-btn"
+          className="p-1 mb-1 responsive-font-size"
           color="info"
           onClick={toggle}
           style={darkMode ? boxStyleDark : boxStyle}

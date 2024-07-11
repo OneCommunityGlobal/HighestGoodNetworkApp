@@ -160,10 +160,6 @@
   .summary-dropdown {
     margin-left: auto;
   }
-
-  .current-prompt-btn {
-    font-size: 0.75rem !important;
-  }
 }
 
 @media only screen and (max-width: 544px) {
