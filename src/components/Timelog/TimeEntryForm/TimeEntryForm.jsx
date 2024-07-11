@@ -517,7 +517,7 @@ const TimeEntryForm = props => {
                 id="dateOfWork"
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
-                min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]} 
+                // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]} 
                 disabled={!canEditTimeEntryDate}
               />
               {'dateOfWork' in errors && (
@@ -605,7 +605,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!canEditTimeEntryToggleTangible || from === 'Timer'}
+                  disabled={!canEditTimeEntryToggleTangible || from !== 'Timer'}
                 />
                 Tangible&nbsp;
                 <i
