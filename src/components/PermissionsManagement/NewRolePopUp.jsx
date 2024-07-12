@@ -49,9 +49,10 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
 
   const checkIfDuplicate = value => {
     let duplicateFound = false;
+    const trimmedValue = value.trim();
 
     roleNames.forEach(val => {
-      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
+      if (val.localeCompare(trimmedValue, 'en', { sensitivity: 'base' }) === 0) {
         duplicateFound = true;
         return true;
       }
