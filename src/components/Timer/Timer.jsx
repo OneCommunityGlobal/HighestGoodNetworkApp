@@ -25,7 +25,7 @@ import TimerStatus from './TimerStatus';
 export default function Timer({ darkMode }) {
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
-   *  the readyState will be stuck at CONNECTING, so here we need to use a custom readyState to
+   *  the readyState will be stuck at OPEN, so here we need to use a custom readyState to
    *  mimic the real readyState, and when internet is cut off, the custom readyState will be set
    *  to CLOSED, and the user will be notified to refresh the page to reconnect to the server.
    * */
@@ -40,7 +40,6 @@ export default function Timer({ darkMode }) {
     },
   };
 
-  const isConnected = customReadyState === ReadyState.OPEN;
   /**
    * Expected message format: {
    *  userId: string,
@@ -259,7 +258,7 @@ export default function Timer({ darkMode }) {
           if (isWSOpenRef.current > 3) {
             setRunning(false);
             setInacModal(true);
-            getWebSocket().close();
+            getWebSocket().close(); // try to close the WS connection, but it might not work when internet is cut off
             setCustomReadyState(ReadyState.CLOSED);
           }
         }, 10000); // close the WS if no response after 10 seconds
