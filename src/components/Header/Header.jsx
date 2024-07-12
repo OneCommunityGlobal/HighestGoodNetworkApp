@@ -334,6 +334,11 @@ export function Header(props) {
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
                       )}
+                      {canGetWeeklyVolunteerSummary && (
+                        <DropdownItem tag={Link} to="/totalorgsummary">
+                          {TOTAL_ORG_SUMMARY}
+                        </DropdownItem>
+                      )}
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>
