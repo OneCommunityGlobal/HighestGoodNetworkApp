@@ -49,6 +49,7 @@ export const RoutePermissions = {
     'updateTask',
     'deleteTask',
     'resolveTask',
-    'putReviewStatus'
+    'putReviewStatus',
+    'suggestTask'
   ]
 };

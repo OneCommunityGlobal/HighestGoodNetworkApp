@@ -3,6 +3,7 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store'; // If using Redux
 import MockAssignTableRow from '../MockData/MockAssignTableRow';
 import AssignBadgePopup from '../AssignBadgePopup';
+import { themeMock } from '__tests__/mockStates';
 
 /** ********************************TEST PRE-REQUISITE*************************************** */
 // Mock Redux store
@@ -11,6 +12,7 @@ const initialState = {
   badge: {
     selectedBadges: [],
   },
+  theme: themeMock,
 };
 const store = mockStore(initialState);
 

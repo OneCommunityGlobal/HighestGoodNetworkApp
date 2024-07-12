@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -34,7 +34,7 @@ import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from 'components/TeamMemberTasks';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
-import { getUserProjects, getUserWBSs } from '../../actions/userProjects';
+import { getUserProjects } from '../../actions/userProjects';
 import { getAllRoles } from '../../actions/role';
 import { getBadgeCount, resetBadgeCount } from '../../actions/badgeManagement';
 import TimeEntryForm from './TimeEntryForm';
@@ -49,7 +49,11 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import Badge from '../Badge';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -86,10 +90,10 @@ const endOfWeek = offset => {
 
 const Timelog = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
+  const location = useLocation();
 
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
 
   // access the store states
   const {
@@ -98,10 +102,18 @@ const Timelog = props => {
     timeEntries,
     roles,
     displayUserProjects,
-    displayUserWBSs,
     disPlayUserTasks,
   } = props;
 
+  function displayUserIdRoute() {
+    const path = location.pathname
+    const id = path.split('/').pop()
+    if (id.includes("dashboard") || id.includes("users")) {
+      return authUser?.userid
+    }
+    return id;
+  }
+  displayUserIdRoute();
   const initialState = {
     timeEntryFormModal: false,
     summary: false,
@@ -135,7 +147,7 @@ const Timelog = props => {
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId : userId,
+    viewingUser ? viewingUser.userId : displayUserIdRoute() || userId
   );
 
   const isAuthUser = authUser.userid === displayUserId;
@@ -219,7 +231,6 @@ const Timelog = props => {
         props.getTimeEntriesForPeriod(userId, timeLogState.fromDate, timeLogState.toDate),
         props.getAllRoles(),
         props.getUserProjects(userId),
-        props.getUserWBSs(userId),
         props.getUserTasks(userId),
       ]);
       setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
@@ -232,7 +243,11 @@ const Timelog = props => {
 
   const toggle = () => {
     if (isNotAllowedToEdit) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (displayUserProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     setTimeLogState({ ...timeLogState, timeEntryFormModal: !timeLogState.timeEntryFormModal });
@@ -339,23 +354,28 @@ const Timelog = props => {
       project.WBSObject = {};
       projectsObject[projectId] = project;
     });
-    displayUserWBSs.forEach(WBS => {
-      const { projectId, _id: wbsId } = WBS;
-      WBS.taskObject = [];
-      if (projectsObject[projectId]) {
-        projectsObject[projectId].WBSObject[wbsId] = WBS;
-      }
-    })
     disPlayUserTasks.forEach(task => {
-      const { projectId, wbsId, _id: taskId, resources } = task;
-      const isTaskCompletedForTimeEntryUser = resources.find(resource => resource.userID === displayUserProfile._id)?.completedTask;
-      if (!isTaskCompletedForTimeEntryUser && projectsObject[projectId]) {
-        if (!projectsObject[projectId].WBSObject) {
-          projectsObject[projectId].WBSObject = {};
+      const { projectId, wbsId, _id: taskId, wbsName, projectName } = task;
+      if (!projectsObject[projectId]) {
+        projectsObject[projectId] = {
+          projectName,
+          WBSObject: {
+            [wbsId]: {
+              wbsName,
+              taskObject: {
+                [taskId]: task
+              }
+            }
+          }
         }
-        if (!projectsObject[projectId].WBSObject[wbsId]) {
-          projectsObject[projectId].WBSObject[wbsId] = { taskObject: {} };
+      } else if (!projectsObject[projectId].WBSObject[wbsId]) {
+        projectsObject[projectId].WBSObject[wbsId] = {
+          wbsName,
+          taskObject: {
+            [taskId]: task
+          }
         }
+      } else {
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
       }
     });
@@ -427,10 +447,8 @@ const Timelog = props => {
   }, [timeLogState.projectsSelected]);
 
   useEffect(() => {
-    props.getBadgeCount(displayUserId);
-  }, [displayUserId, props]);
 
-  useEffect(() => {
+    setDisplayUserId(viewingUser ? viewingUser.userId : displayUserIdRoute() || userId);
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
     window.addEventListener('storage', handleStorageEvent);
     return () => {
@@ -595,11 +613,9 @@ const Timelog = props => {
                           <Button onClick={openInfo} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                             Close
                           </Button>
-                          {canEditTimeEntry ? (
-                            <Button onClick={openInfo} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
-                              Edit
-                            </Button>
-                          ) : null}
+                          <Button onClick={openInfo} color="secondary">
+                            Edit
+                          </Button>
                         </ModalFooter>
                       </Modal>
                       {/* This TimeEntryForm is for adding intangible time throught the add intangible time enty button */}
@@ -813,7 +829,6 @@ const mapStateToProps = state => ({
   displayUserProfile: state.userProfile,
   timeEntries: state.timeEntries,
   displayUserProjects: state.userProjects.projects,
-  displayUserWBSs: state.userProjects.wbs,
   disPlayUserTasks: state.userTask,
   roles: state.role.roles,
   badgeCount: state.badge.badgeCount,
@@ -825,7 +840,6 @@ export default connect(mapStateToProps, {
   getTimeEntriesForPeriod,
   getUserProfile,
   getUserProjects,
-  getUserWBSs,
   getUserTasks,
   updateUserProfile,
   getAllRoles,

@@ -1,3 +1,4 @@
+
 const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
 
@@ -40,7 +41,6 @@ export const ENDPOINTS = {
   TIME_ENTRY_CHANGE: timeEntryId => `${APIEndpoint}/TimeEntry/${timeEntryId}`,
   WBS_ALL: `${APIEndpoint}/wbs`,
   WBS: projectId => `${APIEndpoint}/wbs/${projectId}`,
-  WBS_USER: userId => `${APIEndpoint}/wbs/user/${userId}`,
   GET_WBS: wbsId => `${APIEndpoint}/wbsId/${wbsId}`,
   TASKS: (wbsId, level, mother) => `${APIEndpoint}/tasks/${wbsId}/${level}/${mother || '0'}`,
   TASK: wbsId => `${APIEndpoint}/task/${wbsId}`,
@@ -170,6 +170,7 @@ export const ENDPOINTS = {
 
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
   SET_USER_FOLLOWUP: (userId,taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
+  GET_PROJECT_BY_PERSON: (searchName) => `${APIEndpoint}/userProfile/projects/${searchName}`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
@@ -183,10 +184,16 @@ export const ENDPOINTS = {
   BM_REUSABLE_TYPES: `${APIEndpoint}/bm/invtypes/reusables`,
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
+  BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
+  BM_EQUIPMENT_TYPES : `${APIEndpoint}/bm/invtypes/equipments`,
+  BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
   BM_UPDATE_MATERIAL: `${APIEndpoint}/bm/updateMaterialRecord`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
+  BM_UPDATE_REUSABLE: `${APIEndpoint}/bm/updateReusableRecord`,
+  BM_UPDATE_REUSABLE_BULK: `${APIEndpoint}/bm/updateReusableRecordBulk`,
+  BM_TOOLS: `${APIEndpoint}/bm/tools`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
   BM_TOOLS_PURCHASE: `${APIEndpoint}/bm/tools/purchase`,
   POST_LESSON: `${APIEndpoint}/bm/lessons/new`,
@@ -197,7 +204,9 @@ export const ENDPOINTS = {
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
+  BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
+  BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
   BM_UPDATE_MATERIAL_BULK: `${APIEndpoint}/bm/updateMaterialRecordBulk`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
@@ -205,6 +214,8 @@ export const ENDPOINTS = {
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
   UPDATE_TIME_OFF_REQUEST: id => `${APIEndpoint}/updateTimeOffRequest/${id}`,
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
+  BLUE_SQUARE_EMAIL_BCC : () => `${APIEndpoint}/AssignBlueSquareEmail`,
+  DELETE_BLUE_SQUARE_EMAIL_BCC : id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
 };
 
 export const ApiEndpoint = APIEndpoint;
