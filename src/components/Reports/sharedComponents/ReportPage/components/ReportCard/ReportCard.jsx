@@ -1,4 +1,3 @@
-import React from 'react'
 import { ReportBlock } from '../ReportBlock';
 import './ReportCard.css';
 
