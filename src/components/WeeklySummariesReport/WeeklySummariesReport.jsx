@@ -432,54 +432,71 @@ export class WeeklySummariesReport extends Component {
   };
 
   handleTeamCodeChange = (oldTeamCode, newTeamCode, userId) => {
-    this.setState(prevState => {
-      let { teamCodes, summaries, selectedCodes } = prevState;
-
-      // Find and update the user's team code in summaries
-      summaries = summaries.map(summary => {
-        if (summary._id === userId) {
-          return { ...summary, teamCode: newTeamCode };
-        }
-        return summary;
-      });
-
-      // Count the occurrences of each team code
-      const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
-        acc[teamCode] = (acc[teamCode] || 0) + 1;
-        return acc;
-      }, {});
-
-      // Update teamCodes by filtering out those with zero count
-      teamCodes = Object.entries(teamCodeCounts)
-        .filter(([count]) => count > 0)
-        .map(([code, count]) => ({
-          label: `${code} (${count})`,
-          value: code,
-        }));
-
-      // Update selectedCodes labels and filter out those with zero count
-      selectedCodes = selectedCodes
-        .map(selected => {
-          const count = teamCodeCounts[selected.value];
-          if (count !== undefined && count > 0) {
-            return { ...selected, label: `${selected.value} (${count})` };
+    try {
+      this.setState(prevState => {
+        let { teamCodes, summaries, selectedCodes } = prevState;
+        // Find and update the user's team code in summaries
+        summaries = summaries.map(summary => {
+          if (summary._id === userId) {
+            return { ...summary, teamCode: newTeamCode };
           }
-          return null;
-        })
-        .filter(Boolean);
-
-      if (!selectedCodes.find(code => code.value === newTeamCode)) {
-        selectedCodes.push({
-          label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
-          value: newTeamCode,
+          return summary;
         });
-      }
+        let noTeamCodeCount = 0;
+        summaries.forEach(summary => {
+          if (summary.teamCode.length <= 0) {
+            noTeamCodeCount += 1;
+          }
+        });
+        // Count the occurrences of each team code
+        const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
+          acc[teamCode] = (acc[teamCode] || 0) + 1;
+          return acc;
+        }, {});
+        // console.log(Object.entries(teamCodeCounts), 'teamCodecounts');
+        // Update teamCodes by filtering out those with zero count
+        teamCodes = Object.entries(teamCodeCounts)
+          .filter(([code, count]) => code.length > 0 && count > 0)
+          .map(([code, count]) => ({
+            label: `${code} (${count})`,
+            value: code,
+          }));
 
-      // Sort teamCodes by label
-      teamCodes.sort((a, b) => a.label.localeCompare(b.label));
+        // Update selectedCodes labels and filter out those with zero count
+        selectedCodes = selectedCodes
+          .map(selected => {
+            const count = teamCodeCounts[selected.value];
+            if (selected?.label.includes('Select All With NO Code')) {
+              return { ...selected, label: `Select All With NO Code (${noTeamCodeCount || 0})` };
+            }
+            if (count !== undefined && count > 0) {
+              return { ...selected, label: `${selected.value} (${count})` };
+            }
+            return null;
+          })
+          .filter(Boolean);
 
-      return { summaries, teamCodes, selectedCodes };
-    });
+        if (!selectedCodes.find(code => code.value === newTeamCode)) {
+          if (newTeamCode !== undefined && newTeamCode.length > 0) {
+            selectedCodes.push({
+              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
+              value: newTeamCode,
+            });
+          }
+        }
+
+        // Sort teamCodes by label
+        teamCodes
+          .sort((a, b) => a.label.localeCompare(b.label))
+          .push({
+            value: '',
+            label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+          });
+        return { summaries, teamCodes, selectedCodes };
+      });
+    } catch (error) {
+      // console.log(error);
+    }
   };
 
   render() {
@@ -593,6 +610,7 @@ export class WeeklySummariesReport extends Component {
               onChange={e => {
                 this.handleSelectCodeChange(e);
               }}
+              labelledBy="Select"
             />
           </Col>
           <Col lg={{ size: 5 }} xs={{ size: 5 }}>

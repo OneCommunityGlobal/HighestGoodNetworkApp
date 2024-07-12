@@ -1628,6 +1628,7 @@ export default {
             'postUserProfile',
             'putUserProfile',
             'putUserProfileImportantInfo',
+            'updateSummaryRequirements',
             'updatePassword',
             'deleteUserProfile',
             'infringementAuthorizer',

@@ -11,6 +11,11 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 /**
  * The body row of the user table
  */
@@ -45,7 +50,7 @@ const UserTableData = React.memo(props => {
   const hasFullFunctionality = props.hasPermission('userManagementFullFunctionality');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   return (
-    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : '' }`} id={`tr_user_${props.index}`}>
+    <tr className={`usermanagement__tr`} id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
@@ -95,13 +100,17 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
-            if(!hasFullFunctionality){
-              toast.warn('You do not have permission to perform this action.');
+
+            if(cantUpdateDevAdminDetails(props.user?.email , props.authEmail)){
+              if (props.user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+                alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+              } else {
+                alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+              }
               return;
             }
-
-            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
-              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+            if(!hasFullFunctionality){
+              toast.warn('You do not have permission to perform this action.');
               return;
             }
             onReset(true);
@@ -153,12 +162,17 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
-            if(!hasFullFunctionality){
-              toast.warn('You do not have permission to perform this action.');
+            
+            if(cantUpdateDevAdminDetails(props.user?.email , props.authEmail)){
+              if (props.user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+                alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+              } else {
+                alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+              }
               return;
             }
-            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
-              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+            if(!hasFullFunctionality){
+              toast.warn('You do not have permission to perform this action.');
               return;
             }
             props.onFinalDayClick(
