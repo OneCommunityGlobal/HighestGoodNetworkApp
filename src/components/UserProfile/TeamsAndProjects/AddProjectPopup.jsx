@@ -26,6 +26,7 @@ const AddProjectPopup = React.memo(props => {
   const [dropdownText, setDropdownText] = useState('Unspecified');
   const [searchText, onInputChange] = useState('');
   const [userRole, setUserRole] = useState(props.role);
+  const [allProjects, setAllProjects] = useState(props.projects);
 
   useEffect(() => {
     const categoriesProjects = props.projects.map(item => item.category);
@@ -108,6 +109,7 @@ const AddProjectPopup = React.memo(props => {
       if (status === 200) {
         const findNewProject = projects.filter((item, i) => i === 0)[0];
         selectProject(findNewProject);
+        setAllProjects(res.data);
         finishFetch(status);
       } else {
         onInputChange('');
@@ -133,7 +135,7 @@ const AddProjectPopup = React.memo(props => {
         <>
           <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
             <AddProjectsAutoComplete
-              projectsData={props.projects}
+              projectsData={allProjects}
               onDropDownSelect={selectProject}
               selectedProject={selectedProject}
               setIsOpenDropdown={setIsOpenDropdown}
