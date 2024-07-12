@@ -8,7 +8,7 @@ import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
-import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
+// import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
 import './TotalOrgSummary.css';
 
 // components
