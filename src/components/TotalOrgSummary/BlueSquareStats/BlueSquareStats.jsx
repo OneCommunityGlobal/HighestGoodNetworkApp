@@ -9,11 +9,11 @@ function BlueSquareStats() {
       <div className="blue-square-stats-pie-chart">
         <DonutChart
           data={BLUE_SQUARE_STATS}
-          width={300}
-          height={300}
-          innerRadius={80}
-          outerRadius={100}
-          totalText="Total Blue Squares: 145"
+          width={600}
+          height={600}
+          innerRadius={120}
+          outerRadius={220}
+          totalBlueSquares={145}
           colors={BLUE_SQUARE_STATS_COLORS}
         />
       </div>

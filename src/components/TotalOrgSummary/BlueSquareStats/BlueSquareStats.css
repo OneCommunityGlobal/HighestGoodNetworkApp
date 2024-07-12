@@ -1,22 +1,29 @@
 .blue-square-stats {
   width: 100%;
+  /* padding: 1rem; */
+  box-sizing: border-box;
+}
+
+.blue-square-stats-title {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2rem;
 }
 
 .blue-square-stats-pie-chart {
-  margin-top: 3rem;
-  width: 50%; /* Adjust as needed */
+  width: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
 .blue-square-stats-pie-chart .legend rect {
-  width: 12px; /* Adjust as needed */
-  height: 12px; /* Adjust as needed */
-  margin-right: 5px;
+  width: 18px;
+  height: 18px;
+  margin-right: 8px;
 }
 
 .blue-square-stats-pie-chart .legend text {
-  font-size: 12px;
+  font-size: 2.5rem;
   text-anchor: start;
 }

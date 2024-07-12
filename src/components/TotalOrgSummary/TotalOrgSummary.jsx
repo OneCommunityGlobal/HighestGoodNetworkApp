@@ -8,7 +8,7 @@ import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
-// import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
+import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
 import './TotalOrgSummary.css';
 
 // components
@@ -154,7 +154,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <BlueSquareStats />
             </div>
           </Col>
         </Row>

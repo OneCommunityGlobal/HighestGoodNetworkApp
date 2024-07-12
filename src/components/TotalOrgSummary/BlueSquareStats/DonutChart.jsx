@@ -1,11 +1,10 @@
 import { useEffect, useRef } from 'react';
 import * as d3 from 'd3';
 
-function DonutChart({ data, width, height, innerRadius, outerRadius, totalText, colors }) {
+function DonutChart({ data, width, height, innerRadius, outerRadius, totalBlueSquares, colors }) {
   const svgRef = useRef();
 
   useEffect(() => {
-    // Clear any previous svg elements
     d3.select(svgRef.current)
       .selectAll('*')
       .remove();
@@ -65,7 +64,9 @@ function DonutChart({ data, width, height, innerRadius, outerRadius, totalText, 
       .attr('transform', arcTransformD => `translate(${arcGenerator.centroid(arcTransformD)})`)
       .attr('text-anchor', 'middle')
       .attr('dy', '-0.5em')
-      .style('font-size', `${Math.min(width, height) * 0.03}px`)
+      .style('font-size', `${Math.min(width, height) * 0.045}px`)
+      .style('font-weight', '600')
+      .style('text-wrap', 'wrap')
       .text(arcTextD => arcTextD.data.value);
 
     arcs
@@ -76,19 +77,29 @@ function DonutChart({ data, width, height, innerRadius, outerRadius, totalText, 
       )
       .attr('text-anchor', 'middle')
       .attr('dy', '1.0em')
-      .style('font-size', `${Math.min(width, height) * 0.025}px`)
+      .style('font-size', `${Math.min(width, height) * 0.028}px`)
       .text(
         arcD =>
           `(${((arcD.data.value / d3.sum(data, sumArcD => sumArcD.value)) * 100).toFixed(2)}%)`,
       );
 
-    // Append the total text in the center
     svg
       .append('text')
       .attr('text-anchor', 'middle')
-      .attr('dy', '.35em')
-      .style('font-size', `${Math.min(width, height) * 0.04}px`)
-      .text(totalText);
+      .style('font-size', `${Math.min(width, height) * 0.03}px`)
+      .style('fill', '#828282')
+      .style('font-weight', '600')
+      .text('TOTAL BLUE SQUARES');
+
+    svg
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '1em')
+      .style('font-size', `${Math.min(width, height) * 0.1}px`)
+      .style('fill', '#828282')
+      .style('font-weight', '600')
+
+      .text(totalBlueSquares);
 
     // Create legend
     const legend = svg
@@ -113,9 +124,9 @@ function DonutChart({ data, width, height, innerRadius, outerRadius, totalText, 
       .attr('y', 9)
       .attr('dy', '.35em')
       .style('text-anchor', 'start')
-      .style('font-size', '12px')
+      .style('font-size', '1rem')
       .text(textLabel => textLabel.label);
-  }, [data, width, height, innerRadius, outerRadius, totalText, colors]);
+  }, [data, width, height, innerRadius, outerRadius, totalBlueSquares, colors]);
 
   return <svg ref={svgRef} style={{ maxWidth: '100%', height: 'auto' }} />;
 }
