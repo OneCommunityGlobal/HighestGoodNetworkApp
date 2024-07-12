@@ -3,7 +3,6 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Alert, Input } from
 import AddProjectsAutoComplete from './AddProjectsAutoComplete';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css';
-import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
@@ -25,7 +24,6 @@ const AddProjectPopup = React.memo(props => {
   const [isUserIsNotSelectedAutoComplete, isSetUserIsNotSelectedAutoComplete] = useState(false);
   const [dropdownText, setDropdownText] = useState('Unspecified');
   const [searchText, onInputChange] = useState('');
-  const [userRole, setUserRole] = useState(props.role);
   const [allProjects, setAllProjects] = useState(props.projects);
 
   useEffect(() => {
@@ -157,17 +155,15 @@ const AddProjectPopup = React.memo(props => {
               className="input-group-prepend"
               style={{ marginBottom: '10px', display: 'flex', flexDirection: 'row', gap: '10px' }}
             >
-              {userRole === 'Owner' && (
-                <Input
-                  type="select"
-                  onChange={e => setDropdownText(e.target.value)}
-                  value={dropdownText}
-                >
-                  {itemsDropdown.map(item => {
-                    return <option key={item}>{item}</option>;
-                  })}
-                </Input>
-              )}
+              <Input
+                type="select"
+                onChange={e => setDropdownText(e.target.value)}
+                value={dropdownText}
+              >
+                {itemsDropdown.map(item => {
+                  return <option key={item}>{item}</option>;
+                })}
+              </Input>
 
               <Button
                 color="danger"
