@@ -10,8 +10,28 @@ import {
   LabelList,
 } from 'recharts';
 import './TeamStatsBarChart.css';
+import TeamStatsBarLabel from './TeamStatsBarLabel';
 
-const TeamStatsBarChart = ({ data, yAxisLabel }) => {
+function TeamStatsBarChart({ data, yAxisLabel }) {
+  const totalValue = data.reduce((acc, item) => acc + item.value, 0);
+  const renderCustomLabel = props => {
+    const { x, y, width, height, index } = props;
+    const entry = data[index];
+    const percentage = ((entry.value / totalValue) * 100).toFixed(2);
+
+    return (
+      <TeamStatsBarLabel
+        x={x}
+        y={y}
+        width={width}
+        height={height}
+        value={entry.value}
+        change={entry.change}
+        percentage={percentage}
+      />
+    );
+  };
+
   return (
     <div className="team-stats-bar-chart">
       <h2 className="team-stats-title">Team Stats</h2>
@@ -19,68 +39,22 @@ const TeamStatsBarChart = ({ data, yAxisLabel }) => {
         <BarChart
           layout="vertical"
           data={data}
-          margin={{ top: 20, right: 100, left: 20, bottom: 20 }}
+          margin={{ top: 20, right: 150, left: 20, bottom: 20 }}
         >
           <XAxis type="number" />
           <YAxis type="category" dataKey={yAxisLabel} />
           <Tooltip />
           <Bar dataKey="value" fill="#1B6DDF">
-            <Cell fill="#1B6DDF" />
-            <LabelList
-              dataKey="value"
-              position="right"
-              content={props => {
-                const { x, y, width, value, index } = props;
-                const entry = data[index];
-                return (
-                  <g>
-                    <text
-                      x={x + width + 10}
-                      y={y + 10}
-                      fill="#000"
-                      fontSize="12"
-                      textAnchor="start"
-                      className="team-stats-value"
-                    >
-                      {entry.value}
-                    </text>
-                    <text
-                      x={x + width + 10}
-                      y={y + 25}
-                      fill="#666"
-                      fontSize="12"
-                      textAnchor="start"
-                      className="team-stats-value"
-                    >
-                      {'('}
-                      {(
-                        (entry.value / data.reduce((acc, item) => acc + item.value, 0)) *
-                        100
-                      ).toFixed(2)}
-                      %{')'}
-                    </text>
-                    <text
-                      x={x + width + 10}
-                      y={y + 40}
-                      fill={entry.change >= 0 ? 'green' : 'red'}
-                      fontSize="12"
-                      textAnchor="start"
-                      className="team-stats-value"
-                    >
-                      {entry.change >= 0
-                        ? `+${entry.change} volunteers`
-                        : `${entry.change} volunteers`}
-                    </text>
-                  </g>
-                );
-              }}
-            />
+            {data.map((_, index) => (
+              <Cell key={`cell-${data[index].value}`} fill="#1B6DDF" />
+            ))}
+            <LabelList dataKey="value" position="right" content={renderCustomLabel} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
     </div>
   );
-};
+}
 
 TeamStatsBarChart.propTypes = {
   data: PropTypes.arrayOf(
