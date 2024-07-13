@@ -16,11 +16,7 @@ import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHo
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import HoursCompletedBarChart from './HoursCompletedBarChart/HoursCompletedBarChart';
 
-const startDate = moment()
-.tz('America/Los_Angeles')
-.endOf('week')
-.subtract(2, 'week')
-.toISOString()
+const startDate = '2016-01-01'
 const endDate = moment()
 .tz('America/Los_Angeles')
 .endOf('week')
