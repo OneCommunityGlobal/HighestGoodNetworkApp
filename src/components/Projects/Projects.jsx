@@ -197,7 +197,7 @@ const Projects = function(props) {
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
         <div className="container-lg">
           {fetching || !fetched ? (
-          <div className="center-spinner">
+          <div className="loading-center-spinner">
             <Loading />
           </div>
           ) : null}
