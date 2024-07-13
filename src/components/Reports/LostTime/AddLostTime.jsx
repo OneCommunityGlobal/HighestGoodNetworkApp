@@ -7,7 +7,7 @@ import './../reportsPage.css';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from 'actions/userProfile';
 import { postTimeEntry } from 'actions/timeEntries';
@@ -113,7 +113,7 @@ const AddLostTime = props => {
     if (entryType == 'project') {
       return (
         <FormGroup>
-          <Label>Project Name</Label>
+          <Label className={fontColor}>Project Name</Label>
           <AddProjectsAutoComplete
             projectsData={props.projects}
             onDropDownSelect={selectProject}
@@ -130,7 +130,7 @@ const AddLostTime = props => {
       return (
         <>
           <FormGroup>
-            <Label>Name</Label>
+            <Label className={fontColor}>Name</Label>
             <MemberAutoComplete
               userProfileData={{userProfiles: props.users}}
               onAddUser={selectUser}
@@ -148,7 +148,7 @@ const AddLostTime = props => {
     } else if (entryType == 'team') {
       return (
         <FormGroup>
-          <Label>Team Name</Label>
+          <Label className={fontColor}>Team Name</Label>
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
@@ -311,14 +311,14 @@ const AddLostTime = props => {
   };
 
   return (
-    <Modal className={darkMode ? `${fontColor} dark-mode` : ''} isOpen={props.isOpen} toggle={props.toggle}>
-      <ModalHeader toggle={props.toggle}>
+    <Modal className={darkMode ? `${fontColor} dark-mode` : ''} isOpen={props.isOpen} toggle={props.toggle} style={darkMode ? boxStyleDark : {}}>
+      <ModalHeader toggle={props.toggle} className={`${headerBg}`}>
         Add Lost Time
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={bodyBg}>
         <Form>
           <FormGroup>
-            <Label>Type</Label><br/>
+            <Label className={fontColor}>Type</Label><br/>
             <div className='type-container'>
               <div className='type-item' style={{paddingLeft: '20px'}} >
                 <Input
@@ -328,7 +328,7 @@ const AddLostTime = props => {
                   value="project"
                   onChange={handleTypeChange}
                 />
-                <Label>Project</Label>
+                <Label className={fontColor}>Project</Label>
               </div>
               <div className='type-item'>
                 <Input  
@@ -338,7 +338,7 @@ const AddLostTime = props => {
                   value="person"
                   onChange={handleTypeChange}
                 />
-                <Label>Person</Label>
+                <Label className={fontColor}>Person</Label>
               </div>
               <div className='type-item'>
                 <Input
@@ -348,7 +348,7 @@ const AddLostTime = props => {
                   value="team"
                   onChange={handleTypeChange}
                 />
-                <Label>Team</Label>
+                <Label className={fontColor}>Team</Label>
               </div>
             </div>
           </FormGroup>
@@ -356,7 +356,7 @@ const AddLostTime = props => {
             <>
               {handleFormContent()}
               <FormGroup>
-                <Label for="dateOfWork">Date</Label>
+                <Label for="dateOfWork" className={fontColor}>Date</Label>
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -371,7 +371,7 @@ const AddLostTime = props => {
                 )}
               </FormGroup>
               <FormGroup>
-              <Label for="timeSpent">Time (HH:MM)</Label>
+              <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
               <Row form>
                 <Col>
                   <Input
@@ -425,7 +425,7 @@ const AddLostTime = props => {
               </FormGroup>
             )}
             <FormGroup check>
-              <Label check>
+              <Label check className={fontColor}>
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -445,7 +445,7 @@ const AddLostTime = props => {
           )}
         </Form>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className={bodyBg}>
         <Button onClick={handleCancel} color="danger" style={boxStyle}>
           Cancel
         </Button>
