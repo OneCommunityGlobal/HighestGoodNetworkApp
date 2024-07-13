@@ -1,11 +1,12 @@
 /* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
+import moment from 'moment';
+import 'moment-timezone';
 
 import hasPermission from 'utils/permissions';
-import { getTotalOrgSummary } from 'actions/totalOrgSummary';
-
+import { getTotalOrgSummary, getTaskAndProjectStats} from 'actions/totalOrgSummary';
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -13,17 +14,49 @@ import './TotalOrgSummary.css';
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import HoursCompletedBarChart from './HoursCompletedBarChart/HoursCompletedBarChart';
 
-const startDate = '2016-01-01';
-const endDate = new Date().toISOString().split('T')[0];
+const startDate = moment()
+.tz('America/Los_Angeles')
+.endOf('week')
+.subtract(2, 'week')
+.toISOString()
+const endDate = moment()
+.tz('America/Los_Angeles')
+.endOf('week')
+.toISOString()
+const lastStartDate = moment()
+.tz('America/Los_Angeles')
+.endOf('week')
+.subtract(2, 'week')
+.toISOString()
+const lastEndDate = moment()
+.tz('America/Los_Angeles')
+.endOf('week')
+.subtract(1, 'week')
+.toISOString()
 
 function TotalOrgSummary(props) {
   const { darkMode, loading, error } = props;
+  const [taskProjectHours, setTaskProjectHours] = useState([]);
 
   useEffect(() => {
-    props.getTotalOrgSummary(startDate, endDate);
-    props.hasPermission('');
-  }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
+    // props.getTotalOrgSummary(startDate, endDate);
+    // props.getTaskAndProjectStats(startDate, endDate);
+    // props.hasPermission('');
+    async function fetchData() {
+
+      const { taskHours, projectHours } = await props.getTaskAndProjectStats(startDate, endDate);
+      const { taskHours: lastTaskHours, projectHours: lastProjectHours } = await props.getTaskAndProjectStats(lastStartDate, lastEndDate);
+      const lastData = await props.getTaskAndProjectStats(lastStartDate, lastEndDate);
+      console.log("last", taskHours, projectHours, lastData, lastTaskHours, lastProjectHours)
+      if (taskHours && projectHours) {
+        setTaskProjectHours({ taskHours: taskHours, projectHours: projectHours, lastTaskHours: lastTaskHours, lastProjectHours: lastProjectHours });
+      }
+    }
+    fetchData();
+    // props.hasPermission('');
+  }, [startDate, endDate]);
 
   if (error) {
     return (
@@ -52,7 +85,7 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
-  return (
+  return (  
     <Container
       fluid
       className={`container-total-org-wrapper py-3 mb-5 ${
@@ -111,7 +144,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <HoursCompletedBarChart data={taskProjectHours}/>
             </div>
           </Col>
         </Row>
@@ -173,6 +206,7 @@ const mapStateToProps = state => ({
 
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: () => dispatch(getTotalOrgSummary(startDate, endDate)),
+  getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(startDate, endDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
