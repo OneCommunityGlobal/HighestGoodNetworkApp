@@ -151,6 +151,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
   const onTeamNameValidation = (teamName) => {
     if (teamName !== '') {
+      debugger;
       if (!existTeamName.has(teamName.teamName)) {
         setWarningMessage({ title: "Error", content: "Team Name Not Exists" });
         setShowMessage(true);

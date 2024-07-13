@@ -19,7 +19,7 @@ const getRandomMessage = () => {
 };
 
 const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab';
-const validTeamCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
+const validTeamCodeRegex = /^.{5,7}$/;
 const stillSavingMessage = 'Saving, will take just a second...';
 
 /**
