@@ -136,9 +136,6 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1;
       } else if (sortedByName === "Descending") {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
-      } else if (sortedByName === "SortingByRecentEditedInventory") {
-        // FIXME: 
-        return a.modifiedDatetime < b.modifiedDatetime ? 1 : -1;
       } else if (sortedByName === "SortingByRecentEditedMembers") {
         return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
       } else {
