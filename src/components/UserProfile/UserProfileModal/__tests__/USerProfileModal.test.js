@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent} from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import UserProfileModal from '..';
 import { Provider } from 'react-redux';
@@ -149,7 +149,7 @@ describe('UserProfileModal component', () => {
     expect(screen.queryByText('Admin Links:')).not.toBeInTheDocument()
 
   })
-  it('check type addBlueSquare',()=>{
+  it('check if add blue square works as expected when type is set to addBlueSquare',()=>{
     
     renderComponent(store,'addBlueSquare',true)
 
@@ -168,7 +168,7 @@ describe('UserProfileModal component', () => {
     expect(modifyBlueSquares).toHaveBeenCalled()
 
   })
-  it('check type modBlueSquare',()=>{
+  it('check if modify blue square works a s expected when type is set to modBlueSquare',()=>{
     renderComponent(store,'modBlueSquare',true)
     const summaryElement=document.body.querySelector('[id="summary"]')
     fireEvent.change(summaryElement,{target:{value:"This is a second test blue square summary"}})
@@ -185,13 +185,43 @@ describe('UserProfileModal component', () => {
     
   })
 
-  it('check type viewBlueSquare',()=>{
+  it('check if view blue square works as expected whe type is set to viewBlueSquare',()=>{
     renderComponent(store,'viewBlueSquare',true)
     expect(screen.getByText(`Date:${userProfile.infringements[0].date}`)).toBeInTheDocument()
     expect(screen.getByText(`Created Date:${userProfile.infringements[0].createdDate}`)).toBeInTheDocument()
     expect(screen.getByText('Summary')).toBeInTheDocument()
     expect(screen.getByText(`${userProfile.infringements[0].description}`)).toBeInTheDocument()
-
   })
-  
+  it("check if close button gets displayed when type is set to save",()=>{
+    renderComponent(store,'save',true)
+    const closeButton=screen.getByText('Close')
+    fireEvent.click(closeButton)
+
+    expect(screen.getByText('modal message')).toBeInTheDocument()
+    expect(closeModal).toHaveBeenCalled();
+  })
+  it("check if cancel button gets displayed when type is not set to save",()=>{
+    renderComponent(store,"image",true)
+    const cancelButton=screen.getByText('Cancel')
+    fireEvent.click(cancelButton)
+
+    expect(screen.getByText('modal message')).toBeInTheDocument()
+    expect(closeModal).toHaveBeenCalled()
+  })
+  it("check if add blue square do not get displayed type is not set to addBlueSquare",()=>{
+    renderComponent(store,"image",true)
+    expect(document.body.querySelector("[id='addBlueSquare']")).not.toBeInTheDocument()
+  })
+  it("check if modify blue square do not get displayed type is not set to modBlueSquare",()=>{
+    renderComponent(store,"image",true)
+    expect(screen.queryByText('Update')).not.toBeInTheDocument()
+  })
+  it("check if view blue square do not get displayed type is not set to viewBlueSquare",()=>{
+    renderComponent(store,"image",true)
+    expect(screen.queryByText(`Date:${userProfile.infringements[0].date}`)).not.toBeInTheDocument()
+    expect(screen.queryByText(`Created Date:${userProfile.infringements[0].createdDate}`)).not.toBeInTheDocument()
+    expect(screen.queryByText('Summary')).not.toBeInTheDocument()
+    expect(screen.queryByText(`${userProfile.infringements[0].description}`)).not.toBeInTheDocument()
+  })
+
 });
