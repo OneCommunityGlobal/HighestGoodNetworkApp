@@ -149,8 +149,12 @@ const Projects = function(props) {
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container py-3">
-          {fetching || !fetched ? <Loading /> : null}
+        <div className="container-lg">
+          {fetching || !fetched ? (
+          <div className="center-spinner">
+            <Loading />
+          </div>
+          ) : null}
           <div className="d-flex align-items-center">
           <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
           <EditableInfoModal
@@ -163,6 +167,7 @@ const Projects = function(props) {
         </div>
 
           <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          
           {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
 
           <table className="table table-bordered table-responsive-sm">

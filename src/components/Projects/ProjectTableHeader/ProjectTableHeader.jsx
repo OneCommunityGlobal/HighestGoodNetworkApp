@@ -37,8 +37,8 @@ const ProjectTableHeader = props => {
       <th scope="col" className='d-flex justify-content-between'>{PROJECT_NAME}
       {/* Below tag adds an up arrow and a downArrow buttons to sort Product names alphabetically- Sucheta */}
       <span className='d-flex flex-wrap'>
-      <Button size='sm' className='ml-3' id='Ascending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowDown} pointerEvents="none"/></Button>
-      <Button size='sm' className='ml-2' id='Descending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowUp} pointerEvents="none"/></Button>
+      <Button size='sm' className='ml-3 mb-1' id='Ascending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowDown} pointerEvents="none"/></Button>
+      <Button size='sm' className='ml-3 mb-1' id='Descending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowUp} pointerEvents="none"/></Button>
 
       </span>
       </th>
