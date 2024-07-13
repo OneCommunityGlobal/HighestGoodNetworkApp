@@ -1,16 +1,25 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
+// eslint-disable-next-line import/no-cycle
 import PermissionList from './PermissionList';
 import hasPermission from '../../utils/permissions';
 import './UserRoleTab.css';
 
-
-
-
-const PermissionListItem = (props) => {
-  const {rolePermissions, immutablePermissions, label, permission, subperms, description, editable, depth, setPermissions, darkMode} = props;
+function PermissionListItem(props) {
+  const {
+    rolePermissions,
+    immutablePermissions,
+    label,
+    permission,
+    subperms,
+    description,
+    editable,
+    depth,
+    setPermissions,
+    darkMode,
+  } = props;
 
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
@@ -18,7 +27,7 @@ const PermissionListItem = (props) => {
   const hasThisPermission =
     rolePermissions.includes(permission) || immutablePermissions.includes(permission);
 
-  const handleModalOpen = description => {
+  const handleModalOpen = () => {
     setContent(description);
     setinfoRoleModal(true);
   };
@@ -27,28 +36,32 @@ const PermissionListItem = (props) => {
     setinfoRoleModal(!infoRoleModal);
   };
 
-  const togglePermission = permission => {
-    rolePermissions.includes(permission) || immutablePermissions.includes(permission)
-      ? setPermissions(previous => previous.filter(perm => perm !== permission))
-      : setPermissions(previous => [...previous, permission]);
+  const togglePermission = () => {
+    if (rolePermissions.includes(permission) || immutablePermissions.includes(permission)) {
+      setPermissions(previous => previous.filter(perm => perm !== permission));
+    } else {
+      setPermissions(previous => [...previous, permission]);
+    }
+    // eslint-disable-next-line react/destructuring-assignment
     props.onChange();
   };
 
-  const setSubpermissions = (subperms, adding) => {
-    for (const subperm of subperms) {
+  const setSubpermissions = adding => {
+    subperms.forEach(subperm => {
       if (subperm.subperms) {
         setSubpermissions(subperm.subperms, adding);
-      } else if (adding != rolePermissions.includes(subperm.key)) {
+      } else if (adding !== rolePermissions.includes(subperm.key)) {
         togglePermission(subperm.key);
       }
-    }
+    });
   };
 
-  //returns 'All', 'None', or 'Some' depending on if that role has that selection of permissions
-  const checkSubperms = subperms => {
+  // returns 'All', 'None', or 'Some' depending on if that role has that selection of permissions
+  const checkSubperms = () => {
     if (!subperms) {
-      return;
+      return 'None'; // or any other appropriate default value
     }
+
     let list = [...subperms];
     let all = true;
     let none = true;
@@ -75,19 +88,42 @@ const PermissionListItem = (props) => {
 
   const howManySubpermsInRole = checkSubperms(subperms);
 
+  let color;
+  if (isCategory) {
+    if (howManySubpermsInRole === 'All') {
+      color = 'green';
+    } else if (howManySubpermsInRole === 'Some') {
+      color = darkMode ? 'white' : 'black';
+    } else {
+      color = 'red';
+    }
+  } else {
+    color = hasThisPermission ? 'green' : 'red';
+  }
+
+  const fontSize = isCategory ? '20px' : undefined;
+  const textIndent = `${50 * depth}px`;
+  const textShadow = darkMode ? '0.5px 0.5px 2px black' : '';
+
+  const getColor = () => {
+    if (howManySubpermsInRole === 'All') {
+      return 'danger';
+    }
+    if (howManySubpermsInRole === 'Some') {
+      return 'secondary';
+    }
+    return 'success';
+  };
+
   return (
     <>
-      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
+      <li className="user-role-tab__permissions pr-2" key={permission} data-testid={permission}>
         <p
           style={{
-
-            color: isCategory ?
-              howManySubpermsInRole === 'All' ? 'green' :
-              howManySubpermsInRole === 'Some' ? (darkMode ? 'white' : 'black') : 'red'
-              : hasThisPermission ? 'green' : 'red',
-
-            fontSize: isCategory && '20px',
-            textIndent: 50 * depth + 'px',
+            color,
+            fontSize,
+            textIndent,
+            textShadow,
           }}
         >
           {label}
@@ -105,23 +141,18 @@ const PermissionListItem = (props) => {
               }}
             />
           </div>
-          {!editable ? (
-            <></>
-          ) : isCategory ? (
+          {/* eslint-disable-next-line no-nested-ternary */}
+          {!editable ? null : isCategory ? (
             <Button
               className="icon-button"
-              color={
-                howManySubpermsInRole === 'All'
-                  ? 'danger'
-                  : howManySubpermsInRole === 'Some'
-                  ? 'secondary'
-                  : 'success'
-              }
+              color={getColor()}
               onClick={() => {
                 // const state = howManySubpermsInRole !== 'None';
                 setSubpermissions(subperms, howManySubpermsInRole !== 'All');
+                // eslint-disable-next-line react/destructuring-assignment
                 props.onChange();
               }}
+              // eslint-disable-next-line react/destructuring-assignment
               disabled={!props.hasPermission('putRole')}
               style={darkMode ? boxStyleDark : boxStyle}
             >
@@ -131,11 +162,14 @@ const PermissionListItem = (props) => {
             <Button
               className="icon-button"
               color={hasThisPermission ? 'danger' : 'success'}
-
-              onClick={() => {togglePermission(permission)}}
-              disabled={!props.hasPermission('putRole') || immutablePermissions.includes(permission)}
+              onClick={() => {
+                togglePermission(permission);
+              }}
+              disabled={
+                // eslint-disable-next-line react/destructuring-assignment
+                !props.hasPermission('putRole') || immutablePermissions.includes(permission)
+              }
               style={darkMode ? boxStyleDark : boxStyle}
-
             >
               {hasThisPermission ? 'Delete' : 'Add'}
             </Button>
@@ -156,24 +190,24 @@ const PermissionListItem = (props) => {
             immutablePermissions={immutablePermissions}
             editable={editable}
             setPermissions={setPermissions}
+            // eslint-disable-next-line react/destructuring-assignment
             onChange={props.onChange}
-
-            depth={depth+1}
+            depth={depth + 1}
             darkMode={darkMode}
-
           />
         </li>
-      ) : (
-        <></>
-      )}
+      ) : null}
       <Modal
         isOpen={infoRoleModal}
         toggle={toggleInfoRoleModal}
         id="#modal2-body_new-role--padding"
+        className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
-        <ModalBody>{modalContent}</ModalBody>
-        <ModalFooter>
+        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Permission Info
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalContent}</ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
             {' '}
             Ok{' '}
@@ -182,7 +216,7 @@ const PermissionListItem = (props) => {
       </Modal>
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({ roles: state.role.roles });
 

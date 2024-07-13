@@ -1,24 +1,30 @@
-// returns an array of all the keys for permissions
-export const getAllPermissionKeys = () => {
-  return getAllSubpermissionKeys(permissionLabels);
-};
-
 // recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
-const getAllSubpermissionKeys = (permissions) => {
+const getAllSubpermissionKeys = permissions => {
   const keys = [];
-  permissions.forEach((permission) => {
+  permissions.forEach(permission => {
     // recursive call for nested permissions
-    if(permission.subperms){
-      keys.push(...getAllSubpermissionKeys(permission.subperms))
-    }
-    else {
-      keys.push(permission.key)
+    if (permission.subperms) {
+      keys.push(...getAllSubpermissionKeys(permission.subperms));
+    } else {
+      keys.push(permission.key);
     }
   });
   return keys;
 };
 
 export const permissionLabels = [
+  {
+    label: 'General',
+    description: 'Category for all generalized permissions',
+    subperms: [
+      {
+        label: 'See All Users in Dashboard and Leaderboard',
+        key: 'seeUsersInDashboard',
+        description:
+          'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
+    ],
+  },
   {
     label: 'Reports',
     description: 'Category for all permissions related to reports',
@@ -44,6 +50,12 @@ export const permissionLabels = [
         key: 'highlightEligibleBios',
         description:
           'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
+      },
+      {
+        label: 'Edit Team 4-Digit Codes',
+        key: 'editTeamCode',
+        description:
+          'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
     ],
   },
@@ -87,10 +99,10 @@ export const permissionLabels = [
           'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
       {
-        label: 'Manage Admin Links in User Profile',
-        key: 'manageAdminLinks',
+        label: 'Edit Summary Submit Requirement (Others)',
+        key: 'updateSummaryRequirements',
         description:
-          'Gives the user permission to edit the links of any user on the user profile page. "User Profile" -> "Links button"',
+          'Gives the user permission to change the requirement to the user to submit a summary.',
       },
       {
         label: 'Manage Time Off Requests',
@@ -163,10 +175,10 @@ export const permissionLabels = [
           'Gives the user permission to edit the category or the status of any Project. "Other Links" -> "Projects"',
       },
       {
-        label: 'Find User in Project',
+        label: 'See User in Project',
         key: 'getProjectMembers',
         description:
-          'Gives the user permission to find any user on the project members page. "Other Links" -> "Projects" -> "Members" -> "Find user input" ',
+          'Gives the user permission to access the profile of any user directly from the projects members page. "Other Links" -> "Projects" -> "Members"',
       },
       {
         label: 'Assign Project to Users',
@@ -241,16 +253,6 @@ export const permissionLabels = [
     description: 'Category for all permissions related to team management',
     subperms: [
       {
-        label: 'See Teams Management Tab',
-        key: 'seeTeams',
-        description: 'Make the "Other Links" -> "Teams" button appear',
-      },
-      {
-        label: 'Create Team',
-        key: 'postTeam',
-        description: 'Gives the user permission to create a team.',
-      },
-      {
         label: 'Edit Team',
         key: 'putTeam',
         description: 'Gives the user permission to Edit a team.',
@@ -261,10 +263,21 @@ export const permissionLabels = [
         description: 'Gives the user permission to delete a team.',
       },
       {
-        label: 'Assign Users to Team',
-        key: 'assignTeamToUsers',
-        description:
-          'Gives the user permission to add users to teams. "Other Links" -> "Teams" -> "Members" -> "Add Input"',
+        label: 'Create/assign teams',
+        description: 'Quality of life bundling of two permissions commonly used together',
+        subperms: [
+          {
+            label: 'Create Team',
+            key: 'postTeam',
+            description: 'Gives the user permission to create a team.',
+          },
+          {
+            label: 'Assign Users to Team',
+            key: 'assignTeamToUsers',
+            description:
+              'Gives the user permission to add users to teams. "Other Links" -> "Teams" -> "Members" -> "Add Input"',
+          },
+        ],
       },
     ],
   },
@@ -272,6 +285,12 @@ export const permissionLabels = [
     label: 'Timelog Management',
     description: 'Category for all permissions related to timelog management',
     subperms: [
+      {
+        label: 'Toggle Tangible Time Self',
+        key: 'toggleTangibleTime',
+        description:
+          'Gives the user permission to toggle the Tangible check when editing their own time entry.',
+      },
       {
         label: 'Timelog Management (Others)',
         description: 'Category for all permissions related to timelog management',
@@ -283,41 +302,35 @@ export const permissionLabels = [
               'Gives the user permission to add Intangible time entry to others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Add Time entry to (Name of the user) yellow button". Currently not implemented.',
           },
           {
-            label: 'Toggle Tangible Time Self',
-            key: 'toggleTangibleTime',
-            description:
-              'Gives the user permission to toggle the Tangible check when editing their own time entry.',
-          },
-          {
             label: 'Delete Time Entry (Others)',
             key: 'deleteTimeEntry',
             description:
               'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
           },
           {
-            label: 'Edit Time Entries',
-            description: 'Category for all permissions related to timelog management',
+            label: 'Editing Time Entries',
+            description: 'Category for all permissions related to editing timelogs',
             subperms: [
               {
                 label: 'Edit Timelog Time',
-                key: 'editTimeEntry',
+                key: 'editTimeEntryTime',
                 description: 'Gives the user permission to edit the time of any time log entry.',
               },
               {
                 label: 'Edit Timelog Description',
-                key: 'editTimeEntry',
+                key: 'editTimeEntryDescription',
                 description:
                   'Gives the user permission to edit the description of any time log entry.',
               },
               {
                 label: 'Toggle Tangible Time Others',
-                key: 'editTimeEntry',
+                key: 'editTimeEntryToggleTangible',
                 description:
                   'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
               },
               {
                 label: 'Change Time Entry Date',
-                key: 'editTimelogDate',
+                key: 'editTimeEntryDate',
                 description:
                   'Gives the user permission to edit the date when adding an intangible time entry.',
               },
@@ -375,23 +388,11 @@ export const permissionLabels = [
       // },
     ],
   },
-  {
-    label: 'Misc/Unsorted',
-    description: 'Category for all permissions not related to other categories',
-    subperms: [
-      {
-        label: 'Edit Team 4-Digit Codes',
-        key: 'editTeamCode',
-        description:
-          'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
-      },
-      {
-        label: 'See All Users in Dashboard and Leaderboard',
-        key: 'seeUsersInDashboard',
-        description: 'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
-      },
-    ],
-  },
 ];
+
+// returns an array of all the keys for permissions
+export const getAllPermissionKeys = () => {
+  return getAllSubpermissionKeys(permissionLabels);
+};
 
 export default permissionLabels;

@@ -14,7 +14,7 @@ import { boxStyle } from 'styles';
 import { Link } from 'react-router-dom';
 
 const WBSItem = props => {
-  const {darkMode} = props;
+  const { darkMode } = props.theme;
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const canDeleteWBS = props.hasPermission('deleteWbs');
@@ -26,7 +26,7 @@ const WBSItem = props => {
 
   return (
     <React.Fragment>
-      <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <tr>
         <th scope="row">
           <div>{props.index}</div>
         </th>
@@ -56,6 +56,7 @@ const WBSItem = props => {
         confirmModal={() => confirmDelete()}
         modalMessage={props.popupEditor.currPopup.popupContent || ''}
         modalTitle="Confirm Deletion"
+        darkMode={darkMode}
       />
     </React.Fragment>
   );

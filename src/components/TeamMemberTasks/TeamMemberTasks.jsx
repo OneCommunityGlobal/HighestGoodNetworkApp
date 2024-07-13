@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
-import { Table } from 'reactstrap';
+import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -20,6 +20,7 @@ import { toast } from 'react-toastify';
 // import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
+import { MultiSelect } from 'react-multi-select-component';
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store
@@ -42,6 +43,12 @@ const TeamMemberTasks = React.memo(props => {
   const [showWhoHasTimeOff, setShowWhoHasTimeOff] = useState(true);
   const userOnTimeOff = useSelector(state => state.timeOffRequests.onTimeOff);
   const userGoingOnTimeOff = useSelector(state => state.timeOffRequests.goingOnTimeOff);
+  const [teamNames, setTeamNames] = useState([]);
+  const [teamCodes, setTeamCodes] = useState([]);
+  const [colors, setColors] = useState([]);
+  const [selectedTeamNames, setSelectedTeamNames] = useState([]);
+  const [selectedCodes, setSelectedCodes] = useState([]);
+  const [selectedColors, setSelectedColors] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -193,6 +200,72 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
+  const renderFilters = () => {
+    const teamGroup = {};
+    const teamCodeGroup = {};
+    const colorGroup = {};
+    const teamOptions = [];
+    const teamCodeOptions = [];
+    const colorOptions = [];
+
+    if(usersWithTasks.length > 0) {
+      usersWithTasks.forEach(user => {
+        const teamNames = user.teams.map(team => team.teamName);
+        const code = user.teamCode || 'noCodeLabel';
+        const color = user.weeklySummaryOption || 'noColorLabel';
+
+        teamNames.forEach(name => {
+          if(teamGroup[name]) {
+            teamGroup[name].push(user.personId);
+          } else {
+            teamGroup[name] = [user.personId];
+          }
+        });
+
+        if (teamCodeGroup[code]) {
+          teamCodeGroup[code].push(user.personId);
+        } else {
+          teamCodeGroup[code] = [user.personId];
+        }
+
+        if (colorGroup[color]) {
+          colorGroup[color].push(user.personId);
+        } else {
+          colorGroup[color] = [user.personId];
+        }
+      });
+
+      Object.keys(teamGroup).sort((a,b) => a.localeCompare(b)).forEach(name => {
+        teamOptions.push({
+          value: name,
+          label: `${name}`
+        });
+      })
+
+      Object.keys(teamCodeGroup).sort((a,b) => a.localeCompare(b)).forEach(code => {
+        if (code !== 'noCodeLabel') {
+          teamCodeOptions.push({
+            value: code,
+            label: `${code}`
+          });
+        }
+      });
+
+      Object.keys(colorGroup).sort((a,b) => a.localeCompare(b)).forEach(color => {
+        if (color !== 'noColorLabel') {
+          colorOptions.push({
+            value: color,
+            label: `${color}`
+          });
+        }
+      });
+
+      setTeamNames(teamOptions);
+      setTeamCodes(teamCodeOptions);
+      setColors(colorOptions);
+    }
+  }
+
   useEffect(() => {
     // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
     const initialFetching = async () => {
@@ -211,6 +284,9 @@ const TeamMemberTasks = React.memo(props => {
     if (!isLoading) {
       renderTeamsList();
       closeMarkAsDone();
+      if(['Administrator', 'Owner', 'Manager', 'Mentor'].some( role => role === displayUser.role)) {
+        renderFilters();
+      }
     }
   }, [usersWithTasks]);
 
@@ -221,6 +297,46 @@ const TeamMemberTasks = React.memo(props => {
   const handleshowWhoHasTimeOff = () => {
     setShowWhoHasTimeOff(prev => !prev);
   };
+
+  const handleSelectTeamNames = event => {
+    setSelectedTeamNames(event);
+  }
+
+  const handleSelectCodeChange = event => {
+    setSelectedCodes(event);
+  }
+
+  const handleSelectColorChange = event => {
+    setSelectedColors(event);
+  }
+
+  const filterByUserFeatures = (user) => {
+    if(selectedTeamNames.length === 0 && selectedCodes.length === 0 && selectedColors.length === 0) return true;
+
+    return filterByTeamCodes(user.teamCode) && filterByColors(user.weeklySummaryOption) && filterByTeams(user.teams);
+  }
+
+  const filterByTeams = (teams) => {
+    if(selectedTeamNames.length === 0) return true;
+    let match = false;
+    teams.forEach(team => match = match || filterByTeamName(team.teamName));
+    return match;
+  }
+
+  const filterByTeamName = (name) => {
+    return selectedTeamNames.some(option => option.value === name);
+  }
+
+  const filterByTeamCodes = (code) => {
+    if(selectedCodes.length === 0) return true;
+    return selectedCodes.some(option => option.value === code);
+  }
+
+  const filterByColors = (color) => {
+    if(selectedColors.length === 0) return true;
+    return selectedColors.some(option => option.value === color);
+  }
+
 
   return (
     <div className={"container " + (darkMode ? "team-member-tasks bg-space-cadet" : "team-member-tasks")}>
@@ -320,6 +436,50 @@ const TeamMemberTasks = React.memo(props => {
           darkMode={darkMode}
         />
       )}
+      {
+        ['Administrator', 'Owner', 'Manager', 'Mentor'].some( role => role === displayUser.role) &&
+        <Row style={{ marginBottom: '10px' }}>
+          <Col lg={{ size: 4}} xs={{ size: 12}}>
+            <span className={darkMode ? "text-light" : ""}>
+              Select Team
+            </span>
+            <MultiSelect
+              className="multi-select-filter"
+              options={teamNames}
+              value={selectedTeamNames}
+              onChange={e => {
+                handleSelectTeamNames(e);
+              }}
+            />
+          </Col>
+          <Col lg={{ size: 4}} xs={{ size: 12}}>
+            <span className={darkMode ? "text-light" : ""}>
+            Select Team Code
+            </span>
+            <MultiSelect
+              className="multi-select-filter"
+              options={teamCodes}
+              value={selectedCodes}
+              onChange={e => {
+                handleSelectCodeChange(e);
+              }}
+            />
+          </Col>
+          <Col lg={{ size: 4 }} xs={{ size: 12 }}>
+            <span className={darkMode ? "text-light" : ""}>
+            Select Color
+            </span>
+            <MultiSelect
+              className="multi-select-filter"
+              options={colors}
+              value={selectedColors}
+              onChange={e => {
+                handleSelectColorChange(e);
+              }}
+            />
+          </Col>
+        </Row>
+      }
       <div className="task_table-container">
         <Table>
           <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
@@ -368,11 +528,11 @@ const TeamMemberTasks = React.memo(props => {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
             {isLoading ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
-              teamList.map(user => {
+              teamList.filter((user) => filterByUserFeatures(user)).map(user => {
                 if (!isTimeFilterActive) {
                   return (
                     <TeamMemberTask
