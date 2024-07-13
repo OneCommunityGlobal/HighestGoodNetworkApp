@@ -6,6 +6,7 @@ import {
   modifyProject,
   clearError,
 } from '../../actions/projects';
+import {getProjectsByUsersName} from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
@@ -17,6 +18,8 @@ import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
+import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
 
 const Projects = function(props) {
   const role = props.state.userProfile.role;
@@ -43,6 +46,26 @@ const Projects = function(props) {
     category: '',
   });
   const [projectList, setProjectList] = useState(null);
+  const [searchName, setSearchName] = useState("");
+  const [allProjects, setAllProjects] = useState(null);
+
+  const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+  
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+  
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+  
+    return debouncedValue;
+  };
+
+  const debouncedSearchName = useDebounce(searchName, 300);
 
   const canPostProject = props.hasPermission('postProject');
 
@@ -126,6 +149,7 @@ const Projects = function(props) {
         />
     ));
     setProjectList(projectList);
+    setAllProjects(projectList);
   }
 
   useEffect(() => {
@@ -145,6 +169,28 @@ const Projects = function(props) {
       }
   }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects]);
 
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (debouncedSearchName) {
+        const projects = await props.getProjectsByUsersName(debouncedSearchName);
+        if (projects) {
+          const newProjectList = allProjects.filter(project => 
+            projects.some(p => p === project.key)
+          );
+          setProjectList(newProjectList);
+        }else{
+          setProjectList(allProjects);
+        }
+      } else {
+        setProjectList(allProjects);
+      }
+    };
+    fetchProjects();
+  }, [debouncedSearchName]);
+
+  const handleSearchName = (searchNameInput) => {
+    setSearchName(searchNameInput);
+  };
 
   return (
     <>
@@ -170,6 +216,8 @@ const Projects = function(props) {
           
           {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
 
+          <SearchProjectByPerson onSearch={handleSearchName}/>
+
           <table className="table table-bordered table-responsive-sm">
             <thead>
             <ProjectTableHeader 
@@ -182,7 +230,7 @@ const Projects = function(props) {
               darkMode={darkMode}
             />
             </thead>
-            <tbody>{projectList}</tbody>
+            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
           </table>
         </div>
 
@@ -210,4 +258,5 @@ export default connect(mapStateToProps, {
   clearError,
   getPopupById,
   hasPermission,
+  getProjectsByUsersName
 })(Projects);
