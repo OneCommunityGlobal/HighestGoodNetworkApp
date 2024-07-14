@@ -16,7 +16,7 @@ function OldBadges({ personalBestMaxHrs, badges, darkMode }) {
             style={{
               fontWeight: 'bold',
               fontSize: 18,
-              color: darkMode ? '#1B2A41' : '#285739',
+              color: darkMode ? '#FFF' : '#285739',
               marginBottom: 15,
             }}
           >

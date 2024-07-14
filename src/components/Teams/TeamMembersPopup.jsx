@@ -2,13 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import MembersAutoComplete from './MembersAutoComplete';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 export const TeamMembersPopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const closePopup = () => {
     props.onClose();
     setSortOrder(0)
@@ -18,7 +21,17 @@ export const TeamMembersPopup = React.memo(props => {
   const [searchText, setSearchText] = useState('');
   const [duplicateUserAlert, setDuplicateUserAlert] = useState(false);
   const [memberList, setMemberList] = useState([]);
-  const [sortOrder, setSortOrder] = useState(0)
+  const [sortOrder, setSortOrder] = useState(0);
+  const [deletedPopup, setDeletedPopup] = useState(false);
+    
+  const closeDeletedPopup = () => {
+    setDeletedPopup(!deletedPopup);
+  }
+
+  const handleDelete = (id) => {
+    props.onDeleteClick(`${id}`)
+    setDeletedPopup(true);
+  }
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
 
@@ -136,9 +149,9 @@ export const TeamMembersPopup = React.memo(props => {
 
   return (
     <Container fluid>
-      <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} size='lg'>
-        <ModalHeader toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
-        <ModalBody style={{ textAlign: 'center' }}>
+      <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} size='lg' className={darkMode ? 'dark-mode text-light' : ''}>
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
           {canAssignTeamToUsers && (
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
@@ -148,7 +161,7 @@ export const TeamMembersPopup = React.memo(props => {
                 searchText={searchText}
                 setSearchText={setSearchText}
               />
-              <Button color="primary" onClick={onAddUser} style={boxStyle}>
+              <Button color="primary" onClick={onAddUser} style={darkMode ? boxStyleDark : boxStyle}>
                 Add
               </Button>
             </div>
@@ -162,9 +175,9 @@ export const TeamMembersPopup = React.memo(props => {
             <></>
           )}
 
-          <table className="table table-bordered table-responsive-sm">
+          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode text-light' : ''}`}>
             <thead>
-              <tr>
+              <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <th>Active</th>
                 <th>#</th>
                 <th>User Name</th>
@@ -189,8 +202,8 @@ export const TeamMembersPopup = React.memo(props => {
                       <td>
                         <Button
                           color="danger"
-                          onClick={() => props.onDeleteClick(`${user._id}`)}
-                          style={boxStyle}
+                          onClick={() => handleDelete(user._id)}
+                          style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Delete
                         </Button>
@@ -202,11 +215,17 @@ export const TeamMembersPopup = React.memo(props => {
             </tbody>
           </table>
         </ModalBody>
-        <ModalFooter>
-          <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
             Close
           </Button>
         </ModalFooter>
+      </Modal>
+      <Modal isOpen={deletedPopup} toggle={closeDeletedPopup} className={darkMode ? 'dark-mode text-light' : ''}>
+        <ModalHeader toggle={closeDeletedPopup} className={`${darkMode ? 'bg-space-cadet' : ''} text-danger font-weight-bold`}>Member Deleted!</ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <p>Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.</p>
+        </ModalBody>
       </Modal>
     </Container>
   );

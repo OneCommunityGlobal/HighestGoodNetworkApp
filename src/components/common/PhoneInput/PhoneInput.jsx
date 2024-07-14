@@ -9,12 +9,13 @@ export function PhoneInput({ areaCode, setAreaCode, phoneNumber, setPhoneNumber 
       <InputGroup className="phone-input-content">
         <Row>
           {/* Area code */}
-          <Col xs='auto' className="pr-1">
+          <Col xs="auto" className="pr-1">
             <Input
               type="select"
               value={areaCode}
               onChange={e => setAreaCode(e.target.value)}
-              style={{ width: '70px' }}>
+              style={{ width: '70px' }}
+            >
               <option value="1">+1</option>
               <option value="44">+44</option>
               {/* Add more area codes as needed */}
@@ -32,5 +33,5 @@ export function PhoneInput({ areaCode, setAreaCode, phoneNumber, setPhoneNumber 
         </Row>
       </InputGroup>
     </FormGroup>
-  )
+  );
 }

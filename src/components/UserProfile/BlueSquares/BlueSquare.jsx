@@ -6,10 +6,10 @@ import { formatCreatedDate, formatDate } from 'utils/formatDate';
 const BlueSquare = props => {
   const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare } = props;
+  const { blueSquares, handleBlueSquare, darkMode } = props;
 
   return (
-    <div className="blueSquareContainer">
+    <div className={`blueSquareContainer ${darkMode ? 'bg-space-cadet' : ''}`}>
       <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length > 0
           ? blueSquares
@@ -20,7 +20,7 @@ const BlueSquare = props => {
                   role="button"
                   id="wrapper"
                   data-testid="blueSquare"
-                  className="blueSquareButton"
+                  className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
                   onClick={() => {
                     if (!blueSquare._id) {
                       handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
@@ -44,7 +44,7 @@ const BlueSquare = props => {
                     {blueSquare.description !== undefined && (
                       <div className="summary">
                         {blueSquare.createdDate !== undefined && blueSquare.createdDate !== null
-                          ? `${formatCreatedDate(blueSquare.createdDate)}: ${
+                          ? `Added on ${formatCreatedDate(blueSquare.createdDate)}: ${
                               blueSquare.description
                             }`
                           : blueSquare.description}
@@ -59,7 +59,7 @@ const BlueSquare = props => {
             onClick={() => {
               handleBlueSquare(true, 'addBlueSquare', '');
             }}
-            className="blueSquareButton"
+            className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
             color="primary"
             data-testid="addBlueSquare"
           >
