@@ -118,49 +118,6 @@ function PermissionListItem(props) {
   };
   
 
-  // const handleAllSubpermissions = (subperms) => {
-  //   if (howManySubpermsInRole === 'All') {
-  //     setPermissions(previousPermissions => {
-  //       const updatedPermissions = new Set(previousPermissions);
-  //       if(subperms.subperm){
-  //         subperms.forEach(subperm => {
-  //           if (updatedPermissions.has(subperm.key)) {
-  //             updatedPermissions.delete(subperm.key); 
-  //           }
-  //         });
-  //       }else{
-  //         if (updatedPermissions.has(subperms.key)) {
-  //           updatedPermissions.delete(subperms.key); 
-  //         }
-  //       }
-  //       return Array.from(updatedPermissions);
-  //     });
-  //   }else{
-  //     setPermissions(previousPermissions => {
-  //       const updatedPermissions = new Set(previousPermissions);
-  //       if(subperms.subperm){
-  //         subperms.forEach(subperm => {
-  //           updatedPermissions.add(subperm.key);
-  //         });
-  //       }else{
-  //           updatedPermissions.add(subperms.key); 
-  //       }
-  //       return Array.from(updatedPermissions);
-  //     });
-  //   }
-  //   props.onChange();
-  // }
-  // const handleAllpermissions = (perms) => {
-  //   perms.forEach(perm => {
-  //     if(perm.subperms){
-  //       handleAllpermissions(perm.subperms)
-  //     }else{
-  //       handleAllSubpermissions(perm)
-  //     }
-  //   })
-  // }
-
-
   let color;
   if (isCategory) {
     if (howManySubpermsInRole === 'All') {
