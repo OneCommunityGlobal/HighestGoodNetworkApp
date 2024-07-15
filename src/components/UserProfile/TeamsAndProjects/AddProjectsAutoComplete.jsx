@@ -39,7 +39,10 @@ const AddProjectsAutoComplete = React.memo(props => {
         >
           {props.projectsData
             .filter(project => {
-              if (project.projectName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1) {
+              if (
+                //prettier-ignore
+                props.formatText(project.projectName).indexOf(props.formatText(props.searchText)) >-1
+              ) {
                 return project;
               }
             })
@@ -59,7 +62,7 @@ const AddProjectsAutoComplete = React.memo(props => {
             ))}
 
           {props.projectsData.every(
-            item => item.projectName.toLowerCase() !== props.searchText.toLowerCase(),
+            item => props.formatText(item.projectName) !== props.formatText(props.searchText),
           ) && (
             <div
               className="project-auto-complete"

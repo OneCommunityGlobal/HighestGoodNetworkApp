@@ -26,6 +26,12 @@ const AddProjectPopup = React.memo(props => {
   const [searchText, onInputChange] = useState('');
   const [allProjects, setAllProjects] = useState(props.projects);
 
+  const formatText = result =>
+    result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+
   useEffect(() => {
     const categoriesProjects = props.projects.map(item => item.category);
     const uniqueCategoriesProjects = Array.from(new Set(categoriesProjects));
@@ -140,6 +146,7 @@ const AddProjectPopup = React.memo(props => {
               searchText={searchText}
               onInputChange={onInputChange}
               isSetUserIsNotSelectedAutoComplete={isSetUserIsNotSelectedAutoComplete}
+              formatText={formatText}
             />
             <Button
               color={isOpenDropdown ? 'success' : 'primary'}
