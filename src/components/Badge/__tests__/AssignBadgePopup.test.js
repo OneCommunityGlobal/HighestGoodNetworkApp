@@ -5,7 +5,7 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import AssignBadgePopup from 'components/Badge/AssignBadgePopup';
 import { Provider } from 'react-redux';
-import { themeMock } from './mockStates';
+import { themeMock } from '../../../__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
