@@ -19,3 +19,11 @@
   border-radius: 10px;
   box-shadow: 1px 1px 1px #e0e0e0;
 }
+
+.component-pie-chart-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

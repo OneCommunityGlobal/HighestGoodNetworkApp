@@ -14,14 +14,16 @@ import './TotalOrgSummary.css';
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import HoursWorkList from './HoursWorkList/HoursWorkList';
+import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 
-const startDate = '2024-06-30';
+const startDate = '2023-06-30';
 // const endDate = new Date().toISOString().split('T')[0];
-const endDate = '2024-07-36';
+const endDate = '2024-07-06';
 
 function TotalOrgSummary(props) {
   const dispatch = useDispatch();
-  const [hoursWorked, setHoursWorked] = useState(0);
+  const [volunteerHoursStats, setVolunteerHoursStats] = useState([]);
 
   const totalOrgSummary = useSelector(state => state.totalOrgSummary);
 
@@ -29,18 +31,22 @@ function TotalOrgSummary(props) {
   console.log('props', props);
   const { darkMode, loading, error } = props;
 
-  // const [ hoursWorked, setHoursWorked ] = useState(0);
+  useEffect(() => {
+    dispatch(getTotalOrgSummary(startDate, endDate));
+  }, [startDate, endDate, dispatch]);
 
-  useEffect(async () => {
-    await dispatch(getTotalOrgSummary(startDate, endDate));
-    setHoursWorked(totalOrgSummary.volunteerstats.totalHoursWorked);
-    // props.hasPermission('');
-  }, [startDate, endDate]);
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('totalOrgSummary', totalOrgSummary);
+  }, [totalOrgSummary]);
 
-  // eslint-disable-next-line no-console
-  console.log('totalOrgSummary', totalOrgSummary);
-  // eslint-disable-next-line no-console
-  console.log('hoursWorked', hoursWorked);
+  useEffect(() => {
+    if (totalOrgSummary.volunteerstats) {
+      setVolunteerHoursStats(totalOrgSummary.volunteerstats.volunteerHoursStats);
+    }
+    // eslint-disable-next-line no-console
+    console.log('volunteerHoursStats', volunteerHoursStats);
+  }, [totalOrgSummary, volunteerHoursStats]);
 
   if (error) {
     return (
@@ -117,9 +123,41 @@ function TotalOrgSummary(props) {
       <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
         <Row>
           <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <VolunteerHoursDistribution darkMode={darkMode} hoursWorked={5} />
+            <div className="component-container component-border" style={{ position: 'relative' }}>
+              <div className="d-flex flex-row justify-content-end">
+                {Array.isArray(volunteerHoursStats) && volunteerHoursStats.length > 0 && (
+                  <>
+                    <VolunteerHoursDistribution
+                      darkMode={darkMode}
+                      volunteerHoursStats={volunteerHoursStats}
+                    />
+                    <div className="d-flex flex-column align-items-center justify-content-center">
+                      <HoursWorkList
+                        darkMode={darkMode}
+                        volunteerHoursStats={volunteerHoursStats}
+                      />
+                      <NumbersVolunteerWorked />
+                    </div>
+                  </>
+                )}
+              </div>
+              {/* <p
+                className="component-border component-pie-chart-label"
+                style={{
+                  position: 'absolute',
+                  bottom: '5%',
+                  right: '5%',
+                  width: '20%',
+                  padding: '5px',
+                }}
+              >
+                {'xxx '}
+                Volunteers worked over assigned time
+              </p> */}
             </div>
+            {/* <div>
+              <span>{JSON.stringify(totalOrgSummary)}</span>
+            </div> */}
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
