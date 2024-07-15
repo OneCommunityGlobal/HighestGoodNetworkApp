@@ -78,7 +78,6 @@ function PermissionListItem(props) {
 
   const howManySubpermsInRole = checkSubperms(subperms);
 
-
   const updatePermissionsBasedOnPresence = (permissionsSet, item, shouldAdd) => {
     if (item.subperm) {
       item.forEach(subItem => {
@@ -94,29 +93,28 @@ function PermissionListItem(props) {
       permissionsSet.delete(item.key);
     }
   };
-  
-  const handleAllSubpermissions = (subperms) => {
+
+  const handleAllSubpermissions = subPerms => {
     const allSubperms = howManySubpermsInRole === 'All';
-  
+
     setPermissions(previousPermissions => {
       const updatedPermissions = new Set(previousPermissions);
-      updatePermissionsBasedOnPresence(updatedPermissions, subperms, !allSubperms);
+      updatePermissionsBasedOnPresence(updatedPermissions, subPerms, !allSubperms);
       return Array.from(updatedPermissions);
     });
-  
+
     props.onChange();
   };
-  
-  const handleAllPermissions = (permissions) => {
-    permissions.forEach(permission => {
-      if (permission.subperms) {
-        handleAllPermissions(permission.subperms);
+
+  const handleAllPermissions = perms => {
+    perms.forEach(perm => {
+      if (perm.subperms) {
+        handleAllPermissions(perm.subperms);
       } else {
-        handleAllSubpermissions(permission);
+        handleAllSubpermissions(perm);
       }
     });
   };
-  
 
   let color;
   if (isCategory) {
