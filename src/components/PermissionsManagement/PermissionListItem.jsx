@@ -78,28 +78,88 @@ function PermissionListItem(props) {
 
   const howManySubpermsInRole = checkSubperms(subperms);
 
-  const handleAllpermissions = () => {
-    if (howManySubpermsInRole === 'All') {
-      setPermissions(previousPermissions => {
-        const updatedPermissions = new Set(previousPermissions);
-        subperms.forEach(subperm => {
-          if (updatedPermissions.has(subperm.key)) {
-            updatedPermissions.delete(subperm.key); // Delete the key if it exists
-          }
-        });
-        return Array.from(updatedPermissions);
+
+  const updatePermissionsBasedOnPresence = (permissionsSet, item, shouldAdd) => {
+    if (item.subperm) {
+      item.forEach(subItem => {
+        if (shouldAdd) {
+          permissionsSet.add(subItem.key);
+        } else if (permissionsSet.has(subItem.key)) {
+          permissionsSet.delete(subItem.key);
+        }
       });
-    } else {
-      setPermissions(previousPermissions => {
-        const updatedPermissions = new Set(previousPermissions);
-        subperms.forEach(subperm => {
-          updatedPermissions.add(subperm.key);
-        });
-        return Array.from(updatedPermissions);
-      });
+    } else if (shouldAdd) {
+      permissionsSet.add(item.key);
+    } else if (permissionsSet.has(item.key)) {
+      permissionsSet.delete(item.key);
     }
+  };
+  
+  const handleAllSubpermissions = (subperms) => {
+    const allSubperms = howManySubpermsInRole === 'All';
+  
+    setPermissions(previousPermissions => {
+      const updatedPermissions = new Set(previousPermissions);
+      updatePermissionsBasedOnPresence(updatedPermissions, subperms, !allSubperms);
+      return Array.from(updatedPermissions);
+    });
+  
     props.onChange();
   };
+  
+  const handleAllPermissions = (permissions) => {
+    permissions.forEach(permission => {
+      if (permission.subperms) {
+        handleAllPermissions(permission.subperms);
+      } else {
+        handleAllSubpermissions(permission);
+      }
+    });
+  };
+  
+
+  // const handleAllSubpermissions = (subperms) => {
+  //   if (howManySubpermsInRole === 'All') {
+  //     setPermissions(previousPermissions => {
+  //       const updatedPermissions = new Set(previousPermissions);
+  //       if(subperms.subperm){
+  //         subperms.forEach(subperm => {
+  //           if (updatedPermissions.has(subperm.key)) {
+  //             updatedPermissions.delete(subperm.key); 
+  //           }
+  //         });
+  //       }else{
+  //         if (updatedPermissions.has(subperms.key)) {
+  //           updatedPermissions.delete(subperms.key); 
+  //         }
+  //       }
+  //       return Array.from(updatedPermissions);
+  //     });
+  //   }else{
+  //     setPermissions(previousPermissions => {
+  //       const updatedPermissions = new Set(previousPermissions);
+  //       if(subperms.subperm){
+  //         subperms.forEach(subperm => {
+  //           updatedPermissions.add(subperm.key);
+  //         });
+  //       }else{
+  //           updatedPermissions.add(subperms.key); 
+  //       }
+  //       return Array.from(updatedPermissions);
+  //     });
+  //   }
+  //   props.onChange();
+  // }
+  // const handleAllpermissions = (perms) => {
+  //   perms.forEach(perm => {
+  //     if(perm.subperms){
+  //       handleAllpermissions(perm.subperms)
+  //     }else{
+  //       handleAllSubpermissions(perm)
+  //     }
+  //   })
+  // }
+
 
   let color;
   if (isCategory) {
@@ -163,7 +223,7 @@ function PermissionListItem(props) {
               // eslint-disable-next-line react/destructuring-assignment
               disabled={!props.hasPermission('putRole')}
               onClick={() => {
-                handleAllpermissions(subperms);
+                handleAllPermissions(subperms);
               }}
               style={darkMode ? boxStyleDark : boxStyle}
             >
