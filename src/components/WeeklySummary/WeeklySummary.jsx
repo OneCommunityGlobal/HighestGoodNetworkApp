@@ -51,7 +51,7 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
-import WriteItForMeModal from './WriteForMeModal';
+// import WriteItForMeModal from './WriteForMeModal';
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -812,19 +812,19 @@ export class WeeklySummary extends Component {
                               </DropdownMenu>
                             </UncontrolledDropdown>
                           )}
-                          {/* <CurrentPromptModal
+                          <CurrentPromptModal
                             userRole={userRole}
                             userId={displayUserId}
                             darkMode={darkMode}
-                          /> */}
-                          <div style={{ width: '10rem' }}>
+                          />
+                          {/* <div style={{ width: '10rem' }}>
                             <CurrentPromptModal
                               userRole={userRole}
                               userId={displayUserId}
                               darkMode={darkMode}
                             />
                             <WriteItForMeModal pasteResponse={this.pasteResponse} />
-                          </div>
+                          </div> */}
                         </Label>
                         <Editor
                           tinymceScriptSrc="/tinymce/tinymce.min.js"
