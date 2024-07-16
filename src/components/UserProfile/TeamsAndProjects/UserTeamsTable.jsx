@@ -30,8 +30,6 @@ const UserTeamsTable = props => {
 
   const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState([]);
 
-  const [isOpenModalTeamCode, setIsOpenModalTeamCode] = useState(false);
-
   const [teamCode, setTeamCode] = useState(
     props.userProfile ? props.userProfile.teamCode : props.teamCode,
   );
@@ -43,11 +41,6 @@ const UserTeamsTable = props => {
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = (e, autoComplete) => {
-    //prettier-ignore
-    if( e === true ) { setIsOpenModalTeamCode(true); return;}
-    //prettier-ignore
-    else isOpenModalTeamCode && autoComplete && setIsOpenModalTeamCode(false)
-
     setAutoComplete(autoComplete);
     const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
     if (regexTest) {
@@ -75,7 +68,7 @@ const UserTeamsTable = props => {
     } else {
       setArrayInputAutoComplete(props.inputAutoComplete);
     }
-  }, [teamCode, props.inputAutoComplete, autoComplete, isOpenModalTeamCode]);
+  }, [teamCode, props.inputAutoComplete, autoComplete]);
 
   const filterInputAutoComplete = result => {
     return result
@@ -91,10 +84,7 @@ const UserTeamsTable = props => {
     <div>
       {innerWidth >= 1025 ? (
         <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-          <div
-            className="container"
-            style={{ paddingLeft: '4px', paddingRight: '4px'}}
-          >
+          <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
             {props.canEditVisibility && (
               <div className="row">
                 <Col md="7">
@@ -160,132 +150,80 @@ const UserTeamsTable = props => {
               )}
               <Col md="2" style={{ padding: '0' }}>
                 {props.canEditTeamCode ? (
-                  <>
-                    {!isOpenModalTeamCode ? (
-                      <AutoCompleteTeamCode
-                        refDropdown={refDropdown}
-                        teamCode={teamCode}
-                        showDropdown={showDropdown}
-                        handleCodeChange={handleCodeChange}
-                        setShowDropdown={setShowDropdown}
-                        arrayInputAutoComplete={arrayInputAutoComplete}
-                        inputAutoStatus={props.inputAutoStatus}
-                        isLoading={props.isLoading}
-                        fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
-                        darkMode={darkMode}
-                        isOpenModalTeamCode={isOpenModalTeamCode}
-                        setIsOpenModalTeamCode={setIsOpenModalTeamCode}
-                      />
-                    ) : (
-                      <>
-                        <Input
-                          value={teamCode}
-                          placeholder="X-XXX"
-                          style={
-                            darkMode
-                              ? {
-                                  backgroundColor: '#1c2541',
-                                  color: '#fff',
-                                  outline: 'none',
-                                  border: 'none',
-                                }
-                              : null
-                          }
-                        />
-
-                        <Modal
-                          isOpen={isOpenModalTeamCode}
-                          toggle={() => setIsOpenModalTeamCode(false)}
-                          className={darkMode ? 'dark-mode' : ''}
-                        >
-                          <ModalHeader
-                            toggle={() => setIsOpenModalTeamCode(false)}
-                            className={darkMode && `bg-space-cadet border-white text-light`}
-                          ></ModalHeader>
-                          <ModalBody className={darkMode && `bg-yinmn-blue`}>
-                            <AutoCompleteTeamCode
-                              refDropdown={refDropdown}
-                              teamCode={teamCode}
-                              showDropdown={showDropdown}
-                              handleCodeChange={handleCodeChange}
-                              setShowDropdown={setShowDropdown}
-                              arrayInputAutoComplete={arrayInputAutoComplete}
-                              inputAutoStatus={props.inputAutoStatus}
-                              isLoading={props.isLoading}
-                              fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
-                              darkMode={darkMode}
-                              isOpenModalTeamCode={isOpenModalTeamCode}
-                              setIsOpenModalTeamCode={setIsOpenModalTeamCode}
-                            />
-                          </ModalBody>
-                        </Modal>
-                      </>
-                    )}
-                  </>
+                  <AutoCompleteTeamCode
+                    refDropdown={refDropdown}
+                    teamCode={teamCode}
+                    showDropdown={showDropdown}
+                    handleCodeChange={handleCodeChange}
+                    setShowDropdown={setShowDropdown}
+                    arrayInputAutoComplete={arrayInputAutoComplete}
+                    inputAutoStatus={props.inputAutoStatus}
+                    isLoading={props.isLoading}
+                    fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                    darkMode={darkMode}
+                  />
                 ) : (
-                  <Button
-                    className="btn-addteam"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                    style={darkMode ? {} : boxStyle}
-                  >
-                    Assign Team
-                  </Button>
+                  <div style={{ fontSize: '12px', textAlign: 'center' }}>
+                    {teamCode == '' ? 'No assigned team code' : teamCode}
+                  </div>
                 )}
               </Col>
-            )}
-            <Col md="2" style={{ padding: '0' }}>
-              {props.canEditTeamCode ? (
-                <Input
-                  id="teamCode"
-                  value={teamCode}
-                  onChange={handleCodeChange}
-                  placeholder="X-XXXXX"
-                />
-              ) : (
-                <div style={{ fontSize: "12px", textAlign: 'center' }}>
-                  {teamCode == '' ? "No assigned team code" : teamCode}
-                </div>
-              )}
-            </Col>
+            </div>
           </div>
-        </div>
-        <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
-          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
-            <thead className={darkMode ? 'bg-space-cadet' : ''}>
-              {props.role && (
-                <tr style={{ textAlign: 'center' }}>
-                  <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '10%' }} >#</th>
-                  {canAssignTeamToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>Team Name</th> : null}
-                  {props.userTeamsById.length > 0 ? <th className={darkMode ? 'bg-space-cadet' : ''}></th> : null}
-                </tr>
-              )}
-            </thead>
-            <tbody>
-              {props.userTeamsById.length > 0 ? (
-                props.userTeamsById.map((team, index) => (
-                  <tr key={index} className="tr">
-                    <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
-                    <td className={darkMode ? 'bg-yinmn-blue' : ''}>{`${team.teamName}`}</td>
-                    {props.edit && props.role && (
-                      <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '20%' }}>
-                        <Button
-                          disabled={!canAssignTeamToUsers}
-                          color="danger"
-                          onClick={e => {
-                            props.onDeleteClick(team._id);
-                          }}
-                          style={darkMode ? boxStyleDark : boxStyle}
-                        >
-                          Delete
-                        </Button>
-                      </td>
-                    )}
+          <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
+            <table
+              className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}
+            >
+              <thead className={darkMode ? 'bg-space-cadet' : ''}>
+                {props.role && (
+                  <tr style={{ textAlign: 'center' }}>
+                    <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '10%' }}>
+                      #
+                    </th>
+                    {canAssignTeamToUsers ? (
+                      <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>
+                        Team Name
+                      </th>
+                    ) : null}
+                    {props.userTeamsById.length > 0 ? (
+                      <th className={darkMode ? 'bg-space-cadet' : ''}></th>
+                    ) : null}
                   </tr>
                 )}
               </thead>
+              <tbody className={darkMode ? 'text-light' : ''}>
+                {props.userTeamsById.length > 0 ? (
+                  props.userTeamsById.map((team, index) => (
+                    <tr key={index} className="tr">
+                      <td>{index + 1}</td>
+                      <td>{`${team.teamName}`}</td>
+                      {props.edit && props.role && (
+                        <td>
+                          <div
+                            style={{
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          >
+                            <Button
+                              disabled={!canAssignTeamToUsers}
+                              color="danger"
+                              onClick={e => {
+                                props.onDeleteClick(team._id);
+                              }}
+                            >
+                              Delete
+                            </Button>
+                          </div>
+                        </td>
+                      )}
+                    </tr>
+                  ))
+                ) : (
+                  <></>
+                )}
+              </tbody>
               <tbody>
                 {props.userTeamsById.length > 0 ? (
                   props.userTeamsById.map((team, index) => (
@@ -315,7 +253,6 @@ const UserTeamsTable = props => {
             </table>
           </div>
         </div>
-
       ) : (
         <div className={`teamtable-container tablet  ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>

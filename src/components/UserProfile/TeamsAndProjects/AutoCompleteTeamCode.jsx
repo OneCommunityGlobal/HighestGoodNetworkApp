@@ -15,7 +15,6 @@ export const AutoCompleteTeamCode = props => {
     isLoading,
     fetchTeamCodeAllUsers,
     darkMode,
-    isOpenModalTeamCode,
   } = props;
 
   useEffect(() => {
@@ -29,8 +28,8 @@ export const AutoCompleteTeamCode = props => {
     }
   }, [refDropdown, showDropdown]);
 
-  const classNameStyleP = `m-0 d-flex justify-content-center  align-items-center  list-group-item-action
-  ${isOpenModalTeamCode ? 'p-2' : 'p-1'}`;
+  // prettier-ignore
+  const classNameStyleP = `m-0 d-flex justify-content-center  align-items-center  list-group-item-action p-1`;
 
   const styleP = { border: '1px solid #ccc', backgroundColor: '#fff' };
   const borderBottomRadius = { borderBottomRightRadius: '10px', borderBottomLeftRadius: '10px' };
@@ -47,14 +46,6 @@ export const AutoCompleteTeamCode = props => {
     outline: 'none',
     border: 'none',
   };
-
-  const heightAutoComplete = isOpenModalTeamCode ? '42rem' : '7rem';
-
-  const validationIsOpenModalTeamCode = Array.isArray(arrayInputAutoComplete)
-    ? !isOpenModalTeamCode
-      ? arrayInputAutoComplete.length <= 3
-      : arrayInputAutoComplete.length <= 16
-    : false;
 
   let autoComplete = false;
 
@@ -73,9 +64,9 @@ export const AutoCompleteTeamCode = props => {
         <div
           ref={refDropdown}
           style={
-            validationIsOpenModalTeamCode && inputAutoStatus === 200
+            arrayInputAutoComplete.length <= 3 && inputAutoStatus === 200
               ? { height: 'auto', width: 'auto' }
-              : { height: heightAutoComplete, width: 'auto' }
+              : { height: '7rem', width: 'auto' }
           }
           className="overflow-auto mb-2 scrollAutoComplete"
         >
@@ -98,22 +89,9 @@ export const AutoCompleteTeamCode = props => {
                 </ListGroupItem>
               </ListGroup>
             ) : (
-              arrayInputAutoComplete.map((item, i) => {
+              arrayInputAutoComplete.map(item => {
                 return (
                   <div key={item}>
-                    {i === 0 && !isOpenModalTeamCode && (
-                      <p
-                        className={classNameStyleP}
-                        style={
-                          darkMode
-                            ? { ...styleP, ...colordarkWithBorder, cursor: 'pointer' }
-                            : { ...styleP, cursor: 'pointer' }
-                        }
-                        onClick={() => handleCodeChange(true, (autoComplete = true))}
-                      >
-                        Open modal
-                      </p>
-                    )}
                     <p
                       className={classNameStyleP}
                       style={
