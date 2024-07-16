@@ -152,7 +152,7 @@ export default function Timer({ darkMode }) {
       return (
         remainingDuration.asMinutes() + addition > 0 &&
         goalDuration.asMinutes() + addition >= MIN_MINS &&
-        goalDuration.asHours() + addition / 60 <= MAX_HOURS
+        goalDuration.asHours() < MAX_HOURS
       );
     },
     [remaining],
@@ -168,15 +168,18 @@ export default function Timer({ darkMode }) {
 
   const handleAddButton = useCallback(
     duration => {
+      if (goal >= MAX_HOURS * 3600000) {
+        toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
+        return;
+      }
       const goalAfterAdditionAsHours = moment
         .duration(goal)
         .add(duration, 'minutes')
         .asHours();
       if (goalAfterAdditionAsHours > MAX_HOURS) {
-        toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
-      } else {
-        sendAddGoal(moment.duration(duration, 'minutes').asMilliseconds());
+        toast.info(`Goal time cannot be set over ${MAX_HOURS} hours, Goal time is set to 5 hours`);
       }
+      sendAddGoal(moment.duration(duration, 'minutes').asMilliseconds());
     },
     [remaining],
   );
