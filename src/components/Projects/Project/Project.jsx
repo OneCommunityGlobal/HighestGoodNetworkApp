@@ -59,8 +59,10 @@ const Project = props => {
   }, [projectData]);
 
   return (
+    <table>
+    <tbody>
+    <tr className="projects__tr" id={'tr_' + props.projectId}>
 
-    <tr className={`projects__tr ${darkMode ? 'text-light' : ''}`} id={'tr_' + projectId}>
       <th className="projects__order--input" scope="row">
         <div>{index + 1}</div>
       </th>
@@ -82,15 +84,13 @@ const Project = props => {
       <td className="projects__category--input">
         {(canPutProject) ? (
           <select
+
             data-testid="projects__category--input" //added for unit test
             value={props.category}
             onChange={e => {
               setCategory(e.target.value);
             }}
 
-//             value={category}
-//             onChange={onUpdateProjectCategory}
-            className={darkMode ? 'bg-yinmn-blue border-primary text-light' : ''}
           >
             <option default value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
@@ -107,11 +107,10 @@ const Project = props => {
         )}
       </td>
 
-      <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
-        {props.active ? (
-
-//       <td className="projects__active--input" onClick={canPutProject ? onUpdateProjectActive : null}>
-//         {isActive ? (
+      {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
+        {props.active ? ( */}
+          <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? onUpdateProjectActive : null}>
+              {isActive ? (
 
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
