@@ -1,4 +1,3 @@
-/* TeamsOverview.css */
 
 .teams__overview--top {
   display: flex;
@@ -14,12 +13,13 @@
 }
 
 @media (max-width: 479px) {
-  .teams__overview--top {
-    flex-direction: column; /* Stack cards vertically */
-  }
-  
   .teams__overview--top .card {
-    margin-bottom: 10px; /* Add margin between stacked cards */
+    flex: 1 1 45%; /* Adjust card size to prevent stacking */
+    margin: 5px 0;
+  }
+
+  .teams__overview--top {
+    justify-content: space-between; /* Ensure cards are spaced correctly */
   }
 }
 
@@ -28,7 +28,6 @@
     padding: 10px; /* Add padding to the cards at 768px and below */
   }
 }
-
 /* Table CSS */
 
 .table-container {
