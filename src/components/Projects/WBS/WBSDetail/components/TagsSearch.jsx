@@ -1,16 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import TagSent from './TagSent';
 import './TagsSearch.css';
+import ReadOnlySectionWrapper from '../EditTask/ReadOnlySectionWrapper';
 
-function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems }) {
+function TagsSearch({ placeholder, members, addResources, removeResource, resourceItems, disableInput }) {
   const [isHidden, setIsHidden] = useState(false);
   const [filteredData, setFilteredData] = useState([]);
   const [selectedIndex, setSelectedIndex] = useState(0);
+  const [searchWord, setSearchWord] = useState(''); 
+  const [isFocused, setIsFocused] = useState(false);
 
   const handleClick = (event, member) => {
     addResources(member._id, member.firstName, member.lastName);
-    setIsHidden(!isHidden);
     event.target.closest(".my-element").previousElementSibling.value = '';
+    setSearchWord('');
+    setFilteredData([]);
   };
 
   // sorting using the input letter, giving highest priority to first name starting with that letter,
@@ -50,34 +54,43 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
 
   const handleFilter = event => {
     const searchWord = event.target.value;
-    if (searchWord === '') {
+    setSearchWord(searchWord);
+    const newFilter = sortByStartingWith(searchWord);
+    setFilteredData(newFilter);
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+    setFilteredData(sortByStartingWith(searchWord));
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => {
+      setIsFocused(false);
       setFilteredData([]);
-    } else {
-      const newFilter = sortByStartingWith(searchWord);
-      setIsHidden(false);
-      setFilteredData(newFilter);
-    }
+    }, 100);
   };
 
   return (
     <div className="d-flex flex-column px-0">
       <div className="d-flex flex-column mb-1 px-0">
         <div className="align-items-start justify-content-start w-100 px-0 position-relative">
-          <input
-            type="text"
-            placeholder={placeholder}
-            className="border border-dark rounded form-control px-2"
-            onChange={handleFilter}
-          />
-          {filteredData.length !== 0 ? (
-            <ul
-              className={`my-element ${
-                isHidden
-                  ? 'd-none'
-                  : 'dropdown-menu d-flex flex-column align-items-start justify-content-start w-auto scrollbar shadow-lg rounded-3 position-absolute top-8 start-0 z-3 bg-light'
-              }`}
-            >
-              {filteredData.slice(0, 10).map((member, index) => (
+          {ReadOnlySectionWrapper(
+            <input
+              type="text"
+              placeholder={placeholder}
+              className="border border-dark rounded form-control px-2"
+              onChange={handleFilter}
+              onFocus={handleFocus}
+              onBlur={handleBlur}
+            />,
+            !disableInput,
+            null,
+            {componentOnly:true}
+          )}
+          {(filteredData.length !== 0 || isFocused) && (
+            <ul className="my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 scrollbar shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light scrollable-menu">
+              {filteredData.map((member, index) => (
                 <a key={member._id} className="text-decoration-none w-100">
                   <li
                     className={
@@ -87,13 +100,11 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
                     }
                     onClick={event => handleClick(event, member)}
                   >
-                    {member.firstName + ' ' + member.lastName}
+                    {`${member.firstName} ${member.lastName}`}
                   </li>
                 </a>
               ))}
             </ul>
-          ) : (
-            ''
           )}
         </div>
       </div>

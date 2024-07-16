@@ -15,20 +15,31 @@ import {
 import { toast } from 'react-toastify';
 import cs from 'classnames';
 import css from './Timer.module.css';
+import '../Header/DarkMode.css';
 import { ENDPOINTS } from '../../utils/URL';
 import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 
-export default function Timer() {
+export default function Timer({ darkMode }) {
+  /**
+   *  Because the websocket can not be closed when internet is cut off (lost server connection),
+   *  the readyState will be stuck at OPEN, so here we need to use a custom readyState to
+   *  mimic the real readyState, and when internet is cut off, the custom readyState will be set
+   *  to CLOSED, and the user will be notified to refresh the page to reconnect to the server.
+   * */
+  const [customReadyState, setCustomReadyState] = useState(ReadyState.CONNECTING);
   const WSoptions = {
-    share: true,
+    share: false,
     protocols: localStorage.getItem(config.tokenKey),
-    shouldReconnect: () => true,
-    reconnectAttempts: 5,
-    reconnectInterval: 5000,
+    onOpen: () => setCustomReadyState(ReadyState.OPEN),
+    onClose: () => setCustomReadyState(ReadyState.CLOSED),
+    onError: error => {
+      throw new Error('WebSocket Error:', error);
+    },
   };
+
   /**
    * Expected message format: {
    *  userId: string,
@@ -41,7 +52,7 @@ export default function Timer() {
    * }
    */
 
-  const { sendMessage, lastJsonMessage, readyState } = useWebSocket(
+  const { sendMessage, lastJsonMessage, getWebSocket } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
     WSoptions,
   );
@@ -57,6 +68,7 @@ export default function Timer() {
     REMOVE_GOAL: 'REMOVE_FROM_GOAL=',
     ACK_FORCED: 'ACK_FORCED',
     START_CHIME: 'START_CHIME=',
+    HEARTBEAT: 'ping',
   };
 
   const defaultMessage = {
@@ -81,28 +93,33 @@ export default function Timer() {
   const [logTimeEntryModal, setLogTimeEntryModal] = useState(false);
   const [inacModal, setInacModal] = useState(false);
   const [showTimer, setShowTimer] = useState(false);
-  const [timerIsOverModalOpen, setTimerIsOverModalIsOpen] = useState(false);
+  const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
-  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0, isTangible: true });
-  const audioRef = useRef(null);
+  const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
+  const isWSOpenRef = useRef(0);
+  const timeIsOverAudioRef = useRef(null);
+  const forcedPausedAudioRef = useRef(null);
 
   const timeToLog = moment.duration(goal - remaining);
   const logHours = timeToLog.hours();
   const logMinutes = timeToLog.minutes();
 
+  const sendMessageNoQueue = useCallback(msg => sendMessage(msg, false), [sendMessage]);
+
   const wsMessageHandler = useMemo(
     () => ({
-      sendStart: () => sendMessage(action.START_TIMER),
-      sendPause: () => sendMessage(action.PAUSE_TIMER),
-      sendClear: () => sendMessage(action.CLEAR_TIMER),
-      sendStop: () => sendMessage(action.STOP_TIMER),
-      sendAckForced: () => sendMessage(action.ACK_FORCED),
-      sendStartChime: state => sendMessage(action.START_CHIME.concat(state)),
-      sendSetGoal: timerGoal => sendMessage(action.SET_GOAL.concat(timerGoal)),
-      sendAddGoal: duration => sendMessage(action.ADD_GOAL.concat(duration)),
-      sendRemoveGoal: duration => sendMessage(action.REMOVE_GOAL.concat(duration)),
+      sendStart: () => sendMessageNoQueue(action.START_TIMER),
+      sendPause: () => sendMessageNoQueue(action.PAUSE_TIMER),
+      sendClear: () => sendMessageNoQueue(action.CLEAR_TIMER),
+      sendStop: () => sendMessageNoQueue(action.STOP_TIMER),
+      sendAckForced: () => sendMessageNoQueue(action.ACK_FORCED),
+      sendStartChime: state => sendMessageNoQueue(action.START_CHIME.concat(state)),
+      sendSetGoal: timerGoal => sendMessageNoQueue(action.SET_GOAL.concat(timerGoal)),
+      sendAddGoal: duration => sendMessageNoQueue(action.ADD_GOAL.concat(duration)),
+      sendRemoveGoal: duration => sendMessageNoQueue(action.REMOVE_GOAL.concat(duration)),
+      sendHeartbeat: () => sendMessageNoQueue(action.HEARTBEAT),
     }),
-    [sendMessage],
+    [sendMessageNoQueue],
   );
 
   const {
@@ -114,6 +131,7 @@ export default function Timer() {
     sendStartChime,
     sendAddGoal,
     sendRemoveGoal,
+    sendHeartbeat,
   } = wsMessageHandler;
 
   const toggleLogTimeModal = () => {
@@ -123,8 +141,8 @@ export default function Timer() {
   const toggleTimer = () => setShowTimer(timer => !timer);
 
   const toggleTimeIsOver = () => {
-    setTimerIsOverModalIsOpen(!timerIsOverModalOpen);
-    sendStartChime(!timerIsOverModalOpen);
+    setTimeIsOverModalIsOpen(!timeIsOverModalOpen);
+    sendStartChime(!timeIsOverModalOpen);
   };
 
   const checkBtnAvail = useCallback(
@@ -205,12 +223,18 @@ export default function Timer() {
     }
   };
 
+  /**
+   * This useEffect is to make sure that all the states will be updated before taking effects,
+   * so that message state and other states like running, inacMoal ... will be updated together
+   * at the same time.
+   */
   useEffect(() => {
-    /**
-     * This useEffect is to make sure that all the states will be updated before taking effects,
-     * so that message state and other states like running, inacMoal ... will be updated together
-     * at the same time.
-     */
+    // Exclude heartbeat message
+    if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
+      isWSOpenRef.current = 0;
+      return;
+    }
+
     const {
       paused: pausedLJM,
       forcedPause: forcedPauseLJM,
@@ -220,8 +244,29 @@ export default function Timer() {
     setMessage(lastJsonMessage || defaultMessage);
     setRunning(startedLJM && !pausedLJM);
     setInacModal(forcedPauseLJM);
-    setTimerIsOverModalIsOpen(chimingLJM);
+    setTimeIsOverModalIsOpen(chimingLJM);
   }, [lastJsonMessage]);
+
+  // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (running) {
+        isWSOpenRef.current += 1;
+        sendHeartbeat();
+        setTimeout(() => {
+          // make sure to notify the user if the heartbeat is not responded for 3 times
+          if (isWSOpenRef.current > 3) {
+            setRunning(false);
+            setInacModal(true);
+            getWebSocket().close(); // try to close the WS connection, but it might not work when internet is cut off
+            setCustomReadyState(ReadyState.CLOSED);
+          }
+        }, 10000); // close the WS if no response after 10 seconds
+      }
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, [running]);
 
   useEffect(() => {
     /**
@@ -244,23 +289,43 @@ export default function Timer() {
 
   useEffect(() => {
     checkRemainingTime();
-    setLogTimer({ hours: logHours, minutes: logMinutes, isTangible: true });
+    setLogTimer({ hours: logHours, minutes: logMinutes });
   }, [remaining]);
 
   useEffect(() => {
-    if (timerIsOverModalOpen) {
+    if (timeIsOverModalOpen) {
       window.focus();
-      audioRef.current.play();
+      timeIsOverAudioRef.current.play();
     } else {
       window.focus();
-      audioRef.current.pause();
-      audioRef.current.currentTime = 0;
+      timeIsOverAudioRef.current.pause();
+      timeIsOverAudioRef.current.currentTime = 0;
     }
-  }, [timerIsOverModalOpen]);
+  }, [timeIsOverModalOpen]);
+
+  useEffect(() => {
+    if (inacModal) {
+      window.focus();
+      forcedPausedAudioRef.current.play();
+    } else {
+      window.focus();
+      forcedPausedAudioRef.current.pause();
+      forcedPausedAudioRef.current.currentTime = 0;
+    }
+  }, [inacModal]);
+
+  const fontColor = darkMode ? 'text-light' : '';
+  const headerBg = darkMode ? 'bg-space-cadet' : '';
+  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
   return (
     <div className={css.timerContainer}>
-      <button type="button" onClick={toggleTimer}>
+      <button
+        type="button"
+        onClick={toggleTimer}
+        className={css.btnDiv}
+        aria-label="Open timer dropdown"
+      >
         <BsAlarmFill
           className={cs(css.transitionColor, css.btn)}
           fontSize="2rem"
@@ -273,69 +338,87 @@ export default function Timer() {
           <Progress bar value={2} color="light" />
           <Progress bar value={100 * (remaining / goal)} color="primary" animated={running} />
         </Progress>
-        <button type="button" className={css.preview} onClick={toggleTimer}>
-          {moment.utc(remaining).format('HH:mm:ss')}
-        </button>
-      </div>
-      <div className={css.btns}>
-        <button
-          type="button"
-          onClick={() => {
-            handleAddButton(15);
-          }}
-          title="Add 15min"
-        >
-          <FaPlusCircle
-            className={cs(css.transitionColor, checkBtnAvail(15) ? css.btn : css.btnDisabled)}
-            fontSize="1.5rem"
-          />
-        </button>
-        <button type="button" onClick={() => handleSubtractButton(15)} title="Subtract 15min">
-          <FaMinusCircle
-            className={cs(css.transitionColor, checkBtnAvail(-15) ? css.btn : css.btnDisabled)}
-            fontSize="1.5rem"
-          />
-        </button>
-        {!started || paused ? (
-          <button type="button" onClick={handleStartButton}>
-            <FaPlayCircle
-              className={cs(css.transitionColor, remaining !== 0 ? css.btn : css.btnDisabled)}
-              fontSize="1.5rem"
-              title="Start timer"
-            />
+        {customReadyState === ReadyState.OPEN ? (
+          <button type="button" className={css.preview} onClick={toggleTimer}>
+            {moment.utc(remaining).format('HH:mm:ss')}
           </button>
         ) : (
-          <button type="button" onClick={sendPause}>
-            <FaPauseCircle
-              className={cs(css.btn, css.transitionColor)}
+          <div className={css.disconnected}>Disconnected</div>
+        )}
+      </div>
+      {customReadyState === ReadyState.OPEN && (
+        <div className={css.btns}>
+          <button
+            type="button"
+            onClick={() => {
+              handleAddButton(15);
+            }}
+            title="Add 15min"
+            aria-label="Add 15min"
+          >
+            <FaPlusCircle
+              className={cs(css.transitionColor, checkBtnAvail(15) ? css.btn : css.btnDisabled)}
               fontSize="1.5rem"
-              title="Pause timer"
             />
           </button>
-        )}
-        <button
-          type="button"
-          onClick={handleStopButton}
-          disable={`${!started}`}
-          title="Stop timer and log time"
-        >
-          <FaStopCircle
-            className={cs(
-              css.transitionColor,
-              started && goal - remaining >= 60000 ? css.btn : css.btnDisabled,
-            )}
-            fontSize="1.5rem"
-          />
-        </button>
-        <button type="button" onClick={() => setConfirmationResetModal(true)} title="Reset timer">
-          <FaUndoAlt className={cs(css.transitionColor, css.btn)} fontSize="1.3rem" />
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={() => handleSubtractButton(15)}
+            title="Subtract 15min"
+            aria-label="Subtract 15min"
+          >
+            <FaMinusCircle
+              className={cs(css.transitionColor, checkBtnAvail(-15) ? css.btn : css.btnDisabled)}
+              fontSize="1.5rem"
+            />
+          </button>
+          {!started || paused ? (
+            <button type="button" onClick={handleStartButton} aria-label="Start timer">
+              <FaPlayCircle
+                className={cs(css.transitionColor, remaining !== 0 ? css.btn : css.btnDisabled)}
+                fontSize="1.5rem"
+                title="Start timer"
+              />
+            </button>
+          ) : (
+            <button type="button" onClick={sendPause} aria-label="Pause timer">
+              <FaPauseCircle
+                className={cs(css.btn, css.transitionColor)}
+                fontSize="1.5rem"
+                title="Pause timer"
+              />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleStopButton}
+            disable={`${!started}`}
+            title="Stop timer and log time"
+            aria-label="Stop timer and log time"
+          >
+            <FaStopCircle
+              className={cs(
+                css.transitionColor,
+                started && goal - remaining >= 60000 ? css.btn : css.btnDisabled,
+              )}
+              fontSize="1.5rem"
+            />
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmationResetModal(true)}
+            title="Reset timer"
+            aria-label="Reset timer"
+          >
+            <FaUndoAlt className={cs(css.transitionColor, css.btn)} fontSize="1.3rem" />
+          </button>
+        </div>
+      )}
 
       {showTimer && (
         <div className={css.timer}>
           <div className={css.timerContent}>
-            {readyState === ReadyState.OPEN ? (
+            {customReadyState === ReadyState.OPEN ? (
               <Countdown
                 message={message}
                 timerRange={{ MAX_HOURS, MIN_MINS }}
@@ -351,14 +434,18 @@ export default function Timer() {
                 toggleTimer={toggleTimer}
               />
             ) : (
-              <TimerStatus readyState={readyState} message={message} toggleTimer={toggleTimer} />
+              <TimerStatus
+                readyState={customReadyState}
+                message={message}
+                toggleTimer={toggleTimer}
+              />
             )}
           </div>
         </div>
       )}
       {logTimeEntryModal && (
         <TimeEntryForm
-          fromTimer
+          from="Timer"
           edit={false}
           toggle={toggleLogTimeModal}
           isOpen={logTimeEntryModal}
@@ -366,16 +453,35 @@ export default function Timer() {
           sendStop={sendStop}
         />
       )}
-      <audio ref={audioRef} loop src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3" />
+      <audio
+        ref={timeIsOverAudioRef}
+        loop
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
+      />
+      <audio
+        ref={forcedPausedAudioRef}
+        loop
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
+      />
       <Modal
         isOpen={confirmationResetModal}
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
         centered
         size="md"
+        className={`${fontColor} dark-mode`}
       >
-        <ModalHeader toggle={() => setConfirmationResetModal(false)}>Reset Time</ModalHeader>
-        <ModalBody>Are you sure you want to reset your time?</ModalBody>
-        <ModalFooter>
+        <ModalHeader
+          className={darkMode ? 'bg-space-cadet' : ''}
+          toggle={() => setConfirmationResetModal(false)}
+        >
+          Reset Time
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          Are you sure you want to reset your time?
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             color="primary"
             onClick={() => {
@@ -387,14 +493,23 @@ export default function Timer() {
           </Button>{' '}
         </ModalFooter>
       </Modal>
-      <Modal size="md" isOpen={inacModal} toggle={() => setInacModal(!inacModal)} centered>
-        <ModalHeader toggle={() => setInacModal(!inacModal)}>Timer Paused</ModalHeader>
-        <ModalBody>
+      <Modal
+        className={`${fontColor} dark-mode`}
+        size="md"
+        isOpen={inacModal}
+        toggle={() => setInacModal(!inacModal)}
+        centered
+      >
+        <ModalHeader className={headerBg} toggle={() => setInacModal(!inacModal)}>
+          Timer Paused
+        </ModalHeader>
+        <ModalBody className={bodyBg}>
           The user timer has been paused due to inactivity or a lost in connection to the server.
-          This is to ensure that our resources are being used efficiently and to improve performance
-          for all of our users.
+          Please check your internet connection and refresh the page to continue. This is to ensure
+          that our resources are being used efficiently and to improve performance for all of our
+          users.
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={bodyBg}>
           <Button
             color="primary"
             onClick={() => {
@@ -406,12 +521,20 @@ export default function Timer() {
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={timerIsOverModalOpen} toggle={toggleTimeIsOver} centered size="md">
-        <ModalHeader toggle={toggleTimeIsOver}>Time Complete!</ModalHeader>
-        <ModalBody>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
+      <Modal
+        className={`${fontColor} dark-mode`}
+        isOpen={timeIsOverModalOpen}
+        toggle={toggleTimeIsOver}
+        centered
+        size="md"
+      >
+        <ModalHeader className={headerBg} toggle={toggleTimeIsOver}>
+          Time Complete!
+        </ModalHeader>
+        <ModalBody className={bodyBg}>{`You have worked for ${logHours ? `${logHours} hours` : ''}${
           logMinutes ? ` ${logMinutes} minutes` : ''
         }. Click below if you’d like to add time or Log Time.`}</ModalBody>
-        <ModalFooter>
+        <ModalFooter className={bodyBg}>
           <Button
             color="primary"
             onClick={() => {

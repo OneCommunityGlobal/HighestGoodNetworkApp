@@ -5,11 +5,14 @@ import httpService from 'services/httpService';
 import SetupProfileInvalidToken from './SetupProfileInvalidToken';
 import SetupProfileUserEntry from './SetupProfileUserEntry';
 import './SetupProfile.css';
+
 const SetupProfile = ({ match }) => {
   const [loading, setLoading] = useState(true);
   const [isValidToken, setIsValidToken] = useState(false);
   const [linktoken, setLinkToken] = useState('');
   const [email, setEmail] = useState('');
+  const [inValidMessage, setInValidMessage] = useState('');
+
   useEffect(() => {
     const { token } = match.params;
     setLinkToken(token);
@@ -19,11 +22,14 @@ const SetupProfile = ({ match }) => {
         if (res.status === 200) {
           setIsValidToken(true);
           setEmail(res.data.email);
-        }
+        } 
         setLoading(false);
       })
       .catch(err => {
-        console.log(err);
+        let res = err.response;
+        if(res.data) {
+          setInValidMessage(res.data);
+        }
         setLoading(false);
       });
   }, []);
@@ -34,7 +40,7 @@ const SetupProfile = ({ match }) => {
         isValidToken ? (
           <SetupProfileUserEntry token={linktoken} userEmail={email} />
         ) : (
-          <SetupProfileInvalidToken />
+          <SetupProfileInvalidToken message={inValidMessage} />
         )
       ) : (
         <></>
