@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
-import { teamMemberTasksReducer } from '../components/TeamMemberTasks/reducer';
-import { taskEditSuggestionsReducer } from '../components/TaskEditSuggestions/reducer';
+import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
+import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
 import { allUserProfilesReducer } from './allUserProfilesReducer';
@@ -33,6 +33,7 @@ import notificationReducer from './notificationReducer';
 import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer";
 import { followUpReducer } from "./followUpReducer";
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
+import {userProjectsByUserNameReducer} from './userProjectsByUserNameReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -74,6 +75,7 @@ const localReducers = {
   weeklySummaryRecipients:weeklySummaryRecipientsReducer,
   notification: notificationReducer,
   userFollowUp : followUpReducer,
+  userProjectsByUserNameReducer: userProjectsByUserNameReducer,
   blueSquareEmailAssignment : BlueSquareEmailAssignment,
 
   // bmdashboard

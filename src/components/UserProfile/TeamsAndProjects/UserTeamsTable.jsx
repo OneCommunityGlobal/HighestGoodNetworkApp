@@ -93,7 +93,7 @@ const UserTeamsTable = props => {
         <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div
             className="container"
-            style={{ paddingLeft: '4px', paddingRight: '4px', marginBottom: '2rem' }}
+            style={{ paddingLeft: '4px', paddingRight: '4px'}}
           >
             {props.canEditVisibility && (
               <div className="row">
@@ -223,22 +223,66 @@ const UserTeamsTable = props => {
                     )}
                   </>
                 ) : (
-                  <div style={{ paddingTop: '6px', textAlign: 'center' }}>
-                    {teamCode == '' ? 'No assigned team code' : teamCode}
-                  </div>
+                  <Button
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                    style={darkMode ? {} : boxStyle}
+                  >
+                    Assign Team
+                  </Button>
                 )}
               </Col>
-            </div>
+            )}
+            <Col md="2" style={{ padding: '0' }}>
+              {props.canEditTeamCode ? (
+                <Input
+                  id="teamCode"
+                  value={teamCode}
+                  onChange={handleCodeChange}
+                  placeholder="X-XXXXX"
+                />
+              ) : (
+                <div style={{ fontSize: "12px", textAlign: 'center' }}>
+                  {teamCode == '' ? "No assigned team code" : teamCode}
+                </div>
+              )}
+            </Col>
           </div>
-          <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
-            <table
-              className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}
-            >
-              <thead>
-                {props.role && (
-                  <tr>
-                    <th>#</th>
-                    {canAssignTeamToUsers ? <th style={{ width: '100px' }}>Team Name</th> : null}
+        </div>
+        <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
+          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
+            <thead className={darkMode ? 'bg-space-cadet' : ''}>
+              {props.role && (
+                <tr style={{ textAlign: 'center' }}>
+                  <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '10%' }} >#</th>
+                  {canAssignTeamToUsers ? <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>Team Name</th> : null}
+                  {props.userTeamsById.length > 0 ? <th className={darkMode ? 'bg-space-cadet' : ''}></th> : null}
+                </tr>
+              )}
+            </thead>
+            <tbody>
+              {props.userTeamsById.length > 0 ? (
+                props.userTeamsById.map((team, index) => (
+                  <tr key={index} className="tr">
+                    <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
+                    <td className={darkMode ? 'bg-yinmn-blue' : ''}>{`${team.teamName}`}</td>
+                    {props.edit && props.role && (
+                      <td className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', width: '20%' }}>
+                        <Button
+                          disabled={!canAssignTeamToUsers}
+                          color="danger"
+                          onClick={e => {
+                            props.onDeleteClick(team._id);
+                          }}
+                          style={darkMode ? boxStyleDark : boxStyle}
+                        >
+                          Delete
+                        </Button>
+                      </td>
+                    )}
                   </tr>
                 )}
               </thead>
@@ -271,6 +315,7 @@ const UserTeamsTable = props => {
             </table>
           </div>
         </div>
+
       ) : (
         <div className={`teamtable-container tablet  ${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div style={{ display: 'flex', flexDirection: 'column' }}>
@@ -299,7 +344,7 @@ const UserTeamsTable = props => {
                 </Col>
               </>
             )}
-            <div className="row" style={{ paddingLeft: '30px' }}>
+            <div className="row">
               <Col
                 md="9"
                 xs="12"
