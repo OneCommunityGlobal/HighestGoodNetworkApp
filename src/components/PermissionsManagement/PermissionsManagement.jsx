@@ -122,7 +122,7 @@ function PermissionsManagement(props) {
                   Add New Role
                 </Button>
               )}
-              {canManageUserPermissions && (
+              {canManageUserPermissions && canPutRole && (
                 <Button
                   color="primary"
                   className="permissions-management__button"
