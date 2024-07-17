@@ -17,6 +17,7 @@ import {
   NavLink,
   Button,
 } from 'reactstrap';
+import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
@@ -646,19 +647,39 @@ export class WeeklySummariesReport extends Component {
                 </div>
               )}
               {hasPermissionToFilter && (
-                <div className="filter-style">
-                  <span>Filter by Over Hours</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input"
-                      id="over-hours-toggle"
-                      onChange={this.handleOverHoursToggleChange}
-                    />
-                    <label className="custom-control-label" htmlFor="over-hours-toggle">
-                      {}
-                    </label>
+                <div>
+                  <div
+                    id="filterOverHoursTooltip"
+                    className="filter-style"
+                    data-tip
+                    data-for="filterTooltip"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <span>Filter by Over Hours</span>
+                    <div className="custom-control custom-switch custom-control-smaller">
+                      <input
+                        type="checkbox"
+                        className="custom-control-input"
+                        id="over-hours-toggle"
+                        onChange={this.handleOverHoursToggleChange}
+                      />
+                      <label className="custom-control-label" htmlFor="over-hours-toggle">
+                        {}
+                      </label>
+                    </div>
                   </div>
+                  <ReactTooltip
+                    id="filterTooltip"
+                    place="top"
+                    effect="solid"
+                    className="custom-tooltip"
+                  >
+                    <span
+                      style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}
+                    >
+                      Filter people who contributed more than 25% of their committed hours
+                    </span>
+                  </ReactTooltip>
                 </div>
               )}
             </div>
