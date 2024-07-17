@@ -155,6 +155,7 @@ function CurrentPromptModal(props) {
             data-for="timeEntryTip"
             data-delay-hide="1000"
             aria-hidden="true"
+            aria-label="Information Icon"
             title=""
             style={{ paddingLeft: '.32rem' }}
           />
