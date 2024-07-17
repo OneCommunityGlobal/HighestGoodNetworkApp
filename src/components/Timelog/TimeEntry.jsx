@@ -71,9 +71,10 @@ const TimeEntry = (props) => {
     ) && !cantEditJaeRelatedRecord;
 
   //permission to Delete time entry from other user's Dashboard
-  const canDelete = (dispatch(hasPermission('deleteTimeEntryOthers')) && !cantEditJaeRelatedRecord) ||
-    //permission to delete any time entry on their own time logs tab
-    dispatch(hasPermission('deleteTimeEntry')) ||
+  const canDelete = ((dispatch(hasPermission('deleteTimeEntryOthers')) ||
+    //permission to delete any time entry on their own time logs tab.
+    // Must consider the case of the target record being Jae related 
+    dispatch(hasPermission('deleteTimeEntry')))  && !cantEditJaeRelatedRecord ) ||
     //default permission: delete own sameday tangible entry
     isAuthUserAndSameDayEntry;
   

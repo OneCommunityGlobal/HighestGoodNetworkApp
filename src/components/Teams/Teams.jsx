@@ -12,6 +12,7 @@ import {
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
+  updateTeamMemeberVisibility,
 } from '../../actions/allTeamsAction';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Loading from '../common/Loading';
@@ -108,7 +109,7 @@ class Teams extends React.PureComponent {
         ) : (
           <React.Fragment>
             <div className="container mt-3">
-              {this.teampopupElements()}
+              {this.teampopupElements(allTeams)}
               <TeamOverview
                 numberOfTeams={numberOfTeams}
                 numberOfActiveTeams={numberOfActiveTeams}
@@ -119,7 +120,7 @@ class Teams extends React.PureComponent {
                 darkMode={darkMode}
               />
 
-              < table className="table table-bordered table-responsive-sm">
+              <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}>
                 <thead>
                   <TeamTableHeader 
                     onTeamNameSort={this.toggleTeamNameSort} 
@@ -129,7 +130,7 @@ class Teams extends React.PureComponent {
                     darkMode={darkMode}
                     />
                 </thead>
-                  <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}> 
+                  <tbody className={darkMode ? 'dark-mode' : ''}> 
                     {this.state.sortedTeams}
                   </tbody>
               </table>
@@ -200,8 +201,9 @@ class Teams extends React.PureComponent {
    * 3. Popup to display delete confirmation of the team upon clicking delete button.
    */
 
-  teampopupElements = () => {
+  teampopupElements = (allTeams) => {
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
+    const selectedTeamData= allTeams? allTeams.filter(team => team.teamName === this.state.selectedTeam) : [];
     return (
       <>
         <TeamMembersPopup
@@ -211,6 +213,8 @@ class Teams extends React.PureComponent {
           onDeleteClick={this.onDeleteTeamMember}
           usersdata={this.props.state ? this.props.state.allUserProfiles : []}
           onAddUser={this.onAddUser}
+          teamData= {selectedTeamData}
+          onUpdateTeamMemberVisibility={this.onUpdateTeamMemberVisibility}
           selectedTeamName={this.state.selectedTeam}
         />
         <CreateNewTeamPopup
@@ -248,14 +252,14 @@ class Teams extends React.PureComponent {
   };
 
   onAddUser = user => {
-    this.props.addTeamMember(
-      this.state.selectedTeamId,
-      user._id,
-      user.firstName,
-      user.lastName,
-      user.role,
-      Date.now(),
-    );
+    this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
+  };
+
+   /** NEW CODE
+   * Update Team member visibility by making a Redux action call
+   */
+   onUpdateTeamMemberVisibility = (userid, visibility) => {
+    this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userid, visibility);
   };
 
   /**
@@ -517,4 +521,5 @@ export default connect(mapStateToProps, {
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
+  updateTeamMemeberVisibility,
 })(Teams);

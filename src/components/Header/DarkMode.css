@@ -13,3 +13,7 @@
   color: #f0f0f0;
   opacity: 1; 
 }
+
+.dark-mode tr:hover{
+  background-color: #2f4157;
+}
