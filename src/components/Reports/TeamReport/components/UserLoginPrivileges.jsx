@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState } from 'react';
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
 import TeamReportLogs from './TeamReportLogs';
@@ -7,6 +8,7 @@ import TeamsReportCharts from './TeamsReportCharts';
 import './ReportCharts.css';
 
 function UserLoginPrivileges({
+  // eslint-disable-next-line no-unused-vars
   role,
   teamName,
   teamMembers,
@@ -14,25 +16,26 @@ function UserLoginPrivileges({
   selectedTeams,
   selectedTeamsWeeklyEffort,
   allTeamsMembers,
+  darkMode
 }) {
   // team
   let teamWeeklyCommittedHours = 0;
   let teamTotalBlueSquares = 0;
 
-  teamMembers.map(member => {
+  teamMembers.forEach(member => {
     teamWeeklyCommittedHours += member.weeklycommittedHours;
     teamTotalBlueSquares += member.infringements.length;
   });
 
-  //selectedTeams
+  // selectedTeams
   const [selectedTeamsMembers, setSelectedTeamsMembers] = useState([]);
 
   const [selectedTeamsData, setSelectedTeamsData] = useState([]);
   const [selectedTeamsTotalValues, setSelectedTeamsTotalValues] = useState({});
 
   useEffect(() => {
-    const teamsData = selectedTeamsMembers.map((teamMembers, index) => {
-      const { totalCommitedHours, totalOfMembers, totalBlueSquares } = teamMembers.reduce(
+    const teamsData = selectedTeamsMembers.map((currentTeamMembers, index) => {
+      const { totalCommitedHours, totalOfMembers, totalBlueSquares } = currentTeamMembers.reduce(
         (totals, member) => {
           return {
             totalCommitedHours: totals.totalCommitedHours + member.weeklycommittedHours,
@@ -97,6 +100,7 @@ function UserLoginPrivileges({
         teamWeeklyCommittedHours={teamWeeklyCommittedHours}
         totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours}
         teamTotalBlueSquares={teamTotalBlueSquares}
+        darkMode={darkMode}
       />
       {/* Two cards with pie charts with data */}
       <div
@@ -106,12 +110,13 @@ function UserLoginPrivileges({
           gap: '16px',
         }}
       >
-        <ReportPage.ReportBlock className="team-chart-container">
+        <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
           <TeamReportCharts
             title="Breakdown of Weekly Hours So Far This Week"
             pieChartId="chart1"
             teamWeeklyCommittedHours={teamWeeklyCommittedHours}
             totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours}
+            darkMode={darkMode}
           />
         </ReportPage.ReportBlock>
       </div>
@@ -119,27 +124,31 @@ function UserLoginPrivileges({
         title="Selected Teams"
         selectedTeamsTotalValues={selectedTeamsTotalValues}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
+        darkMode={darkMode}
       />
       {/* Two cards with pie charts with data */}
-      <div className="mobile-chart"
+      <div
+        className="mobile-chart"
         style={{
-          display: 'flex',          
+          display: 'flex',
           gap: '16px',
         }}
       >
-        <ReportPage.ReportBlock className="team-chart-container">
+        <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
           <TeamsReportCharts
             title="Weekly Commited Hours"
             pieChartId="chart2"
             selectedTeamsData={selectedTeamsData}
+            darkMode={darkMode}
           />
         </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock className="team-chart-container">
+        <ReportPage.ReportBlock className="team-chart-container" darkMode={darkMode}>
           <TeamsReportCharts
             title="Hours Worked In Current Week"
             pieChartId="chart3"
             selectedTeamsData={selectedTeamsData}
             selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
+            darkMode={darkMode}
           />
         </ReportPage.ReportBlock>
       </div>

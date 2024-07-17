@@ -1,5 +1,5 @@
 // eslint-disable-next-line no-unused-vars
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo} from 'react';
 import { useDispatch } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
@@ -12,12 +12,11 @@ import Loading from '../../common/Loading';
 
 function TotalTeamReport(props) {
   const dispatch = useDispatch();
-  const [dataLoading, setDataLoading] = useState(true);
-  const [dataRefresh, setDataRefresh] = useState(false);
-  const [teamMemberLoaded, setTeamMemberLoaded] = useState(false);
-  const [dataReady, setDataReady] = useState(false);
+  const [totalTeamReportDataLoading, setTotalTeamReportDataLoading] = useState(true);
+  const [totalTeamReportDataReady, setTotalTeamReportDataReady] = useState(false);
   const [showTotalTeamTable, setShowTotalTeamTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
+  const [teamTimeEntries, setTeamTimeEntries] = useState([]);
   const [allTeams, setAllTeams] = useState([]);
   const [teamInMonth, setTeamInMonth] = useState([]);
   const [teamInYear, setTeamInYear] = useState([]);
@@ -26,11 +25,11 @@ function TotalTeamReport(props) {
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
   const [userNameList, setUserNameList] = useState({});
 
-  const { startDate, endDate, userProfiles } = props;
-
-  const fromDate = startDate.toLocaleDateString('en-CA');
-  const toDate = endDate.toLocaleDateString('en-CA');
-  const userList = userProfiles.map(user => user._id);
+  const { startDate, endDate, userProfiles, allTeamsData, darkMode } = props;
+  const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
+  const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
+  const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
+  const teamList = useMemo(() => allTeamsData.map(team => team._id), [allTeamsData]);
 
   const filterTeamByEndDate = (teams, endDateTime) => {
     const filteredTeams = teams
@@ -87,13 +86,34 @@ function TotalTeamReport(props) {
         }
       });
     });
+    teamTimeEntries?.forEach(entry => {
+      const key = entry.teamId;
+      if (!accTeam[key]) {
+        accTeam[key] = {
+          teamId: key,
+          teamName: entry.teamName,
+          hours: 0,
+          minutes: 0,
+          tangibleHours: 0,
+          tangibleMinutes: 0,
+        };
+      }
+      const hours = parseInt(entry.hours);
+      const minutes = parseInt(entry.minutes);
+      accTeam[key].hours += hours;
+      accTeam[key].minutes += minutes;
+      if(entry.isTangible){
+        accTeam[key].tangibleHours += hours;
+        accTeam[key].tangibleMinutes += minutes;
+      }
+    });
     return accTeam;
   };
 
   const loadTimeEntriesForPeriod = async () => {
     // get the time entries of every user in the selected time range.
     // console.log('Load time entries within the time range');
-    const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+    let url = ENDPOINTS.TIME_ENTRIES_REPORTS;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
@@ -111,7 +131,27 @@ function TotalTeamReport(props) {
         // eslint-disable-next-line no-console
         console.log(err.message);
       });
-    setAllTimeEntries(timeEntries);
+      setAllTimeEntries(timeEntries);
+
+    url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
+    const teamTimeEntries = await axios
+      .post(url, { teams: teamList, fromDate, toDate })
+      .then(res => {
+        return res.data.map(entry => {
+          return {
+            teamId: entry.teamId,
+            hours: entry.hours,
+            minutes: entry.minutes,
+            isTangible: entry.isTangible,
+            date: entry.dateOfWork,
+            teamName: entry.teamName,
+          };
+        });
+      })
+      .catch(err => {
+        console.log(err.message);
+      });
+    setTeamTimeEntries(teamTimeEntries);
   };
 
   const sumByUser = (objectArray, property) => {
@@ -224,18 +264,14 @@ function TotalTeamReport(props) {
 
   useEffect(() => {
     const { savedTeamMemberList } = props;
-
     if (savedTeamMemberList.length > 0) {
       setAllTeamsMembers(savedTeamMemberList);
-      setTeamMemberLoaded(true);
     } else {
-      matchTeamUser(allTeams).then(() => {
-        setTeamMemberLoaded(true);
-      });
+      matchTeamUser(allTeamsData);
     }
     loadTimeEntriesForPeriod().then(() => {
-      setDataLoading(false);
-      setDataRefresh(true);
+      setTotalTeamReportDataLoading(false);
+      setTotalTeamReportDataReady(true);
     });
     const nameList = {};
     userProfiles.forEach(user => {
@@ -244,22 +280,11 @@ function TotalTeamReport(props) {
     setUserNameList(nameList);
   }, []);
 
-  useEffect(() => {
-    setDataReady(false);
-    if (teamMemberLoaded) {
-      // Re-render: reload the time entries when the date changes
-      // console.log('Refresh data');
-      loadTimeEntriesForPeriod().then(() => {
-        setDataLoading(false);
-        setDataRefresh(true);
-      });
-    }
-  }, [startDate, endDate]);
 
   useEffect(() => {
     const { savedTeamMemberList, passTeamMemberList } = props;
 
-    if (!dataLoading && teamMemberLoaded && dataRefresh) {
+    if (!totalTeamReportDataLoading && totalTeamReportDataReady) {
       if (!savedTeamMemberList.length) {
         passTeamMemberList(allTeamsMembers);
       }
@@ -271,10 +296,19 @@ function TotalTeamReport(props) {
       const contributedTeams = filterTenHourTeam(groupedTeam);
       setAllTeams(contributedTeams);
       checkPeriodForSummary();
-      setDataRefresh(false);
-      setDataReady(true);
     }
-  }, [dataRefresh]);
+  }, [totalTeamReportDataLoading, totalTeamReportDataReady, allTeamsMembers, allTimeEntries, teamTimeEntries]);
+
+  useEffect(() => {
+    setTotalTeamReportDataReady(false);
+    const controller = new AbortController();
+    loadTimeEntriesForPeriod(controller).then(() => {
+      setTotalTeamReportDataReady(true);
+    });
+    return () => {
+      controller.abort();
+    }
+  }, [startDate, endDate]);
 
   const onClickTotalTeamDetail = () => {
     const showDetail = showTotalTeamTable;
@@ -291,8 +325,6 @@ function TotalTeamReport(props) {
   };
 
   const getMemberName = (teamId, userNames) => {
-    // given a team(id) and the userid-name list,
-    // return the list of member names of the team
     const nameList = [];
     allTeamsMembers
       .filter(team => team.teamId === teamId)[0]
@@ -366,10 +398,10 @@ function TotalTeamReport(props) {
       return acc + Number(obj.tangibleTime);
     }, 0);
     return (
-      <div className="total-container">
-        <div className="total-title">Total Team Report</div>
+      <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+        <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Team Report</div>
         <div className="total-period">
-          In the period from {fromDate} to {toDate}:
+         In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
         </div>
         <div className="total-item">
           <div className="total-number">{totalTeam.length}</div>
@@ -413,9 +445,9 @@ function TotalTeamReport(props) {
 
   return (
     <div>
-      {!dataReady ? (
+      {!totalTeamReportDataReady ? (
         <div>
-          <Loading />
+          <Loading align="center" darkMode={darkMode}/>
         </div>
       ) : (
         <div>

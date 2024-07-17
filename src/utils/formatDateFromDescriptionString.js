@@ -21,3 +21,13 @@ export const formatDateFromDescriptionString = input => input.replace(/(\d{4}-\d
   ];
   return `${months[parseInt(month) - 1]}-${day}-${year.slice(-2)}`;
 });
+
+
+export const formatTimeOffRequests = inputString => {
+  const searchTerm = 'Notice:'
+  if (inputString.includes(searchTerm)) {
+    const parts = inputString.split(searchTerm);
+    return parts
+  }
+  return [];
+}

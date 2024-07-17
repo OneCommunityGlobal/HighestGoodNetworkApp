@@ -5,19 +5,27 @@ import {
   ModalHeader,
   ModalBody,
   ModalFooter,
-  Input,
   Label,
   Alert,
   Form,
 } from 'reactstrap';
-import { boxStyle } from 'styles';
+import Input from 'components/common/Input';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
+import { useSelector } from 'react-redux';
 /**
  * Modal popup to show the reset password action
  */
 const ResetPasswordPopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [newPassword, onNewPasswordChange] = useState({ password: '', isValid: false });
   const [confirmPassword, onConfirmPasswordChange] = useState({ password: '', isValid: false });
   const [errorMessage, setError] = useState('');
+  const [showPassword, setShowPassword] = useState({
+    newPassword: false,
+    confirmPassword: false
+  });
   const closePopup = e => {
     props.onClose();
   };
@@ -28,6 +36,13 @@ const ResetPasswordPopup = React.memo(props => {
     onConfirmPasswordChange({ password: '', isValid: false });
     setError('');
   }, [props.open]);
+
+  const togglePasswordVisibility = (field) => {
+    setShowPassword(prevState => ({
+      ...prevState,
+      [field]: !prevState[field]
+    }));
+  };
 
   const resetPassword = () => {
     if (!newPassword.isValid) {
@@ -42,33 +57,43 @@ const ResetPasswordPopup = React.memo(props => {
   };
 
   const isValidPassword = password => {
-    const regex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])(?=.{8,})');
+    const regex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\\-])(?=.{8,})');
     return regex.test(password);
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
-      <ModalHeader toggle={closePopup}>Reset Password</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Reset Password</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
-          <Label for="newpassword">New Password</Label>
+          <div className="flex justify-between items-center">
+            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="newpassword">New Password</Label>
+          </div>
           <Input
             autoFocus
-            type="password"
+            type={showPassword.newPassword ? 'text' : 'password'}
             name="newpassword"
             id="newpassword"
             value={newPassword.password}
             onChange={event => {
+              const value = event.target.value;
               onNewPasswordChange({
-                password: event.target.value,
-                isValid: isValidPassword(event.target.value),
+                password: value,
+                isValid: isValidPassword(value),
               });
-              setError('');
+              if (!isValidPassword(value)) {
+                setError('Please choose a strong password which is at least 8 characters long and should contains a digit, a capital letter, and a special character.');
+              } else {
+                setError('');
+              }
             }}
           />
-          <Label for="confirmpassword">Confirm Password</Label>
+
+          <div className="flex justify-between items-center mt-4">
+            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="confirmpassword">Confirm Password</Label>
+          </div>
           <Input
-            type="password"
+            type={showPassword.confirmPassword ? 'text' : 'password'}
             name="confirmpassword"
             id="confirmpassword"
             value={confirmPassword.password}
@@ -77,17 +102,21 @@ const ResetPasswordPopup = React.memo(props => {
                 password: event.target.value,
                 isValid: isValidPassword(event.target.value),
               });
-              setError('');
+              if (newPassword.password !== event.target.value) {
+                setError('Your password and confirmation password do not match.');
+              } else {
+                setError('');
+              }
             }}
           />
         </Form>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         {errorMessage === '' ? <React.Fragment /> : <Alert color="danger">{errorMessage}</Alert>}
-        <Button color="primary" onClick={resetPassword} style={boxStyle}>
+        <Button color="primary" onClick={resetPassword} style={darkMode ? boxStyleDark : boxStyle}>
           Reset Password
         </Button>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>

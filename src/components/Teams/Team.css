@@ -83,6 +83,13 @@ thead {
 
 .isActive i {
   color: lawngreen;
+  margin-top: 10px;
+}
+
+.isNotActive i {
+  color: #dee2e6;
+  margin-top: 10px;
+
 }
 
 .isNotActive {
@@ -110,4 +117,9 @@ tr:hover {
 
 .user-auto-cpmplete:hover {
   background: #1d62f0;
+}
+
+.usermanagement-actions-cell {
+  display: table-cell;
+  padding-left: 10px;
 }

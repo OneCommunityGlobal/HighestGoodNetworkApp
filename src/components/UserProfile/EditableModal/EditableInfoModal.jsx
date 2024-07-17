@@ -1,40 +1,20 @@
 import React, { Component } from 'react';
 import PropTypes from 'prop-types';
-import { 
+import {
   Button,
   Modal,
+  ModalHeader,
   ModalBody,
   ModalFooter,
-  ModalHeader,
   Row,
   Col,
- } from 'reactstrap';
- import Select from 'react-select'
- import { Editor } from '@tinymce/tinymce-react';
+} from 'reactstrap';
+import Select from 'react-select'
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById} from '../../../actions/information';
-import styles from './EditableInfoModal.css';
-import { boxStyle } from 'styles';
-
-// New RichTextEditor component
-const RichTextEditor = ({ disabled, value, onEditorChange }) => (
-  <Editor
-    init={{
-      menubar: false,
-      placeholder: 'Please input infos',
-      plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-      toolbar: 'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-      branding: false,
-      min_height: 180,
-      max_height: 500,
-      autoresize_bottom_margin: 1,
-    }}
-    disabled={disabled}
-    value={value}
-    onEditorChange={onEditorChange}
-  />
-);
+import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
+import { boxStyle, boxStyleDark } from 'styles';
+import RichTextEditor from './RichTextEditor';
 
 const options = [
   { value: '0', label: 'All (default)' },
@@ -44,26 +24,31 @@ const options = [
 
 export class EditableInfoModal extends Component {
   state = {
-    editableModalOpen:false,
+    editableModalOpen: false,
     infoElements: [],
     fetchError: null,
     loading: true,
     editing: false,
     CanRead: false,
     CanEdit: false,
-    infoName:'',
-    infoContent:'',
+    infoName: '',
+    infoContent: '',
     visibility: '',
     fontSize: 24,
   };
-  
+
+  _isMounted = false;
+
   
   async componentDidMount() {
+    this._isMounted = true;
     await this.props.getInfoCollections();
-    const {infoCollections, role, areaTitle, areaName, fontSize, isPermissionPage} = this.props;
+    const { infoCollections, role, areaTitle, areaName, fontSize, isPermissionPage } = this.props;
 
     let content = '';
     let visible = '0';
+
+
     if (Array.isArray(infoCollections)) {
       infoCollections.forEach((info) => {
         if (info.infoName === areaName) {
@@ -72,25 +57,32 @@ export class EditableInfoModal extends Component {
         }
       });
     } 
-    
+
     content = content.replace(/<ul>/g, "<ul class='custom-ul'>");
-    let CanRead = (visible === '0') || 
-                    (visible === '1' && (role ==='Owner' || role ==='Administrator')) ||
-                    (visible === '2' && (role !== 'Volunteer'));
+    let CanRead = (visible === '0') ||
+      (visible === '1' && (role === 'Owner' || role === 'Administrator')) ||
+      (visible === '2' && (role !== 'Volunteer'));
     let CanEdit = role === 'Owner';
-    this.setState({
-      infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
-      fetchError: this.props.fetchError,
-      loading: this.props.loading,
-      infoName: areaName,
-      infoContent: content || 'Please input information!',
-      visibility: visible,
-      CanRead,
-      CanEdit,
-      fontSize: fontSize,
-      isPermissionPage,
-    });
+
+    if(this._isMounted){
+      this.setState({
+        infoElements: Array.isArray(infoCollections) ? [...infoCollections] : [],
+        fetchError: this.props.fetchError,
+        loading: this.props.loading,
+        infoName: areaName,
+        infoContent: content || 'Please input information!',
+        visibility: visible,
+        CanRead,
+        CanEdit,
+        fontSize: fontSize,
+        isPermissionPage,
+      });
+    }
   };
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
   static getDerivedStateFromProps(nextProps, prevState) {
     if (nextProps.infoCollections !== prevState.infoElements) {
@@ -101,12 +93,12 @@ export class EditableInfoModal extends Component {
   }
 
   toggleEditableModal = () => {
-    this.setState({editableModalOpen: false});
+    this.setState({ editableModalOpen: false });
   }
 
   handleEdit = (edit) => {
-    if(this.state.CanEdit){
-      this.setState({editing:edit});
+    if (this.state.CanEdit) {
+      this.setState({ editing: edit });
     }
   }
 
@@ -125,11 +117,11 @@ export class EditableInfoModal extends Component {
   }
   handleInputChange = (content, editor) => {
     const infoContent = this.state.infoContent;
-    this.setState({infoContent:content});
+    this.setState({ infoContent: content });
   }
 
 
-  handleChangeInInfos =  () => {
+  handleChangeInInfos = () => {
 
     let newInfoElements = [...this.state.infoElements]
     let findIndex = false;
@@ -151,13 +143,13 @@ export class EditableInfoModal extends Component {
       infoId: foundInfoId,
     };
   }
-  
+
   handleSelectChange = (selectedOption) => {
-    this.setState({visibility:selectedOption.value});
+    this.setState({ visibility: selectedOption.value });
   };
-  
-  
-    // Updates user profile and weekly summaries 
+
+
+  // Updates user profile and weekly summaries 
   updateUserData = async () => {
     try {
       await this.props.getInfoCollections();
@@ -177,7 +169,7 @@ export class EditableInfoModal extends Component {
     let saveResult;
     if (!updatedInfo) {
       saveResult = await this.props.addInfoCollection(newInfo);
-    }else{
+    } else {
       saveResult = await this.props.updateInfoCollection(infoId, newInfo);
     }
     if (saveResult === 200 || saveResult === 201) {
@@ -196,7 +188,7 @@ export class EditableInfoModal extends Component {
     this.handleEdit(false);
 
   }
-  
+   
 
   handleSave = async event => {
     this.handleEdit(false);
@@ -206,110 +198,104 @@ export class EditableInfoModal extends Component {
     await this.mainSaveHandler();
   };
   render() {
-    const { 
+    const {
       infoContent,
       editableModalOpen,
       fontSize,
       CanRead,
       CanEdit,
       isPermissionPage,
-     } = this.state;
+    } = this.state;
+
+     const darkMode = this.props.darkMode;
 
     return (
-    (CanRead)&&(
-      <div>
-        <i
-          data-toggle="tooltip"
-          data-placement="right"
-          title="Click for user class information"
-          style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '10px'}}
-          aria-hidden="true"
-          className="fa fa-info-circle"
-          onClick={()=>this.setState({editableModalOpen: true})}
-        />
-        {editableModalOpen && (
-          <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg">
-          <ModalHeader>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
-          <ModalBody>
-          {this.state.editing
-                ? <RichTextEditor
+      (CanRead) && (
+        <div>
+          <i
+            data-toggle="tooltip"
+            data-placement="right"
+            title="Click for information about this"
+            style={{ fontSize: fontSize, cursor: 'pointer', color: '#00CCFF', marginRight: '8px' }}
+            aria-hidden="true"
+            className="fa fa-info-circle"
+            onClick={() => this.setState({ editableModalOpen: true })}
+          />
+          {editableModalOpen && (
+            <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
+              <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
+              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                {this.state.editing
+                  ? <RichTextEditor
                     disabled={!this.state.editing}
                     value={infoContent}
                     onEditorChange={this.handleInputChange}
                   />
-                : <div 
-                style={{ paddingLeft: '20px' }} 
-                dangerouslySetInnerHTML={{ __html: infoContent }}
-                onClick={() => this.handleEdit(true)} />
-              }
-          {isPermissionPage && CanEdit&&
-            (
-              <div style={{ paddingLeft: '20px' }}> 
-                <p>Click above to edit this content. (Note: Only works on Permissions Management Page)</p>
-              </div>
-              
-            )
-          }
-          </ModalBody>
-          <ModalFooter>
-          <Row>
-            <Col md={{ size: 5, offset:4}}>
-            {(this.state.editing)&&
-            (
-                <Select 
-                  options={options} 
-                  onChange={this.handleSelectChange}
-                  value={options.find(option => option.value === this.state.visibility)} 
-                  />
-            )
-            }
-             </Col>
-            {(CanEdit&&this.state.editing)&&
-            (
-              <Col md={{ size: 1}} style={{paddingLeft:'5px'}}>
-                <Button
-                  className='saveBtn' 
-                  onClick={this.handleSave}
-                  style={boxStyle}>Save</Button>
-              </Col>)
-            }
-          <Col 
-            md={{ size: 1}}
-            >
-            <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
-          </Col>
-          </Row>
-          </ModalFooter>
-          </Modal>
-        )}
-    </div>)   
+                  : <div
+                    style={{ paddingLeft: '20px' }}
+                    dangerouslySetInnerHTML={{ __html: infoContent }}
+                    onClick={() => this.handleEdit(true)} />
+                }
+              </ModalBody>
+              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                <Row className='no-gutters'>
+                  {(this.state.editing) &&
+                    (
+                      <Col md={6} style={{ paddingRight: '2px' }}>
+                        <Select
+                          options={options}
+                          onChange={this.handleSelectChange}
+                          value={options.find(option => option.value === this.state.visibility)}
+                        />
+                      </Col>)
+                  }
+
+                  {(CanEdit && this.state.editing) &&
+                    (
+                      <Col md={3} style={{ paddingLeft: '4px' }}
+                      >
+                        <Button
+                          className='saveBtn'
+                          onClick={this.handleSave}
+                          style={darkMode ? boxStyleDark : boxStyle}>Save</Button>
+                      </Col>)
+                  }
+                  <Col
+                    md={3}
+                  >
+                    <Button onClick={this.handleClose} style={darkMode ? boxStyleDark : boxStyle}>Close</Button>
+                  </Col>
+                </Row>
+              </ModalFooter>
+            </Modal>
+          )}
+        </div>)
     )
-    };
-  }
+  };
+}
 
 EditableInfoModal.propTypes = {
   fetchError: PropTypes.any,
-  getInfoCollections:PropTypes.func.isRequired,
-  addInfoCollection:PropTypes.func.isRequired,
-  updateInfoCollection:PropTypes.func.isRequired,
+  getInfoCollections: PropTypes.func.isRequired,
+  addInfoCollection: PropTypes.func.isRequired,
+  updateInfoCollection: PropTypes.func.isRequired,
   deleteInfoCollectionById: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-
 };
 
-  
-const mapStateToProps = ({infoCollections }) => ({
+
+const mapStateToProps = ({ infoCollections }) => ({
   loading: infoCollections?.loading,
   fetchError: infoCollections?.error,
   infoCollections: infoCollections?.infos,
 });
-  
+
 const mapDispatchToProps = dispatch => {
   return {
     getInfoCollections: () => dispatch(getInfoCollections()),
     updateInfoCollection: (infoId, updatedInfo) => dispatch(updateInfoCollection(infoId, updatedInfo)),
     addInfoCollection: (newInfo) => dispatch(addInfoCollection(newInfo)),
-    deleteInfoCollectionById: (infoId) => dispatch(deleteInfoCollectionById(infoId)), 
+    deleteInfoCollectionById: (infoId) => dispatch(deleteInfoCollectionById(infoId)),
   };
 };
 

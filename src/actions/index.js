@@ -231,21 +231,6 @@ export function getTimeEntryForSpecifiedPeriod(userId, fromDate, toDate) {
   };
 };
 
-export function getTimeEntryForSpecifiedProject(projectId, fromDate, toDate) {
-  const request = httpService.get(
-    `${APIEndpoint}/TimeEntry/projects/${projectId}/${fromDate}/${toDate}`,
-  );
-
-  return dispatch => {
-    request.then(({ data }) => {
-      dispatch({
-        type: 'GET_TIME_ENTRY_FOR_SPECIFIED_PROJECT',
-        payload: data,
-      });
-    });
-  };
-};
-
 export function postTimeEntry(timeEntryObj) {
   const request = httpService.post(`${APIEndpoint}/TimeEntry`, timeEntryObj);
   return dispatch => {
@@ -253,5 +238,23 @@ export function postTimeEntry(timeEntryObj) {
       response => dispatch({ type: 'REQUEST_SUCCEEDED', payload: response }),
       error => dispatch({ type: 'REQUEST_FAILED', error }),
     );
+  };
+};
+
+export function getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate) {
+  const request = httpService.get(`${APIEndpoint}/TimeEntry/projects/${projectId}/${fromDate}/${toDate}`);
+
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      request.then(({ data }) => {
+        dispatch({
+          type: 'GET_TIME_ENTRY_By_Project_FOR_SPECIFIED_PERIOD',
+          payload: data,
+        });
+        resolve(data);
+      }).catch(error => {
+        reject(error);
+      });
+    });
   };
 };
