@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import 'reactjs-popup/dist/index.css';
 import { Container } from 'reactstrap';
 import './PeopleTableDetails.css';
-import { NewModal } from '../common/NewModal';
+import NewModal from '../common/NewModal';
 import TableFilter from './TableFilter/TableFilter';
 
 
@@ -147,7 +147,7 @@ function PeopleTableDetails(props) {
     }
     toggleMoreResourcesStatus = !toggleMoreResourcesStatus;
   };
-  const { taskData } = props;
+  const { taskData, darkMode } = props;
   const filteredTasks = filterTasks(taskData);
   const filteredOptions = filterOptions(taskData)
 
@@ -365,7 +365,7 @@ function PeopleTableDetails(props) {
 
   // )
   return (
-    <Container fluid className="wrapper">
+    <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>
 
       <TableFilter
         onTaskNameSearch={onTaskNameSearch}
@@ -388,7 +388,7 @@ function PeopleTableDetails(props) {
         startDate={startDate}
         EndDate={endDate}
       />
-      <div className="people-table-row reports-table-head">
+      <div className={`people-table-row reports-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div>Task</div>
         <div>Priority</div>
         <div>Status</div>

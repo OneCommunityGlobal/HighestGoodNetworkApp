@@ -176,6 +176,13 @@ tr:hover {
   gap: 10px;
 }
 
+.setup-invitation-popup-section {
+  display: grid;
+  width: 90%;
+  margin: 0 auto;
+  gap: 10px;
+}
+
 .setup-new-user-popup-label {
   margin: 0px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
@@ -261,7 +268,7 @@ tr:hover {
   fill: #0d6efd;
 }
 .Logged-time-off-cards-container {
-  overflow: scroll;
+  overflow: auto;
   overflow-x: hidden;
   max-height: 215px;
 }
@@ -281,6 +288,12 @@ tr:hover {
   border-radius: 8px;
   background-color: #007BFF ;
   box-shadow: inset 0 0 3px #e7e7e7;
+}
+
+.time-off-request-alert{
+  height: 2.4rem;
+  font-size: 1rem;
+  line-height: 1rem;
 }
 
 .date-of-leave-datepicker {

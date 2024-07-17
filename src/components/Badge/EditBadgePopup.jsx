@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -15,11 +15,15 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import './Badge.css';
+import { boxStyle, boxStyleDark } from 'styles';
 import { updateBadge, closeAlert } from '../../actions/badgeManagement';
-import { badgeTypes } from './BadgeTypes';
-import { boxStyle } from 'styles';
+import badgeTypes from './BadgeTypes';
+import '../Header/DarkMode.css';
 
-const EditBadgePopup = props => {
+function EditBadgePopup(props) {
+  // eslint-disable-next-line
+  const { darkMode } = props;
+
   const [badgeValues, setBadgeValues] = useState('');
   const [badgeId, setBadgeId] = useState('');
   const [badgeName, setBadgeName] = useState('');
@@ -40,34 +44,6 @@ const EditBadgePopup = props => {
   const [multiple, setMultiple] = useState(0);
   const [showPeople, setShowPeople] = useState(false);
   const [people, setPeople] = useState(0);
-
-  useEffect(() => {
-    setBadgeValues(props.badgeValues);
-    setBadgeId(props.badgeValues ? props.badgeValues._id : null);
-    setBadgeName(props.badgeValues ? props.badgeValues.badgeName : '');
-    setImageUrl(props.badgeValues ? props.badgeValues.imageUrl : '');
-    setDescription(props.badgeValues ? props.badgeValues.description : '');
-    setRanking(props.badgeValues ? props.badgeValues.ranking : 0);
-    setType(props.badgeValues ? props.badgeValues.type : 'Custom');
-    setCategory(props.badgeValues ? props.badgeValues.category : 'Unspecified');
-    setTotalHrs(props.badgeValues ? props.badgeValues.totalHrs : 0);
-    setWeeks(props.badgeValues ? props.badgeValues.weeks : 0);
-    setMonths(props.badgeValues ? props.badgeValues.months : 0);
-    setMultiple(props.badgeValues ? props.badgeValues.multiple : 0);
-    setPeople(props.badgeValues ? props.badgeValues.people : 0);
-    displayTypeRelatedFields(props.badgeValues ? props.badgeValues.type : 'Custom');
-  }, [props.badgeValues]);
-
-  const validRanking = ranking => {
-    const pattern = /^[0-9]*$/;
-    return pattern.test(ranking);
-  };
-
-  const enableButton =
-    badgeName.length === 0 ||
-    imageUrl.length === 0 ||
-    description.length === 0 ||
-    !validRanking(ranking);
 
   const resetTypeFieldDisplay = () => {
     setShowCategory(false);
@@ -99,15 +75,44 @@ const EditBadgePopup = props => {
         setShowCategory(true);
         break;
       default:
-        return;
     }
   };
+
+  useEffect(() => {
+    setBadgeValues(props.badgeValues);
+    setBadgeId(props.badgeValues ? props.badgeValues._id : null);
+    setBadgeName(props.badgeValues ? props.badgeValues.badgeName : '');
+    setImageUrl(props.badgeValues ? props.badgeValues.imageUrl : '');
+    setDescription(props.badgeValues ? props.badgeValues.description : '');
+    setRanking(props.badgeValues ? props.badgeValues.ranking : 0);
+    setType(props.badgeValues ? props.badgeValues.type : 'Custom');
+    setCategory(props.badgeValues ? props.badgeValues.category : 'Unspecified');
+    setTotalHrs(props.badgeValues ? props.badgeValues.totalHrs : 0);
+    setWeeks(props.badgeValues ? props.badgeValues.weeks : 0);
+    setMonths(props.badgeValues ? props.badgeValues.months : 0);
+    setMultiple(props.badgeValues ? props.badgeValues.multiple : 0);
+    setPeople(props.badgeValues ? props.badgeValues.people : 0);
+    displayTypeRelatedFields(props.badgeValues ? props.badgeValues.type : 'Custom');
+  }, [props.badgeValues]);
+
+  const validRanking = badgeRanking => {
+    const pattern = /^[0-9]*$/;
+    return pattern.test(badgeRanking);
+  };
+
+  const enableButton =
+    badgeName.length === 0 ||
+    imageUrl.length === 0 ||
+    description.length === 0 ||
+    !validRanking(ranking);
 
   const closePopup = () => {
     props.setEditPopup(false);
   };
 
   const handleChange = event => {
+    let selectedCategoryValue;
+    let selectedType;
     switch (event.target.id) {
       case 'badgeName':
         setBadgeName(event.target.value);
@@ -119,7 +124,7 @@ const EditBadgePopup = props => {
         setDescription(event.target.value);
         break;
       case 'category':
-        const selectedCategoryValue = event.target.value;
+        selectedCategoryValue = event.target.value;
         if (selectedCategoryValue.length === 0) {
           setCategory('Unspecified');
         } else {
@@ -127,7 +132,7 @@ const EditBadgePopup = props => {
         }
         break;
       case 'badgeType':
-        const selectedType = event.target.value;
+        selectedType = event.target.value;
         setType(selectedType);
         if (selectedType.length === 0) {
           setType('Custom');
@@ -153,36 +158,45 @@ const EditBadgePopup = props => {
         setPeople(Number(event.target.value));
         break;
       default:
-        return;
     }
   };
 
   const handleSubmit = () => {
     const badgeData = {
-      badgeName: badgeName,
-      imageUrl: imageUrl,
-      description: description,
-      ranking: ranking,
-      type: type,
-      category: category,
-      totalHrs: totalHrs,
-      weeks: weeks,
-      months: months,
-      multiple: multiple,
-      people: people,
+      badgeName,
+      imageUrl,
+      description,
+      ranking,
+      type,
+      category,
+      totalHrs,
+      weeks,
+      months,
+      multiple,
+      people,
     };
     props.updateBadge(badgeId, badgeData).then(() => {
       closePopup();
     });
   };
 
+  const fontColor = darkMode ? 'text-light' : '';
+
   return (
-    <Modal isOpen={props.open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>Edit Badge</ModalHeader>
-      <ModalBody>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        Edit Badge
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form id="badgeEdit">
           <FormGroup>
-            <Label for="badgeName">Name</Label>
+            <Label for="badgeName" className={fontColor}>
+              Name
+            </Label>
             <Input
               type="name"
               name="name"
@@ -195,7 +209,9 @@ const EditBadgePopup = props => {
             <FormFeedback>Badge name is required and must be unique.</FormFeedback>
           </FormGroup>
           <FormGroup>
-            <Label for="imageUrl">Image URL</Label>
+            <Label for="imageUrl" className={fontColor}>
+              Image URL
+            </Label>
             <Input
               type="url"
               name="url"
@@ -205,13 +221,15 @@ const EditBadgePopup = props => {
               placeholder="Image URL"
               invalid={imageUrl.length === 0}
             />
-            <FormText color="muted">
+            <FormText color={darkMode ? 'white' : 'muted'}>
               For Dropbox URL that ends with &quot;dl=0&quot;, please replace with
               &quot;raw=1&quot;.
             </FormText>
           </FormGroup>
           <FormGroup>
-            <Label for="badgeDescription">Description</Label>
+            <Label for="badgeDescription" className={fontColor}>
+              Description
+            </Label>
             <Input
               type="textarea"
               name="text"
@@ -223,7 +241,9 @@ const EditBadgePopup = props => {
           </FormGroup>
 
           <FormGroup>
-            <Label for="badgeType">Type</Label>
+            <Label for="badgeType" className={fontColor}>
+              Type
+            </Label>
             <i className="fa fa-info-circle ml-1" id="TypeInfo" />
             <UncontrolledTooltip placement="right" target="TypeInfo" className="badgeTooltip">
               <p className="badge_info_icon_text">
@@ -239,7 +259,7 @@ const EditBadgePopup = props => {
               value={type}
               onChange={handleChange}
             >
-              <option value={'Custom'}>{'Custom'}</option>
+              <option value="Custom">Custom</option>
               {badgeTypes.map((element, i) => (
                 <option key={i}>{element}</option>
               ))}
@@ -248,7 +268,9 @@ const EditBadgePopup = props => {
 
           {showCategory ? (
             <FormGroup>
-              <Label for="category">Category</Label>
+              <Label for="category" className={fontColor}>
+                Category
+              </Label>
               <i className="fa fa-info-circle ml-1" id="CategoryInfo" />
               <UncontrolledTooltip placement="right" target="CategoryInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -264,7 +286,8 @@ const EditBadgePopup = props => {
                 value={category}
                 onChange={handleChange}
               >
-                <option value={''}>{''}</option>
+                {/* eslint-disable-next-line */}
+                <option value="" />
                 <option>Food</option>
                 <option>Energy</option>
                 <option>Housing</option>
@@ -281,7 +304,9 @@ const EditBadgePopup = props => {
 
           {showTotalHrs ? (
             <FormGroup>
-              <Label for="badgeTotalHrs">Hours</Label>
+              <Label for="badgeTotalHrs" className={fontColor}>
+                Hours
+              </Label>
               <i className="fa fa-info-circle ml-1" id="TotalHrsInfo" />
               <UncontrolledTooltip placement="right" target="TotalHrsInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -304,7 +329,9 @@ const EditBadgePopup = props => {
 
           {showWeeks ? (
             <FormGroup>
-              <Label for="badgeWeeks">Weeks</Label>
+              <Label for="badgeWeeks" className={fontColor}>
+                Weeks
+              </Label>
               <i className="fa fa-info-circle ml-1" id="WeeksInfo" />
               <UncontrolledTooltip placement="right" target="WeeksInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -327,7 +354,9 @@ const EditBadgePopup = props => {
 
           {showMonths ? (
             <FormGroup>
-              <Label for="badgeMonths">Months </Label>
+              <Label for="badgeMonths" className={fontColor}>
+                Months{' '}
+              </Label>
               <i className="fa fa-info-circle ml-1" id="MonthsInfo" />
               <UncontrolledTooltip placement="right" target="MonthsInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -350,7 +379,9 @@ const EditBadgePopup = props => {
 
           {showMultiple ? (
             <FormGroup>
-              <Label for="badgeMultiple">Multiple </Label>
+              <Label for="badgeMultiple" className={fontColor}>
+                Multiple{' '}
+              </Label>
               <i className="fa fa-info-circle ml-1" id="MultipleInfo" />
               <UncontrolledTooltip placement="right" target="MultipleInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -373,7 +404,9 @@ const EditBadgePopup = props => {
 
           {showPeople ? (
             <FormGroup>
-              <Label for="badgePeople">People</Label>
+              <Label for="badgePeople" className={fontColor}>
+                People
+              </Label>
               <i className="fa fa-info-circle ml-1" id="PeopleInfo" />
               <UncontrolledTooltip placement="right" target="PeopleInfo" className="badgeTooltip">
                 <p className="badge_info_icon_text">
@@ -395,7 +428,9 @@ const EditBadgePopup = props => {
           )}
 
           <FormGroup>
-            <Label for="badgeRanking">Ranking</Label>
+            <Label for="badgeRanking" className={fontColor}>
+              Ranking
+            </Label>
             <i className="fa fa-info-circle ml-1" id="RankingInfo" />
             <UncontrolledTooltip placement="right" target="RankingInfo" className="badgeTooltip">
               <p className="badge_info_icon_text">
@@ -427,27 +462,28 @@ const EditBadgePopup = props => {
           </FormGroup>
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button color="info" onClick={handleSubmit} disabled={enableButton} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button
+          color="info"
+          onClick={handleSubmit}
+          disabled={enableButton}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
           Update
         </Button>{' '}
-        <Button color="primary" onClick={closePopup} style={boxStyle}>
+        <Button color="primary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Cancel
         </Button>
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 const mapStateToProps = state => ({
-  allProjects: state.allProjects.projects,
-  message: state.badge.message,
-  alertVisible: state.badge.alertVisible,
-  color: state.badge.color,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({
-  fetchAllProjects: () => dispatch(fetchAllProjects()),
   updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
   closeAlert: () => dispatch(closeAlert()),
 });

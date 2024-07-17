@@ -1,12 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Form,
   FormGroup,
   Label,
   FormText,
-  Row,
-  Col,
   Modal,
   ModalHeader,
   ModalBody,
@@ -14,6 +12,9 @@ import {
   UncontrolledTooltip,
 } from 'reactstrap';
 import { connect } from 'react-redux';
+import Autosuggest from 'react-autosuggest';
+import { boxStyle, boxStyleDark } from 'styles';
+import { searchWithAccent } from 'utils/search';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,
@@ -26,11 +27,10 @@ import {
   getUserId,
 } from '../../actions/badgeManagement';
 import { getAllUserProfile } from '../../actions/userManagement';
-import Autosuggest from 'react-autosuggest';
-import { boxStyle } from 'styles';
-import { searchWithAccent } from 'utils/search';
+import '../Header/DarkMode.css';
 
-const AssignBadge = props => {
+function AssignBadge(props) {
+  const { darkMode } = props;
   const [isOpen, setOpen] = useState(false);
   const [firstSuggestions, setFirstSuggestions] = useState([]);
   const [lastSuggestions, setLastSuggestions] = useState([]);
@@ -43,11 +43,11 @@ const AssignBadge = props => {
 
   const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
 
-  //const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  // const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
   const getSuggestions = value => {
-    //const escapedValue = escapeRegexCharacters(value.trim());
-    //const regex = new RegExp('^' + escapedValue, 'i');
+    // const escapedValue = escapeRegexCharacters(value.trim());
+    // const regex = new RegExp('^' + escapedValue, 'i');
     return activeUsers.filter(
       user =>
         searchWithAccent(user.firstName, value.trim()) ||
@@ -101,10 +101,6 @@ const AssignBadge = props => {
     props.getUserId(suggestion._id);
   };
 
-  const submit = () => {
-    toggle(true);
-  };
-
   const toggle = (didSubmit = false) => {
     const { selectedBadges, firstName, lastName, userId } = props;
     if (isOpen && didSubmit === true) {
@@ -114,15 +110,17 @@ const AssignBadge = props => {
       } else {
         props.assignBadges(firstName, lastName, selectedBadges);
       }
-      setOpen(isOpen => !isOpen);
+      setOpen(prevIsOpen => !prevIsOpen);
       props.clearNameAndSelected();
+    } else if (firstName && lastName) {
+      setOpen(prevIsOpen => !prevIsOpen);
     } else {
-      if (firstName && lastName) {
-        setOpen(isOpen => !isOpen);
-      } else {
-        props.validateBadges(firstName, lastName);
-      }
+      props.validateBadges(firstName, lastName);
     }
+  };
+
+  const submit = () => {
+    toggle(true);
   };
 
   const FirstInputProps = {
@@ -139,12 +137,14 @@ const AssignBadge = props => {
 
   return (
     <Form
+      className={darkMode ? 'bg-yinmn-blue text-light' : ''}
       style={{
-        margin: 20,
+        padding: 20,
       }}
     >
       <div className="assign-badge-margin-top" style={{ display: 'flex', alignItems: 'center' }}>
         <Label
+          className={darkMode ? 'text-light' : ''}
           style={{
             fontWeight: 'bold',
             marginLeft: '15px',
@@ -154,7 +154,12 @@ const AssignBadge = props => {
         >
           Search by Name
         </Label>
-        <i className="fa fa-info-circle" id="NameInfo" style={{ marginRight: '5px' }} />
+        <i
+          className="fa fa-info-circle"
+          id="NameInfo"
+          data-testid="NameInfo"
+          style={{ marginRight: '5px' }}
+        />
         <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '5px' }}>
           <UncontrolledTooltip
             placement="right"
@@ -209,13 +214,20 @@ const AssignBadge = props => {
         <Button
           className="btn--dark-sea-green"
           onClick={toggle}
-          style={{ ...boxStyle, margin: 20 }}
+          style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
         >
           Assign Badge
         </Button>
-        <Modal isOpen={isOpen} toggle={toggle} backdrop="static">
-          <ModalHeader toggle={toggle}>Assign Badge</ModalHeader>
-          <ModalBody>
+        <Modal
+          isOpen={isOpen}
+          toggle={toggle}
+          backdrop="static"
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
+            Assign Badge
+          </ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <AssignBadgePopup
               allBadgeData={props.allBadgeData}
               submit={submit}
@@ -223,16 +235,18 @@ const AssignBadge = props => {
             />
           </ModalBody>
         </Modal>
-        <FormText color="muted">Please select a badge from the badge list.</FormText>
+        <FormText color={darkMode ? 'white' : 'muted'}>
+          Please select a badge from the badge list.
+        </FormText>
         <Alert color="dark" className="assign-badge-margin-top">
           {' '}
-          {props.selectedBadges ? props.selectedBadges.length : '0'} bagdes selected
+          {props.selectedBadges ? props.selectedBadges.length : '0'} badges selected
         </Alert>
       </FormGroup>
       {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
     </Form>
   );
-};
+}
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
@@ -243,6 +257,7 @@ const mapStateToProps = state => ({
   alertVisible: state.badge.alertVisible,
   color: state.badge.color,
   allUserProfiles: state.allUserProfiles.userProfiles,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({
