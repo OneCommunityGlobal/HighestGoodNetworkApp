@@ -131,6 +131,7 @@ const Timelog = props => {
     personId: displayUserProfile._id,
   }
 
+  // const [shouldFetchData, setShouldFetchData] = useState(false);
   const [initialTab, setInitialTab] = useState(null);
   const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
   const [currentWeekEntries, setCurrentWeekEntries] = useState(null);
@@ -139,6 +140,8 @@ const Timelog = props => {
   const [periodEntries, setPeriodEntries] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
+  const { userId: paramsUserId } = useParams();
+  const [dataLoaded, setDataLoaded] = useState(false);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
   const { userId = authUser.userid } = useParams();
 
@@ -151,29 +154,35 @@ const Timelog = props => {
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
-  const defaultTab = () => {
-    //change default to time log tab(1) in the following cases:
-    const role = authUser.role;
-    let tab = 0;
-    const userHaveTask = doesUserHaveTaskWithWBS(disPlayUserTasks, authUser.userid);
-    /* To set the Task tab as defatult this.userTask is being watched.
-    Accounts with no tasks assigned to it return an empty array.
-    Accounts assigned with tasks with no wbs return and empty array.
-    Accounts assigned with tasks with wbs return an array with that wbs data.
-    The problem: even after unassigning tasks the array keeps the wbs data.
-    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
-
-    //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if (role === 'Volunteer' && !userHaveTask) {
-      tab = 1;
+  useEffect(() => {
+    const loadData = async () => {
+      await loadAsyncData(displayUserId);
+      // After loading all necessary data, set dataLoaded to true
+      setDataLoaded(true);
+    };
+  
+    loadData();
+  }, [displayUserId]);
+  
+  // Set initial tab after confirming data is fully loaded
+  useEffect(() => {
+    if (dataLoaded) {
+      const userHaveTask = doesUserHaveTaskWithWBS(disPlayUserTasks, authUser.userid);
+      const role = authUser.role;
+      let tab = 0;
+      if (!userHaveTask) {
+        tab = 1; // Change default to time log tab if the user doesn't have tasks
+      }
+    
+      if (!props.isDashboard) {
+        tab = 1; // Sets active tab to "Current Week Timelog" when clicked from the dashboard
+      }
+      setTimeLogState(prevState => ({
+        ...prevState,
+        activeTab: tab,
+      }));
     }
-
-    // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
-    if (!props.isDashboard) {
-      tab = 1;
-    }
-    return tab;
-  };
+  }, [dataLoaded, authUser.userid, disPlayUserTasks]);
 
   /*---------------- methods -------------- */
   const updateTimeEntryItems = () => {
@@ -232,8 +241,8 @@ const Timelog = props => {
         props.getUserTasks(userId),
       ]);
       setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
-      const defaultTabValue = defaultTab();
-      setInitialTab(defaultTabValue);
+      // const defaultTabValue = defaultTab();
+      // setInitialTab(defaultTabValue);
     } catch (e) {
       console.log(e);
     }
@@ -421,9 +430,6 @@ const Timelog = props => {
   }
 
   /*---------------- useEffects -------------- */
-  useEffect(() => {
-    changeTab(initialTab);
-  }, [initialTab]);
 
   useEffect(() => {
     // Build the time log after new data is loaded
