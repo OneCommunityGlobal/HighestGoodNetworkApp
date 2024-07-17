@@ -21,6 +21,7 @@ import { toast } from 'react-toastify';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
 import { MultiSelect } from 'react-multi-select-component';
+import { fetchTeamMembersTaskSuccess } from './actions';
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store
@@ -69,8 +70,25 @@ const TeamMemberTasks = React.memo(props => {
       taskId,
     };
     submitTasks(newTask);
-    dispatch(fetchTeamMembersTask(displayUser._id));
-  }, []);
+      
+    // optimistic update while waiting for data being updated
+    const newUsersWithTasks = usersWithTasks.map(userWithTasks => (
+      userWithTasks.tasks.some(task => task._id === taskId)
+        ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
+          ? ({
+            ...userWithTasks,
+            tasks: userWithTasks.tasks.map(task => task._id === taskId ? updatedTask : task),
+          })
+          : ({
+            ...userWithTasks,
+            tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
+          })
+        : userWithTasks
+    ));
+    dispatch(fetchTeamMembersTaskSuccess({
+      usersWithTasks: newUsersWithTasks,
+    }));
+  }, [usersWithTasks]);
 
   const submitTasks = async updatedTasks => {
     const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
@@ -92,8 +110,25 @@ const TeamMemberTasks = React.memo(props => {
     } catch (error) {
       toast.error('Failed to update task');
     }
-    dispatch(fetchTeamMembersTask(displayUser._id));
-  }, []);
+
+    // optimistic update while waiting for data being updated
+    const newUsersWithTasks = usersWithTasks.map(userWithTasks => (
+      userWithTasks.tasks.some(task => task._id === taskId)
+        ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
+          ? ({
+            ...userWithTasks,
+            tasks: userWithTasks.tasks.map(task => task._id === taskId ? updatedTask : task),
+          })
+          : ({
+            ...userWithTasks,
+            tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
+          })
+        : userWithTasks
+    ));
+    dispatch(fetchTeamMembersTaskSuccess({
+      usersWithTasks: newUsersWithTasks
+    }));
+  }, [usersWithTasks]);
 
   const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
@@ -269,6 +304,7 @@ const TeamMemberTasks = React.memo(props => {
   useEffect(() => {
     // TeamMemberTasks is only imported in TimeLog component, in which userId is already definitive
     const initialFetching = async () => {
+      dispatch(fetchTeamMembersTaskSuccess({ usersWithTasks: [] }));
       await dispatch(fetchTeamMembersTask(displayUser._id));
     };
     initialFetching();
@@ -529,7 +565,7 @@ const TeamMemberTasks = React.memo(props => {
             </tr>
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-            {isLoading ? (
+            {isLoading && usersWithTasks.length === 0 ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
               teamList.filter((user) => filterByUserFeatures(user)).map(user => {
