@@ -22,38 +22,38 @@ const auth={user: {
 
 
 const teamMemberTasks={isLoading:false,
-  usersWithTasks: [{
-    name: 'bb',
-    personId: "user123",
-    tasks: [{
-      deadlineCount: 1,
-      dueDatetime: '2023-12-08T08:00:00.000Z',
-      estimatedHours: 20,
-      hoursBest: 20,
-      hoursLogged: 17.55,
-      hoursMost: 20,
-      hoursWorst: 20,
-      isAssigned: true,
-      num: '1',
-      projectId: 'project1234',
-      resources: [],
-      status: 'Started',
-      taskName: 'Task 1',
-      taskNotifications: [],
-      wbsId: 'wbs1234',
-      __v: 0,
-      _id: 'task11234',
-    }],
-    teams: [{teamName: 'mockTeamName', _id: 'team123'}]
-    },
-    {
-      name: 'aa',
-      personId: "user456",
-      tasks: [],
-      teams: [{teamName: 'mockTeamName', _id: 'team123'}]
-    }],
-    usersWithTimeEntries: [{ personId: 'user123', _id: 'entry123', userProfile: [] }],
-                         
+                      usersWithTasks:[
+                        {
+                        name: 'bb',
+                        personId: "user123",
+                        tasks: [{
+                          deadlineCount: 1,
+                          dueDatetime: '2023-12-08T08:00:00.000Z',
+                          estimatedHours: 20,
+                          hoursBest: 20,
+                          hoursLogged: 17.55,
+                          hoursMost: 20,
+                          hoursWorst: 20,
+                          isAssigned: true,
+                          num: '1',
+                          projectId: 'project1234',
+                          resources: [],
+                          status: 'Started',
+                          taskName: 'Task 1',
+                          taskNotifications: [],
+                          wbsId: 'wbs1234',
+                          __v: 0,
+                          _id: 'task11234',
+                        }],
+                        teams: [{teamName: 'mockTeamName', _id: 'team123'}]
+                        },
+                        {
+                          name: 'aa',
+                          personId: "user456",
+                          tasks: [],
+                          teams: [{teamName: 'mockTeamName', _id: 'team123'}]
+                        }],
+                        usersWithTimeEntries:[{personId:'user123',_id:'entry123',userProfile:[]}]
                       }
 const userProfile = {
   _id: 'user123',
@@ -165,7 +165,7 @@ describe("TeamMemberTasks component",()=>{
       status: 200,
       data: '',
     });
-    
+
     const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
     const skeletonLoadingElement=container.querySelector('.skeleton-loading-team-member-tasks-row')
     expect(skeletonLoadingElement).not.toBeInTheDocument()
@@ -175,7 +175,7 @@ describe("TeamMemberTasks component",()=>{
       status: 200,
       data: '',
     });
-    
+
     const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
     const darkModeElement=container.querySelector('.container.team-member-tasks')
     const timeOffElement=container.querySelector('.show-time-off-btn.show-time-off-btn-selected ')
@@ -211,7 +211,7 @@ describe("TeamMemberTasks component",()=>{
       infoCollections:{loading:false},
       role: rolesMock
     })
-    
+
     const {container}=render(<Provider store={testStore}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
     const darkModeElement=container.querySelector('.container.team-member-tasks')
     const timeOffElement=container.querySelector('.show-time-off-btn.show-time-off-btn-selected ')
@@ -269,7 +269,7 @@ describe("TeamMemberTasks component",()=>{
     });
     const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
     expect(container.querySelector('[className="table-row"]')).not.toBeInTheDocument()
-    
+
   })
   it("check if TeamMemberTask with time entries gets displayed when isTimeFilterActive is set to True",()=>{
     axios.get.mockResolvedValue({
