@@ -6,7 +6,7 @@ import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import { toast } from 'react-toastify'; 
+import { toast } from 'react-toastify';  
 
 const Project = props => {
   const { darkMode, index } = props;
@@ -59,12 +59,15 @@ const Project = props => {
   }, [projectData]);
 
   return (
-    <tr className={`projects__tr ${darkMode ? 'text-light' : ''}`} id={'tr_' + projectId}>
+    <tr className="projects__tr" id={'tr_' + props.projectId}>
+
       <th className="projects__order--input" scope="row">
         <div>{index + 1}</div>
       </th>
-      <td className="projects__name--input">
-        {(canPutProject) ? (
+
+      <td data-testid="projects__name--input" className="projects__name--input">
+        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+
           <input
             type="text"
             className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
@@ -79,9 +82,13 @@ const Project = props => {
       <td className="projects__category--input">
         {(canPutProject) ? (
           <select
-            value={category}
-            onChange={onUpdateProjectCategory}
-            className={darkMode ? 'bg-yinmn-blue border-primary text-light' : ''}
+
+            data-testid="projects__category--input" //added for unit test
+            value={props.category}
+            onChange={e => {
+              setCategory(e.target.value);
+            }}
+
           >
             <option default value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
@@ -97,8 +104,12 @@ const Project = props => {
           category
         )}
       </td>
-      <td className="projects__active--input" onClick={canPutProject ? onUpdateProjectActive : null}>
-        {isActive ? (
+
+      {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
+        {props.active ? ( */}
+          <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? onUpdateProjectActive : null}>
+              {isActive ? (
+
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
           </div>
@@ -136,6 +147,7 @@ const Project = props => {
       {(canDeleteProject) ? (
         <td>
           <button
+            data-testid="delete-button"
             type="button"
             className="btn btn-outline-danger"
             onClick={onArchiveProject}
