@@ -11,7 +11,7 @@
     .ai-btn-img {
         margin: 0 -5px;
     }
-    .ai-btn{
+    .btn-info{
         width: 18vw;
      }
      .ai-icon{
@@ -21,7 +21,7 @@
 }
 
 @media screen and (max-width: 1373px) {
-    .ai-btn{
+    .btn-info{
         width: 160px;
      }
      .ai-icon{
@@ -30,7 +30,7 @@
   }
 
 @media screen and (max-width: 1099px) {
-    .ai-btn{
+    .btn-info{
        width: 130px;
        height: 85px;
     }

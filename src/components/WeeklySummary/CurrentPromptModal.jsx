@@ -143,7 +143,7 @@ function CurrentPromptModal(props) {
         </Button>
       ) : (
         <Button
-          className="btn btn-info ai-btn"
+          className="btn btn-info"
           color="info"
           onClick={toggle}
           style={darkMode ? boxStyleDark : boxStyle}
