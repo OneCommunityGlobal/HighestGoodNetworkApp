@@ -57,6 +57,7 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
     setSearchWord(searchWord);
     const newFilter = sortByStartingWith(searchWord);
     setFilteredData(newFilter);
+    setIsFocused(false);
   };
 
   const handleFocus = () => {
@@ -65,21 +66,19 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
   };
 
   const handleBlur = () => {
-    setTimeout(() => {
+     {/* 
+        Temporary fix: Adding resources required multiple retries issue.
+        Removed the timeout and setFilteredData to empty array.
+        TODO: A deeper analysis of the issue is required.
+      */}
       setIsFocused(false);
-      setFilteredData([]);
-    }, 100);
   };
 
   return (
     <div className="d-flex flex-column px-0">
       <div className="d-flex flex-column mb-1 px-0">
         <div className="align-items-start justify-content-start w-100 px-0 position-relative">
-          {/* 
-          Temporary fix: Adding resources required multiple retries issue.
-          TODO: A deeper analysis of the issue is required.
-          */}
-          {/* {ReadOnlySectionWrapper( */}
+          {ReadOnlySectionWrapper(
             <input
               type="text"
               placeholder={placeholder}
@@ -87,12 +86,11 @@ function TagsSearch({ placeholder, members, addResources, removeResource, resour
               onChange={handleFilter}
               onFocus={handleFocus}
               onBlur={handleBlur}
-          />
-          {/* ,
+          />,
             !disableInput,
             null,
             {componentOnly:true}
-          )} */}
+          )} 
           {(filteredData.length !== 0 || isFocused) && (
             <ul className="my-element dropdown-menu d-flex flex-column align-items-start justify-content-start w-100 scrollbar shadow-lg rounded-3 position-absolute top-100 start-0 z-3 bg-light scrollable-menu">
               {filteredData.map((member, index) => (
