@@ -520,7 +520,7 @@ class PeopleReport extends Component {
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
-              className="people-report-time-log-blocks"
+              className="people-report-time-log-block"
               darkMode={darkMode}
             >
               <h3 className='text-light'>{weeklycommittedHours}</h3>
