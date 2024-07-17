@@ -48,7 +48,8 @@ const UserTableData = React.memo(props => {
   };
 
   return (
-    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : '' }`} id={`tr_user_${props.index}`}>
+    <tr className={`usermanagement__tr`} id={`tr_user_${props.index}`}>
+
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
@@ -59,7 +60,7 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td className="email_cell">
-      <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.firstName} </a>
+        <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.firstName} </a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -69,8 +70,8 @@ const UserTableData = React.memo(props => {
           }}
         />
       </td>
-       <td className="email_cell">
-       <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.lastName}</a>
+      <td className="email_cell">
+        <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.lastName}</a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -112,19 +113,18 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
+          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
       </td>
       <td className="centered-td">
         <button
-          className={`btn btn-outline-primary btn-sm${
-            props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
-          }`}
+          className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
+            }`}
           onClick={e => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
+          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -153,7 +153,7 @@ const UserTableData = React.memo(props => {
       <td>
         <button
           type="button"
-          className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
+          className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
             if(cantUpdateDevAdminDetails(props.user?.email , props.authEmail)){
               if (props.user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
@@ -163,14 +163,15 @@ const UserTableData = React.memo(props => {
               }
               return;
             }
+
             props.onFinalDayClick(
               props.user,
-              props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
+              props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
             );
           }}
-          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
+          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
         >
-          {props.isSet ? CANCEL : SET_FINAL_DAY}
+          {props.user.endDate ? CANCEL : SET_FINAL_DAY}
         </button>
       </td>
       <td>
@@ -179,8 +180,8 @@ const UserTableData = React.memo(props => {
           : ''}
       </td>
       <td>{props.user.startDate ? formatDate(props.user.startDate) : 'N/A'}</td>
-       <td className="email_cell">
-      {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
+      <td className="email_cell">
+        {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -199,7 +200,7 @@ const UserTableData = React.memo(props => {
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"} : boxStyle}
+              style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
               disabled={props.auth?.user.userid === props.user._id}
             >
               {DELETE}

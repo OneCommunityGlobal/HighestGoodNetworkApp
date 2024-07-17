@@ -23,10 +23,23 @@ import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 
 export default function Timer({ darkMode }) {
+  /**
+   *  Because the websocket can not be closed when internet is cut off (lost server connection),
+   *  the readyState will be stuck at OPEN, so here we need to use a custom readyState to
+   *  mimic the real readyState, and when internet is cut off, the custom readyState will be set
+   *  to CLOSED, and the user will be notified to refresh the page to reconnect to the server.
+   * */
+  const [customReadyState, setCustomReadyState] = useState(ReadyState.CONNECTING);
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
+    onOpen: () => setCustomReadyState(ReadyState.OPEN),
+    onClose: () => setCustomReadyState(ReadyState.CLOSED),
+    onError: error => {
+      throw new Error('WebSocket Error:', error);
+    },
   };
+
   /**
    * Expected message format: {
    *  userId: string,
@@ -39,7 +52,7 @@ export default function Timer({ darkMode }) {
    * }
    */
 
-  const { sendMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(
+  const { sendMessage, lastJsonMessage, getWebSocket } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
     WSoptions,
   );
@@ -139,7 +152,7 @@ export default function Timer({ darkMode }) {
       return (
         remainingDuration.asMinutes() + addition > 0 &&
         goalDuration.asMinutes() + addition >= MIN_MINS &&
-        goalDuration.asHours() + addition / 60 <= MAX_HOURS
+        goalDuration.asHours() < MAX_HOURS
       );
     },
     [remaining],
@@ -155,15 +168,18 @@ export default function Timer({ darkMode }) {
 
   const handleAddButton = useCallback(
     duration => {
+      if (goal >= MAX_HOURS * 3600000) {
+        toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
+        return;
+      }
       const goalAfterAdditionAsHours = moment
         .duration(goal)
         .add(duration, 'minutes')
         .asHours();
       if (goalAfterAdditionAsHours > MAX_HOURS) {
-        toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
-      } else {
-        sendAddGoal(moment.duration(duration, 'minutes').asMilliseconds());
+        toast.info(`Goal time cannot be set over ${MAX_HOURS} hours, Goal time is set to 5 hours`);
       }
+      sendAddGoal(moment.duration(duration, 'minutes').asMilliseconds());
     },
     [remaining],
   );
@@ -210,17 +226,18 @@ export default function Timer({ darkMode }) {
     }
   };
 
+  /**
+   * This useEffect is to make sure that all the states will be updated before taking effects,
+   * so that message state and other states like running, inacMoal ... will be updated together
+   * at the same time.
+   */
   useEffect(() => {
     // Exclude heartbeat message
     if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
       isWSOpenRef.current = 0;
       return;
     }
-    /**
-     * This useEffect is to make sure that all the states will be updated before taking effects,
-     * so that message state and other states like running, inacMoal ... will be updated together
-     * at the same time.
-     */
+
     const {
       paused: pausedLJM,
       forcedPause: forcedPauseLJM,
@@ -233,17 +250,19 @@ export default function Timer({ darkMode }) {
     setTimeIsOverModalIsOpen(chimingLJM);
   }, [lastJsonMessage]);
 
+  // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
-    // This useEffect is to make sure that the WS is open and send a heartbeat every 60 seconds
     const interval = setInterval(() => {
       if (running) {
         isWSOpenRef.current += 1;
         sendHeartbeat();
         setTimeout(() => {
+          // make sure to notify the user if the heartbeat is not responded for 3 times
           if (isWSOpenRef.current > 3) {
             setRunning(false);
             setInacModal(true);
-            getWebSocket().close();
+            getWebSocket().close(); // try to close the WS connection, but it might not work when internet is cut off
+            setCustomReadyState(ReadyState.CLOSED);
           }
         }, 10000); // close the WS if no response after 10 seconds
       }
@@ -304,7 +323,12 @@ export default function Timer({ darkMode }) {
 
   return (
     <div className={css.timerContainer}>
-      <button type="button" onClick={toggleTimer} className={css.btnDiv}>
+      <button
+        type="button"
+        onClick={toggleTimer}
+        className={css.btnDiv}
+        aria-label="Open timer dropdown"
+      >
         <BsAlarmFill
           className={cs(css.transitionColor, css.btn)}
           fontSize="2rem"
@@ -317,69 +341,87 @@ export default function Timer({ darkMode }) {
           <Progress bar value={2} color="light" />
           <Progress bar value={100 * (remaining / goal)} color="primary" animated={running} />
         </Progress>
-        <button type="button" className={css.preview} onClick={toggleTimer}>
-          {moment.utc(remaining).format('HH:mm:ss')}
-        </button>
-      </div>
-      <div className={css.btns}>
-        <button
-          type="button"
-          onClick={() => {
-            handleAddButton(15);
-          }}
-          title="Add 15min"
-        >
-          <FaPlusCircle
-            className={cs(css.transitionColor, checkBtnAvail(15) ? css.btn : css.btnDisabled)}
-            fontSize="1.5rem"
-          />
-        </button>
-        <button type="button" onClick={() => handleSubtractButton(15)} title="Subtract 15min">
-          <FaMinusCircle
-            className={cs(css.transitionColor, checkBtnAvail(-15) ? css.btn : css.btnDisabled)}
-            fontSize="1.5rem"
-          />
-        </button>
-        {!started || paused ? (
-          <button type="button" onClick={handleStartButton}>
-            <FaPlayCircle
-              className={cs(css.transitionColor, remaining !== 0 ? css.btn : css.btnDisabled)}
-              fontSize="1.5rem"
-              title="Start timer"
-            />
+        {customReadyState === ReadyState.OPEN ? (
+          <button type="button" className={css.preview} onClick={toggleTimer}>
+            {moment.utc(remaining).format('HH:mm:ss')}
           </button>
         ) : (
-          <button type="button" onClick={sendPause}>
-            <FaPauseCircle
-              className={cs(css.btn, css.transitionColor)}
+          <div className={css.disconnected}>Disconnected</div>
+        )}
+      </div>
+      {customReadyState === ReadyState.OPEN && (
+        <div className={css.btns}>
+          <button
+            type="button"
+            onClick={() => {
+              handleAddButton(15);
+            }}
+            title="Add 15min"
+            aria-label="Add 15min"
+          >
+            <FaPlusCircle
+              className={cs(css.transitionColor, checkBtnAvail(15) ? css.btn : css.btnDisabled)}
               fontSize="1.5rem"
-              title="Pause timer"
             />
           </button>
-        )}
-        <button
-          type="button"
-          onClick={handleStopButton}
-          disable={`${!started}`}
-          title="Stop timer and log time"
-        >
-          <FaStopCircle
-            className={cs(
-              css.transitionColor,
-              started && goal - remaining >= 60000 ? css.btn : css.btnDisabled,
-            )}
-            fontSize="1.5rem"
-          />
-        </button>
-        <button type="button" onClick={() => setConfirmationResetModal(true)} title="Reset timer">
-          <FaUndoAlt className={cs(css.transitionColor, css.btn)} fontSize="1.3rem" />
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={() => handleSubtractButton(15)}
+            title="Subtract 15min"
+            aria-label="Subtract 15min"
+          >
+            <FaMinusCircle
+              className={cs(css.transitionColor, checkBtnAvail(-15) ? css.btn : css.btnDisabled)}
+              fontSize="1.5rem"
+            />
+          </button>
+          {!started || paused ? (
+            <button type="button" onClick={handleStartButton} aria-label="Start timer">
+              <FaPlayCircle
+                className={cs(css.transitionColor, remaining !== 0 ? css.btn : css.btnDisabled)}
+                fontSize="1.5rem"
+                title="Start timer"
+              />
+            </button>
+          ) : (
+            <button type="button" onClick={sendPause} aria-label="Pause timer">
+              <FaPauseCircle
+                className={cs(css.btn, css.transitionColor)}
+                fontSize="1.5rem"
+                title="Pause timer"
+              />
+            </button>
+          )}
+          <button
+            type="button"
+            onClick={handleStopButton}
+            disable={`${!started}`}
+            title="Stop timer and log time"
+            aria-label="Stop timer and log time"
+          >
+            <FaStopCircle
+              className={cs(
+                css.transitionColor,
+                started && goal - remaining >= 60000 ? css.btn : css.btnDisabled,
+              )}
+              fontSize="1.5rem"
+            />
+          </button>
+          <button
+            type="button"
+            onClick={() => setConfirmationResetModal(true)}
+            title="Reset timer"
+            aria-label="Reset timer"
+          >
+            <FaUndoAlt className={cs(css.transitionColor, css.btn)} fontSize="1.3rem" />
+          </button>
+        </div>
+      )}
 
       {showTimer && (
         <div className={css.timer}>
           <div className={css.timerContent}>
-            {readyState === ReadyState.OPEN ? (
+            {customReadyState === ReadyState.OPEN ? (
               <Countdown
                 message={message}
                 timerRange={{ MAX_HOURS, MIN_MINS }}
@@ -395,7 +437,11 @@ export default function Timer({ darkMode }) {
                 toggleTimer={toggleTimer}
               />
             ) : (
-              <TimerStatus readyState={readyState} message={message} toggleTimer={toggleTimer} />
+              <TimerStatus
+                readyState={customReadyState}
+                message={message}
+                toggleTimer={toggleTimer}
+              />
             )}
           </div>
         </div>
