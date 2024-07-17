@@ -1,0 +1,40 @@
+/* styles.css */
+
+.ai-btn-img {
+    margin: 0 -0.1vw;
+    width: 1.5rem;
+    height: 1.5rem;
+}
+
+
+@media screen and (max-width: 1753px) {
+    .ai-btn-img {
+        margin: 0 -5px;
+    }
+    .ai-btn{
+        width: 18vw;
+     }
+     .ai-icon{
+        width: 16vw
+     }
+
+}
+
+@media screen and (max-width: 1373px) {
+    .ai-btn{
+        width: 160px;
+     }
+     .ai-icon{
+        width: 133px
+     }
+  }
+
+@media screen and (max-width: 1099px) {
+    .ai-btn{
+       width: 130px;
+       height: 85px;
+    }
+    
+}
+
+

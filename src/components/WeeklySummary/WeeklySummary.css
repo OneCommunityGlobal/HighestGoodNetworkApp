@@ -131,6 +131,30 @@
   background-color: #0056b3; /* Darker blue color on hover */
 }
 
+.dropup-btn{
+  margin-right: 5px;
+  width: 175px
+}
+
+@media screen and (max-width: 1600px) {
+  .dropup-btn{
+    height: 62px;
+  }
+}
+
+
+@media screen and (max-width: 1373px) {
+  .dropup-btn{
+    height: 85px;
+  }
+}
+
+@media screen and (max-width: 1099px) {
+  .dropup-btn{
+    height: 85px;
+  }
+}
+
 @media screen and (min-width: 992px) {
   .left-col-dashboard {
     margin-top: -200px;

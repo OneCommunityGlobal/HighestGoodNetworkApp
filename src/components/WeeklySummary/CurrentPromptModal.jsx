@@ -11,6 +11,7 @@ import {
   getCopiedDateOfPrompt,
 } from '../../actions/weeklySummariesAIPrompt';
 import iconNew from '../../assets/images/New-HGN-Icon-11kb-200x160px.png';
+import './CurrentPromptModal.css';
 
 function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);
@@ -123,9 +124,13 @@ function CurrentPromptModal(props) {
   return (
     <div>
       {new Date(`${updatedPromptDate}`).getTime() > new Date(`${copiedDate}`).getTime() ? (
-        <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-          View and Copy <img src={iconNew} alt="new" style={{ width: '1.5em', height: '1.5em' }} />{' '}
-          AI Prompt
+        <Button
+          className="ai-btn ai-icon"
+          color="info"
+          onClick={toggle}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          View and Copy <img src={iconNew} alt="new" className="ai-btn-img" /> AI Prompt
           <i
             className="fa fa-info-circle"
             data-tip
@@ -137,7 +142,12 @@ function CurrentPromptModal(props) {
           />
         </Button>
       ) : (
-        <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+        <Button
+          className="ai-btn"
+          color="info"
+          onClick={toggle}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
           View and Copy Current AI Prompt
           <i
             className="fa fa-info-circle"
