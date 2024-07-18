@@ -36,7 +36,6 @@ const mapStateToProps = state => {
       element.barcolor = getcolor(element.totaltangibletime_hrs);
       element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
       element.totaltime = round(element.totaltime_hrs, 2);
-      element.isVisible = element.role === 'Volunteer' || element.isVisible;
 
       return element;
     });
@@ -69,6 +68,7 @@ const mapStateToProps = state => {
     userOnTimeOff: state.timeOffRequests?.onTimeOff,
     userGoingOnTimeOff: state.timeOffRequests?.goingOnTimeOff,
     usersOnFutureTimeOff: state.timeOffRequests?.futureTimeOff,
+    allRequests: state.timeOffRequests?.requests,
   };
 };
 export default connect(mapStateToProps, {

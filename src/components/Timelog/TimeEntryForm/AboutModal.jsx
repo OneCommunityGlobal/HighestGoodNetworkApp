@@ -1,4 +1,4 @@
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
 
 /**
  * Modal displaying information about how time entry works
@@ -8,9 +8,9 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
  */
 const AboutModal = props => {
   return (
-    <Modal isOpen={props.visible}>
-      <ModalHeader>Info</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={props.visible} className={props.darkMode ? 'text-light' : ''}>
+      <ModalHeader className={props.darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
+      <ModalBody className={props.darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           This is the One Community time clock! It is used to clock in and out when doing your
           volunteer work with One Community. Whenever you stop this timer, it will ask you to log
@@ -65,7 +65,7 @@ const AboutModal = props => {
           system the same as a time edit.
         </p>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className={props.darkMode ? 'bg-yinmn-blue' : ''}>
         <Button onClick={() => props.setVisible(false)} color="primary">
           Close
         </Button>

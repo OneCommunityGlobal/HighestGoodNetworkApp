@@ -10,6 +10,7 @@ import { getProjectDetail } from 'actions/project';
 import { fetchAllMembers, foundUsers, getProjectActiveUser } from 'actions/projectMembers';
 import { fetchAllWBS } from 'actions/wbs';
 import viewWBSpermissionsRequired from 'utils/viewWBSpermissionsRequired';
+import { themeMock } from '__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 const store = mockStore({
@@ -20,7 +21,8 @@ const store = mockStore({
   },
   wbs: { WBSItems: [] },
   projectMembers: { members: [], foundUsers: [], fetched: true },
-  tasks: [],
+  theme: themeMock,
+  tasks: { taskItems: [] },
   projectReport: {
     project: {
       projectName: 'project 1',
@@ -47,16 +49,19 @@ describe('ProjectReport component', () => {
       </Provider>,
     );
   });
-  it('check if project name is displaying', () => {
+  it('should render the project name three times', async () => {
     axios.get.mockResolvedValue({
       status: 200,
     });
+
     render(
       <Provider store={store}>
         <ProjectReport />
-      </Provider>,
+      </Provider>
     );
-    expect(screen.getByText('project 1')).toBeInTheDocument();
+
+    const projectNameElements = screen.getAllByText('project 1');
+    expect(projectNameElements).toHaveLength(3);
   });
   it('check if getProjectDetail works as expected', async () => {
     const mockProjectDetail = { projectId: 'abc456', projectName: 'project 2', isActive: false };

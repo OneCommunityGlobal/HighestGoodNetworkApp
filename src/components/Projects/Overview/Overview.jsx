@@ -32,4 +32,4 @@ const Overview = props => {
   );
 };
 
-export default Overview;
+export default Overview
