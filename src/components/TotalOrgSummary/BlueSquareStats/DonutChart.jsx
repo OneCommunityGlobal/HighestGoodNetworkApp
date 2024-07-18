@@ -96,10 +96,19 @@ function DonutChart({ data, width, height, innerRadius, outerRadius, totalBlueSq
       .attr('text-anchor', 'middle')
       .attr('dy', '1em')
       .style('font-size', `${Math.min(width, height) * 0.1}px`)
-      .style('fill', '#828282')
+      .style('fill', '#666666')
       .style('font-weight', '600')
 
       .text(totalBlueSquares);
+
+    svg
+      .append('text')
+      .attr('text-anchor', 'middle')
+      .attr('dy', '5.5em')
+      .style('font-size', `${Math.min(width, height) * 0.025}px`)
+      .style('fill', 'red')
+      .style('font-weight', '600')
+      .text('-7% WEEK OVER WEEK');
 
     // Create legend
     const legend = svg
