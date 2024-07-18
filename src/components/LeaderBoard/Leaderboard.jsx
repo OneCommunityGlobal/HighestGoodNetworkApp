@@ -77,6 +77,7 @@ function LeaderBoard({
   totalTimeMouseoverText,
   allRequests,
   showTimeOffRequestModal,
+  userOnTimeOff,
   usersOnFutureTimeOff,
   darkMode,
   getWeeklySummaries,
