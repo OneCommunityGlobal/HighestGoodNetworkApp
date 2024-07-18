@@ -4,7 +4,6 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'react
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
 import {
   updateDashboardData,
   updateCopiedPromptDate,
@@ -12,6 +11,7 @@ import {
   getCopiedDateOfPrompt,
 } from '../../actions/weeklySummariesAIPrompt';
 import iconNew from '../../assets/images/New-HGN-Icon-11kb-200x160px.png';
+import './CurrentPromptModal.css';
 
 function CurrentPromptModal(props) {
   const [modal, setModal] = useState(false);
@@ -20,7 +20,7 @@ function CurrentPromptModal(props) {
   const [prompt, setPrompt] = useState('');
   // const [promptModifiedDate, setPromptModifiedDate] = useState('');
   const [updatedPromptDate, setUpdatedPromptDate] = useState('');
-  const [updatedCopiedDate, setUpdatedCopiedDate] = useState('');
+  const [copiedDate, setCopiedDate] = useState('');
   const [isPromptUpdated, setIsPromptUpdated] = useState(false);
   const [isPromptCopied, setIsPromptCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -74,13 +74,13 @@ function CurrentPromptModal(props) {
     dispatch(getCopiedDateOfPrompt(userId))
       .then(response => {
         if (response) {
-          setUpdatedCopiedDate(response);
+          setCopiedDate(response);
         }
       })
       .catch(() => {
         toast.error('There was an error');
       });
-  }, [isPromptCopied]);
+  }, [isPromptCopied, copiedDate]);
   // =================================================================
 
   const handleCopyToClipboard = async () => {
@@ -100,7 +100,6 @@ function CurrentPromptModal(props) {
         setIsPromptUpdated(true);
       })
       .catch(() => {
-        // console.error('Error updating AI prompt:', error);
         toast.error('Failed to update prompt.');
       })
       .finally(() => {
@@ -124,10 +123,14 @@ function CurrentPromptModal(props) {
 
   return (
     <div>
-      {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
-        <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-          View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} /> AI
-          Prompt
+      {new Date(`${updatedPromptDate}`).getTime() > new Date(`${copiedDate}`).getTime() ? (
+        <Button
+          className="ai-btn ai-icon"
+          color="info"
+          onClick={toggle}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          View and Copy <img src={iconNew} alt="new" className="ai-btn-img" /> AI Prompt
           <i
             className="fa fa-info-circle"
             data-tip
@@ -139,7 +142,12 @@ function CurrentPromptModal(props) {
           />
         </Button>
       ) : (
-        <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+        <Button
+          className="ai-btn"
+          color="info"
+          onClick={toggle}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
           View and Copy Current AI Prompt
           <i
             className="fa fa-info-circle"
@@ -147,6 +155,7 @@ function CurrentPromptModal(props) {
             data-for="timeEntryTip"
             data-delay-hide="1000"
             aria-hidden="true"
+            aria-label="Information Icon"
             title=""
             style={{ paddingLeft: '.32rem' }}
           />
