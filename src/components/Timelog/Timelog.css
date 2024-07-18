@@ -136,3 +136,10 @@
 .container-timelog-wrapper{
   min-height: 100%;
 }
+@media (max-width: 768px) {
+  .container-md{
+    max-width: 90% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  } 
+  }
