@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -50,6 +51,7 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
+// import WriteItForMeModal from './WriteForMeModal';
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -823,6 +825,19 @@ export class WeeklySummary extends Component {
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                             )}
+                          <CurrentPromptModal
+                            userRole={userRole}
+                            userId={displayUserId}
+                            darkMode={darkMode}
+                          />
+                          {/* <div style={{ width: '10rem' }}>
+                            <CurrentPromptModal
+                              userRole={userRole}
+                              userId={displayUserId}
+                              darkMode={darkMode}
+                            />
+                            <WriteItForMeModal pasteResponse={this.pasteResponse} />
+                          </div> */}
                           </div>
                         </Label>
                         <Editor
@@ -839,10 +854,10 @@ export class WeeklySummary extends Component {
                         errors.summaryBeforeLast ||
                         errors.summaryThreeWeeksAgo ||
                         errors.wordCount) && (
-                        <Alert color="danger">
-                          The summary must contain a minimum of 50 words.
-                        </Alert>
-                      )}
+                          <Alert color="danger">
+                            The summary must contain a minimum of 50 words.
+                          </Alert>
+                        )}
                     </Col>
                   </Row>
                 </TabPane>
