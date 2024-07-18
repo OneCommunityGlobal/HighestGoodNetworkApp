@@ -15,6 +15,7 @@ export const AutoCompleteTeamCode = props => {
     isLoading,
     fetchTeamCodeAllUsers,
     darkMode,
+    isMobile,
   } = props;
 
   useEffect(() => {
@@ -29,11 +30,20 @@ export const AutoCompleteTeamCode = props => {
   }, [refDropdown, showDropdown]);
 
   // prettier-ignore
-  const classNameStyleP = `m-0 d-flex justify-content-center  align-items-center  list-group-item-action p-1`;
+  const classNameStyleP = `m-0 p-1 d-flex justify-content-center  align-items-center  list-group-item-action`;
 
-  const styleP = { border: '1px solid #ccc', backgroundColor: '#fff' };
+  const styleP = {
+    border: '1px solid #ccc',
+    backgroundColor: '#fff',
+    width:
+      // prettier-ignore
+      arrayInputAutoComplete && arrayInputAutoComplete.length <= 3 ? '100%'
+        :
+        // prettier-ignore
+       arrayInputAutoComplete && arrayInputAutoComplete.length <= 30 ? '102px': '100px',
+  };
   const borderBottomRadius = { borderBottomRightRadius: '10px', borderBottomLeftRadius: '10px' };
-  const styleSection = { ...styleP, ...borderBottomRadius };
+  const styleSpinner = { ...styleP, ...borderBottomRadius, width: 'auto' };
   const styleReload = { fontSize: '1.5rem', color: '#0780eb', cursor: 'pointer' };
   const colordarkWithBorder = {
     backgroundColor: '#1c2541',
@@ -50,7 +60,7 @@ export const AutoCompleteTeamCode = props => {
   let autoComplete = false;
 
   return (
-    <section>
+    <>
       <Input
         id="teamCode"
         value={teamCode}
@@ -59,64 +69,78 @@ export const AutoCompleteTeamCode = props => {
         placeholder="X-XXX"
         onFocus={() => !showDropdown && setShowDropdown(true)}
       />
-
-      {showDropdown ? (
-        <div
-          ref={refDropdown}
-          style={
-            arrayInputAutoComplete.length <= 3 && inputAutoStatus === 200
-              ? { height: 'auto', width: 'auto' }
-              : { height: '7rem', width: 'auto' }
-          }
-          className="overflow-auto mb-2 scrollAutoComplete"
-        >
-          {!isLoading ? (
-            arrayInputAutoComplete.length === 0 ? (
-              <p
-                className={classNameStyleP}
-                style={darkMode ? { ...styleP, ...colordarkWithBorder } : styleP}
-              >
-                No options
-              </p>
-            ) : inputAutoStatus != 200 ? (
-              <ListGroup>
-                <ListGroupItem
-                  className="d-flex justify-content-center  align-items-center  "
-                  onClick={fetchTeamCodeAllUsers}
-                  style={darkMode ? colordarkWithBorder : null}
+      <section>
+        {showDropdown && (
+          <section
+            ref={refDropdown}
+            className={`overflow-auto mb-2 scrollAutoComplete`}
+            style={{
+              height: isLoading ? '7rem' : arrayInputAutoComplete.length <= 30 ? 'auto' : '23rem',
+              // prettier-ignore
+              width: isLoading || arrayInputAutoComplete.length <=3 ? 'auto' : !isMobile ? '18rem' : '20rem',
+              position: arrayInputAutoComplete.length <= 3 || isLoading ? '' : 'relative',
+              right: !isMobile ? '8rem' : '',
+            }}
+          >
+            {!isLoading ? (
+              arrayInputAutoComplete.length === 0 ? (
+                <p
+                  className={classNameStyleP}
+                  style={
+                    darkMode
+                      ? { ...styleP, ...colordarkWithBorder, width: 'auto' }
+                      : { ...styleP, width: 'auto' }
+                  }
                 >
-                  <IoReload style={darkMode ? styleReload : styleReload} />
-                </ListGroupItem>
-              </ListGroup>
+                  No options
+                </p>
+              ) : inputAutoStatus != 200 ? (
+                <ListGroup>
+                  <ListGroupItem
+                    className="d-flex justify-content-center  align-items-center "
+                    onClick={fetchTeamCodeAllUsers}
+                    style={darkMode ? colordarkWithBorder : null}
+                  >
+                    <IoReload style={styleReload} />
+                  </ListGroupItem>
+                </ListGroup>
+              ) : (
+                <div className={`${arrayInputAutoComplete.length > 3 && 'row row-cols-3'}`}>
+                  {arrayInputAutoComplete.map(item => {
+                    return (
+                      <div
+                        key={item}
+                        className={`${
+                          //prettier-ignore
+                          arrayInputAutoComplete.length <= 3 ?  '': 'col col-cols-3'
+                        }`}
+                      >
+                        <p
+                          className={classNameStyleP}
+                          style={
+                            //prettier-ignore
+                            darkMode? { ...styleP, ...colordarkWithBorder, cursor: 'pointer'} : { ...styleP, cursor: 'pointer' }
+                          }
+                          onClick={() => handleCodeChange(item, (autoComplete = true))}
+                        >
+                          {item}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              )
             ) : (
-              arrayInputAutoComplete.map(item => {
-                return (
-                  <div key={item}>
-                    <p
-                      className={classNameStyleP}
-                      style={
-                        darkMode
-                          ? { ...styleP, ...colordarkWithBorder, cursor: 'pointer' }
-                          : { ...styleP, cursor: 'pointer' }
-                      }
-                      onClick={() => handleCodeChange(item, (autoComplete = true))}
-                    >
-                      {item}
-                    </p>
-                  </div>
-                );
-              })
-            )
-          ) : (
-            <section
-              className="h-100 d-flex justify-content-center align-items-center "
-              style={darkMode ? { ...styleSection, ...colordarkWithBorder } : styleSection}
-            >
-              <Spinner color="primary"></Spinner>
-            </section>
-          )}
-        </div>
-      ) : null}
-    </section>
+              <section
+                className="h-100 d-flex justify-content-center align-items-center "
+                style={darkMode ? { ...styleSpinner, ...colordarkWithBorder } : styleSpinner}
+              >
+                <Spinner color="primary"></Spinner>
+              </section>
+            )}
+          </section>
+        )}
+      </section>
+    </>
   );
 };

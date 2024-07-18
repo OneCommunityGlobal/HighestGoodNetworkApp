@@ -1,14 +1,5 @@
 import { React, useState, useEffect, useRef } from 'react';
-import {
-  Button,
-  Col,
-  Tooltip,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Input,
-} from 'reactstrap';
+import { Button, Col, Tooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
@@ -83,10 +74,10 @@ const UserTeamsTable = props => {
   return (
     <div>
       {innerWidth >= 1025 ? (
-        <div className={`teamtable-container desktop ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+        <div className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
           <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
             {props.canEditVisibility && (
-              <div className="row">
+              <div className="row ml-1">
                 <Col md="7">
                   <span className="teams-span">Visibility</span>
                 </Col>
@@ -161,6 +152,7 @@ const UserTeamsTable = props => {
                     isLoading={props.isLoading}
                     fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
                     darkMode={darkMode}
+                    isMobile={false}
                   />
                 ) : (
                   <div style={{ fontSize: '12px', textAlign: 'center' }}>
@@ -306,6 +298,8 @@ const UserTeamsTable = props => {
                     inputAutoStatus={props.inputAutoStatus}
                     isLoading={props.isLoading}
                     fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                    darkMode={darkMode}
+                    isMobile={true}
                   />
                 ) : (
                   <div style={{ paddingTop: '6px', textAlign: 'center' }}>
