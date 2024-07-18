@@ -215,3 +215,25 @@
   width: 50%;
   padding-left: 2%;
 }
+
+.table-filter-container {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.tasks-table-clear-filter-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: white;
+  border: 2px solid #e7b1ef;
+  outline-color: #e7b1ef;
+  color: #ca50db;
+  border-radius: 4px;
+  width: 110px;
+  height: 30px;
+  cursor: pointer;
+  margin-left: auto;
+}
