@@ -67,9 +67,6 @@ const mapStateToProps = state => {
     totalTimeMouseoverText: state?.mouseoverText?.[0]?.mouseoverText,
     totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
     allRequests: state.timeOffRequests?.requests,
-    userOnTimeOff: state.timeOffRequests?.onTimeOff,
-    userGoingOnTimeOff: state.timeOffRequests?.goingOnTimeOff,
-    usersOnFutureTimeOff: state.timeOffRequests?.futureTimeOff,
   };
 };
 export default connect(mapStateToProps, {
