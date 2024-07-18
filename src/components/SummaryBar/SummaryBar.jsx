@@ -382,7 +382,7 @@ const SummaryBar = props => {
       loadUserProfile();
       getUserTasks();
     } else {
-      setUserProfile(userProfile);
+      setUserProfile(authUser);
       setTasks(displayUserTask.length);
     }
   }, [displayUserId]);
@@ -423,7 +423,8 @@ const SummaryBar = props => {
                 </font>
                 <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
                   <div className='font-weight-bold'>
-                    {userProfile?.firstName ||displayUserProfile.firstName + ' '}
+                    {userProfile?.firstName || displayUserProfile.firstName}
+                    {' '} 
                     {userProfile?.lastName || displayUserProfile.lastName}
                   </div>
                 </CardTitle>

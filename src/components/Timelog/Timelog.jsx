@@ -104,15 +104,6 @@ const Timelog = props => {
     disPlayUserTasks,
   } = props;
 
-  function displayUserIdRoute() {
-    const path =  location.pathname
-    const id = path.split('/').pop()
-    if(id.includes("dashboard")||id.includes("users")){
-      return authUser?.userid
-    }
-    return id;
-   }
-   displayUserIdRoute();
   const initialState = {
     timeEntryFormModal: false,
     summary: false,
@@ -145,7 +136,7 @@ const Timelog = props => {
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId :  displayUserIdRoute() || userId 
+    viewingUser ? viewingUser.userId : userId 
   );
   
   const isAuthUser = authUser.userid === displayUserId;
@@ -417,7 +408,13 @@ const Timelog = props => {
   const handleStorageEvent = () =>{
     const sessionStorageData = checkSessionStorage();
     setViewingUser(sessionStorageData || false);
-    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+    setDisplayUserId(
+      !isAuthUser 
+        ? userId 
+        : sessionStorageData
+          ? sessionStorageData.userId 
+          : authUser.userid
+    );
   }
 
   /*---------------- useEffects -------------- */
@@ -437,13 +434,16 @@ const Timelog = props => {
   }, [displayUserId]);
 
   useEffect(() => {
+    setDisplayUserId(userId);
+  }, [userId]);
+
+  useEffect(() => {
     // Filter the time entries
     updateTimeEntryItems();
   }, [timeLogState.projectsSelected]);
   
   useEffect(() => {
-
-    setDisplayUserId( viewingUser ? viewingUser.userId : displayUserIdRoute()||userId);
+    setDisplayUserId( viewingUser ? viewingUser.userId : userId);
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
     window.addEventListener('storage', handleStorageEvent);
     return () => {
