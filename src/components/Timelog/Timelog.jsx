@@ -105,11 +105,11 @@ const Timelog = props => {
   } = props;
 
   function displayUserIdRoute() {
+    if (authUser?.userid) {
+      return authUser?.userid;
+    }
     const path =  location.pathname
     const id = path.split('/').pop()
-    if(id.includes("dashboard")||id.includes("users")){
-      return authUser?.userid
-    }
     return id;
    }
    displayUserIdRoute();
@@ -147,7 +147,6 @@ const Timelog = props => {
   const [displayUserId, setDisplayUserId] = useState(
     viewingUser ? viewingUser.userId :  displayUserIdRoute() || userId 
   );
-  
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
