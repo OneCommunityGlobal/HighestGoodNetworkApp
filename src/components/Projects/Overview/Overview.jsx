@@ -11,8 +11,8 @@ const Overview = props => {
     <div className="projects__overview--top">
       <div className="card" id="card_project">
         <div className="card-body">
-          <h4 className="card-title">{props.numberOfProjects}</h4>
-          <h6 className="card-subtitle">
+          <h4 className="card-title ml-3">{props.numberOfProjects}</h4>
+          <h6 className="card-subtitle ml-3">
             <i className="fa fa-folder" aria-hidden="true"></i> {PROJECTS}
           </h6>
         </div>
@@ -20,8 +20,8 @@ const Overview = props => {
 
       <div className="card" id="card_active">
         <div className="card-body">
-          <h4 className="card-title">{props.numberOfActive}</h4>
-          <h6 className="card-subtitle">
+          <h4 className="card-title ml-3">{props.numberOfActive}</h4>
+          <h6 className="card-subtitle ml-3">
             {/* <div className="isActive"> */}
               <i className="fa fa-circle fa-circle-isActive" aria-hidden="true"></i> {ACTIVE_PROJECTS}
             {/* </div> */}
