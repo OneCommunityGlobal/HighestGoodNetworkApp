@@ -69,9 +69,6 @@ const mapStateToProps = state => {
     userGoingOnTimeOff: state.timeOffRequests?.goingOnTimeOff,
     usersOnFutureTimeOff: state.timeOffRequests?.futureTimeOff,
     allRequests: state.timeOffRequests?.requests,
-    userOnTimeOff: state.timeOffRequests?.onTimeOff,
-    userGoingOnTimeOff: state.timeOffRequests?.goingOnTimeOff,
-    usersOnFutureTimeOff: state.timeOffRequests?.futureTimeOff,
   };
 };
 export default connect(mapStateToProps, {
