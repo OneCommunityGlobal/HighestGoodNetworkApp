@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useCallback } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import {
   Container,
   Row,
@@ -53,6 +53,7 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
+import PropTypes from 'prop-types';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -89,10 +90,10 @@ const endOfWeek = offset => {
 
 const Timelog = props => {
   const darkMode = useSelector(state => state.theme.darkMode)
-
+  const location = useLocation();
+ 
   // Main Function component
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
 
   // access the store states
   const {
@@ -102,6 +103,7 @@ const Timelog = props => {
     roles,
     displayUserProjects,
     disPlayUserTasks,
+    userId
   } = props;
 
   const initialState = {
@@ -131,17 +133,31 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
-  const { userId = authUser.userid } = useParams();
+  const { userprofileId = authUser.userid } = useParams();
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
-  const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId : userId,
-  );
+  const getUserId =()=>{
+    try {
+         if(viewingUser){
+            return viewingUser.userId;
+         }
+         else if(userId!=null){
+            return userId;
+         }
+         return authUser.userid;
+    } catch (error) {
+       return null;
+    }
+}
 
+  const [displayUserId, setDisplayUserId] = useState(
+     getUserId()
+  );
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
+  
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = authUser.role;
@@ -433,6 +449,8 @@ const Timelog = props => {
   }, [timeLogState.projectsSelected]);
   
   useEffect(() => {
+
+    setDisplayUserId( getUserId());
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
     window.addEventListener('storage', handleStorageEvent);
     return () => {
@@ -597,11 +615,9 @@ const Timelog = props => {
                           <Button onClick={openInfo} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                             Close
                           </Button>
-                          {canEditTimeEntry ? (
-                            <Button onClick={openInfo} color="secondary" style={darkMode ? boxStyleDark : boxStyle}>
-                              Edit
-                            </Button>
-                          ) : null}
+                          <Button onClick={openInfo} color="secondary">
+                            Edit
+                          </Button>
                         </ModalFooter>
                       </Modal>
                       {/* This TimeEntryForm is for adding intangible time throught the add intangible time enty button */}
@@ -793,6 +809,14 @@ const Timelog = props => {
       )}
     </div>
   );
+};
+
+Timelog.prototype = {
+  userId: PropTypes.string,
+};
+
+Timelog.defaultProps = {
+  userId: null,
 };
 
 const mapStateToProps = state => ({

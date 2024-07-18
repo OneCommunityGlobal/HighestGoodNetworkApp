@@ -169,6 +169,7 @@ const UserTableData = React.memo(props => {
           ? formatDateLocal(props.user.reactivationDate)
           : ''}
       </td>
+      
       <td>{props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A'}</td>
       <td className="email_cell">
         {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
