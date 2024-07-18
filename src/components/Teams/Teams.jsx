@@ -449,6 +449,11 @@ class Teams extends React.PureComponent {
 
   sortTeams = () => {
     const { teams, sortTeamNameState, sortTeamActiveState } = this.state;
+    
+    if (!Array.isArray(teams)) {
+    console.error("Teams is not an array:", teams);
+    return;
+  }
     const sortedTeams = [...teams].sort((a, b) => {
       const dateA = new Date(a.props.team.modifiedDatetime);
       const dateB = new Date(b.props.team.modifiedDatetime);
