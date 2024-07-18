@@ -683,8 +683,6 @@ function UserProfile(props) {
   const canChangeRehireableStatus = props.hasPermission('changeUserRehireableStatus');
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');;
-  const canSeeQSC = props.hasPermission('seeQSC');
-
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -774,9 +772,9 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-
-            {canSeeQSC && (
               <QuickSetupModal
+                canViewTitle={props.hasPermission('viewTitle')}
+
                 canAddTitle={props.hasPermission('addNewTitle')}
                 canAssignTitle={props.hasPermission('assignTitle')}
                 setSaved={setSaved}
@@ -787,7 +785,7 @@ function UserProfile(props) {
                 teamsData={props?.allTeams?.allTeamsData || []}
                 projectsData={props?.allProjects?.projects || []}
               />
-            )}
+             
           </Col>
           <Col md="8">
             {!isProfileEqual || !isTasksEqual || (!isTeamsEqual && !isTeamSaved) || !isProjectsEqual ? (
@@ -941,7 +939,7 @@ function UserProfile(props) {
                 canEdit={canEdit || canManageAdminLinks}
                 darkMode={darkMode}
               />
-              <BlueSquareLayout
+               <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
@@ -1179,7 +1177,7 @@ function UserProfile(props) {
               >
                 Basic Information
               </Button>
-              <Modal isOpen={showConfirmDialog} toggle={handleCancelChange} className={darkMode ? 'text-light dark-mode' : ''}>
+              {/* <Modal isOpen={showConfirmDialog} toggle={handleCancelChange} className={darkMode ? 'text-light dark-mode' : ''}>
                 <ModalHeader toggle={handleCancelChange} className={darkMode ? 'bg-space-cadet' : ''}>Confirm Status Change</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'}?`}
@@ -1188,7 +1186,7 @@ function UserProfile(props) {
                   <Button color="primary" onClick={handleConfirmChange}>Confirm</Button>{' '}
                   <Button color="secondary" onClick={handleCancelChange}>Cancel</Button>
                 </ModalFooter>
-              </Modal>
+              </Modal> */}
               <Modal isOpen={menuModalTabletScreen === 'Basic Information'} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
                 <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Basic Information</ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
