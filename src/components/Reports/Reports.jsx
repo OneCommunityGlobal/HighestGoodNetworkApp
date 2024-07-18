@@ -1,4 +1,4 @@
-import React, { Component, useEffect } from 'react';
+import React, { Component, useEffect, createRef } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { Container, Button } from 'reactstrap';
@@ -101,7 +101,10 @@ class ReportsPage extends Component {
     this.setTeamMemberList = this.setTeamMemberList.bind(this);
     this.setAddTime = this.setAddTime.bind(this);
     this.setRemainedTeams = this.setRemainedTeams.bind(this);
+    this.projectTableRef = createRef();
   }
+
+  
 
   async componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
@@ -233,18 +236,25 @@ class ReportsPage extends Component {
   }
 
   showProjectTable() {
-    this.setState(prevState => ({
-      showProjects: !prevState.showProjects,
-      showPeople: false,
-      showTeams: false,
-      showTotalProject: false,
-      showTotalTeam: false,
-      showTotalPeople: false,
-      showAddTimeForm: false,
-      showAddProjHistory: false,
-      showAddPersonHistory: false,
-      showAddTeamHistory: false,
-    }));
+    this.setState(
+      prevState => ({
+        showProjects: !prevState.showProjects,
+        showPeople: false,
+        showTeams: false,
+        showTotalProject: false,
+        showTotalTeam: false,
+        showTotalPeople: false,
+        showAddTimeForm: false,
+        showAddProjHistory: false,
+        showAddPersonHistory: false,
+        showAddTeamHistory: false,
+      }),
+      () => {
+        if (this.state.showProjects && this.projectTableRef.current && window.innerWidth < 900) {
+          this.projectTableRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
+      },
+    );
   }
 
   showTeamsTable() {
@@ -726,8 +736,14 @@ class ReportsPage extends Component {
         </div>
         </div>
         <div className="table-data-container mt-5">
-          {this.state.showPeople && <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode}/>}
-          {this.state.showProjects && <ProjectTable projects={this.state.projectSearchData} darkMode={darkMode}/>}
+            {this.state.showPeople && (
+              <PeopleTable userProfiles={this.state.peopleSearchData} darkMode={darkMode} />
+            )}
+            {this.state.showProjects && (
+              <div ref={this.projectTableRef}>
+                <ProjectTable projects={this.state.projectSearchData} darkMode={darkMode} />
+              </div>
+            )}
           {this.state.showTeams && <TeamTable allTeams={this.state.teamSearchData} darkMode={darkMode}/>}
           {this.state.showTotalProject && (
             <TotalProjectReport
