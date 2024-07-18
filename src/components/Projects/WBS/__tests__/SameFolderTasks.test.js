@@ -198,17 +198,9 @@ const mockAllTasksResponse = [
 mock.onGet(ENDPOINTS.TASKS()).reply(200, {});
 mock.onGet(ENDPOINTS.GET_WBS('')).reply(200, {});
 
-const mockResolve = () => {
-  return new Promise((res, rej) => {
-    setTimeout(() => {
-      res([200, mockAllTasksResponse]);
-    }, 250);
-  });
-};
-
 mock
   .onGet(ENDPOINTS.TASKS(mockTaskResponse.wbsId, mockTaskResponse.level, mockTaskResponse.mother))
-  .reply(mockResolve);
+  .reply(200, mockAllTasksResponse);
 mock
   .onGet(
     ENDPOINTS.TASKS(
@@ -217,7 +209,7 @@ mock
       mockTaskResponseNullMother.mother,
     ),
   )
-  .reply(mockResolve);
+  .reply(200, mockAllTasksResponse);
 mock.onGet(ENDPOINTS.GET_WBS(mockTaskResponse.wbsId)).reply(200, mockWbsResponse);
 mock.onGet(ENDPOINTS.GET_TASK('123')).reply(200, mockTaskResponse);
 mock.onGet(ENDPOINTS.GET_TASK('321')).reply(200, mockTaskResponse);
@@ -277,7 +269,7 @@ describe('SameFolderTasks', () => {
     });
   });
 
-  describe('Render Table', () => {
+  describe('Render Table tests', () => {
     let props;
 
     it('Before loading tasks, there is a Loading... span', () => {
@@ -289,6 +281,17 @@ describe('SameFolderTasks', () => {
       renderSameFolderTasks(props);
       await expect(screen.findByText('Loading...'));
       await expect(screen.findByText('Task Name'));
+    });
+
+    it('After loading tasks, there are 5 sample tasks', async () => {
+      await renderSameFolderTasks(props);
+      await expect(screen.findByText('Loading...'));
+
+      await expect(screen.findByText('Sample Task 1'));
+      await expect(screen.findByText('Sample Task 2'));
+      await expect(screen.findByText('Sample Task 3'));
+      await expect(screen.findByText('Sample Task 4'));
+      await expect(screen.findByText('Sample Task 5'));
     });
 
     beforeEach(() => {
