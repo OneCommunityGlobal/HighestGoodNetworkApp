@@ -19,7 +19,6 @@ const hasPermission = (action) => {
   }
 };
 
-
 /**
  * Return true if the user is not allowed to update the protected accounts
  * @param {String} devAdminEmail target user email
@@ -28,9 +27,9 @@ const hasPermission = (action) => {
  */
 export const cantUpdateDevAdminDetails = (devAdminEmail, authEmail) => {
   const allowedEmails = ['jae@onecommunityglobal.org',
-                         'one.community@me.com',
-                         'jsabol@me.com'
-                        ]
+    'one.community@me.com',
+    'jsabol@me.com'
+  ]
   const protectedEmails = ['jae@onecommunityglobal.org',
                            'one.community@me.com',
                            'jsabol@me.com',
