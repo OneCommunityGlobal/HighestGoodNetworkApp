@@ -5,7 +5,11 @@ import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 
 import hasPermission from 'utils/permissions';
+
+// actions
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
+import { getAllUserProfile } from 'actions/userManagement';
+import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
@@ -17,36 +21,84 @@ import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 
-const startDate = '2023-06-30';
-// const endDate = new Date().toISOString().split('T')[0];
-const endDate = '2024-07-06';
+const fromDate = '2024-06-01';
+// const toDate = new Date().toISOString().split('T')[0];
+const toDate = '2024-07-01';
 
 function TotalOrgSummary(props) {
-  const dispatch = useDispatch();
-  const [volunteerHoursStats, setVolunteerHoursStats] = useState([]);
-
-  const totalOrgSummary = useSelector(state => state.totalOrgSummary);
-
   // eslint-disable-next-line no-console
-  console.log('props', props);
+  // console.log('props', props);
   const { darkMode, loading, error } = props;
 
-  useEffect(() => {
-    dispatch(getTotalOrgSummary(startDate, endDate));
-  }, [startDate, endDate, dispatch]);
+  const [usersId, setUsersId] = useState([]);
+  const [volunteerHoursStats, setVolunteerHoursStats] = useState([]);
+
+  const dispatch = useDispatch();
+
+  const totalOrgSummary = useSelector(state => state.totalOrgSummary);
+  const allUserProfiles = useSelector(state => state.allUserProfiles);
+  const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('totalOrgSummary', totalOrgSummary);
-  }, [totalOrgSummary]);
+    dispatch(getAllUserProfile());
+  }, []);
 
   useEffect(() => {
-    if (totalOrgSummary.volunteerstats) {
-      setVolunteerHoursStats(totalOrgSummary.volunteerstats.volunteerHoursStats);
+    dispatch(getTotalOrgSummary(fromDate, toDate));
+  }, [fromDate, toDate, dispatch]);
+
+  useEffect(() => {
+    if (Array.isArray(usersId) && usersId.length > 0) {
+      dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
     }
+  }, [usersId, fromDate, toDate, dispatch]);
+
+  useEffect(() => {
     // eslint-disable-next-line no-console
-    console.log('volunteerHoursStats', volunteerHoursStats);
-  }, [totalOrgSummary, volunteerHoursStats]);
+    // console.log('All User Profile', allUserProfiles);
+
+    if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
+      const idsList = allUserProfiles.userProfiles.reduce((acc, user) => {
+        if (user.isActive) acc.push(user._id);
+        return acc;
+      }, []);
+      setUsersId(idsList);
+    }
+  }, [allUserProfiles]);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('Users Ids', usersId);
+  }, [usersId]);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('All Users Time ENtries', allUsersTimeEntries);
+  }, [allUsersTimeEntries]);
+
+  // useEffect(() => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('totalOrgSummary', totalOrgSummary);
+  // }, [totalOrgSummary]);
+
+  useEffect(() => {
+    if (
+      !totalOrgSummary.loading &&
+      Array.isArray(totalOrgSummary.volunteerstats?.volunteerHoursStats?.hoursStats) &&
+      totalOrgSummary.volunteerstats.volunteerHoursStats.hoursStats.length > 0
+    ) {
+      setVolunteerHoursStats(totalOrgSummary.volunteerstats.volunteerHoursStats.hoursStats);
+    }
+  }, [
+    totalOrgSummary,
+    totalOrgSummary.loading,
+    totalOrgSummary.volunteerstats?.volunteerHoursStats?.hoursStats,
+  ]);
+
+  // useEffect(() => {
+  //   // eslint-disable-next-line no-console
+  //   console.log('volunteerHoursStats updated', volunteerHoursStats);
+  // }, [volunteerHoursStats]);
 
   if (error) {
     return (
@@ -227,7 +279,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(startDate, endDate)),
+  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });
 

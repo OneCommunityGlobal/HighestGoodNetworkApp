@@ -48,6 +48,7 @@ import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
+import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 
 
 const localReducers = {
@@ -78,6 +79,8 @@ const localReducers = {
   userFollowUp : followUpReducer,
   userProjectsByUserNameReducer: userProjectsByUserNameReducer,
   blueSquareEmailAssignment : BlueSquareEmailAssignment,
+  totalOrgSummary: totalOrgSummaryReducer,
+  allUsersTimeEntries: allUsersTimeEntriesReducer,
 
   // bmdashboard
   materials: materialsReducer,
@@ -91,9 +94,7 @@ const localReducers = {
   bmEquipments: equipmentReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
-  bmReusables: reusablesReducer,
-  totalOrgSummary: totalOrgSummaryReducer
-
+  bmReusables: reusablesReducer
 };
 
 const sessionReducers = {

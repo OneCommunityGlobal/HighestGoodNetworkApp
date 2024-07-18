@@ -6,9 +6,9 @@ function HoursWorkList({ volunteerHoursStats = [] }) {
   useEffect(() => {
     setWorkedData(volunteerHoursStats);
     // eslint-disable-next-line no-console
-    console.log('workedData', workedData);
-    // eslint-disable-next-line no-console
-    console.log('VolunteerHoursStats(3)', volunteerHoursStats);
+    // console.log('workedData', workedData);
+    // // eslint-disable-next-line no-console
+    // console.log('VolunteerHoursStats(3)', volunteerHoursStats);
   }, [volunteerHoursStats, workedData]);
 
   return (
@@ -17,7 +17,7 @@ function HoursWorkList({ volunteerHoursStats = [] }) {
       <ul className="list-unstyled">
         {workedData.map(item => (
           <li key={item.id}>
-            {item._id} - {item.count} hrs.
+            {item.range} - {item.count} hrs.
           </li>
         ))}
       </ul>

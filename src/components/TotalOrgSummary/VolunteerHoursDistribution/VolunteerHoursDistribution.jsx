@@ -5,7 +5,7 @@ import { ReportPieChart } from '../../common/ReportPieChart/ReportPieChart';
 export default function VolunteerHoursDistribution({ darkMode, volunteerHoursStats = [] }) {
   const [userData, setUserData] = useState([]);
   // eslint-disable-next-line no-console
-  console.log('VolunteerHoursStats(2)', volunteerHoursStats);
+  // console.log('VolunteerHoursStats(2)', volunteerHoursStats);
 
   useEffect(() => {
     const totalHoursWorked =
@@ -20,7 +20,7 @@ export default function VolunteerHoursDistribution({ darkMode, volunteerHoursSta
       volunteerHoursStats.length > 0 &&
       volunteerHoursStats.map(member => {
         const data = {
-          name: `${member._id}`,
+          name: `${member.range}`,
           value: member.count,
           totalHoursCalculated: totalHoursWorked,
           title: 'Volunteer Hours',
@@ -29,7 +29,7 @@ export default function VolunteerHoursDistribution({ darkMode, volunteerHoursSta
         return data;
       });
     // eslint-disable-next-line no-console
-    console.log('arrData', arrData);
+    // console.log('arrData', arrData);
 
     // const sortedArr = arrData.sort((a, b) => a.name.localeCompare(b.name));
     // setUserData(sortedArr);
