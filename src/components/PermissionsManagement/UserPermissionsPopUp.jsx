@@ -6,6 +6,7 @@ import { getAllUserProfile } from 'actions/userManagement';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
+// eslint-disable-next-line no-unused-vars
 import { boxStyle, boxStyleDark } from 'styles';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
@@ -17,7 +18,17 @@ import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import ReminderModal from './ReminderModal';
 
-const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, authUser, setReminderModal, reminderModal, modalStatus }) => {
+function UserPermissionsPopUp({
+  allUserProfiles,
+  // eslint-disable-next-line no-unused-vars
+  toggle,
+  getAllUsers,
+  roles,
+  authUser,
+  setReminderModal,
+  reminderModal,
+  modalStatus,
+}) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -97,7 +108,12 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
   return (
     <>
       {modalStatus && (
-        <ReminderModal setReminderModal={setReminderModal} reminderModal={reminderModal} updateProfileOnSubmit={updateProfileOnSubmit} changedAccount={selectedAccount} />
+        <ReminderModal
+          setReminderModal={setReminderModal}
+          reminderModal={reminderModal}
+          updateProfileOnSubmit={updateProfileOnSubmit}
+          changedAccount={selectedAccount}
+        />
       )}
       <Form
         id="manage__user-permissions"
@@ -110,10 +126,11 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
           <Button
             type="button"
             color="success"
+            // eslint-disable-next-line no-unused-vars
             onClick={e => {
               setToDefault();
             }}
-            disabled={actualUserProfile ? false : true}
+            disabled={!actualUserProfile}
             style={boxStyle}
           >
             Reset to Default
@@ -130,6 +147,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
             type="text"
             value={searchText}
             innerRef={refInput}
+            // eslint-disable-next-line no-unused-vars
             onFocus={e => {
               setIsInputFocus(true);
               setIsOpen(true);
@@ -149,6 +167,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
               style={{ marginTop: '0px', width: '100%' }}
             >
               {allUserProfiles
+                // eslint-disable-next-line array-callback-return, consistent-return
                 .filter(user => {
                   if (
                     user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -178,6 +197,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
                 ))}
             </div>
           ) : (
+            // eslint-disable-next-line react/jsx-no-useless-fragment
             <></>
           )}
         </Dropdown>

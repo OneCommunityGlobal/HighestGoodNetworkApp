@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
@@ -11,15 +11,13 @@ import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
+import { ModalContext } from 'context/ModalContext';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
 import PermissionChangeLogTable from './PermissionChangeLogTable';
-import { ENDPOINTS } from 'utils/URL';
-import { ModalContext } from 'context/ModalContext';
-import { useContext } from 'react';
 
 function PermissionsManagement(props) {
   const { auth, getUserRole, userProfile, darkMode } = props;
@@ -49,9 +47,9 @@ function PermissionsManagement(props) {
 
   useEffect(() => {
     if (reminderUser !== null) {
-      console.log(reminderUser)
+      // console.log(reminderUser);
     }
-  }, [reminderUser])
+  }, [reminderUser]);
 
   useEffect(() => {
     getAllRoles();
@@ -75,7 +73,7 @@ function PermissionsManagement(props) {
     if (modalStatus === false) {
       setIsUserPermissionsOpen(previousState => !previousState);
     } else {
-      setReminderModal(!reminderModal)
+      setReminderModal(!reminderModal);
     }
   };
   const role = userProfile?.role;
@@ -83,8 +81,16 @@ function PermissionsManagement(props) {
   const roleNames = roles?.map(role => role.roleName);
 
   return (
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%", border: "1px solid #1B2A41" }}>
-      <div key={`${role}+permission`} className={darkMode ? "permissions-management-dark bg-yinmn-blue" : "permissions-management"}>
+    <div
+      className={darkMode ? 'bg-oxford-blue text-light' : ''}
+      style={{ minHeight: '100%', border: '1px solid #1B2A41' }}
+    >
+      <div
+        key={`${role}+permission`}
+        className={
+          darkMode ? 'permissions-management-dark bg-yinmn-blue' : 'permissions-management'
+        }
+      >
         <h1 className="permissions-management__title">User Roles</h1>
         <div key={`${role}_header`} className="permissions-management__header">
           {canPutRole && (
@@ -180,13 +186,20 @@ function PermissionsManagement(props) {
               Manage User Permissions
             </ModalHeader>
             <ModalBody id="modal-body_new-role--padding">
-              <UserPermissionsPopUp toggle={togglePopUpUserPermissions} setReminderModal={setReminderModal} reminderModal={reminderModal} modalStatus={modalStatus} />
+              <UserPermissionsPopUp
+                toggle={togglePopUpUserPermissions}
+                setReminderModal={setReminderModal}
+                reminderModal={reminderModal}
+                modalStatus={modalStatus}
+              />
             </ModalBody>
           </Modal>
         </div>
       </div>
-      {loading && (<p className='loading-message'>Loading...</p>)}
-      {changeLogs?.length > 0 && (<PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} darkMode={darkMode} />)}
+      {loading && <p className="loading-message">Loading...</p>}
+      {changeLogs?.length > 0 && (
+        <PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} darkMode={darkMode} />
+      )}
       <br />
       <br />
     </div>

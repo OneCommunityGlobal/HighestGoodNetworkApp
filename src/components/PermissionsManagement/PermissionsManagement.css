@@ -226,7 +226,7 @@
   }
 }
 
-@media only screen and (min-width: 600px) {
+@media only screen and (min-width: 300px) {
   .ContainerReminder {
     position: absolute;
     width: 400px;
