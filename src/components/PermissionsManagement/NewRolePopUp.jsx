@@ -5,8 +5,9 @@ import { connect } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
+import PermissionsManagement from './PermissionsManagement';
 
-function CreateNewRolePopup({ toggle, roleNames, darkMode }) {
+function CreateNewRolePopup({ toggle, roleNames, darkMode, addNewRole, getAllRoles }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
@@ -30,8 +31,15 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode }) {
         roleName: newRoleName,
         permissions: permissionsChecked,
       };
-      await addNewRole(newRoleObject);
-      toast.success('Role created successfully');
+      const result = await addNewRole(newRoleObject); //await addNewRole(newRoleObject);
+      console.log(result);
+      if(result){
+        toast.success('Role created successfully');
+        getAllRoles(); // Refresh the roles after adding a new role
+      }else{
+        toast.error('Error while creating role');
+      }
+      
       toggle();
     }
   };
@@ -111,7 +119,7 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode }) {
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles, darkMode: state.theme.darkMode });
+const mapStateToProps = state => ({ roleNames: state.role.roles.map(role => role.roleName), darkMode: state.theme.darkMode });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),

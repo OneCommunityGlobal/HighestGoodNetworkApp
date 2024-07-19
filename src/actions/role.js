@@ -35,8 +35,10 @@ export const addNewRole = newRole => {
     try {
       const res = await axios.post(ENDPOINTS.ROLES(), newRole);
       role = res.data;
+      return true;
     } catch (error) {
       status = 400;
+      return false;
     }
 
     dispatch(postNewRole(role, status));

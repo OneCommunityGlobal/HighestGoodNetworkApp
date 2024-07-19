@@ -19,7 +19,7 @@ import CreateNewRolePopup from './NewRolePopUp';
 import PermissionChangeLogTable from './PermissionChangeLogTable';
 
 function PermissionsManagement(props) {
-  const { auth, getUserRole, userProfile, darkMode } = props;
+  const { auth, getUserRole, userProfile, darkMode, getAllRoles } = props;
   let { roles } = props;
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
@@ -156,7 +156,7 @@ function PermissionsManagement(props) {
               id="modal-body_new-role--padding"
               className={darkMode ? 'bg-yinmn-blue' : ''}
             >
-              <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} />
+              <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} getAllRoles={getAllRoles} />
             </ModalBody>
           </Modal>
           <Modal
