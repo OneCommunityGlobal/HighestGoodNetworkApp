@@ -103,6 +103,7 @@ class ReportsPage extends Component {
     this.projectTableRef = createRef();
     this.peopleTableRef = createRef();
     this.teamsTableRef = createRef();
+    this.debouncedSearch = this.debounce(this.handleSearch, 500);
   }
 
   async componentDidMount() {
@@ -117,13 +118,36 @@ class ReportsPage extends Component {
     this.props.getAllUserProfile();
   }
 
+  handleSearch = () => {
+    if (this.state.showPeople && this.state.peopleSearchData.length > 0) {
+      this.scrollToRefIfNarrowScreen(this.peopleTableRef);
+    } else if (this.state.showProjects && this.state.projectSearchData.length > 0) {
+      this.scrollToRefIfNarrowScreen(this.projectTableRef);
+    } else if (this.state.showTeams && this.state.teamSearchData.length > 0) {
+      this.scrollToRefIfNarrowScreen(this.teamsTableRef);
+    }
+  };
+
+  debounce = (func, wait) => {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  };
+
   /**
    * callback for search
    */
   onWildCardSearch = searchText => {
-    this.setState({
-      wildCardSearchText: searchText,
-    });
+    this.setState(
+      {
+        wildCardSearchText: searchText,
+      },
+      () => {
+        this.debouncedSearch();
+      },
+    );
   };
 
   filteredProjectList = projects => {
