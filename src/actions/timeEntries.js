@@ -106,7 +106,7 @@ export const deleteTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.delete(url);
-      if (timeEntry.entryType == 'default') {
+      if (timeEntry.entryType === 'default') {
         dispatch(updateTimeEntries(timeEntry));
       }
       return res.status;

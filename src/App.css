@@ -109,6 +109,10 @@ body {
   background-color: #3A506B !important;
 }
 
+.bg-yinmn-blue-light{
+  background-color:#2f4157;
+}
+
 .bg-azure{
   background-color: #007BFF !important;
 }
@@ -130,7 +134,11 @@ body {
 }
 
 .text-dark-green{
-  background-color: #193D31 !important;
+  color: #193D31 !important;
+}
+
+.text-custom-grey{
+  color: rgb(192, 192, 192) !important;
 }
 
 .box-shadow-dark {
@@ -164,4 +172,16 @@ nav ul.navbar-nav li:last-child > div {
 
 tr {
   content-visibility: auto;
+}
+
+.custom-checkbox *:hover {
+  cursor: pointer;
+}
+
+input[type="radio"]:hover {
+  cursor: pointer;
+}
+
+input[type="checkbox"]:not([disabled]):hover {
+  cursor: pointer;
 }

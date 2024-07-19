@@ -4,10 +4,10 @@ import { Component } from 'react';
 import Joi from 'joi';
 import { cloneDeep, isEqual, groupBy } from 'lodash';
 import { Link } from 'react-router-dom';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import Input from '../Input';
 import Dropdown from '../Dropdown';
-import Radio from "../Radio";
+import Radio from '../Radio';
 import Image from '../Image';
 import FileUpload from '../FileUpload';
 import TinyMCEEditor from '../TinyceEditor/tinymceEditor';
@@ -225,9 +225,16 @@ class Form extends Component {
       testDropdown: Joi.string().required(),
       testRadio: Joi.string().required(),
       testCheckbox: Joi.boolean(),
-      testCollection: Joi.array().items(Joi.string()).min(1).required(),
-      email: Joi.string().email().required(),
-      password: Joi.string().min(6).required(),
+      testCollection: Joi.array()
+        .items(Joi.string())
+        .min(1)
+        .required(),
+      email: Joi.string()
+        .email()
+        .required(),
+      password: Joi.string()
+        .min(6)
+        .required(),
       someField: Joi.string().required(),
     };
 
@@ -337,10 +344,14 @@ class Form extends Component {
     };
   }
 
-  renderButton(label) {
+  renderButton({ label, darkMode }) {
     return (
       // eslint-disable-next-line react/button-has-type
-      <button disabled={this.validateForm()} className="btn btn-primary" style={boxStyle}>
+      <button
+        disabled={this.validateForm()}
+        className="btn btn-primary"
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
         {label}
       </button>
     );
@@ -405,7 +416,9 @@ class Form extends Component {
 
   renderFileUpload({ name, ...rest }) {
     const { errors } = { ...this.state };
-    return <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />;
+    return (
+      <FileUpload name={name} onUpload={this.handleFileUpload} {...rest} error={errors[name]} />
+    );
   }
 
   renderCheckboxCollection({ collectionName, ...rest }) {
@@ -426,7 +439,6 @@ class Form extends Component {
       />
     );
   }
-
 
   // eslint-disable-next-line class-methods-use-this
   renderLink({ label, to, className }) {

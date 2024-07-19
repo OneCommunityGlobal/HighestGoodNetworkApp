@@ -6,6 +6,7 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from '../actions';
 import { waitFor } from '@testing-library/react';
+import { themeMock } from '__tests__/mockStates';
 
 
 describe('TaskEditSuggestions', () => {
@@ -41,6 +42,7 @@ describe('TaskEditSuggestions', () => {
       userSortDirection: 'asc',
       dateSuggestedSortDirection: 'asc',
     },
+    theme: themeMock,
   };
   const mockStore = configureStore();
   let store, mockDispatch;
@@ -128,6 +130,7 @@ describe('TaskEditSuggestions loading', () => {
       userSortDirection: 'asc',
       dateSuggestedSortDirection: 'asc',
     },
+    theme: themeMock,
   };
   const mockStore = configureStore();
   let store, mockDispatch;

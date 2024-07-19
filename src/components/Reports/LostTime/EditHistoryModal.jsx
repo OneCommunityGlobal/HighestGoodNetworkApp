@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Form, Row, Col } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useDispatch } from 'react-redux';
 import { getUserProfile } from 'actions/userProfile';
 import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
@@ -14,6 +14,7 @@ import axios from 'axios';
 import './EditHistoryModal.css';
 
 const EditHistoryModal = props => {
+  const darkMode = props.darkMode;
 
   const initialForm = {
     projectId: props.entryType == 'project'? props.dataId: undefined,
@@ -191,11 +192,11 @@ const EditHistoryModal = props => {
     const currEntryTime = parseFloat(hours) + parseFloat(minutes) / 60;
     const timeDifference = currEntryTime - oldEntryTime;
 
-    if (initialForm.isTangible == 'true' && isTangible == 'true') {
+    if (initialForm.isTangible && isTangible) {
       hoursByCategory['unassigned'] += timeDifference;
-    } else if (initialForm.isTangible == 'false' && isTangible == 'false') {
+    } else if (!initialForm.isTangible && !isTangible) {
       userProfile.totalIntangibleHrs += timeDifference;
-    } else if (initialForm.isTangible == 'true' && isTangible == 'false') {
+    } else if (initialForm.isTangible && !isTangible) {
       hoursByCategory['unassigned'] -= oldEntryTime;
       userProfile.totalIntangibleHrs += currEntryTime;
     } else {
@@ -217,8 +218,8 @@ const EditHistoryModal = props => {
     const { isTangible, personId } = timeEntry;
 
     const entryTime = parseFloat(initialForm.hours) + parseFloat(initialForm.minutes) / 60;
-
-    if (isTangible == 'true') {
+    
+    if (isTangible) {
       hoursByCategory['unassigned'] -= entryTime;
     } else {
       userProfile.totalIntangibleHrs -= entryTime;
@@ -262,15 +263,11 @@ const EditHistoryModal = props => {
       projectId: inputs.projectId,
       teamId: inputs.teamId,
       dateOfWork: inputs.dateOfWork,
-      isTangible: inputs.isTangible.toString(),
+      isTangible: inputs.isTangible,
       entryType: props.entryType,
       hours: parseInt(inputs.hours),
       minutes: parseInt(inputs.minutes),
     };
-
-    if(inputs.personId) {
-      updateHours(props.userProfile, timeEntry, inputs.hours, inputs.minutes);
-    }
 
     setSubmitting(true);
     let timeEntryStatus;
@@ -301,15 +298,11 @@ const EditHistoryModal = props => {
       projectId: inputs.projectId,
       teamId: inputs.teamId,
       dateOfWork: inputs.dateOfWork,
-      isTangible: inputs.isTangible.toString(),
+      isTangible: inputs.isTangible,
       entryType: props.entryType,
       hours: parseInt(inputs.hours),
       minutes: parseInt(inputs.minutes),
     };
-
-    if(inputs.personId) {
-      deleteHours(props.userProfile, timeEntry);
-    }
 
     const timeEntryStatus = await dispatch(deleteTimeEntry(timeEntry));
     if (timeEntryStatus !== 200) {
@@ -428,10 +421,10 @@ const EditHistoryModal = props => {
       </ModalFooter>
     </Modal>
     <div className='history-btn-div'>
-      <Button className='history-btn' color="primary" onClick={toggleEdit} style={boxStyle}>
+      <Button className='history-btn' color="primary" onClick={toggleEdit} style={darkMode ? boxStyleDark : boxStyle}>
         Edit
       </Button>
-      <Button className='history-btn' color="danger" onClick={toggleDelete} style={boxStyle}>
+      <Button className='history-btn' color="danger" onClick={toggleDelete} style={darkMode ? boxStyleDark : boxStyle}>
         Delete
       </Button>
     </div>

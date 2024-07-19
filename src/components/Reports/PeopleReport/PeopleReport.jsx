@@ -28,7 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import {updateRehireableStatus} from '../../../actions/userManagement'
+import { updateRehireableStatus } from '../../../actions/userManagement'
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -47,7 +47,7 @@ class PeopleReport extends Component {
       // eslint-disable-next-line react/no-unused-state
       isAssigned: '',
       isActive: '',
-      isRehireable: false,
+      isRehireable: true,
       // eslint-disable-next-line react/no-unused-state
       priority: '',
       // eslint-disable-next-line react/no-unused-state
@@ -290,7 +290,7 @@ class PeopleReport extends Component {
     } = this.state;
     // eslint-disable-next-line no-unused-vars
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
-    const { tangibleHoursReportedThisWeek, auth, match } = this.props;
+    const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
 
     let totalTangibleHrsRound = 0;
@@ -423,23 +423,28 @@ class PeopleReport extends Component {
         <PeopleTableDetails
           taskData={peopleData.taskData}
           showFilter={tangibleHoursReportedThisWeek !== 0}
+          darkMode={darkMode}
         />
       );
     };
 
     const renderProfileInfo = () => {
       const { isRehireable, bioStatus, authRole } = this.state;
-      const { profilePic, role, jobTitle, endDate, _id, createdDate } = userProfile;
+      const { profilePic, role, jobTitle, endDate, _id, createdDate, startDate } = userProfile;
 
       return (
         <ReportPage.ReportHeader
           src={profilePic}
           avatar={profilePic ? undefined : <FiUser />}
           isActive={isActive}
+          darkMode={darkMode}
         >
-          <div className="report-stats">
+          <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
             <p>
-              <Link to={`/userProfile/${_id}`} title="View Profile">
+              <Link to={`/userProfile/${_id}`}
+                title="View Profile"
+                className={darkMode ? 'text-light font-weight-bold' : ''}
+                style={{ fontSize: "24px" }}>
                 {firstName} {lastName}
               </Link>
             </p>
@@ -447,20 +452,23 @@ class PeopleReport extends Component {
             <p>Title: {jobTitle}</p>
 
             {/* {endDate ? ( */}
-              <div className="rehireable">
-                <Checkbox
-                  value={isRehireable}
-                  onChange={() => this.setRehireable(!isRehireable)}
-                  label="Rehireable"
-                />
-              </div>
+            <div className="rehireable">
+              <Checkbox
+                value={isRehireable}
+                onChange={() => this.setRehireable(!isRehireable)}
+                label="Rehireable"
+                darkMode={darkMode}
+                backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
+                textColorCN={darkMode ? "text-light" : ""}
+              />
+            </div>
             {/* ) : (
               ''
             )} */}
 
             <div className="stats">
               <div>
-                <h4>{formatDate(createdDate)}</h4>
+                <h4>{formatDate(startDate)}</h4>
                 <p>Start Date</p>
               </div>
               <div>
@@ -473,6 +481,7 @@ class PeopleReport extends Component {
                   {authRole === 'Administrator' || authRole === 'Owner' ? (
                     <ToggleSwitch
                       fontSize="13px"
+                      fontColor="#007BFF"
                       switchType="bio"
                       state={bioStatus}
                       /* eslint-disable-next-line no-use-before-define */
@@ -505,15 +514,16 @@ class PeopleReport extends Component {
     };
 
     return (
-      <div className="container-people-wrapper">
-        <ReportPage renderProfile={renderProfileInfo}>
-          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper": ""}`}>
+      <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+        <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
-              className="people-report-time-log-block"
+              className="people-report-time-log-blocks"
+              darkMode={darkMode}
             >
-              <h3>{weeklycommittedHours}</h3>
+              <h3 className='text-light'>{weeklycommittedHours}</h3>
               <p>Weekly Committed Hours</p>
             </ReportPage.ReportBlock>
 
@@ -524,8 +534,9 @@ class PeopleReport extends Component {
                 firstColor="#b368d2"
                 secondColor="#831ec4"
                 className="people-report-time-log-block"
+                darkMode={darkMode}
               >
-                <h3>{tangibleHoursReportedThisWeek}</h3>
+                <h3 className='text-light'>{tangibleHoursReportedThisWeek}</h3>
                 <p>Hours Logged This Week</p>
               </ReportPage.ReportBlock>
             )}
@@ -534,24 +545,26 @@ class PeopleReport extends Component {
               firstColor="#64b7ff"
               secondColor="#928aef"
               className="people-report-time-log-block"
+              darkMode={darkMode}
             >
-              <h3>{infringements.length}</h3>
+              <h3 className='text-light'>{infringements.length}</h3>
               <p>Blue squares</p>
             </ReportPage.ReportBlock>
             <ReportPage.ReportBlock
               firstColor="#ffdb56"
               secondColor="#ff9145"
               className="people-report-time-log-block"
+              darkMode={darkMode}
             >
-              <h3>{totalTangibleHrsRound}</h3>
+              <h3 className='text-light'>{totalTangibleHrsRound}</h3>
               <p>Total Hours Logged</p>
             </ReportPage.ReportBlock>
           </div>
 
-          <PeopleTasksPieChart />
+          <PeopleTasksPieChart darkMode={darkMode} />
           <div className="mobile-people-table">
-            <ReportPage.ReportBlock>
-              <div className="intro_date">
+            <ReportPage.ReportBlock darkMode={darkMode}>
+              <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
                 <h4>Tasks contributed</h4>
               </div>
 
@@ -567,13 +580,14 @@ class PeopleReport extends Component {
                     timeEntries={timeEntries}
                   />
                   <div className="visualizationDiv">
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} />
+                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
                   </div>
                   <div className="visualizationDiv">
                     <InfringementsViz
                       infringements={infringements}
                       fromDate={fromDate}
                       toDate={toDate}
+                      darkMode={darkMode}
                     />
                   </div>
                   <div className="visualizationDivRow">
@@ -585,7 +599,7 @@ class PeopleReport extends Component {
                       />
                     </div>
                     <div className="BadgeSummaryPreviewDiv">
-                      <BadgeSummaryPreview badges={userProfile.badgeCollection} />
+                      <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
                     </div>
                   </div>
                 </div>
@@ -644,6 +658,7 @@ class PeopleReport extends Component {
     );
   }
 }
+
 export default connect(getPeopleReportData, {
   getUserProfile,
   updateUserProfileProperty,
