@@ -344,7 +344,7 @@ function LeaderBoard({
             darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
           }`}
         >
-          <thead>
+          <thead className="responsive-font-size">
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
               <th>
@@ -384,8 +384,8 @@ function LeaderBoard({
               </th>
             </tr>
           </thead>
-          <tbody className="my-custome-scrollbar">
-            <tr>
+          <tbody className="my-custome-scrollbar responsive-font-size">
+            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
