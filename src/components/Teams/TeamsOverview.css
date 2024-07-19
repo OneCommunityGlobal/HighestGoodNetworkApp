@@ -14,12 +14,12 @@
 
 @media (max-width: 479px) {
   .teams__overview--top .card {
-    flex: 1 1 45%; /* Adjust card size to prevent stacking */
+    flex: 1 1 45%; 
     margin: 5px 0;
   }
 
   .teams__overview--top {
-    justify-content: space-between; /* Ensure cards are spaced correctly */
+    justify-content: space-between; 
   }
 }
 

@@ -2,8 +2,7 @@ import React from 'react';
 import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
-// Sai Sarath Kumar Alavakonda working on TEAMS UI , 3 july 2024
-import './TeamsOverview.css';   //added by me
+import './TeamsOverview.css'; 
 /**
  * The header row of the team table.
  */
