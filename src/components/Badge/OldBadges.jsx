@@ -9,6 +9,7 @@ function OldBadges({ personalBestMaxHrs, badges, darkMode }) {
           backgroundColor: darkMode ? '#3A506B' : '#f6f6f3',
           marginTop: 20,
           marginBottom: 20,
+          padding: '0px 10px',
         }}
       >
         <CardBody>

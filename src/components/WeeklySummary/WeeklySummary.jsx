@@ -825,12 +825,12 @@ export class WeeklySummary extends Component {
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                             )}
-                          <CurrentPromptModal
-                            userRole={userRole}
-                            userId={displayUserId}
-                            darkMode={darkMode}
-                          />
-                          {/* <div style={{ width: '10rem' }}>
+                            <CurrentPromptModal
+                              userRole={userRole}
+                              userId={displayUserId}
+                              darkMode={darkMode}
+                            />
+                            {/* <div style={{ width: '10rem' }}>
                             <CurrentPromptModal
                               userRole={userRole}
                               userId={displayUserId}
@@ -854,10 +854,10 @@ export class WeeklySummary extends Component {
                         errors.summaryBeforeLast ||
                         errors.summaryThreeWeeksAgo ||
                         errors.wordCount) && (
-                          <Alert color="danger">
-                            The summary must contain a minimum of 50 words.
-                          </Alert>
-                        )}
+                        <Alert color="danger">
+                          The summary must contain a minimum of 50 words.
+                        </Alert>
+                      )}
                     </Col>
                   </Row>
                 </TabPane>

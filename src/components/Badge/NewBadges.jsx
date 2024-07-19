@@ -30,7 +30,9 @@ function NewBadges(props) {
 
   return (
     <>
-      <Card style={{ backgroundColor: props.darkMode ? '#3A506B' : '#f6f6f3' }}>
+      <Card
+        style={{ backgroundColor: props.darkMode ? '#3A506B' : '#f6f6f3', padding: '0px 10px' }}
+      >
         <CardBody>
           <CardTitle
             style={{
