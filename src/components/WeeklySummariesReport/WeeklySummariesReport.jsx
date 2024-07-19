@@ -438,13 +438,13 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
-  handleTeamCodeChange = (oldTeamCode, newTeamCode, userId) => {
+  handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
     try {
       this.setState(prevState => {
         let { teamCodes, summaries, selectedCodes } = prevState;
         // Find and update the user's team code in summaries
         summaries = summaries.map(summary => {
-          if (summary._id === userId) {
+          if (userIdObj[summary._id]) {
             return { ...summary, teamCode: newTeamCode };
           }
           return summary;
@@ -460,6 +460,14 @@ export class WeeklySummariesReport extends Component {
           acc[teamCode] = (acc[teamCode] || 0) + 1;
           return acc;
         }, {});
+        const teamCodeWithUserId = summaries.reduce((acc, { _id, teamCode }) => {
+          if (acc && acc[teamCode]) {
+            acc[teamCode].push(_id);
+          } else {
+            acc[teamCode] = [_id];
+          }
+          return acc;
+        }, {});
         // console.log(Object.entries(teamCodeCounts), 'teamCodecounts');
         // Update teamCodes by filtering out those with zero count
         teamCodes = Object.entries(teamCodeCounts)
@@ -467,37 +475,44 @@ export class WeeklySummariesReport extends Component {
           .map(([code, count]) => ({
             label: `${code} (${count})`,
             value: code,
+            _ids: teamCodeWithUserId[code],
           }));
-
         // Update selectedCodes labels and filter out those with zero count
         selectedCodes = selectedCodes
           .map(selected => {
             const count = teamCodeCounts[selected.value];
-            if (selected?.label.includes('Select All With NO Code')) {
-              return { ...selected, label: `Select All With NO Code (${noTeamCodeCount || 0})` };
+            const ids = teamCodeWithUserId[selected.value];
+            if (selected?.label.includes('Select All With NO Code') && noTeamCodeCount > 0) {
+              return {
+                ...selected,
+                label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+                _ids: ids,
+              };
             }
             if (count !== undefined && count > 0) {
-              return { ...selected, label: `${selected.value} (${count})` };
+              return { ...selected, label: `${selected.value} (${count})`, _ids: ids };
             }
             return null;
           })
           .filter(Boolean);
 
         if (!selectedCodes.find(code => code.value === newTeamCode)) {
+          const ids = teamCodeWithUserId[newTeamCode];
           if (newTeamCode !== undefined && newTeamCode.length > 0) {
             selectedCodes.push({
               label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
               value: newTeamCode,
+              _ids: ids,
             });
           }
         }
-
         // Sort teamCodes by label
         teamCodes
           .sort((a, b) => a.label.localeCompare(b.label))
           .push({
             value: '',
             label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+            _ids: teamCodeWithUserId[''],
           });
         return { summaries, teamCodes, selectedCodes };
       });
@@ -518,17 +533,20 @@ export class WeeklySummariesReport extends Component {
           replaceCode,
         };
         const data = await axios.patch(url, payload);
-        if (data?.data) {
-          userIds.forEach(id => {
-            this.handleTeamCodeChange('', replaceCode, id);
-          });
+        const userObjs = userIds.reduce((acc, curr) => {
+          acc[curr] = true;
+          return acc;
+        }, {});
+        if (data?.data?.isUpdated) {
+          this.handleTeamCodeChange('', replaceCode, userObjs);
+          this.setState({ replaceCode: '', replaceCodeError: false });
+          this.filterWeeklySummaries();
         }
-        this.setState({ replaceCode: '', replaceCodeError: true });
       } else {
         this.setState({ replaceCodeError: true });
       }
     } catch (error) {
-      this.setState({ replaceCode: '' });
+      this.setState({ replaceCode: '', replaceCodeError: true });
     }
   };
 
