@@ -16,7 +16,7 @@ const jaeAccountMock = {
     iat: 1597272666,
     userid: '1',
     role: 'Administrator',
-    email: 'devadmin@hgn.net'
+    email: 'devadmin@hgn.net',
   },
   firstName: 'Is',
   lastName: 'Jae',
@@ -57,7 +57,6 @@ const ownerAccountMock = {
   email: 'devadmin@hgn.net'
 }
 
-
 describe('User Table Data: Non-Jae related Account', () => {
   let onPauseResumeClick;
   let onDeleteClick;
@@ -67,7 +66,7 @@ describe('User Table Data: Non-Jae related Account', () => {
     store = mockStore({
       auth: ownerAccountMock,
       userProfile: nonJaeAccountMock,
-      role: nonJaeAccountMock.role,
+      role: rolesMock.role,
       theme: themeMock,
     });
     onPauseResumeClick = jest.fn();
@@ -150,7 +149,6 @@ describe('User Table Data: Non-Jae related Account', () => {
   });
 });
 
-
 describe('User Table Data: Jae protected account record and login as Jae related account', () => {
   let onPauseResumeClick;
   let onDeleteClick;
@@ -160,7 +158,7 @@ describe('User Table Data: Jae protected account record and login as Jae related
     store = mockStore({
       auth: authMock,
       userProfile: jaeAccountMock,
-      role: jaeAccountMock.role
+      role: rolesMock.role,
     });
     onPauseResumeClick = jest.fn();
     onDeleteClick = jest.fn();

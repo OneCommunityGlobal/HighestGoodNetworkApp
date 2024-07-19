@@ -54,7 +54,7 @@ const UserTableData = React.memo(props => {
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
-          canChange={hasFullFunctionality || canChangeUserStatus}
+          canChange={canChangeUserStatus || hasFullFunctionality}
           key={`active_cell${props.index}`}
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
