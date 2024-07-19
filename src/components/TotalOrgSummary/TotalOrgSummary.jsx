@@ -21,37 +21,28 @@ import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 
-const fromDate = '2024-06-01';
+const fromDate = '2024-07-01';
 // const toDate = new Date().toISOString().split('T')[0];
-const toDate = '2024-07-01';
+const toDate = '2024-07-19';
 
 function TotalOrgSummary(props) {
   // eslint-disable-next-line no-console
   // console.log('props', props);
-  const { darkMode, loading, error } = props;
+  const { darkMode, loading, error, allUserProfiles } = props;
 
   const [usersId, setUsersId] = useState([]);
-  const [volunteerHoursStats, setVolunteerHoursStats] = useState([]);
-
+  const [usersTimeEntries, setUsersTimeEntries] = useState([]);
+  // const [unifiedUsersTimeEntries, setUnifiedUsersTimeEntries] = useState([]);
   const dispatch = useDispatch();
 
-  const totalOrgSummary = useSelector(state => state.totalOrgSummary);
-  const allUserProfiles = useSelector(state => state.allUserProfiles);
+  // const [volunteerHoursStats, setVolunteerHoursStats] = useState([]);
+
+  // const totalOrgSummary = useSelector(state => state.totalOrgSummary);
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
 
   useEffect(() => {
     dispatch(getAllUserProfile());
   }, []);
-
-  useEffect(() => {
-    dispatch(getTotalOrgSummary(fromDate, toDate));
-  }, [fromDate, toDate, dispatch]);
-
-  useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0) {
-      dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
-    }
-  }, [usersId, fromDate, toDate, dispatch]);
 
   useEffect(() => {
     // eslint-disable-next-line no-console
@@ -67,38 +58,71 @@ function TotalOrgSummary(props) {
   }, [allUserProfiles]);
 
   useEffect(() => {
+    if (Array.isArray(usersId) && usersId.length > 0) {
+      dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
+    }
+  }, [usersId, fromDate, toDate, dispatch]);
+
+  useEffect(() => {
     // eslint-disable-next-line no-console
     console.log('Users Ids', usersId);
   }, [usersId]);
 
   useEffect(() => {
     // eslint-disable-next-line no-console
-    console.log('All Users Time ENtries', allUsersTimeEntries);
+    console.log('🚀~ allUsersTimeEntries:', allUsersTimeEntries);
   }, [allUsersTimeEntries]);
 
-  // useEffect(() => {
-  //   // eslint-disable-next-line no-console
-  //   console.log('totalOrgSummary', totalOrgSummary);
-  // }, [totalOrgSummary]);
+  const aggregateTimeEntries = userTimeEntries => {
+    const aggregatedEntries = {};
+
+    userTimeEntries.forEach(entry => {
+      const { personId, hours, minutes } = entry;
+      if (!aggregatedEntries[personId]) {
+        aggregatedEntries[personId] = {
+          hours: parseInt(hours, 10),
+          minutes: parseInt(minutes, 10),
+        };
+      } else {
+        aggregatedEntries[personId].hours += parseInt(hours, 10);
+        aggregatedEntries[personId].minutes += parseInt(minutes, 10);
+      }
+    });
+
+    // Convertir minutos a horas si es necesario
+    Object.keys(aggregatedEntries).forEach(personId => {
+      const totalMinutes = aggregatedEntries[personId].minutes;
+      const additionalHours = Math.floor(totalMinutes / 60);
+      aggregatedEntries[personId].hours += additionalHours;
+      aggregatedEntries[personId].minutes = totalMinutes % 60;
+    });
+
+    // Convertir el objeto a un arreglo
+    const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
+      personId,
+      hours,
+      minutes,
+    }));
+
+    return result;
+  };
 
   useEffect(() => {
     if (
-      !totalOrgSummary.loading &&
-      Array.isArray(totalOrgSummary.volunteerstats?.volunteerHoursStats?.hoursStats) &&
-      totalOrgSummary.volunteerstats.volunteerHoursStats.hoursStats.length > 0
+      !Array.isArray(allUsersTimeEntries.usersTimeEntries) ||
+      allUsersTimeEntries.usersTimeEntries.length === 0
     ) {
-      setVolunteerHoursStats(totalOrgSummary.volunteerstats.volunteerHoursStats.hoursStats);
+      return;
     }
-  }, [
-    totalOrgSummary,
-    totalOrgSummary.loading,
-    totalOrgSummary.volunteerstats?.volunteerHoursStats?.hoursStats,
-  ]);
 
-  // useEffect(() => {
-  //   // eslint-disable-next-line no-console
-  //   console.log('volunteerHoursStats updated', volunteerHoursStats);
-  // }, [volunteerHoursStats]);
+    const aggregatedEntries = aggregateTimeEntries(allUsersTimeEntries.usersTimeEntries);
+    setUsersTimeEntries(aggregatedEntries);
+  }, [allUsersTimeEntries]);
+
+  useEffect(() => {
+    // eslint-disable-next-line no-console
+    console.log('Users Time ENtries', usersTimeEntries);
+  }, [usersTimeEntries]);
 
   if (error) {
     return (
@@ -177,18 +201,15 @@ function TotalOrgSummary(props) {
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border" style={{ position: 'relative' }}>
               <div className="d-flex flex-row justify-content-end">
-                {Array.isArray(volunteerHoursStats) && volunteerHoursStats.length > 0 && (
+                {Array.isArray(usersTimeEntries) && usersTimeEntries.length > 0 && (
                   <>
                     <VolunteerHoursDistribution
                       darkMode={darkMode}
-                      volunteerHoursStats={volunteerHoursStats}
+                      usersTimeEntries={usersTimeEntries}
                     />
                     <div className="d-flex flex-column align-items-center justify-content-center">
-                      <HoursWorkList
-                        darkMode={darkMode}
-                        volunteerHoursStats={volunteerHoursStats}
-                      />
-                      <NumbersVolunteerWorked />
+                      <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />
+                      <NumbersVolunteerWorked usersTimeEntries={usersTimeEntries} />
                     </div>
                   </>
                 )}
@@ -272,15 +293,17 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  volunteerstats: state.volunteerstats,
+  totalOrgSummary: state.totalOrgSummary,
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
+  allUserProfiles: state.allUserProfiles,
 });
 
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
+  getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);
