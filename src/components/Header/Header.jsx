@@ -6,7 +6,6 @@ import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import { Link, useLocation } from 'react-router-dom';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link } from 'react-router-dom';=
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
