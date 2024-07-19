@@ -490,9 +490,8 @@ export function TeamReport({ match }) {
             {allTeamsMembers.length > 1 ? (
               <tbody className="table">
                 {/* eslint-disable-next-line no-shadow */}
-                {/* Note: the handleSearch() function will cause the white page error, but any changes to that part will cause
-                unable to pass the git test */}
-                {handleSearch().map((team, index) => (
+                {/* Note: the handleSearch() function will cause the white page error */}
+                {/* handleSearch().map((team, index) => (
                   <tr className={`table-row ${darkMode ? 'bg-yinmn-blue text-light table-hover-dark' : ''}`} key={team._id}>
                     <td>
                       <input
@@ -540,7 +539,7 @@ export function TeamReport({ match }) {
                     <td>{handleDate(team.createdDatetime)}</td>
                     <td>{handleDate(team.modifiedDatetime)}</td>
                   </tr>
-                ))}
+                ))*/}
               </tbody>
             ) : (
               <tbody>
