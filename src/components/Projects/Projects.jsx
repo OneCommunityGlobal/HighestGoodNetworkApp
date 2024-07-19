@@ -303,17 +303,17 @@ handleSort = (e)=>{
         <div className="container mt-3">
           {fetching || !fetched ? <Loading /> : null}
           <div className="d-flex align-items-center">
-          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <EditableInfoModal
-            areaName="projectsInfoModal"
-            areaTitle="Projects"
-            fontSize={30}
-            isPermissionPage={true}
-            role={role}
-          />
-        </div>
+            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+            <EditableInfoModal
+              areaName="projectsInfoModal"
+              areaTitle="Projects"
+              fontSize={30}
+              isPermissionPage={true}
+              role={role}
+            />
+            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          </div>
 
-          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           {canPostProject ? <AddProject addNewProject={this.postProject} /> : null}
 
           <table className="table table-bordered table-responsive-sm">
