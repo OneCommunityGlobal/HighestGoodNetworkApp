@@ -20,6 +20,10 @@ const mockAuth = {
   },
   firstName: 'Jerry'
 }
+
+const themeMock = {
+  primaryColor: '#000000',
+};
 const middlewares = [thunk]
 const mockStore = configureStore(middlewares)
 const store = mockStore({
