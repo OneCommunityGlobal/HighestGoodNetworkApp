@@ -825,11 +825,6 @@ export class WeeklySummary extends Component {
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                             )}
-                            <CurrentPromptModal
-                              userRole={userRole}
-                              userId={displayUserId}
-                              darkMode={darkMode}
-                            />
                             {/* <div style={{ width: '10rem' }}>
                             <CurrentPromptModal
                               userRole={userRole}
