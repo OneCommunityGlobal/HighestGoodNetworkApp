@@ -10,7 +10,7 @@ function PeopleTable({ userProfiles, darkMode }) {
     PeopleList = userProfiles
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
       .map((person, index) => (
-        <tr className={`teams__tr ${darkMode ? 'hover-effect-reports-page-dark-mode' : ''}`} id={`tr_${person._id}`} key={person._id}>
+        <tr className={`teams__tr`} id={`tr_${person._id}`} key={person._id}>
           <th className={`teams__order--input ${darkMode ? 'text-light' : ''}`} scope="row">
             <div>{index + 1}</div>
           </th>
@@ -56,8 +56,8 @@ function PeopleTable({ userProfiles, darkMode }) {
 
   return (
     <table className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`} style={darkMode ? boxStyleDark : boxStyle}>
-      <thead className={darkMode ? "bg-space-cadet text-light" : ""}>
-        <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <thead>
+        <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
             #
           </th>
@@ -73,7 +73,7 @@ function PeopleTable({ userProfiles, darkMode }) {
           </th>
         </tr>
       </thead>
-      <tbody>{PeopleList}</tbody>
+      <tbody className={darkMode ? 'dark-mode' : ''}>{PeopleList}</tbody>
     </table>
   );
 }
