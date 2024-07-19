@@ -23,8 +23,8 @@ const initialState = {
   },
   userProfile: {
     infringements: [
-      { _id: '1', date: '2023-12-03', description: 'some reason' },
-      { _id: '2', date: '2023-12-10', description: 'test reason' },
+      { _id: '1', date: '2023-12-03T12:00:00.000+00:00', description: 'some reason' },
+      { _id: '2', date: '2023-12-10T12:00:00.000+00:00', description: 'test reason' },
     ],
   },
   role: mockAdminState.role,
@@ -76,8 +76,8 @@ describe('BlueSquare component', () => {
         />
       </Provider>,
     );
-    expect(screen.queryByText('Dec-02-23')).toBeInTheDocument();
-    expect(screen.queryByText('Dec-09-23')).toBeInTheDocument();
+    expect(screen.queryByText('Dec-03-23')).toBeInTheDocument();
+    expect(screen.queryByText('Dec-10-23')).toBeInTheDocument();
     expect(screen.queryByText('some reason')).toBeInTheDocument();
     expect(screen.queryByText('test reason')).toBeInTheDocument();
   });
