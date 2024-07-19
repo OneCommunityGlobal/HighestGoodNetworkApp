@@ -191,7 +191,7 @@ const Members = props => {
             handleUserProfile={handleToggle}
           />
 
-          {isLoading ? ( <Loading /> ) : (
+          {isLoading ? ( <Loading align="center" /> ) : (
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
