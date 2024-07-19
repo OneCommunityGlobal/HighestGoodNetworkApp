@@ -2,13 +2,13 @@ import React from 'react';
 import { TOTAL_TEAMS, ACTIVE_TEAMS } from '../../languages/en/ui';
 import "./TeamsOverview.css"
 
-export const TeamsOverview = ({numberOfTeams, numberOfActiveTeams}) => {
+const TeamsOverview = ({ numberOfTeams, numberOfActiveTeams }) => {
   return (
     <div className="teams__overview--top">
       <div className="card" id="card_team" data-testid="card_team">
         <div className="card-body">
           <h6 className="card-text">
-            <i className="fa fa-users" aria-hidden="true"></i> {TOTAL_TEAMS}: {props.numberOfTeams}
+            <i className="fa fa-users" aria-hidden="true"></i> {TOTAL_TEAMS}: {numberOfTeams}
           </h6>
         </div>
       </div>
@@ -16,7 +16,7 @@ export const TeamsOverview = ({numberOfTeams, numberOfActiveTeams}) => {
       <div className="card" id="card_active" data-testid="card_active">
         <div className="card-body">
           <h6 className="card-text">
-            <i className="fa fa-circle fa-circle-isActive" aria-hidden="true"></i> {ACTIVE_TEAMS}: {props.numberOfActiveTeams}
+            <i className="fa fa-circle fa-circle-isActive" aria-hidden="true"></i> {ACTIVE_TEAMS}: {numberOfActiveTeams}
           </h6>
         </div>
       </div>
