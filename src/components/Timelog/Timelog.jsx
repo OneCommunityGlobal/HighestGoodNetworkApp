@@ -318,14 +318,14 @@ const Timelog = props => {
       return <></>;
     } else if (timeLogState.activeTab === 4) {
       return (
-        <p className={"ml-1 " + (darkMode ? "text-light" : "")}>
+        <p className={`ml-1 responsive-font-size ${darkMode ? "text-light" : ""}`}>
           Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
           <b>{formatDate(timeLogState.toDate)}</b>
         </p>
       );
     } else {
       return (
-        <p className={"ml-1 " + (darkMode ? "text-light" : "")}>
+        <p className={`ml-1 responsive-font-size ${darkMode ? "text-light" : ""}`}>
           Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
           <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
         </p>
@@ -347,7 +347,7 @@ const Timelog = props => {
   const buildOptions = () => {
     const projectsObject = {};
     const options = [(
-      <option value="all" key="TimeLogDefaultProjectOrTask" >
+      <option className='responsive-font-size' value="all" key="TimeLogDefaultProjectOrTask" >
         Select Project/Task (all)
       </option>
     )];
@@ -385,21 +385,21 @@ const Timelog = props => {
     for (const [projectId, project] of Object.entries(projectsObject)) {
       const { projectName, WBSObject } = project;
       options.push(
-        <option value={projectId} key={`TimeLog_${projectId}`} >
+        <option className='responsive-font-size' value={projectId} key={`TimeLog_${projectId}`} >
           {projectName}
         </option>
       )
       for (const [wbsId, WBS] of Object.entries(WBSObject)) {
         const { wbsName, taskObject } = WBS;
         options.push(
-          <option value={wbsId} key={`TimeLog_${wbsId}`} disabled className={darkMode ? "text-white-50" : ''}>
+          <option value={wbsId} key={`TimeLog_${wbsId}`} disabled className={`${darkMode ? "text-white-50" : ''} responsive-font-size`}>
               {`\u2003WBS: ${wbsName}`}
           </option>
         )
         for (const [taskId, task] of Object.entries(taskObject)) {
           const { taskName } = task;
           options.push(
-            <option value={taskId} key={`TimeLog_${taskId}`} >
+            <option className='responsive-font-size' value={taskId} key={`TimeLog_${taskId}`} >
                 {`\u2003\u2003 ↳ ${taskName}`}
             </option>
           )
@@ -460,7 +460,7 @@ const Timelog = props => {
 
   return (
     <div className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`} 
-         style={darkMode ? (!props.isDashboard ? {paddingBottom: "300px"} : {}) : {}}>
+         style={darkMode ? (!props.isDashboard ? {padding: "0 15px 300px 15px"} : {}) : {}}>
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
@@ -472,25 +472,26 @@ const Timelog = props => {
           <br />
         </Container>
       ) : (
-      
-        <Container fluid="md" style={{textAlign: 'right'}}>
-       
-        <EditableInfoModal
-          areaName="DashboardTimelog"
-          areaTitle="Timelog"
-          fontSize={30}
-          isPermissionPage={true}
-          role={authUser.role}
-          darkMode={darkMode}
-        />
+        <Container style={{textAlign: 'right', minWidth: '100%'}}>
+          {
+            props.isDashboard ? 
+              <></> : 
+              <EditableInfoModal
+                areaName="DashboardTimelog"
+                areaTitle="Timelog"
+                fontSize={30}
+                isPermissionPage={true}
+                role={authUser.role}
+                darkMode={darkMode}
+              /> 
+          }
         </Container>
-   
       )}
 
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <Container fluid="md" className="right-padding-temp-fix">
+        <div className={`${!props.isDashboard ? "timelogPageContainer" : "ml-3 min-width-100"}`}>
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
@@ -498,13 +499,12 @@ const Timelog = props => {
               </div>
             </div>
           ) : null}
-
-          <Row>
-            <Col md={12}>
+          <Row style={{minWidth: "100%"}}>
+            <Col md={12} className='px-0 mx-0'>
               <Card className={darkMode ? 'border-0' : ''}>
                 <CardHeader className={darkMode ? 'card-header-shadow-dark bg-space-cadet text-light' : 'card-header-shadow'}>
-                  <Row>
-                    <Col md={11}>
+                  <Row style={{minWidth: "100%"}} className='px-0 mx-0'>
+                    <Col style={{minWidth: "100%"}} className='px-0 mx-0'>
                       <CardTitle tag="h4">
                       <div className="d-flex align-items-center">
                         <span className="mb-1 mr-2">Tasks and Timelogs</span>
@@ -536,15 +536,15 @@ const Timelog = props => {
                         <ProfileNavDot userId={displayUserId} style={{marginLeft: '2px', padding: '1px'}} />
                         </div>
                       </CardTitle>
-                      <CardSubtitle tag="h6" className={darkMode ? "text-azure" : "text-muted"}>
+                      <CardSubtitle tag="h6" className={`${darkMode ? "text-azure" : "text-muted"} responsive-font-size`}>
                         Viewing time entries logged in the last 3 weeks
                       </CardSubtitle>
                     </Col>
-                    <Col md={11}>
+                    <Col className='px-0'>
                       {isAuthUser ? (
-                        <div className="float-right">
+                        <div className="float-right mt-1">
                           <div>
-                            <Button color="success" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+                            <Button className='responsive-font-size' color="success" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                               {'Add Intangible Time Entry '}
                               <i
                                 className="fa fa-info-circle"
@@ -637,7 +637,7 @@ const Timelog = props => {
                   </Row>
                 </CardHeader>
                 <CardBody className={darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'}>
-                  <Nav tabs className="mb-1">
+                  <Nav tabs className="mb-1 responsive-font-size">
                     <NavItem>
                       <NavLink
                         className={classnames({ active: timeLogState.activeTab === 0 })}
@@ -711,15 +711,16 @@ const Timelog = props => {
                     </NavItem>
                   </Nav>
 
-                  <TabContent activeTab={timeLogState.activeTab} className={darkMode ? "bg-yinmn-blue" : ""}>
+                  <TabContent activeTab={timeLogState.activeTab} className={darkMode ? "bg-space-cadet" : ""}>
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
                       <Form inline className="mb-2">
-                        <FormGroup className="mr-2">
-                          <Label for="fromDate" className={"mr-2 ml-1 " + (darkMode ? "text-light" : "")}>
+                        <FormGroup className="mr-2 date-selector-form">
+                          <Label for="fromDate" className={`responsive-font-size mr-2 ml-1 ${darkMode ? "text-light" : ""}`}>
                             From
                           </Label>
                           <Input
+                            className='responsive-font-size'
                             type="date"
                             name="fromDate"
                             id="fromDate"
@@ -728,10 +729,11 @@ const Timelog = props => {
                           />
                         </FormGroup>
                         <FormGroup>
-                          <Label for="toDate" className={"mr-2 " + (darkMode ? "text-light" : "")}>
+                          <Label for="toDate" className={`responsive-font-size mr-2 ${darkMode ? "text-light" : ""}`}>
                             To
                           </Label>
                           <Input
+                            className='responsive-font-size'
                             type="date"
                             name="toDate"
                             id="toDate"
@@ -742,7 +744,7 @@ const Timelog = props => {
                         <Button
                           color="primary"
                           onClick={handleSearch}
-                          className="ml-2"
+                          className="search-time-entries-btn"
                           style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Search
@@ -752,7 +754,7 @@ const Timelog = props => {
                     {timeLogState.activeTab === 0 || timeLogState.activeTab === 5 ? (
                       <></>
                     ) : (
-                      <Form className="mb-2">
+                      <Form className="mb-2 responsive-font-size">
                         <FormGroup>
                           <Label htmlFor="projectSelected" className={"mr-1 ml-1 mb-1 align-top " + (darkMode ? "text-light" : "")}>
                             Filter Entries by Project and Task:
@@ -805,7 +807,7 @@ const Timelog = props => {
               </Card>
             </Col>
           </Row>
-        </Container>
+        </div>
       )}
     </div>
   );
