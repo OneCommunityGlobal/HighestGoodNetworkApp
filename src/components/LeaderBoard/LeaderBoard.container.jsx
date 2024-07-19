@@ -66,6 +66,9 @@ const mapStateToProps = state => {
     roles: get(state, 'role', {}).roles,
     totalTimeMouseoverText: state?.mouseoverText?.[0]?.mouseoverText,
     totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
+    userOnTimeOff: state.timeOffRequests?.onTimeOff,
+    userGoingOnTimeOff: state.timeOffRequests?.goingOnTimeOff,
+    usersOnFutureTimeOff: state.timeOffRequests?.futureTimeOff,
     allRequests: state.timeOffRequests?.requests,
   };
 };
