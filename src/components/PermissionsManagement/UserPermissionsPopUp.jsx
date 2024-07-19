@@ -1,19 +1,23 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button, Dropdown, Form, Input, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { useEffect, useState, useRef } from 'react';
+import { Button, Dropdown, Form, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { addNewRole, getAllRoles } from '../../actions/role';
 import { getAllUserProfile } from 'actions/userManagement';
-import PermissionList from './PermissionList';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
+import PermissionList from './PermissionList';
+import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import ReminderModal from './ReminderModal';
 
 const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, authUser, setReminderModal, reminderModal, modalStatus }) => {
-
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -24,7 +28,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
 
   const setToDefault = () => {
     setUserPermissions([]);
-  }
+  };
 
   useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
@@ -51,7 +55,13 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
     e.preventDefault();
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (actualUserProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     const userId = actualUserProfile?._id;
@@ -62,7 +72,7 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
 
     await axios
       .put(url, newUserInfo)
-      .then(res => {
+      .then(() => {
         const SUCCESS_MESSAGE = `
         Permission has been updated successfully. Be sure to tell them that you are changing these
         permissions and for that they need to log out and log back in for their new permissions to take
@@ -72,13 +82,12 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
         });
       })
       .catch(err => {
-        console.log(err);
         const ERROR_MESSAGE = `
         Permission updated failed. ${err}
-        `
+        `;
         toast.error(ERROR_MESSAGE, {
           autoClose: 10000,
-        })
+        });
       });
     getAllUsers();
   };
@@ -196,13 +205,14 @@ const UserPermissionsPopUp = ({ allUserProfiles, toggle, getAllUsers, roles, aut
       </Form>
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   roles: state.role.roles,
   allUserProfiles: state.allUserProfiles.userProfiles,
   permissionsUser: state.auth.permissions,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

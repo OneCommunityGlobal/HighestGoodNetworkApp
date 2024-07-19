@@ -115,13 +115,13 @@
   border-radius: 8px;
 }
 
-.role-name{
+.role-name {
   margin: 0;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   font-size: 1.2rem;
   font-weight: 500;
-  cursor: pointer; 
+  cursor: pointer;
   display: flex;
   align-items: center;
 }
@@ -131,22 +131,20 @@
   flex-grow: 1;
 }
 
-.infos{
+.infos {
   margin-left: auto;
   text-align: center;
   align-items: center;
   padding-bottom: 8px;
 }
 
-
 .role-name:hover {
   background-color: lightgrey;
 }
 
 .role-name-dark:hover {
-  background-color: #1C2541;
+  background-color: #2f4157;
 }
-
 
 .loading-message {
   font-size: 30px;

@@ -1,8 +1,8 @@
 //  Necessary permission(s) to access a route. Only one in the list is required.
 // Route : Permissions
 export const RoutePermissions = {
-  reports: 'getReports',
-  weeklySummariesReport: 'getWeeklySummaries',
+  reports: ['getReports'],
+  weeklySummariesReport: ['getWeeklySummaries'],
   userManagement: [
     'getUserProfiles',
     'postUserProfile',
@@ -39,9 +39,9 @@ export const RoutePermissions = {
     'putRole',
     'deleteRole'
   ],
-  userPermissionsManagement: 'putUserProfilePermissions',
-  inventoryProject: '',
-  inventoryProjectWbs: '',
+  userPermissionsManagement: ['putUserProfilePermissions'],
+  inventoryProject: [''],
+  inventoryProjectWbs: [''],
   workBreakdownStructure: [
     'postWbs',
     'deleteWbs',
@@ -49,6 +49,7 @@ export const RoutePermissions = {
     'updateTask',
     'deleteTask',
     'resolveTask',
-    'putReviewStatus'
+    'putReviewStatus',
+    'suggestTask'
   ]
 };

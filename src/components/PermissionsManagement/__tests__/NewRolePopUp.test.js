@@ -24,7 +24,8 @@ const middlewares = [thunk]
 const mockStore = configureStore(middlewares)
 const store = mockStore({
   auth: mockAuth,
-  role: [mockRoleNames]
+  role: [mockRoleNames],
+  theme: themeMock,
 })
 
 const renderComponent = () => {

@@ -11,9 +11,10 @@ import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { Link } from 'react-router-dom';
 
 const WBSItem = props => {
-  const {darkMode} = props;
+  const { darkMode } = props.theme;
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const canDeleteWBS = props.hasPermission('deleteWbs');
@@ -25,12 +26,12 @@ const WBSItem = props => {
 
   return (
     <React.Fragment>
-      <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <tr>
         <th scope="row">
           <div>{props.index}</div>
         </th>
         <td className="members__name">
-          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</a>
+          <Link to={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</Link>
         </td>
         {canDeleteWBS ? (
           <td className="members__assign">
@@ -55,6 +56,7 @@ const WBSItem = props => {
         confirmModal={() => confirmDelete()}
         modalMessage={props.popupEditor.currPopup.popupContent || ''}
         modalTitle="Confirm Deletion"
+        darkMode={darkMode}
       />
     </React.Fragment>
   );

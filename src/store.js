@@ -35,19 +35,28 @@ const filteredReducer = reducer => {
   let knownKeys = Object.keys(reducer(undefined, { type: '@@FILTER/INIT' }));
   return (state, action) => {
     let filteredState = state;
+
     if (knownKeys.length && state !== undefined) {
       filteredState = knownKeys.reduce(
         (current, key) => Object.assign(current, { [key]: state[key] }),
         {},
       );
     }
+
     const newState = reducer(filteredState, action);
     let nextState = state;
     if (newState !== filteredState) {
-      knownKeys = Object.keys(newState);
+      // Filter out unexpected keys from newState
+      const filteredNewState = Object.keys(newState).reduce((acc, key) => {
+        if (knownKeys.includes(key)) {
+          acc[key] = newState[key];
+        }
+        return acc;
+      }, {});
+      knownKeys = Object.keys(filteredNewState);
       nextState = {
         ...state,
-        ...newState,
+        ...filteredNewState,
       };
     }
     return nextState;

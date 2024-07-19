@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -17,8 +18,8 @@ import {
   NavItem,
   NavLink,
   Modal,
-  ModalBody,
   ModalHeader,
+  ModalBody,
   ModalFooter,
   UncontrolledDropdown,
   DropdownMenu,
@@ -37,6 +38,11 @@ import { toast } from 'react-toastify';
 import classnames from 'classnames';
 import { getUserProfile } from 'actions/userProfile';
 import { boxStyle, boxStyleDark } from 'styles';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 import { WeeklySummaryContentTooltip, MediaURLTooltip } from './WeeklySummaryTooltips';
 import SkeletonLoading from '../common/SkeletonLoading';
 import DueDateTime from './DueDateTime';
@@ -45,6 +51,20 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
+// import WriteItForMeModal from './WriteForMeModal';
+
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
+  plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+  toolbar:
+    'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+  branding: false,
+  min_height: 180,
+  max_height: 500,
+  autoresize_bottom_margin: 1,
+};
 
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
@@ -163,7 +183,6 @@ export class WeeklySummary extends Component {
       fetchError,
       loading,
     } = this.props;
-
     await getWeeklySummaries(displayUserId || currentUser.userid);
 
     const { mediaUrl, weeklySummaries, weeklySummariesCount } = summaries;
@@ -306,7 +325,7 @@ export class WeeklySummary extends Component {
     const { isNotAllowedToEdit } = this.props;
     if (isNotAllowedToEdit) {
       // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     const { moveSelect, formElements, activeTab, movePopup } = this.state;
@@ -579,10 +598,15 @@ export class WeeklySummary extends Component {
   };
 
   handleMoveSave = async event => {
-    const { isNotAllowedToEdit } = this.props;
+    const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (event) {
@@ -597,10 +621,15 @@ export class WeeklySummary extends Component {
   };
 
   handleSave = async event => {
-    const { isNotAllowedToEdit } = this.props;
+    const { isNotAllowedToEdit, displayUserEmail } = this.props;
     if (isNotAllowedToEdit) {
-      // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (displayUserEmail === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (event) {
@@ -650,6 +679,10 @@ export class WeeklySummary extends Component {
         : moment(dueDateThreeWeeksAgo).format('YYYY-MMM-DD'),
     };
 
+    const fontColor = darkMode ? 'text-light' : '';
+    const headerBg = darkMode ? 'bg-space-cadet' : '';
+    const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
+    const boxStyling = darkMode ? boxStyleDark : boxStyle;
     if (fetchError) {
       return (
         <Container>
@@ -684,23 +717,17 @@ export class WeeklySummary extends Component {
     return (
       <Container
         fluid={!!isModal}
-        className={`py-3 mb-5 ${
-          darkMode ? 'bg-space-cadet text-azure box-shadow-dark' : 'bg--white-smoke'
-        }`}
+        className={`py-3 mb-5 ${darkMode ? 'bg-space-cadet text-azure box-shadow-dark' : 'bg--white-smoke'
+          }`}
       >
         <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
         <Row>
           <Col md="9">
-            Total submitted:
-            {summariesCountShowing || formElements.weeklySummariesCount}
+            Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
           </Col>
           <Col md="3">
-            <Button
-              className="btn--dark-sea-green"
-              onClick={this.handleClose}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
+            <Button className="btn--dark-sea-green" onClick={this.handleClose} style={boxStyling}>
               Close this window
             </Button>
           </Col>
@@ -736,16 +763,16 @@ export class WeeklySummary extends Component {
                     <Col>
                       <FormGroup>
                         <Label for={summaryName} className="summary-instructions-row">
-                          <div className={darkMode ? 'text-light' : ''}>
+                          <div className={fontColor}>
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
                           {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
                             <UncontrolledDropdown>
                               <DropdownToggle
-                                className="px-5 btn--dark-sea-green"
+                                className="px-5 mr-2 btn--dark-sea-green"
                                 caret
-                                style={darkMode ? boxStyleDark : boxStyle}
+                                style={boxStyling}
                               >
                                 Move This Summary
                               </DropdownToggle>
@@ -754,7 +781,7 @@ export class WeeklySummary extends Component {
                                   disabled={activeTab === '1'}
                                   onClick={() => this.handleMoveSelect('1')}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                 >
                                   This Week
                                 </DropdownItem>
@@ -762,14 +789,14 @@ export class WeeklySummary extends Component {
                                   disabled={activeTab === '2'}
                                   onClick={() => this.handleMoveSelect('2')}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                 >
                                   Last Week
                                 </DropdownItem>
                                 <DropdownItem
                                   disabled={activeTab === '3'}
                                   onClick={() => this.handleMoveSelect('3')}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
                                 >
                                   Week Before Last
@@ -777,7 +804,7 @@ export class WeeklySummary extends Component {
                                 <DropdownItem
                                   disabled={activeTab === '4'}
                                   onClick={() => this.handleMoveSelect('4')}
-                                  className={darkMode ? 'text-light' : ''}
+                                  className={fontColor}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
                                 >
                                   Three Weeks Ago
@@ -790,20 +817,18 @@ export class WeeklySummary extends Component {
                             userId={displayUserId}
                             darkMode={darkMode}
                           />
+                          {/* <div style={{ width: '10rem' }}>
+                            <CurrentPromptModal
+                              userRole={userRole}
+                              userId={displayUserId}
+                              darkMode={darkMode}
+                            />
+                            <WriteItForMeModal pasteResponse={this.pasteResponse} />
+                          </div> */}
                         </Label>
                         <Editor
-                          init={{
-                            menubar: false,
-                            placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
-                            plugins:
-                              'advlist autolink autoresize lists link charmap table paste help wordcount',
-                            toolbar:
-                              'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-                            branding: false,
-                            min_height: 180,
-                            max_height: 500,
-                            autoresize_bottom_margin: 1,
-                          }}
+                          tinymceScriptSrc="/tinymce/tinymce.min.js"
+                          init={TINY_MCE_INIT_OPTIONS}
                           id={summaryName}
                           name={summaryName}
                           value={formElements[summaryName]}
@@ -815,10 +840,10 @@ export class WeeklySummary extends Component {
                         errors.summaryBeforeLast ||
                         errors.summaryThreeWeeksAgo ||
                         errors.wordCount) && (
-                        <Alert color="danger">
-                          The summary must contain a minimum of 50 words.
-                        </Alert>
-                      )}
+                          <Alert color="danger">
+                            The summary must contain a minimum of 50 words.
+                          </Alert>
+                        )}
                     </Col>
                   </Row>
                 </TabPane>
@@ -828,8 +853,8 @@ export class WeeklySummary extends Component {
               <Col>
                 {formElements.mediaUrl && !mediaFirstChange ? (
                   <FormGroup className="media-url">
-                    <FontAwesomeIcon icon={faExternalLinkAlt} className="mx-1 text--silver" />
-                    <Label for="mediaUrl" className="mt-1">
+                    <FontAwesomeIcon icon={faExternalLinkAlt} className=" text--silver" />
+                    <Label for="mediaUrl" className="mt-1 ml-2">
                       <a href={formElements.mediaUrl} target="_blank" rel="noopener noreferrer">
                         Your DropBox Media Files Link (Share your files here)
                       </a>
@@ -838,47 +863,24 @@ export class WeeklySummary extends Component {
                   </FormGroup>
                 ) : (
                   <Col>
-                    <Label for="mediaUrl" className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
-                      Dropbox link to your weekly media files. (required)
-                      <MediaURLTooltip />
-                    </Label>
-                    <Row form>
-                      <Col md={8}>
-                        <FormGroup>
-                          <Input
-                            type="url"
-                            name="mediaUrl"
-                            id="mediaUrl"
-                            data-testid="media-input"
-                            placeholder="Enter a link"
-                            value={formElements.mediaUrl}
-                            onChange={this.handleInputChange}
-                          />
-                        </FormGroup>
-                        <Modal isOpen={editPopup}>
-                          <ModalHeader> Warning!</ModalHeader>
-                          <ModalBody>
-                            Whoa Tiger! Are you sure you want to do that? This link needs to be
-                            added by an Admin when you were set up as a member of the team. Only
-                            Update this if you are SURE your new link is correct.
-                          </ModalBody>
-                          <ModalFooter>
-                            <Button
-                              onClick={this.handleMediaChange}
-                              style={darkMode ? boxStyleDark : boxStyle}
-                            >
-                              Confirm
-                            </Button>
-                            <Button
-                              onClick={() => this.toggleShowPopup(editPopup)}
-                              style={darkMode ? boxStyleDark : boxStyle}
-                            >
-                              Close
-                            </Button>
-                          </ModalFooter>
-                        </Modal>
-                        {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
-                      </Col>
+                    <Row>
+                      <Label for="mediaUrl" className={`mt-1 ${fontColor}`}>
+                        Dropbox link to your weekly media files. (required)
+                        <MediaURLTooltip />
+                      </Label>
+                    </Row>
+                    <Row>
+                      <FormGroup>
+                        <Input
+                          type="url"
+                          name="mediaUrl"
+                          id="mediaUrl"
+                          data-testid="media-input"
+                          placeholder="Enter a link"
+                          value={formElements.mediaUrl}
+                          onChange={this.handleInputChange}
+                        />
+                      </FormGroup>
                       {formElements.mediaUrl && !errors.mediaUrl && (
                         <Col md={4}>
                           <FormGroup className="media-url">
@@ -897,24 +899,44 @@ export class WeeklySummary extends Component {
                         </Col>
                       )}
                     </Row>
+                    <Row form>
+                      <Col md={8}>
+                        <Modal isOpen={editPopup} className={fontColor}>
+                          <ModalHeader className={headerBg}> Warning!</ModalHeader>
+                          <ModalBody className={bodyBg}>
+                            Whoa Tiger! Are you sure you want to do that? This link needs to be
+                            added by an Admin when you were set up as a member of the team. Only
+                            Update this if you are SURE your new link is correct.
+                          </ModalBody>
+                          <ModalFooter className={bodyBg}>
+                            <Button onClick={this.handleMediaChange} style={boxStyling}>
+                              Confirm
+                            </Button>
+                            <Button
+                              onClick={() => this.toggleShowPopup(editPopup)}
+                              style={boxStyling}
+                            >
+                              Close
+                            </Button>
+                          </ModalFooter>
+                        </Modal>
+                        {errors.mediaUrl && <Alert color="danger">{errors.mediaUrl}</Alert>}
+                      </Col>
+                    </Row>
                   </Col>
                 )}
 
                 <Row form>
-                  <Modal isOpen={movePopup} toggle={this.toggleMovePopup}>
-                    <ModalHeader> Warning!</ModalHeader>
-                    <ModalBody>Are you SURE you want to move the summary?</ModalBody>
-                    <ModalFooter>
-                      <Button
-                        onClick={this.handleMoveSave}
-                        style={darkMode ? boxStyleDark : boxStyle}
-                      >
+                  <Modal isOpen={movePopup} toggle={this.toggleMovePopup} className={fontColor}>
+                    <ModalHeader className={headerBg}> Warning!</ModalHeader>
+                    <ModalBody className={bodyBg}>
+                      Are you SURE you want to move the summary?
+                    </ModalBody>
+                    <ModalFooter className={bodyBg}>
+                      <Button onClick={this.handleMoveSave} style={boxStyling}>
                         Confirm and Save
                       </Button>
-                      <Button
-                        onClick={this.toggleMovePopup}
-                        style={darkMode ? boxStyleDark : boxStyle}
-                      >
+                      <Button onClick={this.toggleMovePopup} style={boxStyling}>
                         Close
                       </Button>
                     </ModalFooter>
@@ -1000,7 +1022,7 @@ export class WeeklySummary extends Component {
                         className="px-5 btn--dark-sea-green"
                         disabled={Boolean(this.validate())}
                         onClick={this.handleSave}
-                        style={darkMode ? boxStyleDark : boxStyle}
+                        style={boxStyling}
                       >
                         Save
                       </Button>

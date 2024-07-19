@@ -1,36 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import axios from "axios"
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
-import { Button, Modal, ModalBody, ModalHeader, Row, Col } from 'reactstrap';
+import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import './PermissionsManagement.css';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { ENDPOINTS } from 'utils/URL';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
-import PermissionChangeLogTable from './PermissionChangeLogTable'
+import PermissionChangeLogTable from './PermissionChangeLogTable';
 import { ENDPOINTS } from 'utils/URL';
 import { ModalContext } from 'context/ModalContext';
 import { useContext } from 'react';
 
-function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProfile, hasPermission, getInfoCollections, darkMode }) {
+function PermissionsManagement(props) {
+  const { auth, getUserRole, userProfile, darkMode } = props;
+  let { roles } = props;
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
   const [reminderModal, setReminderModal] = useState(false);
   const { modalStatus, reminderUser } = useContext(ModalContext);
 
-  const canPostRole = hasPermission('postRole');
-  const canPutRole = hasPermission('putRole');
-  const canManageUserPermissions = hasPermission('putUserProfilePermissions');
+  const canPostRole = props.hasPermission('postRole');
+  const canPutRole = props.hasPermission('putRole');
+  const canManageUserPermissions = props.hasPermission('putUserProfilePermissions');
 
   // Added permissionChangeLogs state management
-  const [changeLogs, setChangeLogs] = useState([])
+  const [changeLogs, setChangeLogs] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const history = useHistory();
@@ -38,6 +42,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
 
+  // eslint-disable-next-line
   roles = roles.filter(role => {
     if (role != null) return role;
   });
@@ -55,15 +60,15 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
 
     const getChangeLogs = async () => {
       try {
-        const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid))
-        setChangeLogs(response.data)
+        const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid));
+        setChangeLogs(response.data);
         setLoading(false);
+      } catch (error) {
+        // Removed console.error statement
       }
-      catch (error) {
-        console.error('Error fetching change logs:', error)
-      }
-    }
-    getChangeLogs()
+    };
+
+    getChangeLogs();
   }, []);
 
   const togglePopUpUserPermissions = () => {
@@ -74,6 +79,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
     }
   };
   const role = userProfile?.role;
+  // eslint-disable-next-line no-shadow
   const roleNames = roles?.map(role => role.roleName);
 
   return (
@@ -81,7 +87,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
       <div key={`${role}+permission`} className={darkMode ? "permissions-management-dark bg-yinmn-blue" : "permissions-management"}>
         <h1 className="permissions-management__title">User Roles</h1>
         <div key={`${role}_header`} className="permissions-management__header">
-          {canPutRole &&
+          {canPutRole && (
             <div key={`${role}_name`} className="role-name-container">
               {roleNames?.map(roleName => {
                 const roleNameLC = roleName.toLowerCase().replace(' ', '-');
@@ -90,6 +96,7 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                     <button
                       onClick={() => history.push(`/permissionsmanagement/${roleNameLC}`)}
                       key={roleName}
+                      type="button"
                       className={`role-btn ${darkMode ? 'text-light' : ''}`}
                     >
                       {roleName}
@@ -97,9 +104,10 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                     <div className="infos">
                       <EditableInfoModal
                         role={role}
-                        areaName={`${roleName}` + 'Info'}
-                        areaTitle={`${roleName}` + ' User Role'}
+                        areaName={`${roleName} Info`}
+                        areaTitle={`${roleName} User Role`}
                         fontSize={18}
+                        darkMode={darkMode}
                         isPermissionPage
                       />
                     </div>
@@ -107,10 +115,10 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                 );
               })}
             </div>
-          }
+          )}
           {(canPostRole || canManageUserPermissions) && (
             <div className="buttons-container">
-              {canPostRole &&
+              {canPostRole && (
                 <Button
                   className="permissions-management__button"
                   type="button"
@@ -119,8 +127,9 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Add New Role
-                </Button>}
-              {(canManageUserPermissions) &&
+                </Button>
+              )}
+              {canManageUserPermissions && (
                 <Button
                   color="primary"
                   className="permissions-management__button"
@@ -131,19 +140,29 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
                   style={darkMode ? boxStyleDark : boxStyle}
                 >
                   Manage User Permissions
-                </Button>}
+                </Button>
+              )}
             </div>
           )}
         </div>
         <div className="permissions-management--flex">
-          <Modal isOpen={isNewRolePopUpOpen} toggle={togglePopUpNewRole} id="modal-content__new-role">
+          <Modal
+            isOpen={isNewRolePopUpOpen}
+            toggle={togglePopUpNewRole}
+            id="modal-content__new-role"
+            className={darkMode ? 'dark-mode text-light' : ''}
+          >
             <ModalHeader
               toggle={togglePopUpNewRole}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
             >
               Create New Role
             </ModalHeader>
-            <ModalBody id="modal-body_new-role--padding">
+            <ModalBody
+              id="modal-body_new-role--padding"
+              className={darkMode ? 'bg-yinmn-blue' : ''}
+            >
               <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} />
             </ModalBody>
           </Modal>
@@ -151,10 +170,12 @@ function PermissionsManagement({ getAllRoles, roles, auth, getUserRole, userProf
             isOpen={isUserPermissionsOpen}
             toggle={togglePopUpUserPermissions}
             id="modal-content__new-role"
+            className={darkMode ? 'text-light dark-mode' : ''}
           >
             <ModalHeader
               toggle={togglePopUpUserPermissions}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
             >
               Manage User Permissions
             </ModalHeader>
@@ -190,4 +211,3 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(PermissionsManagement);
-
