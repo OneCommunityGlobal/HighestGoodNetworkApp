@@ -164,6 +164,7 @@ function EquipmentsTable({ equipment, project }) {
                     <td>{new Date(rec.rentalDueDate).toLocaleDateString()}</td>
 
                     <td className="materials_cell">
+                      {/* eslint-disable-next-line */}
                       <button type="button" onClick={() => handleOpenModal(rec, 'UpdatesEdit')}>
                         <BiPencil />
                       </button>
