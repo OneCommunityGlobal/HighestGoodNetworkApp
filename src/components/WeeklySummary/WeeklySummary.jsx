@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 import { Component } from 'react';
 import PropTypes from 'prop-types';
 import {
@@ -50,6 +51,7 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
+// import WriteItForMeModal from './WriteForMeModal';
 
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
@@ -715,9 +717,8 @@ export class WeeklySummary extends Component {
     return (
       <Container
         fluid={!!isModal}
-        className={`py-3 mb-5 ${
-          darkMode ? 'bg-space-cadet text-azure box-shadow-dark' : 'bg--white-smoke'
-        }`}
+        className={`py-3 mb-5 ${darkMode ? 'bg-space-cadet text-azure box-shadow-dark' : 'bg--white-smoke'
+          }`}
       >
         <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
@@ -816,6 +817,14 @@ export class WeeklySummary extends Component {
                             userId={displayUserId}
                             darkMode={darkMode}
                           />
+                          {/* <div style={{ width: '10rem' }}>
+                            <CurrentPromptModal
+                              userRole={userRole}
+                              userId={displayUserId}
+                              darkMode={darkMode}
+                            />
+                            <WriteItForMeModal pasteResponse={this.pasteResponse} />
+                          </div> */}
                         </Label>
                         <Editor
                           tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -831,10 +840,10 @@ export class WeeklySummary extends Component {
                         errors.summaryBeforeLast ||
                         errors.summaryThreeWeeksAgo ||
                         errors.wordCount) && (
-                        <Alert color="danger">
-                          The summary must contain a minimum of 50 words.
-                        </Alert>
-                      )}
+                          <Alert color="danger">
+                            The summary must contain a minimum of 50 words.
+                          </Alert>
+                        )}
                     </Col>
                   </Row>
                 </TabPane>
