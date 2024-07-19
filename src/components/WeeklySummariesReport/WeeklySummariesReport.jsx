@@ -17,6 +17,7 @@ import {
   NavLink,
   Button,
   Input,
+  Spinner,
 } from 'reactstrap';
 import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
@@ -76,6 +77,7 @@ export class WeeklySummariesReport extends Component {
       selectedBioStatus: false,
       replaceCode: '',
       replaceCodeError: false,
+      replaceCodeLoading: false,
       // weeklyRecipientAuthPass: '',
     };
   }
@@ -524,6 +526,7 @@ export class WeeklySummariesReport extends Component {
   handleAllTeamCodeReplace = async () => {
     try {
       const { replaceCode } = this.state;
+      this.setState({ replaceCodeLoading: true });
       const boolean = fullCodeRegex.test(replaceCode);
       if (boolean) {
         const userIds = this.state.selectedCodes.flatMap(item => item._ids);
@@ -532,21 +535,27 @@ export class WeeklySummariesReport extends Component {
           userIds,
           replaceCode,
         };
-        const data = await axios.patch(url, payload);
-        const userObjs = userIds.reduce((acc, curr) => {
-          acc[curr] = true;
-          return acc;
-        }, {});
-        if (data?.data?.isUpdated) {
-          this.handleTeamCodeChange('', replaceCode, userObjs);
-          this.setState({ replaceCode: '', replaceCodeError: false });
-          this.filterWeeklySummaries();
+        try {
+          const data = await axios.patch(url, payload);
+          const userObjs = userIds.reduce((acc, curr) => {
+            acc[curr] = true;
+            return acc;
+          }, {});
+          if (data?.data?.isUpdated) {
+            this.handleTeamCodeChange('', replaceCode, userObjs);
+            this.setState({ replaceCode: '', replaceCodeError: false });
+            this.filterWeeklySummaries();
+          }
+        } catch (err) {
+          this.setState({ replaceCode: '', replaceCodeError: true });
         }
       } else {
         this.setState({ replaceCodeError: true });
       }
     } catch (error) {
       this.setState({ replaceCode: '', replaceCodeError: true });
+    } finally {
+      this.setState({ replaceCodeLoading: false });
     }
   };
 
@@ -567,6 +576,7 @@ export class WeeklySummariesReport extends Component {
       auth,
       replaceCode,
       replaceCodeError,
+      replaceCodeLoading,
     } = this.state;
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -716,7 +726,7 @@ export class WeeklySummariesReport extends Component {
             </div>
           </Col>
         </Row>
-        {selectedCodes.length > 0 && (
+        {this.codeEditPermission && selectedCodes.length > 0 && (
           <Row style={{ marginBottom: '10px' }}>
             <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
               Replace With
@@ -728,13 +738,17 @@ export class WeeklySummariesReport extends Component {
                   this.setState({ replaceCode: e.target.value });
                 }}
               />
-              <Button
-                className="mr-1 mt-3 btn-bottom"
-                color="primary"
-                onClick={this.handleAllTeamCodeReplace}
-              >
-                Replace
-              </Button>
+              {replaceCodeLoading ? (
+                <Spinner className="mt-3 mr-1" color="primary" />
+              ) : (
+                <Button
+                  className="mr-1 mt-3 btn-bottom"
+                  color="primary"
+                  onClick={this.handleAllTeamCodeReplace}
+                >
+                  Replace
+                </Button>
+              )}
               {replaceCodeError && (
                 <Alert className="code-alert" color="danger">
                   NOT SAVED! The code must be between 5 and 7 characters long.
