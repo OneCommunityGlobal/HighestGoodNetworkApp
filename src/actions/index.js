@@ -240,3 +240,21 @@ export function postTimeEntry(timeEntryObj) {
     );
   };
 };
+
+export function getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate) {
+  const request = httpService.get(`${APIEndpoint}/TimeEntry/projects/${projectId}/${fromDate}/${toDate}`);
+
+  return dispatch => {
+    return new Promise((resolve, reject) => {
+      request.then(({ data }) => {
+        dispatch({
+          type: 'GET_TIME_ENTRY_By_Project_FOR_SPECIFIED_PERIOD',
+          payload: data,
+        });
+        resolve(data);
+      }).catch(error => {
+        reject(error);
+      });
+    });
+  };
+};
