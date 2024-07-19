@@ -23,7 +23,7 @@ import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 
-function ControllerRow (props) {
+function ControllerRow(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
@@ -75,7 +75,7 @@ function ControllerRow (props) {
   */
 
   return (
-    <tr className="wbsTaskController desktop-view" id={`controller_${props.taskId}`}>
+    <tr className="wbsTaskController" id={`controller_${props.taskId}`}>
       <td colSpan={props.tableColNum} className={`controlTd ${darkMode ? 'bg-space-cadet' : ''}`}>
         {props.level < 4 && canPostTask ? (
           <AddTaskModal
@@ -110,8 +110,8 @@ function ControllerRow (props) {
           load={props.load}
           setIsLoading={props.setIsLoading}
         />
-        
-          <>
+
+        <>
           {canDeleteTask && (
             <Button
               color="danger"
@@ -122,40 +122,40 @@ function ControllerRow (props) {
             >
               Remove
             </Button>
-            )}
+          )}
 
-            <Dropdown
-              direction="up"
-              isOpen={dropdownOpen}
-              toggle={toggle}
-            >
-              <DropdownToggle caret color="primary" className='controlBtn' size="sm" style={darkMode ? boxStyleDark : boxStyle}>
-                Move
-              </DropdownToggle>
-              <DropdownMenu>
-                {props.siblings.map((item, i) => {
-                  if (item.num !== props.num) {
-                    return (
-                      <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
-                        {item.num.split('.0')[0]}
-                      </DropdownItem>
-                    );
-                  }
-                })}
-              </DropdownMenu>
-            </Dropdown>
+          <Dropdown
+            direction="up"
+            isOpen={dropdownOpen}
+            toggle={toggle}
+          >
+            <DropdownToggle caret color="primary" className='controlBtn' size="sm" style={darkMode ? boxStyleDark : boxStyle}>
+              Move
+            </DropdownToggle>
+            <DropdownMenu>
+              {props.siblings.map((item, i) => {
+                if (item.num !== props.num) {
+                  return (
+                    <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
+                      {item.num.split('.0')[0]}
+                    </DropdownItem>
+                  );
+                }
+              })}
+            </DropdownMenu>
+          </Dropdown>
 
-            <Button
-              color="secondary"
-              size="sm"
-              className="controlBtn"
-              onClick={() => onCopy(props.taskId)}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              {isCopied ? 'Copied' : 'Copy'}
-            </Button>
-          </>
-        
+          <Button
+            color="secondary"
+            size="sm"
+            className="controlBtn"
+            onClick={() => onCopy(props.taskId)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {isCopied ? 'Copied' : 'Copy'}
+          </Button>
+        </>
+
         <ModalDelete
           isOpen={canDeleteTask && modalDelete}
           closeModal={() => {
