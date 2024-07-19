@@ -325,7 +325,7 @@ const TeamMemberTasks = React.memo(props => {
 
     if (usersWithTasks.length > 0) {
       usersWithTasks.forEach(user => {
-        const teamNames = user.teams.map(team => team.teamName);
+        const teamNames = user.teams?.map(team => team.teamName) ?? [];
         const code = user.teamCode || 'noCodeLabel';
         const color = user.weeklySummaryOption || 'noColorLabel';
 

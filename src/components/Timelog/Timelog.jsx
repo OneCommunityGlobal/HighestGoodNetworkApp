@@ -53,6 +53,7 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
+import PropTypes from 'prop-types';
 
 const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
   if (!Array.isArray(tasks)) return false;
@@ -102,17 +103,9 @@ const Timelog = props => {
     roles,
     displayUserProjects,
     disPlayUserTasks,
+    userId
   } = props;
 
-  function displayUserIdRoute() {
-    const path =  location.pathname
-    const id = path.split('/').pop()
-    if(id.includes("dashboard")||id.includes("users")){
-      return authUser?.userid
-    }
-    return id;
-   }
-   displayUserIdRoute();
   const initialState = {
     timeEntryFormModal: false,
     summary: false,
@@ -140,17 +133,31 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
-  const { userId = authUser.userid } = useParams();
+  const { userprofileId = authUser.userid } = useParams();
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
+  const getUserId =()=>{
+    try {
+         if(viewingUser){
+            return viewingUser.userId;
+         }
+         else if(userId!=null){
+            return userId;
+         }
+         return authUser.userid;
+    } catch (error) {
+       return null;
+    }
+}
+
   const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId :  displayUserIdRoute() || userId 
+     getUserId()
   );
-  
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
+  
   const defaultTab = () => {
     //change default to time log tab(1) in the following cases:
     const role = authUser.role;
@@ -443,7 +450,7 @@ const Timelog = props => {
   
   useEffect(() => {
 
-    setDisplayUserId( viewingUser ? viewingUser.userId : displayUserIdRoute()||userId);
+    setDisplayUserId( getUserId());
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
     window.addEventListener('storage', handleStorageEvent);
     return () => {
@@ -804,6 +811,14 @@ const Timelog = props => {
       )}
     </div>
   );
+};
+
+Timelog.prototype = {
+  userId: PropTypes.string,
+};
+
+Timelog.defaultProps = {
+  userId: null,
 };
 
 const mapStateToProps = state => ({
