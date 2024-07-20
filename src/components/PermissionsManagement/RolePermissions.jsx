@@ -1,25 +1,24 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
-import permissionLabel from './PermissionsConst';
-import PermissionList from './PermissionList';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faEdit } from '@fortawesome/free-regular-svg-icons';
 import { faExclamationTriangle } from '@fortawesome/free-solid-svg-icons';
 import { connect } from 'react-redux';
-import { updateRole, getAllRoles } from '../../actions/role';
 import { toast } from 'react-toastify';
-import { ENDPOINTS } from '../../utils/URL';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import PermissionsPresetsModal from './PermissionsPresetsModal.jsx';
 import { getPresetsByRole, createNewPreset } from 'actions/rolePermissionPresets';
+import PermissionsPresetsModal from './PermissionsPresetsModal';
+import { ENDPOINTS } from '../../utils/URL';
+import { updateRole, getAllRoles } from '../../actions/role';
+import PermissionList from './PermissionList';
+import permissionLabel from './PermissionsConst';
 import hasPermission from '../../utils/permissions';
 
 function RolePermissions(props) {
-  const darkMode = props.darkMode;
+  const { darkMode } = props;
   const [permissions, setPermissions] = useState(props.permissions);
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
@@ -59,18 +58,23 @@ function RolePermissions(props) {
   };
 
   useEffect(() => {
-    roleName !== props.role ? setDisabled(false) : setDisabled(true);
+    if (roleName !== props.role) {
+      setDisabled(false);
+    } else {
+      setDisabled(true);
+    }
   }, [roleName]);
 
   const handleSaveNewPreset = async () => {
     let count = 1;
-    while (props.presets.some(preset => preset.presetName === 'New Preset ' + count)) {
+    // eslint-disable-next-line no-loop-func
+    while (props.presets.some(preset => preset.presetName === `New Preset ${count}`)) {
       count += 1;
     }
     const newPreset = {
-      presetName: 'New Preset ' + count,
+      presetName: `New Preset ${count}`,
       roleName: props.role,
-      permissions: permissions,
+      permissions,
     };
 
     const status = await props.createNewPreset(newPreset);
@@ -85,8 +89,8 @@ function RolePermissions(props) {
     const id = props.roleId;
 
     const updatedRole = {
-      roleName: roleName,
-      permissions: permissions,
+      roleName,
+      permissions,
       roleId: id,
     };
     try {
@@ -103,12 +107,14 @@ function RolePermissions(props) {
   const deleteRole = async () => {
     try {
       const URL = ENDPOINTS.ROLES_BY_ID(props.roleId);
-      const res = await axios.delete(URL);
+      await axios.delete(URL);
       history.push('/permissionsmanagement');
     } catch (error) {
-      console.log(error.message);
+      // console.log(error.message);
     }
   };
+
+  const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
   return (
     <>
@@ -116,9 +122,7 @@ function RolePermissions(props) {
         <Alert color="warning" className="user-role-tab__alert ">
           You have unsaved changes! Please click <strong>Save</strong> button to save changes!
         </Alert>
-      ) : (
-        <></>
-      )}
+      ) : null}
       <header>
         <div className="user-role-tab__name-container">
           <div className="name-container__role-name">
@@ -140,7 +144,7 @@ function RolePermissions(props) {
                     className="btn_save"
                     color="success"
                     onClick={handleSaveNewPreset}
-                    style={darkMode ? boxStyleDark : boxStyle}
+                    style={boxStyling}
                   >
                     Create New Preset
                   </Button>
@@ -149,7 +153,7 @@ function RolePermissions(props) {
                     onClick={() => {
                       setShowPresetModal(!showPresetModal);
                     }}
-                    style={darkMode ? boxStyleDark : boxStyle}
+                    style={boxStyling}
                   >
                     Load Presets
                   </Button>
@@ -159,14 +163,14 @@ function RolePermissions(props) {
                     className="btn_save"
                     color="success"
                     onClick={() => updateInfo()}
-                    style={darkMode ? boxStyleDark : boxStyle}
+                    style={boxStyling}
                   >
                     Save
                   </Button>
                   <Button
                     color="danger"
                     onClick={toggleDeleteRoleModal}
-                    style={darkMode ? boxStyleDark : boxStyle}
+                    style={boxStyling}
                     disabled={!canDeleteRole}
                   >
                     Delete Role
@@ -189,6 +193,7 @@ function RolePermissions(props) {
                     aria-hidden="true"
                     className="fa fa-info-circle"
                     onClick={() => {
+                      // eslint-disable-next-line no-undef
                       handleModalOpen('Create New Preset');
                     }}
                   />
@@ -199,6 +204,7 @@ function RolePermissions(props) {
                     aria-hidden="true"
                     className="fa fa-info-circle"
                     onClick={() => {
+                      // eslint-disable-next-line no-undef
                       handleModalOpen('Load Presets');
                     }}
                   />

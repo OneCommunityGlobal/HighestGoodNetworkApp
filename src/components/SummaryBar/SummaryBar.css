@@ -141,7 +141,7 @@
   display: inline-block;
   padding: 5px;
   margin-bottom: 5px;
-  min-width: 60px;
+  min-width: 40px;
 }
 
 .badge-list {
@@ -179,7 +179,7 @@
 }
 
 /* Large devices (landscape phones, 544px and down) */
-@media (max-width: 992px) {
+@media (max-width: 991px) {
   .large_text_summary {
     font-size: 2rem;
   }
@@ -205,4 +205,42 @@
 .text-center{
   display: flex;
   justify-content: center;
+}
+
+.sortable-container {
+  background-color: #333;
+  padding: 1rem;
+  margin: 1rem;
+  overflow: hidden;
+}
+
+.sortable-content {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2.5%;
+}
+
+.sortable-content p {
+  outline: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.sortable-draggable {
+  padding: 1rem;
+  background-color: white;
+  border: 1px solid black;
+  cursor: grab;
+  word-break: break-word;
+  white-space: normal;
+}
+  
+.sortable-draggable-dragging {
+  opacity: .5;
+  cursor: grabbing;
+}
+
+.edit-icon {
+  cursor: pointer;
 }

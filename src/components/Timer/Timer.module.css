@@ -2,7 +2,6 @@
   position: relative;
   display: flex;
   align-items: center;
-  padding-right: 1rem;
   gap: 0.5rem;
   z-index: 30;
   user-select: none;
@@ -14,6 +13,16 @@
   flex-direction: column;
 }
 
+.disconnected {
+  font-size: 1.2rem;
+  font-weight: bold;
+  width: fit-content;
+  background-color: rgba(82, 92, 102, 1);
+  color: rgb(238, 10, 10);
+  border-radius: 0 0 0.5rem 0.5rem;
+  padding: 0.25rem 0.25rem;
+}
+
 .preview {
   font-size: 1.2rem;
   font-weight: bold;
@@ -21,7 +30,7 @@
   background-color: rgba(82, 92, 102, 1);
   color: white;
   border-radius: 0 0 0.5rem 0.5rem;
-  padding: 0.25rem 0.65rem;
+  padding: 0.25rem 0.25rem;
 }
 
 .btns {
@@ -118,5 +127,22 @@
 
   .btns button {
     padding: 1px 3px;
+  }
+}
+
+@media (max-width: 360px) {
+  .btns {
+    display: grid;
+    grid-template-columns: auto auto;
+  }
+
+  .btns button {
+    padding: 1px 1px;
+  }
+}
+
+@media (max-width: 530px) {
+  .btnDiv {
+    display: none;
   }
 }
