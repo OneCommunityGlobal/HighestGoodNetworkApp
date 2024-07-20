@@ -167,7 +167,7 @@ const Projects = function(props) {
           hasInactiveBtn: false,
         });
       }
-  }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects]);
+  }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -196,7 +196,7 @@ const Projects = function(props) {
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
         <div className="container py-3">
-          {fetching || !fetched ? <Loading /> : null}
+          {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center">
           <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
           <EditableInfoModal
