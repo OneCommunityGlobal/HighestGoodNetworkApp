@@ -198,17 +198,16 @@ const Projects = function(props) {
         <div className="container py-3">
           {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center">
-          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <EditableInfoModal
-            areaName="projectsInfoModal"
-            areaTitle="Projects"
-            fontSize={30}
-            isPermissionPage={true}
-            role={role}
-          />
-        </div>
-
-          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+            <EditableInfoModal
+              areaName="projectsInfoModal"
+              areaTitle="Projects"
+              fontSize={30}
+              isPermissionPage={true}
+              role={role}
+            />
+            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          </div>
 
           {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
 
