@@ -9,13 +9,8 @@ import { faCopy, faCalendarDay, faCheck, faClock } from '@fortawesome/free-solid
 import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
-import { formatDate } from 'utils/formatDate';
+import { formatDateLocal } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
-  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
-  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
 /**
  * The body row of the user table
  */
@@ -47,9 +42,10 @@ const UserTableData = React.memo(props => {
       || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
 
-  return (
-    <tr className={`usermanagement__tr`} id={`tr_user_${props.index}`}>
+  const isCurrentUser = props.user.email === props.authEmail;
 
+  return (
+    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
@@ -99,12 +95,8 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
-            if(cantUpdateDevAdminDetails(props.user?.email , props.authEmail)){
-              if (props.user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-                alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
-              } else {
-                alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
-              }
+            if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
+              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
             }
             onReset(true);
@@ -151,42 +143,41 @@ const UserTableData = React.memo(props => {
         )}
       </td>
       <td>
-        <button
-          type="button"
-          className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
-          onClick={e => {
-            if(cantUpdateDevAdminDetails(props.user?.email , props.authEmail)){
-              if (props.user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-                alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
-              } else {
-                alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+        {!isCurrentUser && (
+          <button
+            type="button"
+            className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
+            onClick={e => {
+              if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
+                alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+                return;
               }
-              return;
-            }
 
-            props.onFinalDayClick(
-              props.user,
-              props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
-            );
-          }}
-          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
-        >
-          {props.user.endDate ? CANCEL : SET_FINAL_DAY}
-        </button>
+              props.onFinalDayClick(
+                props.user,
+                props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
+              );
+            }}
+            style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
+          >
+            {props.user.endDate ? CANCEL : SET_FINAL_DAY}
+          </button>
+        )}
       </td>
       <td>
         {props.user.isActive === false && props.user.reactivationDate
-          ? formatDate(props.user.reactivationDate)
+          ? formatDateLocal(props.user.reactivationDate)
           : ''}
       </td>
-      <td>{props.user.startDate ? formatDate(props.user.startDate) : 'N/A'}</td>
+      
+      <td>{props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A'}</td>
       <td className="email_cell">
-        {props.user.endDate ? formatDate(props.user.endDate) : 'N/A'}
+        {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
           onClick={() => {
-            navigator.clipboard.writeText(props.user.endDate ? formatDate(props.user.endDate) : 'N/A');
+            navigator.clipboard.writeText(props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A');
             toast.success('End Date Copied!');
           }}
         />
@@ -217,6 +208,7 @@ const UserTableData = React.memo(props => {
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  authEmail: state.auth.user.email,
 });
 
 export default connect(mapStateToProps, { hasPermission })(UserTableData);

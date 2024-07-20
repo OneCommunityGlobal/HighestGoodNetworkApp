@@ -148,7 +148,7 @@ function PermissionsManagement(props) {
             <ModalHeader
               toggle={togglePopUpNewRole}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet' : ''}
+              className={darkMode ? 'bg-space-cadet text-light' : ''}
             >
               Create New Role
             </ModalHeader>

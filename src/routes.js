@@ -107,8 +107,11 @@ export default (
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
-        <ProtectedRoute path="/timelog/" exact component={Timelog} />
-        <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
+        <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
+        <ProtectedRoute path="/timelog/:userId" exact render ={(props) => {
+           const {userId} = props.match.params;
+            return <Timelog userId ={userId}/>
+        }} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
