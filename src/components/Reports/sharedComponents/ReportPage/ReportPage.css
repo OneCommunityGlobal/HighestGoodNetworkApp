@@ -7,6 +7,7 @@
   background-color: #faf7fd;
   padding: 40px 0 0 24px;
   align-items: start;
+  padding: 2vh 7vw;
 }
 
 .report-page-content {
@@ -14,6 +15,7 @@
   flex-direction: column;
   grid-row-start: 1;
   row-gap: 32px;
+  width: 100%;
   /* padding-bottom: 24px; */
 }
 
@@ -21,6 +23,13 @@
 .report-page-profile {
   padding: 24px;
   background-color: #f1ebf7;
+  border-top-left-radius: 25px;
+  border-radius: 25px;
+}
+
+.report-page-profile-dark {
+  padding: 24px;
+  background-color: #1C2541;
   border-top-left-radius: 25px;
   border-radius: 25px;
 }
@@ -46,5 +55,32 @@
   .report-page-content {
     justify-content: center;
     align-items: center;
+  }
+}
+
+
+@media (max-width: 435px) {
+
+  .report-page-content {
+    padding: 0px;
+  }
+
+  .report-page-wrapper {
+    padding: 20px;
+  }
+}
+
+.project-header{
+  font-size: 32px;
+  padding: 10px 10px;
+  text-align: center;
+  background-color:white;
+  border-radius: 20px;
+  box-shadow: 0 0 12px #eae1f6;
+}
+
+@media (max-width: 450px){
+  .project-header{
+    margin-top: 1rem;
   }
 }

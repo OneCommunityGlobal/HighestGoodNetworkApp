@@ -1,9 +1,11 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
+import { boxStyle, boxStyleDark } from 'styles';
 import AssignTableRow from './AssignTableRow';
-import { boxStyle } from 'styles';
+import { useSelector } from 'react-redux';
 
-const AssignBadgePopup = props => {
+function AssignBadgePopup(props) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [searchedName, setSearchedName] = useState('');
 
   const onSearch = text => {
@@ -11,15 +13,16 @@ const AssignBadgePopup = props => {
   };
 
   const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
+    const filteredList = allBadges.filter(badge => {
       if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
         return badge;
       }
+      return 0;
     });
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(props.allBadgeData);
+  const filteredBadges = filterBadges(props.allBadgeData);
 
   return (
     <div>
@@ -31,9 +34,9 @@ const AssignBadgePopup = props => {
           onSearch(e.target.value);
         }}
       />
-      <Table>
+      <Table className={darkMode ? 'text-light' : ''}>
         <thead>
-          <tr>
+          <tr className={darkMode ? 'bg-space-cadet' : ''}>
             <th>Badge</th>
             <th>Name</th>
             <th>
@@ -58,19 +61,24 @@ const AssignBadgePopup = props => {
         </thead>
         <tbody>
           {filteredBadges.map((value, index) => (
-            <AssignTableRow badge={value} index={index} key={index} selectedBadges={props.selectedBadges}/>
+            <AssignTableRow
+              badge={value}
+              index={index}
+              key={index}
+              selectedBadges={props.selectedBadges}
+            />
           ))}
         </tbody>
       </Table>
       <Button
         className="btn--dark-sea-green float-right"
-        style={{ ...boxStyle, margin: 5 }}
+        style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
         onClick={props.submit}
       >
         Confirm
       </Button>
     </div>
   );
-};
+}
 
 export default AssignBadgePopup;

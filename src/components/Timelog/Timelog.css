@@ -4,6 +4,21 @@
   justify-content: center;
   text-align: center;
 }
+.card-body-shadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+}
+.card-header-shadow {
+  box-shadow: 2px 2px 4px 1px lightgray;
+  margin-bottom:1px;
+}
+
+.card-body-shadow-dark {
+  box-shadow: 2px 2px 4px 1px black;
+}
+.card-header-shadow-dark {
+  box-shadow: 2px 2px 4px 1px black;
+  margin-bottom:1px;
+}
 
 .buttons {
   right: 0;
@@ -44,9 +59,53 @@
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
+.tab-pane {
+  max-height: 1025px;
+  width: 100%;
+}
+
+.search-time-entries-btn{
+  margin-left: 6px;
+  margin-top: 0px;
+}
+
+.min-width-100{
+  min-width: 100%;
+}
+
+.timelogPageContainer{
+  width: 100%;
+  padding: 0 30%;
+}
+
+@media screen and (max-width: 1400px) and (min-width: 1100px) {
+  .timelogPageContainer{
+    padding: 0 20%;
+  }
+}
+
+@media screen and (max-width: 1100px) and (min-width: 800px) {
+  .timelogPageContainer{
+    padding: 0 10%;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .timelogPageContainer{
+    padding: 0;
+    margin-left: 15px;
+  }
+}
+
+@media screen and (max-width: 575px) and (min-width: 399px) {
+  .search-time-entries-btn{
+    margin-top: 15px;
+  }
+}
+
 @media (max-width: 544px) {
   .tab-pane {
-    height: 300px;
+    max-height: 500px;
     overflow-y: scroll;
     width: 100%;
   }
@@ -54,7 +113,11 @@
   .right-padding-temp-fix {
     padding-right: 0px !important;
   }
+  .search-time-entries-btn{
+    padding: 3px 6px !important;
+  }
 }
+
 
 #projectSelected {
   max-width: 100%;
@@ -70,10 +133,67 @@
   padding-right: 0px !important;
 }
 
+.button {
+  margin-left: 10px; /* Add space between buttons */
+  padding: 5px 10px; /* Add padding to the buttons */
+  border: curved;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.edit-button {
+  background-color: blue; /* Blue for the Edit button */
+  color: white;
+}
+
+.save-button {
+  background-color: green; /* Green for the Save button */
+  color: white;
+}
+
+.cancel-button {
+  background-color: red; /* Red for the Cancel button */
+  color: white;
+}
+
+.edit-textarea {
+  min-height: 150px;
+  resize: vertical;
+}
+
 .activeUser {
   color: lawngreen;
 }
 
 .notActiveUser {
   color: #dee2e6;
+}
+
+
+.custom-text-alignment {
+  text-align: center;
+}
+
+@media (min-width: 992px) { 
+  .custom-text-alignment {
+      text-align: right;
+  }
+}
+
+.container-timelog-wrapper{
+  min-height: 100%;
+  min-width: 100%;
+}
+
+@media only screen and (max-width: 544px) {
+  .responsive-font-size{
+    font-size: 0.75rem !important;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  .date-selector-form{
+    margin-left: 5px;
+  }
 }

@@ -1,3 +1,25 @@
+.leaderboard {
+  font-size: 1rem;
+} /*1rem = 16px*/
+
+.my-custom-scrollbar {
+  max-height: 1000px;
+  overflow-y: scroll;
+  margin-bottom: 1rem;
+}
+
+.table-wrapper-scroll-y {
+  display: relative;
+}
+
+.leaderboard thead th {
+  top: 0;
+  border-top: 10px solid #dee2e6;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: rgb(222, 226, 230);
+}
+
 /* Small devices (landscape phones, 544px and up) */
 @media (max-width: 544px) {
   .leaderboard {
@@ -14,31 +36,49 @@
     display: relative;
   }
 
-  thead th {
-    position: sticky;
+  .leaderboard thead th {
     top: 0;
-    background-color: aliceblue;
-    border-top: 1px solid #dee2e6;
+    border-top: 10px solid #dee2e6;
     border-top-width: 1px;
     border-top-style: solid;
     border-top-color: rgb(222, 226, 230);
   }
 }
+.row {
+  width: 97%;
+}
 
-.boldClass {
-  color: #007bff;
-  font-weight: bold;
+.table-fixed tbody td {
+  white-space: normal; /* Allow text wrapping within cells */
+}
+.table-fixed {
+  font-size: 0.93rem;
 }
 
 .animation {
   animation: l-animation 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
 }
-
 @keyframes l-animation {
   0% {
     transform: rotate(0deg);
   }
   100% {
     transform: rotate(360deg);
+  }
+}
+
+.leaderboard-totals-title {
+  color: #007bff;
+  font-weight: bold;
+}
+
+.leaderboard-totals-container {
+  display: flex;
+  flex-direction: column;
+}
+
+@media screen and (max-width: 544px) {
+  .responsive-font-size {
+    font-size: 0.75rem !important;
   }
 }
