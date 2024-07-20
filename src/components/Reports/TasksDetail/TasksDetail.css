@@ -1,22 +1,63 @@
-.tasks-detail-grid{
+.scrollable-container {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 10px; /* Add padding for better visualization */
+}
+
+.tasks-detail-grid {
   display: grid;
   grid-auto-flow: column;
-  grid-template-columns: 2fr 1fr 2fr repeat(9, 2fr);
+  grid-template-columns: 0.5fr 2fr 1fr 1.2fr 2fr 1fr 1fr 1fr 1fr 1.5fr 1fr 1.2fr 1.2fr; /* Adjust column widths */
   column-gap: 10px;
-  min-height: 42px;
   align-items: center;
   text-align: left;
-  border-bottom: 3px solid #f8f7f8;
+  min-width: 1000px; /* Ensure it has a minimum width */
+}
+
+.tasks-detail-grid > div {
+  padding: 8px;
+}
+
+@media (max-width: 769px) {
+  .tasks-detail-grid {
+    grid-template-columns: repeat(3, 1fr); /* Adjust columns for small screens */
+    grid-auto-flow: row; /* Change to row flow for small screens */
+  }
+
+  .tasks-detail-grid > div {
+    border-bottom: 1px solid #ddd;
+    padding: 8px;
+  }
+
+  .tasks-detail-table-head,
+  .tasks-detail-table-row {
+    display: flex;
+    flex-direction: column;
+  }
 }
 
 .tasks-detail-table-head {
   background-color: #eee7f8;
   border-radius: 4px;
-  padding: 0 16px;
+  padding: 8px 16px;
+  border-bottom: 2px solid #ddd;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 0.5fr 2fr 1fr 1.2fr 2fr 1fr 1fr 1fr 1fr 1.5fr 1fr 1.2fr 1.2fr; /* Adjust column widths */
+  column-gap: 10px;
+  align-items: center;
+  text-align: left;
 }
 
-.tasks-detail-table-row{
+.tasks-detail-table-row {
   padding: 8px 16px;
+  border-bottom: 1px solid #ddd;
+  display: grid;
+  grid-auto-flow: column;
+  grid-template-columns: 0.5fr 2fr 1fr 1.2fr 2fr 1fr 1fr 1fr 1fr 1.5fr 1fr 1.2fr 1.2fr; /* Adjust column widths */
+  column-gap: 10px;
+  align-items: center;
+  text-align: left;
 }
 
 .tasks-detail-center-cells {
@@ -32,4 +73,22 @@
   margin-bottom: 12px;
   font-size: 18px;
   color: #acacac;
+}
+.dark-mode-row {
+  background-color:  #162e4c;
+  color: #fff;
+}
+
+.dark-mode .tasks-detail-table-head > div {
+  border-bottom: none; /* Remove bottom border in header */
+  border-top: none; /* Remove top border in header */
+}
+
+.dark-mode .tasks-detail-table-row {
+  border-bottom: none; /* Remove bottom border in rows */
+}
+
+.dark-mode .tasks-detail-grid > div {
+  border-bottom: none; /* Remove bottom border in grid cells */
+  border-top: none; /* Remove top border in grid cells */
 }

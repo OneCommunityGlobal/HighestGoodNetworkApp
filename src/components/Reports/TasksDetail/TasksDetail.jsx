@@ -29,8 +29,7 @@ const ShowCollapse = props => {
 export const TasksDetail = props => {
   const darkMode = props.darkMode;
   let tasksList = [];
-  let tasks = [];
-  tasks = props.tasks_filter;
+  let tasks = props.tasks_filter;
 
   if (props.tasks_filter.length > 0) {
     tasks = ['priority', 'status', 'classification', 'isActive', 'isAssigned'].reduce(
@@ -45,7 +44,7 @@ export const TasksDetail = props => {
     if (props.users) {
       let test = [];
       for (var i = 0; i < tasks.length; i++) {
-        for (var j = 0; j < tasks[i].resources.length; j++) {
+        for (var j = 0; i < tasks[i].resources.length; j++) {
           if (tasks[i].resources[j].name === props.users) {
             test.push(tasks[i]);
           }
@@ -56,7 +55,7 @@ export const TasksDetail = props => {
   }
 
   tasksList = tasks.map((task, index) => (
-    <div key={task._id} className="tasks-detail-grid tasks-detail-table-row">
+    <div key={task._id} className={`tasks-detail-grid tasks-detail-table-row ${darkMode ? 'dark-mode-row' : ''}`}>
       <div>
         <EditTaskModal
           key={`updateTask_${task._id}`}
@@ -96,21 +95,20 @@ export const TasksDetail = props => {
         )}
       </div>
 
-      <div className='tasks-detail-center-cells'>
+      <div className="tasks-detail-center-cells">
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
       </div>
-      <div className='tasks-detail-center-cells'>{task.classification}</div>
-      <div className='tasks-detail-center-cells'>{task.estimatedHours.toFixed(2)}</div>
+      <div className="tasks-detail-center-cells">{task.classification}</div>
+      <div className="tasks-detail-center-cells">{task.estimatedHours.toFixed(2)}</div>
       <div>{task.startedDatetime ? task.startedDatetime : ''}</div>
       <div>{task.dueDatetime ? task.dueDatetime : ''}</div>
     </div>
   ));
 
   return (
-    <div>
+    <div className={`scrollable-container ${darkMode ? 'dark-mode' : ''}`}>
       <div className="tasks-detail-total">Total: {tasksList.length}</div>
-      <div className={`tasks-detail-grid tasks-detail-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>   
-        <div></div>     
+      <div className={`tasks-detail-grid tasks-detail-table-head ${darkMode ? 'dark-mode-row' : ''}`}>
         <div className="tasks-detail-center-cells">#</div>
         <div>Task</div>
         <div>Priority</div>
@@ -119,7 +117,7 @@ export const TasksDetail = props => {
         <div className="tasks-detail-center-cells">Active</div>
         <div className="tasks-detail-center-cells">Assign</div>
         <div className="tasks-detail-center-cells">Class</div>
-        <div className="tasks-detail-center-cells" >Estimated Hours</div>
+        <div className="tasks-detail-center-cells">Estimated Hours</div>
         <div>Start Date</div>
         <div>End Date</div>
       </div>
