@@ -149,7 +149,7 @@ const UserTableData = React.memo(props => {
         )}
       </td>
       <td>
-        {!isCurrentUser && (
+        {(!isCurrentUser || hasFullFunctionality) && (
           <button
             type="button"
             className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
