@@ -1,19 +1,24 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
-import { addNewRole, getAllRoles } from '../../actions/role';
+import { getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
-import PermissionsManagement from './PermissionsManagement';
 
-function CreateNewRolePopup({ toggle, roleNames, darkMode, addNewRole, getAllRoles }) {
+function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
   const [isNotDuplicateRole, setIsNotDuplicateRole] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
   const noSymbolsRegex = /^([a-zA-Z0-9 ]+)$/;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    dispatch(getAllRoles());
+  }, [dispatch]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -31,24 +36,23 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addNewRole, getAllRol
         roleName: newRoleName,
         permissions: permissionsChecked,
       };
-      const result = await addNewRole(newRoleObject); //await addNewRole(newRoleObject);
-      console.log(result);
-      if(result){
+      const response = await addRole(newRoleObject);
+      if (response?.status === 201) {
         toast.success('Role created successfully');
-        getAllRoles(); // Refresh the roles after adding a new role
-      }else{
-        toast.error('Error while creating role');
+        dispatch(getAllRoles());
+      } else {
+        toast.error(`Error: ${response?.status || 'Unknown error'}`);
       }
-      
       toggle();
     }
   };
 
   const checkIfDuplicate = value => {
     let duplicateFound = false;
+    const trimmedValue = value.trim();
 
     roleNames.forEach(val => {
-      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
+      if (val.localeCompare(trimmedValue, 'en', { sensitivity: 'base' }) === 0) {
         duplicateFound = true;
         return true;
       }
@@ -119,11 +123,11 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addNewRole, getAllRol
   );
 }
 
-const mapStateToProps = state => ({ roleNames: state.role.roles.map(role => role.roleName), darkMode: state.theme.darkMode });
+const mapStateToProps = state => ({ roles: state.role.roles, darkMode: state.theme.darkMode });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
-  addNewRole: newRole => dispatch(addNewRole(newRole)),
+  // addNewRole: newRole => dispatch(addNewRole(newRole)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(CreateNewRolePopup);
