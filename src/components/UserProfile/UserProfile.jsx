@@ -76,6 +76,7 @@ function UserProfile(props) {
   };
   const roles = props?.role.roles;
   const dispatch = useDispatch();
+  const currentUser = useSelector((state) => state.auth.user);
 
   /* Hooks */
   const [showLoading, setShowLoading] = useState(true);
@@ -298,8 +299,10 @@ function UserProfile(props) {
     try {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const currentUserEmail = response.data.email;
-      dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail }));
-    } catch (err) {
+      const currentUserFirstName = response.data.firstName;
+      const currentUserLastName = response.data.lastName;
+      dispatch(setCurrentUser({...props.auth.user, email: currentUserEmail, firstName: currentUserFirstName, lastName: currentUserLastName}));
+    }catch(err) {
       toast.error('Error while getting current logged in user email');
     }
   };
@@ -503,6 +506,8 @@ function UserProfile(props) {
           .tz('America/Los_Angeles')
           .toISOString()
           .split('T')[0],
+        manuallyAssigned: true,
+        manuallyAssignedBy: currentUser.firstName+" "+currentUser.lastName
       };
       setOriginalUserProfile({
         ...originalUserProfile,
@@ -515,13 +520,18 @@ function UserProfile(props) {
       setModalTitle('Blue Square');
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
-      if (dateStamp != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
+      if (currentBlueSquares.length !== 0) {
+        const blueSquare = currentBlueSquares.find(blueSquare => blueSquare._id === id);
+        if (blueSquare) {
+          if (dateStamp != null) {
+            blueSquare.date = dateStamp;
+          }
+          if (summary != null) {
+            blueSquare.description = summary;
+          }
+          blueSquare.editedBy = `${currentUser.firstName} ${currentUser.lastName}`;
+        }
       }
-      if (summary != null && currentBlueSquares.length !== 0) {
-        currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
-      }
-
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
     } else if (operation === 'delete') {
