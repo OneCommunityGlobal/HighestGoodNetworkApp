@@ -90,6 +90,11 @@
   }
 }
 
+@media (max-width: 760px) {
+  .nav-item {
+    margin-inline: 5px;
+  }
+}
 @media screen and (min-width: 1400px) and (max-width: 1700px) {
   .owner-message {
     display: none;
