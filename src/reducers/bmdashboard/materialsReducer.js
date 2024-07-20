@@ -2,7 +2,7 @@ import {
   SET_MATERIALS, POST_UPDATE_MATERIAL_START_BULK, POST_UPDATE_MATERIAL_END_BULK,
   RESET_UPDATE_MATERIAL_BULK, POST_UPDATE_MATERIAL_ERROR_BULK, POST_UPDATE_MATERIAL_START, POST_UPDATE_MATERIAL_END,
   RESET_UPDATE_MATERIAL, POST_UPDATE_MATERIAL_ERROR
-} from "../../constants/bmdashboard/materialsConstants"
+} from "constants/bmdashboard/materialsConstants"
 
 const defaultState = {
   materialslist: [],

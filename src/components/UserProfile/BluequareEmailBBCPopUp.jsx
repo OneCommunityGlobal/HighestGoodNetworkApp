@@ -20,6 +20,7 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons';
 import { boxStyle, boxStyleDark } from 'styles';
 
 const BluequareEmailAssignmentPopUp = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
   const [searchWord, setSearchWord] = useState('');
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -67,9 +68,9 @@ const BluequareEmailAssignmentPopUp = React.memo(props => {
   },[])
 
   return (
-    <Modal isOpen={props.isOpen} toggle={closePopup} size='lg'>
-      <ModalHeader toggle={closePopup}>Set blue square email recipients</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={props.isOpen} toggle={closePopup} size='lg' className={darkMode ? 'dark-mode text-light' : ''}>
+      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Set blue square email recipients</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Container>
         <InputGroup>
           <Input
@@ -112,7 +113,7 @@ const BluequareEmailAssignmentPopUp = React.memo(props => {
           </Dropdown>
         )}
         
-        <table className="table table-bordered table-responsive-lg mt-3">
+        <table className={`table table-bordered table-responsive-lg mt-3 ${darkMode ? 'text-light' : ''}`}>
           <thead>
             <tr>
               <th>Status</th>
@@ -153,11 +154,11 @@ const BluequareEmailAssignmentPopUp = React.memo(props => {
         </table>
         </Container>
       </ModalBody>
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button
           color="secondary"
           onClick={closePopup}
-          style={props.darkMode ? boxStyleDark : boxStyle}
+          style={darkMode ? boxStyleDark : boxStyle}
         >
           Close
         </Button>

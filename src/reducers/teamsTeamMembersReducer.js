@@ -37,6 +37,11 @@ export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
         fetched: true,
         status: '200',
       });
+    case types.FETCH_TEAM_USERS_START:
+      return updateObject(teamMembers, {
+        fetching: true,
+        fetched: false,
+      });
 
     default:
       return teamMembers;

@@ -1,6 +1,8 @@
 import { createStore, applyMiddleware, compose, combineReducers } from 'redux';
 import { persistStore, persistReducer } from 'redux-persist';
 import storage from 'redux-persist/lib/storage'; // defaults to localStorage for web
+import storageSession from 'redux-persist/lib/storage/session';
+import concatenateReducers from 'redux-concatenate-reducers';
 
 import thunk from 'redux-thunk';
 import { localReducers, sessionReducers } from './reducers';
@@ -11,27 +13,67 @@ const devTools = window.__REDUX_DEVTOOLS_EXTENSION__
   ? window.__REDUX_DEVTOOLS_EXTENSION__()
   : f => f;
 
-export const rootReducers = combineReducers({
-  ...localReducers,
-  ...sessionReducers,
-});
-
-const persistConfig = {
-  key: 'root',
-  storage,
-  blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)],
-};
-
-const localPersistReducer = persistReducer(persistConfig, rootReducers);
-
-const store = createStore(
-  localPersistReducer,
-  initialState,
-  compose(applyMiddleware(...middleware), devTools),
+const localPersistReducer = persistReducer(
+  {
+    key: 'root',
+    storage,
+    blacklist: ['auth', 'errors', ...Object.keys(sessionReducers)],
+  },
+  combineReducers(localReducers),
 );
 
-const persistor = persistStore(store);
+const sessionPersistReducer = persistReducer(
+  {
+    key: 'root',
+    storage: storageSession,
+    blacklist: [...Object.keys(localReducers)],
+  },
+  combineReducers(sessionReducers),
+);
+
+const filteredReducer = reducer => {
+  let knownKeys = Object.keys(reducer(undefined, { type: '@@FILTER/INIT' }));
+  return (state, action) => {
+    let filteredState = state;
+
+    if (knownKeys.length && state !== undefined) {
+      filteredState = knownKeys.reduce(
+        (current, key) => Object.assign(current, { [key]: state[key] }),
+        {},
+      );
+    }
+
+    const newState = reducer(filteredState, action);
+    let nextState = state;
+    if (newState !== filteredState) {
+      // Filter out unexpected keys from newState
+      const filteredNewState = Object.keys(newState).reduce((acc, key) => {
+        if (knownKeys.includes(key)) {
+          acc[key] = newState[key];
+        }
+        return acc;
+      }, {});
+      knownKeys = Object.keys(filteredNewState);
+      nextState = {
+        ...state,
+        ...filteredNewState,
+      };
+    }
+    return nextState;
+  };
+};
+
+export const rootReducers = concatenateReducers([
+  filteredReducer(sessionPersistReducer),
+  filteredReducer(localPersistReducer),
+]);
 
 export default () => {
+  const store = createStore(
+    rootReducers,
+    initialState,
+    compose(applyMiddleware(...middleware), devTools),
+  );
+  const persistor = persistStore(store);
   return { store, persistor };
-}
+};

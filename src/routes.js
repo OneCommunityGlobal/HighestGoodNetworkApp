@@ -60,6 +60,11 @@ const ProjectDetails = lazy(() =>
 const UpdateMaterialsBulk = lazy(() =>
   import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
 );
+
+const UpdateReusablesBulk = lazy(() =>
+  import('./components/BMDashboard/UpdateReusables/UpdateReusablesBulk/UpdateReusablesBulk'),
+);
+
 const PurchaseConsumable = lazy(() => import('./components/BMDashboard/ConsumablePurchaseRequest'));
 const InventoryTypesList = lazy(() => import('./components/BMDashboard/InventoryTypesList'));
 const PurchaseTools = lazy(() => import('./components/BMDashboard/ToolPurchaseRequest'));
@@ -103,8 +108,11 @@ export default (
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
-        <ProtectedRoute path="/timelog/" exact component={Timelog} />
-        <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
+        <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
+        <ProtectedRoute path="/timelog/:userId" exact render ={(props) => {
+           const {userId} = props.match.params;
+            return <Timelog userId ={userId}/>
+        }} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
@@ -283,6 +291,11 @@ export default (
           fallback
           component={UpdateMaterialsBulk}
         />
+        <BMProtectedRoute
+          path="/bmdashboard/reusables/update"
+          fallback
+          component={UpdateReusablesBulk}
+        />
         <BMProtectedRoute path="/bmdashboard/materials/add" fallback component={AddMaterial} />
         <BMProtectedRoute path="/bmdashboard/equipment/add" component={AddEquipmentType} />
         <BMProtectedRoute
@@ -337,8 +350,6 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
-
-
       </Switch>
     </>
   </Switch>

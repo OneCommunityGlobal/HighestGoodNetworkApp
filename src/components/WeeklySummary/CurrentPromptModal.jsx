@@ -5,6 +5,7 @@ import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
+import './WeeklySummary.css';
 import {
   updateDashboardData,
   updateCopiedPromptDate,
@@ -125,9 +126,14 @@ function CurrentPromptModal(props) {
   return (
     <div>
       {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
-        <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-          View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} /> AI
-          Prompt
+        <Button
+          className="p-1 mb-1 responsive-font-size"
+          color="info"
+          onClick={toggle}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          View and Copy <img src={iconNew} alt="new" style={{ width: '1.5em', height: '1.5em' }} />{' '}
+          AI Prompt
           <i
             className="fa fa-info-circle"
             data-tip
@@ -139,7 +145,12 @@ function CurrentPromptModal(props) {
           />
         </Button>
       ) : (
-        <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+        <Button
+          className="p-1 mb-1 responsive-font-size"
+          color="info"
+          onClick={toggle}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
           View and Copy Current AI Prompt
           <i
             className="fa fa-info-circle"

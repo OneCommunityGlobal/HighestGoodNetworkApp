@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
+import { getWeeklySummaries } from 'actions/weeklySummaries';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
@@ -28,7 +29,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   VOLUNTEER_SUMMARY_REPORT,
-  TOTAL_ORG_SUMMARY
+  TOTAL_ORG_SUMMARY,
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -74,52 +75,69 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+
+  const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
+  const canInteractWithViewingUser = useMemo(
+    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
+    [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
+  );
+
   // Reports
-  const canGetReports = props.hasPermission('getReports');
-  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
+  const canGetReports = props.hasPermission(
+    'getReports',
+    !isAuthUser && canInteractWithViewingUser,
+  );
+  const canGetWeeklySummaries = props.hasPermission(
+    'getWeeklySummaries',
+    !isAuthUser && canInteractWithViewingUser,
+  );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
-  // const canGetWeeklyVolunteerSummary = props.hasPermission('weeklyVolunteerSummary');
   // Users
   const canAccessUserManagement =
-    props.hasPermission('postUserProfile') ||
-    props.hasPermission('deleteUserProfile') ||
-    props.hasPermission('changeUserStatus') ||
-    props.hasPermission('getUserProfiles');
+    props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
 
   // Badges
   const canAccessBadgeManagement =
-    props.hasPermission('seeBadges') ||
-    props.hasPermission('createBadges') ||
-    props.hasPermission('updateBadges') ||
-    props.hasPermission('deleteBadges');
+    props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
   // Projects
   const canAccessProjects =
-    props.hasPermission('postProject') ||
-    props.hasPermission('deleteProject') ||
-    props.hasPermission('putProject') ||
-    props.hasPermission('getProjectMembers') ||
-    props.hasPermission('assignProjectToUsers') ||
-    props.hasPermission('postWbs') ||
-    props.hasPermission('deleteWbs') ||
-    props.hasPermission('postTask') ||
-    props.hasPermission('updateTask') ||
-    props.hasPermission('deleteTask');
+    props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask');
+  const canUpdateTask = props.hasPermission(
+    'updateTask',
+    !isAuthUser && canInteractWithViewingUser,
+  );
   // Teams
   const canAccessTeams =
-    props.hasPermission('postTeam') ||
-    props.hasPermission('putTeam') ||
-    props.hasPermission('deleteTeam') ||
-    props.hasPermission('assignTeamToUsers');
+    props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
   // Popups
-  const canAccessPopups = props.hasPermission('createPopup') || props.hasPermission('updatePopup');
+  const canAccessPopups =
+    props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
   // Permissions
   const canAccessPermissionsManagement =
-    props.hasPermission('postRole') ||
-    props.hasPermission('putRole') ||
-    props.hasPermission('deleteRole') ||
-    props.hasPermission('putUserProfilePermissions');
+    props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -199,6 +217,7 @@ export function Header(props) {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
+    props.getWeeklySummaries(user.userid);
   };
 
   const closeModal = () => {
@@ -272,6 +291,8 @@ export function Header(props) {
     }
   }, [lastDismissed, userId, userDashboardProfile]);
 
+  const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
+
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
@@ -295,7 +316,6 @@ export function Header(props) {
                 className="d-flex justify-content-center align-items-center"
                 style={{ width: '100%' }}
               >
-                <DarkModeButton />
                 {canUpdateTask && (
                   <NavItem>
                     <NavLink tag={Link} to="/taskeditsuggestions">
@@ -322,14 +342,14 @@ export function Header(props) {
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu>
+                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
                       {canGetReports && (
-                        <DropdownItem tag={Link} to="/reports">
+                        <DropdownItem tag={Link} to="/reports" className={`${fontColor}`}>
                           {REPORTS}
                         </DropdownItem>
                       )}
                       {canGetWeeklySummaries && (
-                        <DropdownItem tag={Link} to="/weeklysummariesreport">
+                        <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor}>
                           {WEEKLY_SUMMARIES_REPORT}
                         </DropdownItem>
                       )}
@@ -338,7 +358,7 @@ export function Header(props) {
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
-                      <DropdownItem tag={Link} to="/teamlocations">
+                      <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>
                     </DropdownMenu>
@@ -370,40 +390,44 @@ export function Header(props) {
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
-                    <DropdownMenu>
+                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
                       {canAccessUserManagement ? (
-                        <DropdownItem tag={Link} to="/usermanagement">
+                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
                           {USER_MANAGEMENT}
                         </DropdownItem>
                       ) : (
                         <React.Fragment></React.Fragment>
                       )}
                       {canAccessBadgeManagement ? (
-                        <DropdownItem tag={Link} to="/badgemanagement">
+                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
                       ) : (
                         <React.Fragment></React.Fragment>
                       )}
                       {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects">
+                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
                           {PROJECTS}
                         </DropdownItem>
                       )}
                       {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams">
+                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
                           {TEAMS}
                         </DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (
-                        <DropdownItem tag={Link} to="/announcements">
+                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
                           {SEND_EMAILS}
                         </DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (
                         <>
                           <DropdownItem divider />
-                          <DropdownItem tag={Link} to="/permissionsmanagement">
+                          <DropdownItem
+                            tag={Link}
+                            to="/permissionsmanagement"
+                            className={fontColor}
+                          >
                             {PERMISSIONS_MANAGEMENT}
                           </DropdownItem>
                         </>
@@ -427,22 +451,37 @@ export function Header(props) {
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu>
-                    <DropdownItem header>Hello {firstName}</DropdownItem>
+                  <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <DropdownItem header className={darkMode ? 'text-custom-grey' : ''}>
+                      Hello {firstName}
+                    </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`}>
+                    <DropdownItem
+                      tag={Link}
+                      to={`/userprofile/${displayUserId}`}
+                      className={fontColor}
+                    >
                       {VIEW_PROFILE}
                     </DropdownItem>
                     {!cantUpdateDevAdminDetails(
                       props.userProfile.email,
                       props.userProfile.email,
                     ) && (
-                      <DropdownItem tag={Link} to={`/updatepassword/${displayUserId}`}>
+                      <DropdownItem
+                        tag={Link}
+                        to={`/updatepassword/${displayUserId}`}
+                        className={fontColor}
+                      >
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
+                    <DropdownItem>
+                      <DarkModeButton />
+                    </DropdownItem>
                     <DropdownItem divider />
-                    <DropdownItem onClick={openModal}>{LOGOUT}</DropdownItem>
+                    <DropdownItem onClick={openModal} className={fontColor}>
+                      {LOGOUT}
+                    </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
               </div>
@@ -503,4 +542,5 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
+  getWeeklySummaries,
 })(Header);

@@ -36,7 +36,7 @@ function AssignBadgePopup(props) {
       />
       <Table className={darkMode ? 'text-light' : ''}>
         <thead>
-          <tr>
+          <tr className={darkMode ? 'bg-space-cadet' : ''}>
             <th>Badge</th>
             <th>Name</th>
             <th>

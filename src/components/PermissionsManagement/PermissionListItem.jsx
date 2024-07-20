@@ -91,19 +91,20 @@ function PermissionListItem(props) {
   let color;
   if (isCategory) {
     if (howManySubpermsInRole === 'All') {
-      color = 'green';
+      color = darkMode ? 'lightgreen' : 'green';
     } else if (howManySubpermsInRole === 'Some') {
       color = darkMode ? 'white' : 'black';
     } else {
-      color = 'red';
+      color = darkMode ? '#f94144' : 'red';
     }
+  } else if (darkMode) {
+    color = hasThisPermission ? 'lightgreen' : '#f94144';
   } else {
     color = hasThisPermission ? 'green' : 'red';
   }
 
   const fontSize = isCategory ? '20px' : undefined;
   const textIndent = `${50 * depth}px`;
-  const textShadow = darkMode ? '0.5px 0.5px 2px black' : '';
 
   const getColor = () => {
     if (howManySubpermsInRole === 'All') {
@@ -123,7 +124,6 @@ function PermissionListItem(props) {
             color,
             fontSize,
             textIndent,
-            textShadow,
           }}
         >
           {label}
@@ -139,6 +139,7 @@ function PermissionListItem(props) {
               onClick={() => {
                 handleModalOpen(description);
               }}
+              style={{ color: darkMode ? 'white' : 'black' }}
             />
           </div>
           {/* eslint-disable-next-line no-nested-ternary */}
@@ -203,9 +204,11 @@ function PermissionListItem(props) {
         id="#modal2-body_new-role--padding"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
-        <ModalBody>{modalContent}</ModalBody>
-        <ModalFooter>
+        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Permission Info
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalContent}</ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
             {' '}
             Ok{' '}

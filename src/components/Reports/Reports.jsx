@@ -28,7 +28,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
-
+  
   constructor(props) {
     super(props);
     this.state = {
@@ -365,7 +365,7 @@ class ReportsPage extends Component {
       showAddTeamHistory: !prevState.showAddTeamHistory,
     }));
   }
-
+  
 
   render() {
     const darkMode = this.props.state.theme.darkMode;
@@ -472,8 +472,8 @@ class ReportsPage extends Component {
                 {this.state.teamSearchData?.length}
               </button> */}
             </div>
-            <div
-              className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'}`}
+            <div 
+              className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue text-light' : 'bg-white'}`} 
               style={darkMode ? boxStyleDark : boxStyle}>
               <div>
                 <a>Select a Filter</a>
@@ -651,7 +651,7 @@ class ReportsPage extends Component {
               )}
             </div>
             {myRole === 'Owner' && (
-              <div
+              <div 
                 className={`mt-4 p-3 rounded-lg ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
                 style={darkMode ? boxStyleDark : boxStyle}
               >
@@ -757,7 +757,7 @@ class ReportsPage extends Component {
               darkMode={darkMode}
             />
           )}
-          {(this.state.showAddTimeForm && myRole === 'Owner') &&
+          {(this.state.showAddTimeForm && myRole === 'Owner') && 
             <AddLostTime
               isOpen = {this.state.showAddTimeForm}
               toggle = {this.setAddTime}

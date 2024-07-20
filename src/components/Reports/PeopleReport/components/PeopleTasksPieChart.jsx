@@ -57,7 +57,7 @@ export const PeopleTasksPieChart = ({darkMode}) => {
             darkMode={darkMode}
           />}
           {showViewAllTasksButton && (
-         <div>               
+         <div>
            {showAllTasks &&   <PieChart
                 pieChartId={'allTasksPieChart'}
                 data={tasksWithLoggedHoursById}

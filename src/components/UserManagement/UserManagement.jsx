@@ -101,7 +101,7 @@ class UserManagement extends React.PureComponent {
               darkMode={darkMode}
             />
             <div className="table-responsive" id="user-management-table">
-              <Table className={`table table-bordered noWrap ${darkMode ? 'text-light' : ''}`}>
+              <Table className={`table table-bordered noWrap ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
                 <thead>
                   <UserTableHeader
                     authRole={this.props.state.auth.user.role}
@@ -120,7 +120,7 @@ class UserManagement extends React.PureComponent {
                     darkMode={darkMode}
                   />
                 </thead>
-                <tbody>{userTable}</tbody>
+                <tbody className={darkMode ? 'dark-mode' : ''}>{userTable}</tbody>
               </Table>
             </div>
             <UserTableFooter
@@ -499,7 +499,7 @@ class UserManagement extends React.PureComponent {
    */
   onFirstNameSearch = searchText => {
     this.setState({
-      firstNameSearchText: searchText,
+      firstNameSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };
@@ -509,7 +509,7 @@ class UserManagement extends React.PureComponent {
    */
   onLastNameSearch = searchText => {
     this.setState({
-      lastNameSearchText: searchText,
+      lastNameSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };
@@ -529,7 +529,7 @@ class UserManagement extends React.PureComponent {
    */
   onEmailSearch = searchText => {
     this.setState({
-      emailSearchText: searchText,
+      emailSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };
@@ -539,7 +539,7 @@ class UserManagement extends React.PureComponent {
    */
   onWeeklyHrsSearch = searchText => {
     this.setState({
-      weeklyHrsSearchText: searchText,
+      weeklyHrsSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };
@@ -568,7 +568,7 @@ class UserManagement extends React.PureComponent {
    */
   onWildCardSearch = searchText => {
     this.setState({
-      wildCardSearchText: searchText,
+      wildCardSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };

@@ -5,8 +5,11 @@ import {
   EDIT_FIRST_NAME,
   EDIT_USER_PROFILE,
   CLEAR_USER_PROFILE,
+  GET_PROJECT_BY_USER_NAME,
+  USER_NOT_FOUND_ERROR
 } from '../constants/userProfile';
 import { ENDPOINTS } from '../utils/URL';
+import { toast } from 'react-toastify';
 
 export const getUserProfile = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
@@ -72,6 +75,31 @@ export const updateUserProfileProperty = (userProfile, key, value) => {
     return res.status;
   };
 };
+
+export const getProjectsByUsersName = searchName => {
+  const url = ENDPOINTS.GET_PROJECT_BY_PERSON(searchName);
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+      dispatch(getProjectsByPersonActionCreator(res.data));
+      return res.data.allProjects;
+    } catch (error) {
+      dispatch(userNotFoundError(error.message));
+      dispatch(getProjectsByPersonActionCreator([]));
+      toast.error("Could not find user or project, please try again");
+    }
+  };
+};
+
+export const getProjectsByPersonActionCreator = data => ({
+  type: GET_PROJECT_BY_USER_NAME,
+  payload: data
+});
+
+const userNotFoundError = (error) =>({
+  type: USER_NOT_FOUND_ERROR,
+  payload: error,
+});
 
 export const getUserProfileActionCreator = data => ({
   type: GET_USER_PROFILE,

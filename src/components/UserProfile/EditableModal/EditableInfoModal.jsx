@@ -236,14 +236,6 @@ export class EditableInfoModal extends Component {
                     dangerouslySetInnerHTML={{ __html: infoContent }}
                     onClick={() => this.handleEdit(true)} />
                 }
-                {isPermissionPage && CanEdit &&
-                  (
-                    <div style={{ paddingLeft: '20px' }}>
-                      <p>Click above to edit this content. (Note: Only works on Permissions Management Page)</p>
-                    </div>
-
-                  )
-                }
               </ModalBody>
               <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <Row className='no-gutters'>

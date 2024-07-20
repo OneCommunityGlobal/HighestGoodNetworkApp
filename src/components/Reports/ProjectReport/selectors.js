@@ -6,7 +6,3 @@ export const projectReportViewData = state => ({
   isLoading: state.projectReport.isLoading,
   wbsTasksID: state.wbs.WBSItems.map(item => item._id),
 });
-
-export const allUserData = state => ({
-  leaderBoardData:state.leaderBoardData
-})

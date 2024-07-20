@@ -1,3 +1,25 @@
+.leaderboard {
+  font-size: 1rem;
+} /*1rem = 16px*/
+
+.my-custom-scrollbar {
+  max-height: 1000px;
+  overflow-y: scroll;
+  margin-bottom: 1rem;
+}
+
+.table-wrapper-scroll-y {
+  display: relative;
+}
+
+.leaderboard thead th {
+  top: 0;
+  border-top: 10px solid #dee2e6;
+  border-top-width: 1px;
+  border-top-style: solid;
+  border-top-color: rgb(222, 226, 230);
+}
+
 /* Small devices (landscape phones, 544px and up) */
 @media (max-width: 544px) {
   .leaderboard {
@@ -15,23 +37,21 @@
   }
 
   .leaderboard thead th {
-    position: sticky;
     top: 0;
-    background-color: #1c2541;
     border-top: 10px solid #dee2e6;
     border-top-width: 1px;
     border-top-style: solid;
     border-top-color: rgb(222, 226, 230);
   }
 }
-.row{
+.row {
   width: 97%;
 }
 
 .table-fixed tbody td {
   white-space: normal; /* Allow text wrapping within cells */
 }
-.table-fixed{
+.table-fixed {
   font-size: 0.93rem;
 }
 
@@ -55,4 +75,10 @@
 .leaderboard-totals-container {
   display: flex;
   flex-direction: column;
+}
+
+@media screen and (max-width: 544px) {
+  .responsive-font-size {
+    font-size: 0.75rem !important;
+  }
 }

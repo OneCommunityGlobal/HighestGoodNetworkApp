@@ -13,6 +13,16 @@
   flex-direction: column;
 }
 
+.disconnected {
+  font-size: 1.2rem;
+  font-weight: bold;
+  width: fit-content;
+  background-color: rgba(82, 92, 102, 1);
+  color: rgb(238, 10, 10);
+  border-radius: 0 0 0.5rem 0.5rem;
+  padding: 0.25rem 0.25rem;
+}
+
 .preview {
   font-size: 1.2rem;
   font-weight: bold;

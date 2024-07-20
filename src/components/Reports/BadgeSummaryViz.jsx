@@ -68,9 +68,9 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             {/* --- DESKTOP VERSION OF MODAL --- */}
             <div className="desktop">
               <div style={{ overflowY: 'scroll', height: '75vh' }}>
-                <Table className={darkMode ? 'text-light' : ''}>
+                <Table className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }}>
+                    <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
                       <th style={{ width: '93px' }}>Badge</th>
                       <th>Name</th>
                       <th style={{ width: '110px' }}>Modified</th>
@@ -169,9 +169,9 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
             {/* --- TABLET VERSION OF MODAL --- */}
             <div className="tablet">
               <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table  className={darkMode ? 'text-light' : ''}>
+                <Table  className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }}>
+                    <tr style={{ zIndex: '10' }}  className={darkMode ? 'bg-space-cadet' : ''}>
                       <th style={{ width: '25%' }}>Badge</th>
                       <th style={{ width: '25%' }}>Name</th>
                       <th style={{ width: '25%' }}>Modified</th>

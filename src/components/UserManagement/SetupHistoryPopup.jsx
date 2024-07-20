@@ -28,7 +28,7 @@ const TableFilter = ({
   setSortByExpiredDateDesc,
   darkMode}) => {
   return (
-    <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
+    <tr>
       <td style={{ width: '20%' }}>
           {/* <label htmlFor="email-filter">Email</label> */}
           <input
@@ -111,30 +111,39 @@ const SetupHistoryPopup = props => {
   const [ loading, setLoading ] = useState(true);
   const [ filteredUserDataCount, setFilteredUserDataCount ] = useState(0);
   const [ isButtonDisabled, setIsButtonDisabled ] = useState(false);
+  const [noDataMsg,setNoDataMsg] = useState("No Data");
   
   const closePopup = e => {
     props.onClose();
   };
 
   useEffect(() => {
-    httpService
-        .get(ENDPOINTS.GET_SETUP_INVITATION())
-        .then(res => {
-          //  setSetupInvitationData(res.data);
-           setSetupInvitationData(prevData => {
-            const transformedData = transformedTableData(res.data)
-            setFilteredSetupInvitationData(transformedData);
-            setFilteredUserDataCount(transformedData.length && transformedData.length > 0 ? transformedData.length : 0);
-            return res.data;
-           });
-        })
-        .catch(err => {
-          toast.error(`Fetching error: Invitation History.`);
-        })
-        .finally( () =>{
-          setLoading(false);
-        });
-  }, []);
+    if(props.open){
+      httpService
+      .get(ENDPOINTS.GET_SETUP_INVITATION())
+      .then(res => {
+        //  setSetupInvitationData(res.data);
+         setSetupInvitationData(prevData => {
+          const transformedData = transformedTableData(res.data)
+          setFilteredSetupInvitationData(transformedData);
+          setFilteredUserDataCount(transformedData.length && transformedData.length > 0 ? transformedData.length : 0);
+          return res.data;
+         });
+      })
+      .catch(err => {
+         if(err?.response?.status==403){
+               const msg = err?.response?.data;
+               setNoDataMsg(msg);
+         }else{
+           toast.error(`Fetching error: Invitation History.`);
+           setNoDataMsg("No Data");
+         }
+      })
+      .finally( () =>{
+        setLoading(false);
+      });
+    }
+  }, [props.open]);
 
   /**
    * Triggered data fetching when a new user invitation is sent or a record is updated.
@@ -281,7 +290,7 @@ const SetupHistoryPopup = props => {
         {loading ? <div>Data Loading...</div> : 
         setupInvitationData && setupInvitationData.length > 0 ? (
           <>
-            <Table responsive className={darkMode ? 'text-light' : ''}>
+            <Table responsive className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   {TABLE_HEADER.map((key, index) => (
@@ -289,7 +298,7 @@ const SetupHistoryPopup = props => {
                   ))}
                 </tr>
               </thead>
-              <tbody>
+              <tbody className={darkMode ? 'dark-mode' : ''}>
                 <TableFilter 
                   emailFilter={emailFilter}
                   statusFilter={statusFilter}
@@ -302,7 +311,7 @@ const SetupHistoryPopup = props => {
                   darkMode={darkMode}
                 />
                 {filteredSetupInvitationData.map((record, index) => {
-                  return <tr key={index} className={darkMode ? 'bg-yinmn-blue' : ''}>
+                  return <tr key={index}>
                       <td>{record.email}</td>
                       <td>{record.weeklyCommittedHours}</td>
                       <td>{formatDate(record.createdDate)}</td>
@@ -342,7 +351,7 @@ const SetupHistoryPopup = props => {
             />
           </>
         ) : (
-          <div>No Data</div>
+          <div>{noDataMsg}</div>
         )}
         </div>
       </ModalBody>

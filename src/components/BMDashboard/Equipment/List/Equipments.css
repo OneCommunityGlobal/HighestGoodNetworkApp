@@ -1,0 +1,59 @@
+.PageViewContainer {
+  padding: 0% !important;
+
+}
+
+.Page {
+  background-color: #E8F4F9;
+  width: 100%;
+  height: auto;
+  margin: 0px;
+  padding: 1rem 2rem;
+  font-size: 15px;
+}
+
+.Box {
+  background-color: white;
+  border-radius: 1rem;
+  padding: 1.5rem;
+  height: auto;
+}
+
+.modal-open {
+  padding-right: 0px !important;
+}
+
+.ModalViewContainer {
+  overflow-y: auto;
+  overflow-x: auto;
+  max-height: 75vh;
+  font-size: small;
+}
+
+@media (min-width: 1200px) {
+  .ModalViewContainer {
+    font-size: medium;
+  }
+}
+
+.InputsMargin {
+  margin: 0.2rem;
+}
+
+.cusorpointer {
+  cursor: pointer;
+}
+
+.BuildingTableHeaderLine {
+  font-weight: 500;
+  vertical-align: bottom;
+  border-bottom: 2px solid #dee2e6;
+  background-color: #E8F4F9;
+  border-top: 1px solid #dee2e6;
+}
+
+.BuildingTitle {
+  font-weight: bold;
+  margin-bottom: 20px;
+  text-align: center;
+}

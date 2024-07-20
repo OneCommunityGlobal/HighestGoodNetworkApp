@@ -33,16 +33,16 @@ const UserTableSearchHeader = React.memo((props) => {
     <tr className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
       <td id="user_active"></td>
       <td id="user_first">
-        <TextSearchBox id={'firts_name_search'} searchCallback={onFirstNameSearch} />
+        <TextSearchBox id={'firts_name_search'} searchCallback={onFirstNameSearch} placeholder=" Search First Name"/>
       </td>
       <td id="user_last_name">
-        <TextSearchBox id={'last_name_search'} searchCallback={onLastNameSearch} />
+        <TextSearchBox id={'last_name_search'} searchCallback={onLastNameSearch} placeholder=" Search Last Name"/>
       </td>
       <td id="user_role">
         <DropDownSearchBox id={'role_search'} items={props.roles} searchCallback={onRoleSearch} />
       </td>
       <td id="user_email" >
-        <TextSearchBox id={'email_search'} searchCallback={onEmailSearch} style={{ width:'100%' }}/>
+        <TextSearchBox id={'email_search'} searchCallback={onEmailSearch} style={{ width:'100%' }} placeholder=" Search Email"/>
       </td>
       <td id="user_hrs" style= {{ display: 'flex' }}>
         <TextSearchBox
