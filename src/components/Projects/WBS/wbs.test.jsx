@@ -32,7 +32,8 @@ afterEach(() => {
 const renderComponent = (index, key, wbsId, projectId, name) => {
     return render(
       <Provider store={store}>
-        
+            <table>
+            <tbody>
             <WBSItem
               index={index}
               key={key}
@@ -41,7 +42,8 @@ const renderComponent = (index, key, wbsId, projectId, name) => {
               name={name}
               popupEditor={{ currPopup: { popupContent: 'Are you sure you want to delete?' } }}
             />
-         
+         </tbody>
+         </table>
       </Provider>
     );
   };
@@ -67,7 +69,11 @@ describe('WBSItem Component', () => {
       
       const { getByText } = renderComponent(
         <Provider store={store}>
+          <table>
+          <tbody>
           <WBSItem {...props} />
+          </tbody>
+      </table>
         </Provider>
       );
     
@@ -79,9 +85,11 @@ describe('WBSItem Component', () => {
      
         const { container, findByText } = renderComponent(
             <Provider store={store}>
-           
+                <table>
+                <tbody>
                 <WBSItem {...props} />
-               
+                </tbody>
+      </table>
             </Provider>
           );
         
