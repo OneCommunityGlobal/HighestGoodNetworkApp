@@ -25,7 +25,7 @@
   height: 30px;
   border-radius: 20px;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   background-color: #1C2541;
   position: relative;
@@ -92,7 +92,7 @@
   height: 30px;
   border-radius: 20px;
   display: flex;
-  justify-content: start;
+  justify-content: flex-start;
   align-items: center;
   background-color: #e3e3e3;
   position: relative;

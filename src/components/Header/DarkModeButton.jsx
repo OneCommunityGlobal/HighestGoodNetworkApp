@@ -28,7 +28,8 @@ const DarkModeButton = () => {
       >
         {darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
       </Tooltip>
-      <button 
+      <div 
+        type='button'
         className={`dark-mode-button ${darkMode ? 'dark-mode' : ''}`} 
         onClick={toggleDarkMode}
         id="darkModeTooltip">
@@ -45,7 +46,7 @@ const DarkModeButton = () => {
           <span className='lightModeText'>Light Mode</span>
           <span className='darkModeHoverText'>Dark Mode</span>
         </div>}
-      </button>
+      </div>
     </>
 
   );
