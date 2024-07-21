@@ -75,18 +75,19 @@
 
 .timelogPageContainer{
   width: 100%;
-  padding: 0 30%;
+  padding: 0 17%;
 }
 
 @media screen and (max-width: 1400px) and (min-width: 1100px) {
   .timelogPageContainer{
-    padding: 0 20%;
+    padding: 0 10%;
   }
 }
 
 @media screen and (max-width: 1100px) and (min-width: 800px) {
   .timelogPageContainer{
-    padding: 0 10%;
+    padding: 0 7%;
+    margin-left: 15px;
   }
 }
 

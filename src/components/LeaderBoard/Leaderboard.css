@@ -4,7 +4,7 @@
 
 .my-custom-scrollbar {
   max-height: 1000px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-bottom: 1rem;
 }
 

@@ -184,12 +184,14 @@ function PermissionListItem(props) {
                   : 'success'
               }
               onClick={() => {
+                // eslint-disable-next-line no-debugger
                 // const state = howManySubpermsInRole !== 'None';
                 setSubpermissions(subperms, howManySubpermsInRole !== 'All');
                 props.onChange();
                 updateModalStatus(true);
               }}
               disabled={!props.hasPermission('putRole')}
+
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
