@@ -191,7 +191,6 @@ function PermissionListItem(props) {
                 updateModalStatus(true);
               }}
               disabled={!props.hasPermission('putRole')}
-
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
