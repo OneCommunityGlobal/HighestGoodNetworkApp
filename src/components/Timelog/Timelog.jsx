@@ -154,6 +154,7 @@ const Timelog = props => {
   const [displayUserId, setDisplayUserId] = useState(
      getUserId()
   );
+  console.log(getUserId(), "getuserid")
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
@@ -424,13 +425,20 @@ const Timelog = props => {
   const handleStorageEvent = () =>{
     const sessionStorageData = checkSessionStorage();
     setViewingUser(sessionStorageData || false);
-    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : getUserId());
   }
+  
 
   /*---------------- useEffects -------------- */
   useEffect(() => {
     changeTab(initialTab);
   }, [initialTab]);
+
+  useEffect(()=> {
+    setDisplayUserId(getUserId());
+  },[userId])
+
+  
 
   useEffect(() => {
     // Build the time log after new data is loaded
