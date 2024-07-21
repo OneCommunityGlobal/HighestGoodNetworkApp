@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
@@ -12,6 +12,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
+import { ModalContext } from 'context/ModalContext';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
 import { addNewRole } from '../../actions/role';
@@ -25,6 +26,8 @@ function PermissionsManagement(props) {
   let { roles } = props;
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
+  const [reminderModal, setReminderModal] = useState(false);
+  const { modalStatus, reminderUser } = useContext(ModalContext);
 
   const canPostRole = props.hasPermission('postRole');
   const canPutRole = props.hasPermission('putRole');
@@ -47,6 +50,14 @@ function PermissionsManagement(props) {
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (reminderUser !== null) {
+      // console.log(reminderUser);
+    }
+  }, [reminderUser]);
+
+  useEffect(() => {
+    getAllRoles();
+
     getInfoCollections();
     getUserRole(auth?.user.userid);
 
@@ -64,7 +75,11 @@ function PermissionsManagement(props) {
   }, []);
 
   const togglePopUpUserPermissions = () => {
-    setIsUserPermissionsOpen(previousState => !previousState);
+    if (modalStatus === false) {
+      setIsUserPermissionsOpen(previousState => !previousState);
+    } else {
+      setReminderModal(!reminderModal);
+    }
   };
   const role = userProfile?.role;
   // eslint-disable-next-line no-shadow
@@ -189,11 +204,13 @@ function PermissionsManagement(props) {
             >
               Manage User Permissions
             </ModalHeader>
-            <ModalBody
-              id="modal-body_new-role--padding"
-              className={darkMode ? 'bg-yinmn-blue' : ''}
-            >
-              <UserPermissionsPopUp toggle={togglePopUpUserPermissions} />
+            <ModalBody id="modal-body_new-role--padding">
+              <UserPermissionsPopUp
+                toggle={togglePopUpUserPermissions}
+                setReminderModal={setReminderModal}
+                reminderModal={reminderModal}
+                modalStatus={modalStatus}
+              />
             </ModalBody>
           </Modal>
         </div>

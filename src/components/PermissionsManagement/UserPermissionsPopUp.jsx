@@ -6,6 +6,7 @@ import { getAllUserProfile } from 'actions/userManagement';
 import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
+// eslint-disable-next-line no-unused-vars
 import { boxStyle, boxStyleDark } from 'styles';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
@@ -15,14 +16,26 @@ import {
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
+import ReminderModal from './ReminderModal';
 
-function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
+function UserPermissionsPopUp({
+  allUserProfiles,
+  // eslint-disable-next-line no-unused-vars
+  toggle,
+  getAllUsers,
+  roles,
+  authUser,
+  setReminderModal,
+  reminderModal,
+  modalStatus,
+}) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
+  const [selectedAccount, setSelectedAccount] = useState('');
 
   const setToDefault = () => {
     setUserPermissions([]);
@@ -37,6 +50,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
     setActualUserProfile(allUserInfo);
+    setSelectedAccount(`${allUserInfo.firstName} ${allUserInfo.lastName}`);
   };
 
   useEffect(() => {
@@ -92,112 +106,124 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
     refInput.current.focus();
   }, []);
   return (
-    <Form
-      id="manage__user-permissions"
-      onSubmit={e => {
-        updateProfileOnSubmit(e);
-      }}
-    >
-      <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}>
-        <h4 className="user-permissions-pop-up__title">User name:</h4>
-        <Button
-          type="button"
-          color="success"
-          onClick={() => {
-            setToDefault();
-          }}
-          disabled={!actualUserProfile}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
-          Reset to Default
-        </Button>
-      </div>
-      <Dropdown
-        isOpen={isOpen}
-        toggle={() => {
-          setIsOpen(!isOpen);
-        }}
-        style={{ width: '100%', marginRight: '5px' }}
-      >
-        <Input
-          type="text"
-          value={searchText}
-          innerRef={refInput}
-          onFocus={() => {
-            setIsInputFocus(true);
-            setIsOpen(true);
-          }}
-          onChange={e => {
-            onInputChange(e.target.value);
-            setIsOpen(true);
-          }}
-          placeholder="Shows only ACTIVE users"
+    <>
+      {modalStatus && (
+        <ReminderModal
+          setReminderModal={setReminderModal}
+          reminderModal={reminderModal}
+          updateProfileOnSubmit={updateProfileOnSubmit}
+          changedAccount={selectedAccount}
         />
-        {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
-          <div
-            tabIndex="-1"
-            role="menu"
-            aria-hidden="false"
-            className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''}`}
-            style={{ marginTop: '0px', width: '100%' }}
-          >
-            {allUserProfiles
-              .filter(user => {
-                if (
-                  user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
-                  user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
-                  `${user.firstName} ${user.lastName}`
-                    .toLowerCase()
-                    .includes(searchText.toLowerCase())
-                ) {
-                  if (user.isActive) {
-                    return user;
-                  }
-                }
-                return null;
-              })
-              .map(user => (
-                <div
-                  className="user__auto-complete"
-                  key={user._id}
-                  onClick={() => {
-                    onInputChange(`${user.firstName} ${user.lastName}`);
-                    setIsOpen(false);
-                    setActualUserProfile(user);
-                    getUserData(user._id);
-                  }}
-                >
-                  {`${user.firstName} ${user.lastName}`}
-                </div>
-              ))}
-          </div>
-        ) : null}
-      </Dropdown>
-      <div>
-        <h4 className="user-permissions-pop-up__title">Permissions:</h4>
-        <ul className="user-role-tab__permission-list">
-          <PermissionList
-            rolePermissions={userPermissions}
-            immutablePermissions={actualUserRolePermission}
-            editable={!!actualUserProfile}
-            setPermissions={setUserPermissions}
-            darkMode={darkMode}
-          />
-        </ul>
-      </div>
-      <Button
-        type="submit"
+      )}
+      <Form
         id="manage__user-permissions"
-        color="primary"
-        size="lg"
-        block
-        style={
-          darkMode ? { ...boxStyleDark, marginTop: '1rem' } : { ...boxStyle, marginTop: '1rem' }
-        }
+        onSubmit={e => {
+          updateProfileOnSubmit(e);
+        }}
       >
-        Submit
-      </Button>
-    </Form>
+        <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}>
+          <h4 className="user-permissions-pop-up__title">User name:</h4>
+          <Button
+            type="button"
+            color="success"
+            // eslint-disable-next-line no-unused-vars
+            onClick={e => {
+              setToDefault();
+            }}
+            disabled={!actualUserProfile}
+            style={boxStyle}
+          >
+            Reset to Default
+          </Button>
+        </div>
+        <Dropdown
+          isOpen={isOpen}
+          toggle={() => {
+            setIsOpen(!isOpen);
+          }}
+          style={{ width: '100%', marginRight: '5px' }}
+        >
+          <Input
+            type="text"
+            value={searchText}
+            innerRef={refInput}
+            // eslint-disable-next-line no-unused-vars
+            onFocus={e => {
+              setIsInputFocus(true);
+              setIsOpen(true);
+            }}
+            onChange={e => {
+              onInputChange(e.target.value);
+              setIsOpen(true);
+            }}
+            placeholder="Shows only ACTIVE users"
+          />
+          {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
+            <div
+              tabIndex="-1"
+              role="menu"
+              aria-hidden="false"
+              className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''}`}
+              style={{ marginTop: '0px', width: '100%' }}
+            >
+              {allUserProfiles
+                // eslint-disable-next-line array-callback-return, consistent-return
+                .filter(user => {
+                  if (
+                    user.firstName.toLowerCase().includes(searchText.toLowerCase()) ||
+                    user.lastName.toLowerCase().includes(searchText.toLowerCase()) ||
+                    `${user.firstName} ${user.lastName}`
+                      .toLowerCase()
+                      .includes(searchText.toLowerCase())
+                  ) {
+                    if (user.isActive) {
+                      return user;
+                    }
+                  }
+                })
+                .map(user => (
+                  <div
+                    className="user__auto-complete"
+                    key={user._id}
+                    onClick={() => {
+                      onInputChange(`${user.firstName} ${user.lastName}`);
+                      setIsOpen(false);
+                      setActualUserProfile(user);
+                      getUserData(user._id);
+                    }}
+                  >
+                    {`${user.firstName} ${user.lastName}`}
+                  </div>
+                ))}
+            </div>
+          ) : (
+            // eslint-disable-next-line react/jsx-no-useless-fragment
+            <></>
+          )}
+        </Dropdown>
+        <div>
+          <h4 className="user-permissions-pop-up__title">Permissions:</h4>
+          <ul className="user-role-tab__permission-list">
+            <PermissionList
+              rolePermissions={userPermissions}
+              immutablePermissions={actualUserRolePermission}
+              editable={!!actualUserProfile}
+              setPermissions={setUserPermissions}
+            />
+          </ul>
+        </div>
+        <Button
+          type="submit"
+          id="manage__user-permissions"
+          color="primary"
+          size="lg"
+          block
+          style={{ ...boxStyle, marginTop: '1rem' }}
+        >
+          Submit
+        </Button>
+      </Form>
+    </>
   );
 }
 

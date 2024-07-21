@@ -7,6 +7,7 @@ import { screen } from '@testing-library/react';
 import { renderWithRouterMatch } from '../../__tests__/utils';
 import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
+import { ModalProvider } from 'context/ModalContext';
 
 jest.mock('actions/role.js');
 
@@ -32,7 +33,9 @@ describe('permissions management page structure', () => {
     store.dispatch = jest.fn();
 
     renderWithRouterMatch(
-      <Route path="/permissionsmanagement">{props => <PermissionsManagement {...props} infoCollections={mockInfoCollections} areaName={'testInfo'} role={'Owner'} fontSiz={24} />}</Route>,
+      <ModalProvider>
+      <Route path="/permissionsmanagement">{props => <PermissionsManagement {...props} infoCollections={mockInfoCollections} areaName={'testInfo'} role={'Owner'} fontSiz={24} />}</Route>
+      </ModalProvider>,
       {
         route: `/permissionsmanagement`,
         store,
