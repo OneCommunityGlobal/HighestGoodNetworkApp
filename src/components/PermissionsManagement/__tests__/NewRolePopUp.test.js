@@ -5,6 +5,10 @@ import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import CreateNewRolePopup from '../NewRolePopUp'
 import { ModalProvider } from 'context/ModalContext';
+import axios from 'axios';
+
+jest.mock('axios');
+
 
 const mockTogglePopUpNewRole = jest.fn()
 const mockAddNewRole = jest.fn()
@@ -46,6 +50,7 @@ const renderComponent = () => {
 
 beforeEach(() => {
   store.clearActions();
+  axios.get.mockResolvedValue({ data: {} });
 });
 
 
