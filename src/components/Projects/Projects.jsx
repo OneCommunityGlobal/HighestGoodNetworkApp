@@ -94,7 +94,8 @@ const Projects = function(props) {
   }
 
   const handleSort = (e) => {
-    setSortedByName(e.target.id);
+    const clickedId = e.target.id;
+    setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
   }
 
   const onUpdateProject = async (updatedProject) => {
@@ -135,6 +136,8 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1;
       } else if (sortedByName === "Descending") {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
+      } else if (sortedByName === "SortingByRecentEditedMembers") {
+        return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
       } else {
         return 0;
       }
