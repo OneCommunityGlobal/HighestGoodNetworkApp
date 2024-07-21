@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
-import * as types from '../constants/role';
+import * as types from "../constants/role";
 
 export const fetchAllRoles = roles => {
   return {
@@ -29,16 +29,18 @@ export const getAllRoles = () => async dispatch => {
 };
 
 export const addNewRole = newRole => {
-  return axios
-    .post(ENDPOINTS.ROLES(), newRole)
-    .then(res => {
-      return res;
-    })
-    .catch(err => {
-      if (err.response) return err.response;
-      if (err.request) return err.request;
-      return err.message;
-    });
+  return async dispatch => {
+    let role = {};
+    let status = 200;
+    try {
+      const res = await axios.post(ENDPOINTS.ROLES(), newRole);
+      role = res.data;
+    } catch (error) {
+      status = 400;
+    }
+
+    dispatch(postNewRole(role, status));
+  };
 };
 
 export const updateRole = (roleId, updatedRole) => {
