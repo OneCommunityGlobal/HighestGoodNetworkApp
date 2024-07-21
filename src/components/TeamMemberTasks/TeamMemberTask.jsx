@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
@@ -21,6 +21,8 @@ import moment from 'moment-timezone';
 
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+import { getTeamMembersId } from '../../actions/allTeamsAction';
+import { getMinimalUserProfile} from '../../actions/userProfile'
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 import GoogleDocIcon from '../common/GoogleDocIcon';
@@ -75,6 +77,7 @@ const TeamMemberTask = React.memo(
     // these need to be changed to actual permissions...
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
+    const [teamMemberIds, setTeamMemberIds] = useState([]);
     const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     // ^^^
@@ -96,6 +99,65 @@ const TeamMemberTask = React.memo(
 
     const openDetailModal = request => {
       dispatch(showTimeOffRequestModal(request));
+    };
+
+    useEffect(() => {
+      const fetchTeamMemberData = async () => {
+        const promises = user.teams.map(team => dispatch(getTeamMembersId(team._id)));
+        const responses = await Promise.all(promises);
+        const allTeamMemberIds = responses.flat();
+        const profilePromises = allTeamMemberIds.map(memberId => getMinimalUserProfile(memberId));
+        const profiles = await Promise.all(profilePromises);
+
+        // Filter out the current user and any null results
+        const filteredProfiles = profiles.filter(profile => profile && profile._id !== user.personId);
+
+        setTeamMemberIds(filteredProfiles);
+      };
+
+      fetchTeamMemberData();
+    }, [user, dispatch]);
+
+    const groupedTeamMembers = {
+      Managers: [],
+      AssistantManagers: [],
+      Mentors: []
+    };
+
+    teamMemberIds.forEach(memberProfile => {
+      switch(memberProfile.role) {
+        case 'Manager':
+          groupedTeamMembers.Managers.push(memberProfile);
+          break;
+        case 'Assistant Manager':
+          groupedTeamMembers.AssistantManagers.push(memberProfile);
+          break;
+        case 'Mentor':
+          groupedTeamMembers.Mentors.push(memberProfile);
+          break;
+      }
+    });
+
+    function getInitials(name) {
+      return name
+        .split(' ')
+        .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
+        .map(n => n[0])
+        .join('')
+        .toUpperCase();
+    }
+
+    const getRoleColor = (role) => {
+      switch(role) {
+        case 'Manager':
+          return 'green';
+        case 'Assistant Manager':
+          return 'blue';
+        case 'Mentor':
+          return 'yellow';
+        default:
+          return 'black'; // fallback color
+      }
     };
 
     const userGoogleDocLink = user.adminLinks?.reduce((targetLink, currentElement) => {
@@ -143,6 +205,44 @@ const TeamMemberTask = React.memo(
                 />
               </Link>
             </div>
+            <div style={{
+              display: 'flex',
+              flexWrap: 'wrap',
+              maxHeight: '52px',
+              overflowY: 'auto',
+              overflowX: 'hidden',
+              marginLeft: '5px'
+            }}>
+              {Object.values(groupedTeamMembers).flat().map((memberProfile) => {
+                const initials = getInitials(`${memberProfile.firstName} ${memberProfile.lastName}`);
+                const textColor = getRoleColor(memberProfile.role);
+                return (
+                  <Link
+                    key={memberProfile._id}
+                    to={`/userprofile/${memberProfile._id}`}
+                    title={`${memberProfile.firstName} ${memberProfile.lastName} (${memberProfile.role})`}
+                    style={{
+                      margin: '0 5px 5px 0',
+                      textDecoration: 'none',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      width: '21px',
+                      height: '21px',
+                      borderRadius: '50%',
+                      backgroundColor: '#D3D3D3',
+                      color: textColor,
+                      fontWeight: 'bold',
+                      fontSize: '11px',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {initials}
+                  </Link>
+                );
+              })}
+            </div>
+
           </td>
           <td colSpan={2}>
             <Table borderless className="team-member-tasks-subtable">
@@ -196,7 +296,7 @@ const TeamMemberTask = React.memo(
                               className='team-member-tasks-content-link'
                               to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                               data-testid={`${task.taskName}`}
-                              style={{color: darkMode ? "#007BFF" : undefined}} 
+                              style={{color: darkMode ? "#007BFF" : undefined}}
                             >
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
@@ -280,7 +380,7 @@ const TeamMemberTask = React.memo(
                             )}
                             <div className="team-task-progress-container">
                               <span
-                                data-testid={`times-${task.taskName}`} 
+                                data-testid={`times-${task.taskName}`}
                                 className={`${darkMode ? 'text-light ' : ''} ${canSeeFollowUpCheckButton ? "team-task-progress-time" : "team-task-progress-time-volunteers"}`}
                               >
                                 {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(

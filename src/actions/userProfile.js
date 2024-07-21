@@ -91,6 +91,28 @@ export const getProjectsByUsersName = searchName => {
   };
 };
 
+/**
+ * Retrieve only the role, firstName, lastName of a user
+ */
+export const getMinimalUserProfile = async (userId) => {
+  try {
+    const url = ENDPOINTS.USER_PROFILE(userId);
+    let loggedOut = false;
+    const response = await axios.get(url).catch(error => {
+      if (error.response && error.response.status === 401) {
+        loggedOut = true;
+      }
+    });
+    if (response && !loggedOut) {
+      const { role, firstName, lastName } = response.data;
+      return { role, firstName, lastName, _id: userId };
+    }
+  } catch (error) {
+    console.error('Error fetching role, firstName, lastName:', error);
+    return null;
+  }
+};
+
 export const getProjectsByPersonActionCreator = data => ({
   type: GET_PROJECT_BY_USER_NAME,
   payload: data

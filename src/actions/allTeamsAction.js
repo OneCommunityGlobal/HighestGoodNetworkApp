@@ -150,7 +150,7 @@ export const postNewTeam = (name, status) => {
           return { status: 500, message: error.message };
         }
       });
-  }; 
+  };
 };
 
 
@@ -254,5 +254,21 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
           console.error('Error updating visibility:', error.message);
         }
       });
+  };
+};
+
+/**
+ * Get team members id based on teamId
+ */
+export const getTeamMembersId = (teamId) => {
+  const url = ENDPOINTS.TEAM_DATA(teamId);
+  return async (dispatch) => {
+    try {
+      const teamMembersResponse = await axios.get(url);
+      const memberIds = teamMembersResponse.data.members.map(member => member.userId);
+      return memberIds;
+    } catch (error) {
+      return error.response ? error.response.data.error : error.message;
+    }
   };
 };
