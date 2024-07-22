@@ -91,19 +91,20 @@ function PermissionListItem(props) {
   let color;
   if (isCategory) {
     if (howManySubpermsInRole === 'All') {
-      color = 'green';
+      color = darkMode ? 'lightgreen' : 'green';
     } else if (howManySubpermsInRole === 'Some') {
       color = darkMode ? 'white' : 'black';
     } else {
-      color = 'red';
+      color = darkMode ? '#f94144' : 'red';
     }
+  } else if (darkMode) {
+    color = hasThisPermission ? 'lightgreen' : '#f94144';
   } else {
     color = hasThisPermission ? 'green' : 'red';
   }
 
   const fontSize = isCategory ? '20px' : undefined;
   const textIndent = `${50 * depth}px`;
-  const textShadow = darkMode ? '0.5px 0.5px 2px black' : '';
 
   const getColor = () => {
     if (howManySubpermsInRole === 'All') {
@@ -123,7 +124,6 @@ function PermissionListItem(props) {
             color,
             fontSize,
             textIndent,
-            textShadow,
           }}
         >
           {label}
@@ -139,6 +139,7 @@ function PermissionListItem(props) {
               onClick={() => {
                 handleModalOpen(description);
               }}
+              style={{ color: darkMode ? 'white' : 'black' }}
             />
           </div>
           {/* eslint-disable-next-line no-nested-ternary */}
@@ -147,13 +148,14 @@ function PermissionListItem(props) {
               className="icon-button"
               color={getColor()}
               onClick={() => {
+                // eslint-disable-next-line no-debugger
                 // const state = howManySubpermsInRole !== 'None';
                 setSubpermissions(subperms, howManySubpermsInRole !== 'All');
                 // eslint-disable-next-line react/destructuring-assignment
                 props.onChange();
               }}
               // eslint-disable-next-line react/destructuring-assignment
-              disabled={!props.hasPermission('putRole')}
+              disabled={immutablePermissions.includes(permission)}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -165,10 +167,7 @@ function PermissionListItem(props) {
               onClick={() => {
                 togglePermission(permission);
               }}
-              disabled={
-                // eslint-disable-next-line react/destructuring-assignment
-                !props.hasPermission('putRole') || immutablePermissions.includes(permission)
-              }
+              disabled={immutablePermissions.includes(permission)}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {hasThisPermission ? 'Delete' : 'Add'}

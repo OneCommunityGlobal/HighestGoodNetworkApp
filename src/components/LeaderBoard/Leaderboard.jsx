@@ -461,7 +461,7 @@ function LeaderBoard({
                         }
                       }}
                     >
-                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                      {hasLeaderboardPermissions(item.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
                           className="fa fa-star"
@@ -607,7 +607,7 @@ function LeaderBoard({
                   <span
                     title={mouseoverTextValue}
                     id="Total time"
-                    className={item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null}
+                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
                   >
                     {item.totaltime}
                   </span>
