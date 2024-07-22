@@ -129,7 +129,7 @@ function BMTimeLogStopWatch() {
             <b className="font-color-gray">{currentTime}</b>
           </Col>
         </Row>
-        <Row className="mb-2">Task: </Row>
+        {/* <Row className="mb-2">Task: </Row> */}
         <Row className="justify-content-center">
           <Button className="member-clear" onClick={clear}>
             <b>CLEAR</b>

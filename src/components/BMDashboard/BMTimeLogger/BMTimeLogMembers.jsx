@@ -6,7 +6,7 @@ import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
 function BMTimeLogMembers() {
   const projectInfo = useSelector(state => state.bmProjectMembers);
   const membersList = projectInfo.members;
-  console.log('membersList: ', membersList);
+  // console.log('membersList: ', membersList);
 
   return (
     <Row>
