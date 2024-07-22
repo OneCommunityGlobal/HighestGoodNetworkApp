@@ -142,3 +142,18 @@
 .btn_save_delete{
   height: 4rem;
 }
+
+.icon-button-role {
+  display: block;
+  align-items: center;
+  justify-content: flex-start;
+  flex-wrap: nowrap;
+  font-size: 24px;
+  cursor: pointer;
+}
+
+.icon-button-role-container i {
+  display: block;
+  align-items: center; /* This ensures vertical alignment with the button */
+  margin-right: 10px; /* Optional: Adds some spacing between the icon and the button */
+}

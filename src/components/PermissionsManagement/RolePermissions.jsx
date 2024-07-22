@@ -29,6 +29,54 @@ function RolePermissions(props) {
   const [showPresetModal, setShowPresetModal] = useState(false);
   const userProfile = useSelector(state => state.userProfile);
 
+  const [infoRoleModal, setinfoRoleModal] = useState(false);
+  const [modalContent, setContent] = useState(null);
+
+  const handleModalOpen = description => {
+    let content = '';
+    if (description === 'save') {
+      content = (
+        <div>
+          <p>Here you can create new presets and save your changes</p>
+          <ul>
+            <li>
+              {' '}
+              <b> Create New Presets: </b> Click this button to save the current settings as a new
+              preset that can be accessed with the “Load Presets” button.{' '}
+            </li>
+            <li>
+              {' '}
+              <b> Save: </b> Click this button to save any changes you’ve made.{' '}
+            </li>
+          </ul>
+        </div>
+      );
+    } else if (description === 'delete') {
+      content = (
+        <div>
+          <p>Here you can load saved presets and delete the current role.</p>
+          <ul>
+            <li>
+              <b>Load Presets:</b> Click this button to see all previously saved presets. From
+              there, you can choose one to load and replace the current set of permissions. Remember
+              to “Save” if you do this.
+            </li>
+            <li>
+              <b>Delete Role:</b> Click this button to delete the current Role.{' '}
+              <b>WARNING: This action cannot be undone.</b>
+            </li>
+          </ul>
+        </div>
+      );
+    }
+    setContent(content);
+    setinfoRoleModal(true);
+  };
+
+  const toggleInfoRoleModal = () => {
+    setinfoRoleModal(!infoRoleModal);
+  };
+
   const isEditableRole =
     props.role === 'Owner'
       ? props.hasPermission('addDeleteEditOwners')
@@ -176,17 +224,10 @@ function RolePermissions(props) {
                     Delete Role
                   </Button>
                 </div>
-              </div>
 
-              <div
-                className="icon-button-container"
-                style={{ position: 'relative', width: '0', height: '0' }}
-              >
-                <div
-                  className="name-container__btns"
-                  style={{ position: 'absolute', left: '10px', top: '20px' }}
-                >
+                <div className="icon-button-role">
                   <i
+                    style={{ marginTop: '10px' }}
                     data-toggle="tooltip"
                     data-placement="center"
                     title="Click for information about this"
@@ -194,10 +235,11 @@ function RolePermissions(props) {
                     className="fa fa-info-circle"
                     onClick={() => {
                       // eslint-disable-next-line no-undef
-                      handleModalOpen('Create New Preset');
+                      handleModalOpen(`save`);
                     }}
                   />
                   <i
+                    style={{ marginTop: '30px' }}
                     data-toggle="tooltip"
                     data-placement="center"
                     title="Click for information about this"
@@ -205,7 +247,7 @@ function RolePermissions(props) {
                     className="fa fa-info-circle"
                     onClick={() => {
                       // eslint-disable-next-line no-undef
-                      handleModalOpen('Load Presets');
+                      handleModalOpen(`delete`);
                     }}
                   />
                 </div>
@@ -297,6 +339,21 @@ function RolePermissions(props) {
             onApply={perms => setPermissions(perms)}
           />
         </ModalBody>
+      </Modal>
+      <Modal
+        isOpen={infoRoleModal}
+        toggle={toggleInfoRoleModal}
+        id="#modal2-body_new-role--padding"
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader toggle={toggleInfoRoleModal}>Role Info</ModalHeader>
+        <ModalBody>{modalContent}</ModalBody>
+        <ModalFooter>
+          <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
+            {' '}
+            Ok{' '}
+          </Button>
+        </ModalFooter>
       </Modal>
     </>
   );
