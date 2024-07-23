@@ -349,9 +349,8 @@
 }
 
 .task_table-container{
-  max-height: 800px;
   width: 100%;
-  overflow-y: auto;
+  overflow-y: hidden;
 }
 
 @media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
