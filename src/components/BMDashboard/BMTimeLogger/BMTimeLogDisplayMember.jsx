@@ -17,7 +17,7 @@ function BMTimeLogDisplayMember({ firstName, lastName, role }) {
     role.includes('mentor')
   ) {
     cardColor = '#6cc3b2'; // light green
-  } else if (role.includes('Owner') || role.includes('ownder')) {
+  } else if (role.includes('Owner') || role.includes('owner')) {
     cardColor = '#c36c6c'; // light red
   }
 

@@ -1,13 +1,7 @@
-import { useSelector } from 'react-redux';
 import { Row, Col } from 'reactstrap';
 import BMTimeLogDisplayMember from './BMTimeLogDisplayMember';
 
-// function BMTimeLogCard({ selectedProject }) {
-function BMTimeLogMembers() {
-  const projectInfo = useSelector(state => state.bmProjectMembers);
-  const membersList = projectInfo.members;
-  // console.log('membersList: ', membersList);
-
+function BMTimeLogMembers({ membersList }) {
   return (
     <Row>
       {membersList.map((value, index) => (

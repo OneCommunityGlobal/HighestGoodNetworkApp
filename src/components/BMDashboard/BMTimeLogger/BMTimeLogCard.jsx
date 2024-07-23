@@ -4,23 +4,30 @@ import { useSelector, useDispatch } from 'react-redux';
 import BMError from '../shared/BMError';
 import { fetchBMProjectMembers } from '../../../actions/bmdashboard/projectMemberAction';
 import BMTimeLogMembers from './BMTimeLogMembers';
+import BMTimeLogMemberInfo from './BMTimeLogMemberInfo';
 
 // function BMTimeLogCard({ selectedProject }) {
 function BMTimeLogCard(props) {
   // const state = useSelector();
 
   const [isError, setIsError] = useState(false);
+  const [memberList, setMemberList] = useState(false);
+  const [isMemberFetched, setIsMemberFetched] = useState(false);
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
 
-  // // console.log('props.state: ', state);
-  // console.log('selectedProject: ', props.selectedProject);
-  // dispatch(fetchBMProjectMembers(props.selectedProject));
-
   useEffect(() => {
     dispatch(fetchBMProjectMembers(props.selectedProject));
   }, [props.selectedProject]);
+
+  useEffect(() => {}, [memberList]);
+
+  useEffect(() => {
+    if (memberList) {
+      setIsMemberFetched(true);
+    }
+  }, [memberList]);
 
   // trigger an error state if there is an errors object
   useEffect(() => {
@@ -31,11 +38,10 @@ function BMTimeLogCard(props) {
 
   return (
     <Container fluid>
-      {isError ? (
-        <BMError errors={errors} />
-      ) : (
-        <BMTimeLogMembers selectedProject={props.selectedProject} />
-      )}
+      <BMTimeLogMemberInfo setMemberList={setMemberList} />
+
+      {isMemberFetched ? <BMTimeLogMembers membersList={memberList} /> : null}
+      {isError ? <BMError errors={errors} /> : null}
     </Container>
   );
 }
