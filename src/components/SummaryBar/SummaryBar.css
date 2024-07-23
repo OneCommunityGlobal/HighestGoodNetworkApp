@@ -200,6 +200,13 @@
   .large_text_summary {
     font-size: 1.5rem;
   }
+  .redBackgroup {
+    font-size: 0.75rem;
+    height: 20px;
+    max-width: 20px;
+    min-width: 20px;
+    padding: 0;
+  }
 }
 
 .text-center{
