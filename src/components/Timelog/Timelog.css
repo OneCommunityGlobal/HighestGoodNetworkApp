@@ -188,24 +188,6 @@
   min-width: 100%;
 }
 
-
- @media (max-width: 768px) {
-  .timelogPageContainer .container-md{
-    max-width: 97% ;
-  } 
-  .timelogPageContainer .row{
-    margin: auto ;    
-  }
-}
- @media (min-width: 768px) and (max-width:1025px) {
-  .timelogPageContainer .container-md{
-    max-width:90% ;
-  } 
-  .timelogPageContainer .row{
-    margin: auto ;     
-  }
-} 
-
 @media only screen and (max-width: 544px) {
   .responsive-font-size{
     font-size: 0.75rem !important;
