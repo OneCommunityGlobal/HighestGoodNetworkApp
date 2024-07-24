@@ -22,7 +22,6 @@
     "diff": "^5.0.0",
     "dompurify": "^3.0.6",
     "font-awesome": "^4.7.0",
-    "fs-extra": "^11.2.0",
     "history": "^4.10.1",
     "html-react-parser": "^1.4.14",
     "html-to-pdfmake": "^2.0.6",

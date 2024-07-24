@@ -4,14 +4,16 @@
  * Created on  : 05/27/2020
  * List the users in the application for administrator.
  *****************************************************************/
-import React from 'react';
+import React, { useState } from 'react';
 import {
   getAllUserProfile,
   updateUserStatus,
   updateUserFinalDayStatusIsSet,
   deleteUser,
+  enableEditUserInfo,
+  disableEditUserInfo,
 } from '../../actions/userManagement';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import Loading from '../common/Loading';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserTableHeader from './UserTableHeader';
@@ -36,6 +38,7 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { toast } from 'react-toastify';
+// import { stat } from 'fs-extra';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -51,7 +54,7 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: '',
       selectedPage: 1,
       pageSize: 10,
-      allSelected:undefined,
+      allSelected: undefined,
       isActive: undefined,
       isSet: undefined,
       activationDateOpen: false,
@@ -77,56 +80,61 @@ class UserManagement extends React.PureComponent {
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
     const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode);
+    var editUser = this.props.state.userProfileEdit.editable
+    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode,editUser);
     let roles = [...new Set(userProfiles.map(item => item.role))];
+  
+
     return (
-      <Container fluid className={darkMode ? ' bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+      <Container fluid className={darkMode ? ' bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
         {/* {fetching ? (
           <SkeletonLoading template="UserManagement" />
         ) : ( */}
-          <React.Fragment>
-            {this.popupElements()}
-            <UserSearchPanel
-              onSearch={this.onWildCardSearch}
-              searchText={this.state.wildCardSearchText}
-              onActiveFiter={this.onActiveFiter}
-              onNewUserClick={this.onNewUserClick}
-              handleNewUserSetupPopup={this.handleNewUserSetupPopup}
-              handleSetupHistoryPopup={this.handleSetupHistoryPopup}
-              darkMode={darkMode}
-            />
-            <div className="table-responsive" id="user-management-table">
-              <Table className={`table table-bordered noWrap ${darkMode ? 'text-light' : ''}`}>
-                <thead>
-                  <UserTableHeader
-                    authRole={this.props.state.auth.user.role}
-                    roleSearchText={this.state.roleSearchText}
-                    darkMode={darkMode}
-                  />
-                  <UserTableSearchHeader
-                    onFirstNameSearch={this.onFirstNameSearch}
-                    onLastNameSearch={this.onLastNameSearch}
-                    onRoleSearch={this.onRoleSearch}
-                    onEmailSearch={this.onEmailSearch}
-                    onWeeklyHrsSearch={this.onWeeklyHrsSearch}
-                    roles={roles}
-                    authRole={this.props.state.auth.user.role}
-                    roleSearchText={this.state.roleSearchText}
-                    darkMode={darkMode}
-                  />
-                </thead>
-                <tbody>{userTable}</tbody>
-              </Table>
-            </div>
-            <UserTableFooter
-              datacount={this.filteredUserDataCount}
-              selectedPage={this.state.selectedPage}
-              onPageSelect={this.onSelectPage}
-              onSelectPageSize={this.onSelectPageSize}
-              pageSize={this.state.pageSize}
-              darkMode={darkMode}
-            />
-          </React.Fragment>
+        <React.Fragment>
+          {this.popupElements()}
+          <UserSearchPanel
+            onSearch={this.onWildCardSearch}
+            searchText={this.state.wildCardSearchText}
+            onActiveFiter={this.onActiveFiter}
+            onNewUserClick={this.onNewUserClick}
+            handleNewUserSetupPopup={this.handleNewUserSetupPopup}
+            handleSetupHistoryPopup={this.handleSetupHistoryPopup}
+            darkMode={darkMode}
+          />
+          <div className="table-responsive" id="user-management-table">
+            <Table className={`table table-bordered noWrap ${darkMode ? 'text-light' : ''}`}>
+              <thead>
+                <UserTableHeader
+                  authRole={this.props.state.auth.user.role}
+                  roleSearchText={this.state.roleSearchText}
+                  darkMode={darkMode}
+                  editUser={editUser}
+                // seteditUser={seteditUser}
+                />
+                <UserTableSearchHeader
+                  onFirstNameSearch={this.onFirstNameSearch}
+                  onLastNameSearch={this.onLastNameSearch}
+                  onRoleSearch={this.onRoleSearch}
+                  onEmailSearch={this.onEmailSearch}
+                  onWeeklyHrsSearch={this.onWeeklyHrsSearch}
+                  roles={roles}
+                  authRole={this.props.state.auth.user.role}
+                  roleSearchText={this.state.roleSearchText}
+                  darkMode={darkMode}
+                />
+              </thead>
+              <tbody>{userTable}</tbody>
+            </Table>
+          </div>
+          <UserTableFooter
+            datacount={this.filteredUserDataCount}
+            selectedPage={this.state.selectedPage}
+            onPageSelect={this.onSelectPage}
+            onSelectPageSize={this.onSelectPageSize}
+            pageSize={this.state.pageSize}
+            darkMode={darkMode}
+          />
+        </React.Fragment>
         {/* )} */}
       </Container>
     );
@@ -201,7 +209,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements =(userProfiles, rolesPermissions, timeOffRequests, darkMode) => {
+  userTableElements = (userProfiles, rolesPermissions, timeOffRequests, darkMode,editUser) => {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -245,6 +253,7 @@ class UserManagement extends React.PureComponent {
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
               darkMode={darkMode}
+              editUser={editUser}
             />
           );
         });
@@ -270,7 +279,7 @@ class UserManagement extends React.PureComponent {
 
           // Check the isPaused state only if 'all' is not selected
           ((this.state.allSelected && true) || (this.state.isPaused === false || (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
-        ) &&
+          ) &&
 
           (
             searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
@@ -316,19 +325,19 @@ class UserManagement extends React.PureComponent {
    */
   onLogTimeOffClick = user => {
     // Check if target user is Jae's related user and authroized to manage time off requests
-    if(cantUpdateDevAdminDetails(user.email , this.authEmail)){
+    if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
     const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
-    
+
     const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
-    if(canManageTimeOffRequests || hasRolePermission){
+    if (canManageTimeOffRequests || hasRolePermission) {
       this.setState({
         logTimeOffPopUpOpen: true,
         userForTimeOff: user,
       });
-    }else{
+    } else {
       toast.warn(`You do not have permission to manage time-off requests.`)
     }
 
@@ -339,7 +348,7 @@ class UserManagement extends React.PureComponent {
    */
 
   onFinalDayClick = (user, status) => {
-    if(cantUpdateDevAdminDetails(user.email , this.authEmail)) {
+    if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
       alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
       return;
     }
@@ -642,7 +651,7 @@ class UserManagement extends React.PureComponent {
       newUserPopupOpen: false,
     });
   };
-  
+
 }
 
 const mapStateToProps = state => {
@@ -655,4 +664,6 @@ export default connect(mapStateToProps, {
   deleteUser,
   hasPermission,
   getAllTimeOffRequests,
+  enableEditUserInfo,
+  disableEditUserInfo
 })(UserManagement);

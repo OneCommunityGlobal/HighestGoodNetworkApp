@@ -6,9 +6,12 @@ import {
   RECEIVE_ALL_USER_PROFILES,
   USER_PROFILE_UPDATE,
   USER_PROFILE_DELETE,
+  ENABLE_USER_PROFILE_EDIT,
+  DISABLE_USER_PROFILE_EDIT
 } from '../constants/userManagement';
 import { ENDPOINTS } from '../utils/URL';
 import { UserStatus } from '../utils/enums';
+import { dispatch } from 'd3';
 
 /**
  * fetching all user profiles
@@ -193,3 +196,11 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
     });
   };
 };
+
+export const enableEditUserInfo=(value)=>(dispatch,getState)=>{
+  dispatch({type:ENABLE_USER_PROFILE_EDIT,payload:value});
+}
+
+export const disableEditUserInfo=(value)=>(dispatch,getState)=>{
+  dispatch({type:DISABLE_USER_PROFILE_EDIT,payload:value});
+}
