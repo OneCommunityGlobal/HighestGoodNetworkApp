@@ -780,7 +780,9 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      <Container className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+      <Container 
+        className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
         <Row>
           <Col md="4" id="profileContainer">
             <div className="profile-img">

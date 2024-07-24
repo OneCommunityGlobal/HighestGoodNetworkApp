@@ -61,7 +61,7 @@ export const Badges = props => {
 
   return (
     <>
-      <Card id="badgeCard" className={darkMode ? 'bg-space-cadet' : ''}>
+      <Card id="badgeCard" className={`badgeCard ${darkMode ? 'bg-space-cadet' : ''}`}>
         <CardHeader>
           <div className="badge-header">
 

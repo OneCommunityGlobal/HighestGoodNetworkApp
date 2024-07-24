@@ -55,6 +55,7 @@
 
 .lightModeHoverText {
   opacity: 0;
+  color: #151515;
   position: absolute;
   margin-left: 6px;
   transition: opacity 100ms linear, transition-delay 300ms linear;
