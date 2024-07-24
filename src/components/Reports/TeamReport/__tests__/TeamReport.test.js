@@ -94,10 +94,10 @@ describe("Team Report component",()=>{
       data: [],
     });
     render(<Provider store={store}><TeamReport match={match}/></Provider>)
-    /*await waitFor(()=>{
+    await waitFor(()=>{
       expect(screen.getByText('Apr-04-18')).toBeInTheDocument()
       expect(screen.getByText('Created Date')).toBeInTheDocument()
-    })*/
+    })
     
   })
   it('check if team ID header and its value is getting displayed when the team is present',async ()=>{
