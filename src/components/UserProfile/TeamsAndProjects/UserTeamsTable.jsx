@@ -183,39 +183,6 @@ const UserTeamsTable = props => {
                   </tr>
                 )}
               </thead>
-              <tbody className={darkMode ? 'text-light' : ''}>
-                {props.userTeamsById.length > 0 ? (
-                  props.userTeamsById.map((team, index) => (
-                    <tr key={index} className="tr">
-                      <td>{index + 1}</td>
-                      <td>{`${team.teamName}`}</td>
-                      {props.edit && props.role && (
-                        <td>
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <Button
-                              disabled={!canAssignTeamToUsers}
-                              color="danger"
-                              onClick={e => {
-                                props.onDeleteClick(team._id);
-                              }}
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        </td>
-                      )}
-                    </tr>
-                  ))
-                ) : (
-                  <></>
-                )}
-              </tbody>
               <tbody>
                 {props.userTeamsById.length > 0 ? (
                   props.userTeamsById.map((team, index) => (
