@@ -441,7 +441,9 @@ const Timelog = props => {
   },[]);
 
   return (
-    <div className={`container-timelog-wrapper ${props.isDashboard ? "" : "timelogPageContainer"}`} style={darkMode ? (!props.isDashboard ? {paddingBottom: "300px"} : {}) : {}}>
+    <div 
+      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''} ${props.isDashboard ? "" : "timelogPageContainer"}`} 
+      style={darkMode ? (!props.isDashboard ? {paddingBottom: "300px"} : {}) : {}}>
     
       {!props.isDashboard ? (
         <Container fluid>
