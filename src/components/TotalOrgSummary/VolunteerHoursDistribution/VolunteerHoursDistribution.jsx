@@ -1,10 +1,8 @@
 import { useEffect, useState } from 'react';
-import { ReportPieChart } from '../../common/ReportPieChart/ReportPieChart';
+import HoursWorkedPieChart from '../HoursWorkedPieChart/HoursWorkedPieChart';
 
 export default function VolunteerHoursDistribution({ darkMode, usersTimeEntries = [] }) {
   const [userData, setUserData] = useState([]);
-  // eslint-disable-next-line no-console
-  // console.log('VolunteerHoursStats(2)u);
 
   useEffect(() => {
     if (!Array.isArray(usersTimeEntries) || usersTimeEntries.length === 0) {
@@ -40,17 +38,12 @@ export default function VolunteerHoursDistribution({ darkMode, usersTimeEntries 
         name: range.name,
         value,
         totalHoursCalculated: totalHoursWorked,
-        title: 'Volunteer Hours',
+        title: 'HOURS WORKED',
       };
     });
 
     setUserData(arrData);
   }, [usersTimeEntries]);
-
-  useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('userData', userData);
-  }, [userData]);
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -74,7 +67,7 @@ export default function VolunteerHoursDistribution({ darkMode, usersTimeEntries 
   return (
     <div>
       <h4 style={{ color: 'black' }}>Volunteer Hours Distribution</h4>
-      <ReportPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
+      <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
     </div>
   );
 }

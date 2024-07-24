@@ -1,28 +1,19 @@
+
 import React, { useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
 
-const generateRandomHexColor = () => {
-  const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-  const hexColor = '#' + '0'.repeat(6 - randomColor.length) + randomColor;
-  return hexColor;
-};
 
-const renderActiveShape = props => {
-  const hexColor = generateRandomHexColor();
+const generateRandomHexColor = () => {
+
+  const randomColor = Math.floor(Math.random() * 16777215).toString(16);
+  const hexColor = "#" + "0".repeat(6 - randomColor.length) + randomColor;
+  return hexColor;
+}
+
+const renderActiveShape = (props) => {
+  const hexColor = generateRandomHexColor()
   const RADIAN = Math.PI / 180;
-  const {
-    cx,
-    cy,
-    midAngle,
-    innerRadius,
-    outerRadius,
-    startAngle,
-    endAngle,
-    fill,
-    payload,
-    percent,
-    value,
-  } = props;
+  const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
   const sin = Math.sin(-RADIAN * midAngle);
   const cos = Math.cos(-RADIAN * midAngle);
   const sx = cx + (outerRadius + 10) * cos;
@@ -33,20 +24,12 @@ const renderActiveShape = props => {
   const ey = my;
   const textAnchor = cos >= 0 ? 'start' : 'end';
 
+
   return (
     <g>
-        <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
-          {payload.lastName
-            ? `${payload.lastName.substring(0, 5)} ${payload.value.toFixed(
-                1,
-              )} of ${payload.totalHoursCalculated.toFixed(1)} hrs`
-            : 'HOURS WORKED'}
-        </text>
-        <text x={cx} y={cy} dy={28} textAnchor="middle" fill={fill}>
-          {payload.title && payload.title === 'Volunteer Hours'
-            ? `${payload.totalHoursCalculated.toFixed(1)} hrs`
-            : ''}
-        </text>
+      <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
+        {payload.lastName.substring(0, 5)} {payload.value.toFixed(1)} of {payload.totalHoursCalculated.toFixed(1)}hrs
+      </text>
       <Sector
         cx={cx}
         cy={cy}
@@ -67,25 +50,15 @@ const renderActiveShape = props => {
       />
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text
-        x={ex + (cos >= 0 ? 1 : -1) * -24}
-        y={ey}
-        dy={-6}
-        textAnchor={textAnchor}
-        fill="#333"
-      > { payload.lastName?
-           `${payload.name.substring(0, 5)}` : ''}</text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * -30} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-        {`${value.toFixed(1)} Hrs`}
-      </text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * -24} y={ey} dy={36} textAnchor={textAnchor} fill="#999">
-        {`(${(percent * 100).toFixed(1)}%)`}
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${payload.name.substring(0, 14)}`}</text>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
+        {`${value.toFixed(2)} Hours (${(percent * 100).toFixed(2)}%)`}
       </text>
     </g>
   );
 };
 
-export function ReportPieChart({ userData, windowSize, darkMode }) {
+export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
   const [activeIndex, setActiveIndex] = useState(0);
 
   const onPieEnter = (_, index) => {
@@ -94,7 +67,7 @@ export function ReportPieChart({ userData, windowSize, darkMode }) {
 
   let circleSize = 30;
   if (windowSize <= 1280) {
-    circleSize = (windowSize / 10) * 0.5;
+    circleSize = windowSize / 10 * 0.5;
   }
 
   return (
@@ -112,9 +85,9 @@ export function ReportPieChart({ userData, windowSize, darkMode }) {
             fill="#8884d8"
             dataKey="value"
             onMouseEnter={onPieEnter}
-          />
-        </PieChart>
-      </ResponsiveContainer>
-    </div>
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
   );
 }

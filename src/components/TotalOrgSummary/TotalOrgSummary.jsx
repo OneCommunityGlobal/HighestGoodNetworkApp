@@ -20,24 +20,18 @@ import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHo
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
+import Loading from '../common/Loading';
 
-const fromDate = '2024-07-01';
-// const toDate = new Date().toISOString().split('T')[0];
+const fromDate = '2024-07-10';
 const toDate = '2024-07-19';
 
 function TotalOrgSummary(props) {
-  // eslint-disable-next-line no-console
-  // console.log('props', props);
   const { darkMode, loading, error, allUserProfiles } = props;
 
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
-  // const [unifiedUsersTimeEntries, setUnifiedUsersTimeEntries] = useState([]);
   const dispatch = useDispatch();
 
-  // const [volunteerHoursStats, setVolunteerHoursStats] = useState([]);
-
-  // const totalOrgSummary = useSelector(state => state.totalOrgSummary);
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
 
   useEffect(() => {
@@ -45,9 +39,6 @@ function TotalOrgSummary(props) {
   }, []);
 
   useEffect(() => {
-    // eslint-disable-next-line no-console
-    // console.log('All User Profile', allUserProfiles);
-
     if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
       const idsList = allUserProfiles.userProfiles.reduce((acc, user) => {
         if (user.isActive) acc.push(user._id);
@@ -62,16 +53,6 @@ function TotalOrgSummary(props) {
       dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
     }
   }, [usersId, fromDate, toDate, dispatch]);
-
-  useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('Users Ids', usersId);
-  }, [usersId]);
-
-  useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('🚀~ allUsersTimeEntries:', allUsersTimeEntries);
-  }, [allUsersTimeEntries]);
 
   const aggregateTimeEntries = userTimeEntries => {
     const aggregatedEntries = {};
@@ -89,7 +70,6 @@ function TotalOrgSummary(props) {
       }
     });
 
-    // Convertir minutos a horas si es necesario
     Object.keys(aggregatedEntries).forEach(personId => {
       const totalMinutes = aggregatedEntries[personId].minutes;
       const additionalHours = Math.floor(totalMinutes / 60);
@@ -97,7 +77,6 @@ function TotalOrgSummary(props) {
       aggregatedEntries[personId].minutes = totalMinutes % 60;
     });
 
-    // Convertir el objeto a un arreglo
     const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
       personId,
       hours,
@@ -118,11 +97,6 @@ function TotalOrgSummary(props) {
     const aggregatedEntries = aggregateTimeEntries(allUsersTimeEntries.usersTimeEntries);
     setUsersTimeEntries(aggregatedEntries);
   }, [allUsersTimeEntries]);
-
-  useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('Users Time ENtries', usersTimeEntries);
-  }, [usersTimeEntries]);
 
   if (error) {
     return (
@@ -200,7 +174,14 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border" style={{ position: 'relative' }}>
-              <div className="d-flex flex-row justify-content-end">
+              {(allUserProfiles.fetching || allUsersTimeEntries.loading) && (
+                <div className="d-flex justify-content-center align-items-center0">
+                  <div className="w-100vh ">
+                    <Loading />
+                  </div>
+                </div>
+              )}
+              <div className="d-flex flex-row justify-content-center">
                 {Array.isArray(usersTimeEntries) && usersTimeEntries.length > 0 && (
                   <>
                     <VolunteerHoursDistribution
@@ -214,23 +195,7 @@ function TotalOrgSummary(props) {
                   </>
                 )}
               </div>
-              {/* <p
-                className="component-border component-pie-chart-label"
-                style={{
-                  position: 'absolute',
-                  bottom: '5%',
-                  right: '5%',
-                  width: '20%',
-                  padding: '5px',
-                }}
-              >
-                {'xxx '}
-                Volunteers worked over assigned time
-              </p> */}
             </div>
-            {/* <div>
-              <span>{JSON.stringify(totalOrgSummary)}</span>
-            </div> */}
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">

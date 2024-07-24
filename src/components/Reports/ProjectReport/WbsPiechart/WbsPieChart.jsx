@@ -1,5 +1,5 @@
 import React, {  useEffect, useState } from 'react';
-import { ReportPieChart } from '../../../common/ReportPieChart/ReportPieChart';
+import { ProjectPieChart } from '../ProjectPieChart/ProjectPieChart';
 import '../PiechartByProject/PieChartByProject.css';
 
 export function WbsPieChart({
@@ -106,7 +106,7 @@ export function WbsPieChart({
 
       </div>)}
       {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
-        <ReportPieChart userData={userData} windowSize={windowSize.width} darkMode={darkMode}/>
+        <ProjectPieChart userData={userData} windowSize={windowSize.width} darkMode={darkMode}/>
       </div>)}
     </div>
   )
