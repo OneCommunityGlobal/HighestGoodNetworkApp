@@ -441,8 +441,8 @@ const Timelog = props => {
   },[]);
 
   return (
-    <div className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`} 
-         style={darkMode ? (!props.isDashboard ? {paddingBottom: "300px"} : {}) : {}}>
+    <div className={`container-timelog-wrapper ${props.isDashboard ? "" : "timelogPageContainer"}`} style={darkMode ? (!props.isDashboard ? {paddingBottom: "300px"} : {}) : {}}>
+    
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
@@ -472,7 +472,7 @@ const Timelog = props => {
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <Container fluid="md" >
+        <Container fluid="md"  >
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
