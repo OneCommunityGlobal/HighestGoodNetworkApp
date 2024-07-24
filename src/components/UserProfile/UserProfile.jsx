@@ -496,23 +496,29 @@ function UserProfile(props) {
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
-      const newBlueSquare = {
-        date: dateStamp,
-        description: summary,
-        createdDate: moment
-          .tz('America/Los_Angeles')
-          .toISOString()
-          .split('T')[0],
-      };
-      setOriginalUserProfile({
-        ...originalUserProfile,
-        infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
-      setUserProfile({
-        ...userProfile,
-        infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
-      setModalTitle('Blue Square');
+      /* peizhou: check that the date of the blue square is not future */
+      if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
+        console.log('WARNING: Future Blue Square');
+        alert('WARNING: Cannot Assign Blue Square with a Future Date');
+      } else {
+        const newBlueSquare = {
+          date: dateStamp,
+          description: summary,
+          createdDate: moment
+            .tz('America/Los_Angeles')
+            .toISOString()
+            .split('T')[0],
+        };
+        setOriginalUserProfile({
+          ...originalUserProfile,
+          infringements: userProfile.infringements?.concat(newBlueSquare),
+        });
+        setUserProfile({
+          ...userProfile,
+          infringements: userProfile.infringements?.concat(newBlueSquare),
+        });
+        setModalTitle('Blue Square');
+      }
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
       if (dateStamp != null && currentBlueSquares.length !== 0) {
