@@ -146,9 +146,17 @@ function UserProfile(props) {
   }, [teams, projects]);
 
   useEffect(() => {
+    // use abortController() to cancel requests on unmount.
+    const aboutController = new AbortController();
+    const { signal } = aboutController;
+
     setShowLoading(true);
-    loadUserProfile();
-    loadUserTasks();
+    loadUserProfile(signal);
+    loadUserTasks(signal);
+
+    return () => {
+      aboutController.abort(); // Abort ongoing fetches on component unmount
+    }
   }, [props?.match?.params?.userId]);
 
   useEffect(() => {
@@ -257,15 +265,22 @@ function UserProfile(props) {
     }
   };
 
-  const loadUserTasks = async () => {
+  const loadUserTasks = async (signal) => {
     const userId = props?.match?.params?.userId;
+    if (!userId) return;
     axios
-      .get(ENDPOINTS.TASKS_BY_USERID(userId))
+      .get(ENDPOINTS.TASKS_BY_USERID(userId), {signal})
       .then(res => {
         setTasks(res?.data || []);
         setOriginalTasks(res.data);
       })
-      .catch(err => console.log(err));
+      .catch(err => {
+        if (axios.isCancel(err)) {
+          console.log('Fetch cancelled:', err.message);  // Handling cancelled fetch specifically
+        } else {
+          console.error('Error loading user tasks:', err);  // General error handling
+        }
+      });
   };
 
 
@@ -280,13 +295,13 @@ function UserProfile(props) {
     }
   };
 
-  const loadUserProfile = async () => {
+  const loadUserProfile = async (signal) => {
     const userId = props?.match?.params?.userId;
 
     if (!userId) return;
 
     try {
-      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
+      const response = await axios.get(ENDPOINTS.USER_PROFILE(userId), {signal});
       const newUserProfile = response.data;
       // Assuming newUserProfile contains isRehireable attribute
       setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
@@ -318,6 +333,11 @@ function UserProfile(props) {
       setUserStartDate(newUserProfile?.startDate.split('T')[0]);
       setShowLoading(false);
     } catch (err) {
+      if (axios.isCancel(err)) {
+        console.log('Fetch cancelled:', err);
+      } else {
+        console.error('Error loading user profile:', err);
+      }
       setShowLoading(false);
     }
   };
