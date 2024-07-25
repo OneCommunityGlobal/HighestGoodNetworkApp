@@ -65,7 +65,7 @@
 .multi-select-filter {
   .options {
     max-height: 570px;
-    overflow-y: scroll;
+    overflow-y: auto;
     font-family: 'Courier New', Courier, monospace;
   }
 
