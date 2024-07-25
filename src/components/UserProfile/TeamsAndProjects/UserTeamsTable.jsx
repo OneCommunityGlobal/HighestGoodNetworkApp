@@ -28,7 +28,7 @@ const UserTeamsTable = props => {
   const refDropdown = useRef();
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^.{5,7}$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = (e, autoComplete) => {
