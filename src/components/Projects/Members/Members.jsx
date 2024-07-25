@@ -35,27 +35,30 @@ const Members = props => {
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
   useEffect(() => {
+    let isMounted = true;
     const fetchMembers = async () => {
       setIsLoading(true);
       setMembersList([]); 
       await props.fetchAllMembers(projectId);
-      setIsLoading(false);
+      if (isMounted) {
+        setIsLoading(false);
+      }
     };
     fetchMembers();
+    return () => {
+      isMounted = false; 
+    };
   }, [projectId]);
 
   const assignAll = async () => {
     const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
 
     // Wait for all members to be assigned
-
-    await Promise.all(allUsers.map(user => {
-      console.log('successfully assigned', user.firstName)
-      props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName)
-      
-    }
-    ));
-  
+    await Promise.all(
+      allUsers.map(user =>
+        props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName),
+      ),
+    );
 
     props.fetchAllMembers(projectId);
   };
@@ -95,25 +98,6 @@ const Members = props => {
 
   return (
     <React.Fragment>
-
-//       <div className="container">
-//         <nav aria-label="breadcrumb">
-//           <ol className="breadcrumb">
-//             <NavItem tag={Link} to={`/projects/`}>
-//               <button type="button" className="btn btn-secondary" style={boxStyle}>
-//                 <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-//               </button>
-//             </NavItem>
-
-//             <div data-testid="projectId" id="member_project__name">PROJECTS {projectId}</div>
-//           </ol>
-//         </nav>
-//         {canGetProjectMembers ? (
-//           <div className="input-group" id="new_project">
-//             <div className="input-group-prepend">
-//               <span className="input-group-text">Find user</span>
-//             </div>
-
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
         <div className="container pt-2">
           <nav aria-label="breadcrumb">
@@ -124,7 +108,7 @@ const Members = props => {
                 </button>
               </NavItem>
 
-              <div id="member_project__name">PROJECTS {props.projectId}</div>
+              <div id="member_project__name" data-testid="projectId">PROJECTS {props.projectId}</div>
             </ol>
           </nav>
           {canAssignProjectToUsers ? (
@@ -163,30 +147,6 @@ const Members = props => {
                 </button>
               </div>
             </div>
-
-//           </div>
-//         ) : null}
-//         {showFindUserList && props.state.projectMembers.foundUsers.length > 0 ? (
-//           <table className="table table-bordered table-responsive-sm">
-//             <thead>
-//               <tr>
-//                 <th scope="col" id="foundUsers__order">
-//                   #
-//                 </th>
-//                 <th scope="col">Name</th>
-//                 <th scope="col">Email</th>
-//                 {canAssignProjectToUsers ? (
-//                   <th scope="col">
-//                     Assign
-//                     <button
-//                       className="btn btn-outline-primary"
-//                       type="button"
-//                       onClick={() => assignAll()}
-//                       style={boxStyle}
-//                     >
-//                       +All
-//                     </button>
-
           ) : null}
 
           {showFindUserList && props.state.projectMembers.foundUsers.length > 0 ? (
@@ -195,7 +155,6 @@ const Members = props => {
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   <th scope="col" id="foundUsers__order">
                     #
-
                   </th>
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
@@ -238,31 +197,6 @@ const Members = props => {
             handleUserProfile={handleToggle}
           />
 
-
-//         <table className="table table-bordered table-responsive-sm">
-//           <thead>
-//             <tr>
-//               <th scope="col" id="members__order">
-//                 #
-//               </th>
-//               <th scope="col" id="members__name"></th>
-//               {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
-//             </tr>
-//           </thead>
-//           <tbody>
-//             {displayedMembers.map((member, i) => (
-//               <Member
-//                 index={i}
-//                 key={member._id}
-//                 projectId={projectId}
-//                 uid={member._id}
-//                 fullName={member.firstName + ' ' + member.lastName}
-//                 //data-testid={`member-${member._id}`} // Add a test id to each member element
-//               />
-//             ))}
-//           </tbody>
-//         </table>
-
           {isLoading ? ( <Loading align="center" /> ) : (
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead>
@@ -283,6 +217,7 @@ const Members = props => {
                     uid={member._id}
                     fullName={member.firstName + ' ' + member.lastName}
                     darkMode={darkMode}
+                    data-testid={`member-${member._id}`}
                   />
                 ))}
               </tbody>
