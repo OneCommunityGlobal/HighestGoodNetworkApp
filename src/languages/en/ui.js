@@ -4,6 +4,7 @@
  ******************************************************************************* */
 export const ACTIVE = 'Active';
 export const INACTIVE = 'InActive';
+export const ACTIVE_MEMBERS = 'Active Members';
 export const ACTIVE_PROJECTS = 'Active Projects';
 export const BM_DASHBOARD = 'BM Dashboard';
 export const BM_PROJECT = 'Project';

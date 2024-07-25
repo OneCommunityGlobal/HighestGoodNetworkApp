@@ -2,13 +2,12 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
+import '../Header/DarkMode.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
 import { connect, useSelector } from 'react-redux';
 import MembersAutoComplete from './MembersAutoComplete';
-
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
 
@@ -22,15 +21,16 @@ export const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
-    
+  const [activeUserCount, setActiveUserCount] = useState(0); // State for counting active users
+
   const closeDeletedPopup = () => {
     setDeletedPopup(!deletedPopup);
-  }
+  };
 
-  const handleDelete = (id) => {
-    props.onDeleteClick(`${id}`)
+  const handleDelete = id => {
+    props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
-  }
+  };
 
   const [infoModal, setInfoModal] = useState(false);
 
@@ -41,6 +41,7 @@ export const TeamMembersPopup = React.memo(props => {
     props.onClose();
     setSortOrder(0);
   };
+
   const onAddUser = () => {
     if (selectedUser) {
       const isDuplicate = props.members.teamMembers.some(x => x._id === selectedUser._id);
@@ -57,6 +58,7 @@ export const TeamMembersPopup = React.memo(props => {
       setIsValidUser(false);
     }
   };
+
   const selectUser = user => {
     setSelectedUser(user);
     setIsValidUser(true);
@@ -64,7 +66,6 @@ export const TeamMembersPopup = React.memo(props => {
   };
 
   const sortByPermission = useCallback((a, b) => {
-    // Sort by index
     const rolesPermission = [
       'owner',
       'administrator',
@@ -83,16 +84,8 @@ export const TeamMembersPopup = React.memo(props => {
     return nameA.localeCompare(nameB);
   }, []);
 
-  /**
-   * The function to sort the memberlist
-   * @param {-1 | 0 | 1} [sort = 0]
-   * -1: ascending order by date
-   * 0: alphabetized order by name
-   * 1: descending order by date
-   */
   const sortList = (sort = 0) => {
     let sortedList = [];
-
     if (sort === 0) {
       const groupByPermissionList =
         props.members?.teamMembers?.reduce((pre, cur) => {
@@ -155,7 +148,7 @@ export const TeamMembersPopup = React.memo(props => {
       });
     }
     return memberVisibility;
-  }
+  };
 
   useEffect(() => {
     sortList(sortOrder);
@@ -168,7 +161,12 @@ export const TeamMembersPopup = React.memo(props => {
     setDuplicateUserAlert(false);
   }, [props.open]);
 
-  // call the handler to update the team member's visibility
+  // Calculate the number of active users whenever the memberList changes
+  useEffect(() => {
+    const count = memberList.filter(user => user.isActive).length;
+    setActiveUserCount(count);
+  }, [memberList]);
+
   const UpdateTeamMembersVisibility = (userId, choice) => {
     props.onUpdateTeamMemberVisibility(userId, choice);
   };
@@ -207,6 +205,8 @@ export const TeamMembersPopup = React.memo(props => {
             <></>
           )}
 
+          <p>Total Active Users: {activeUserCount}</p> {/* Display active user count */}
+
           <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode text-light' : ''}`}>
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
@@ -232,9 +232,10 @@ export const TeamMembersPopup = React.memo(props => {
               </tr>
             </thead>
             <tbody>
-              {props.members.teamMembers.length > 0 && props.members.fetching === false && props.members.fetched && 
+              {props.members.teamMembers.length > 0 &&
+                props.members.fetching === false &&
+                props.members.fetched &&
                 memberList.toSorted().map((user, index) => {
-
                   return (
                     <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
                       <td>
@@ -254,7 +255,6 @@ export const TeamMembersPopup = React.memo(props => {
                           </span>
                         )}{' '}
                       </td>
-                      {/* <td>{user}</td> */}
                       <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
                       <td>
                         <ToggleSwitch
