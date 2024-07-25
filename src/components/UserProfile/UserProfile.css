@@ -1,0 +1,466 @@
+.desktop-profile-page {
+  z-index: -100;
+}
+
+.profileContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  padding: 10px;
+  padding-bottom: 50px;
+  margin-left: 10vw;
+  margin-right: 10vw;
+  font-weight: bold;
+  background-color: white;
+}
+
+.row {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.column {
+  -webkit-box-flex: 50%;
+      -ms-flex: 50%;
+          flex: 50%;
+}
+
+.red {
+  color: grey;
+}
+
+.green {
+  color: green;
+}
+
+.emp-profile {
+  padding-top: 20px;
+  padding-left: 3%;
+  padding-right: 3%;
+  margin-top: 40px;
+  margin-bottom: 20px;
+  border-radius: 0.5rem;
+  background: #fff;
+}
+
+.profile-img {
+  text-align: center;
+}
+
+.profile-img .file {
+  position: relative;
+  overflow: hidden;
+  margin-top: -10%;
+  width: 70%;
+  border: none;
+  border-radius: 0;
+  font-size: 15px;
+  background: red;
+}
+
+.profile-img .file input {
+  position: absolute;
+  opacity: 0;
+  right: 0;
+  top: 0;
+}
+
+.profile-head h5 {
+  color: #333;
+  margin: 0;
+}
+
+.job-title {
+  color: #0062cc;
+}
+
+.profile-head {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -ms-flex-wrap: wrap;
+      flex-wrap: wrap;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.profile-edit-btn {
+  border: none;
+  border-radius: 1.5rem;
+  width: 70%;
+  padding: 2%;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.proile-rating {
+  font-size: 12px;
+  color: #818182;
+  margin-top: 5%;
+}
+
+.proile-rating span {
+  color: #495057;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.profile-tabs .nav-tabs {
+  margin-bottom: 5%;
+}
+
+.profile-tabs .nav-tabs .nav-link {
+  font-weight: 600;
+  border: none;
+}
+
+.profile-tabs .nav-tabs .nav-link.active {
+  border: none;
+  border-bottom: 2px solid #0062cc;
+}
+
+.profile-work {
+  padding: 5% 14% 14% 14%;
+}
+
+.profile-work p {
+  font-size: 12px;
+  color: #818182;
+  font-weight: 600;
+  margin-top: 10%;
+}
+
+.profile-work a {
+  text-decoration: none;
+  color: #495057;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.profile-work ul {
+  list-style: none;
+}
+
+.profile-tab label {
+  font-weight: 600;
+}
+
+.profile-tab p {
+  font-weight: 600;
+  color: #0062cc;
+}
+
+.profile-work {
+  font-size: 12px;
+  color: #818182;
+  font-weight: 600;
+  margin-top: 16px;
+}
+
+.iconContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+}
+
+.icon {
+  padding-right: 10px;
+}
+
+.profileEditButtonContainer {
+  margin-top: 20px;
+}
+
+.profileEditButton {
+  border: none;
+  border-radius: 1.5rem;
+  width: 70%;
+  padding: 2%;
+  font-weight: 600;
+  color: #6c757d;
+  cursor: pointer;
+}
+
+.btn-bottom {
+  margin-top: 2px;
+  margin-bottom: 2px;
+}
+
+.profilePicture {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  max-width: 240px;
+  max-height: 240px;
+  width: auto;
+  height: auto;
+  margin: auto;
+}
+
+.whoSection {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  text-align: center;
+  margin: 5vh;
+  padding: 5vh;
+}
+
+.detailSectionContainer {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  margin-right: 10vh;
+  margin-left: 10vh;
+}
+
+.detailSection {
+  width: 300px;
+}
+
+.profileLinks {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 80%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  padding: 5px;
+}
+
+.linkIconSection {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: justify;
+      -ms-flex-pack: justify;
+          justify-content: space-between;
+  color: orange;
+  font-weight: bold;
+  margin: 5px;
+}
+
+.profile-functions-tablet {
+  display: none;
+}
+
+#stopSchedulerButton {
+  background-color: #ffc107;
+  border: #ffc107;
+}
+
+#stopSchedulerButton:hover {
+  background-color: #ffcd39;
+  border: #ffcd39;
+}
+
+#stopSchedulerButton:active, #stopSchedulerButton:focus {
+  background-color: #997404;
+  border: #997404;
+}
+
+.user-profile-blue-square-time-off-section {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+}
+
+.isActive {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  height: 100%;
+}
+
+.isActive i {
+  color: lawngreen;
+  margin-top: 10px;
+}
+
+.isNotActive i {
+  color: #dee2e6;
+  margin-top: 10px;
+}
+
+.isNotActive {
+  color: #dee2e6;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  height: 100%;
+}
+
+.Blue-Square-Email-BCC-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  -webkit-transform: translateX(-50%);
+          transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}
+
+.Blue-Square-Email-BCC-tooltip {
+  visibility: hidden;
+  background-color: white;
+  color: black;
+  text-align: center;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  position: relative;
+  z-index: 1;
+  font-size: 0.8rem;
+  top: 10px;
+}
+
+.Blue-Square-Email-BCC-div {
+  height: 6em;
+}
+
+.Blue-Square-Email-BCC-div:hover div {
+  visibility: visible;
+}
+
+@media only screen and (max-width: 1024px) {
+  .profileContainer {
+    -ms-flex-pack: distribute;
+        justify-content: space-around;
+    margin: 0;
+    padding: 0;
+  }
+  .profile-work {
+    padding: 0;
+  }
+  .profile-work p {
+    margin: 0;
+  }
+  .profile-functions-desktop {
+    display: none;
+  }
+  .profile-functions-tablet {
+    display: block;
+  }
+  .profile-functions-list {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    -webkit-box-orient: vertical;
+    -webkit-box-direction: normal;
+        -ms-flex-direction: column;
+            flex-direction: column;
+    padding: 0;
+  }
+  .profile-functions-list {
+    margin-top: 16px;
+    border-top: 2px solid #0275d8;
+  }
+  .list-button {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+    margin: 4px 0;
+    padding: 8px 0;
+    font-weight: bold;
+    text-decoration: none;
+  }
+  .list-button:nth-child(1) {
+    margin-top: 16px;
+  }
+  .desktop-panel {
+    display: none;
+  }
+  .whoSection {
+    width: 250px;
+  }
+  .detailSection {
+    width: 250px;
+  }
+}
+
+@media only screen and (max-width: 767px) {
+  .emp-profile {
+    margin-top: 0;
+  }
+}
+
+@media only screen and (max-height: 650px) {
+  .profileContainer {
+    -ms-flex-pack: distribute;
+        justify-content: space-around;
+  }
+  .whoSection {
+    width: 240px;
+  }
+  .detailSection {
+    width: 240px;
+  }
+}
+
+.btn-outline-primary:disabled {
+  margin-right: 5px;
+}
+
+button.btn.btn-outline-primary {
+  margin-right: 5px;
+}
+/*# sourceMappingURL=UserProfile.css.map */

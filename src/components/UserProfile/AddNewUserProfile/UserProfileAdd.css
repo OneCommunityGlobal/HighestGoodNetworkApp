@@ -1,0 +1,193 @@
+form-control {
+  width: 0;
+}
+
+.border-error-validation {
+  border-color: red !important;
+}
+
+.saveChangesWarning {
+  display: block;
+  position: fixed;
+  top: 7vh;
+  left: 0;
+  width: 100%;
+  color: white;
+  background-color: red;
+  border: 1px solid #a8a8a8;
+  text-align: center;
+  z-index: 9;
+  opacity: 70%;
+}
+
+.profileEditTitleCenter {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  width: 100%;
+  margin: 5px;
+  font-weight: bold;
+  text-align: center;
+  color: lightblue;
+}
+
+.profileEditTitle {
+  color: lightblue;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  margin: 5px;
+  font-weight: bold;
+}
+
+.detailEditSection {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  text-align: center;
+  width: 300px;
+  margin-left: 5%;
+  margin-right: 5%;
+}
+
+.inputSections {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: vertical;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: column;
+          flex-direction: column;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  -ms-flex-line-pack: center;
+      align-content: center;
+  text-align: center;
+  width: 300px;
+}
+
+.profileViewButtonContainer {
+  position: absolute;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  right: 1%;
+  -webkit-box-pack: end;
+      -ms-flex-pack: end;
+          justify-content: flex-end;
+}
+
+.profileViewButton {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  padding: 0.25em 0.4em;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
+  border-radius: 20px;
+  background-color: dodgerblue;
+  color: white;
+}
+
+.profileViewButton:hover {
+  text-decoration: none;
+}
+
+.modLinkButton {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  width: 25px;
+  height: 25px;
+  margin: 5px;
+  color: white;
+  border-radius: 25%;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  background-color: #6d757d;
+  border: none;
+}
+
+.teamsView {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+}
+
+.blueSquareSection {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-orient: horizontal;
+  -webkit-box-direction: normal;
+      -ms-flex-direction: row;
+          flex-direction: row;
+  -webkit-box-align: center;
+      -ms-flex-align: center;
+          align-items: center;
+  -webkit-box-pack: center;
+      -ms-flex-pack: center;
+          justify-content: center;
+  color: orange;
+  font-weight: bold;
+  margin: 5px;
+}
+
+.tab-pane .row {
+  padding: 15 px;
+}
+
+.required-user-field {
+  color: #c50202;
+  padding-top: 0.3rem;
+  font-size: 0.8rem;
+}
+
+.weeklySummaryOptionsLabel {
+  margin-left: 7px;
+}
+
+.user-add-row {
+  width: auto;
+}
+
+.text-md-right {
+  white-space: nowrap;
+}
+
+@media only screen and (max-width: 1024px) {
+  .text-md-right {
+    padding: 0px !important;
+  }
+  label {
+    font-weight: normal;
+  }
+}
+
+@media only screen and (max-width: 992px) and (min-width: 768px) {
+  .user-add-row {
+    margin-right: -50px !important;
+    margin-left: -50px !important;
+    font-size: 14px;
+  }
+  .add-new-user .form-control {
+    max-width: 210px !important;
+  }
+}
+/*# sourceMappingURL=UserProfileAdd.css.map */
