@@ -29,7 +29,6 @@ export const fetchAllUsersTimeEntriesError = error => ({
 });
 
 export const getAllUsersTimeEntries = (users, fromDate, toDate) => {
-  // console.log("🚀 ~ getAllUsersTimeEntries ~ users, startDate, endDate:", users, startDate, endDate)
   const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
   return async dispatch => {
     dispatch(fetchAllUsersTimeEntriesBegin());

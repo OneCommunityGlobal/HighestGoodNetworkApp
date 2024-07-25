@@ -10,6 +10,7 @@ import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import { getAllUserProfile } from 'actions/userManagement';
 import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
+import { getTimeEntryForOverDate } from 'actions/index';
 
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
@@ -22,14 +23,86 @@ import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
 
-const fromDate = '2024-07-10';
-const toDate = '2024-07-19';
+function calculateFromDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
+  currentDate.setDate(currentDate.getDate() - daysToSubtract);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateToDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToAdd = dayOfWeek === 6 ? 0 : 6 - dayOfWeek;
+  currentDate.setDate(currentDate.getDate() + daysToAdd);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateFromOverDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
+  currentDate.setDate(currentDate.getDate() - daysToSubtract - 7);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateToOverDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToAdd = dayOfWeek === 6 ? 0 : -1 - dayOfWeek;
+  currentDate.setDate(currentDate.getDate() + daysToAdd);
+  return currentDate.toISOString().split('T')[0];
+}
+
+const fromDate = calculateFromDate();
+const toDate = calculateToDate();
+const fromOverDate = calculateFromOverDate();
+const toOverDate = calculateToOverDate();
+
+const aggregateTimeEntries = userTimeEntries => {
+  const aggregatedEntries = {};
+
+  userTimeEntries.forEach(entry => {
+    const { personId, hours, minutes } = entry;
+    if (!aggregatedEntries[personId]) {
+      aggregatedEntries[personId] = {
+        hours: parseInt(hours, 10),
+        minutes: parseInt(minutes, 10),
+      };
+    } else {
+      aggregatedEntries[personId].hours += parseInt(hours, 10);
+      aggregatedEntries[personId].minutes += parseInt(minutes, 10);
+    }
+  });
+
+  Object.keys(aggregatedEntries).forEach(personId => {
+    const totalMinutes = aggregatedEntries[personId].minutes;
+    const additionalHours = Math.floor(totalMinutes / 60);
+    aggregatedEntries[personId].hours += additionalHours;
+    aggregatedEntries[personId].minutes = totalMinutes % 60;
+  });
+
+  const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
+    personId,
+    hours,
+    minutes,
+  }));
+
+  return result;
+};
 
 function TotalOrgSummary(props) {
   const { darkMode, loading, error, allUserProfiles } = props;
 
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
+  const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
+
   const dispatch = useDispatch();
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
@@ -49,42 +122,11 @@ function TotalOrgSummary(props) {
   }, [allUserProfiles]);
 
   useEffect(() => {
-    if (Array.isArray(usersId) && usersId.length > 0) {
+    if (Array.isArray(usersId) && usersId.length > 0 && fromDate && toDate) {
       dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
+      // dispatch(getAllUsersTimeEntries(usersId, fromOverDate, toOverDate));
     }
   }, [usersId, fromDate, toDate, dispatch]);
-
-  const aggregateTimeEntries = userTimeEntries => {
-    const aggregatedEntries = {};
-
-    userTimeEntries.forEach(entry => {
-      const { personId, hours, minutes } = entry;
-      if (!aggregatedEntries[personId]) {
-        aggregatedEntries[personId] = {
-          hours: parseInt(hours, 10),
-          minutes: parseInt(minutes, 10),
-        };
-      } else {
-        aggregatedEntries[personId].hours += parseInt(hours, 10);
-        aggregatedEntries[personId].minutes += parseInt(minutes, 10);
-      }
-    });
-
-    Object.keys(aggregatedEntries).forEach(personId => {
-      const totalMinutes = aggregatedEntries[personId].minutes;
-      const additionalHours = Math.floor(totalMinutes / 60);
-      aggregatedEntries[personId].hours += additionalHours;
-      aggregatedEntries[personId].minutes = totalMinutes % 60;
-    });
-
-    const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
-      personId,
-      hours,
-      minutes,
-    }));
-
-    return result;
-  };
 
   useEffect(() => {
     if (
@@ -93,10 +135,27 @@ function TotalOrgSummary(props) {
     ) {
       return;
     }
-
     const aggregatedEntries = aggregateTimeEntries(allUsersTimeEntries.usersTimeEntries);
     setUsersTimeEntries(aggregatedEntries);
   }, [allUsersTimeEntries]);
+
+  useEffect(() => {
+    if (Array.isArray(usersId) && usersId.length > 0) {
+      getTimeEntryForOverDate(usersId, fromOverDate, toOverDate)
+        .then(response => {
+          if (response && Array.isArray(response)) {
+            setUsersOverTimeEntries(response);
+          } else {
+            // eslint-disable-next-line no-console
+            console.log('error on fetching data');
+          }
+        })
+        .catch(() => {
+          // eslint-disable-next-line no-console
+          console.log('error on fetching data');
+        });
+    }
+  }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
 
   if (error) {
     return (
@@ -181,12 +240,13 @@ function TotalOrgSummary(props) {
                   </div>
                 </div>
               )}
-              <div className="d-flex flex-row justify-content-center">
+              <div className="d-flex flex-row justify-content-center flex-wrap">
                 {Array.isArray(usersTimeEntries) && usersTimeEntries.length > 0 && (
                   <>
                     <VolunteerHoursDistribution
                       darkMode={darkMode}
                       usersTimeEntries={usersTimeEntries}
+                      usersOverTimeEntries={usersOverTimeEntries}
                     />
                     <div className="d-flex flex-column align-items-center justify-content-center">
                       <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />

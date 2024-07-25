@@ -40,22 +40,24 @@ function HoursWorkList({ usersTimeEntries = [] }) {
   return (
     <div>
       <h6 style={{ color: 'grey' }}>Hours Worked</h6>
-      <ul className="list-unstyled">
-        {workedData.map(item => (
-          <li key={item.name} className="text-secondary d-flex align-items-center">
-            <div
-              className="me-2"
-              style={{
-                width: '15px',
-                height: '15px',
-                marginRight: '5px',
-                backgroundColor: item.color,
-              }}
-            />
-            <span className="ms-2">{item.name}</span>
-          </li>
-        ))}
-      </ul>
+      <div>
+        <ul className="list-unstyled">
+          {workedData.map(item => (
+            <li key={item.name} className="text-secondary d-flex align-items-center">
+              <div
+                className="me-2"
+                style={{
+                  width: '15px',
+                  height: '15px',
+                  marginRight: '5px',
+                  backgroundColor: item.color,
+                }}
+              />
+              <span className="ms-2">{item.name}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
     </div>
   );
 }

@@ -1,15 +1,33 @@
 import { useEffect, useState } from 'react';
 import HoursWorkedPieChart from '../HoursWorkedPieChart/HoursWorkedPieChart';
 
-export default function VolunteerHoursDistribution({ darkMode, usersTimeEntries = [] }) {
+// components
+import Loading from '../../common/Loading';
+
+export default function VolunteerHoursDistribution({
+  darkMode,
+  usersTimeEntries = [],
+  usersOverTimeEntries = [],
+}) {
   const [userData, setUserData] = useState([]);
 
   useEffect(() => {
-    if (!Array.isArray(usersTimeEntries) || usersTimeEntries.length === 0) {
+    if (
+      !Array.isArray(usersTimeEntries) ||
+      usersTimeEntries.length === 0 ||
+      !Array.isArray(usersOverTimeEntries) ||
+      usersOverTimeEntries.length === 0
+    ) {
       return;
     }
 
-    const totalHoursWorked = usersTimeEntries.reduce((acc, curr) => {
+    const hoursWorked = usersTimeEntries.reduce((acc, curr) => {
+      const hours = Number(curr.hours) || 0;
+      const minutes = Number(curr.minutes) || 0;
+      return acc + hours + minutes / 60;
+    }, 0);
+
+    const hoursOverTimeWorked = usersOverTimeEntries.reduce((acc, curr) => {
       const hours = Number(curr.hours) || 0;
       const minutes = Number(curr.minutes) || 0;
       return acc + hours + minutes / 60;
@@ -37,13 +55,14 @@ export default function VolunteerHoursDistribution({ darkMode, usersTimeEntries 
       return {
         name: range.name,
         value,
-        totalHoursCalculated: totalHoursWorked,
+        totalHours: hoursWorked,
+        totalOverTimeHours: hoursOverTimeWorked,
         title: 'HOURS WORKED',
       };
     });
 
     setUserData(arrData);
-  }, [usersTimeEntries]);
+  }, [usersTimeEntries, usersOverTimeEntries]);
 
   const [windowSize, setWindowSize] = useState({
     width: window.innerWidth,
@@ -66,8 +85,18 @@ export default function VolunteerHoursDistribution({ darkMode, usersTimeEntries 
 
   return (
     <div>
-      <h4 style={{ color: 'black' }}>Volunteer Hours Distribution</h4>
-      <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
+      {!Array.isArray(userData) || userData.length === 0 ? (
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="w-100vh">
+            <Loading />
+          </div>
+        </div>
+      ) : (
+        <div>
+          <h6 style={{ color: 'black', textAlign: 'center' }}>Volunteer Hours Distribution</h6>
+          <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
+        </div>
+      )}
     </div>
   );
 }

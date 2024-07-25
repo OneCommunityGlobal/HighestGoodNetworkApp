@@ -12,12 +12,25 @@ const renderCustomizedLabel = ({
   outerRadius,
   percent,
   value,
-  totalHoursCalculated,
+  totalHours,
   title,
+  totalOverTimeHours,
 }) => {
-  const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
+  const radius = innerRadius + (outerRadius - innerRadius) * 0.4;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+  const percentage = Math.round((totalHours / totalOverTimeHours - 1) * 100);
+  const fillColor = totalHours / totalOverTimeHours > 1 ? 'green' : 'red';
+
+  const textContent = `${percentage}% current week over last week`;
+  const fontSize = 10;
+  const maxTextLength = Math.floor((innerRadius / fontSize) * 4);
+
+  let adjustedText = textContent;
+  if (textContent.length > maxTextLength) {
+    adjustedText = `${textContent.substring(0, maxTextLength - 3)}...`;
+  }
 
   return (
     <>
@@ -36,29 +49,33 @@ const renderCustomizedLabel = ({
         fill="white"
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
-        fontSize="10"
+        fontSize="8"
       >
         {`(${(percent * 100).toFixed(0)}%)`}
       </text>
-      <text x={cx} y={cy} dy={8} textAnchor="middle" fill="#696969">
+      <text x={cx} y={cy} dy={-7} textAnchor="middle" fill="#696969">
         {title}
       </text>
-      <text x={cx} y={cy} dy={35} textAnchor="middle" fill="#696969" fontSize="25">
-        {totalHoursCalculated.toFixed(0)}
+      <text x={cx} y={cy} dy={14} textAnchor="middle" fill="#696969" fontSize="25">
+        {totalHours.toFixed(0)}
+      </text>
+      <text x={cx} y={cy} dy={24} textAnchor="middle" fill={fillColor} fontSize="10">
+        {adjustedText}
       </text>
     </>
   );
 };
 
 export default function HoursWorkedPieChart({ userData, darkMode, windowSize }) {
-  let circleSize = 30;
+  let innerRadius = 80;
+  let outerRadius = 160;
   if (windowSize.width <= 650) {
-    circleSize = -(windowSize.width / 10) * 0.25;
+    innerRadius = 65;
+    outerRadius = 130;
   }
-
   return (
     <div className={darkMode ? 'text-light' : ''}>
-      <ResponsiveContainer maxWidth={640} maxHeight={640} minWidth={350} minHeight={350}>
+      <ResponsiveContainer maxWidth={600} maxHeight={600} minWidth={320} minHeight={320}>
         <PieChart>
           <Pie
             data={userData}
@@ -66,8 +83,8 @@ export default function HoursWorkedPieChart({ userData, darkMode, windowSize }) 
             cy="50%"
             labelLine={false}
             label={renderCustomizedLabel}
-            innerRadius={50 + circleSize}
-            outerRadius={130 + circleSize}
+            innerRadius={innerRadius}
+            outerRadius={outerRadius}
             fill="#8884d8"
             dataKey="value"
           >
