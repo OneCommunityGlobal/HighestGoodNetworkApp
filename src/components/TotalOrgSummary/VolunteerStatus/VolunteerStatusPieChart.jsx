@@ -1,11 +1,13 @@
-import React from 'react';
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
+import { Chart, ArcElement } from 'chart.js';
 import './VolunteerStatusPieChart.css';
 
-const VolunteerStatusPieChart = ({ data }) => {
-  const { totalVolunteers, percentageChange, data: volunteerData } = data;
+Chart.register(ArcElement);
+
+function VolunteerStatusPieChart(props) {
+  const { totalVolunteers, percentageChange, data: volunteerData } = props.data;
 
   const chartData = {
     labels: volunteerData.map(item => item.label),
@@ -25,7 +27,7 @@ const VolunteerStatusPieChart = ({ data }) => {
         font: {
           size: 16,
         },
-        formatter: (value, context) => {
+        formatter: value => {
           const percentage = ((value / totalVolunteers) * 100).toFixed(2);
           return `${value}\n(${percentage}%)`;
         },
@@ -59,18 +61,18 @@ const VolunteerStatusPieChart = ({ data }) => {
       </div>
       <div className="volunteer-status-labels">
         {volunteerData.map((item, index) => (
-          <div key={index} className="volunteer-status-label">
+          <div key={item.label} className="volunteer-status-label">
             <span
               className="volunteer-status-color"
               style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
-            ></span>
+            />
             {item.label}
           </div>
         ))}
       </div>
     </div>
   );
-};
+}
 
 VolunteerStatusPieChart.propTypes = {
   data: PropTypes.shape({
