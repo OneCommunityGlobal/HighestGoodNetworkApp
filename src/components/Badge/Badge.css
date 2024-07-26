@@ -156,3 +156,9 @@
   max-width: 120px;
   margin: 0 auto;
 }
+
+@media screen and (max-width: 544px) {
+  .responsive-font-size {
+    font-size: 0.75rem !important;
+  }
+}
