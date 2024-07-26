@@ -8,7 +8,7 @@ export default function TinyBarChart(props) {
     <BarChart
       data={chartData}
       margin={{
-        top: 20, right: 30, left: 20, bottom: 5,
+        top: 30, right: 30, left: 20, bottom: 30,
       }}
     >
       <XAxis dataKey="name" />
