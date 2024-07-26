@@ -76,7 +76,7 @@ export class WeeklySummariesReport extends Component {
       selectedOverTime: false,
       selectedBioStatus: false,
       replaceCode: '',
-      replaceCodeError: false,
+      replaceCodeError: null,
       replaceCodeLoading: false,
       // weeklyRecipientAuthPass: '',
     };
@@ -543,17 +543,27 @@ export class WeeklySummariesReport extends Component {
           }, {});
           if (data?.data?.isUpdated) {
             this.handleTeamCodeChange('', replaceCode, userObjs);
-            this.setState({ replaceCode: '', replaceCodeError: false });
+            this.setState({ replaceCode: '', replaceCodeError: null });
             this.filterWeeklySummaries();
+          } else {
+            this.setState({
+              replaceCode: '',
+              replaceCodeError: 'Update failed Please try again with another code!',
+            });
           }
         } catch (err) {
-          this.setState({ replaceCode: '', replaceCodeError: true });
+          this.setState({ replaceCode: '', replaceCodeError: err.toJSON().message });
         }
       } else {
-        this.setState({ replaceCodeError: true });
+        this.setState({
+          replaceCodeError: 'NOT SAVED! The code must be between 5 and 7 characters long.',
+        });
       }
     } catch (error) {
-      this.setState({ replaceCode: '', replaceCodeError: true });
+      this.setState({
+        replaceCode: '',
+        replaceCodeError: 'Something went wrong please try again!',
+      });
     } finally {
       this.setState({ replaceCodeLoading: false });
     }
@@ -667,7 +677,7 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
             <MultiSelect
-              className="multi-select-filter"
+              className="multi-select-filter text-dark"
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
@@ -679,7 +689,7 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5 }} xs={{ size: 5 }}>
             Select Color
             <MultiSelect
-              className="multi-select-filter"
+              className="multi-select-filter text-dark"
               options={colorOptions}
               value={selectedColors}
               onChange={e => {
@@ -751,7 +761,7 @@ export class WeeklySummariesReport extends Component {
               )}
               {replaceCodeError && (
                 <Alert className="code-alert" color="danger">
-                  NOT SAVED! The code must be between 5 and 7 characters long.
+                  {replaceCodeError}
                 </Alert>
               )}
             </Col>
