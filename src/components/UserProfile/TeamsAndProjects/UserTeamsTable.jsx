@@ -7,6 +7,9 @@ import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL';
+import { toast } from 'react-toastify';
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
@@ -31,20 +34,31 @@ const UserTeamsTable = props => {
   const fullCodeRegex = /^.{5,7}$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
-  const handleCodeChange = (e, autoComplete) => {
+  const handleCodeChange = async (e, autoComplete) => {
     setAutoComplete(autoComplete);
     const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
     if (regexTest) {
-      props.setCodeValid(true);
+      props.setCodeValid('saving');
       setTeamCode(autoComplete ? e : e.target.value);
       if (props.userProfile) {
-        props.setUserProfile({ ...props.userProfile, teamCode: autoComplete ? e : e.target.value });
+        // prettier-ignore
+        await props.setUserProfile({ ...props.userProfile, teamCode: autoComplete ? e : e.target.value });
+        try {
+          const url = ENDPOINTS.USER_PROFILE(props.userProfile._id);
+          await axios.put(url, props.userProfile);
+          props.setCodeValid('saved');
+          setTimeout(() => {
+            props.setCodeValid('');
+          }, 30000);
+        } catch {
+          toast.error('It is not possible to save the team code.');
+        }
       } else {
         props.onAssignTeamCode(autoComplete ? e : e.target.value);
       }
     } else {
       setTeamCode(autoComplete ? e : e.target.value);
-      props.setCodeValid(false);
+      props.setCodeValid('NOT SAVED');
     }
     autoComplete ? setShowDropdown(false) : null;
     autoComplete = false;
@@ -75,7 +89,7 @@ const UserTeamsTable = props => {
     <div>
       {innerWidth >= 1025 ? (
         <div className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
-          <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
+          <div className="container">
             {props.canEditVisibility && (
               <div className="row ml-1">
                 <Col md="7">

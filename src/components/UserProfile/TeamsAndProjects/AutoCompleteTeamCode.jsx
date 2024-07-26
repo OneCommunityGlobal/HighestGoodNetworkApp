@@ -79,7 +79,7 @@ export const AutoCompleteTeamCode = props => {
               // prettier-ignore
               width: isLoading || arrayInputAutoComplete.length <=3 ? 'auto' : !isMobile ? '18rem' : '20rem',
               position: arrayInputAutoComplete.length <= 3 || isLoading ? '' : 'relative',
-              right: !isMobile ? '8rem' : '',
+              right: !isMobile ? '11rem' : '',
             }}
           >
             {!isLoading ? (

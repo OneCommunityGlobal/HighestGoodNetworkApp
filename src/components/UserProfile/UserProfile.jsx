@@ -118,7 +118,7 @@ function UserProfile(props) {
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
-  const [codeValid, setCodeValid] = useState(true);
+  const [codeValid, setCodeValid] = useState('');
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
@@ -833,11 +833,24 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
-            {!codeValid ? (
-              <Alert color="danger">
-                NOT SAVED! The code must be between 5 and 7 characters long
+            {codeValid !== '' && (
+              <Alert
+                color={
+                  codeValid === 'NOT SAVED'
+                    ? 'danger'
+                    : codeValid === 'saving'
+                    ? 'primary'
+                    : codeValid === 'saved' && 'success'
+                }
+              >
+                {codeValid === 'NOT SAVED'
+                  ? 'NOT SAVED! The code must be between 5 and 7 characters long'
+                  : codeValid === 'saving'
+                  ? 'The team code is being saved'
+                  : // prettier-ignore
+                    codeValid === 'saved' && 'The team code has been saved'}
               </Alert>
-            ) : null}
+            )}
             <div className="profile-head">
               <h5
                 className={`mr-2 ${darkMode ? 'text-light' : ''}`}
@@ -930,9 +943,15 @@ function UserProfile(props) {
             <h6 className="text-azure">{jobTitle}</h6>
             <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
               {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
-              From : <span className={darkMode ? 'text-light' : ''}>{formatDateLocal(userProfile.startDate)}</span>
+              From :{' '}
+              <span className={darkMode ? 'text-light' : ''}>
+                {formatDateLocal(userProfile.startDate)}
+              </span>
               {'   '}
-              To: <span className={darkMode ? 'text-light' : ''}>{userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}</span>
+              To:{' '}
+              <span className={darkMode ? 'text-light' : ''}>
+                {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+              </span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
