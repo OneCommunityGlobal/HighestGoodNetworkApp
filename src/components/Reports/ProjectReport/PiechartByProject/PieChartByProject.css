@@ -1,17 +1,19 @@
-
-.pie-chart-title{
-  text-align: left;
+.pie-chart-title {
+  text-align: center;
   margin-bottom: 24px;
-
 }
-.pie-chart-description{
-  display: flex;
-  justify-content: space-around;
-  alignItems: center;
-  backgroundColor: white;
-  overflow: auto;
-  flex-direction: column;
-  align-items: flex-start;
-  width: 100%;
 
+.pie-chart-description {
+  display: flex;
+  justify-content: center; /* Center the content horizontally */
+  align-items: center;
+  background-color: white;
+  overflow: auto;
+  flex-direction: row; /* Align items horizontally */
+  width: 100%;
+  margin-bottom: 16px; /* Add some space between sections */
+}
+
+.pie-chart-checkbox {
+  margin-left: 8px; /* Space between label and checkbox */
 }

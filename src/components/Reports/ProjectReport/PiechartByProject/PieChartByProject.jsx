@@ -130,6 +130,7 @@ export function PieChartByProject({
           }}>{isChecked ? 'All-Time Total Hours by All Member (Hide PieChart)' : 'All-Time Total Hours by Member (Show PieChart)'}</label>
           <input
             type="checkbox"
+            className="pie-chart-checkbox"
             checked={isChecked}
             onChange={handleShowPieChart}
           />
