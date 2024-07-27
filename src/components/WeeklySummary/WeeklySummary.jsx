@@ -825,7 +825,7 @@ export class WeeklySummary extends Component {
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                             )}
-                          {/* <div style={{ width: '10rem' }}>
+                            {/* <div style={{ width: '10rem' }}>
                             <CurrentPromptModal
                               userRole={userRole}
                               userId={displayUserId}
