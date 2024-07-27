@@ -118,6 +118,33 @@ _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
+## One Community Global Code of Conduct
+
+
+This Code of Conduct applies to all participants in One Community Global's online spaces, including our forums, chat rooms, social media platforms, and other digital gathering places.
+
+#### Our Commitment to Inclusion
+We are committed to providing a welcoming environment for all members of our community. We value diversity in all its forms, including but not limited to differences in background, beliefs, identity, abilities, and experiences. Our goal is to create a space where everyone feels respected and can participate fully.
+
+#### Prohibited Behaviors
+We do not tolerate harassment or discrimination in any form. This includes, but is not limited to:
+
+#### Offensive comments related to personal characteristics
+Sharing inappropriate or explicit content
+Intimidation or stalking
+Unwanted physical contact or sexual attention
+Disruptive behavior during community events or discussions
+
+#### Communication Guidelines
+We expect all community members to communicate respectfully. Please be mindful of your language and avoid jokes or comments that could be offensive to others. If you're unsure whether something is appropriate, it's best to err on the side of caution.
+Enforcement
+If you are asked to stop any inappropriate behavior, you are expected to comply immediately. Violation of these rules may result in temporary or permanent removal from OneCommunity Global spaces.
+
+#### Reporting Concerns
+If you experience or witness behavior that violates this Code of Conduct, or if you have any related concerns, please contact our community liaison, Jae (jae@onecommunityglobal.org), or another community leader promptly.
+Our Shared Responsibility
+Creating a positive community environment is a shared responsibility. We appreciate your cooperation in upholding these standards and making OneCommunity Global a welcoming space for all.
+
 <!-- CONTRIBUTING -->
 
 ## Contributing
