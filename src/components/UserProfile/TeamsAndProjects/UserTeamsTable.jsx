@@ -28,7 +28,7 @@ const UserTeamsTable = props => {
   const refDropdown = useRef();
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^.{5,7}$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = (e, autoComplete) => {
@@ -183,39 +183,6 @@ const UserTeamsTable = props => {
                   </tr>
                 )}
               </thead>
-              <tbody className={darkMode ? 'text-light' : ''}>
-                {props.userTeamsById.length > 0 ? (
-                  props.userTeamsById.map((team, index) => (
-                    <tr key={index} className="tr">
-                      <td>{index + 1}</td>
-                      <td>{`${team.teamName}`}</td>
-                      {props.edit && props.role && (
-                        <td>
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <Button
-                              disabled={!canAssignTeamToUsers}
-                              color="danger"
-                              onClick={e => {
-                                props.onDeleteClick(team._id);
-                              }}
-                            >
-                              Delete
-                            </Button>
-                          </div>
-                        </td>
-                      )}
-                    </tr>
-                  ))
-                ) : (
-                  <></>
-                )}
-              </tbody>
               <tbody>
                 {props.userTeamsById.length > 0 ? (
                   props.userTeamsById.map((team, index) => (
