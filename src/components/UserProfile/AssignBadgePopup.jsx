@@ -3,7 +3,7 @@ import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import AssignTableRow from '../Badge/AssignTableRow';
-import { assignBadgesByUserID, clearNameAndSelected } from '../../actions/badgeManagement';
+import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
 import { ENDPOINTS } from '../../utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
@@ -66,6 +66,22 @@ function AssignBadgePopup(props) {
 
   let filteredBadges = filterBadges(badgeList);
 
+  useEffect(() => {
+    const addExistBadges = () => {
+      if (props.userProfile && props.userProfile.badgeCollection) {
+        const existBadges = props.userProfile.badgeCollection.map(badge => badge.badge._id);
+        existBadges.forEach(badgeId => {
+          if (!props.selectedBadges.includes(badgeId)) {
+            props.addSelectBadge(badgeId);
+            console.log('selectedBadges', props.selectedBadges);
+          }
+        });
+      }
+    };
+    addExistBadges();
+  }, [props.userProfile, props.selectedBadges, props.addSelectBadge]);
+
+
   return (
     <div data-testid="test-assignbadgepopup">
       <input
@@ -106,7 +122,7 @@ function AssignBadgePopup(props) {
           </thead>
           <tbody>
             {filteredBadges.map((value, index) => (
-              <AssignTableRow badge={value} index={index} key={index} />
+              <AssignTableRow badge={value} index={index} key={index} selectedBadges={props.selectedBadges} />
             ))}
           </tbody>
         </Table>
@@ -134,6 +150,7 @@ const mapDispatchToProps = dispatch => {
     assignBadgesByUserID: (userId, selectedBadge) =>
       assignBadgesByUserID(userId, selectedBadge)(dispatch),
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
+    addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
   };
 };
 

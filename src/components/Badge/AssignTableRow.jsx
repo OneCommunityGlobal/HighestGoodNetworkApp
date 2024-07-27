@@ -8,7 +8,7 @@ function AssignTableRow(props) {
   const [isSelect, setSelect] = useState(false);
 
   useEffect(() => {
-    if (props.selectedBadges && props.selectedBadges.includes(`assign-badge-${props.badge._id}`)) {
+    if (props.selectedBadges && props.selectedBadges.includes(`${props.badge._id}`)) {
       setSelect(true);
     } else {
       setSelect(false);
