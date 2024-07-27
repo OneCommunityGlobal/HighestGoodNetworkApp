@@ -88,7 +88,6 @@ class UserProfileAdd extends Component {
       formErrors: {
         firstName: 'First Name is required',
         lastName: 'Last Name is required',
-        jobTitle: 'Job Title is required',
         email: 'Email is required',
         phoneNumber: 'Phone Number is required',
         actualEmail: 'Actual Email is required',
