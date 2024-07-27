@@ -66,7 +66,6 @@ describe('ProjectTable component', () => {
     });
   });
 
-
   it('renders an empty table when no projects are provided', () => {
     renderWithRouter(<ProjectTable projects={[]} />);
     const rows = screen.getAllByRole('row');
@@ -80,5 +79,11 @@ describe('ProjectTable component', () => {
     expect(screen.getByText('Active')).toBeInTheDocument();
   });
 
-
+  it('applies the hover effect class in dark mode', () => {
+    renderWithRouter(<ProjectTable projects={mockProjects} darkMode={true} />);
+    const rows = screen.getAllByRole('row');
+    rows.slice(1).forEach(row => { // Skipping the header row
+      expect(row).toHaveClass('hover-effect-reports-page-dark-mode');
+    });
+  });
 });
