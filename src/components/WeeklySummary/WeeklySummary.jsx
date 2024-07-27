@@ -774,7 +774,17 @@ export class WeeklySummary extends Component {
                             Enter your weekly summary below. (required)
                             <WeeklySummaryContentTooltip tabId={tId} />
                           </div>
-                          {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
+                          <div className="d-flex flex-column text-right">
+                            <CurrentPromptModal
+                              userRole={userRole}
+                              userId={displayUserId}
+                              darkMode={darkMode}
+                            />
+                            {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
+                              <UncontrolledDropdown className="summary-dropdown"
+                                  className="btn--dark-sea-green w-100 responsive-font-size"
+                                  caret
+                                  style={boxStyling}
                             <UncontrolledDropdown>
                               <DropdownToggle
                                 className="px-3 btn--dark-sea-green"
