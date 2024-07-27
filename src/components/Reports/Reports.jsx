@@ -25,7 +25,8 @@ import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import FilterPanel from './Filterpanel/FilterPanel';
+import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
+import ReportFilter from './ReportFilter/ReportFilter';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 
@@ -102,28 +103,27 @@ class ReportsPage extends Component {
     this.setTeamMemberList = this.setTeamMemberList.bind(this);
     this.setAddTime = this.setAddTime.bind(this);
     this.setRemainedTeams = this.setRemainedTeams.bind(this);
+    this.setFilterStatus = this.setFilterStatus.bind(this);
+    this.onWildCardSearch = this.onWildCardSearch.bind(this);
+    this.onDateChange = this.onDateChange.bind(this);
   }
 
   async componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
-    this.setState({
-      showProjects: false,
-      showPeople: false,
-      showTeams: false,
-      checkActive: '',
-    });
     this.props.getAllUserProfile();
+  }
+
+  setFilterStatus(status) {
+    this.setState({ checkActive: status });
   }
 
   /**
    * callback for search
    */
-  onWildCardSearch = searchText => {
-    this.setState({
-      wildCardSearchText: searchText,
-    });
-  };
+  onWildCardSearch(searchText) {
+    this.setState({ wildCardSearchText: searchText });
+  }
 
   filteredProjectList = projects => {
     const filteredList = projects.filter(project => {
@@ -368,6 +368,14 @@ class ReportsPage extends Component {
     }));
   }
 
+  onDateChange(dates) {
+    // Handle the date changes from DatePickerComponent
+    this.setState({
+      startDate: dates.startDate,
+      endDate: dates.endDate,
+    });
+  }
+
   render() {
     const { darkMode } = this.props.state.theme;
     const userRole = this.props.state.userProfile.role;
@@ -504,51 +512,17 @@ class ReportsPage extends Component {
                 }`}
                 style={darkMode ? boxStyleDark : boxStyle}
               >
-                <FilterPanel
-                  setActive={this.setActive}
-                  setInActive={this.setInActive}
-                  setAll={this.setAll}
+                <ReportFilter
+                  setFilterStatus={this.setFilterStatus}
                   onWildCardSearch={this.onWildCardSearch}
                   onCreateNewTeamShow={this.onCreateNewTeamShow}
                 />
-                <div className="date-picker-container">
-                  <div id="task_startDate" className="date-picker-item">
-                    <label htmlFor="task_startDate" className={`date-picker-label ${textColor}`}>
-                      {' '}
-                      Start Date
-                    </label>
-                    <DatePicker
-                      selected={this.state.startDate}
-                      minDate={new Date(DATE_PICKER_MIN_DATE)}
-                      maxDate={new Date()}
-                      onChange={date => {
-                        if (date > new Date(DATE_PICKER_MIN_DATE) && date <= this.state.endDate) {
-                          this.setState({ startDate: date });
-                        }
-                      }}
-                      className="form-control"
-                      popperPlacement="top-start"
-                    />
-                  </div>
-                  <div id="task_EndDate" className="date-picker-item">
-                    <label htmlFor="task_EndDate" className={`date-picker-label ${textColor}`}>
-                      {' '}
-                      End Date
-                    </label>
-                    <DatePicker
-                      selected={this.state.endDate}
-                      maxDate={new Date()}
-                      minDate={new Date(DATE_PICKER_MIN_DATE)}
-                      onChange={date => {
-                        if (date >= this.state.startDate) {
-                          this.setState({ endDate: date });
-                        }
-                      }}
-                      className="form-control"
-                      popperPlacement="top"
-                    />
-                  </div>
-                </div>
+                <ViewReportByDate
+                  minDate={new Date(DATE_PICKER_MIN_DATE)}
+                  maxDate={new Date()}
+                  textColor={textColor}
+                  onDateChange={this.onDateChange}
+                />
                 <div className="total-report-container">
                   <div className="total-report-item">
                     <Button color="info" onClick={this.showTotalProject}>
@@ -562,7 +536,7 @@ class ReportsPage extends Component {
                         areaTitle="Total Project Report"
                         role={userRole}
                         fontSize={15}
-                        isPermissionPage={true}
+                        isPermissionPage
                       />
                     </div>
                   </div>
@@ -578,7 +552,7 @@ class ReportsPage extends Component {
                         areaTitle="Total People Report"
                         role={userRole}
                         fontSize={15}
-                        isPermissionPage={true}
+                        isPermissionPage
                       />
                     </div>
                   </div>
@@ -594,7 +568,7 @@ class ReportsPage extends Component {
                         areaTitle="Total Team Report"
                         role={userRole}
                         fontSize={15}
-                        isPermissionPage={true}
+                        isPermissionPage
                       />
                     </div>
                   </div>
@@ -613,7 +587,7 @@ class ReportsPage extends Component {
                           areaTitle="Project Lost Time"
                           role={myRole}
                           fontSize={15}
-                          isPermissionPage={true}
+                          isPermissionPage
                         />
                       </div>
                     </div>
@@ -629,7 +603,7 @@ class ReportsPage extends Component {
                           areaTitle="Person Lost Time"
                           role={myRole}
                           fontSize={15}
-                          isPermissionPage={true}
+                          isPermissionPage
                         />
                       </div>
                     </div>
@@ -645,34 +619,13 @@ class ReportsPage extends Component {
                           areaTitle="Team Lost Time"
                           role={myRole}
                           fontSize={15}
-                          isPermissionPage={true}
+                          isPermissionPage
                         />
                       </div>
                     </div>
                   </div>
                 )}
               </div>
-              {/* <FilterPanel
-                darkMode={darkMode}
-                setActive={this.setActive}
-                setInActive={this.setInActive}
-                setAll={this.setAll}
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                onWildCardSearch={this.onWildCardSearch}
-                onCreateNewTeamShow={this.onCreateNewTeamShow}
-                showTotalProject={this.showTotalProject}
-                showTotalPeople={this.showTotalPeople}
-                showTotalTeam={this.showTotalTeam}
-                showAddProjHistory={this.showAddProjHistory}
-                showAddPersonHistory={this.showAddPersonHistory}
-                showAddTeamHistory={this.showAddTeamHistory}
-                setStartDate={date => this.setState({ startDate: date })}
-                setEndDate={date => this.setState({ endDate: date })}
-                textColor={textColor}
-                myRole={myRole}
-                userRole={userRole}
-              /> */}
 
               {myRole === 'Owner' && (
                 <div
