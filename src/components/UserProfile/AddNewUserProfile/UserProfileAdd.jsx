@@ -631,7 +631,7 @@ class UserProfileAdd extends Component {
     }
 
     axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if (res.status === 200) {
+      if(res.status === 200) {
         const { timezone, currentLocation } = res.data;
         this.setState({
           ...this.state,
@@ -859,7 +859,7 @@ class UserProfileAdd extends Component {
             }
             toast.error(
               err.response?.data?.error ||
-              'An unknown error occurred while attempting to create this user.',
+            'An unknown error occurred while attempting to create this user.',
             );
           });
       }
@@ -1051,7 +1051,7 @@ class UserProfileAdd extends Component {
           val = 168
         } else if (val < 0) {
           val = 0
-        }
+        } 
         this.setState({
           userProfile: {
             ...userProfile,
