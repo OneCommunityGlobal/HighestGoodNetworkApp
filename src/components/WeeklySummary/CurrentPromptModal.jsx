@@ -101,6 +101,7 @@ function CurrentPromptModal(props) {
         setIsPromptUpdated(true);
       })
       .catch(() => {
+        // console.error('Error updating AI prompt:', error);
         toast.error('Failed to update prompt.');
       })
       .finally(() => {
