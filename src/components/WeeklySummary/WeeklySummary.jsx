@@ -781,22 +781,18 @@ export class WeeklySummary extends Component {
                               darkMode={darkMode}
                             />
                             {isNotAllowedToEdit && isNotAllowedToEdit === true ? null : (
-                              <UncontrolledDropdown className="summary-dropdown"
+                              <UncontrolledDropdown className="summary-dropdown">
+                                <DropdownToggle
                                   className="btn--dark-sea-green w-100 responsive-font-size"
                                   caret
                                   style={boxStyling}
-                            <UncontrolledDropdown>
-                              <DropdownToggle
-                                className="px-3 btn--dark-sea-green"
-                                caret
-                                style={boxStyling}
-                              >
-                                Move This Summary
-                              </DropdownToggle>
-                              <DropdownMenu className={darkMode ? 'bg-oxford-blue' : ''}>
-                                <DropdownItem
-                                  disabled={activeTab === '1'}
-                                  onClick={() => this.handleMoveSelect('1')}
+                                >
+                                  Move This Summary
+                                </DropdownToggle>
+                                <DropdownMenu className={darkMode ? 'bg-oxford-blue' : ''}>
+                                  <DropdownItem
+                                    disabled={activeTab === '1'}
+                                    onClick={() => this.handleMoveSelect('1')}
                                   style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
                                   className={fontColor}
                                 >
