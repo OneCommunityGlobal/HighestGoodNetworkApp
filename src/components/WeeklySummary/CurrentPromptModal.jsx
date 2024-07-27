@@ -21,7 +21,7 @@ function CurrentPromptModal(props) {
   const [prompt, setPrompt] = useState('');
   // const [promptModifiedDate, setPromptModifiedDate] = useState('');
   const [updatedPromptDate, setUpdatedPromptDate] = useState('');
-  const [copiedDate, setCopiedDate] = useState('');
+  const [updatedCopiedDate, setUpdatedCopiedDate] = useState('');
   const [isPromptUpdated, setIsPromptUpdated] = useState(false);
   const [isPromptCopied, setIsPromptCopied] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -75,13 +75,13 @@ function CurrentPromptModal(props) {
     dispatch(getCopiedDateOfPrompt(userId))
       .then(response => {
         if (response) {
-          setCopiedDate(response);
+          setUpdatedCopiedDate(response);
         }
       })
       .catch(() => {
         toast.error('There was an error');
       });
-  }, [isPromptCopied, copiedDate]);
+  }, [isPromptCopied]);
   // =================================================================
 
   const handleCopyToClipboard = async () => {
@@ -125,9 +125,14 @@ function CurrentPromptModal(props) {
   return (
     <div>
       {new Date(`${updatedPromptDate}`) > new Date(`${updatedCopiedDate}`) ? (
-        <Button color="info" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
-          View and Copy <img src={iconNew} alt="new" style={{ width: '2em', height: '2em' }} /> AI
-          Prompt
+        <Button
+          className="p-1 mb-1 responsive-font-size"
+          color="info"
+          onClick={toggle}
+          style={darkMode ? boxStyleDark : boxStyle}	
+        >	
+          View and Copy <img src={iconNew} alt="new" style={{ width: '1.5em', height: '1.5em' }} />{' '}	
+          AI Prompt
           <i
             className="fa fa-info-circle"
             data-tip
