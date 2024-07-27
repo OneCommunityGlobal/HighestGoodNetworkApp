@@ -97,7 +97,7 @@
 .badge_history_container {
   display: flex;
   flex-wrap: wrap;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .badge_image_container {
