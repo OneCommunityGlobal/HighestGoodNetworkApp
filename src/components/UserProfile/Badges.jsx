@@ -79,7 +79,7 @@ export const Badges = props => {
               />
             </span>
 
-            <div >
+            <div className='d-flex'>
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
