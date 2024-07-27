@@ -859,7 +859,7 @@ class UserProfileAdd extends Component {
             }
             toast.error(
               err.response?.data?.error ||
-            'An unknown error occurred while attempting to create this user.',
+                'An unknown error occurred while attempting to create this user.',
             );
           });
       }
