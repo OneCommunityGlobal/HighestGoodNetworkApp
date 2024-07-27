@@ -607,7 +607,7 @@ function LeaderBoard({
                   <span
                     title={mouseoverTextValue}
                     id="Total time"
-                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                    className={item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null}
                   >
                     {item.totaltime}
                   </span>
