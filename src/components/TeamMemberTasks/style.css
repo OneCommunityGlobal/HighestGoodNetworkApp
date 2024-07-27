@@ -1,6 +1,5 @@
 .team-member-tasks {
   background-color: white;
-  overflow: hidden;
 }
 
 .team-member-tasks h1 {
@@ -9,7 +8,7 @@
 }
 
 .task_table-container {
-  overflow: hidden;
+  overflow-x: hidden;
   position: relative;
 }
 
@@ -349,8 +348,9 @@
 }
 
 .task_table-container{
+  max-height: 800px;
   width: 100%;
-  overflow-y: hidden;
+  overflow-y: scroll;
 }
 
 @media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */

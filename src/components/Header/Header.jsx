@@ -331,14 +331,13 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
+                  <NavLink tag={Link} to={`/timelog`}>
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
               </div>
-              <div className='d-flex align-items-center justify-content-center'>
-                
-                {(canGetReports || canGetWeeklySummaries) ? (
+              <div className="d-flex align-items-center justify-content-center">
+                {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
@@ -352,6 +351,11 @@ export function Header(props) {
                       {canGetWeeklySummaries && (
                         <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor}>
                           {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                      )}
+                      {canGetWeeklyVolunteerSummary && (
+                        <DropdownItem tag={Link} to="/totalorgsummary">
+                          {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
@@ -471,7 +475,7 @@ export function Header(props) {
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
-                    <DropdownItem className={fontColor}>
+                    <DropdownItem>
                       <DarkModeButton />
                     </DropdownItem>
                     <DropdownItem divider />

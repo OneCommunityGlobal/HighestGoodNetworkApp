@@ -74,7 +74,9 @@ function PermissionsManagement(props) {
     >
       <div
         key={`${role}+permission`}
-        className={`permissions-management ${darkMode ? 'bg-yinmn-blue dark-box-shadow' : ''}`}
+        className={
+          darkMode ? 'permissions-management-dark bg-yinmn-blue' : 'permissions-management'
+        }
       >
         <h1 className="permissions-management__title">User Roles</h1>
         <div key={`${role}_header`} className="permissions-management__header">

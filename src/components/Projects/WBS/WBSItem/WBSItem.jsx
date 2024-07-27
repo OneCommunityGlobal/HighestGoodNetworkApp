@@ -3,7 +3,7 @@
  * Author: Henry Ng - 08/01/20
  * Display member of the members list
  ********************************************************************************/
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { connect } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
 import { deleteWbs } from './../../../../actions/wbs';
@@ -13,9 +13,8 @@ import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import { Link } from 'react-router-dom';
 
-
 const WBSItem = props => {
-  const { darkMode } = props;
+  const { darkMode } = props.theme;
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const canDeleteWBS = props.hasPermission('deleteWbs');
@@ -32,7 +31,7 @@ const WBSItem = props => {
           <div>{props.index}</div>
         </th>
         <td className="members__name">
-          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</a>
+          <Link to={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</Link>
         </td>
         {canDeleteWBS ? (
           <td className="members__assign">
@@ -62,9 +61,9 @@ const WBSItem = props => {
     </React.Fragment>
   );
 };
-const mapStateToProps = (state) => state;
+const mapStateToProps = state => state;
 export default connect(mapStateToProps, {
   deleteWbs,
   getPopupById,
-  hasPermission,
+  hasPermission
 })(WBSItem);

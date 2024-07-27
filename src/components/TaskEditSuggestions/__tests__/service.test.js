@@ -38,12 +38,7 @@ describe('HTTP Service Functions',()=>{
 
   it('should reject task edit suggestion', async () => {
     const taskEditSuggestionId = '1234';
-    let result;
-
-    try {
-      result = await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
-    } catch (_e) {};
-
+    const result = await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
     expect(result).toBeUndefined();
   });
 
@@ -89,14 +84,11 @@ describe('HTTP other Service Functions', () => {
 
   it('should reject task edit suggestion', async () => {
     const taskEditSuggestionId = '1234';
-    mock.onDelete(ENDPOINTS.REJECT_TASK_EDIT_SUGGESTION('1234')).reply(400);
+    mock.onDelete(ENDPOINTS.REJECT_TASK_EDIT_SUGGESTION('1234')).reply(200, { status: 'deleted' });
     let result;
     
-    try {
-      result = await rejectTaskEditSuggestionHTTP(taskEditSuggestionId)
-    } catch (_e) {};
-
-    expect(result).toBeUndefined();
+    result = await rejectTaskEditSuggestionHTTP(taskEditSuggestionId);
+    expect(result).toEqual({ status: 'deleted' });
    
   });
 

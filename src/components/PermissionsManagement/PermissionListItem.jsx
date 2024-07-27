@@ -104,8 +104,7 @@ function PermissionListItem(props) {
   }
 
   const fontSize = isCategory ? '20px' : undefined;
-  const paddingLeft = `${50 * depth}px`;
-  const textShadow = darkMode ? '0.5px 0.5px 2px black' : '';
+  const textIndent = `${50 * depth}px`;
 
   const getColor = () => {
     if (howManySubpermsInRole === 'All') {
@@ -119,15 +118,13 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
+      <li className="user-role-tab__permissions pr-2" key={permission} data-testid={permission}>
         <p
           style={{
             color,
             fontSize,
-            paddingLeft,
-            textShadow,
+            textIndent,
           }}
-          className="permission-label"
         >
           {label}
         </p>
@@ -151,14 +148,13 @@ function PermissionListItem(props) {
               className="icon-button"
               color={getColor()}
               onClick={() => {
-                // eslint-disable-next-line no-debugger
                 // const state = howManySubpermsInRole !== 'None';
                 setSubpermissions(subperms, howManySubpermsInRole !== 'All');
                 // eslint-disable-next-line react/destructuring-assignment
                 props.onChange();
               }}
               // eslint-disable-next-line react/destructuring-assignment
-              disabled={immutablePermissions.includes(permission)}
+              disabled={!props.hasPermission('putRole')}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -170,7 +166,10 @@ function PermissionListItem(props) {
               onClick={() => {
                 togglePermission(permission);
               }}
-              disabled={immutablePermissions.includes(permission)}
+              disabled={
+                // eslint-disable-next-line react/destructuring-assignment
+                !props.hasPermission('putRole') || immutablePermissions.includes(permission)
+              }
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {hasThisPermission ? 'Delete' : 'Add'}

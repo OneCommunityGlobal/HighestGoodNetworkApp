@@ -52,11 +52,6 @@ const TimeEntry = (props) => {
   const [filteredColor,setFilteredColor] = useState(hrsFilterBtnColorMap[7]);
   const dispatch = useDispatch();
 
-  const hasATimeEntryEditPermission = props.hasPermission('editTimeEntryTime') ||
-    props.hasPermission('editTimeEntryDescription') ||
-    props.hasPermission('editTimeEntryDate');
-
-
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
 
   const toggle = () => setTimeEntryFormModal(modal => !modal);
@@ -188,13 +183,14 @@ const TimeEntry = (props) => {
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
             <div className="buttons">
-              {((hasATimeEntryEditPermission || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
+              {((true || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
+                && from === 'WeeklyTab' 
                 && (
                   <button className="mr-3 text-primary">
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
                   </button>
                 )}
-              {canDelete && (
+              {canDelete && from === 'WeeklyTab' && (
                 <button className='text-primary'>
                   <DeleteModal timeEntry={data} />
                 </button>
@@ -220,8 +216,4 @@ const mapStateToProps = (state) => ({
   authUser: state.auth.user,
 })
 
-const mapDispatchToProps = dispatch => ({
-  hasPermission: permission => dispatch(hasPermission(permission)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(TimeEntry);
+export default connect(mapStateToProps, null)(TimeEntry);

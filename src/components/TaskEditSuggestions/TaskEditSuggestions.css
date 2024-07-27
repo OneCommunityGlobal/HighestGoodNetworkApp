@@ -1,6 +1,0 @@
-.task-edit-suggestions-title {
-  display: grid;
-  grid-template-columns: auto auto 1fr;
-  gap: 1rem;
-  padding-top: 1rem;
-}
