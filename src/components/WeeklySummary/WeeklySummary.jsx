@@ -793,38 +793,38 @@ export class WeeklySummary extends Component {
                                   <DropdownItem
                                     disabled={activeTab === '1'}
                                     onClick={() => this.handleMoveSelect('1')}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={fontColor}
-                                >
-                                  This Week
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '2'}
-                                  onClick={() => this.handleMoveSelect('2')}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                  className={fontColor}
-                                >
-                                  Last Week
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '3'}
-                                  onClick={() => this.handleMoveSelect('3')}
-                                  className={fontColor}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                >
-                                  Week Before Last
-                                </DropdownItem>
-                                <DropdownItem
-                                  disabled={activeTab === '4'}
-                                  onClick={() => this.handleMoveSelect('4')}
-                                  className={fontColor}
-                                  style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
-                                >
-                                  Three Weeks Ago
-                                </DropdownItem>
-                              </DropdownMenu>
-                            </UncontrolledDropdown>
-                          )}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                    className={fontColor}
+                                  >
+                                    This Week
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '2'}
+                                    onClick={() => this.handleMoveSelect('2')}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                    className={fontColor}
+                                  >
+                                    Last Week
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '3'}
+                                    onClick={() => this.handleMoveSelect('3')}
+                                    className={fontColor}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  >
+                                    Week Before Last
+                                  </DropdownItem>
+                                  <DropdownItem
+                                    disabled={activeTab === '4'}
+                                    onClick={() => this.handleMoveSelect('4')}
+                                    className={fontColor}
+                                    style={{ backgroundColor: darkMode ? '#1C2541' : '' }}
+                                  >
+                                    Three Weeks Ago
+                                  </DropdownItem>
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                            )}
                           {/* <div style={{ width: '10rem' }}>
                             <CurrentPromptModal
                               userRole={userRole}
