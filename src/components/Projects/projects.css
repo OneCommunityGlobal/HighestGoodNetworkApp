@@ -38,9 +38,9 @@ thead {
   text-align: center;
 }
 
-.projects__overview--top {
+/* .projects__overview--top {
   background: gray;
-}
+} */
 
 .projects__overview--top .card {
   width: 200px;
