@@ -16,7 +16,8 @@ import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
-function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
+function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
+  const a = 1;
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -77,6 +78,8 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
         toast.success(SUCCESS_MESSAGE, {
           autoClose: 10000,
         });
+        toggle();
+        console.log("here");
       })
       .catch(err => {
         const ERROR_MESSAGE = `
