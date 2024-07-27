@@ -28,7 +28,7 @@ export function PieChartByProject({
     }, 0) / 3600;
     setTotalHours(totalHoursCalculated);
     const activeUsers = mergedProjectUsersArray.filter(member => member.personId.isActive )
-      setActiveData(activeUsers);
+    setActiveData(activeUsers);
 
     const arrData = mergedProjectUsersArray.map(member => {
       const data = {
@@ -119,6 +119,14 @@ export function PieChartByProject({
     }
   };
 
+  const noDataPlaceholder = [{
+    name: "No Data",
+    value: 1/1000,
+    projectName: projectName,
+    totalHoursCalculated: 0,
+    lastName: ""
+  }];
+
   return (
     <div className={darkMode ? 'text-light' : ''}>
       <div className='pie-chart-title'><h4>Pie Charts</h4></div>
@@ -154,7 +162,7 @@ export function PieChartByProject({
         </div>)}
       </div>
         {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
-        <ProjectPieChart userData={userData} windowSize={windowSize.width} darkMode={darkMode} />
+        <ProjectPieChart userData={totalHours > 0 ? userData : noDataPlaceholder} windowSize={windowSize.width} darkMode={darkMode} />
       </div>)}
     </div>
   )
