@@ -129,9 +129,9 @@ function CurrentPromptModal(props) {
           className="p-1 mb-1 responsive-font-size"
           color="info"
           onClick={toggle}
-          style={darkMode ? boxStyleDark : boxStyle}	
-        >	
-          View and Copy <img src={iconNew} alt="new" style={{ width: '1.5em', height: '1.5em' }} />{' '}	
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          View and Copy <img src={iconNew} alt="new" style={{ width: '1.5em', height: '1.5em' }} />{' '}
           AI Prompt
           <i
             className="fa fa-info-circle"
