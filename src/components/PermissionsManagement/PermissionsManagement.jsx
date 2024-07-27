@@ -74,9 +74,7 @@ function PermissionsManagement(props) {
     >
       <div
         key={`${role}+permission`}
-        className={
-          darkMode ? 'permissions-management-dark bg-yinmn-blue' : 'permissions-management'
-        }
+        className={`permissions-management ${darkMode ? 'bg-yinmn-blue dark-box-shadow' : ''}`}
       >
         <h1 className="permissions-management__title">User Roles</h1>
         <div key={`${role}_header`} className="permissions-management__header">
@@ -148,7 +146,7 @@ function PermissionsManagement(props) {
             <ModalHeader
               toggle={togglePopUpNewRole}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet' : ''}
+              className={darkMode ? 'bg-space-cadet text-light' : ''}
             >
               Create New Role
             </ModalHeader>
