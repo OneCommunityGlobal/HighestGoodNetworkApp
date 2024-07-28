@@ -572,6 +572,20 @@ function UserProfile(props) {
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1025) {
+        setMenuModalTabletScreen('');
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   const toggleTab = tab => {
     if (activeTab !== tab) setActiveTab(tab);
   };
@@ -780,7 +794,9 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      <Container className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+      <Container 
+        className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
         <Row>
           <Col md="4" id="profileContainer">
             <div className="profile-img">
@@ -927,7 +943,7 @@ function UserProfile(props) {
                 ''
               )}
             </div>
-            <h6 className="text-azure">{jobTitle}</h6>
+            <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
             <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
               {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
               From : <span className={darkMode ? 'text-light' : ''}>{formatDateLocal(userProfile.startDate)}</span>
@@ -1010,7 +1026,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '1' },
                       'nav-link',
-                      darkMode && activeTab === '1' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '1' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
@@ -1023,7 +1040,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '2' },
                       'nav-link',
-                      darkMode && activeTab === '2' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '2' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
@@ -1036,7 +1054,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '3' },
                       'nav-link',
-                      darkMode && activeTab === '3' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '3' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
@@ -1049,7 +1068,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '4' },
                       'nav-link',
-                      darkMode && activeTab === '4' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '4' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
@@ -1062,7 +1082,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '5' },
                       'nav-link',
-                      darkMode && activeTab === '5' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '5' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={e => {
                       e.preventDefault();
