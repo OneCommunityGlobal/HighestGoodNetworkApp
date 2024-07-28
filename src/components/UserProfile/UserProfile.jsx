@@ -608,16 +608,21 @@ function UserProfile(props) {
     setShowConfirmDialog(true);
   };
 
-  const handleConfirmChange = () => {
+  const handleConfirmChange = async () => {
     setShowConfirmDialog(false);
     const updatedUserProfile = {
       ...userProfile,
       isRehireable: pendingRehireableStatus,
     };
-    updateRehireableStatus(updatedUserProfile, pendingRehireableStatus);
-    setIsRehireable(pendingRehireableStatus);
-    setUserProfile(updatedUserProfile);
-    setOriginalUserProfile(updatedUserProfile);
+    try{
+      await dispatch(updateRehireableStatus(updatedUserProfile, pendingRehireableStatus));
+      setIsRehireable(pendingRehireableStatus);
+      setUserProfile(updatedUserProfile);
+      setOriginalUserProfile(updatedUserProfile);
+    }catch(error){
+      toast.error('Unable change rehireable status');
+
+    }
   };
 
   const handleCancelChange = () => {
