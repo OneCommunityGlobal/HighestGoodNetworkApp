@@ -37,10 +37,10 @@ function PermissionListItem(props) {
   };
 
   const togglePermission = () => {
-    if (rolePermissions.includes(permissionKey) || immutablePermissions.includes(permissionKey)) {
+    if (rolePermissions.includes(permission) || immutablePermissions.includes(permission)) {
       setPermissions(previous => previous.filter(perm => perm !== permission));
     } else {
-      setPermissions(previous => [...previous, permissionKey]);
+      setPermissions(previous => [...previous, permission]);
     }
     // eslint-disable-next-line react/destructuring-assignment
     props.onChange();
@@ -193,7 +193,7 @@ function PermissionListItem(props) {
               className="icon-button"
               color={hasThisPermission ? 'danger' : 'success'}
               onClick={() => {
-                togglePermission(permissionKey);
+                togglePermission(permission);
               }}
               disabled={immutablePermissions.includes(permission)}
               style={darkMode ? boxStyleDark : boxStyle}
