@@ -14,6 +14,7 @@ import './TotalOrgSummary.css';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import RoleDistributionPieChart from './components/RoleDistributionPieChart';
+import RoleDistributionPieChart2 from './components/RoleDistributionPieChart2';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
@@ -22,12 +23,9 @@ function TotalOrgSummary(props) {
   const { darkMode, loading, error, volunteerstats } = props;
 
   useEffect(() => {
-    console.log('Fetching...');
     props.getTotalOrgSummary(startDate, endDate);
     props.hasPermission('');
   }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
-
-  console.log('props: ', props);
 
   if (error) {
     return (
@@ -143,7 +141,8 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <RoleDistributionPieChart2 /> 
+              {/* <VolunteerHoursDistribution /> */}
             </div>
           </Col>
         </Row>
