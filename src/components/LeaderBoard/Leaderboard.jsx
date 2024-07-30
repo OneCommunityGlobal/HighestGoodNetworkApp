@@ -2,7 +2,20 @@ import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
 import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
-import { Table, Progress, Modal, ModalBody, ModalFooter, ModalHeader, Button } from 'reactstrap';
+import {
+  Table,
+  Progress,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Spinner,
+} from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -15,8 +28,13 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { boxStyle } from 'styles';
+import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
+import { boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
+import { ENDPOINTS } from '../../utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -35,6 +53,17 @@ function useDeepEffect(effectFunc, deps) {
   }, deps);
 }
 
+function displayDaysLeft(lastDay) {
+  if (lastDay) {
+    const today = new Date();
+    const endDate = new Date(lastDay);
+    const differenceInTime = endDate.getTime() - today.getTime();
+    const differenceInDays = Math.ceil(differenceInTime / (1000 * 3600 * 24));
+    return -differenceInDays;
+  }
+  return null; // or any other appropriate default value
+}
+
 function LeaderBoard({
   getLeaderboardData,
   getOrgData,
@@ -49,6 +78,7 @@ function LeaderBoard({
   allRequests,
   showTimeOffRequestModal,
   darkMode,
+  getWeeklySummaries,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -63,6 +93,79 @@ function LeaderBoard({
     getMouseoverText();
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
+  const [teams, setTeams] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
+  const [textButton, setTextButton] = useState('My Team');
+  const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
+  const [isLoadingTeams, setIsLoadingTeams] = useState(false);
+  const [userRole, setUserRole] = useState();
+  const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
+  const [innerWidth, setInnerWidth] = useState();
+
+  useEffect(() => {
+    const fetchInitial = async () => {
+      const url = ENDPOINTS.USER_PROFILE(displayUserId);
+      try {
+        const response = await axios.get(url);
+        setTeams(response.data.teams);
+        setUserRole(response.data.role);
+      } catch (error) {
+        toast.error(error);
+      }
+    };
+
+    fetchInitial();
+  }, []);
+
+  useEffect(() => {
+    if (!isEqual(leaderBoardData, teamsUsers)) {
+      if (selectedTeamName === 'Select a Team') {
+        setTeamsUsers(leaderBoardData);
+      }
+    }
+  }, [leaderBoardData]);
+
+  useEffect(() => {
+    setInnerWidth(window.innerWidth);
+  }, [window.innerWidth]);
+
+  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
+
+  const renderTeamsList = async team => {
+    if (!team) {
+      setIsLoadingTeams(true);
+
+      setTimeout(() => {
+        setIsLoadingTeams(false);
+        setTeamsUsers(leaderBoardData);
+      }, 1000);
+    } else {
+      try {
+        setIsLoadingTeams(true);
+        const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
+        const idUsers = response.data.map(item => item._id);
+        const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
+        setTeamsUsers(usersTaks);
+        setIsLoadingTeams(false);
+      } catch (error) {
+        toast.error('Error fetching team members:', error);
+        setIsLoadingTeams(false);
+      }
+    }
+  };
+
+  const handleToggleButtonClick = () => {
+    if (textButton === 'View All') {
+      setTextButton('My Team');
+      renderTeamsList(null);
+    } else if (usersSelectedTeam.length === 0) {
+      toast.error(`You have not selected a team or the selected team does not have any members.`);
+    } else {
+      setTextButton('View All');
+      renderTeamsList(usersSelectedTeam);
+    }
+  };
 
   const handleMouseoverTextUpdate = text => {
     setMouseoverTextValue(text);
@@ -77,7 +180,7 @@ function LeaderBoard({
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
-          const elem = document.getElementById(`id${userId}`); //
+          const elem = document.getElementById(`id${userId}`);
 
           if (elem) {
             const topPos = elem.offsetTop;
@@ -101,6 +204,7 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
+    getWeeklySummaries(item.personId);
     dispatch(getUserProfile(item.personId)).then(user => {
       const { _id, role, firstName, lastName, profilePic, email } = user;
       const viewingUser = {
@@ -119,13 +223,38 @@ function LeaderBoard({
   };
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
-    await getLeaderboardData(userId);
+    if (isEqual(leaderBoardData, teamsUsers)) {
+      await getLeaderboardData(userId);
+      setTeamsUsers(leaderBoardData);
+    } else {
+      await getLeaderboardData(userId);
+      renderTeamsList(usersSelectedTeam);
+      setTextButton('View All');
+    }
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
   };
 
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
+  };
+
+  const teamName = (name, maxLength) =>
+    setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
+
+  const dropdownName = (name, maxLength) => {
+    if (innerWidth > 457) {
+      return maxLength > 50 ? `${name.substring(0, 50)}...` : name;
+    }
+    return maxLength > 27 ? `${name.substring(0, 27)}...` : name;
+  };
+
+  const TeamSelected = team => {
+    if (team.teamName.length !== undefined) {
+      teamName(team.teamName, team.teamName.length);
+    }
+    setUsersSelectedTeam(team);
+    setTextButton('My Team');
   };
 
   return (
@@ -148,10 +277,52 @@ function LeaderBoard({
             areaTitle="Leaderboard"
             role={loggedInUser.role}
             fontSize={24}
+            darkMode={darkMode}
             isPermissionPage
           />
         </div>
       </h3>
+      {userRole === 'Administrator' || userRole === 'Owner' ? (
+        <section className="d-flex flex-row flex-wrap mb-3">
+          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=" mr-3">
+            <DropdownToggle caret>
+              {selectedTeamName} {/* Display selected team or default text */}
+            </DropdownToggle>
+            <DropdownMenu>
+              {teams.length === 0 ? (
+                <DropdownItem
+                  onClick={() => toast.warning('Please, create a team to use the filter.')}
+                >
+                  Please, create a team to use the filter.
+                </DropdownItem>
+              ) : (
+                teams.map(team => (
+                  <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
+                    {dropdownName(team.teamName, team.teamName.length)}
+                  </DropdownItem>
+                ))
+              )}
+            </DropdownMenu>
+          </Dropdown>
+
+          {teams.length === 0 ? (
+            <Link to="/teams">
+              <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                Create Team
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              color="primary"
+              onClick={handleToggleButtonClick}
+              disabled={isLoadingTeams}
+              boxstyle={boxStyle}
+            >
+              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : textButton}
+            </Button>
+          )}
+        </section>
+      ) : null}
       {!isVisible && (
         <Alert color="warning">
           <div className="d-flex align-items-center">
@@ -161,15 +332,20 @@ function LeaderBoard({
               areaTitle="Leaderboard settings"
               role={loggedInUser.role}
               fontSize={24}
+              darkMode={darkMode}
               isPermissionPage
             />
           </div>
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-        <Table className={`leaderboard table-fixed ${darkMode ? 'text-light' : ''}`}>
-          <thead>
-            <tr>
+        <Table
+          className={`leaderboard table-fixed ${
+            darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+          }`}
+        >
+          <thead className="responsive-font-size">
+            <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
               <th>
                 <div className="d-flex align-items-center">
@@ -180,10 +356,12 @@ function LeaderBoard({
                     role={loggedInUser.role}
                     fontSize={18}
                     isPermissionPage
+                    darkMode={darkMode}
                     className="p-2" // Add Bootstrap padding class to the EditableInfoModal
                   />
                 </div>
               </th>
+              <th>Days Left</th>
               <th>Time Off</th>
               <th>
                 <span className="d-sm-none">Tan. Time</span>
@@ -206,9 +384,9 @@ function LeaderBoard({
               </th>
             </tr>
           </thead>
-          <tbody className="my-custome-scrollbar">
-            <tr>
-              <td />
+          <tbody className="my-custome-scrollbar responsive-font-size">
+            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
@@ -217,11 +395,11 @@ function LeaderBoard({
                   </span>
                 )}
               </th>
-              <td className="align-middle" />
+              <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
                 <span title="Tangible time">{organizationData.tangibletime || ''}</span>
               </td>
-              <td className="align-middle">
+              <td className="align-middle" aria-label="Description">
                 <Progress
                   title={`TangibleEffort: ${organizationData.tangibletime} hours`}
                   value={organizationData.barprogress}
@@ -234,20 +412,26 @@ function LeaderBoard({
                 </span>
               </td>
             </tr>
-            {leaderBoardData.map(item => (
+            {teamsUsers.map(item => (
               <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
                     <Modal
                       isOpen={isDashboardOpen === item.personId}
                       toggle={dashboardToggle}
-                      className="modal-personal-dashboard"
+                      className={darkMode ? 'text-light dark-mode' : ''}
+                      style={darkMode ? boxStyleDark : {}}
                     >
-                      <ModalHeader toggle={dashboardToggle}>Jump to personal Dashboard</ModalHeader>
-                      <ModalBody>
+                      <ModalHeader
+                        toggle={dashboardToggle}
+                        className={darkMode ? 'bg-space-cadet' : ''}
+                      >
+                        Jump to personal Dashboard
+                      </ModalHeader>
+                      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <p>Are you sure you wish to view this {item.name} dashboard?</p>
                       </ModalBody>
-                      <ModalFooter>
+                      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <Button variant="primary" onClick={() => showDashboard(item)}>
                           Ok
                         </Button>{' '}
@@ -277,7 +461,7 @@ function LeaderBoard({
                         }
                       }}
                     >
-                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                      {hasLeaderboardPermissions(item.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
                           className="fa fa-star"
@@ -333,7 +517,7 @@ function LeaderBoard({
                         ) &&
                         currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                           ? 'rgba(128, 128, 128, 0.5)'
-                          : undefined,
+                          : '#007BFF',
                     }}
                   >
                     {item.name}
@@ -363,6 +547,11 @@ function LeaderBoard({
                   )}
                 </th>
                 <td className="align-middle">
+                  <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
+                    {displayDaysLeft(item.endDate)}
+                  </span>
+                </td>
+                <td className="align-middle">
                   {allRequests && allRequests[item.personId]?.length > 0 && (
                     <div>
                       <button
@@ -376,6 +565,7 @@ function LeaderBoard({
                           handleTimeOffModalOpen(data);
                         }}
                         style={{ width: '35px', height: 'auto' }}
+                        aria-label="View Time Off Requests"
                       >
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
@@ -405,8 +595,7 @@ function LeaderBoard({
                 <td className="align-middle" id={`id${item.personId}`}>
                   <span title="Tangible time">{item.tangibletime}</span>
                 </td>
-               
-                <td className="align-middle">
+                <td className="align-middle" aria-label="Description or purpose of the cell">
                   <Link
                     to={`/timelog/${item.personId}?userId=${item.personId}`}
                     //</td>to={{pathname: `/timelog/${item.personId}`,state: { userId: item.personId } // Pass userId as state

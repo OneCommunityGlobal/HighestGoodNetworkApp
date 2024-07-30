@@ -120,9 +120,9 @@ const TeamMemberTask = React.memo(
 
     return (
       <>
-        <tr ref={ref} className="table-row" key={user.personId}>
+        <tr ref={ref} className={`table-row ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
-          <td colSpan={1}>
+          <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div className="committed-hours-circle">
                 <FontAwesomeIcon
@@ -138,7 +138,7 @@ const TeamMemberTask = React.memo(
                 <i
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', color: darkMode ? 'white' : 'black' }}
+                  style={{ fontSize: 24, cursor: 'pointer', color: darkMode ? 'lightgray' : 'black' }}
                   title="Click to see user's timelog"
                 />
               </Link>
@@ -150,6 +150,7 @@ const TeamMemberTask = React.memo(
                 <tr>
                   <td className="team-member-tasks-user-name">
                     <Link
+                      className='team-member-tasks-user-name-link'
                       to={`/userprofile/${user.personId}`}
                       style={{
                         color:
@@ -158,7 +159,8 @@ const TeamMemberTask = React.memo(
                           ) &&
                           currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                             ? 'rgba(128, 128, 128, 0.5)'
-                            : undefined,
+                            : darkMode ? "#007BFF" : undefined,
+                        fontSize: '20px'
                       }}
                     >{`${user.name}`}</Link>
                     {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
@@ -172,7 +174,7 @@ const TeamMemberTask = React.memo(
                       personId={user.personId}
                     />
                   </td>
-                  <td data-label="Time" className={"team-clocks " + (darkMode ? "text-light" : "")}>
+                  <td data-label="Time" className={`team-clocks ${darkMode ? "text-light" : ""}`}>
                     <u className={darkMode ? "text-azure" : ""}>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                     <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
@@ -188,11 +190,13 @@ const TeamMemberTask = React.memo(
                   activeTasks.slice(0, numTasksToShow).map((task, index) => {
                     return (
                       <tr key={`${task._id}${index}`} className="task-break">
-                        <td data-label="Task(s)" className="task-align">
+                        <td data-label="Task(s)" className={`task-align  ${darkMode ? "bg-yinmn-blue text-light" : ""}`}>
                           <div className="team-member-tasks-content">
                             <Link
+                              className='team-member-tasks-content-link'
                               to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                               data-testid={`${task.taskName}`}
+                              style={{color: darkMode ? "#007BFF" : undefined}} 
                             >
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
@@ -264,7 +268,7 @@ const TeamMemberTask = React.memo(
                           </div>
                         </td>
                         {task.hoursLogged != null && task.estimatedHours != null && (
-                          <td data-label="Progress" className="team-task-progress">
+                          <td data-label="Progress" className={`team-task-progress  ${darkMode ? "bg-yinmn-blue text-light" : ""}`}>
                             {isAllowedToSeeDeadlineCount && (
                               <span
                                 className="deadlineCount"
@@ -277,7 +281,7 @@ const TeamMemberTask = React.memo(
                             <div className="team-task-progress-container">
                               <span
                                 data-testid={`times-${task.taskName}`} 
-                                className={darkMode ? 'text-light ' : '' + (canSeeFollowUpCheckButton ? "team-task-progress-time" : "team-task-progress-time-volunteers")}
+                                className={`${darkMode ? 'text-light ' : ''} ${canSeeFollowUpCheckButton ? "team-task-progress-time" : "team-task-progress-time-volunteers"}`}
                               >
                                 {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
                                   task.estimatedHours.toFixed(2),
@@ -306,8 +310,8 @@ const TeamMemberTask = React.memo(
                   })}
                 {canTruncate && (
                   <tr key="truncate-button-row" className="task-break">
-                    <td className="task-align">
-                      <button type="button" onClick={handleTruncateTasksButtonClick}>
+                    <td className={`task-align`}>
+                      <button type="button" onClick={handleTruncateTasksButtonClick} className={darkMode ? 'text-light' : ''}>
                         {isTruncated ? `Show All (${activeTasks.length}) Tasks` : 'Truncate Tasks'}
                       </button>
                     </td>

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import {
   Container,
   Row,
@@ -20,10 +20,11 @@ import OldBadges from './OldBadges';
 import { WEEK_DIFF } from '../../constants/badge';
 
 function Badge(props) {
+  const { darkMode } = props;
+
   // const [isOpen, setOpen] = useState(false);
   const [isOpenTypes, setOpenTypes] = useState(false);
   const [totalBadge, setTotalBadge] = useState(0);
-  const darkMode = useSelector(state => state.theme.darkMode);
 
   // const toggle = () => {
   //   if (isOpen) {
@@ -78,11 +79,18 @@ function Badge(props) {
   }, [props.userProfile.badgeCollection, totalBadge]);
   return (
     <>
-      <Container className={`p-0 ${darkMode ? 'badge-box-shadow-dark' : 'bagde-box-shadow'}`}>
-        <Row>
-          <Col md={12}>
+      <div style={{ minWidth: '100%', paddingRight: '0' }}>
+        <Row
+          className={`${darkMode ? 'badge-box-shadow-dark bg-space-cadet' : 'bagde-box-shadow'}`}
+          style={{ minWidth: '100%', marginLeft: '2px' }}
+        >
+          <Col className="px-0 mr-0">
             <Card
-              style={{ backgroundColor: darkMode ? '#1C2541' : '#fafafa', borderRadius: 0 }}
+              style={{
+                backgroundColor: darkMode ? '#1C2541' : '#fafafa',
+                borderRadius: 0,
+                minWidth: '100%',
+              }}
               id="badgesearned"
             >
               <CardHeader tag="h3" onClick={toggleTypes} role="button" tabIndex={0}>
@@ -105,6 +113,7 @@ function Badge(props) {
                     fontSize: 18,
                     color: darkMode ? '#007BFF' : '#285739',
                   }}
+                  className="responsive-font-size"
                 >
                   {generateBadgeText(
                     totalBadge,
@@ -118,7 +127,7 @@ function Badge(props) {
             </Card>
           </Col>
         </Row>
-      </Container>
+      </div>
       <UncontrolledTooltip
         placement="auto"
         target="CountInfo"
@@ -144,9 +153,15 @@ function Badge(props) {
           icon to learn more about the different types of badges.
         </p>
       </UncontrolledTooltip>
-      <Modal isOpen={isOpenTypes} toggle={toggleTypes}>
-        <ModalHeader toggle={toggleTypes}>Badge Types and Assignment</ModalHeader>
-        <ModalBody>
+      <Modal
+        isOpen={isOpenTypes}
+        toggle={toggleTypes}
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggleTypes}>
+          Badge Types and Assignment
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p className="badge_info_icon_text">
             No Infringement Streak: Not recieving any infringement for a certain number of months.{' '}
           </p>
@@ -191,6 +206,7 @@ function Badge(props) {
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps)(Badge);

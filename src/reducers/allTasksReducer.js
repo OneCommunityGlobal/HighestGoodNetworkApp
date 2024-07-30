@@ -124,7 +124,6 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
       };
     case types.COPY_TASK:
       const copiedTask = allTasks.taskItems.find(item => item._id === action.taskId);
-      console.log(copiedTask);
       return { ...allTasks, copiedTask };
     case types.ADD_NEW_TASK_ERROR:
       const error = action.err;

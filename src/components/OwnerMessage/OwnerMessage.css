@@ -21,16 +21,17 @@ img {
   text-align: center;
   justify-content: center;
   color: white;
-  margin: 0 1rem;
+  margin: 0rem;
 }
 
 .icon-wrapper {
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.25rem;
+  flex-direction: column;
+  padding: 0rem;
   border-radius: 4px;
-  margin-left: 1rem;
+  margin-left: 0rem;
 }
 
 button {
@@ -58,9 +59,5 @@ button > img:hover {
     align-items: center;
     justify-content: center;
     text-align: center;
-  }
-
-  .message {
-    color: black;
   }
 }

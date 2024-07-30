@@ -27,7 +27,7 @@ describe('Leaderboard page structure', () => {
     const tableHeader = mountedLeaderboard.find('thead');
     expect(tableHeader.length).toBe(1);
     const tableHeads = tableHeader.find('th');
-    expect(tableHeads.length).toBe(6);
+    expect(tableHeads.length).toBe(7);
   });
 
   it('should be rendered with mock Leaderboard data', () => {
