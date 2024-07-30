@@ -82,10 +82,11 @@ export function Header(props) {
   const canGetReports = props.hasPermission('getReports', !isAuthUser && canInteractWithViewingUser);
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser && canInteractWithViewingUser);
   // Users
-  const canAccessUserManagement = props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
+  const canAccessUserManagement = props.hasPermission('userManagementFullFunctionality') 
+    || props.hasPermission('postUserProfile')
+    || props.hasPermission('deleteUserProfile')
+    || props.hasPermission('changeUserStatus')
+    || props.hasPermission('getUserProfiles');
 
   // Badges
   const canAccessBadgeManagement = props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser)

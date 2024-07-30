@@ -7,7 +7,8 @@ export const RoutePermissions = {
     'getUserProfiles',
     'postUserProfile',
     'deleteUserProfile',
-    'changeUserStatus'
+    'changeUserStatus',
+    'userManagementFullFunctionality',
   ],
   badgeManagement: [
     'seeBadges',

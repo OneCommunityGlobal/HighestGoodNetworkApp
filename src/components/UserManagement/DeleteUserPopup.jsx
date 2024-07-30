@@ -26,7 +26,7 @@ const DeleteUserPopup = React.memo(props => {
   const closePopup = e => {
     props.onClose();
   };
-  const canDeleteUser = props.hasPermission('deleteUserProfile');
+  const canDeleteUser = props.hasPermission('deleteUserProfile') || props.hasPermission('userManagementFullFunctionality');
 
   return (
     <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light dark-mode' : ''}>
