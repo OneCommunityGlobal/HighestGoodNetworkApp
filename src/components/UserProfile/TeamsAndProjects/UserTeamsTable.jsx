@@ -30,6 +30,8 @@ const UserTeamsTable = props => {
 
   const refDropdown = useRef();
 
+  const refInput = useRef(null);
+
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const fullCodeRegex = /^.{5,7}$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
@@ -38,18 +40,14 @@ const UserTeamsTable = props => {
     setAutoComplete(autoComplete);
     const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
     if (regexTest) {
-      props.setCodeValid('saving');
+      props.setCodeValid(true);
       setTeamCode(autoComplete ? e : e.target.value);
+      refInput.current = autoComplete ? e : e.target.value;
       if (props.userProfile) {
-        // prettier-ignore
-        await props.setUserProfile({ ...props.userProfile, teamCode: autoComplete ? e : e.target.value });
         try {
-          const url = ENDPOINTS.USER_PROFILE(props.userProfile._id);
-          await axios.put(url, props.userProfile);
-          props.setCodeValid('saved');
-          setTimeout(() => {
-            props.setCodeValid('');
-          }, 30000);
+          const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
+          await axios.patch(url, { key: 'teamCode', value: refInput.current });
+          toast.success('Team code updated!');
         } catch {
           toast.error('It is not possible to save the team code.');
         }
@@ -58,7 +56,8 @@ const UserTeamsTable = props => {
       }
     } else {
       setTeamCode(autoComplete ? e : e.target.value);
-      props.setCodeValid('NOT SAVED');
+      refInput.current = autoComplete ? e : e.target.value;
+      props.setCodeValid(false);
     }
     autoComplete ? setShowDropdown(false) : null;
     autoComplete = false;
@@ -73,6 +72,8 @@ const UserTeamsTable = props => {
     } else {
       setArrayInputAutoComplete(props.inputAutoComplete);
     }
+
+    refInput.current = props.userProfile ? props.userProfile.teamCode : props.teamCode;
   }, [teamCode, props.inputAutoComplete, autoComplete]);
 
   const filterInputAutoComplete = result => {
@@ -167,6 +168,7 @@ const UserTeamsTable = props => {
                     fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
                     darkMode={darkMode}
                     isMobile={false}
+                    refInput={refInput}
                   />
                 ) : (
                   <div style={{ fontSize: '12px', textAlign: 'center' }}>
@@ -281,6 +283,7 @@ const UserTeamsTable = props => {
                     fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
                     darkMode={darkMode}
                     isMobile={true}
+                    refInput={refInput}
                   />
                 ) : (
                   <div style={{ paddingTop: '6px', textAlign: 'center' }}>

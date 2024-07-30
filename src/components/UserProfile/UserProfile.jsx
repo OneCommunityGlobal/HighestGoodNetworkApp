@@ -118,7 +118,7 @@ function UserProfile(props) {
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
   const isProfileEqual = JSON.stringify(userProfile) === JSON.stringify(originalUserProfile);
-  const [codeValid, setCodeValid] = useState('');
+  const [codeValid, setCodeValid] = useState(true);
 
   const [userStartDate, setUserStartDate] = useState('');
   const [userEndDate, setUserEndDate] = useState('');
@@ -833,24 +833,11 @@ function UserProfile(props) {
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
-            {codeValid !== '' && (
-              <Alert
-                color={
-                  codeValid === 'NOT SAVED'
-                    ? 'danger'
-                    : codeValid === 'saving'
-                    ? 'primary'
-                    : codeValid === 'saved' && 'success'
-                }
-              >
-                {codeValid === 'NOT SAVED'
-                  ? 'NOT SAVED! The code must be between 5 and 7 characters long'
-                  : codeValid === 'saving'
-                  ? 'The team code is being saved'
-                  : // prettier-ignore
-                    codeValid === 'saved' && 'The team code has been saved'}
+            {!codeValid ? (
+              <Alert color="danger">
+                NOT SAVED! The code must be between 5 and 7 characters long
               </Alert>
-            )}
+            ) : null}
             <div className="profile-head">
               <h5
                 className={`mr-2 ${darkMode ? 'text-light' : ''}`}

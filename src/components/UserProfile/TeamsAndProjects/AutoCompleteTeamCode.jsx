@@ -16,6 +16,7 @@ export const AutoCompleteTeamCode = props => {
     fetchTeamCodeAllUsers,
     darkMode,
     isMobile,
+    refInput,
   } = props;
 
   useEffect(() => {
@@ -66,6 +67,7 @@ export const AutoCompleteTeamCode = props => {
         value={teamCode}
         onChange={handleCodeChange}
         style={darkMode ? colordark : null}
+        ref={refInput}
         placeholder="X-XXX"
         onFocus={() => !showDropdown && setShowDropdown(true)}
       />
