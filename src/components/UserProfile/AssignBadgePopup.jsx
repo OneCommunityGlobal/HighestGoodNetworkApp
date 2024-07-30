@@ -73,7 +73,7 @@ function AssignBadgePopup(props) {
         existBadges.forEach(badgeId => {
           if (!props.selectedBadges.includes(badgeId)) {
             props.addSelectBadge(badgeId);
-            console.log('selectedBadges', props.selectedBadges);
+            // console.log('selectedBadges', props.selectedBadges);
           }
         });
       }

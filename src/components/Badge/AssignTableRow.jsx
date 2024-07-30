@@ -50,7 +50,7 @@ function AssignTableRow(props) {
       <td>
         <CustomInput
           type="checkbox"
-          id={`assign-badge-${props.badge._id}`}
+          id={`assign-new-badge-${props.badge._id}`}
           onChange={handleCheckBoxChange}
           checked={isSelect}
         />

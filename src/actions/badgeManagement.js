@@ -222,51 +222,33 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 
 // Return updated badgeCollection
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
-  let newBadgeCollection = Array.from(badgeCollection);
+  const badgeMap = new Map(badgeCollection.map(badge => [badge.badge, badge]));
 
-  // object to track updated or newly added badges to prevent duplicates
-  let updatedOrAddedBadges = {};
+  const currentTs = Date.now();
+  const currentDate = formatDate();
 
   selectedBadgesId.forEach(originalBadgeId => {
-    let badgeId = originalBadgeId;
-    // Remove "assign-badge-" from badgeId
-    if (badgeId.includes('assign-badge-')) badgeId = badgeId.replace('assign-badge-', '');
-
-    if (!updatedOrAddedBadges[badgeId]) {
-      let included = false;
-      let currentTs = Date.now();
-      let currentDate = formatDate();
-
-      newBadgeCollection.forEach(badgeObj => {
-        if (badgeId === badgeObj.badge) {
-          if (!included) { 
-            // Only update the first instance
-            // Increment count only for the first instance found
-            badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1;
-            badgeObj.lastModified = currentTs;
-            badgeObj.earnedDate.push(currentDate);
-            included = true;
-          }
-          // Note this badge ID as updated so it's not added again
-          updatedOrAddedBadges[badgeId] = true;
-        }
+    //  Remove "assign-badge-" prefix
+    const badgeId = originalBadgeId.replace('assign-new-badge-', '');
+    
+    if (badgeMap.has(badgeId)) {
+      // Update the existing badge record
+      const badge = badgeMap.get(badgeId);
+      badge.count = (badge.count || 0) + 1;
+      badge.lastModified = currentTs;
+      badge.earnedDate.push(currentDate);
+    } else {
+      // Add the new badge record
+      badgeMap.set(badgeId, {
+        badge: badgeId,
+        count: 1,
+        lastModified: currentTs,
+        earnedDate: [currentDate],
       });
-
-      // Add the new badge record to badgeCollection if not included already
-      if (!included) {
-        newBadgeCollection.push({
-          badge: badgeId,
-          count: 1,
-          lastModified: currentTs,
-          earnedDate: [currentDate],
-        });
-        // Note this badge ID as added
-        updatedOrAddedBadges[badgeId] = true;
-      }
     }
   });
 
-  return newBadgeCollection;
+  return Array.from(badgeMap.values());
 };
 
 // Make API call to update badgeCollection
