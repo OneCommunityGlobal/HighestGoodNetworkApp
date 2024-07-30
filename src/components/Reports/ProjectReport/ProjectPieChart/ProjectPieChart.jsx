@@ -10,7 +10,7 @@ const generateRandomHexColor = () => {
   return hexColor;
 }
 
-const renderActiveShape = (props) => {
+const renderActiveShape = (props, darkMode) => {
   const hexColor = generateRandomHexColor()
   const RADIAN = Math.PI / 180;
   const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
@@ -27,7 +27,7 @@ const renderActiveShape = (props) => {
 
   return (
     <g>
-      <text x={cx} y={cy} dy={8} textAnchor="middle" fill={fill}>
+      <text x={cx} y={cy} dy={8} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
         {payload.lastName.substring(0, 5)} {payload.value.toFixed(1)} of {payload.totalHoursCalculated.toFixed(1)}hrs
       </text>
       <Sector
@@ -50,9 +50,12 @@ const renderActiveShape = (props) => {
       />
       <path d={`M${sx},${sy}L${mx},${my}L${ex},${ey}`} stroke={fill} fill="none" />
       <circle cx={ex} cy={ey} r={2} fill={fill} stroke="none" />
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill="#333">{`${payload.name.substring(0, 14)}`}</text>
-      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill="#999">
-        {`${value.toFixed(2)} Hours (${(percent * 100).toFixed(2)}%)`}
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill={darkMode ? 'white' : '#333'} >{`${payload.name.substring(0, 14)}`}</text>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={18} textAnchor={textAnchor} fill={darkMode ? 'white' : '#999'}>
+        {`${value.toFixed(2)}Hrs`}
+      </text>
+      <text x={ex + (cos >= 0 ? 1 : -1) * 12} y={ey} dy={36} textAnchor={textAnchor} fill={darkMode ? 'white' : '#999'}>
+        {`${(percent * 100).toFixed(2)}%`}
       </text>
     </g>
   );
@@ -71,12 +74,12 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
   }
 
   return (
-    <div className={darkMode ? 'text-light' : ''}>
+    <div className={`${darkMode ? 'text-light' : ''} h-100`}>
       <ResponsiveContainer maxWidth={640} maxHeight={640} minWidth={350} minHeight={350}>
         <PieChart>
           <Pie
             activeIndex={activeIndex}
-            activeShape={renderActiveShape}
+            activeShape={(props) => renderActiveShape(props, darkMode)}
             data={userData}
             cx="50%"
             cy="50%"
@@ -85,6 +88,7 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
             fill="#8884d8"
             dataKey="value"
             onMouseEnter={onPieEnter}
+            darkMode={darkMode}
             />
           </PieChart>
         </ResponsiveContainer>

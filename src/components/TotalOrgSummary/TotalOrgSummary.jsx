@@ -229,10 +229,15 @@ function TotalOrgSummary(props) {
           </Col>
         </Row>
       </AccordianWrapper>
-      <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
-        <Row>
+      <AccordianWrapper
+        title="Volunteer Workload and Task Completion Analysis"
+        className={`${darkMode ? 'bg-oxford-blue text-light rounded-lg' : 'cbg--white-smoke'}`}
+      >
+        <Row
+          className={`${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'} rounded-lg`}
+        >
           <Col lg={{ size: 6 }}>
-            <div className="component-container component-border" style={{ position: 'relative' }}>
+            <div className="component-container component-border">
               {(allUserProfiles.fetching || allUsersTimeEntries.loading) && (
                 <div className="d-flex justify-content-center align-items-center0">
                   <div className="w-100vh ">
@@ -250,7 +255,10 @@ function TotalOrgSummary(props) {
                     />
                     <div className="d-flex flex-column align-items-center justify-content-center">
                       <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />
-                      <NumbersVolunteerWorked usersTimeEntries={usersTimeEntries} />
+                      <NumbersVolunteerWorked
+                        usersTimeEntries={usersTimeEntries}
+                        darkMode={darkMode}
+                      />
                     </div>
                   </>
                 )}

@@ -93,7 +93,9 @@ export default function VolunteerHoursDistribution({
         </div>
       ) : (
         <div>
-          <h6 style={{ color: 'black', textAlign: 'center' }}>Volunteer Hours Distribution</h6>
+          <h6 className={darkMode ? 'text-light' : 'text-dark'} style={{ textAlign: 'center' }}>
+            Volunteer Hours Distribution
+          </h6>
           <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
         </div>
       )}
