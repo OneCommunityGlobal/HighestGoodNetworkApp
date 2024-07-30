@@ -1,0 +1,72 @@
+/* styles.css */
+/* Remove default list styling */
+.react-autosuggest__suggestions-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+  max-height: 200px; /* Set a maximum height for the suggestions list */
+  overflow-y: auto; /* Enable vertical scrolling */
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+/* Style each suggestion item */
+.react-autosuggest__suggestion {
+  padding: 10px;
+  border-bottom: 1px solid #eee;
+  cursor: pointer;
+  background-color: white;
+}
+
+.react-autosuggest__suggestion:last-child {
+  border-bottom: none;
+}
+
+.react-autosuggest__suggestion--highlighted {
+  background-color: #f5f5f5;
+}
+
+/* Input styling */
+.autosuggest-input {
+  width: calc(100% - 40px); /* Adjust width to make space for the clear button */
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px 0 0 4px; /* Rounded corners only on the left */
+  margin-bottom: 10px;
+}
+
+/* Container styling */
+.autosuggest-container {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* Clear button styling */
+.clear-button {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-left: none;
+  border-radius: 0 4px 4px 0; /* Rounded corners only on the right */
+  background-color: #f5f5f5;
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+
+.clear-button:hover {
+  background-color: #e5e5e5;
+}
+
+/* Suggestions container styling */
+.react-autosuggest__suggestions-container {
+  position: absolute;
+  z-index: 9999;
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 100%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  max-height: 200px; /* Set a maximum height for the suggestions container */
+  overflow-y: auto; /* Enable vertical scrolling */
+}

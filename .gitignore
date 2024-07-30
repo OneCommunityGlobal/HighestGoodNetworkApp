@@ -26,3 +26,5 @@ yarn-error.log*
 **\ **
 
 /public/tinymce/
+
+/bashrc.sh
