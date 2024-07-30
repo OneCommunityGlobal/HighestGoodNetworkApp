@@ -23,6 +23,7 @@ function AssignTableRow(props) {
       setSelect(true);
     } else {
       props.removeSelectBadge(e.target.id);
+      console.log('remove badge', props.selectedBadges);
       setSelect(false);
     }
   };
@@ -59,9 +60,13 @@ function AssignTableRow(props) {
   );
 }
 
+const mapStateToProps = state => ({
+  selectedBadges: state.badge.selectedBadges,
+});
+
 const mapDispatchToProps = dispatch => ({
   addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
   removeSelectBadge: badgeId => dispatch(removeSelectBadge(badgeId)),
 });
 
-export default connect(null, mapDispatchToProps)(AssignTableRow);
+export default connect(mapStateToProps, mapDispatchToProps)(AssignTableRow);
