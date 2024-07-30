@@ -1,16 +1,23 @@
-# Define a imagem base
+# Define the base image
 FROM node:14-alpine
+
 # Set the working directory to /app
 WORKDIR /app
-# Copy the package.json and yarn.lock files to the container
-COPY package.json yarn.lock ./
+
+# Copy the package.json and package-lock.json files to the container
+COPY package.json package-lock.json ./
+
 # Install dependencies
-RUN yarn install
+RUN npm install
+
 # Copy the rest of the app files to the container
-COPY . ./
+COPY . .
+
 # Build the app
-RUN yarn build
+RUN npm run build
+
 # Expose port 3000
 EXPOSE 3000
+
 # Set the startup command to run the app using Node.js
-CMD ["yarn", "start:local"]
+CMD ["npm", "run", "start:local"]
