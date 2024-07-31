@@ -331,7 +331,7 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} to={`/timelog`}>
+                  <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
@@ -475,7 +475,7 @@ export function Header(props) {
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
-                    <DropdownItem>
+                    <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
                     <DropdownItem divider />
