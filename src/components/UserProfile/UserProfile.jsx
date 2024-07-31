@@ -42,6 +42,7 @@ import TabToolTips from './ToolTips/TabToolTips';
 import BasicToolTips from './ToolTips/BasicTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
+import { getAllTeamCode } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus, updateRehireableStatus } from '../../actions/userManagement';
@@ -134,6 +135,7 @@ function UserProfile(props) {
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
     dispatch(getAllTimeOffRequests());
+    dispatch(getAllTeamCode());
     fetchTeamCodeAllUsers();
   }, []);
 
@@ -184,6 +186,7 @@ function UserProfile(props) {
     setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
+      if (!team) return;
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           originalTeamProperties.push({ [key]: value });
@@ -193,6 +196,7 @@ function UserProfile(props) {
 
     const teamsProperties = [];
     teams?.forEach(team => {
+      if (!team) return;
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           teamsProperties.push({ [key]: value });
@@ -213,7 +217,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects);
+
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -322,6 +326,9 @@ function UserProfile(props) {
         await loadSummaryIntroDetails(teamId, response.data);
       }
 
+      // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
+      newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
+      newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
@@ -340,6 +347,8 @@ function UserProfile(props) {
         startDate: newUserProfile?.startDate.split('T')[0],
       });
       setUserStartDate(newUserProfile?.startDate.split('T')[0]);
+      checkIsProjectsEqual();
+      // isTeamSaved(true);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -767,7 +776,6 @@ function UserProfile(props) {
   const handleEndDate = async endDate => {
     setUserEndDate(endDate);
   };
-
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
@@ -846,7 +854,7 @@ function UserProfile(props) {
             (!isTeamsEqual && !isTeamSaved) ||
             !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '} 
               </Alert>
             ) : null}
             {!codeValid ? (
