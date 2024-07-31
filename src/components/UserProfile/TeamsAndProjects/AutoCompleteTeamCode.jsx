@@ -79,9 +79,12 @@ export const AutoCompleteTeamCode = props => {
             style={{
               height: isLoading ? '7rem' : arrayInputAutoComplete.length <= 30 ? 'auto' : '23rem',
               // prettier-ignore
-              width: isLoading || arrayInputAutoComplete.length <=3 ? 'auto' : !isMobile ? '18rem' : '20rem',
-              position: arrayInputAutoComplete.length <= 3 || isLoading ? '' : 'relative',
-              right: !isMobile ? '11rem' : '',
+              width: isLoading? 'auto' : !isMobile &&  arrayInputAutoComplete.length <=3 ? '7rem' : !isMobile ? '19rem' :
+              isMobile && arrayInputAutoComplete.length <= 3? '' : '21rem',
+              position: isLoading ? '' : 'relative',
+              // prettier-ignore
+              right: !isMobile && arrayInputAutoComplete.length <= 3? '5px' : !isMobile? '12rem' : 
+                        isMobile && arrayInputAutoComplete.length <= 3? '' : '1rem'
             }}
           >
             {!isLoading ? (
@@ -112,10 +115,8 @@ export const AutoCompleteTeamCode = props => {
                     return (
                       <div
                         key={item}
-                        className={`${
-                          //prettier-ignore
-                          arrayInputAutoComplete.length <= 3 ?  '': 'col col-cols-3'
-                        }`}
+                        //prettier-ignore
+                        className={` ${arrayInputAutoComplete.length <= 3 ? '' : 'col col-cols-3'}`}
                       >
                         <p
                           className={classNameStyleP}

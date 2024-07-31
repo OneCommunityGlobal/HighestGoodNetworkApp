@@ -39,15 +39,16 @@ const UserTeamsTable = props => {
   const handleCodeChange = async (e, autoComplete) => {
     setAutoComplete(autoComplete);
     const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
+    refInput.current = autoComplete ? e : e.target.value;
     if (regexTest) {
       props.setCodeValid(true);
       setTeamCode(autoComplete ? e : e.target.value);
-      refInput.current = autoComplete ? e : e.target.value;
       if (props.userProfile) {
         try {
           const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
           await axios.patch(url, { key: 'teamCode', value: refInput.current });
           toast.success('Team code updated!');
+          props.fetchTeamCodeAllUsers();
         } catch {
           toast.error('It is not possible to save the team code.');
         }
@@ -56,7 +57,6 @@ const UserTeamsTable = props => {
       }
     } else {
       setTeamCode(autoComplete ? e : e.target.value);
-      refInput.current = autoComplete ? e : e.target.value;
       props.setCodeValid(false);
     }
     autoComplete ? setShowDropdown(false) : null;

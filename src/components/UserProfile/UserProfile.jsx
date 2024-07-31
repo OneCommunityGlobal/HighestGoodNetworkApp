@@ -550,7 +550,6 @@ function UserProfile(props) {
       }
       await loadUserProfile();
       await loadUserTasks();
-      await fetchTeamCodeAllUsers();
       setSaved(false);
     } catch (err) {
       console.log(err);
