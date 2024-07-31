@@ -16,11 +16,7 @@ import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHo
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 
-const startDate = moment()
-.tz('America/Los_Angeles')
-.endOf('week')
-.subtract(2, 'week')
-.toISOString()
+const startDate = '2016-01-01'
 const endDate = moment()
 .tz('America/Los_Angeles')
 .endOf('week')
@@ -48,7 +44,6 @@ function TotalOrgSummary(props) {
 
       const { taskHours, projectHours } = await props.getTaskAndProjectStats(startDate, endDate);
       const { taskHours: lastTaskHours, projectHours: lastProjectHours } = await props.getTaskAndProjectStats(lastStartDate, lastEndDate);
-      const lastData = await props.getTaskAndProjectStats(lastStartDate, lastEndDate);
       if (taskHours && projectHours) {
         setTaskProjectHours({ taskHours: taskHours, projectHours: projectHours, lastTaskHours: lastTaskHours, lastProjectHours: lastProjectHours });
       }
@@ -56,6 +51,8 @@ function TotalOrgSummary(props) {
     fetchData();
     // props.hasPermission('');
   }, [startDate, endDate]);
+
+  
   if (error) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
