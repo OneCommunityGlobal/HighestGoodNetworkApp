@@ -28,8 +28,14 @@ const UserTeamsTable = props => {
   const refDropdown = useRef();
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
-  const fullCodeRegex = /^.{5,7}$/;
+  const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
   const toggleTooltip = () => setTooltip(!tooltipOpen);
+
+  useEffect(() => {
+    if (props.userProfile?.teamCode) {
+      setTeamCode(props.userProfile.teamCode);
+    }
+  }, [props.userProfile.teamCode]);
 
   const handleCodeChange = (e, autoComplete) => {
     setAutoComplete(autoComplete);
@@ -356,5 +362,6 @@ const UserTeamsTable = props => {
       )}
     </div>
   );
-};
+  };
+  
 export default connect(null, { hasPermission })(UserTeamsTable);
