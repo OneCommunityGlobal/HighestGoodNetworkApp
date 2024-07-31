@@ -71,6 +71,8 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
   };
 };
 
+export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //Find last week of work in date
+  toDate = moment(toDate)
     .endOf('day')
     .format('YYYY-MM-DD');
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate,toDate);
