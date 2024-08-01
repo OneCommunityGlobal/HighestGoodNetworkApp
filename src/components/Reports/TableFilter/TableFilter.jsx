@@ -33,7 +33,7 @@ function TableFilter({
   searchAssign,
   searchEstimatedHours,
   name,
-  taskNameList,
+  taskNameList = [],
   estimatedHours,
   resources,
   status,
@@ -69,7 +69,7 @@ function TableFilter({
         id="hour_search"
         searchCallback={searchEstimatedHours}
         value={estimatedHours}
-        placeholder="Est Hours"
+        placeholder="Estimated Hours"
         className="table-filter-item table-filter-input"
       />
       <TextSuggestion
