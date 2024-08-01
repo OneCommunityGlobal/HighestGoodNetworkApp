@@ -289,7 +289,19 @@ export class WeeklySummary extends Component {
       mediaFirstChange: false,
     });
 
-    // console.log('this.props.userRole in WeeklySummary: ', this.props.userRole);
+    // Adding new code for handling the timer button click
+    const timerButton = document.querySelector('.weeklySummaryCountdownButton');
+    const summaryTab = document.querySelector('[data-testid="tab-1"]');
+
+    if (timerButton && summaryTab) {
+      timerButton.addEventListener('click', () => {
+        if (window.location.pathname === '/dashboard') {
+          window.setTimeout(() => {
+            summaryTab.scrollIntoView({ behavior: 'smooth' });
+          }, 100);
+        }
+      });
+    }
   }
 
   doesDateBelongToWeek = (dueDate, weekIndex) => {
