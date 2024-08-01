@@ -307,7 +307,8 @@ const TeamMemberTask = React.memo(
                         )}
                       </tr>
                     );
-                  })}
+                  })
+                }
                 {canTruncate && (
                   <tr key="truncate-button-row" className="task-break">
                     <td className={`task-align`}>
