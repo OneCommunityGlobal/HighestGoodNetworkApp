@@ -32,8 +32,8 @@ import '../Header/DarkMode.css';
 function AssignBadge(props) {
   const { darkMode } = props;
   const [isOpen, setOpen] = useState(false);
-  const [firstSuggestions, setFirstSuggestions] = useState([]);
-  const [lastSuggestions, setLastSuggestions] = useState([]);
+  const [firstName, setFirstName] = useState('');
+  const [lastName, setLastName] = useState('');
 
   useEffect(() => {
     props.getAllUserProfile();
@@ -41,65 +41,7 @@ function AssignBadge(props) {
     props.closeAlert();
   }, []);
 
-  const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
-
-  // const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-
-  const getSuggestions = value => {
-    // const escapedValue = escapeRegexCharacters(value.trim());
-    // const regex = new RegExp('^' + escapedValue, 'i');
-    return activeUsers.filter(
-      user =>
-        searchWithAccent(user.firstName, value.trim()) ||
-        searchWithAccent(user.lastName, value.trim()),
-    );
-  };
-
-  const getSuggestionFirst = suggestion => suggestion.firstName;
-
-  const getSuggestionLast = suggestion => suggestion.lastName;
-
-  const renderSuggestion = suggestion => {
-    return (
-      <div>
-        {suggestion.firstName} {suggestion.lastName}
-      </div>
-    );
-  };
-
-  const onFirstChange = (event, { newValue }) => {
-    props.getFirstName(newValue);
-  };
-
-  const onLastChange = (event, { newValue }) => {
-    props.getLastName(newValue);
-  };
-
-  const onFirstSuggestionsFetchRequested = ({ value }) => {
-    setFirstSuggestions(getSuggestions(value));
-  };
-
-  const onFirstSuggestionsClearRequested = () => {
-    setFirstSuggestions([]);
-  };
-
-  const onFirstSuggestionSelected = (event, { suggestion }) => {
-    props.getLastName(suggestion.lastName);
-    props.getUserId(suggestion._id);
-  };
-
-  const onLastSuggestionsFetchRequested = ({ value }) => {
-    setLastSuggestions(getSuggestions(value));
-  };
-
-  const onLastSuggestionsClearRequested = () => {
-    setLastSuggestions([]);
-  };
-
-  const onLastSuggestionSelected = (event, { suggestion }) => {
-    props.getFirstName(suggestion.firstName);
-    props.getUserId(suggestion._id);
-  };
+ 
 
   const toggle = (didSubmit = false) => {
     const { selectedBadges, firstName, lastName, userId } = props;
@@ -184,30 +126,20 @@ function AssignBadge(props) {
               many times as you want them to earn it.
             </p>
           </UncontrolledTooltip>
-          <div style={{ marginRight: '5px' }}>
-            <Autosuggest
-              suggestions={firstSuggestions}
-              onSuggestionsFetchRequested={onFirstSuggestionsFetchRequested}
-              onSuggestionsClearRequested={onFirstSuggestionsClearRequested}
-              onSuggestionSelected={onFirstSuggestionSelected}
-              getSuggestionValue={getSuggestionFirst}
-              renderSuggestion={renderSuggestion}
-              inputProps={FirstInputProps}
-              style={{ marginLeft: '5px', marginRight: '5px' }}
-            />
-          </div>
-          <div style={{ marginLeft: '5px' }}>
-            <Autosuggest
-              suggestions={lastSuggestions}
-              onSuggestionsFetchRequested={onLastSuggestionsFetchRequested}
-              onSuggestionsClearRequested={onLastSuggestionsClearRequested}
-              onSuggestionSelected={onLastSuggestionSelected}
-              getSuggestionValue={getSuggestionLast}
-              renderSuggestion={renderSuggestion}
-              inputProps={LastInputProps}
-              style={{ marginLeft: '5px' }}
-            />
-          </div>
+          <input
+            type="text"
+            placeholder="First name"
+            value={firstName}
+            onChange={handleFirstNameChange}
+            style={{ marginRight: '10px', padding: '5px' }}
+          />
+          <input
+            type="text"
+            placeholder="Last name"
+            value={lastName}
+            onChange={handleLastNameChange}
+            style={{ marginRight: '10px', padding: '5px' }}
+          />
         </div>
       </div>
       <FormGroup className="assign-badge-margin-top">
