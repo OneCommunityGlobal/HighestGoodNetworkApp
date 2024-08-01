@@ -48,7 +48,11 @@ const UserTeamsTable = props => {
           const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
           await axios.patch(url, { key: 'teamCode', value: refInput.current });
           toast.success('Team code updated!');
-          props.fetchTeamCodeAllUsers();
+
+          setTimeout(() => {
+            props.fetchTeamCodeAllUsers();
+            toast.info('Auto complete updated!');
+          }, 9000);
         } catch {
           toast.error('It is not possible to save the team code.');
         }
