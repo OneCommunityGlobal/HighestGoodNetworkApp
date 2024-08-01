@@ -53,6 +53,12 @@ import {
 import CurrentPromptModal from './CurrentPromptModal';
 // import WriteItForMeModal from './WriteForMeModal';
 
+//Images are not allowed in weekly summary
+const disable_image_upload_handler = (blobInfo, progress) =>
+  new Promise((resolve, reject) => {
+    return reject({ message: 'Pictures are not allowed here!', remove: true });
+  });
+
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
   menubar: false,
@@ -65,6 +71,7 @@ const TINY_MCE_INIT_OPTIONS = {
   max_height: 500,
   autoresize_bottom_margin: 1,
   content_style: 'body { font-size: 14px; }',
+  images_upload_handler: disable_image_upload_handler,
 };
 
 // Need this export here in order for automated testing to work.
