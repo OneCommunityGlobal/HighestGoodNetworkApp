@@ -341,10 +341,19 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
-                Created Date:
-                {blueSquare[0]?.createdDate}
+                Created Date: {blueSquare[0]?.createdDate ? new Date(blueSquare[0]?.createdDate).toLocaleDateString('en-US') : ''}
               </Label>
             </FormGroup>
+            {blueSquare[0]?.manuallyAssigned && blueSquare[0]?.manuallyAssignedBy && (
+              <FormGroup>
+                <Label className={fontColor} for="manuallyAssignedBy">
+                  Manual Assignment
+                </Label>
+                  <div style={{ fontSize: '1rem', color: 'grey', marginLeft: '0.2rem', marginBottom: '0.4rem', display: 'block', fontWeight: 'bold' }}>
+                    {blueSquare[0]?.manuallyAssignedBy}
+                  </div>
+              </FormGroup>
+            )}
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
               <Input 
@@ -356,6 +365,17 @@ const UserProfileModal = props => {
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
             </FormGroup>
+            {blueSquare[0]?.editedBy && (
+              <FormGroup>
+                <Label
+                className={fontColor}
+                for="editedBy"
+                style={{ fontSize: '0.8rem', color: 'grey', textAlign: 'right', display: 'block' }}>
+                  Edited By {blueSquare[0]?.editedBy}
+                </Label>
+              </FormGroup>
+            )}
+
           </>
         )}
 
@@ -369,8 +389,7 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
-                Created Date:
-                {blueSquare[0]?.createdDate}
+                Created Date: {blueSquare[0]?.createdDate}
               </Label>
             </FormGroup>
             <FormGroup>
