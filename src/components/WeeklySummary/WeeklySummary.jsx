@@ -53,10 +53,11 @@ import {
 import CurrentPromptModal from './CurrentPromptModal';
 // import WriteItForMeModal from './WriteForMeModal';
 
-//Images are not allowed in weekly summary
-const disable_image_upload_handler = (blobInfo, progress) =>
-  new Promise((resolve, reject) => {
-    return reject({ message: 'Pictures are not allowed here!', remove: true });
+// Images are not allowed in weekly summary
+const customImageUploadHandler = () =>
+  new Promise((_, reject) => {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    reject({ message: 'Pictures are not allowed here!', remove: true });
   });
 
 const TINY_MCE_INIT_OPTIONS = {
@@ -71,7 +72,7 @@ const TINY_MCE_INIT_OPTIONS = {
   max_height: 500,
   autoresize_bottom_margin: 1,
   content_style: 'body { font-size: 14px; }',
-  images_upload_handler: disable_image_upload_handler,
+  images_upload_handler: customImageUploadHandler,
 };
 
 // Need this export here in order for automated testing to work.

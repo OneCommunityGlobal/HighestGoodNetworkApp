@@ -31,10 +31,11 @@ import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css'
 
-//Images are not allowed in timelog
-const disable_image_upload_handler = (blobInfo, progress) =>
-  new Promise((resolve, reject) => {
-    return reject({ message: 'Pictures are not allowed here!', remove: true });
+// Images are not allowed in timelog
+const customImageUploadHandler = () =>
+  new Promise((_, reject) => {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    reject({ message: 'Pictures are not allowed here!', remove: true });
   });
 
 const TINY_MCE_INIT_OPTIONS = {
@@ -51,7 +52,7 @@ const TINY_MCE_INIT_OPTIONS = {
   max_height: 300,
   autoresize_bottom_margin: 1,
   content_style: 'body { cursor: text !important; }',
-  images_upload_handler: disable_image_upload_handler
+  images_upload_handler: customImageUploadHandler,
 };
 
 /**
