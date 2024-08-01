@@ -231,7 +231,7 @@ function PeopleTableDetails(props) {
       //     </div>
       //   </div>
       // </div>
-      <div className="task-card">
+      <div className={`task-card ${darkMode ? 'text-dark' : ''}`}>
         <div key={value._id} >
           <div className='task-header'>
             <div className='task-title'>

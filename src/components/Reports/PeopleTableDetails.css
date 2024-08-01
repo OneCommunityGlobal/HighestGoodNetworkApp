@@ -180,6 +180,10 @@
   overflow: hidden;
 }
 
+.text-dark {
+  color:black;
+}
+
 .task-header {
   background-color: #eee7f8;
   display: flex;

@@ -223,7 +223,28 @@ body {
 
 @media (min-width: 850px) {
   .people-report-time-logs-wrapper {
+    margin-top: 25px;
     display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    color: white;
+  }
+}
+
+@media (min-width: 850px) and (max-width: 1249px) {
+  .people-report-time-logs-wrapper > * {
+    margin-top: 25px;
+    /* display: flex; */
+    flex-wrap: wrap;
+    justify-content: space-between;
+    color: white;
+  }
+}
+
+@media (min-width: 275px) and (max-width: 435px) {
+  .people-report-time-logs-wrapper > * {
+    margin-top: 25px; 
+    /* display: flex; */
     flex-wrap: wrap;
     justify-content: space-between;
     color: white;

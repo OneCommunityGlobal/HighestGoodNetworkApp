@@ -20,7 +20,7 @@ export const Checkbox = ({
         checked={value}
         onChange={onChange}
       />
-      <label className="checkbox-label" htmlFor={id}>
+      <label className={`checkbox-label ${textColorCN}`} htmlFor={id}>
         {label}
       </label>
     </div>
