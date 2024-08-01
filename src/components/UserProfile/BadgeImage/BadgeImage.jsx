@@ -1,10 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstrap';
 
 const BadgeImage = props => {
   const [isOpen, setOpen] = useState(false);
+  const [badgeValue, setBadgeValue] = useState(props.count);
 
   const toggle = () => setOpen(isOpen => !isOpen);
+
+  const choosePersonalMaxHours = (countValue, personalBestMaxHrs) => {
+    if(props.badgeData.type == 'Personal Max'){
+      if (countValue > personalBestMaxHrs) {
+        setBadgeValue(countValue);
+      }
+      else{
+        setBadgeValue(personalBestMaxHrs);
+      }
+    }
+  }
+
+  useEffect(() => {
+    choosePersonalMaxHours(props.count, props.personalBestMaxHrs);
+  }, [props.badgeData]);
 
   return (
     <>
@@ -19,12 +35,12 @@ const BadgeImage = props => {
 
           {props.badgeData.type == 'Personal Max' ? (
             <span data-testid="badge_featured_count_personalmax" className={'badge_featured_count_personalmax'}>
-              {`${Math.floor(props.personalBestMaxHrs)} ${Math.floor(props.personalBestMaxHrs) <= 1 ? ' hr' : ' hrs'}`}
+              {`${Math.floor(badgeValue)} ${Math.floor(badgeValue) <= 1 ? ' hr' : ' hrs'}`}
             </span>
           ) : props.count < 100 ? (
-            <span data-testid="badge_featured_count" className={'badge_featured_count'}>{Math.round(props.count)}</span>
+            <span data-testid="badge_featured_count" className={'badge_featured_count'}>{Math.round(badgeValue)}</span>
           ) : (
-            <span data-testid="badge_featured_count_3_digit" className="badge_featured_count_3_digit">{Math.round(props.count)}</span>
+            <span data-testid="badge_featured_count_3_digit" className="badge_featured_count_3_digit">{Math.round(badgeValue)}</span>
           )}
         </div>
       </div>

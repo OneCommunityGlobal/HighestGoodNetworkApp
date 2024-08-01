@@ -23,7 +23,6 @@ function AssignTableRow(props) {
       setSelect(true);
     } else {
       props.removeSelectBadge(e.target.id);
-      console.log('remove badge', props.selectedBadges);
       setSelect(false);
     }
   };

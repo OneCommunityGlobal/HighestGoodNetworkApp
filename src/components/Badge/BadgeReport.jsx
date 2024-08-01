@@ -203,9 +203,6 @@ function BadgeReport(props) {
 
     setNumFeatured(featuredCount);
     setSortBadges(newBadges);
-
-    console.log('BadgeReport useEffect:', newBadges);
-    console.log('BadgeReport useEffect:', numFeatured);
   }, [props.badges]);
 
   const countChange = (badge, index, newValue) => {
