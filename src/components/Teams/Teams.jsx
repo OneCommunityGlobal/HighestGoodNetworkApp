@@ -12,6 +12,7 @@ import {
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
+  updateTeamMemeberVisibility,
 } from '../../actions/allTeamsAction';
 import { getAllUserProfile } from '../../actions/userManagement';
 import Loading from '../common/Loading';
@@ -108,7 +109,7 @@ class Teams extends React.PureComponent {
         ) : (
           <React.Fragment>
             <div className="container mt-3">
-              {this.teampopupElements()}
+              {this.teampopupElements(allTeams)}
               <TeamOverview
                 numberOfTeams={numberOfTeams}
                 numberOfActiveTeams={numberOfActiveTeams}
@@ -200,8 +201,9 @@ class Teams extends React.PureComponent {
    * 3. Popup to display delete confirmation of the team upon clicking delete button.
    */
 
-  teampopupElements = () => {
+  teampopupElements = (allTeams) => {
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
+    const selectedTeamData= allTeams? allTeams.filter(team => team.teamName === this.state.selectedTeam) : [];
     return (
       <>
         <TeamMembersPopup
@@ -211,6 +213,8 @@ class Teams extends React.PureComponent {
           onDeleteClick={this.onDeleteTeamMember}
           usersdata={this.props.state ? this.props.state.allUserProfiles : []}
           onAddUser={this.onAddUser}
+          teamData= {selectedTeamData}
+          onUpdateTeamMemberVisibility={this.onUpdateTeamMemberVisibility}
           selectedTeamName={this.state.selectedTeam}
         />
         <CreateNewTeamPopup
@@ -248,14 +252,14 @@ class Teams extends React.PureComponent {
   };
 
   onAddUser = user => {
-    this.props.addTeamMember(
-      this.state.selectedTeamId,
-      user._id,
-      user.firstName,
-      user.lastName,
-      user.role,
-      Date.now(),
-    );
+    this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
+  };
+
+   /** NEW CODE
+   * Update Team member visibility by making a Redux action call
+   */
+   onUpdateTeamMemberVisibility = (userid, visibility) => {
+    this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userid, visibility);
   };
 
   /**
@@ -445,6 +449,11 @@ class Teams extends React.PureComponent {
 
   sortTeams = () => {
     const { teams, sortTeamNameState, sortTeamActiveState } = this.state;
+    
+    if (!Array.isArray(teams)) {
+    console.error("Teams is not an array:", teams);
+    return;
+  }
     const sortedTeams = [...teams].sort((a, b) => {
       const dateA = new Date(a.props.team.modifiedDatetime);
       const dateB = new Date(b.props.team.modifiedDatetime);
@@ -517,4 +526,5 @@ export default connect(mapStateToProps, {
   getTeamMembers,
   deleteTeamMember,
   addTeamMember,
+  updateTeamMemeberVisibility,
 })(Teams);

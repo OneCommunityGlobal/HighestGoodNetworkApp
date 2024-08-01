@@ -65,7 +65,7 @@
 .multi-select-filter {
   .options {
     max-height: 570px;
-    overflow-y: scroll;
+    overflow-y: auto;
     font-family: 'Courier New', Courier, monospace;
   }
 
@@ -131,4 +131,10 @@
 }
 .hours-not-fulfilled {
   color: red;
+}
+
+@media screen and (max-width: 544px) {
+  .responsive-font-size {
+    font-size: 0.75rem !important;
+  }
 }
