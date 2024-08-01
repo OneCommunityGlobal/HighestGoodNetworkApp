@@ -23,7 +23,7 @@ const renderCustomizedLabel = ({
   const percentage = Math.round((totalHours / totalOverTimeHours - 1) * 100);
   const fillColor = totalHours / totalOverTimeHours > 1 ? 'green' : 'red';
 
-  const textContent = `${percentage}% current week over last week`;
+  const textContent = `${percentage}% week over week`;
   const fontSize = 10;
   const maxTextLength = Math.floor((innerRadius / fontSize) * 4);
 

@@ -28,7 +28,7 @@ function calculateFromDate() {
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
   const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
-  currentDate.setDate(currentDate.getDate() - daysToSubtract);
+  currentDate.setDate(currentDate.getDate() - daysToSubtract - 7);
   return currentDate.toISOString().split('T')[0];
 }
 
@@ -36,7 +36,7 @@ function calculateToDate() {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
-  const daysToAdd = dayOfWeek === 6 ? 0 : 6 - dayOfWeek;
+  const daysToAdd = dayOfWeek === 6 ? 0 : -1 - dayOfWeek;
   currentDate.setDate(currentDate.getDate() + daysToAdd);
   return currentDate.toISOString().split('T')[0];
 }
@@ -46,7 +46,7 @@ function calculateFromOverDate() {
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
   const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
-  currentDate.setDate(currentDate.getDate() - daysToSubtract - 7);
+  currentDate.setDate(currentDate.getDate() - daysToSubtract - 14);
   return currentDate.toISOString().split('T')[0];
 }
 
@@ -54,7 +54,7 @@ function calculateToOverDate() {
   const currentDate = new Date();
   currentDate.setHours(0, 0, 0, 0);
   const dayOfWeek = currentDate.getDay();
-  const daysToAdd = dayOfWeek === 6 ? 0 : -1 - dayOfWeek;
+  const daysToAdd = dayOfWeek === 6 ? 0 : -8 - dayOfWeek;
   currentDate.setDate(currentDate.getDate() + daysToAdd);
   return currentDate.toISOString().split('T')[0];
 }
@@ -124,7 +124,6 @@ function TotalOrgSummary(props) {
   useEffect(() => {
     if (Array.isArray(usersId) && usersId.length > 0 && fromDate && toDate) {
       dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
-      // dispatch(getAllUsersTimeEntries(usersId, fromOverDate, toOverDate));
     }
   }, [usersId, fromDate, toDate, dispatch]);
 
