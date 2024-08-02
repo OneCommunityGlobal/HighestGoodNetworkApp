@@ -7,8 +7,9 @@ const BadgeImage = props => {
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
-  const choosePersonalMaxHours = (countValue, personalBestMaxHrs) => {
-    if(props.badgeData.type == 'Personal Max'){
+  const updateBadgeValue = (countValue, personalBestMaxHrs) => {
+    if(props.badgeData.type == 'Personal Max'){ 
+      // show the personal best hours or mannually updated hours
       if (countValue > personalBestMaxHrs) {
         setBadgeValue(countValue);
       }
@@ -16,10 +17,14 @@ const BadgeImage = props => {
         setBadgeValue(personalBestMaxHrs);
       }
     }
+    else{
+      setBadgeValue(countValue);
+    }
   }
 
   useEffect(() => {
-    choosePersonalMaxHours(props.count, props.personalBestMaxHrs);
+    // update the badge value when save changes simultaneously
+    updateBadgeValue(props.count, props.personalBestMaxHrs);
   }, [props.badgeData]);
 
   return (
