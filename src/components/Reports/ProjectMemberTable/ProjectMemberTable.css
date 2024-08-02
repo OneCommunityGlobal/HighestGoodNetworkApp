@@ -1,8 +1,7 @@
 .project-member-table {
   height: 100%;
-  display: flex;
-  flex-direction: column;
 }
+
 .project-member-table-title {
   text-align: start;
   margin-bottom: 12px;
@@ -22,11 +21,6 @@
   text-align: center;
 }
 
-.project-member-table-content {
-  flex: 1; /* This will make the content area expand to fill available space */
-  overflow-y: auto; /* Add a scrollbar when content overflows */
-  padding-bottom: 16px; /* Add some bottom padding to prevent overlapping */
-}
 .reports-table-head-members {
   background-color: #eee7f8;  
   display: grid;
@@ -79,9 +73,5 @@
   }
   .reports-table-head-members {
     grid-template-columns: 1fr 3fr 1fr 3fr;
-  }
-  .project-member-table-content {
-    overflow-y: unset; /* Disable vertical overflow on smaller screens */
-    padding-bottom: 0; /* Remove bottom padding */
   }
 }

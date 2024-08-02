@@ -123,8 +123,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
         <div className="reports-table-head-cell project-member-table-active-column">Active</div>
         <div className="reports-table-head-cell">ID</div>
       </div>
-     
-      <div className= "project-member-table-content">
+      <div>
         {memberFilter == 'all-time' ? (
           allMemberTable.length > 0 ? (
             allMemberTable
@@ -137,7 +136,6 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           <Stub darkMode={darkMode}/>
         )}
       </div>
-     
     </div>
   );
 };
