@@ -429,7 +429,6 @@ const Timelog = props => {
     if(sessionStorageData && sessionStorageData.userId!=authUser.userId) {
       setDisplayUserId(sessionStorageData.userId);
     }
-    // setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
   }
 
   /*---------------- useEffects -------------- */
