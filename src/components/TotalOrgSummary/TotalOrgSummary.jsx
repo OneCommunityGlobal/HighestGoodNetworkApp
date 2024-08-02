@@ -1,7 +1,7 @@
-/* eslint-disable react/forbid-prop-types */
-import { connect } from 'react-redux';
 import { useEffect } from 'react';
-import { Alert, Col, Container, Row } from 'reactstrap';
+import { connect } from 'react-redux';
+import { Alert, Button, Col, Container, Row } from 'reactstrap';
+import jsPDF from 'jspdf';
 
 import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
@@ -24,6 +24,40 @@ function TotalOrgSummary(props) {
     props.getTotalOrgSummary(startDate, endDate);
     props.hasPermission('');
   }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
+
+  const handleSharePDF = () => {
+    // eslint-disable-next-line new-cap
+    const doc = new jsPDF();
+
+    // Add content to the PDF
+    doc.text('Total Org Summary', 10, 10);
+    doc.text('Volunteer Workload and Task Completion Analysis', 10, 20);
+
+    // Save the PDF
+    doc.save('TotalOrgSummary.pdf');
+
+    // Share the PDF
+    if (navigator.share) {
+      navigator
+        .share({
+          title: 'Total Org Summary',
+          text: 'Check out this PDF!',
+          files: [new File([doc.output()], 'TotalOrgSummary.pdf', { type: 'application/pdf' })],
+        })
+        .then(() => {
+          // eslint-disable-next-line no-console
+          console.log('Successful share');
+        })
+        // eslint-disable-next-line no-shadow
+        .catch(error => {
+          // eslint-disable-next-line no-console
+          console.error('Error sharing', error);
+        });
+    } else {
+      // eslint-disable-next-line no-alert
+      alert('Sharing not supported');
+    }
+  };
 
   if (error) {
     return (
@@ -62,6 +96,9 @@ function TotalOrgSummary(props) {
       <Row>
         <Col lg={{ size: 12 }}>
           <h3 className="mt-3 mb-5">Total Org Summary</h3>
+          <Button style={{ backgroundColor: 'black', color: 'white' }} onClick={handleSharePDF}>
+            Share PDF
+          </Button>
         </Col>
       </Row>
       <hr />
