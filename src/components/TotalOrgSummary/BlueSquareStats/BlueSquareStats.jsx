@@ -10,7 +10,7 @@ function BlueSquareStats() {
       <h1 className="blue-square-stats-title">BlueSquareStats</h1>
       <div className="blue-square-stats-pie-chart">
         <DonutChart
-          title={'TOTAL BLUE SQUARES'}
+          title="TOTAL BLUE SQUARES"
           totalCount={totalBlueSquares}
           percentageChange={percentageChange}
           data={data}

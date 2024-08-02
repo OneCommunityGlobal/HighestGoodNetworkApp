@@ -8,7 +8,6 @@ Chart.register(ArcElement);
 
 function DonutChart(props) {
   const { title, totalCount, percentageChange, data, colors } = props;
-  console.log(props);
   const chartData = {
     labels: data.map(item => item.label),
     datasets: [
