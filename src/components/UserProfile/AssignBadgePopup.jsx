@@ -37,7 +37,7 @@ function AssignBadgePopup(props) {
       toast.success('Badge update successfully');
     } catch (e) {
       //TODO: Proper error handling.
-      toast.error('Badge uodate failed');
+      toast.error('Badge update failed');
     }
     setConfirmButtonDisable(false);
     props.handleSubmit();
@@ -65,6 +65,7 @@ function AssignBadgePopup(props) {
   };
 
   let filteredBadges = filterBadges(badgeList);
+  let featuredBadges = props.userProfile.badgeCollection.filter(badge => badge.featured).map(badge => badge.badge._id);
 
   useEffect(() => {
     const addExistBadges = () => {
@@ -73,7 +74,6 @@ function AssignBadgePopup(props) {
         existBadges.forEach(badgeId => {
           if (!props.selectedBadges.includes(badgeId)) {
             props.addSelectBadge(badgeId);
-            // console.log('selectedBadges', props.selectedBadges);
           }
         });
       }
@@ -122,7 +122,7 @@ function AssignBadgePopup(props) {
           </thead>
           <tbody>
             {filteredBadges.map((value, index) => (
-              <AssignTableRow badge={value} index={index} key={index} selectedBadges={props.selectedBadges} />
+              <AssignTableRow badge={value} index={index} key={index} selectedBadges={props.selectedBadges} featuredBadges={featuredBadges} />
             ))}
           </tbody>
         </Table>

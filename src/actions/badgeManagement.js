@@ -222,31 +222,31 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 
 // Return updated badgeCollection
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
+  const personalMaxBadge = '666b78265bca0bcb94080605'; // backend id for Personal Max badge
   const badgeMap = new Map(badgeCollection.map(badge => [badge.badge, badge]));
 
   const currentTs = Date.now();
   const currentDate = formatDate();
 
-    // Create a set of selected badgeIds for efficient lookup
-    const selectedBadgeSet = new Set(selectedBadgesId.map(id => id.replace('assign-new-badge-', '')));
+  // Create a set of selected badgeIds for efficient lookup
+  const selectedBadgeSet = new Set(selectedBadgesId);
 
-    // Remove badges that are not in selectedBadgesId
-    badgeMap.forEach((value, key) => {
-      if (!selectedBadgeSet.has(key)) {
-        badgeMap.delete(key);
-      }
-    });
+  // Remove badges that are not in selectedBadgesId
+  badgeMap.forEach((value, key) => {
+    if (!selectedBadgeSet.has(key)) {
+      badgeMap.delete(key);
+    }
+  });
 
-  selectedBadgesId.forEach(originalBadgeId => {
-    //  Remove "assign-new-badge-" prefix
-    const badgeId = originalBadgeId.replace('assign-new-badge-', '');
-    
+  selectedBadgesId.forEach(badgeId => {
     if (badgeMap.has(badgeId)) {
       // Update the existing badge record
-      const badge = badgeMap.get(badgeId);
-      badge.count = (badge.count || 0) + 1;
-      badge.lastModified = currentTs;
-      badge.earnedDate.push(currentDate);
+      if (badgeId != personalMaxBadge) {
+        const badge = badgeMap.get(badgeId);
+        badge.count = (badge.count || 0) + 1;
+        badge.lastModified = currentTs;
+        badge.earnedDate.push(currentDate);
+      }
     } else {
       // Add the new badge record
       badgeMap.set(badgeId, {

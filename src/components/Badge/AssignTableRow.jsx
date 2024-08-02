@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
 import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 function AssignTableRow(props) {
@@ -22,8 +23,14 @@ function AssignTableRow(props) {
       props.addSelectBadge(e.target.id);
       setSelect(true);
     } else {
-      props.removeSelectBadge(e.target.id);
-      setSelect(false);
+      if (props.featuredBadges.includes(e.target.id)) {
+        toast.error(
+          'Error: You cannot remove a badge that is featured. Please remove the badge from the featured list first.',
+        );
+      } else {
+        props.removeSelectBadge(e.target.id);
+        setSelect(false);
+      }
     }
   };
 
@@ -50,7 +57,7 @@ function AssignTableRow(props) {
       <td>
         <CustomInput
           type="checkbox"
-          id={`assign-new-badge-${props.badge._id}`}
+          id={`${props.badge._id}`}
           onChange={handleCheckBoxChange}
           checked={isSelect}
         />
