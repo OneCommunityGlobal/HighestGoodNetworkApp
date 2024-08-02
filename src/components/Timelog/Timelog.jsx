@@ -134,18 +134,8 @@ const Timelog = props => {
   const [timeLogState, setTimeLogState] = useState(initialState);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
 
-  const location = useLocation();
-  const searchParams = new URLSearchParams(location.search);
-  //const userId = searchParams.get('userId') || useParams().userId || authUser.userid;
-  const { userId: urlUserId } = useParams();
-  const [userId, setUserId] = useState(urlUserId || props.authUser.userid);
-
-  // Update user ID if it changes in the URL
-  useEffect(() => {
-    if (urlUserId) {
-      setUserId(urlUserId);
-    }
-  }, [urlUserId]);
+  const { userId: urlId } = useParams();
+  const [userprofileId, setUserProfileId] = useState(urlId || authUser.userid);
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
@@ -193,12 +183,6 @@ const Timelog = props => {
     }
     return tab;
   };
-  useEffect(() => {
-    console.log("URL User ID:", urlUserId);
-    if (urlUserId) {
-      loadAsyncData(urlUserId);
-    }
-  }, [urlUserId]);
 
   /*---------------- methods -------------- */
   const updateTimeEntryItems = () => {
@@ -442,10 +426,27 @@ const Timelog = props => {
   const handleStorageEvent = () =>{
     const sessionStorageData = checkSessionStorage();
     setViewingUser(sessionStorageData || false);
-    setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
+    if(sessionStorageData && sessionStorageData.userId!=authUser.userId) {
+      setDisplayUserId(sessionStorageData.userId);
+    }
+    // setDisplayUserId(sessionStorageData ? sessionStorageData.userId : authUser.userid);
   }
 
   /*---------------- useEffects -------------- */
+
+  // Update user ID if it changes in the URL
+  useEffect(() => {
+    if (urlId) {
+      setUserProfileId(urlId);
+    }
+  }, [urlId]);
+  
+  useEffect(() => {
+    if (userprofileId) {
+      setDisplayUserId(userprofileId);
+    }
+  }, [userprofileId]);
+
   useEffect(() => {
     changeTab(initialTab);
   }, [initialTab]);
@@ -467,8 +468,6 @@ const Timelog = props => {
   }, [timeLogState.projectsSelected]);
   
   useEffect(() => {
-
-    setDisplayUserId( getUserId());
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
     window.addEventListener('storage', handleStorageEvent);
     return () => {

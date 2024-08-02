@@ -597,11 +597,8 @@ function LeaderBoard({
                 </td>
                 <td className="align-middle" aria-label="Description or purpose of the cell">
                   <Link
-                    to={`/timelog/${item.personId}?userId=${item.personId}`}
-                    //</td>to={{pathname: `/timelog/${item.personId}`,state: { userId: item.personId } // Pass userId as state
-                  
+                    to={`/timelog/${item.personId}`}
                     title={`TangibleEffort: ${item.tangibletime} hours`}
-                    //target="_blank" // Add this attribute to open the link in a new tab
                   >
                     <Progress value={item.barprogress} color={item.barcolor} />
                   </Link>
