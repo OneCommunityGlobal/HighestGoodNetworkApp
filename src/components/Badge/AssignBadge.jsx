@@ -10,6 +10,7 @@ import {
   ModalBody,
   Alert,
   UncontrolledTooltip,
+  Table
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import Autosuggest from 'react-autosuggest';
@@ -34,6 +35,8 @@ function AssignBadge(props) {
   const [isOpen, setOpen] = useState(false);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(null);
 
   useEffect(() => {
     props.getAllUserProfile();
@@ -59,6 +62,14 @@ function AssignBadge(props) {
     } else {
       props.validateBadges(firstName, lastName);
     }
+  };
+
+  const handleFirstNameChange = event => {
+    setFirstName(event.target.value);
+  };
+
+  const handleLastNameChange = event => {
+    setLastName(event.target.value);
   };
 
   const submit = () => {
@@ -142,6 +153,39 @@ function AssignBadge(props) {
           />
         </div>
       </div>
+      {filteredUsers.length > 0 && (
+        <div className="table-responsive mb-3">
+          <Table className="table table-striped table-bordered">
+            <thead>
+              <tr>
+                <th>Select</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map(user => (
+                <tr
+                  key={user._id}
+                  onClick={() => handleUserSelect(user)}
+                  style={{ cursor: 'pointer', backgroundColor: selectedUserId === user._id ? '#e9ecef' : '' }}
+                >
+                  <td>
+                    <input
+                      type="radio"
+                      name="user"
+                      checked={selectedUserId === user._id}
+                      readOnly
+                    />
+                  </td>
+                  <td>{user.firstName}</td>
+                  <td>{user.lastName}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      )}
       <FormGroup className="assign-badge-margin-top">
         <Button
           className="btn--dark-sea-green"
