@@ -1,11 +1,40 @@
 import React from 'react';
+import axios from 'axios';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import { StartDate, WeeklyCommittedHours, MissedHours } from '../VolunteeringTimeTab';
 import ViewTab from '../VolunteeringTimeTab';
+import { ENDPOINTS } from 'utils/URL';
+import MockAdapter from 'axios-mock-adapter';
+const mock = new MockAdapter(axios);
+
+const userProfile = {
+  _id: '12345',
+  startDate: '2023-10-09',
+  endDate: '2023-10-10',
+  createdDate: '2023-01-01',
+  weeklycommittedHours: 40,
+  missedHours: 0,
+  totalIntangibleHrs: 5,
+  hoursByCategory: { design: 10, development: 20 }
+};
+
+const startOfWeek = '2023-10-01';
+const endOfWeek = '2023-10-07';
+const createdDate = '2023-01-01';
+const today = '2023-10-10';
+
 beforeAll(() => {
   window.alert = jest.fn(); // Mock the alert function
 });
+beforeEach(() => {
+  mock.reset();  // Clear previous mocks
+
+  mock.onGet(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, startOfWeek, endOfWeek)).reply(200, { data: 'mock data' });
+  mock.onGet(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, createdDate, today)).reply(200, { data: 'mock data' });
+});
+
+
 describe('Date and Hours Input Validations', () => {
 
   test('StartDate component should correctly validate and display a success style if the start date is before the end date', () => {

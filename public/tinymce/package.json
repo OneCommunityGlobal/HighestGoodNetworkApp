@@ -1,0 +1,59 @@
+{
+  "_from": "tinymce@^7.0.0",
+  "_id": "tinymce@7.2.1",
+  "_inBundle": false,
+  "_integrity": "sha512-ADd1cvdIuq6NWyii0ZOZRuu+9sHIdQfcRNWBcBps2K8vy7OjlRkX6iw7zz1WlL9kY4z4L1DvIP+xOrVX/46aHA==",
+  "_location": "/tinymce",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "range",
+    "registry": true,
+    "raw": "tinymce@^7.0.0",
+    "name": "tinymce",
+    "escapedName": "tinymce",
+    "rawSpec": "^7.0.0",
+    "saveSpec": null,
+    "fetchSpec": "^7.0.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/tinymce/-/tinymce-7.2.1.tgz",
+  "_shasum": "9b4f6b5a0fa647e2953c174ac69aa47483683332",
+  "_spec": "tinymce@^7.0.0",
+  "_where": "/Users/aaryaneil/Documents/One Community Global/HighestGoodNetworkApp",
+  "author": {
+    "name": "Ephox Corporation DBA Tiny Technologies, Inc"
+  },
+  "bugs": {
+    "url": "https://github.com/tinymce/tinymce/issues"
+  },
+  "bundleDependencies": false,
+  "deprecated": false,
+  "description": "Web based JavaScript HTML WYSIWYG editor control.",
+  "homepage": "https://www.tiny.cloud/",
+  "keywords": [
+    "wysiwyg",
+    "tinymce",
+    "richtext",
+    "javascript",
+    "html",
+    "text",
+    "rich editor",
+    "rich text editor",
+    "rte",
+    "rich text",
+    "contenteditable",
+    "editing"
+  ],
+  "license": "GPL-2.0-or-later",
+  "main": "tinymce.js",
+  "name": "tinymce",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tinymce/tinymce.git",
+    "directory": "modules/tinymce"
+  },
+  "types": "tinymce.d.ts",
+  "version": "7.2.1"
+}
