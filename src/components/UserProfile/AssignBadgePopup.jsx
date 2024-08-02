@@ -65,7 +65,7 @@ function AssignBadgePopup(props) {
   };
 
   let filteredBadges = filterBadges(badgeList);
-  let featuredBadges = props.userProfile.badgeCollection.filter(badge => badge.featured).map(badge => badge.badge._id);
+  let featuredBadges = props.userProfile?.badgeCollection?.filter(badge => badge.featured)?.map(badge => `assign-badge-${badge.badge?._id}`) || [];
 
   useEffect(() => {
     const addExistBadges = () => {
@@ -73,7 +73,7 @@ function AssignBadgePopup(props) {
         const existBadges = props.userProfile.badgeCollection.map(badge => badge.badge._id);
         existBadges.forEach(badgeId => {
           if (!props.selectedBadges.includes(badgeId)) {
-            props.addSelectBadge(badgeId);
+            props.addSelectBadge('assign-badge-'+badgeId);
           }
         });
       }

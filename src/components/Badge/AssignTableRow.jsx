@@ -9,7 +9,7 @@ function AssignTableRow(props) {
   const [isSelect, setSelect] = useState(false);
 
   useEffect(() => {
-    if (props.selectedBadges && props.selectedBadges.includes(`${props.badge._id}`)) {
+    if (props.selectedBadges && props.selectedBadges?.includes(`assign-badge-${props.badge._id}`)) {
       setSelect(true);
     } else {
       setSelect(false);
@@ -23,7 +23,7 @@ function AssignTableRow(props) {
       props.addSelectBadge(e.target.id);
       setSelect(true);
     } else {
-      if (props.featuredBadges.includes(e.target.id)) {
+      if (props.featuredBadges?.includes(e.target.id)) {
         toast.error(
           'Error: You cannot remove a badge that is featured. Please remove the badge from the featured list first.',
         );
@@ -57,7 +57,7 @@ function AssignTableRow(props) {
       <td>
         <CustomInput
           type="checkbox"
-          id={`${props.badge._id}`}
+          id={`assign-badge-${props.badge._id}`}
           onChange={handleCheckBoxChange}
           checked={isSelect}
         />
@@ -66,13 +66,9 @@ function AssignTableRow(props) {
   );
 }
 
-const mapStateToProps = state => ({
-  selectedBadges: state.badge.selectedBadges,
-});
-
 const mapDispatchToProps = dispatch => ({
   addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
   removeSelectBadge: badgeId => dispatch(removeSelectBadge(badgeId)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(AssignTableRow);
+export default connect(null, mapDispatchToProps)(AssignTableRow);
