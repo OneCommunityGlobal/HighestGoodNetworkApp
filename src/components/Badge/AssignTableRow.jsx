@@ -23,14 +23,8 @@ function AssignTableRow(props) {
       props.addSelectBadge(e.target.id);
       setSelect(true);
     } else {
-      if (props.featuredBadges?.includes(e.target.id)) {
-        toast.error(
-          'Error: You cannot remove a badge that is featured. Please remove the badge from the featured list first.',
-        );
-      } else {
-        props.removeSelectBadge(e.target.id);
-        setSelect(false);
-      }
+      props.removeSelectBadge(e.target.id);
+      setSelect(false);
     }
   };
 

@@ -227,17 +227,6 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
 
   const currentTs = Date.now();
   const currentDate = formatDate();
-
-  // Create a set of selected badgeIds for efficient lookup
-  const selectedBadgeSet = new Set(selectedBadgesId.map(id => id.replace('assign-badge-', '')));
-
-  // Remove badges that are not in selectedBadgesId
-  badgeMap.forEach((value, key) => {
-    if (!selectedBadgeSet.has(key)) {
-      badgeMap.delete(key);
-    }
-  });
-
   selectedBadgesId.forEach(originalBadgeId => {
     const badgeId = originalBadgeId.replace('assign-badge-', '');
     if (badgeMap.has(badgeId)) {
