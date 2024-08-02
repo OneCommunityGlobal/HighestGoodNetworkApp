@@ -1,19 +1,19 @@
 import { BLUE_SQUARE_STATS, BLUE_SQUARE_STATS_COLORS } from 'constants/totalOrgSummary';
-import DonutChart from './DonutChart';
 import './BlueSquareStats.css';
+import DonutChart from '../DonutChart/DonutChart';
 
 function BlueSquareStats() {
+  const { totalBlueSquares, percentageChange, data } = BLUE_SQUARE_STATS;
+
   return (
     <section className="blue-square-stats">
       <h1 className="blue-square-stats-title">BlueSquareStats</h1>
       <div className="blue-square-stats-pie-chart">
         <DonutChart
-          data={BLUE_SQUARE_STATS}
-          width={600}
-          height={600}
-          innerRadius={120}
-          outerRadius={220}
-          totalBlueSquares={145}
+          title={'TOTAL BLUE SQUARES'}
+          totalCount={totalBlueSquares}
+          percentageChange={percentageChange}
+          data={data}
           colors={BLUE_SQUARE_STATS_COLORS}
         />
       </div>
