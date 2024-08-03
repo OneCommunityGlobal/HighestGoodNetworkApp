@@ -187,6 +187,7 @@ export function Header(props) {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
+    window.location.href = `/dashboard/${userId}`;
   }
 
   const closeModal = () => {
