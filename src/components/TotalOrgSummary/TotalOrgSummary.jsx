@@ -139,7 +139,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <HoursCompletedBarChart data={taskProjectHours}/>
+              <VolunteerHoursDistribution />
             </div>
           </Col>
         </Row>

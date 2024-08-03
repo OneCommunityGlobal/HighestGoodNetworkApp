@@ -78,66 +78,50 @@ export function Header(props) {
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
-    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
-    [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
-  );
+    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role), [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role])
 
   // Reports
-  const canGetReports = props.hasPermission(
-    'getReports',
-    !isAuthUser && canInteractWithViewingUser,
-  );
-  const canGetWeeklySummaries = props.hasPermission(
-    'getWeeklySummaries',
-    !isAuthUser && canInteractWithViewingUser,
-  );
+  const canGetReports = props.hasPermission('getReports', !isAuthUser && canInteractWithViewingUser);
+  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser && canInteractWithViewingUser);
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
+  // const canGetWeeklyVolunteerSummary = props.hasPermission('weeklyVolunteerSummary');
   // Users
-  const canAccessUserManagement =
-    props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
+  const canAccessUserManagement = props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
 
   // Badges
-  const canAccessBadgeManagement =
-    props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
+  const canAccessBadgeManagement = props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
   // Projects
-  const canAccessProjects =
-    props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
+  const canAccessProjects = props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
   // Tasks
-  const canUpdateTask = props.hasPermission(
-    'updateTask',
-    !isAuthUser && canInteractWithViewingUser,
-  );
+  const canUpdateTask = props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser);
   // Teams
-  const canAccessTeams =
-    props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
+  const canAccessTeams = props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
   // Popups
-  const canAccessPopups =
-    props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+  const canAccessPopups = props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
   // Permissions
-  const canAccessPermissionsManagement =
-    props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
+  const canAccessPermissionsManagement = props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser)
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -217,9 +201,8 @@ export function Header(props) {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
-    props.getWeeklySummaries(user.userid);
-  };
-
+    props.getWeeklySummaries(user.userid)
+  }
   const closeModal = () => {
     setModalVisible(false);
     const today = new Date();
@@ -542,5 +525,5 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
-  getWeeklySummaries,
+  getWeeklySummaries
 })(Header);
