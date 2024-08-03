@@ -10,7 +10,6 @@ export default function HoursCompletedBarChart({ data }) {
     );
   }
   const { taskHours, projectHours, lastTaskHours, lastProjectHours } = data;
-  console.log("data", data)
   const taskPercentage = parseFloat(taskHours) / (parseFloat(taskHours) + parseFloat(projectHours));
   const taskChangePercentage = parseFloat(taskHours - lastTaskHours) / parseFloat(lastTaskHours);
   const projectChangePercentage =
