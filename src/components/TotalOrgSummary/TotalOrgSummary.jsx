@@ -44,15 +44,16 @@ function TotalOrgSummary(props) {
 
       const { taskHours, projectHours } = await props.getTaskAndProjectStats(startDate, endDate);
       const { taskHours: lastTaskHours, projectHours: lastProjectHours } = await props.getTaskAndProjectStats(lastStartDate, lastEndDate);
+      console.log("lastTaskHours", taskHours, projectHours ,lastTaskHours, lastProjectHours)
       if (taskHours && projectHours) {
         setTaskProjectHours({ taskHours: taskHours, projectHours: projectHours, lastTaskHours: lastTaskHours, lastProjectHours: lastProjectHours });
       }
     }
     fetchData();
     // props.hasPermission('');
-  }, [startDate, endDate]);
+  }, [startDate, endDate, lastStartDate, lastEndDate]);
 
-  
+  console.log("datae", taskProjectHours )
   if (error) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
@@ -139,7 +140,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+            <HoursCompletedBarChart data={taskProjectHours} />
             </div>
           </Col>
         </Row>
