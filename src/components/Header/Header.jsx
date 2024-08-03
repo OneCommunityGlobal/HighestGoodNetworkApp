@@ -78,9 +78,7 @@ export function Header(props) {
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
-    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
-    [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
-  );
+    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role), [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role])
 
   // Reports
   const canGetReports = props.hasPermission('getReports', !isAuthUser && canInteractWithViewingUser);
@@ -110,10 +108,7 @@ export function Header(props) {
     || props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser)
     || props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
   // Tasks
-  const canUpdateTask = props.hasPermission(
-    'updateTask',
-    !isAuthUser && canInteractWithViewingUser,
-  );
+  const canUpdateTask = props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser);
   // Teams
   const canAccessTeams = props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser)
     || props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser)
@@ -206,13 +201,8 @@ export function Header(props) {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
-<<<<<<<<< Temporary merge branch 1
-  };
-=========
     props.getWeeklySummaries(user.userid)
   }
->>>>>>>>> Temporary merge branch 2
-
   const closeModal = () => {
     setModalVisible(false);
     const today = new Date();
