@@ -1,12 +1,18 @@
+import { changePagination } from 'actions/userManagement';
 import React from 'react';
+import { useDispatch } from 'react-redux';
 const NUMBER_OF_PAGE_LINK = 5;
 
 const UserTableFooter = React.memo(props => {
   const darkMode = props.darkMode;
-
+  const dispatch=useDispatch()
   const onSelectPageSize = pageSize => {
     props.onSelectPageSize(parseInt(pageSize));
   };
+
+  const changePaginationStats=(value)=>{
+    dispatch(changePagination(value))
+  }
 
   const onPageSelect = page => {
     props.onPageSelect(page);
@@ -28,9 +34,11 @@ const UserTableFooter = React.memo(props => {
               className={`btn btn-default ${darkMode ? 'text-light' : ''}`}
               onClick={e => {
                 if (props.selectedPage > 1) {
-                  props.onPageSelect(props.selectedPage - 1);
+                  // props.onPageSelect(props.selectedPage - 1);
+                 changePaginationStats({selectedPage:props.selectedPage -1})
                 }
               }}
+            
             >
               Previous
             </button>
@@ -45,7 +53,8 @@ const UserTableFooter = React.memo(props => {
               className={`btn btn-default ${darkMode ? 'text-light' : ''}`}
               onClick={e => {
                 if (props.selectedPage <= parseInt(props.datacount / props.pageSize)) {
-                  props.onPageSelect(props.selectedPage + 1);
+                  // props.onPageSelect(props.selectedPage + 1);
+                  changePaginationStats({selectedPage:props.selectedPage + 1})
                 }
               }}
             >
@@ -71,6 +80,7 @@ const PageSizeDropDown = React.memo(props => {
             className="changePageSize form-control ember-view"
             onChange={e => {
               props.onSelectPageSize(parseInt(e.target.value));
+             changePaginationStats({pageSize:e.target.value})
             }}
           >
             <option value="10">10</option>

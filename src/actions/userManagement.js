@@ -7,11 +7,12 @@ import {
   USER_PROFILE_UPDATE,
   USER_PROFILE_DELETE,
   ENABLE_USER_PROFILE_EDIT,
-  DISABLE_USER_PROFILE_EDIT
+  DISABLE_USER_PROFILE_EDIT,
+  CHANGE_USER_PROFILE_PAGE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '../utils/URL';
 import { UserStatus } from '../utils/enums';
-import { dispatch } from 'd3';
+
 
 /**
  * fetching all user profiles
@@ -203,4 +204,8 @@ export const enableEditUserInfo=(value)=>(dispatch,getState)=>{
 
 export const disableEditUserInfo=(value)=>(dispatch,getState)=>{
   dispatch({type:DISABLE_USER_PROFILE_EDIT,payload:value});
+}
+
+export const changePagination=(value)=>(dispatch,getState)=>{
+  dispatch({type:CHANGE_USER_PROFILE_PAGE,payload:value});
 }

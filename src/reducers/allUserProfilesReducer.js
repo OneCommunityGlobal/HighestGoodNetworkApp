@@ -5,6 +5,7 @@ const userProfilesInitial = {
   fetched: false,
   userProfiles: [],
   editable:{'first':1,'last':1,'role':1,'email':1,'hours':1},
+  pagestats:{pageSize:10,selectedPage:1},
   status: 404,
 };
 
@@ -67,6 +68,15 @@ export const enableUserInfoEditReducer=(userProfile=userProfilesInitial,action)=
     return updateObject(userProfile,{"editable":action.payload})
     case "DISABLE_USER_PROFILE_EDIT":
       return updateObject(userProfile,{"editable":action.payload})
+    default:return userProfile
+  }
+}
+
+export const changeUserPageStatusReducer=(userProfile=userProfilesInitial,action)=>{
+  switch(action.type){
+    case "CHANGE_USER_PROFILE_PAGE":
+     
+      return updateObject(userProfile.pagestats,action.payload)
     default:return userProfile
   }
 }

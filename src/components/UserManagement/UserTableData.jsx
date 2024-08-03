@@ -19,21 +19,22 @@ const UserTableData = React.memo(props => {
   const editUser=props.editUser;
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  const [formData,updateFormData]=useState({firstName:props.user.firstName,lastName:props.user.lastName})
+  const [formData,updateFormData]=useState({firstName:props.user.firstName,lastName:props.user.lastName,id:props.user._id})
   /**
    * reset the changing state upon rerender with new isActive status
    */
   const submitData=(value)=>{
     console.log(value)
   }
+
   useEffect(() => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
-  useEffect(()=>{
-    if(editUser.first==0){
-    }
-  },[editUser])
+  // useEffect(()=>{
+  //   if(editUser.first==0){
+  //   }
+  // },[editUser])
   /**
    * Checks whether users should be able to change the record of other users.
    * @returns {boolean} true if the target user record has a owner role, the logged in 
@@ -60,30 +61,31 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td className="email_cell">
-     {/* {editUser.first? (<div> */}
-      <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{formData.firstName} </a>
+     {editUser.first? (<div>
+      <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.firstName} </a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
           onClick={() => {
-            navigator.clipboard.writeText(formData.firstName);
+            navigator.clipboard.writeText(props.user.firstName);
             toast.success('First Name Copied!');
           }}
         />
-        {/* </div>):<input type='text' className='edituser_input_firstname' value={formData.firstName} onChange={(e)=>updateFormData({...formData,firstName:e.target.value})}></input>} */}
+        </div>):<input type='text' className='edituser_input_firstname' value={formData.firstName} onChange={(e)=>updateFormData({...formData,firstName:e.target.value})}></input>}
       </td>
        <td className="email_cell">
-       {editUser.last?<div><a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{formData.lastName}</a>
+       {editUser.last?<div><a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.lastName}</a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
           onClick={() => {
-            navigator.clipboard.writeText(formData.lastName);
+            navigator.clipboard.writeText(props.user.lastName);
             toast.success('Last Name Copied!');
           }}
         /></div>:<input type='text' className='edituser_input' value={formData.lastName} onChange={(e)=>updateFormData({...formData,lastName:e.target.value})}></input>}
       </td>
       {editUser.role?<td>{props.user.role}</td>:<input></input>}
+      
       <td className="email_cell">
         {props.user.email}
         <FontAwesomeIcon

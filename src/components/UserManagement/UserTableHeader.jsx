@@ -15,7 +15,6 @@ import {
   REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 import userTableDataPermissions from 'utils/userTableDataPermissions';
-import { dispatch } from 'd3';
 import { disableEditUserInfo, enableEditUserInfo } from 'actions/userManagement';
 import { useDispatch } from 'react-redux';
 
@@ -23,8 +22,11 @@ import { useDispatch } from 'react-redux';
  * The header row of the user table.
  */
 const UserTableHeader = React.memo(({ authRole, roleSearchText, darkMode,editUser}) => {
+
   const [editFlag,setEditFlag]=useState(editUser)
+  // const [editFlag,setEditFlag]=useState({first:1,'last':1,'role':1,'email':1,'hours':1})
   const dispatch=useDispatch();
+
   const enableEdit=(value)=>{
     setEditFlag(value)
     dispatch(enableEditUserInfo(value))
@@ -40,34 +42,34 @@ const UserTableHeader = React.memo(({ authRole, roleSearchText, darkMode,editUse
         {ACTIVE}
       </th>
       <th scope="col" id="usermanagement_first" className='p-auto'>
-        {/* <div className='text-center'> */}
-          {/* <span className='my-auto'> */}
+        <div className='text-center'>
+          <span className='my-auto'>
             {FIRST_NAME}
-            {/* </span> */}
-          {/* {editFlag.first ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, first: 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, first: 1 })}>Save</button>} */}
-        {/* </div> */}
+            </span>
+          {editFlag.first==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'first': 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, 'first': 1 })}>Save</button>}
+        </div>
       </th>
       <th scope="col" id="usermanagement_last_name" className=''>
         <div className='text-center'>
           <span className='my-auto'>{LAST_NAME}</span>
-          {editFlag.last ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, last: 0 })}>Edit</button> : <button className='btn btn-info ml-2 ' onClick={() => disableEdit({ ...editFlag, last: 1 })}>Save</button>}
+          {editFlag.last==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'last': 0 })}>Edit</button> : <button className='btn btn-info ml-2 ' onClick={() => disableEdit({ ...editFlag, 'last': 1 })}>Save</button>}
         </div>
       </th>
       <th scope="col" id="usermanagement_role">
         <div className='text-center'>
           <span className='my-auto'>{ROLE}</span>
-          {editFlag.role ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, role: 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, role: 1 })}>Save</button>}
+          {editFlag.role==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'role': 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, 'role': 1 })}>Save</button>}
         </div>
       </th>
       <th scope="col" id="usermanagement_email">
         <div className='text-center'>
           <span className='my-auto text-center'>{EMAIL}</span>
-          {editFlag.email ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, email: 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, email: 1 })}>Save</button>}
+          {editFlag.email==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'email': 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, 'email': 1 })}>Save</button>}
         </div>
       </th>
       <th scope="col" id="usermanagement_hrs">
         <span className='my-auto'>{WKLY_COMMITTED_HRS}</span>
-        {editFlag.hours ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, hours: 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, hours: 1 })}>Save</button>}
+        {editFlag.hours==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'hours': 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, 'hours': 1 })}>Save</button>}
       </th>
       <th scope="col" id="usermanagement_pause">
         <span>{PAUSE}</span>

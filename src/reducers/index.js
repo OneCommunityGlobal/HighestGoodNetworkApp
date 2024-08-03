@@ -3,7 +3,7 @@ import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
-import { allUserProfilesReducer, enableUserInfoEditReducer } from './allUserProfilesReducer';
+import { allUserProfilesReducer, changeUserPageStatusReducer, enableUserInfoEditReducer } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
@@ -92,6 +92,7 @@ const localReducers = {
 };
 
 const sessionReducers = {
+  userPagination:changeUserPageStatusReducer,
   userProfileEdit:enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,
   userTask: userTaskByIdReducer,

@@ -42,7 +42,6 @@ import { toast } from 'react-toastify';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -52,8 +51,8 @@ class UserManagement extends React.PureComponent {
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
-      selectedPage: 1,
-      pageSize: 10,
+      selectedPage: props.state.userPagination.pagestats.selectedPage,
+      pageSize: props.state.userPagination.pagestats.pageSize,
       allSelected: undefined,
       isActive: undefined,
       isSet: undefined,
@@ -66,6 +65,8 @@ class UserManagement extends React.PureComponent {
       shouldRefreshInvitationHistory: false,
       logTimeOffPopUpOpen: false,
       userForTimeOff: '',
+      userTableItems:[],
+      editable:props.state.userPagination.editable
     };
   }
 
@@ -73,17 +74,41 @@ class UserManagement extends React.PureComponent {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
+    let darkMode = this.props.state.theme.darkMode;
+    let { userProfiles, fetching } = this.props.state.allUserProfiles;
+    let { roles: rolesPermissions } = this.props.state.role;
+    let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode,this.state.editable)
   }
+
+  componentDidUpdate(prevData){
+    let editable=this.props.state.userProfileEdit.editable
+    let edit_prev=this.state.editable;
+    console.log(this.props.state.userPagination.pagestats)
+    // console.log(this.state.selectedPage)
+    if(editable.first!==edit_prev.first || editable.last!==edit_prev.last || editable.role!==edit_prev.role || editable.email!==edit_prev.email || editable.hours!==edit_prev.hours){
+      this.setState({
+        editable:editable
+      },()=>{
+
+        let darkMode = this.props.state.theme.darkMode;
+        let { userProfiles, fetching } = this.props.state.allUserProfiles;
+        let { roles: rolesPermissions } = this.props.state.role;
+        let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+        this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode,this.state.editable)
+      })
+    }
+  }
+
 
   render() {
     const darkMode = this.props.state.theme.darkMode;
-    let { userProfiles, fetching } = this.props.state.allUserProfiles;
-    const { roles: rolesPermissions } = this.props.state.role;
-    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    var editUser = this.props.state.userProfileEdit.editable
-    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode,editUser);
+    var { userProfiles, fetching } = this.props.state.allUserProfiles;
+    // const { roles: rolesPermissions } = this.props.state.role;
+    // const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    // var editUser = this.props.state.userProfileEdit.editable
+    // let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode,this.state.editable);
     let roles = [...new Set(userProfiles.map(item => item.role))];
-  
 
     return (
       <Container fluid className={darkMode ? ' bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
@@ -108,7 +133,7 @@ class UserManagement extends React.PureComponent {
                   authRole={this.props.state.auth.user.role}
                   roleSearchText={this.state.roleSearchText}
                   darkMode={darkMode}
-                  editUser={editUser}
+                  editUser={this.state.editable}
                 // seteditUser={seteditUser}
                 />
                 <UserTableSearchHeader
@@ -123,7 +148,7 @@ class UserManagement extends React.PureComponent {
                   darkMode={darkMode}
                 />
               </thead>
-              <tbody>{userTable}</tbody>
+              <tbody>{this.state.userTableItems}</tbody>
             </Table>
           </div>
           <UserTableFooter
@@ -218,6 +243,7 @@ class UserManagement extends React.PureComponent {
        * the rows for currently selected page .
        * Applying the Default sort in the order of created date as well
        */
+      // console.log(this.state.selectedPage)
       return usersSearchData
         .sort((a, b) => {
           if (a.createdDate >= b.createdDate) return -1;
@@ -260,6 +286,12 @@ class UserManagement extends React.PureComponent {
     }
   };
 
+  getFilteredData=(userProfiles, rolesPermissions, timeOffRequests, darkMode,editUser)=>{
+    this.setState({
+      userTableItems:this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode,editUser)
+    })
+  }
+
   filteredUserList = userProfiles => {
     return userProfiles.filter(user => {
       // console.log('user', user);
@@ -299,6 +331,7 @@ class UserManagement extends React.PureComponent {
    */
   userCreated = () => {
     const text = this.state.wildCardSearchText;
+    
     this.props.getAllUserProfile();
     this.setState({
       newUserPopupOpen: false,
@@ -567,6 +600,13 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: searchText,
       selectedPage: 1,
     });
+    let darkMode = this.props.state.theme.darkMode;
+    let { userProfiles, fetching } = this.props.state.allUserProfiles;
+    let { roles: rolesPermissions } = this.props.state.role;
+    let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    let editUser = this.props.state.userProfileEdit.editable
+    this.getFilteredData(userProfiles,rolesPermissions, timeOffRequests,darkMode,editUser)
+    
   };
 
   /**
