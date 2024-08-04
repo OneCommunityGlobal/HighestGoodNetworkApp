@@ -352,9 +352,7 @@
   margin-top: 5px;
 }
 
-.team-clock-small-screens-row{
-  display: none;
-}
+
 @media (max-width: 1240px) and (min-width: 992px) {
   .taskboard-card-header-box {
     flex-direction: column
@@ -387,15 +385,6 @@
 
   .team-clocks{
     display: none;
-  }
-
-  .team-clock-small-screens-row{
-    display: table-row;
-  }
-
-  .team-clocks-small-screen {
-    display: flex;
-    justify-content: center;
   }
 
 }

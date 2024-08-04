@@ -187,15 +187,6 @@ const TeamMemberTask = React.memo(
                     <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                   </td>
                 </tr>
-                <tr className='team-clock-small-screens-row'>
-                  <td data-label="Time" className={'team-clocks-small-screen ' + (darkMode ? 'text-light' : '')}>
-                    <u className={darkMode ? 'text-azure' : ''}>
-                      {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
-                    </u>{' '}
-                    /<font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
-                    <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
-                  </td>
-                </tr>
               </tbody>
             </Table>
           </td>
