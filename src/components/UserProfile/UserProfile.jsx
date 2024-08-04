@@ -496,11 +496,18 @@ function UserProfile(props) {
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
-      /* peizhou: check that the date of the blue square is not future */
-      if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
-        console.log('WARNING: Future Blue Square');
-        alert('WARNING: Cannot Assign Blue Square with a Future Date');
-      } else {
+      /* peizhou: check that the date of the blue square is not future or empty. */
+      if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
+        if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
+          console.log('WARNING: Future Blue Square');
+          alert('WARNING: Cannot Assign Blue Square with a Future Date');
+        }
+        if (dateStamp === '') {
+          console.log('WARNING: Empty Date');
+          alert('WARNING: Cannot Assign Blue Square with an Empty Date');
+        }
+      } 
+      else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
