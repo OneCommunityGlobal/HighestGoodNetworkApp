@@ -65,21 +65,17 @@ function AssignBadgePopup(props) {
   };
 
   let filteredBadges = filterBadges(badgeList);
-  let featuredBadges = props.userProfile?.badgeCollection?.filter(badge => badge.featured)?.map(badge => `assign-badge-${badge.badge?._id}`) || [];
 
-  useEffect(() => {
-    const addExistBadges = () => {
-      if (props.userProfile && props.userProfile.badgeCollection) {
-        const existBadges = props.userProfile.badgeCollection.map(badge => badge.badge._id);
-        existBadges.forEach(badgeId => {
-          if (!props.selectedBadges.includes(badgeId)) {
-            props.addSelectBadge('assign-badge-'+badgeId);
-          }
-        });
-      }
-    };
-    addExistBadges();
-  }, [props.userProfile, props.selectedBadges, props.addSelectBadge]);
+  const addExistBadges = () => {
+    if (props.userProfile && props.userProfile.badgeCollection) {
+      const existBadges = props.userProfile.badgeCollection.map(badge => `assign-badge-${badge.badge._id}`);
+      return existBadges;
+    }
+    return [];
+  };
+
+  let existBadges = addExistBadges();
+
 
 
   return (
@@ -122,7 +118,7 @@ function AssignBadgePopup(props) {
           </thead>
           <tbody>
             {filteredBadges.map((value, index) => (
-              <AssignTableRow badge={value} index={index} key={index} selectedBadges={props.selectedBadges} featuredBadges={featuredBadges} />
+              <AssignTableRow badge={value} index={index} key={index} existBadges={existBadges} />
             ))}
           </tbody>
         </Table>

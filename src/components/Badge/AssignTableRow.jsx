@@ -9,12 +9,13 @@ function AssignTableRow(props) {
   const [isSelect, setSelect] = useState(false);
 
   useEffect(() => {
-    if (props.selectedBadges && props.selectedBadges?.includes(`assign-badge-${props.badge._id}`)) {
+    if (props.existBadges?.includes(`assign-badge-${props.badge._id}`)) {
       setSelect(true);
+      props.addSelectBadge(`assign-badge-${props.badge._id}`);
     } else {
       setSelect(false);
     }
-  }, [props.selectedBadges, props.badge._id]);
+  }, []);
 
   const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
 

@@ -223,7 +223,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 // Return updated badgeCollection
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
   const personalMaxBadge = '666b78265bca0bcb94080605'; // backend id for Personal Max badge
-  const badgeMap = new Map(badgeCollection.map(badge => [badge.badge, badge]));
+  const badgeMap = new Map(badgeCollection?.map(badge => [badge.badge, badge]));
 
   const currentTs = Date.now();
   const currentDate = formatDate();

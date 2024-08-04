@@ -4,7 +4,6 @@ import { Card, CardTitle, CardBody, CardImg, CardText, Popover } from 'reactstra
 const BadgeImage = props => {
   const [isOpen, setOpen] = useState(false);
   const [badgeValue, setBadgeValue] = useState(props.count);
-  console.log('badgeValue', badgeValue, props.count);
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
@@ -19,7 +18,6 @@ const BadgeImage = props => {
       }
     }
     else{
-      console.log('countValue', countValue);
       setBadgeValue(countValue);
     }
   }
