@@ -28,9 +28,10 @@
 
 @media screen and (max-width: 1240px) {
   .followup-tooltip {
-  
     top: 80px; 
-   
+  }
+  .followup-tooltip-button-icon{
+    font-size: 13px;
   }
 
 }

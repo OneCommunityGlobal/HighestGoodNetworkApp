@@ -113,9 +113,7 @@
 
 .hours-btn-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  column-gap: 1rem;
 }
 
 .circle-border {
@@ -129,7 +127,7 @@
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-.taskboard-card-header-box {
+.header-box {
   display: flex;
   flex-direction: row;
   padding: 10px;
@@ -359,10 +357,16 @@
   overflow-y: hidden;
 }
 
+.hours-btn-div{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
 
 @media (max-width: 1240px) and (min-width: 992px) {
-  .taskboard-card-header-box {
-    flex-direction: column
+  .header-box {
+    flex-direction: column;
   }
   .hours-btn-container {
     margin-top: 10px;
@@ -414,13 +418,15 @@
     text-align: center;
   }
 
-  /* .hours-btn-container {
+  .hours-btn-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     min-width: 165px;
     padding: 0 5%;
-  } */
+  }
+
+ 
 
   .card-body {
     padding-left: 0 !important;
@@ -472,9 +478,9 @@
     font-size: 24px;
   }
 
-  .header-box {
+  /* .header-box {
     flex-direction: unset;
-  }
+  } */
 
   .team-member-tasks h1 {
     font-size: 28px;
