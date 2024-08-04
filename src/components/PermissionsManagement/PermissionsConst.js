@@ -318,12 +318,12 @@ export const permissionLabels = [
             description: 'Category for all permissions related to editing timelogs',
             subperms: [
               {
-                label: 'Edit Timelog Time',
+                label: 'Edit Timelog Time (Self and Others)',
                 key: 'editTimeEntryTime',
                 description: 'Gives the user permission to edit the time of any time log entry.',
               },
               {
-                label: 'Edit Timelog Description',
+                label: 'Edit Timelog Description (Self and Others)',
                 key: 'editTimeEntryDescription',
                 description:
                   'Gives the user permission to edit the description of any time log entry.',
@@ -335,7 +335,7 @@ export const permissionLabels = [
                   'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
               },
               {
-                label: 'Change Time Entry Date',
+                label: 'Change Time Entry Date (Self and Others)',
                 key: 'editTimeEntryDate',
                 description:
                   'Gives the user permission to edit the date when adding an intangible time entry.',
