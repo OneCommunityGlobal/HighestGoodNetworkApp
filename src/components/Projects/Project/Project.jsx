@@ -18,6 +18,10 @@ const Project = props => {
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
 
+  const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
+  const canEditCategoryAndStatus = props.hasPermission('editProject');
+
+
   const updateProject = (key, value) => {
     setProjectData({
       ...projectData,
@@ -59,16 +63,16 @@ const Project = props => {
   }, [projectData]);
 
   return (
-    <table>
-    <tbody>
     <tr className="projects__tr" id={'tr_' + props.projectId}>
 
       <th className="projects__order--input" scope="row">
         <div>{index + 1}</div>
       </th>
 
+
       <td data-testid="projects__name--input" className="projects__name--input">
         {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+
 
           <input
             type="text"
@@ -82,7 +86,9 @@ const Project = props => {
         )}
       </td>
       <td className="projects__category--input">
-        {(canPutProject) ? (
+
+        {canEditCategoryAndStatus || canPutProject ? (
+
           <select
 
             data-testid="projects__category--input" //added for unit test
@@ -92,7 +98,9 @@ const Project = props => {
             }}
 
           >
-            <option default value="Unspecified">Unspecified</option>
+            <option default value="Unspecified">
+              Unspecified
+            </option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>
             <option value="Housing">Housing</option>
@@ -107,10 +115,12 @@ const Project = props => {
         )}
       </td>
 
+
       {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
-          <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? onUpdateProjectActive : null}>
+          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
               {isActive ? (
+
 
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -146,7 +156,9 @@ const Project = props => {
         </NavItem>
       </td>
 
+
       {(canDeleteProject) ? (
+
         <td>
           <button
             data-testid="delete-button"
@@ -160,8 +172,6 @@ const Project = props => {
         </td>
       ) : null}
     </tr>
-    </tbody>
-    </table>
   );
 };
 const mapStateToProps = state => state;

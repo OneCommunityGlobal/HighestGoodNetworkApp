@@ -19,6 +19,7 @@ export const ENDPOINTS = {
   LOGIN: `${APIEndpoint}/login`,
   PROJECTS: `${APIEndpoint}/projects`,
   TEAM: `${APIEndpoint}/team`,
+  TEAM_ALL_CODE: `${APIEndpoint}/teamCode`,
   TEAM_DATA: teamId => `${APIEndpoint}/team/${teamId}`,
   TEAM_USERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   USER_PROJECTS: userId => `${APIEndpoint}/projects/user/${userId}`,
@@ -63,6 +64,7 @@ export const ENDPOINTS = {
   SAVE_SUMMARY_RECEPIENTS: (userid) => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () => `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
+  TOTAL_ORG_SUMMARY: (startDate,endDate) => `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}`,
 
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
