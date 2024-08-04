@@ -650,7 +650,7 @@ const Timelog = props => {
                         Click this icon to learn about the timelog.
                       </ReactTooltip>
                     </Col>
-                  </div>
+                  </Row>
                 </CardHeader>
                 <CardBody className={darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'}>
                   <Nav tabs className="mb-1 responsive-font-size">
