@@ -390,10 +390,6 @@
     margin-bottom: 3px;
   }
 
-  .team-clocks{
-    display: none;
-  }
-
 }
 
 @media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
@@ -418,13 +414,13 @@
     text-align: center;
   }
 
-  .hours-btn-container {
+  /* .hours-btn-container {
     display: flex;
     justify-content: space-between;
     align-items: center;
     min-width: 165px;
     padding: 0 5%;
-  }
+  } */
 
   .card-body {
     padding-left: 0 !important;

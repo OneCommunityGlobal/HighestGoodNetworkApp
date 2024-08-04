@@ -558,7 +558,7 @@ const Timelog = props => {
                     </Col>
                     <Col className='px-0'>
                       {isAuthUser ? (
-                        <div className="float-right mt-1">
+                        <div className="tasks-and-timelog-header-add-time-div mt-2">
                           <div>
                             <Button className='responsive-font-size' color="success" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                               {'Add Intangible Time Entry '}
@@ -653,7 +653,7 @@ const Timelog = props => {
                   </Row>
                 </CardHeader>
                 <CardBody className={darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'}>
-                  <Nav tabs className="mb-1 responsive-font-size">
+                  <Nav tabs className="task-and-timelog-card-nav mb-1 responsive-font-size">
                     <NavItem>
                       <NavLink
                         className={classnames({ active: timeLogState.activeTab === 0 })}
