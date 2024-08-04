@@ -1268,7 +1268,7 @@ function UserProfile(props) {
                         setTeams(originalTeams);
                         setProjects(resetProjects);
                       }}
-                      className="btn btn-outline-danger mr-1 btn-bottom"
+                      className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                       style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Cancel
@@ -1395,7 +1395,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1403,7 +1403,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1470,7 +1470,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1478,7 +1478,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1566,7 +1566,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1574,7 +1574,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1649,7 +1649,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1657,7 +1657,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1719,7 +1719,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1727,7 +1727,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
