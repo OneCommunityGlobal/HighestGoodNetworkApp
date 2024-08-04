@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import './TeamLocations.css';
 
-function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
+function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkMode }) {
 
   const [sortOrder, setSortOrder] = useState({ field: null, direction: 'dsc' });
   const [nameSortOrder, setNameSortOrder] = useState('dsc');
@@ -46,7 +46,7 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
   };
 
 
-  const sortedMapMarkers = mapMarkers.slice().sort((a, b) => {
+  const sortedMapMarkers = filteredMapMarkers.slice().sort((a, b) => {
     const field = sortOrder.field;
     const direction = sortOrder.direction === 'asc' ? 1 : -1;
 
@@ -63,7 +63,7 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
     }
   });
 
-  const filteredMapMarkers = sortedMapMarkers.filter((user) => {
+  const newfilteredMapMarkers = sortedMapMarkers.filter((user) => {
     const fullName = `${user.firstName} ${user.lastName}`.toLowerCase();
     const location = user.location.city ? 
     `${user.location.city}, ${user.location.country}`.toLowerCase() : user.location.country.toLowerCase();
@@ -72,9 +72,9 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
 
   return (
     <div className={`map-table-container ${visible ? 'visible' : ''}`}>
-      <table className='team-locations-table'>
+      <table className={`team-locations-table ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
         <thead>
-          <tr>
+          <tr className={darkMode ? 'bg-space-cadet' : ''}>
             <th className="team-locations-table-header small-column">
               <div className='cursor-pointer' onClick={() => toggleSortOrder('setActiveUsers')}>
                 <i className='cursor-pointer fa fa-user-o' aria-hidden='true'></i>
@@ -99,7 +99,7 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
             </th>
           </tr>
           {showSearchBar &&
-          <tr>
+          <tr className={darkMode ? 'bg-space-cadet' : ''}>
             <th colSpan="4" className='team-locations-table-header'>
             <div className={`search-bar ${showSearchBar ? 'visible' : ''}`}>
                 <input type='text' placeholder='Search Team Members...' onChange={handleSearchTermChange} value={searchTerm} />
@@ -108,8 +108,8 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
           </tr>}
         </thead>
         <tbody>
-          {filteredMapMarkers.map((user, index) => (
-            <tr key={index} onClick={() => setCurrentUser(user)} className={`team-locations-table-row ${index % 2 === 0 ? 'team-locations-table-row-even' : ''}`}>
+          {newfilteredMapMarkers.map((user, index) => (
+            <tr key={index} onClick={() => setCurrentUser(user)} className={`team-locations-table-row ${index % 2 === 0 ? 'team-locations-table-row-even' : ''} ${darkMode ? 'bg-space-cadet' : ''}`}>
               <td className='team-locations-table-data'>
                 <i
                   className='fa fa-circle'
@@ -118,13 +118,13 @@ function TeamLocationsTable({ visible, mapMarkers, setCurrentUser, darkMode }) {
                 ></i>
               </td>
               <td className='team-locations-table-data'>
-                <span style={{color: 'black'}} className='column-content'>{`${user.firstName} ${user.lastName.charAt(0)}.`}</span>
+                <span style={{ color: darkMode ? 'white' : 'black' }} className='column-content'>{`${user.firstName} ${user.lastName.charAt(0)}.`}</span>
               </td>
               <td className='team-locations-table-data'>
                 {user.location.city ? (
-                  <span style={{color: 'black'}} className='column-content'>{`${user.location.city}, ${user.location.country}`}</span>
+                  <span style={{ color: darkMode ? 'white' : 'black' }} className='column-content'>{`${user.location.city}, ${user.location.country}`}</span>
                 ) : (
-                  <span style={{color: 'black'}} className='column-content'>{`${user.location.country}`}</span>
+                  <span style={{ color: darkMode ? 'white' : 'black' }} className='column-content'>{`${user.location.country}`}</span>
                 )}
               </td>
               <td className='team-locations-table-data'></td>
