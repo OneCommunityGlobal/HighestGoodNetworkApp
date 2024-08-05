@@ -50,7 +50,6 @@ import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 
-
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,

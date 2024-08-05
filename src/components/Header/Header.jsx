@@ -92,6 +92,7 @@ export function Header(props) {
     !isAuthUser && canInteractWithViewingUser,
   );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
+
   // Users
   const canAccessUserManagement =
     props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
@@ -355,6 +356,7 @@ export function Header(props) {
                       )}
                       {canGetWeeklyVolunteerSummary && (
                         <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
+
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
@@ -542,5 +544,5 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
-  getWeeklySummaries,
+  getWeeklySummaries
 })(Header);

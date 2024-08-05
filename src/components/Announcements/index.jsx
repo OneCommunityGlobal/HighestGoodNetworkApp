@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
+import { toast } from 'react-toastify';
 
 function Announcements() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -124,7 +125,14 @@ function Announcements() {
   const handleSendEmails = () => {
     const htmlContent = emailContent;
     // Send the HTML content using your sendEmail function
-    dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
+    if(emailList.length === 0 || emailList.every(email => !email.trim())){
+      toast.error(
+        'Error: Empty Email List. Please enter AT LEAST One email.',
+      );
+    }else{
+      dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
+    }
+    
   };
 
   const handleBroadcastEmails = () => {
