@@ -18,11 +18,9 @@ const UserTeamsTable = props => {
 
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const [autoComplete, setAutoComplete] = useState(false);
-
   const [innerWidth, setInnerWidth] = useState();
 
-  const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState([]);
+  const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState(props.inputAutoComplete);
 
   const [teamCode, setTeamCode] = useState(
     props.userProfile ? props.userProfile.teamCode : props.teamCode,
@@ -37,7 +35,7 @@ const UserTeamsTable = props => {
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = async (e, autoComplete) => {
-    setAutoComplete(autoComplete);
+    const isUpdateAutoComplete = validationUpdateAutoComplete(autoComplete ? e : e.target.value);
     const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
     refInput.current = autoComplete ? e : e.target.value;
     if (regexTest) {
@@ -48,11 +46,14 @@ const UserTeamsTable = props => {
           const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
           await axios.patch(url, { key: 'teamCode', value: refInput.current });
           toast.success('Team code updated!');
-
-          setTimeout(() => {
-            props.fetchTeamCodeAllUsers();
-            toast.info('Auto complete updated!');
-          }, 9000);
+          setTimeout(async () => {
+            //prettier-ignore
+            if(isUpdateAutoComplete.length === 0){
+              await props.fetchTeamCodeAllUsers();
+              toast.info('Auto complete updated!')
+            }
+          }, 2000);
+          setArrayInputAutoComplete(props.inputAutoComplete);
         } catch {
           toast.error('It is not possible to save the team code.');
         }
@@ -67,18 +68,20 @@ const UserTeamsTable = props => {
     autoComplete = false;
   };
 
-  useEffect(() => {
-    if (teamCode !== '' && !props.isLoading && autoComplete === undefined) {
+  const validationUpdateAutoComplete = e => {
+    if (e !== '' && !props.isLoading) {
       const isMatchingSearch = props.inputAutoComplete.filter(item =>
-        filterInputAutoComplete(item).includes(filterInputAutoComplete(teamCode)),
+        filterInputAutoComplete(item).includes(filterInputAutoComplete(e)),
       );
       setArrayInputAutoComplete(isMatchingSearch);
+      //prettier-ignore
+      return isMatchingSearch.filter(item => filterInputAutoComplete(item) === filterInputAutoComplete(e));
     } else {
       setArrayInputAutoComplete(props.inputAutoComplete);
     }
-
-    refInput.current = props.userProfile ? props.userProfile.teamCode : props.teamCode;
-  }, [teamCode, props.inputAutoComplete, autoComplete]);
+  };
+  //prettier-ignore
+  useEffect(() => {setArrayInputAutoComplete(props.inputAutoComplete)}, [props.inputAutoStatus]);
 
   const filterInputAutoComplete = result => {
     return result
