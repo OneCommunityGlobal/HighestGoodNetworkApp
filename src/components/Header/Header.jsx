@@ -205,7 +205,6 @@ export function Header(props) {
     window.dispatchEvent(new Event('storage'));
     props.getWeeklySummaries(user.userid)
     history.push('/dashboard');
-    console.log("after");
   }
   const closeModal = () => {
     setModalVisible(false);
