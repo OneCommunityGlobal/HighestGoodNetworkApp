@@ -12,7 +12,6 @@ import { getAllUserProfile } from 'actions/userManagement';
 import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
 
-
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -157,7 +156,6 @@ function TotalOrgSummary(props) {
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
 
-
   if (error) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
@@ -264,19 +262,16 @@ function TotalOrgSummary(props) {
                   </>
                 )}
               </div>
-
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
               <span> task Completed</span>
-
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
               <span>hours completed </span>
-
             </div>
           </Col>
         </Row>
@@ -341,7 +336,6 @@ const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
-
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);

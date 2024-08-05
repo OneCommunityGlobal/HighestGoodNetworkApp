@@ -99,7 +99,6 @@ export default function VolunteerHoursDistribution({
           <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
         </div>
       )}
-
     </div>
   );
 }
