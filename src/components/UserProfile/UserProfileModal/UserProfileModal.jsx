@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState, useReducer, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -16,6 +16,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css'
 import hasPermission from 'utils/permissions';
 import { connect, useSelector } from 'react-redux';
+import { useRef } from 'react';
 
 const UserProfileModal = props => {
   const {
@@ -32,8 +33,8 @@ const UserProfileModal = props => {
   let blueSquare = [
     {
       date: 'ERROR',
-      description:
-        'This is auto generated text. You must save the document first before viewing newly created blue squares.',
+      description: ''
+        // 'This is auto generated text. You must save the document first before viewing newly created blue squares.',
     },
   ];
 
@@ -114,6 +115,14 @@ const UserProfileModal = props => {
     },
     userProfile.adminLinks,
   );
+
+  const textAreaRef = useRef(null);
+
+  useEffect(() => {
+    if (!summaryFieldView && textAreaRef.current) {
+      textAreaRef.current.focus();
+    }
+  }, [summaryFieldView]);
 
   const handleChange = event => {
     event.preventDefault();
@@ -328,6 +337,7 @@ const UserProfileModal = props => {
                 value={summary} 
                 style={{ minHeight: '200px', overflow: 'hidden'}} 
                 onInput={e => adjustTextareaHeight(e.target)} 
+                innerRef = {textAreaRef}
               />
             </FormGroup>
           </>
