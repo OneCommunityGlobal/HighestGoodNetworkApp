@@ -36,18 +36,18 @@ function PermissionListItem(props) {
     setinfoRoleModal(!infoRoleModal);
   };
 
-  const togglePermission = () => {
-    if (rolePermissions.includes(permission) || immutablePermissions.includes(permission)) {
-      setPermissions(previous => previous.filter(perm => perm !== permission));
+  const togglePermission = permissionKey => {
+    if (rolePermissions.includes(permissionKey) || immutablePermissions.includes(permissionKey)) {
+      setPermissions(previous => previous.filter(perm => perm !== permissionKey));
     } else {
-      setPermissions(previous => [...previous, permission]);
+      setPermissions(previous => [...previous, permissionKey]);
     }
     // eslint-disable-next-line react/destructuring-assignment
     props.onChange();
   };
 
-  const setSubpermissions = adding => {
-    subperms.forEach(subperm => {
+  const setSubpermissions = (recursiveSubperms, adding) => {
+    recursiveSubperms.forEach(subperm => {
       if (subperm.subperms) {
         setSubpermissions(subperm.subperms, adding);
       } else if (adding !== rolePermissions.includes(subperm.key)) {
