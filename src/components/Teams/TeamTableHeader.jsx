@@ -1,5 +1,5 @@
 import React from 'react';
-import { TEAM_NAME, ACTIVE, MEMBERS } from '../../languages/en/ui';
+import { TEAM_NAME, ACTIVE, MEMBERS, ACTIVE_MEMBERS } from '../../languages/en/ui';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 
