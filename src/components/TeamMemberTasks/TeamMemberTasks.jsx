@@ -1,16 +1,6 @@
 import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
-import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Button,
-  Spinner,
-  Table,
-  Row,
-  Col,
-} from 'reactstrap';
+import { Table, Row, Col, Spinner } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -32,8 +22,7 @@ import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
 import { MultiSelect } from 'react-multi-select-component';
 import { fetchTeamMembersTaskSuccess } from './actions';
-
-import { Link } from 'react-router-dom';
+//! import { Link } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
 
 const TeamMemberTasks = React.memo(props => {
@@ -81,25 +70,9 @@ const TeamMemberTasks = React.memo(props => {
   const [innerWidth, setInnerWidth] = useState();
   const [controlUseEfffect, setControlUseEfffect] = useState(false);
 
-  const handleToggleButtonClick = () => {
-    if (textButton === 'View All') {
-      renderTeamsList(null);
-      setTextButton('My Team');
-      setControlUseEfffect(false);
-    } else if (usersSelectedTeam.length === 0) {
-      toast.error(`You have not selected a team or the selected team does not have any members.`);
-    } else {
-      renderTeamsList(usersSelectedTeam);
-      setTextButton('View All');
-      setControlUseEfffect(true);
-    }
-  };
-
   useEffect(() => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
-
-  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
 
   const dispatch = useDispatch();
 
@@ -114,31 +87,36 @@ const TeamMemberTasks = React.memo(props => {
     setCurrentUserId('');
   };
 
-  const onUpdateTask = useCallback((taskId, updatedTask) => {
-    const newTask = {
-      updatedTask,
-      taskId,
-    };
-    submitTasks(newTask);
-      
-    // optimistic update while waiting for data being updated
-    const newUsersWithTasks = usersWithTasks.map(userWithTasks => (
-      userWithTasks.tasks.some(task => task._id === taskId)
-        ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
-          ? ({
-            ...userWithTasks,
-            tasks: userWithTasks.tasks.map(task => task._id === taskId ? updatedTask : task),
-          })
-          : ({
-            ...userWithTasks,
-            tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
-          })
-        : userWithTasks
-    ));
-    dispatch(fetchTeamMembersTaskSuccess({
-      usersWithTasks: newUsersWithTasks,
-    }));
-  }, [usersWithTasks]);
+  const onUpdateTask = useCallback(
+    (taskId, updatedTask) => {
+      const newTask = {
+        updatedTask,
+        taskId,
+      };
+      submitTasks(newTask);
+
+      // optimistic update while waiting for data being updated
+      const newUsersWithTasks = usersWithTasks.map(userWithTasks =>
+        userWithTasks.tasks.some(task => task._id === taskId)
+          ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
+            ? {
+                ...userWithTasks,
+                tasks: userWithTasks.tasks.map(task => (task._id === taskId ? updatedTask : task)),
+              }
+            : {
+                ...userWithTasks,
+                tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
+              }
+          : userWithTasks,
+      );
+      dispatch(
+        fetchTeamMembersTaskSuccess({
+          usersWithTasks: newUsersWithTasks,
+        }),
+      );
+    },
+    [usersWithTasks],
+  );
 
   const submitTasks = async updatedTasks => {
     const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
@@ -149,36 +127,41 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
-  const updateTaskStatus = useCallback(async (taskId, updatedTask) => {
-    const newTask = {
-      updatedTask,
-      taskId,
-    };
-    const url = ENDPOINTS.TASK_UPDATE_STATUS(newTask.taskId);
-    try {
-      await axios.put(url, newTask.updatedTask);
-    } catch (error) {
-      toast.error('Failed to update task');
-    }
+  const updateTaskStatus = useCallback(
+    async (taskId, updatedTask) => {
+      const newTask = {
+        updatedTask,
+        taskId,
+      };
+      const url = ENDPOINTS.TASK_UPDATE_STATUS(newTask.taskId);
+      try {
+        await axios.put(url, newTask.updatedTask);
+      } catch (error) {
+        toast.error('Failed to update task');
+      }
 
-    // optimistic update while waiting for data being updated
-    const newUsersWithTasks = usersWithTasks.map(userWithTasks => (
-      userWithTasks.tasks.some(task => task._id === taskId)
-        ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
-          ? ({
-            ...userWithTasks,
-            tasks: userWithTasks.tasks.map(task => task._id === taskId ? updatedTask : task),
-          })
-          : ({
-            ...userWithTasks,
-            tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
-          })
-        : userWithTasks
-    ));
-    dispatch(fetchTeamMembersTaskSuccess({
-      usersWithTasks: newUsersWithTasks
-    }));
-  }, [usersWithTasks]);
+      // optimistic update while waiting for data being updated
+      const newUsersWithTasks = usersWithTasks.map(userWithTasks =>
+        userWithTasks.tasks.some(task => task._id === taskId)
+          ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
+            ? {
+                ...userWithTasks,
+                tasks: userWithTasks.tasks.map(task => (task._id === taskId ? updatedTask : task)),
+              }
+            : {
+                ...userWithTasks,
+                tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
+              }
+          : userWithTasks,
+      );
+      dispatch(
+        fetchTeamMembersTaskSuccess({
+          usersWithTasks: newUsersWithTasks,
+        }),
+      );
+    },
+    [usersWithTasks],
+  );
 
   const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
@@ -278,10 +261,14 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
-  const renderTeamsList = async team => {
-    if (!team) {
+  useEffect(() => {
+    renderTeamsList();
+  }, [props.filteredUserTeamIds]);
+
+  const renderTeamsList = async () => {
+    if (props.filteredUserTeamIds && props.filteredUserTeamIds.length === 0) {
+      setLoading(true);
       if (usersWithTasks.length > 0) {
-        setLoading(true);
         //sort all users by their name
 
         usersWithTasks.sort((a, b) => (a.name.toLowerCase() < b.name.toLowerCase() ? -1 : 1));
@@ -301,17 +288,16 @@ const TeamMemberTasks = React.memo(props => {
         }, 3000);
       }
     } else {
-      try {
-        setLoading(true);
-        const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
-        const idUsers = response.data.map(item => item._id);
-        const usersTaks = usersWithTasks.filter(item => idUsers.includes(item.personId));
-        setTeamList(usersTaks);
+      setLoading(true);
+      const usersTaks = usersWithTasks.filter(
+        item =>
+          Array.isArray(props.filteredUserTeamIds) &&
+          props.filteredUserTeamIds.includes(item.personId),
+      );
+      setTeamList(usersTaks);
+      setTimeout(() => {
         setLoading(false);
-      } catch (error) {
-        toast.error('Error fetching team members:', error);
-        setLoading(false);
-      }
+      }, 5000);
     }
   };
 
@@ -422,23 +408,6 @@ const TeamMemberTasks = React.memo(props => {
     setShowWhoHasTimeOff(prev => !prev);
   };
 
-  const TeamSelected = team => {
-    team.teamName.length !== undefined ? teamName(team.teamName, team.teamName.length) : null;
-    setUsersSelectedTeam(team);
-    setTextButton('My Team');
-  };
-
-  const teamName = (name, maxLength) =>
-    setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
-
-  const dropdownName = (name, maxLength) => {
-    if (innerWidth >= 457) {
-      return maxLength > 50 ? `${name.substring(0, 50)}...` : name;
-    } else {
-      return maxLength > 15 ? `${name.substring(0, 15)}...` : name;
-    }
-  };
-
   const handleSelectTeamNames = event => {
     setSelectedTeamNames(event);
   };
@@ -484,13 +453,15 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   return (
-    <div className={`container team-member-tasks ${darkMode ? " bg-space-cadet border-left border-right border-secondary" : ""}`}>
+    <div
+      className={`container team-member-tasks ${
+        darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
+      }`}
+    >
       <header className="header-box">
         <section className="d-flex flex-column">
           <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
-
-          {/* Dropdown for selecting a team */}
-          {isLoading && (userRole === 'Administrator' || userRole === 'Owner') ? (
+          {loading && (
             <>
               <span
                 className={`d-flex justify-content-start align-items-center ${
@@ -502,47 +473,7 @@ const TeamMemberTasks = React.memo(props => {
                 <Spinner color="primary"></Spinner>
               </span>
             </>
-          ) : !isLoading && (userRole === 'Administrator' || userRole === 'Owner') ? (
-            <section className="d-flex flex-row mr-xl-2">
-              <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="mb-3">
-                <DropdownToggle caret>{selectedTeamName}</DropdownToggle>
-                <DropdownMenu>
-                  {teams.length === 0 ? (
-                    <DropdownItem
-                      onClick={() => toast.warning('Please, create a team to use the filter.')}
-                    >
-                      {'Please, create a team to use the filter.'}
-                    </DropdownItem>
-                  ) : (
-                    teams.map(team => (
-                      <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                        {dropdownName(team.teamName, team.teamName.length)}
-                      </DropdownItem>
-                    ))
-                  )}
-                </DropdownMenu>
-              </Dropdown>
-              &nbsp; &nbsp;
-              {teams.length === 0 ? (
-                <Link to="/teams">
-                  <Button color="success" className="fw-bold" boxstyle={boxStyle}>
-                    Create Team
-                  </Button>
-                </Link>
-              ) : (
-                <Button
-                  color="primary"
-                  onClick={handleToggleButtonClick}
-                  style={{ width: '7rem' }}
-                  className="mb-3 mb-0-md-end"
-                  boxstyle={boxStyle}
-                  disabled={loading}
-                >
-                  {loading ? <Spinner animation="border" size="sm" /> : textButton}
-                </Button>
-              )}
-            </section>
-          ) : !isLoading && userRole !== 'Administrator' && userRole !== 'Owner' ? null : null}
+          )}
         </section>
         {finishLoading ? (
           <section className=" hours-btn-container flex-wrap ml-2">
@@ -646,10 +577,8 @@ const TeamMemberTasks = React.memo(props => {
       )}
       {['Administrator', 'Owner', 'Manager', 'Mentor'].some(role => role === displayUser.role) && (
         <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 4}} xs={{ size: 12}} className='ml-3'>
-            <span className={darkMode ? "text-light responsive-font-size" : ""}>
-              Select Team
-            </span>
+          <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
+            <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Team</span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
               options={teamNames}
@@ -659,9 +588,9 @@ const TeamMemberTasks = React.memo(props => {
               }}
             />
           </Col>
-          <Col lg={{ size: 4}} xs={{ size: 12}} className='ml-3'>
-            <span className={darkMode ? "text-light responsive-font-size" : ""}>
-            Select Team Code
+          <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
+            <span className={darkMode ? 'text-light responsive-font-size' : ''}>
+              Select Team Code
             </span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
@@ -672,10 +601,8 @@ const TeamMemberTasks = React.memo(props => {
               }}
             />
           </Col>
-          <Col lg={{ size: 4 }} xs={{ size: 12 }} className='ml-3'>
-            <span className={darkMode ? "text-light responsive-font-size" : ""}>
-            Select Color
-            </span>
+          <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
+            <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Color</span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
               options={colors}
@@ -688,14 +615,26 @@ const TeamMemberTasks = React.memo(props => {
         </Row>
       )}
       <div className="task_table-container">
-        <Table className='task-table'>
-          <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
+        <Table className="task-table">
+          <thead
+            className={`pc-component ${darkMode ? 'bg-space-cadet' : ''}`}
+            style={{ position: 'sticky', top: 0 }}
+          >
             <tr>
               {/* Empty column header for hours completed icon */}
-              <th colSpan={1} className={`hours-completed-column ${darkMode ? "bg-space-cadet" : ""}`}/>
-              <th colSpan={2} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
-                <Table borderless className={`team-member-tasks-subtable ${darkMode ? "text-light" : ""}`}>
-                  <thead className={darkMode ? "bg-space-cadet" : ""}>
+              <th
+                colSpan={1}
+                className={`hours-completed-column ${darkMode ? 'bg-space-cadet' : ''}`}
+              />
+              <th
+                colSpan={2}
+                className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}
+              >
+                <Table
+                  borderless
+                  className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
+                >
+                  <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
                       <th
                         className={`team-member-tasks-headers team-member-tasks-user-name ${

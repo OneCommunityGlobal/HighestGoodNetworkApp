@@ -79,6 +79,7 @@ function LeaderBoard({
   showTimeOffRequestModal,
   darkMode,
   getWeeklySummaries,
+  setFilteredUserTeamIds,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -95,8 +96,7 @@ function LeaderBoard({
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
-  const [textButton, setTextButton] = useState('My Team');
+  const [selectedTeamName, setSelectedTeamName] = useState('All users');
   const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [userRole, setUserRole] = useState();
@@ -120,7 +120,7 @@ function LeaderBoard({
 
   useEffect(() => {
     if (!isEqual(leaderBoardData, teamsUsers)) {
-      if (selectedTeamName === 'Select a Team') {
+      if (selectedTeamName === 'All users') {
         setTeamsUsers(leaderBoardData);
       }
     }
@@ -135,6 +135,7 @@ function LeaderBoard({
   const renderTeamsList = async team => {
     if (!team) {
       setIsLoadingTeams(true);
+      setFilteredUserTeamIds([]);
 
       setTimeout(() => {
         setIsLoadingTeams(false);
@@ -145,6 +146,7 @@ function LeaderBoard({
         setIsLoadingTeams(true);
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
         const idUsers = response.data.map(item => item._id);
+        setFilteredUserTeamIds(idUsers);
         const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
         setTeamsUsers(usersTaks);
         setIsLoadingTeams(false);
@@ -156,13 +158,12 @@ function LeaderBoard({
   };
 
   const handleToggleButtonClick = () => {
-    if (textButton === 'View All') {
-      setTextButton('My Team');
+    if (usersSelectedTeam === 'All users') {
       renderTeamsList(null);
     } else if (usersSelectedTeam.length === 0) {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
     } else {
-      setTextButton('View All');
+      //! setTextButton('View All');
       renderTeamsList(usersSelectedTeam);
     }
   };
@@ -229,7 +230,7 @@ function LeaderBoard({
     } else {
       await getLeaderboardData(userId);
       renderTeamsList(usersSelectedTeam);
-      setTextButton('View All');
+      //!  setTextButton('View All');
     }
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
@@ -250,11 +251,11 @@ function LeaderBoard({
   };
 
   const TeamSelected = team => {
-    if (team.teamName.length !== undefined) {
-      teamName(team.teamName, team.teamName.length);
-    }
+    if (team === 'All users') {
+      setUsersSelectedTeam(team);
+      teamName('All users', 7);
+    } else if (team.teamName.length !== undefined) teamName(team.teamName, team.teamName.length);
     setUsersSelectedTeam(team);
-    setTextButton('My Team');
   };
 
   return (
@@ -288,7 +289,7 @@ function LeaderBoard({
             <DropdownToggle caret>
               {selectedTeamName} {/* Display selected team or default text */}
             </DropdownToggle>
-            <DropdownMenu>
+            <DropdownMenu className="overflow-auto" style={{ height: '35rem' }}>
               {teams.length === 0 ? (
                 <DropdownItem
                   onClick={() => toast.warning('Please, create a team to use the filter.')}
@@ -296,11 +297,14 @@ function LeaderBoard({
                   Please, create a team to use the filter.
                 </DropdownItem>
               ) : (
-                teams.map(team => (
-                  <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                    {dropdownName(team.teamName, team.teamName.length)}
-                  </DropdownItem>
-                ))
+                <>
+                  <DropdownItem onClick={() => TeamSelected('All users')}>All users</DropdownItem>
+                  {teams.map(team => (
+                    <DropdownItem onClick={() => TeamSelected(team)} key={team._id}>
+                      {dropdownName(team.teamName, team.teamName.length)}
+                    </DropdownItem>
+                  ))}
+                </>
               )}
             </DropdownMenu>
           </Dropdown>
@@ -318,7 +322,7 @@ function LeaderBoard({
               disabled={isLoadingTeams}
               boxstyle={boxStyle}
             >
-              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : textButton}
+              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : 'My Team'}
             </Button>
           )}
         </section>
