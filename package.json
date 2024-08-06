@@ -70,7 +70,7 @@
     "redux-concatenate-reducers": "^1.0.0",
     "redux-persist": "^5.10.0",
     "redux-thunk": "^2.3.0",
-    "tinymce": "^7.0.0",
+    "tinymce": "^7.2.0",
     "uuid": "^9.0.1"
   },
   "scripts": {
