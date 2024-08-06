@@ -14,7 +14,6 @@ import {
 } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
-import { searchWithAccent } from 'utils/search';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,
@@ -30,7 +29,7 @@ import { getAllUserProfile } from '../../actions/userManagement';
 import '../Header/DarkMode.css';
 
 function AssignBadge(props) {
-  const darkMode = useSelector(state => state.theme.darkMode); // Get darkMode state from Redux
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setOpen] = useState(false);
   const [fullName, setFullName] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
@@ -60,7 +59,6 @@ function AssignBadge(props) {
   };
 
   const handleUserSelect = user => {
-    // Toggle the selection: unselect if the same user is clicked
     if (selectedUserId === user._id) {
       setSelectedUserId(null);
       props.clearNameAndSelected();
