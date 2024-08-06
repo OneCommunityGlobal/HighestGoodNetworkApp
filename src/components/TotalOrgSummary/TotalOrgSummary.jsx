@@ -1,4 +1,4 @@
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import 'moment-timezone';
@@ -14,22 +14,67 @@ import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHo
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 
-const startDate = '2016-01-01';
-const endDate = new Date().toISOString().split('T')[0];
-const lastStartDate = '2022-01-01';
-const lastEndDate = '2024-01-01';
+// const startDate = '2016-01-01';
+// const endDate = new Date().toISOString().split('T')[0];
+// const lastStartDate = '2022-01-01';
+// const lastEndDate = '2024-01-01';
+
+function calculateFromDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
+  currentDate.setDate(currentDate.getDate() - daysToSubtract - 7);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateToDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToAdd = dayOfWeek === 6 ? 0 : -1 - dayOfWeek;
+  currentDate.setDate(currentDate.getDate() + daysToAdd);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateFromOverDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
+  currentDate.setDate(currentDate.getDate() - daysToSubtract - 14);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateToOverDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToAdd = dayOfWeek === 6 ? 0 : -8 - dayOfWeek;
+  currentDate.setDate(currentDate.getDate() + daysToAdd);
+  return currentDate.toISOString().split('T')[0];
+}
+
+const startDate = calculateFromDate();
+const endDate = calculateToDate();
+const lastStartDate = calculateFromOverDate();
+const lastEndDate = calculateToOverDate();
 
 function TotalOrgSummary(props) {
   const { darkMode, loading, error } = props;
   const [taskProjectHours, setTaskProjectHours] = useState([]);
+  const dispatch = useDispatch();
 
   useEffect(() => {
     async function fetchData() {
-      const { taskHours, projectHours } = await props.getTaskAndProjectStats(startDate, endDate);
-      const {
-        taskHours: lastTaskHours,
-        projectHours: lastProjectHours,
-      } = await props.getTaskAndProjectStats(lastStartDate, lastEndDate);
+      const { taskHours, projectHours } = await dispatch(
+        getTaskAndProjectStats(startDate, endDate),
+      );
+      // const fetchTotalOrgSummary = await props.getTotalOrgSummary(startDate, endDate);
+      // setTotalorgSummary(fetchTotalOrgSummary);
+      const { taskHours: lastTaskHours, projectHours: lastProjectHours } = await dispatch(
+        getTaskAndProjectStats(lastStartDate, lastEndDate),
+      );
 
       if (taskHours && projectHours) {
         setTaskProjectHours({
@@ -39,8 +84,8 @@ function TotalOrgSummary(props) {
           lastProjectHours,
         });
       }
-      getTotalOrgSummary(startDate, endDate);
-      hasPermission('');
+      // getTotalOrgSummary(startDate, endDate);
+      // hasPermission('');
     }
     fetchData();
   }, [startDate, endDate, lastStartDate, lastEndDate, getTotalOrgSummary, hasPermission]);
