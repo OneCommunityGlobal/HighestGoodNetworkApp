@@ -10,10 +10,9 @@ import {
   ModalBody,
   Alert,
   UncontrolledTooltip,
-  Table
+  Table,
 } from 'reactstrap';
-import { connect } from 'react-redux';
-import Autosuggest from 'react-autosuggest';
+import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
 import { searchWithAccent } from 'utils/search';
 import AssignBadgePopup from './AssignBadgePopup';
@@ -31,10 +30,9 @@ import { getAllUserProfile } from '../../actions/userManagement';
 import '../Header/DarkMode.css';
 
 function AssignBadge(props) {
-  const { darkMode } = props;
+  const darkMode = useSelector(state => state.theme.darkMode); // Get darkMode state from Redux
   const [isOpen, setOpen] = useState(false);
-  const [firstName, setFirstName] = useState('');
-  const [lastName, setLastName] = useState('');
+  const [fullName, setFullName] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
 
@@ -44,12 +42,39 @@ function AssignBadge(props) {
     props.closeAlert();
   }, []);
 
- 
+  useEffect(() => {
+    if (fullName) {
+      setFilteredUsers(
+        props.allUserProfiles.filter(user => {
+          const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+          return userFullName.includes(fullName.toLowerCase());
+        }),
+      );
+    } else {
+      setFilteredUsers([]);
+    }
+  }, [fullName, props.allUserProfiles]);
+
+  const handleFullNameChange = event => {
+    setFullName(event.target.value);
+  };
+
+  const handleUserSelect = user => {
+    // Toggle the selection: unselect if the same user is clicked
+    if (selectedUserId === user._id) {
+      setSelectedUserId(null);
+      props.clearNameAndSelected();
+    } else {
+      setSelectedUserId(user._id);
+      props.getFirstName(user.firstName);
+      props.getLastName(user.lastName);
+      props.getUserId(user._id);
+    }
+  };
 
   const toggle = (didSubmit = false) => {
     const { selectedBadges, firstName, lastName, userId } = props;
     if (isOpen && didSubmit === true) {
-      // If user is selected from dropdown suggestions
       if (userId) {
         props.assignBadgesByUserID(userId, selectedBadges);
       } else {
@@ -64,100 +89,65 @@ function AssignBadge(props) {
     }
   };
 
-  const handleFirstNameChange = event => {
-    setFirstName(event.target.value);
-  };
-
-  const handleLastNameChange = event => {
-    setLastName(event.target.value);
-  };
-
   const submit = () => {
     toggle(true);
   };
 
-  const FirstInputProps = {
-    placeholder: ' first name',
-    value: props.firstName,
-    onChange: onFirstChange,
-    autoFocus: true,
-  };
-  const LastInputProps = {
-    placeholder: ' last name',
-    value: props.lastName,
-    onChange: onLastChange,
-  };
-
   return (
     <Form
-      className={darkMode ? 'bg-yinmn-blue text-light' : ''}
-      style={{
-        padding: 20,
-      }}
+      className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+      style={{ padding: 20 }}
     >
-      <div className="assign-badge-margin-top" style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="row align-items-center mb-3">
         <Label
-          className={darkMode ? 'text-light' : ''}
-          style={{
-            fontWeight: 'bold',
-            marginLeft: '15px',
-            marginRight: '2px',
-            paddingRight: '2px',
-          }}
+          className={`col-12 col-md-2 ${darkMode ? 'text-light' : ''}`}
+          style={{ fontWeight: 'bold', marginBottom: 10 }}
         >
-          Search by Name
-        </Label>
-        <i
-          className="fa fa-info-circle"
-          id="NameInfo"
-          data-testid="NameInfo"
-          style={{ marginRight: '5px' }}
-        />
-        <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '5px' }}>
+          Search by Full Name
+          <i
+            className="fa fa-info-circle ml-2"
+            id="NameInfo"
+            data-testid="NameInfo"
+            style={{ cursor: 'pointer' }}
+          />
           <UncontrolledTooltip
             placement="right"
             target="NameInfo"
             style={{
               backgroundColor: '#666',
               color: '#fff',
-              paddingLeft: '2px',
-              marginLeft: '2px',
             }}
           >
             <p className="badge_info_icon_text">
-              Really, you&apos;re not sure what &quot;name&quot; means? Start typing a first or last
-              name and a list of the active members (matching what you type) will be auto generated.
-              Then you........ CHOOSE ONE!
+              Start typing a name and a list of the active members (matching what you type) will be
+              auto-generated. Then you........ CHOOSE ONE!
             </p>
             <p className="badge_info_icon_text">
-              Yep, that&apos;s it. Next you click &quot;Assign Badge&quot; and.... choose one or
-              multiple badges! Click &quot;confirm&quot; then &quot;submit&quot; and those badges
-              will show up as part of that person&apos;s earned badges. You can even assign a person
-              multiple of the same badge(s) by repeating this process and choosing the same badge as
-              many times as you want them to earn it.
+              After selecting a person, click &quot;Assign Badge&quot; and choose one or multiple
+              badges. Click &quot;confirm&quot; then &quot;submit&quot; and those badges will be
+              assigned.
             </p>
           </UncontrolledTooltip>
+        </Label>
+        <div className="col-12 col-md-8 mb-2">
           <input
             type="text"
-            placeholder="First name"
-            value={firstName}
-            onChange={handleFirstNameChange}
-            style={{ marginRight: '10px', padding: '5px' }}
-          />
-          <input
-            type="text"
-            placeholder="Last name"
-            value={lastName}
-            onChange={handleLastNameChange}
-            style={{ marginRight: '10px', padding: '5px' }}
+            placeholder="Full Name"
+            value={fullName}
+            onChange={handleFullNameChange}
+            className="form-control"
           />
         </div>
       </div>
       {filteredUsers.length > 0 && (
         <div className="table-responsive mb-3">
-          <Table className="table table-striped table-bordered">
+          <Table
+            className={`table table-bordered ${
+              darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''
+            }`}
+          >
             <thead>
-              <tr>
+              <tr className={darkMode ? 'bg-space-cadet text-light' : 'table-primary'}>
                 <th>Select</th>
                 <th>First Name</th>
                 <th>Last Name</th>
@@ -168,7 +158,11 @@ function AssignBadge(props) {
                 <tr
                   key={user._id}
                   onClick={() => handleUserSelect(user)}
-                  style={{ cursor: 'pointer', backgroundColor: selectedUserId === user._id ? '#e9ecef' : '' }}
+                  style={{
+                    cursor: 'pointer',
+                    backgroundColor: selectedUserId === user._id ? '#e9ecef' : '',
+                  }}
+                  className={darkMode && selectedUserId === user._id ? 'bg-dark text-light' : ''}
                 >
                   <td>
                     <input
@@ -186,7 +180,7 @@ function AssignBadge(props) {
           </Table>
         </div>
       )}
-      <FormGroup className="assign-badge-margin-top">
+      <FormGroup className="mb-3">
         <Button
           className="btn--dark-sea-green"
           onClick={toggle}
@@ -214,12 +208,11 @@ function AssignBadge(props) {
         <FormText color={darkMode ? 'white' : 'muted'}>
           Please select a badge from the badge list.
         </FormText>
-        <Alert color="dark" className="assign-badge-margin-top">
+        <Alert color="dark" className="mt-3">
           {' '}
           {props.selectedBadges ? props.selectedBadges.length : '0'} badges selected
         </Alert>
       </FormGroup>
-      {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
     </Form>
   );
 }
