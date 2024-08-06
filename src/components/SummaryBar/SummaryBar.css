@@ -141,7 +141,7 @@
   display: inline-block;
   padding: 5px;
   margin-bottom: 5px;
-  min-width: 60px;
+  min-width: 40px;
 }
 
 .badge-list {
@@ -179,7 +179,7 @@
 }
 
 /* Large devices (landscape phones, 544px and down) */
-@media (max-width: 992px) {
+@media (max-width: 991px) {
   .large_text_summary {
     font-size: 2rem;
   }
@@ -199,6 +199,13 @@
 @media (max-width: 576px) {
   .large_text_summary {
     font-size: 1.5rem;
+  }
+  .redBackgroup {
+    font-size: 0.75rem;
+    height: 20px;
+    max-width: 20px;
+    min-width: 20px;
+    padding: 0;
   }
 }
 

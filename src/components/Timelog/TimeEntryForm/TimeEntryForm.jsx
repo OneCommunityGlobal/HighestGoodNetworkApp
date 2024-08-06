@@ -74,12 +74,14 @@ const TimeEntryForm = props => {
   // props from store
   const { authUser } = props;
 
+  const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}'); 
+
   const initialFormValues = Object.assign(
     {
       dateOfWork: moment()
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
-      personId: authUser.userid,
+      personId: viewingUser.userId ?? authUser.userid,
       projectId: '',
       wbsId: '',
       taskId: '',
@@ -92,7 +94,9 @@ const TimeEntryForm = props => {
     data,
   );
 
-  const timeEntryUserId = from === 'Timer' ? authUser.userid : data.personId;
+  const timeEntryUserId = from === 'Timer' 
+    ? (viewingUser.userId ?? authUser.userid)
+    : data.personId;
 
   const {
     dateOfWork: initialDateOfWork,
@@ -471,7 +475,7 @@ const TimeEntryForm = props => {
     if (isOpen) {
       loadAsyncData(timeEntryUserId);
     }
-  }, [isOpen]);
+  }, [isOpen, timeEntryUserId]);
 
   useEffect(() => {
     setFormValues({ ...formValues, ...data})
@@ -492,7 +496,7 @@ const TimeEntryForm = props => {
             ) : (
               <span style={{ color: 'orange' }}>Intangible </span>
             )}
-            Time Entry{' '}
+            Time Entry{viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
             <i
               className="fa fa-info-circle"
               data-tip
@@ -605,7 +609,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!canEditTimeEntryToggleTangible || from !== 'Timer'}
+                  disabled={!canEditTimeEntryToggleTangible}
                 />
                 Tangible&nbsp;
                 <i

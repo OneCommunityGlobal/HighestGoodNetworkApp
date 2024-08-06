@@ -1,7 +1,7 @@
 .permissions-management {
-  padding: 1.5rem 3rem;
+  padding: 0.5rem 1rem;
   width: 40%;
-  min-width: 400px;
+  min-width: 350px;
   margin: 1.5rem auto;
   box-shadow: 1px 1px 8px rgb(158, 158, 158);
   display: flex;
@@ -10,16 +10,8 @@
   border-radius: 8px;
 }
 
-.permissions-management-dark {
-  padding: 1.5rem 3rem;
-  width: 40%;
-  min-width: 400px;
-  margin: 1.5rem auto;
+.dark-box-shadow {
   box-shadow: 1px 1px 8px black;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 8px;
 }
 
 .permissions-management__header {

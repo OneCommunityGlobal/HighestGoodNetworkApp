@@ -39,7 +39,7 @@ const BlueSquare = props => {
                     }
                   }}
                 >
-                  <div className="report" data-testid="report">
+                  <div className={`report ${darkMode ? 'bg-space-cadet' : ''}`} data-testid="report">
                     <div className="title">{formatDate(blueSquare.date)}</div>
                     {blueSquare.description !== undefined && (
                       <div className="summary">

@@ -66,9 +66,9 @@ const PauseAndResumeButton = props => {
         onPause={pauseUser}
       />
       <Button
-        outline
-        color="primary"
-        className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${
+        {...(darkMode ? { outline: false } : {outline: true})}
+        color={isActive ? 'warning' : 'success'}
+        className={`btn ${darkMode ? '' : `btn-outline-${isActive ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={e => {

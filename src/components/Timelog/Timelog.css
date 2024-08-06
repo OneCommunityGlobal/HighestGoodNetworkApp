@@ -59,9 +59,53 @@
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
+.tab-pane {
+  width: 100%;
+}
+
+.search-time-entries-btn{
+  margin-left: 6px;
+  margin-top: 0px;
+}
+
+.min-width-100{
+  min-width: 100%;
+}
+
+.timelogPageContainer{
+  width: 100%;
+  padding: 0 17%;
+}
+
+@media screen and (max-width: 1400px) and (min-width: 1100px) {
+  .timelogPageContainer{
+    padding: 0 10%;
+  }
+}
+
+@media screen and (max-width: 1100px) and (min-width: 800px) {
+  .timelogPageContainer{
+    padding: 0 7%;
+    margin-left: 15px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .timelogPageContainer{
+    padding: 0;
+    margin-left: 15px;
+  }
+}
+
+@media screen and (max-width: 575px) and (min-width: 399px) {
+  .search-time-entries-btn{
+    margin-top: 15px;
+  }
+}
+
 @media (max-width: 544px) {
   .tab-pane {
-    height: 300px;
+    max-height: 1000px;
     overflow-y: scroll;
     width: 100%;
   }
@@ -69,7 +113,11 @@
   .right-padding-temp-fix {
     padding-right: 0px !important;
   }
+  .search-time-entries-btn{
+    padding: 3px 6px !important;
+  }
 }
+
 
 #projectSelected {
   max-width: 100%;
@@ -135,4 +183,17 @@
 
 .container-timelog-wrapper{
   min-height: 100%;
+  min-width: 100%;
+}
+
+@media only screen and (max-width: 544px) {
+  .responsive-font-size{
+    font-size: 0.75rem !important;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  .date-selector-form{
+    margin-left: 5px;
+  }
 }

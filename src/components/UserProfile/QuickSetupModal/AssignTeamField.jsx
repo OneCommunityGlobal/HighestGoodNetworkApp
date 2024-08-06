@@ -20,6 +20,11 @@ const AssignTeamField = React.memo(props => {
     }
   }, [props.searchText]);
 
+  const sTeam = props.teamsData.allTeams.find(team => team.teamName === '2021 Test new');
+  if (sTeam) {
+    console.log('sTeam', sTeam);
+  }
+  
   return (
     <Dropdown
       isOpen={isOpen}

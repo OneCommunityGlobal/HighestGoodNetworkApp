@@ -64,7 +64,9 @@ describe('CurrentPromptModal component', () => {
         </Provider>,
       );
       await waitFor(() => {
-        const buttonElement = container.querySelector('[class="btn btn-info"]');
+        const buttonElement = container.querySelector(
+          '[class="p-1 mb-1 responsive-font-size btn btn-info"]',
+        );
         expect(buttonElement.textContent).toBe('View and Copy Current AI Prompt');
         fireEvent.click(buttonElement);
         const modalElement = screen.getByRole('dialog');
@@ -111,7 +113,9 @@ describe('CurrentPromptModal component', () => {
         </Provider>,
       );
       await waitFor(() => {
-        const buttonElement = container.querySelector('[class="btn btn-info"]');
+        const buttonElement = container.querySelector(
+          '[class="p-1 mb-1 responsive-font-size btn btn-info"]',
+        );
         fireEvent.click(buttonElement);
 
         const modalDialogElement = screen.getByRole('document');
@@ -148,7 +152,9 @@ describe('CurrentPromptModal component', () => {
       );
 
       await waitFor(async () => {
-        const buttonElement = container.querySelector('[class="btn btn-info"]');
+        const buttonElement = container.querySelector(
+          '[class="p-1 mb-1 responsive-font-size btn btn-info"]',
+        );
         fireEvent.click(buttonElement);
         await waitFor(() => {
           expect(screen.getByRole('document')).toBeInTheDocument();
@@ -181,7 +187,9 @@ describe('CurrentPromptModal component', () => {
   Do not add flowery language, keep it simple and factual. Do not add a final summary sentence. Apply all this to the following:`;
 
       await waitFor(async () => {
-        const buttonElement = container.querySelector('[class="btn btn-info"]');
+        const buttonElement = container.querySelector(
+          '[class="p-1 mb-1 responsive-font-size btn btn-info"]',
+        );
         fireEvent.click(buttonElement);
         await waitFor(() => {
           expect(screen.getByRole('document')).toBeInTheDocument();

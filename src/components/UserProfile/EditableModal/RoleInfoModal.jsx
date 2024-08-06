@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector, connect } from 'react-redux';
@@ -20,7 +21,7 @@ const RoleInfoModal = ({ info, auth}) => {
   useEffect(() => {
     setInfoContentModal(infoContent);
   }, [infoContent]);
-  
+
   const handleSaveSuccess = async () => {
     toast.success('✔ The info was saved successfully!', {
       pauseOnFocusLoss: false,
@@ -59,7 +60,7 @@ const RoleInfoModal = ({ info, auth}) => {
     }
 
     const updateInfo = {infoContent: infoContentModal}
-    
+
     let saveResult = await dispatch(updateInfoCollection(info._id, updateInfo));
     setInfoContentModal(infoContentModal);
 
@@ -74,26 +75,26 @@ const RoleInfoModal = ({ info, auth}) => {
   if (CanRead) {
     return (
       <span>
-        <i
-          data-toggle="tooltip"
-          data-placement="right"
-          title="Click for user class information"
-          style={{ fontSize: 24, cursor: 'pointer', color: '#00CCFF', marginLeft: '12px'}}
-          aria-hidden="true"
-          className="fa fa-info-circle"
-          onClick={handleMouseOver}
-        />
+         <i
+           data-toggle="tooltip"
+           data-placement="right"
+           title="Click for user class information"
+           style={{ fontSize: 24, cursor: 'pointer', color: '#00CCFF', marginLeft: '12px'}}
+           aria-hidden="true"
+           className="fa fa-info-circle"
+           onClick={handleMouseOver}
+         />
         {isOpen && (
           <Modal isOpen={isOpen} size="lg" className={darkMode ? 'text-light' : ''}>
             <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to Information Page!</ModalHeader>
             <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-              {canEditInfoModal && isEditing ? 
-                <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} /> : 
+              {canEditInfoModal && isEditing ?
+                <RichTextEditor disabled={!isEditing} value={infoContentModal} onEditorChange={handleInputChange} /> :
                 <div
-                style={{ paddingLeft: '20px' }}
-                dangerouslySetInnerHTML={{ __html: infoContentModal }}
-                onClick={() => setIsEditing(true)}
-              />}
+                  style={{ paddingLeft: '20px' }}
+                  dangerouslySetInnerHTML={{ __html: infoContentModal }}
+                  onClick={() => setIsEditing(true)}
+                />}
             </ModalBody>
             <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
               <Row className="no-gutters" style={{ gap: '10px', justifyContent: 'flex-end' }}>
@@ -113,7 +114,7 @@ const RoleInfoModal = ({ info, auth}) => {
             </ModalFooter>
           </Modal>
         )}
-      </span>
+       </span>
     );
   }
   return <></>;
