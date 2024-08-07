@@ -17,15 +17,14 @@ import {
   NavLink,
   Button,
 } from 'reactstrap';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
-import TeamChart from './TeamChart';
 import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import TeamChart from './TeamChart';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -35,6 +34,7 @@ import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import SelectTeamPieChart from './SelectTeamPieChart';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 
@@ -58,8 +58,7 @@ export class WeeklySummariesReport extends Component {
     this.state = {
       tableData: [],
       structuredTableData: [],
-      teams: [],
-      data: [],
+      chartData: [],
       total: 0,
       COLORS: [],
       loading: true,
@@ -129,9 +128,16 @@ export class WeeklySummariesReport extends Component {
     const teamCodes = [];
     const colorOptionGroup = new Set();
     const colorOptions = [];
-    const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042', '#FF00FF', '#800080', '#FFFF00', '#00FFFF'];
-
-
+    const COLORS = [
+      '#0088FE',
+      '#00C49F',
+      '#FFBB28',
+      '#FF8042',
+      '#FF00FF',
+      '#800080',
+      '#FFFF00',
+      '#00FFFF',
+    ];
 
     summariesCopy.forEach(summary => {
       const code = summary.teamCode || 'noCodeLabel';
@@ -166,8 +172,7 @@ export class WeeklySummariesReport extends Component {
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
       });
-      const data = [
-      ];
+    const chartData = [];
     this.setState({
       loading,
       allRoleInfo: [],
@@ -180,7 +185,7 @@ export class WeeklySummariesReport extends Component {
       hasSeeBadgePermission: badgeStatusCode === 200,
       filteredSummaries: summariesCopy,
       tableData: teamCodeGroup,
-      data,
+      chartData,
       COLORS,
       colorOptions,
       teamCodes,
@@ -359,10 +364,10 @@ export class WeeklySummariesReport extends Component {
       summaries,
       selectedOverTime,
       selectedBioStatus,
-      tableData, 
-      COLORS
+      tableData,
+      COLORS,
     } = this.state;
-    const data = [];
+    const chartData = [];
     let temptotal = 0;
     const structuredTeamTableData = [];
 
@@ -396,52 +401,70 @@ export class WeeklySummariesReport extends Component {
       if (selectedCodes.length >= 52) {
         selectedCodes.forEach(code => {
           if (code.value === '') return;
-          data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
+          chartData.push({
+            name: code.label,
+            value: temp.filter(summary => summary.teamCode === code.value).length,
+          });
           const team = tableData[code.value];
           const index = selectedCodesArray.indexOf(code.value);
-          const color = COLORS[index % COLORS.length]
+          const color = COLORS[index % COLORS.length];
           const members = [];
           team.forEach(member => {
-             members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
-           })
-          structuredTeamTableData.push({team: code.value, color, members,})
-        })
-      }else{
-        data.push({name: 'All With NO Code', value: temp.filter(summary => summary.teamCode === '').length})
-        const team = tableData['noCodeLabel'];
+            members.push({
+              name: `${member.firstName} ${member.lastName}`,
+              role: member.role,
+              id: member._id,
+            });
+          });
+          structuredTeamTableData.push({ team: code.value, color, members });
+        });
+      } else {
+        chartData.push({
+          name: 'All With NO Code',
+          value: temp.filter(summary => summary.teamCode === '').length,
+        });
+        const team = tableData.noCodeLabel;
         const index = selectedCodesArray.indexOf('noCodeLabel');
-        const color = COLORS[index % COLORS.length]
+        const color = COLORS[index % COLORS.length];
         const members = [];
         team.forEach(member => {
-           members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
-         })
-        structuredTeamTableData.push({team: 'noCodeLabel', color, members,})
+          members.push({
+            name: `${member.firstName} ${member.lastName}`,
+            role: member.role,
+            id: member._id,
+          });
+        });
+        structuredTeamTableData.push({ team: 'noCodeLabel', color, members });
       }
-    }else{
-    selectedCodes.forEach(code => {
-      data.push({name: code.label, value: temp.filter(summary => summary.teamCode === code.value).length})
-      let team = tableData[code.value];
-      const index = selectedCodesArray.indexOf(code.value);
-      const color = COLORS[index % COLORS.length]
-      const members = [];
-      if (team !== undefined){
-        team.forEach(member => {
-          members.push({name: member.firstName + ' ' + member.lastName, role: member.role, id: member._id})
-        })
-       structuredTeamTableData.push({team: code.value, color, members,})
-      }
-
-
-
-     })
+    } else {
+      selectedCodes.forEach(code => {
+        chartData.push({
+          name: code.label,
+          value: temp.filter(summary => summary.teamCode === code.value).length,
+        });
+        const team = tableData[code.value];
+        const index = selectedCodesArray.indexOf(code.value);
+        const color = COLORS[index % COLORS.length];
+        const members = [];
+        if (team !== undefined) {
+          team.forEach(member => {
+            members.push({
+              name: `${member.firstName} ${member.lastName}`,
+              role: member.role,
+              id: member._id,
+            });
+          });
+          structuredTeamTableData.push({ team: code.value, color, members });
+        }
+      });
     }
 
-     data.sort()
-     temptotal = data.reduce((acc, entry) => acc + entry.value, 0);
-     structuredTeamTableData.sort()
-     this.setState({ total: temptotal });
+    chartData.sort();
+    temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
+    structuredTeamTableData.sort();
+    this.setState({ total: temptotal, });
     this.setState({ filteredSummaries: temp });
-    this.setState({ data: data });
+    this.setState({ chartData });
     this.setState({ structuredTableData: structuredTeamTableData });
   };
 
@@ -541,7 +564,7 @@ export class WeeklySummariesReport extends Component {
       colorOptions,
       teamCodes,
       structuredTableData,
-      data,
+      chartData,
       total,
       COLORS,
       auth,
@@ -645,34 +668,16 @@ export class WeeklySummariesReport extends Component {
             />
           </Col>
         </Row>
-        <Row>
+        {chartData.length>=1 &&(
+          <Row>
           <Col>
-          <ResponsiveContainer width="100%" height={500}>
-            <PieChart>
-              <Pie
-                data={data}
-                dataKey="value"
-                nameKey="name"
-                cx="50%"
-                cy="50%"
-                outerRadius={150}
-                fill="#8884d8"
-                label={({ name, value }) => `${name}:(${Math.round((value / total) * 100)}%)`}
-              >
-                {data.map((entry, index) => (
-                  <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                ))}
-              </Pie>
-              <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
-                Total: {total}
-              </text>
-            </PieChart>
-          </ResponsiveContainer>
+            <SelectTeamPieChart chartData={chartData} COLORS={COLORS} total={total}/>
           </Col>
           <Col>
-          <TeamChart teamData= {structuredTableData}/>
+            <TeamChart teamData={structuredTableData} />
           </Col>
         </Row>
+        )}
         <Row style={{ marginBottom: '10px' }}>
           <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
             <div className="filter-container">
@@ -820,7 +825,6 @@ const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
-
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
