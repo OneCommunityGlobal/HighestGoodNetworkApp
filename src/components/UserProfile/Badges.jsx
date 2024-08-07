@@ -88,7 +88,7 @@ export const Badges = (props) => {
     return acc + Math.round(Number(badge.count));
   }, 0);
 
-  const subject = props.isUserSelf ? 'You have' : 'This person has ';
+  const subject = props.isUserSelf ? 'You have' : 'This person has';
   const verb = badgesEarned ? `earned ${badgesEarned}`  : 'no';
   const object = badgesEarned == 1 ? 'badge' : 'badges';
   let congratulatoryText = `${subject} ${verb} ${object}`;
@@ -184,7 +184,7 @@ export const Badges = (props) => {
           <div>
             {badgesEarned ? (
               <div>
-                Bravo! {subject} earned <a href="#" onClick={toggleBadge} >{badgesEarned} </a> {object}!
+                Bravo! {subject} earned <a href="#" onClick={toggleBadge} >{badgesEarned}</a> {object}!
               </div>
             ) : (
               <div>
@@ -372,7 +372,7 @@ export const Badges = (props) => {
                   </tbody> 
                 </Table>
               </div>
-            </div>
+            </div> 
           </div>
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
