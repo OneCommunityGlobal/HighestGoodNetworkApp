@@ -95,11 +95,8 @@ export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //F
       if(!lastEntry){
         return "N/A";
       }
-      const dayOfWeek = moment(lastEntry.dateOfWork).day();
-      const daysUntilSat = dayOfWeek <= 6 ? 6 - dayOfWeek : 6 + (7 - dayOfWeek);
-      const lastSat = moment(lastEntry.dateOfWork).add(daysUntilSat, 'days');
-      const formattedLastSatday = moment.utc(lastSat).format('YYYY-MM-DD');
-      return formattedLastSatday;
+      const formattedLastEntryDate = moment(lastEntry.dateOfWork).format('YYYY-MM-DD');
+      return formattedLastEntryDate;
     } catch (error) {
       console.error("Error fetching time entries:", error);
       if (error.response && error.response.status === 401) {
