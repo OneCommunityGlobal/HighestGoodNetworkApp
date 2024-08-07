@@ -20,8 +20,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
-import { getUserProjects, getUserWBSs } from '../../../actions/userProjects';
-import { getUserProfile, updateUserProfile } from 'actions/userProfile';
+import { getUserProfile } from 'actions/userProfile';
 
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -71,16 +70,18 @@ const TINY_MCE_INIT_OPTIONS = {
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile, darkMode } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
+
+  const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}'); 
 
   const initialFormValues = Object.assign(
     {
       dateOfWork: moment()
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
-      personId: authUser.userid,
+      personId: viewingUser.userId ?? authUser.userid,
       projectId: '',
       wbsId: '',
       taskId: '',
@@ -93,7 +94,9 @@ const TimeEntryForm = props => {
     data,
   );
 
-  const timeEntryUserId = from === 'Timer' ? authUser.userid : data.personId;
+  const timeEntryUserId = from === 'Timer' 
+    ? (viewingUser.userId ?? authUser.userid)
+    : data.personId;
 
   const {
     dateOfWork: initialDateOfWork,
@@ -137,13 +140,16 @@ const TimeEntryForm = props => {
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
-  const canEditTimeEntry =
-    props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
+  const canEditTimeEntryTime = props.hasPermission('editTimeEntryTime');
+  const canEditTimeEntryDescription = props.hasPermission('editTimeEntryDescription');
+  const canEditTimeEntryToggleTangible = isForAuthUser ?
+    props.hasPermission('toggleTangibleTime'):
+    props.hasPermission('editTimeEntryToggleTangible');
+  const canEditTimeEntryDate = props.hasPermission('editTimeEntryDate');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
 // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-  const canUserEditDate = canEditTimeEntry && canPutUserProfileImportantInfo;
-  const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry || isSameDayAuthUserEdit) ;
+  const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntryTime || isSameDayAuthUserEdit) ;
 
   /*---------------- methods -------------- */
   const toggleRemainder = () =>
@@ -224,7 +230,7 @@ const TimeEntryForm = props => {
 
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required';
     if (!isDateValid) errorObj.dateOfWork = 'Invalid date';
-    if (from !== 'Timer' && !canChangeTime) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
+    if (from !== 'Timer' && from !== 'WeeklyTab' && !canChangeTime) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
     if (!formValues.hours && !formValues.minutes)
       errorObj.time = 'Time should be greater than 0 minutes';
     if (!formValues.projectId) errorObj.projectId = 'Project/Task is required';
@@ -372,27 +378,30 @@ const TimeEntryForm = props => {
       project.WBSObject = {};
       projectsObject[projectId] = project;
     });
-    timeEntryFormUserWBSs.forEach(WBS => {
-      const { projectId, _id: wbsId } = WBS;
-      WBS.taskObject = {};
-      if(projectsObject[projectId]){
-        projectsObject[projectId].WBSObject[wbsId] = WBS;
-      }
-    });
     timeEntryFormUserTasks.forEach(task => {
-      const { projectId, wbsId, _id: taskId, resources } = task;
-      const isTaskCompletedForTimeEntryUser = resources.find(
-        resource => resource.userID === timeEntryUserId,
-      ).completedTask;
-      if (!isTaskCompletedForTimeEntryUser && projectsObject[projectId]) {
-        if (!projectsObject[projectId].WBSObject) {
-          projectsObject[projectId].WBSObject = {};
-        }
-        if (!projectsObject[projectId].WBSObject[wbsId]) {
-          projectsObject[projectId].WBSObject[wbsId] = { taskObject: {} };
-        }
+      const { projectId, wbsId, _id: taskId, wbsName, projectName } = task;
+      if (!projectsObject[projectId]) {
+        projectsObject[projectId] = {
+          projectName,
+          WBSObject: {
+            [wbsId]: {
+              wbsName,
+              taskObject: {
+                [taskId]: task,
+              },
+            },
+          },
+        };
+      } else if (!projectsObject[projectId].WBSObject[wbsId]) {
+        projectsObject[projectId].WBSObject[wbsId] = {
+          wbsName,
+          taskObject: {
+            [taskId]: task,
+          },
+        };
+      } else {
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
-      }   
+      }
     });
 
     for (const [projectId, project] of Object.entries(projectsObject)) {
@@ -432,23 +441,19 @@ const TimeEntryForm = props => {
     try {
       const profileURL = ENDPOINTS.USER_PROFILE(timeEntryUserId);
       const projectURL = ENDPOINTS.USER_PROJECTS(timeEntryUserId);
-      const wbsURL = ENDPOINTS.WBS_USER(timeEntryUserId);
       const taskURL = ENDPOINTS.TASKS_BY_USERID(timeEntryUserId);
 
       const profilePromise = axios.get(profileURL);
       const projectPromise = axios.get(projectURL);
-      const wbsPromise = axios.get(wbsURL);
       const taskPromise = axios.get(taskURL);
 
-      const [userProfileRes, userProjectsRes, userWBSsRes, userTasksRes] = await Promise.all([
+      const [userProfileRes, userProjectsRes, userTasksRes] = await Promise.all([
         profilePromise,
         projectPromise,
-        wbsPromise,
         taskPromise,
       ]);
       setTimeEntryFormUserProfile(userProfileRes.data);
       setTimeEntryFormUserProjects(userProjectsRes.data);
-      setTimeEntryFormUserWBSs(userWBSsRes.data);
       setTimeEntryFormUserTasks(userTasksRes.data);
       setIsAsyncDataLoaded(true);
     } catch (e) {
@@ -470,7 +475,7 @@ const TimeEntryForm = props => {
     if (isOpen) {
       loadAsyncData(timeEntryUserId);
     }
-  }, [isOpen]);
+  }, [isOpen, timeEntryUserId]);
 
   useEffect(() => {
     setFormValues({ ...formValues, ...data})
@@ -491,7 +496,7 @@ const TimeEntryForm = props => {
             ) : (
               <span style={{ color: 'orange' }}>Intangible </span>
             )}
-            Time Entry{' '}
+            Time Entry{viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
             <i
               className="fa fa-info-circle"
               data-tip
@@ -516,8 +521,8 @@ const TimeEntryForm = props => {
                 id="dateOfWork"
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
-                // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate ? userProfile?.startDate.split('T')[0] : null} 
-                disabled={!canEditTimeEntry}
+                // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]} 
+                disabled={!canEditTimeEntryDate}
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -588,6 +593,7 @@ const TimeEntryForm = props => {
                 className="form-control"
                 value={formValues.notes}
                 onEditorChange={handleEditorChange}
+                disabled={!(isSameDayAuthUserEdit || canEditTimeEntryDescription)}
               />
 
               {'notes' in errors && (
@@ -603,7 +609,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!(canEditTimeEntry || from === 'Timer')}
+                  disabled={!canEditTimeEntryToggleTangible}
                 />
                 Tangible&nbsp;
                 <i
@@ -661,16 +667,12 @@ TimeEntryForm.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
-  userProfile: state.userProfile,
   darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {
   hasPermission,
   getUserProfile,
-  updateUserProfile,
-  getUserProjects,
-  getUserWBSs,
   editTimeEntry,
   postTimeEntry,
   getTimeEntriesForWeek,

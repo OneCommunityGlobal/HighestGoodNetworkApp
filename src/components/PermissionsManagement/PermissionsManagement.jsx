@@ -18,13 +18,15 @@ import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
 import PermissionChangeLogTable from './PermissionChangeLogTable';
 
-function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode }) {
+function PermissionsManagement(props) {
+  const { auth, getUserRole, userProfile, darkMode } = props;
+  let { roles } = props;
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
 
-  const canPostRole = hasPermission('postRole');
-  const canPutRole = hasPermission('putRole');
-  const canManageUserPermissions = hasPermission('putUserProfilePermissions');
+  const canPostRole = props.hasPermission('postRole');
+  const canPutRole = props.hasPermission('putRole');
+  const canManageUserPermissions = props.hasPermission('putUserProfilePermissions');
 
   // Added permissionChangeLogs state management
   const [changeLogs, setChangeLogs] = useState([]);
@@ -72,9 +74,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
     >
       <div
         key={`${role}+permission`}
-        className={
-          darkMode ? 'permissions-management-dark bg-yinmn-blue' : 'permissions-management'
-        }
+        className={`permissions-management ${darkMode ? 'bg-yinmn-blue dark-box-shadow' : ''}`}
       >
         <h1 className="permissions-management__title">User Roles</h1>
         <div key={`${role}_header`} className="permissions-management__header">
@@ -141,11 +141,12 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
             isOpen={isNewRolePopUpOpen}
             toggle={togglePopUpNewRole}
             id="modal-content__new-role"
+            className={darkMode ? 'dark-mode text-light' : ''}
           >
             <ModalHeader
               toggle={togglePopUpNewRole}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet' : ''}
+              className={darkMode ? 'bg-space-cadet text-light' : ''}
             >
               Create New Role
             </ModalHeader>
