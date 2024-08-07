@@ -16,7 +16,7 @@ const renderComponent = mockData => {
     <Provider store={store}>
       <AssignTableRow
         badge={mockData.badge}
-        selectedBadges={mockData.selectedBadges}
+        existBadges={mockData.selectedBadges}
         index={mockData.index}
         addSelectBadge={addSelectBadge}
         removeSelectBadge={removeSelectBadge}
