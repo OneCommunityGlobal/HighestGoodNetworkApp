@@ -34,6 +34,7 @@ const TeamMemberTasks = React.memo(props => {
     usersWithTasks,
     usersWithTimeEntries,
     darkMode,
+    filteredUserTeamIds = [],
   } = props;
 
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -263,10 +264,10 @@ const TeamMemberTasks = React.memo(props => {
 
   useEffect(() => {
     renderTeamsList();
-  }, [props.filteredUserTeamIds]);
+  }, [filteredUserTeamIds]);
 
   const renderTeamsList = async () => {
-    if (props.filteredUserTeamIds && props.filteredUserTeamIds.length === 0) {
+    if (filteredUserTeamIds.length === 0) {
       setLoading(true);
       if (usersWithTasks.length > 0) {
         //sort all users by their name
@@ -289,11 +290,7 @@ const TeamMemberTasks = React.memo(props => {
       }
     } else {
       setLoading(true);
-      const usersTaks = usersWithTasks.filter(
-        item =>
-          Array.isArray(props.filteredUserTeamIds) &&
-          props.filteredUserTeamIds.includes(item.personId),
-      );
+      const usersTaks = usersWithTasks.filter(item => filteredUserTeamIds.includes(item.personId));
       setTeamList(usersTaks);
       setTimeout(() => {
         setLoading(false);
