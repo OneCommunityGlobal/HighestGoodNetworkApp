@@ -20,6 +20,23 @@
   margin-bottom:1px;
 }
 
+.time-entry-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-section {
+  flex: 1;
+  margin-bottom: 13px; 
+  overflow-wrap: break-word; 
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px; 
+}
+
 .buttons {
   right: 0;
   bottom: 0;
