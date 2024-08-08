@@ -8,9 +8,13 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCopy, faCalendarDay, faCheck, faClock } from '@fortawesome/free-solid-svg-icons';
 import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { formatDate } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import { useDispatch } from 'react-redux';
+import { getAllRoles } from 'actions/role';
+
+
 /**
  * The body row of the user table
  */
@@ -19,22 +23,25 @@ const UserTableData = React.memo(props => {
   const editUser=props.editUser;
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  const [formData,updateFormData]=useState({firstName:props.user.firstName,lastName:props.user.lastName,id:props.user._id})
+  const [formData,updateFormData]=useState({firstName:props.user.firstName,lastName:props.user.lastName,id:props.user._id,role:props.user.role})
+  const dispatch=useDispatch();
+  const {roles}=useSelector(state=>state.role)
+  // roles.map((e)=>console.log(e.roleName))
   /**
    * reset the changing state upon rerender with new isActive status
    */
-  const submitData=(value)=>{
-    console.log(value)
-  }
+  // const submitData=(value)=>{
+  //   console.log(value)
+  // }
 
   useEffect(() => {
     onReset(false);
+    dispatch(getAllRoles())
   }, [props.isActive, props.resetLoading]);
 
-  // useEffect(()=>{
-  //   if(editUser.first==0){
-  //   }
-  // },[editUser])
+  useEffect(()=>{
+    updateFormData({firstName:props.user.firstName,lastName:props.user.lastName,id:props.user._id,role:props.user.role})
+  },[props.user])
   /**
    * Checks whether users should be able to change the record of other users.
    * @returns {boolean} true if the target user record has a owner role, the logged in 
@@ -84,7 +91,10 @@ const UserTableData = React.memo(props => {
           }}
         /></div>:<input type='text' className='edituser_input' value={formData.lastName} onChange={(e)=>updateFormData({...formData,lastName:e.target.value})}></input>}
       </td>
-      {editUser.role?<td>{props.user.role}</td>:<input></input>}
+      {editUser.role && roles!==undefined?<td>{props.user.role}</td>:
+      <select name="role-select-tag" id="" value={formData.role} onChange={(e)=>updateFormData({...formData,role:e.target.value})}>
+        {roles.map((e,index)=> <option key={index} value={e.roleName} >{e.roleName}</option>)}
+      </select>}
       
       <td className="email_cell">
         {props.user.email}
