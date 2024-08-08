@@ -123,3 +123,11 @@ tr:hover {
   display: table-cell;
   padding-left: 10px;
 }
+
+@media (max-width: 768px) {
+  .overflow-container {
+    overflow-x: auto;
+    max-height: 80vh;
+    overflow-y: auto;
+  }
+}
