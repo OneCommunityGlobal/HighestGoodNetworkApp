@@ -533,32 +533,33 @@ const Timelog = props => {
                   <Row style={{ minWidth: "100%" }} className='px-0 mx-0'>
                     <Col style={{ minWidth: "100%" }} className='px-0 mx-0'>
                       <CardTitle tag="h4">
-                      <div className="d-flex align-items-center">
-                        <span className="taskboard-header-title mb-1 mr-2">Tasks and Timelogs</span>
-                        <EditableInfoModal
-                          areaName="TasksAndTimelogInfoPoint"
-                          areaTitle="Tasks and Timelogs"
-                          fontSize={24}
-                          isPermissionPage={true}
-                          role={authUser.role} // Pass the 'role' prop to EditableInfoModal
-                          darkMode={darkMode}
-                        />
-                      
-                        <span className="mr-2" style={{padding: '1px'}}>
-                          <ActiveCell
-                            isActive={displayUserProfile.isActive}
-                            user={displayUserProfile}
-                            onClick={() => {
-                              props.updateUserProfile({
-                                ...displayUserProfile,
-                                isActive: !displayUserProfile.isActive,
-                                endDate:
-                                  !displayUserProfile.isActive === false
-                                    ? moment(new Date()).format('YYYY-MM-DD')
-                                    : undefined,
-                              });
-                            }}
+                        <div className="d-flex align-items-center">
+                          <span className="taskboard-header-title mb-1 mr-2">Tasks and Timelogs</span>
+                          <EditableInfoModal
+                            areaName="TasksAndTimelogInfoPoint"
+                            areaTitle="Tasks and Timelogs"
+                            fontSize={24}
+                            isPermissionPage={true}
+                            role={authUser.role} // Pass the 'role' prop to EditableInfoModal
+                            darkMode={darkMode}
                           />
+
+                          <span className="mr-2" style={{ padding: '1px' }}>
+                            <ActiveCell
+                              isActive={displayUserProfile.isActive}
+                              user={displayUserProfile}
+                              onClick={() => {
+                                props.updateUserProfile({
+                                  ...displayUserProfile,
+                                  isActive: !displayUserProfile.isActive,
+                                  endDate:
+                                    !displayUserProfile.isActive === false
+                                      ? moment(new Date()).format('YYYY-MM-DD')
+                                      : undefined,
+                                });
+                              }}
+                            />
+                          </span>
 
                           <span className="mr-2" style={{ padding: '1px' }}>
                             <ActiveCell
