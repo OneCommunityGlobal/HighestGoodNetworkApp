@@ -34,42 +34,50 @@ function AssignBadgePopup(props) {
           onSearch(e.target.value);
         }}
       />
-      <Table className={darkMode ? 'text-light' : ''}>
-        <thead>
-          <tr className={darkMode ? 'bg-space-cadet' : ''}>
-            <th>Badge</th>
-            <th>Name</th>
-            <th>
-              <i className="fa fa-info-circle" id="SelectInfo" />
-              <UncontrolledTooltip
-                placement="right"
-                target="SelectInfo"
-                style={{ backgroundColor: '#666', color: '#fff' }}
-              >
-                <p className="badge_info_icon_text">
-                  Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check those
-                  boxes to select the badges you wish to assign a person. Click the
-                  &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you wish to
-                  add.
-                </p>
-                <p className="badge_info_icon_text">
-                  Want to assign multiple of the same badge to a person? Repeat the process!!
-                </p>
-              </UncontrolledTooltip>
-            </th>
-          </tr>
-        </thead>
-        <tbody>
-          {filteredBadges.map((value, index) => (
-            <AssignTableRow
-              badge={value}
-              index={index}
-              key={index}
-              selectedBadges={props.selectedBadges}
-            />
-          ))}
-        </tbody>
-      </Table>
+      <div
+        style={{
+          maxHeight: '300px',
+          overflowY: 'auto',
+          marginBottom: '10px',
+        }}
+      >
+        <Table className={darkMode ? 'text-light' : ''}>
+          <thead>
+            <tr className={darkMode ? 'bg-space-cadet' : ''}>
+              <th>Badge</th>
+              <th>Name</th>
+              <th>
+                <i className="fa fa-info-circle" id="SelectInfo" />
+                <UncontrolledTooltip
+                  placement="right"
+                  target="SelectInfo"
+                  style={{ backgroundColor: '#666', color: '#fff' }}
+                >
+                  <p className="badge_info_icon_text">
+                    Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check those
+                    boxes to select the badges you wish to assign a person. Click the
+                    &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you wish to
+                    add.
+                  </p>
+                  <p className="badge_info_icon_text">
+                    Want to assign multiple of the same badge to a person? Repeat the process!!
+                  </p>
+                </UncontrolledTooltip>
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            {filteredBadges.map((value, index) => (
+              <AssignTableRow
+                badge={value}
+                index={index}
+                key={index}
+                selectedBadges={props.selectedBadges}
+              />
+            ))}
+          </tbody>
+        </Table>
+      </div>
       <Button
         className="btn--dark-sea-green float-right"
         style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
