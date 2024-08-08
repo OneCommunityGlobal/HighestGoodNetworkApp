@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import './Paging.css';
 
 // eslint-disable-next-line react/function-component-definition
-const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) => {
+const Paging = ({ maxElemPerPage = 5, totalElementsCount, children, darkMode }) => {
   const [currentPage, setCurrentPage] = useState(1);
 
   const pageIndexButton = darkMode ? 'page-index-button-dark' : 'page-index-button';
@@ -31,7 +31,7 @@ const Paging = ({ maxElemPerPage = 6, totalElementsCount, children, darkMode }) 
   const renderPageIndexes = () => {
     const indexesButtons = [];
 
-    if (pagesCount <= 6) {
+    if (pagesCount <= 5) {
       for (let i = 1; i <= pagesCount; i += 1) {
         indexesButtons.push(renderPageNumberButton(i));
       }
