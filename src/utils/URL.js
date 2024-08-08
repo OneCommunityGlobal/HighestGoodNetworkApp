@@ -1,4 +1,3 @@
-
 const APIEndpoint =
   process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
 
@@ -61,18 +60,26 @@ export const ENDPOINTS = {
   UPDATE_PARENT_TASKS: wbsId => `${APIEndpoint}/task/updateAllParents/${wbsId}`,
   MOVE_TASKS: wbsId => `${APIEndpoint}/tasks/moveTasks/${wbsId}`,
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
-  SAVE_SUMMARY_RECEPIENTS: (userid) => `${APIEndpoint}/reports/recepients/${userid}`,
+  SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
-  AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () => `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
-  TOTAL_ORG_SUMMARY: (startDate,endDate) => `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}`,
+  //warnings for all users
+  GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
+  POST_NEW_WARNING: () => `${APIEndpoint}/currentWarnings`,
+  UPDATE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
+  DELETE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
+  //users warnings
+  EDIT_WARNING_DESCRIPTION: () => `${APIEndpoint}/currentWarnings/edit`,
+  GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
+    `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
+  TOTAL_ORG_SUMMARY: (startDate, endDate) =>
+    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}`,
 
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: id => `${APIEndpoint}/backup/popupeditor/${id}`,
-
-  GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
-  POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
-  DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
 
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
@@ -101,7 +108,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
   TIMER_SERVICE: `${APIEndpoint.replace('http', 'ws').replace('api', 'timer-service')}`,
-  TIMEZONE_LOCATION: (location) => `${APIEndpoint}/timezone/${location}`,
+  TIMEZONE_LOCATION: location => `${APIEndpoint}/timezone/${location}`,
 
   ROLES: () => `${APIEndpoint}/roles`,
   ROLES_BY_ID: roleId => `${APIEndpoint}/roles/${roleId}`,
@@ -169,9 +176,7 @@ export const ENDPOINTS = {
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
 
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
-
-  SET_USER_FOLLOWUP: (userId,taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
-  GET_PROJECT_BY_PERSON: (searchName) => `${APIEndpoint}/userProfile/projects/${searchName}`,
+  SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
@@ -186,7 +191,7 @@ export const ENDPOINTS = {
   BM_REUSABLES: `${APIEndpoint}/bm/reusables`,
   BM_PURCHASE_REUSABLES: `${APIEndpoint}/bm/reusables/purchase`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
-  BM_EQUIPMENT_TYPES : `${APIEndpoint}/bm/invtypes/equipments`,
+  BM_EQUIPMENT_TYPES: `${APIEndpoint}/bm/invtypes/equipments`,
   BM_EQUIPMENT_PURCHASE: `${APIEndpoint}/bm/equipment/purchase`,
   BM_PROJECTS: `${APIEndpoint}/bm/projects`,
   BM_PROJECT_BY_ID: projectId => `${APIEndpoint}/project/${projectId}`,
@@ -215,8 +220,8 @@ export const ENDPOINTS = {
   ADD_TIME_OFF_REQUEST: () => `${APIEndpoint}/setTimeOffRequest`,
   UPDATE_TIME_OFF_REQUEST: id => `${APIEndpoint}/updateTimeOffRequest/${id}`,
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
-  BLUE_SQUARE_EMAIL_BCC : () => `${APIEndpoint}/AssignBlueSquareEmail`,
-  DELETE_BLUE_SQUARE_EMAIL_BCC : id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
+  BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
+  DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
 };
 
 export const ApiEndpoint = APIEndpoint;
