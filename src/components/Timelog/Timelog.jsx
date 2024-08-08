@@ -533,15 +533,31 @@ const Timelog = props => {
                   <Row style={{ minWidth: "100%" }} className='px-0 mx-0'>
                     <Col style={{ minWidth: "100%" }} className='px-0 mx-0'>
                       <CardTitle tag="h4">
-                        <div className="d-flex align-items-center">
-                          <span className="mb-1 mr-2">Tasks and Timelogs</span>
-                          <EditableInfoModal
-                            areaName="TasksAndTimelogInfoPoint"
-                            areaTitle="Tasks and Timelogs"
-                            fontSize={24}
-                            isPermissionPage={true}
-                            role={authUser.role} // Pass the 'role' prop to EditableInfoModal
-                            darkMode={darkMode}
+                      <div className="d-flex align-items-center">
+                        <span className="taskboard-header-title mb-1 mr-2">Tasks and Timelogs</span>
+                        <EditableInfoModal
+                          areaName="TasksAndTimelogInfoPoint"
+                          areaTitle="Tasks and Timelogs"
+                          fontSize={24}
+                          isPermissionPage={true}
+                          role={authUser.role} // Pass the 'role' prop to EditableInfoModal
+                          darkMode={darkMode}
+                        />
+                      
+                        <span className="mr-2" style={{padding: '1px'}}>
+                          <ActiveCell
+                            isActive={displayUserProfile.isActive}
+                            user={displayUserProfile}
+                            onClick={() => {
+                              props.updateUserProfile({
+                                ...displayUserProfile,
+                                isActive: !displayUserProfile.isActive,
+                                endDate:
+                                  !displayUserProfile.isActive === false
+                                    ? moment(new Date()).format('YYYY-MM-DD')
+                                    : undefined,
+                              });
+                            }}
                           />
 
                           <span className="mr-2" style={{ padding: '1px' }}>
@@ -569,7 +585,7 @@ const Timelog = props => {
                     </Col>
                     <Col className='px-0'>
                       {isAuthUser ? (
-                        <div className="float-right mt-1">
+                        <div className="tasks-and-timelog-header-add-time-div mt-2">
                           <div>
                             <Button className='responsive-font-size' color="success" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                               {'Add Intangible Time Entry '}
@@ -626,7 +642,7 @@ const Timelog = props => {
                         </div>
                       ) : (
                         !(viewingUser && viewingUser.role === 'Owner' && authUser.role !== 'Owner') && (canPutUserProfileImportantInfo) && (
-                          <div className="float-right">
+                          <div className="tasks-and-timelog-header-add-time-div">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
                                 Add Time Entry {!isAuthUser && `for ${fullName}`}
@@ -664,7 +680,7 @@ const Timelog = props => {
                   </Row>
                 </CardHeader>
                 <CardBody className={darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'}>
-                  <Nav tabs className="mb-1 responsive-font-size">
+                  <Nav tabs className="task-and-timelog-card-nav mb-1 responsive-font-size">
                     <NavItem>
                       <NavLink
                         className={classnames({ active: timeLogState.activeTab === 0 })}
