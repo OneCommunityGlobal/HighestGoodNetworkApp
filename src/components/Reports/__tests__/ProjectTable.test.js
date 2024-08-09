@@ -37,5 +37,54 @@ describe('ProjectTable component', () => {
       expect(row.querySelector(activeIcon)).toBeInTheDocument();
     });
   });
+  it('renders the table with dark mode styles when darkMode is true', () => {
+    renderWithRouter(<ProjectTable projects={mockProjects} darkMode={true} />);
+    const table = screen.getByRole('table');
+    expect(table).toHaveClass('bg-yinmn-blue');
 
+    const thead = table.querySelector('thead');
+    expect(thead).toHaveClass('bg-space-cadet');
+
+    const links = screen.getAllByRole('link');
+    links.forEach(link => {
+      expect(link).toHaveClass('text-light');
+    });
+  });
+
+  it('renders the table with light mode styles when darkMode is false', () => {
+    renderWithRouter(<ProjectTable projects={mockProjects} darkMode={false} />);
+    const table = screen.getByRole('table');
+    expect(table).toHaveClass('table-bordered');
+
+    const thead = table.querySelector('thead');
+    expect(thead).not.toHaveClass('bg-space-cadet');
+
+    const links = screen.getAllByRole('link');
+    links.forEach(link => {
+      expect(link).not.toHaveClass('text-light');
+    });
+  });
+
+  it('renders an empty table when no projects are provided', () => {
+    renderWithRouter(<ProjectTable projects={[]} />);
+    const rows = screen.getAllByRole('row');
+    expect(rows.length).toBe(1); // Only the header row
+  });
+
+  //test to render with corect header labels
+  it('renders with correct table header labels', () => {
+    renderWithRouter(<ProjectTable projects={mockProjects} />);
+    expect(screen.getByText('#')).toBeInTheDocument();
+    expect(screen.getByText('Project Name')).toBeInTheDocument();
+    expect(screen.getByText('Active')).toBeInTheDocument();
+  });
+
+  //test to check for dark mode hover effect
+  it('applies the hover effect class in dark mode', () => {
+    renderWithRouter(<ProjectTable projects={mockProjects} darkMode={true} />);
+    const rows = screen.getAllByRole('row');
+    rows.slice(1).forEach(row => { // Skipping the header row
+      expect(row).toHaveClass('hover-effect-reports-page-dark-mode');
+    });
+  });
 });
