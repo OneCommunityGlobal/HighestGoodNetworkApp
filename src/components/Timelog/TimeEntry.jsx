@@ -75,13 +75,15 @@ const TimeEntry = (props) => {
       dispatch(hasPermission('editTimeEntryToggleTangible'))
     ) && !cantEditJaeRelatedRecord;
 
-  //permission to Delete time entry from other user's Dashboard
-  const canDelete = ((dispatch(hasPermission('deleteTimeEntryOthers')) ||
-    //permission to delete any time entry on their own time logs tab.
-    // Must consider the case of the target record being Jae related 
-    dispatch(hasPermission('deleteTimeEntry')))  && !cantEditJaeRelatedRecord ) ||
-    //default permission: delete own sameday tangible entry
-    isAuthUserAndSameDayEntry;
+  //permission to Delete any time entry from other user's Dashboard
+  const canDeleteOther = (dispatch(hasPermission('deleteTimeEntryOthers')));
+
+  //permission to delete any time entry on their own time logs tab
+  const canDeleteOwn=(dispatch(hasPermission('deleteTimeEntryOwn')));
+
+  // condition for allowing delete in delete model
+  //default permission: delete own sameday tangible entry = isAuthUserAndSameDayEntry
+  const canDelete = canDeleteOther || canDeleteOwn;
   
   const toggleTangibility = async () => {
     setIsProcessing(true);
