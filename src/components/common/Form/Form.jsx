@@ -307,9 +307,11 @@ class Form extends Component {
           obj[ref] = this.state.data[ref];
         });
       }
-      const { error } = Joi.validate(obj[name], schema[name]);
+      const objectSchema = Joi.object(schema);
+      const { error } = objectSchema.validate(obj, { abortEarly: false });
       if (!error) return null;
-      return error.details[0].message;
+      const fieldError = error.details.find(detail => detail.path[0] === name);
+      return fieldError ? fieldError.message : null;
     };
 
     this.validateForm = () => {
