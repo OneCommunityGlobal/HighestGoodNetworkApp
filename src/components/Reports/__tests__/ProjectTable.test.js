@@ -72,6 +72,7 @@ describe('ProjectTable component', () => {
     expect(rows.length).toBe(1); // Only the header row
   });
 
+  //test to render with corect header labels
   it('renders with correct table header labels', () => {
     renderWithRouter(<ProjectTable projects={mockProjects} />);
     expect(screen.getByText('#')).toBeInTheDocument();
@@ -79,6 +80,7 @@ describe('ProjectTable component', () => {
     expect(screen.getByText('Active')).toBeInTheDocument();
   });
 
+  //test to check for dark mode hover effect
   it('applies the hover effect class in dark mode', () => {
     renderWithRouter(<ProjectTable projects={mockProjects} darkMode={true} />);
     const rows = screen.getAllByRole('row');
