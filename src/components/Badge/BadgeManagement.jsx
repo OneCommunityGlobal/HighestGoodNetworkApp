@@ -10,8 +10,9 @@ import { fetchAllBadges } from '../../actions/badgeManagement';
 
 function BadgeManagement(props) {
   const { darkMode } = props;
+  const badgeAssignmentPermissions = checkIfBadgeAssignmentIsAllowed(props.permissions, props.role);
 
-  const [activeTab, setActiveTab] = useState('1');
+  const [activeTab, setActiveTab] = useState(badgeAssignmentPermissions?'1':'2');
 
   const toggle = tab => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -21,6 +22,8 @@ function BadgeManagement(props) {
   useEffect(() => {
     props.fetchAllBadges();
   }, []);
+
+
 
   return (
     <div
@@ -48,10 +51,11 @@ function BadgeManagement(props) {
               darkMode && activeTab !== '1' ? 'bg-light' : ''
             }`}
             onClick={() => {
-              toggle('1');
+              if(badgeAssignmentPermissions){toggle('1');}
+              
             }}
             style={
-              darkMode ? { ...boxStyleDark, cursor: 'pointer' } : { ...boxStyle, cursor: 'pointer' }
+              darkMode ? { ...boxStyleDark, cursor: badgeAssignmentPermissions?'pointer': 'no-drop' } : { ...boxStyle, cursor: badgeAssignmentPermissions?'pointer': 'no-drop' }
             }
           >
             Badge Assignment
@@ -75,7 +79,9 @@ function BadgeManagement(props) {
       </Nav>
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">
-          <AssignBadge allBadgeData={props.allBadgeData} />
+          <AssignBadge
+            allBadgeData={props.allBadgeData}
+          />
         </TabPane>
         <TabPane tabId="2" className="h-100">
           <BadgeDevelopment allBadgeData={props.allBadgeData} darkMode={darkMode} />
@@ -89,10 +95,16 @@ const mapStateToProps = state => ({
   allBadgeData: state.badge.allBadgeData,
   role: state.userProfile.role,
   darkMode: state.theme.darkMode,
+  permissions: state.userProfile.permissions,
 });
 
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
 });
+
+function checkIfBadgeAssignmentIsAllowed(permissions, role) {
+  if (role === 'Administrator' || role === 'Owner') return true;
+  return permissions?.frontPermissions.includes('assignBadges');
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);
