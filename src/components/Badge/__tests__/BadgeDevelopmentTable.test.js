@@ -7,7 +7,6 @@ import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
 import { shallow } from 'enzyme';
 import { themeMock } from '__tests__/mockStates';
-import { updateBadge } from 'actions/badgeManagement';
 
 const mockStore = configureStore([thunk]);
 
@@ -51,7 +50,7 @@ const mockData = {
   color: null,
   message: '',
 };
- 
+
 const renderComponent = mockProps => {
   const store = mockStore({
     badge: {
