@@ -75,7 +75,7 @@ TeamStatsBarChart.propTypes = {
   overallTeamStats: PropTypes.shape({
     totalTeams: PropTypes.number.isRequired,
     totalMembers: PropTypes.number.isRequired,
-  }),
+  }).isRequired,
 };
 
 export default TeamStatsBarChart;
