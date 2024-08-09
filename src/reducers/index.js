@@ -47,6 +47,7 @@ import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer"
+import dashboardReducer  from '../reducers/dashboardReducer';
 
 
 const localReducers = {
@@ -90,7 +91,8 @@ const localReducers = {
   bmEquipments: equipmentReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
-  bmReusables: reusablesReducer
+  bmReusables: reusablesReducer,
+  dashboard: dashboardReducer
 };
 
 const sessionReducers = {
