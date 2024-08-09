@@ -19,6 +19,7 @@ import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
+import hasPermission from '../../utils/permissions';
 import './Badge.css';
 
 function BadgeDevelopmentTable(props) {
@@ -34,6 +35,9 @@ function BadgeDevelopmentTable(props) {
 
   const [editBadgeValues, setEditBadgeValues] = useState('');
   const [editPopup, setEditPopup] = useState(false);
+
+  const canDeleteBadges = props.hasPermission('deleteBadges');
+  const canUpdateBadges = props.hasPermission('updateBadges');
 
   const detailsText = badegValue => {
     let returnText = '';
@@ -235,6 +239,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="info"
+                    disabled = {!canUpdateBadges}
                     onClick={() => onEditButtonClick(value)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -245,6 +250,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="danger"
+                    disabled = {!canDeleteBadges}
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -298,6 +304,7 @@ const mapDispatchToProps = dispatch => ({
   deleteBadge: badgeId => dispatch(deleteBadge(badgeId)),
   updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
   closeAlert: () => dispatch(closeAlert()),
+  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeDevelopmentTable);
