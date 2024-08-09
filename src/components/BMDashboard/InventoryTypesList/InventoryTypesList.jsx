@@ -1,11 +1,16 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
-
-import { fetchInvTypeByType } from 'actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
+import {
+  fetchInvTypeByType,
+  resetDeleteInvTypeResult,
+  resetUpdateInvTypeResult,
+} from 'actions/bmdashboard/invTypeActions';
+
 import { Accordion, Card } from 'react-bootstrap';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import { toast } from 'react-toastify';
 
 import BMError from '../shared/BMError';
 import TypesTable from './TypesTable';
@@ -14,10 +19,10 @@ import AccordionToggle from './AccordionToggle';
 import './TypesList.css';
 
 export function InventoryTypesList(props) {
-  const { invUnits, errors, dispatch } = props;
+  const { updateInvTypeResult, deleteInvTypeResult, errors, dispatch } = props;
 
   // NOTE: depend on redux action implementation
-  const categories = ['Materials', 'Consumables', 'Equipments', 'Reusables', 'Tools'];
+  const categories = ['Material', 'Consumable', 'Equipment', 'Reusable', 'Tool'];
 
   const [isError, setIsError] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
@@ -25,13 +30,31 @@ export function InventoryTypesList(props) {
   // dispatch inventory type fetch action on load
   useEffect(() => {
     // NOTE: depend on redux action implementation
-    dispatch(fetchInvTypeByType('Materials'));
-    dispatch(fetchInvTypeByType('Consumables'));
-    dispatch(fetchInvTypeByType('Equipments'));
-    dispatch(fetchInvTypeByType('Reusables'));
-    dispatch(fetchInvTypeByType('Tools'));
+    categories.forEach(category => dispatch(fetchInvTypeByType(category)));
     dispatch(fetchInvUnits());
   }, []);
+
+  useEffect(() => {
+    if (deleteInvTypeResult.error) {
+      // trigger error according to the error object
+      toast.error(deleteInvTypeResult.result.error || `Error deleting type.`);
+      dispatch(resetDeleteInvTypeResult());
+    } else if (deleteInvTypeResult.success) {
+      toast.success(`Type deleted.`);
+      dispatch(resetDeleteInvTypeResult());
+    }
+  }, [deleteInvTypeResult]);
+
+  useEffect(() => {
+    if (updateInvTypeResult.error) {
+      // trigger error according to the error object
+      toast.error(updateInvTypeResult.result.error || `Error updating type.`);
+      dispatch(resetUpdateInvTypeResult());
+    } else if (updateInvTypeResult.success) {
+      toast.success(`Type updated.`);
+      dispatch(resetUpdateInvTypeResult());
+    }
+  }, [updateInvTypeResult]);
 
   // trigger error state if an error object is added to props
   useEffect(() => {
@@ -87,7 +110,7 @@ export function InventoryTypesList(props) {
           </AccordionToggle>
           <Accordion.Collapse eventKey={categories.length + 1}>
             <Card.Body className="accordion-collapse">
-              <UnitsTable invUnits={invUnits} />
+              <UnitsTable />
             </Card.Body>
           </Accordion.Collapse>
         </Card>
@@ -105,7 +128,8 @@ export function InventoryTypesList(props) {
 
 const mapStateToProps = state => ({
   errors: state.errors,
-  invUnits: state.bmInvUnits.list,
+  deleteInvTypeResult: state.bmInvTypes.deletedResult,
+  updateInvTypeResult: state.bmInvTypes.updatedResult,
 });
 
 export default connect(mapStateToProps)(InventoryTypesList);
