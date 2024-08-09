@@ -58,9 +58,9 @@ const SetUpFinalDayButton = props => {
         onSave={deactiveUser}
       />
       <Button
-        outline
-        color="primary"
-        className={`btn btn-outline-${isSet ? 'warning' : 'success'} ${
+        {...(darkMode ? { outline: false } : {outline: true})}
+        color={isSet ? 'warning' : 'success'}
+        className={`btn ${darkMode ? '' : `btn-outline-${isSet ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={e => {
