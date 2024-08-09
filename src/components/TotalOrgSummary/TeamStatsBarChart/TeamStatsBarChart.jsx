@@ -12,7 +12,7 @@ import {
 import './TeamStatsBarChart.css';
 import TeamStatsBarLabel from './TeamStatsBarLabel';
 
-function TeamStatsBarChart({ data, yAxisLabel }) {
+function TeamStatsBarChart({ data, yAxisLabel, overallTeamStats }) {
   const totalValue = data.reduce((acc, item) => acc + item.value, 0);
   const renderCustomLabel = props => {
     const { x, y, width, height, index } = props;
@@ -46,12 +46,18 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
           <Tooltip />
           <Bar dataKey="value" fill="#1B6DDF">
             {data.map((_, index) => (
-              <Cell key={`cell-${data[index].value}`} fill="#1B6DDF" />
+              <Cell key={`cell-${data[index].value}`} fill={data[index].color} />
             ))}
             <LabelList dataKey="value" position="right" content={renderCustomLabel} />
           </Bar>
         </BarChart>
       </ResponsiveContainer>
+
+      <div className="team-stats-bar-chart-summary">
+        <span>
+          {overallTeamStats.totalTeams} teams with {overallTeamStats.totalMembers}+ members
+        </span>
+      </div>
     </div>
   );
 }
@@ -62,9 +68,14 @@ TeamStatsBarChart.propTypes = {
       name: PropTypes.string.isRequired,
       value: PropTypes.number.isRequired,
       change: PropTypes.number.isRequired,
+      color: PropTypes.string.isRequired,
     }),
   ).isRequired,
   yAxisLabel: PropTypes.string.isRequired,
+  overallTeamStats: PropTypes.shape({
+    totalTeams: PropTypes.number.isRequired,
+    totalMembers: PropTypes.number.isRequired,
+  }),
 };
 
 export default TeamStatsBarChart;
