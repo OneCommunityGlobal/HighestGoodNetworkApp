@@ -122,21 +122,9 @@ function Announcements() {
         setEmailContent(editor.getContent());
       }
   };
-  // const handleSendEmails = () => {
-  //   const htmlContent = emailContent;
-  //   // Send the HTML content using your sendEmail function
-  //   if(emailList.length === 0 || emailList.every(email => !email.trim())){
-  //     toast.error(
-  //       'Error: Empty Email List. Please enter AT LEAST One email.',
-  //     );
-  //   }else{
-  //     dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
-  //   }
-    
-  // };
+
   const validateEmail = (email) => {
-    // Add a regex pattern for email validation
-    //const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    /* Add a regex pattern for email validation */
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
   };
