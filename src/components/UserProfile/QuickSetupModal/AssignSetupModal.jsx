@@ -86,6 +86,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
               id="agreement"
               value="true"
               onClick={() => checkboxOnClick()}
+              style={{ paddingLeft: '10px' }} //padding added
             />
             <Label for="agreement" className={fontColor}>
               Volunteer Agreement Confirmed
