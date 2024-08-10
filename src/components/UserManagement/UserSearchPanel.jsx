@@ -12,12 +12,6 @@ const setupHistoryTooltip = (
     Setup History Modal
   </Tooltip>
 )
-const createNewUserTooltip = (
-  <Tooltip id="tooltip">
-    No permission to create new users
-  </Tooltip>
-);
-
 
 /**
  * The search panel stateless component for user management grid
@@ -42,19 +36,17 @@ const UserSearchPanel = ({hasPermission,handleNewUserSetupPopup, handleSetupHist
 
 
 
-      <OverlayTrigger placement="bottom" overlay={canCreateUsers ? <Tooltip id="tooltip">Create New User</Tooltip> : createNewUserTooltip} >
-          <span className="d-inline-block">
-            <button
-              type="button"
-              className="btn btn-info mr-2"
-              onClick={canCreateUsers ? onNewUserClick : (e) => e.preventDefault()}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              {CREATE_NEW_USER}
-            </button>
-          </span>
-        </OverlayTrigger>
-
+      <button
+        type="button"
+        disabled={!canCreateUsers}
+        className="btn btn-info mr-2"
+        onClick={e => {
+          onNewUserClick();
+        }}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        {CREATE_NEW_USER}
+      </button>
       <div className="input-group-prepend">
         <span className="input-group-text">{SEARCH}</span>
       </div>
