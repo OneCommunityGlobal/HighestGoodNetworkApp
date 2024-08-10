@@ -75,6 +75,7 @@ const ResetPasswordPopup = React.memo(props => {
             name="newpassword"
             id="newpassword"
             value={newPassword.password}
+            label="New Password" 
             onChange={event => {
               const value = event.target.value;
               onNewPasswordChange({
@@ -96,6 +97,7 @@ const ResetPasswordPopup = React.memo(props => {
             type={showPassword.confirmPassword ? 'text' : 'password'}
             name="confirmpassword"
             id="confirmpassword"
+            label=" Password" 
             value={confirmPassword.password}
             onChange={event => {
               onConfirmPasswordChange({
