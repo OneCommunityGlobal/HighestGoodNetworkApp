@@ -187,7 +187,7 @@ const TimeEntry = (props) => {
           <Col md={5} className="pl-2 pr-0">
             <div className="text-muted">Notes:</div>
             {ReactHtmlParser(notes)}
-            <div className="buttons">
+            <div className="d-flex justify-content-end">
               {((hasATimeEntryEditPermission || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
                 && (
                   <button className="mr-3 text-primary">
