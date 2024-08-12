@@ -92,15 +92,13 @@ const Project = props => {
           <select
 
             data-testid="projects__category--input" //added for unit test
-            value={props.category}
+            value={category}
             onChange={e => {
-              setCategory(e.target.value);
+              onUpdateProjectCategory(e);
             }}
 
           >
-            <option default value="Unspecified">
-              Unspecified
-            </option>
+            <option value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>
             <option value="Housing">Housing</option>
