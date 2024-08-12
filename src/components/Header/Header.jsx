@@ -28,6 +28,8 @@ import {
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
+  VOLUNTEER_SUMMARY_REPORT,
+  TOTAL_ORG_SUMMARY,
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -81,6 +83,8 @@ export function Header(props) {
   // Reports
   const canGetReports = props.hasPermission('getReports', !isAuthUser && canInteractWithViewingUser);
   const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser && canInteractWithViewingUser);
+  const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
+  // const canGetWeeklyVolunteerSummary = props.hasPermission('weeklyVolunteerSummary');
   // Users
   const canAccessUserManagement = props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser)
     || props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser)
@@ -199,7 +203,6 @@ export function Header(props) {
     window.dispatchEvent(new Event('storage'));
     props.getWeeklySummaries(user.userid)
   }
-
   const closeModal = () => {
     setModalVisible(false);
     const today = new Date();
@@ -317,7 +320,7 @@ export function Header(props) {
                 </NavItem>
               </div>
               <div className="d-flex align-items-center justify-content-center">
-                {canGetReports || canGetWeeklySummaries ? (
+                {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
@@ -331,6 +334,11 @@ export function Header(props) {
                       {canGetWeeklySummaries && (
                         <DropdownItem tag={Link} to="/weeklysummariesreport" className={fontColor}>
                           {WEEKLY_SUMMARIES_REPORT}
+                        </DropdownItem>
+                      )}
+                      {canGetWeeklyVolunteerSummary && (
+                        <DropdownItem tag={Link} to="/totalorgsummary">
+                          {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
