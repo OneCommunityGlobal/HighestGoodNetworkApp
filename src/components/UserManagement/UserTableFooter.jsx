@@ -73,7 +73,6 @@ const PageSizeDropDown = React.memo(props => {
             className="changePageSize form-control ember-view"
             onChange={e => {
               props.onSelectPageSize(parseInt(e.target.value));
-              //  changePaginationStats({pageSize:e.target.value})
             }}
           >
             <option value="10">10</option>

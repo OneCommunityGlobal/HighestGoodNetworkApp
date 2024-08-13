@@ -85,8 +85,9 @@ class UserManagement extends React.PureComponent {
     let editable = this.props.state.userProfileEdit.editable
     let edit_prev = this.state.editable;
     let search_state = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || (prevState.lastNameSearchText !== this.state.lastNameSearchText) || (prevState.roleSearchText !== this.state.roleSearchText) || (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText);
-
-    if (editable.first !== edit_prev.first || editable.last !== edit_prev.last || editable.role !== edit_prev.role || editable.email !== edit_prev.email || editable.hours !== edit_prev.hours) {
+    let page_size_value=(prevState.pageSize!==this.state.pageSize);
+    
+    if (editable.first !== edit_prev.first || editable.last !== edit_prev.last || editable.role !== edit_prev.role || editable.email !== edit_prev.email || editable.weeklycommittedHours !== edit_prev.weeklycommittedHours || editable.startDate !== edit_prev.startDate || editable.endDate !== edit_prev.endDate) {
       this.setState({
         editable: editable
       }, () => {
@@ -97,7 +98,7 @@ class UserManagement extends React.PureComponent {
         this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable)
       })
     }
-    else if ((prevState.selectedPage !== this.state.selectedPage) || (prevState.wildCardSearchText !== this.state.wildCardSearchText) || search_state) {
+    else if ((prevState.selectedPage !== this.state.selectedPage) || (prevState.wildCardSearchText !== this.state.wildCardSearchText) || search_state || page_size_value) {
       let darkMode = this.props.state.theme.darkMode;
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
       let { roles: rolesPermissions } = this.props.state.role;

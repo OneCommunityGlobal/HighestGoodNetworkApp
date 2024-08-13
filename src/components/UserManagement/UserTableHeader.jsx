@@ -17,21 +17,20 @@ import {
 import userTableDataPermissions from 'utils/userTableDataPermissions';
 import { disableEditUserInfo, enableEditUserInfo } from 'actions/userManagement';
 import { useDispatch } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import {faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * The header row of the user table.
  */
-const UserTableHeader = React.memo(({ authRole, roleSearchText, darkMode,editUser}) => {
-
-  const [editFlag,setEditFlag]=useState(editUser)
-  // const [editFlag,setEditFlag]=useState({first:1,'last':1,'role':1,'email':1,'hours':1})
-  const dispatch=useDispatch();
-
-  const enableEdit=(value)=>{
+const UserTableHeader = React.memo(({ authRole, roleSearchText, darkMode, editUser }) => {
+  const [editFlag, setEditFlag] = useState(editUser)
+  const dispatch = useDispatch();
+  const enableEdit = (value) => {
     setEditFlag(value)
     dispatch(enableEditUserInfo(value))
   }
-  const disableEdit=(value)=>{
+  const disableEdit = (value) => {
     setEditFlag(value)
     dispatch(disableEditUserInfo(value))
   }
@@ -42,53 +41,78 @@ const UserTableHeader = React.memo(({ authRole, roleSearchText, darkMode,editUse
         {ACTIVE}
       </th>
       <th scope="col" id="usermanagement_first" className='p-auto'>
-        <div className='text-center'>
-          <span className='my-auto'>
+        <div className='text-center flex'>
+          <span className='m-auto'>
             {FIRST_NAME}
-            </span>
-          {editFlag.first==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'first': 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, 'first': 1 })}>Save</button>}
+          </span>
+          {authRole==="Owner" ?(editFlag.first == 1 ? <FontAwesomeIcon icon={faEdit} className='editbutton' onClick={() => enableEdit({ ...editFlag, 'first': 0 })}/> : <FontAwesomeIcon icon={faSave} className='editbutton' onClick={() => disableEdit({ ...editFlag, 'first': 1 })}/>):<></>}
         </div>
       </th>
       <th scope="col" id="usermanagement_last_name" className=''>
         <div className='text-center'>
-          <span className='my-auto'>{LAST_NAME}</span>
-          {editFlag.last==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'last': 0 })}>Edit</button> : <button className='btn btn-info ml-2 ' onClick={() => disableEdit({ ...editFlag, 'last': 1 })}>Save</button>}
+          <span className='m-auto'>{LAST_NAME}</span>
+          {authRole==="Owner" ?(editFlag.last == 1 ? <FontAwesomeIcon icon={faEdit} className='editbutton' onClick={() => enableEdit({ ...editFlag, 'last': 0 })}/>: <FontAwesomeIcon icon={faSave} className='editbutton' onClick={() => disableEdit({ ...editFlag, 'last': 1 })}/>):<></>}
         </div>
       </th>
       <th scope="col" id="usermanagement_role">
         <div className='text-center'>
-          <span className='my-auto'>{ROLE}</span>
-          {editFlag.role==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'role': 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, 'role': 1 })}>Save</button>}
+          <span className='m-auto'>{ROLE}</span>
+          {authRole==="Owner" ?(editFlag.role == 1 ? <FontAwesomeIcon icon={faEdit} className='editbutton' onClick={() => enableEdit({ ...editFlag, 'role': 0 })}/> : <FontAwesomeIcon icon={faSave} className='editbutton' onClick={() => disableEdit({ ...editFlag, 'role': 1 })}/>):<></>}
         </div>
       </th>
       <th scope="col" id="usermanagement_email">
         <div className='text-center'>
-          <span className='my-auto text-center'>{EMAIL}</span>
-          {editFlag.email==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'email': 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, 'email': 1 })}>Save</button>}
+          <span className='m-auto text-center'>{EMAIL}</span>
+          {authRole==="Owner" ?(editFlag.email == 1 ? <FontAwesomeIcon icon={faEdit} className='editbutton' onClick={() => enableEdit({ ...editFlag, 'email': 0 })}/> : <FontAwesomeIcon icon={faSave} className='editbutton' onClick={() => disableEdit({ ...editFlag, 'email': 1 })}/>):<></>}
         </div>
       </th>
       <th scope="col" id="usermanagement_hrs">
-        <span className='my-auto'>{WKLY_COMMITTED_HRS}</span>
-        {editFlag.hours==1 ? <button className='btn btn-info ml-2' onClick={() => enableEdit({ ...editFlag, 'hours': 0 })}>Edit</button> : <button className='btn btn-info ml-2' onClick={() => disableEdit({ ...editFlag, 'hours': 1 })}>Save</button>}
+        <div className='text-center'>
+          <span className='m-auto'>{WKLY_COMMITTED_HRS}</span>
+          {authRole==="Owner" ? (editFlag.weeklycommittedHours == 1 ?
+            <FontAwesomeIcon icon={faEdit} className='editbutton' onClick={() => enableEdit({ ...editFlag, 'weeklycommittedHours': 0 })} />
+            : <FontAwesomeIcon icon={faSave} className='editbutton' onClick={() => disableEdit({ ...editFlag, 'weeklycommittedHours': 1 })}/>):<></>}
+        </div>
       </th>
+
       <th scope="col" id="usermanagement_pause">
-        <span>{PAUSE}</span>
+        <div className='text-center m-auto'>
+          {PAUSE}
+        </div>
       </th>
+
       <th scope="col" id="usermanagement_requested_time_off">
-        {REQUESTED_TIME_OFF}
+        <div className='text-center m-auto'>
+          {REQUESTED_TIME_OFF}
+        </div>
       </th>
+
       <th scope="col" id="usermanagement_finalday">
-        {MANAGE_FINAL_DAY}
+        <div className='text-center m-auto'>
+          {MANAGE_FINAL_DAY}
+        </div>
       </th>
+
       <th scope="col" id="usermanagement_resume_date">
-        {USER_RESUME_DATE}
+        <div className='text-center m-auto'>
+          {USER_RESUME_DATE}
+        </div>
       </th>
+
       <th scope="col" id="usermanagement_resume_date">
-        {USER_START_DATE}
+        <div className='text-center'>
+          <span className='m-auto text-center'>{USER_START_DATE}</span>
+          {authRole==="Owner"?(editFlag.startDate == 1 ? <FontAwesomeIcon icon={faEdit} className='editbutton' onClick={() => enableEdit({ ...editFlag, 'startDate': 0 })}/> : <FontAwesomeIcon icon={faSave} className='editbutton' onClick={() => disableEdit({ ...editFlag, 'startDate': 1 })}/>):<></>}
+        </div>
       </th>
+
       <th scope="col" id="usermanagement_resume_date">
-        {USER_END_DATE}
+        <div className='text-center'>
+          <span className='m-auto text-center'>{USER_END_DATE}</span>
+          {authRole==="Owner"? (editFlag.endDate == 1 ? <FontAwesomeIcon icon={faEdit} className='editbutton' onClick={() => enableEdit({ ...editFlag, 'endDate': 0 })}/>: <FontAwesomeIcon icon={faSave} className='editbutton' onClick={() => disableEdit({ ...editFlag, 'endDate': 1 })}/>):<></>}
+        </div>
       </th>
+
       {userTableDataPermissions(authRole, roleSearchText) && (
         <th scope="col" id="usermanagement_delete"></th>
       )}
