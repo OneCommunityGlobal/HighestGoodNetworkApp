@@ -4,6 +4,7 @@ const userTeamsInitial = {
   fetching: false,
   fetched: false,
   allTeams: [],
+  allTeamCode: [],
   status: 404,
 };
 
@@ -69,6 +70,45 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: '200',
       });
+    case types.UPDATE_TEAM_MEMBER_VISIBILITY:
+      const { teamId, userId, visibility } = action;
+      const updatedTeams = allTeams.allTeams.map(team => {
+        if (team._id === teamId) {
+          const updatedMembers = team.members.map(member => {
+            if (member.userId === userId) {
+              member.visible = visibility;
+            }
+            return member;
+          });
+
+          return { ...team, members: updatedMembers };
+        }
+        return team;
+      });
+      return updateObject(allTeams, {
+        allTeams: updatedTeams,
+        fetching: false,
+        fetched: true,
+        status: '200',
+      });
+    
+      case types.FETCH_ALL_TEAM_CODE_SUCCESS:
+        const payload = action.payload;
+        return {
+          ...allTeams,
+          allTeamCode: payload,
+          fetching: false,
+          fetched: true,
+          status: '200',
+        };
+  
+      case types.FETCH_ALL_TEAM_CODE_FAILURE:
+        return {
+          ...allTeams,
+          fetching: false,
+          fetched: false,
+          status: '500',
+        };
 
     default:
       return allTeams;

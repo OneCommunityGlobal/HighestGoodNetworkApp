@@ -52,6 +52,12 @@ export const permissionLabels = [
           'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
       },
       {
+        label: 'See Volunteer Weekly Summaries',
+        key: 'getVolunteerWeeklySummary',
+        description:
+          'Makes ONLY the "Reports" -> "Volunteer Summary Reports" option appear/accessible.',
+      },
+      {
         label: 'Edit Team 4-Digit Codes',
         key: 'editTeamCode',
         description:
@@ -312,12 +318,12 @@ export const permissionLabels = [
             description: 'Category for all permissions related to editing timelogs',
             subperms: [
               {
-                label: 'Edit Timelog Time',
+                label: 'Edit Timelog Time (Self and Others)',
                 key: 'editTimeEntryTime',
                 description: 'Gives the user permission to edit the time of any time log entry.',
               },
               {
-                label: 'Edit Timelog Description',
+                label: 'Edit Timelog Description (Self and Others)',
                 key: 'editTimeEntryDescription',
                 description:
                   'Gives the user permission to edit the description of any time log entry.',
@@ -329,7 +335,7 @@ export const permissionLabels = [
                   'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
               },
               {
-                label: 'Change Time Entry Date',
+                label: 'Change Time Entry Date (Self and Others)',
                 key: 'editTimeEntryDate',
                 description:
                   'Gives the user permission to edit the date when adding an intangible time entry.',
