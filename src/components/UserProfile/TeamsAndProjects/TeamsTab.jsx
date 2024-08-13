@@ -74,7 +74,6 @@ const TeamsTab = props => {
         userTeamsById={userTeams}
         onSelectAssignTeam={onSelectAssignTeam}
         handleSubmit={handleSubmit}
-        userProfile={userProfile}
         darkMode={darkMode}
       />
       <UserTeamsTable
