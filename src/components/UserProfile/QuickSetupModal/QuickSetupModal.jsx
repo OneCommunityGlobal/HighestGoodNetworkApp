@@ -8,20 +8,23 @@ import { getAllTitle } from '../../../actions/title';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css'
-import { useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from 'utils/permissions';
 
-function QuickSetupModal({
-  canAddTitle,
-  canAssignTitle,
-  teamsData,
-  projectsData,
-  userProfile,
-  setUserProfile,
-  handleSubmit,
-  setSaved,
-  canViewTitle
-}) {
+function QuickSetupModal(
+//   {
+//   canAddTitle,
+//   canAssignTitle,
+//   teamsData,
+//   projectsData,
+//   userProfile,
+//   setUserProfile,
+//   handleSubmit,
+//   setSaved,
+//   canViewTitle
+// },
+props) {
   const darkMode = useSelector(state => state.theme.darkMode)
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -33,8 +36,6 @@ function QuickSetupModal({
   const [warningMessage, setWarningMessage] = useState({});
 
   useEffect(() => {
-    console.log(userProfile);
-
     getAllTitle()
       .then(res => {
         setTitles(res.data);
@@ -74,7 +75,7 @@ function QuickSetupModal({
         setTitleOnClick={setTitleOnClick}
       />}
 
-      <div className="col text-center mt-3">
+      {/* <div className="col text-center mt-3">
         {canAddTitle ? (
           <Button color="primary" onClick={() => setShowAddTitle(true)} style={darkMode ? boxStyleDark : boxStyle}>
             Add A New Title
@@ -135,9 +136,13 @@ function QuickSetupModal({
             </Button>
           </ModalFooter>
         </Modal>
-      )}
-    </div>
+      )} */}
+    </div> 
   );
 }
 
-export default QuickSetupModal;
+const mapDispatchToProps={
+  hasPermission
+};
+
+export default connect(null,mapDispatchToProps)(QuickSetupModal);
