@@ -96,12 +96,13 @@ function LeaderBoard({
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
   const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedTeamName, setSelectedTeamName] = useState('All users');
-  const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
+  const [selectedTeamName, setSelectedTeamName] = useState('Show all');
+  const [usersSelectedTeam, setUsersSelectedTeam] = useState('Show all');
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
   const [innerWidth, setInnerWidth] = useState();
+  const [isDisplayAlert, setIsDisplayAlert] = useState(false);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -120,7 +121,7 @@ function LeaderBoard({
 
   useEffect(() => {
     if (!isEqual(leaderBoardData, teamsUsers)) {
-      if (selectedTeamName === 'All users') {
+      if (selectedTeamName === 'Show all') {
         setTeamsUsers(leaderBoardData);
       }
     }
@@ -133,6 +134,7 @@ function LeaderBoard({
   const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
 
   const renderTeamsList = async team => {
+    setIsDisplayAlert(false);
     if (!team) {
       setIsLoadingTeams(true);
       setFilteredUserTeamIds([]);
@@ -146,10 +148,14 @@ function LeaderBoard({
         setIsLoadingTeams(true);
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
         const idUsers = response.data.map(item => item._id);
-        setFilteredUserTeamIds(idUsers);
         const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
-        setTeamsUsers(usersTaks);
-        setIsLoadingTeams(false);
+
+        // eslint-disable-next-line no-unused-expressions
+        usersTaks.length === 0
+          ? // eslint-disable-next-line no-unused-expressions
+            (setIsDisplayAlert(true), setIsLoadingTeams(false), null)
+          : // eslint-disable-next-line no-unused-expressions
+            (setTeamsUsers(usersTaks), setIsLoadingTeams(false), setFilteredUserTeamIds(idUsers));
       } catch (error) {
         toast.error('Error fetching team members:', error);
         setIsLoadingTeams(false);
@@ -158,14 +164,11 @@ function LeaderBoard({
   };
 
   const handleToggleButtonClick = () => {
-    if (usersSelectedTeam === 'All users') {
-      renderTeamsList(null);
-    } else if (usersSelectedTeam.length === 0) {
+    // prettier-ignore
+    if (usersSelectedTeam === 'Show all') {renderTeamsList(null)}
+     else if (usersSelectedTeam.length === 0) {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
-    } else {
-      //! setTextButton('View All');
-      renderTeamsList(usersSelectedTeam);
-    }
+    } else renderTeamsList(usersSelectedTeam);
   };
 
   const handleMouseoverTextUpdate = text => {
@@ -195,7 +198,7 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
-  const individualsWithZeroHours = leaderBoardData.filter(
+  const individualsWithZeroHours = teamsUsers.filter(
     individuals => individuals.weeklycommittedHours === 0,
   );
 
@@ -230,7 +233,6 @@ function LeaderBoard({
     } else {
       await getLeaderboardData(userId);
       renderTeamsList(usersSelectedTeam);
-      //!  setTextButton('View All');
     }
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
@@ -251,9 +253,9 @@ function LeaderBoard({
   };
 
   const TeamSelected = team => {
-    if (team === 'All users') {
+    if (team === 'Show all') {
       setUsersSelectedTeam(team);
-      teamName('All users', 7);
+      teamName('Show all', 7);
     } else if (team.teamName.length !== undefined) teamName(team.teamName, team.teamName.length);
     setUsersSelectedTeam(team);
   };
@@ -290,22 +292,39 @@ function LeaderBoard({
               {selectedTeamName} {/* Display selected team or default text */}
             </DropdownToggle>
             <DropdownMenu className="overflow-auto" style={{ height: '35rem' }}>
-              {teams.length === 0 ? (
-                <DropdownItem
-                  onClick={() => toast.warning('Please, create a team to use the filter.')}
-                >
-                  Please, create a team to use the filter.
-                </DropdownItem>
-              ) : (
-                <>
-                  <DropdownItem onClick={() => TeamSelected('All users')}>All users</DropdownItem>
-                  {teams.map(team => (
-                    <DropdownItem onClick={() => TeamSelected(team)} key={team._id}>
-                      {dropdownName(team.teamName, team.teamName.length)}
+              <div className=" align-items-center d-flex flex-column">
+                {teams.length === 0 ? (
+                  <DropdownItem
+                    onClick={() => toast.warning('Please, create a team to use the filter.')}
+                  >
+                    Please, create a team to use the filter.
+                  </DropdownItem>
+                ) : (
+                  <>
+                    <h5 className="ml-4">All users</h5>
+                    <DropdownItem
+                      onClick={() => TeamSelected('Show all')}
+                      className="cursor-pointer hover-shadow"
+                    >
+                      <ul>
+                        <li>Show all</li>
+                      </ul>
                     </DropdownItem>
-                  ))}
-                </>
-              )}
+                    <h5 className="ml-4">My Teams</h5>
+                    {teams.map(team => (
+                      <DropdownItem
+                        onClick={() => TeamSelected(team)}
+                        key={team._id}
+                        className="cursor-pointer hover-scale"
+                      >
+                        <ul>
+                          <li>{dropdownName(team.teamName, team.teamName.length)}</li>
+                        </ul>
+                      </DropdownItem>
+                    ))}
+                  </>
+                )}
+              </div>
             </DropdownMenu>
           </Dropdown>
 
@@ -327,6 +346,14 @@ function LeaderBoard({
           )}
         </section>
       ) : null}
+
+      {isDisplayAlert && (
+        <Alert color="danger">
+          This team has no members, please add members to this team by clicking{' '}
+          <Link to="/teams">here</Link>.
+        </Alert>
+      )}
+
       {!isVisible && (
         <Alert color="warning">
           <div className="d-flex align-items-center">
@@ -392,7 +419,12 @@ function LeaderBoard({
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
-                <span>{organizationData.name}</span>
+                <span>
+                  {/* //prettier-ignore */}
+                  {isEqual(leaderBoardData, teamsUsers)
+                    ? organizationData.name
+                    : `HGN Totals: ${teamsUsers.length} Members`}
+                </span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
                   <span className="leaderboard-totals-title">
                     0 hrs Totals: {individualsWithZeroHours.length} Members

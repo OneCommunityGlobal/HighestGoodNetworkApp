@@ -1,6 +1,6 @@
 import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
-import { Table, Row, Col, Spinner } from 'reactstrap';
+import { Table, Row, Col } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { fetchTeamMembersTask, deleteTaskNotification } from 'actions/task';
 import React, { useEffect, useState, useCallback } from 'react';
@@ -66,7 +66,6 @@ const TeamMemberTasks = React.memo(props => {
   const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
   const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
   const [userRole, setUserRole] = useState(displayUser.role);
-  const [loading, setLoading] = useState(false);
   const [textButton, setTextButton] = useState('My Team');
   const [innerWidth, setInnerWidth] = useState();
   const [controlUseEfffect, setControlUseEfffect] = useState(false);
@@ -268,7 +267,6 @@ const TeamMemberTasks = React.memo(props => {
 
   const renderTeamsList = async () => {
     if (filteredUserTeamIds.length === 0) {
-      setLoading(true);
       if (usersWithTasks.length > 0) {
         //sort all users by their name
 
@@ -283,18 +281,11 @@ const TeamMemberTasks = React.memo(props => {
           usersWithTasks.unshift(...usersWithTasks.splice(currentUserIndex, 1));
         }
 
-        setTimeout(() => {
-          setLoading(false);
-          setTeamList([...usersWithTasks]);
-        }, 3000);
+        setTeamList([...usersWithTasks]);
       }
     } else {
-      setLoading(true);
       const usersTaks = usersWithTasks.filter(item => filteredUserTeamIds.includes(item.personId));
       setTeamList(usersTaks);
-      setTimeout(() => {
-        setLoading(false);
-      }, 5000);
     }
   };
 
@@ -458,19 +449,6 @@ const TeamMemberTasks = React.memo(props => {
       <header className="header-box">
         <section className="d-flex flex-column">
           <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
-          {loading && (
-            <>
-              <span
-                className={`d-flex justify-content-start align-items-center ${
-                  darkMode ? 'text-light' : 'text-black'
-                }`}
-              >
-                {' '}
-                Loading teams: &nbsp;
-                <Spinner color="primary"></Spinner>
-              </span>
-            </>
-          )}
         </section>
         {finishLoading ? (
           <section className=" hours-btn-container flex-wrap ml-2">
@@ -574,7 +552,7 @@ const TeamMemberTasks = React.memo(props => {
       )}
       {['Administrator', 'Owner', 'Manager', 'Mentor'].some(role => role === displayUser.role) && (
         <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
+          <Col lg={{ size: 4 }} xs={{ size: 4 }}>
             <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Team</span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
@@ -585,7 +563,7 @@ const TeamMemberTasks = React.memo(props => {
               }}
             />
           </Col>
-          <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
+          <Col lg={{ size: 4 }} xs={{ size: 4 }}>
             <span className={darkMode ? 'text-light responsive-font-size' : ''}>
               Select Team Code
             </span>
@@ -598,7 +576,7 @@ const TeamMemberTasks = React.memo(props => {
               }}
             />
           </Col>
-          <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
+          <Col lg={{ size: 4 }} xs={{ size: 4 }}>
             <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Color</span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
@@ -689,7 +667,7 @@ const TeamMemberTasks = React.memo(props => {
             </tr>
           </thead>
           <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
-            {isLoading && usersWithTasks.length === 0 ? (
+            {(isLoading && usersWithTasks.length === 0) || teamList.length === 0 ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
               teamList
