@@ -28,6 +28,7 @@
   height: 30px;
   margin-right: 8px;
   margin-bottom: 12px;
+  flex-wrap: nowrap;
 }
 
 /* Input styling */

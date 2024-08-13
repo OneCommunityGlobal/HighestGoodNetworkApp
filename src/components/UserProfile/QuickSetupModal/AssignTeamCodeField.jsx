@@ -5,7 +5,6 @@ import { Dropdown, Input } from 'reactstrap';
 const AssignTeamCodeField = React.memo(props => {
   const [searchText, onInputChange] = useState('');
   const [isOpen, toggle] = useState(false);
-
   useEffect(() => {
     if (props.selectedTeamCode && props.selectedTeamCode !== searchText) {
       props.onSelectTeamCode(undefined);
@@ -41,7 +40,6 @@ const AssignTeamCodeField = React.memo(props => {
         >
           {[...props.teamCodeData]
                       .filter(teamCode => {
-                          console.log(teamCode);
               if (teamCode.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
                 return teamCode;
               }
