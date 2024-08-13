@@ -183,6 +183,7 @@ function AssignBadge(props) {
           className="btn--dark-sea-green"
           onClick={toggle}
           style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
+          disabled={!fullName}
         >
           Assign Badge
         </Button>
@@ -241,4 +242,3 @@ const mapDispatchToProps = dispatch => ({
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(AssignBadge);
-
