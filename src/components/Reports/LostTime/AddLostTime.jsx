@@ -4,32 +4,14 @@ import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
 import './../reportsPage.css';
-import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle } from 'styles';
 import { isEmpty, isEqual } from 'lodash';
 import { getUserProfile } from 'actions/userProfile';
 import { postTimeEntry } from 'actions/timeEntries';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: '',
-  plugins:
-    'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar:
-    'bold italic underline link removeformat | bullist numlist outdent indent |\
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                    subscript superscript charmap  | help',
-  branding: false,
-  min_height: 180,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-  content_style: 'body { cursor: text !important; }',
-};
 
 const AddLostTime = props => {
 
@@ -42,7 +24,6 @@ const AddLostTime = props => {
       .format('YYYY-MM-DD'),
     hours: 0,
     minutes: 0,
-    notes: '',
     isTangible: true,
   };
 
@@ -59,12 +40,6 @@ const AddLostTime = props => {
   const [newTeamName, setNewTeamName] = useState('');
 
   const [errors, setErrors] = useState({});
-
-  const { darkMode } = props
-
-  const fontColor = darkMode ? 'text-light' : '';
-  const headerBg = darkMode ? 'bg-space-cadet' : '';
-  const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
   useEffect(() => {
     if (inputs.personId && props.userProfile._id !== inputs.personId) {
@@ -113,7 +88,7 @@ const AddLostTime = props => {
     if (entryType == 'project') {
       return (
         <FormGroup>
-          <Label className={fontColor}>Project Name</Label>
+          <Label>Project Name</Label>
           <AddProjectsAutoComplete
             projectsData={props.projects}
             onDropDownSelect={selectProject}
@@ -130,7 +105,7 @@ const AddLostTime = props => {
       return (
         <>
           <FormGroup>
-            <Label className={fontColor}>Name</Label>
+            <Label>Name</Label>
             <MemberAutoComplete
               userProfileData={{userProfiles: props.users}}
               onAddUser={selectUser}
@@ -148,7 +123,7 @@ const AddLostTime = props => {
     } else if (entryType == 'team') {
       return (
         <FormGroup>
-          <Label className={fontColor}>Team Name</Label>
+          <Label>Team Name</Label>
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
@@ -281,7 +256,6 @@ const AddLostTime = props => {
       dateOfWork: inputs.dateOfWork,
       hours: parseInt(inputs.hours),
       minutes: parseInt(inputs.minutes),
-      notes: inputs.notes,
       projectId: inputs.projectId,
       teamId: inputs.teamId,
       isTangible: inputs.isTangible,
@@ -306,19 +280,15 @@ const AddLostTime = props => {
     if (props.isOpen) props.toggle();
   };
 
-  const handleEditorChange = (content, editor) => {
-    setInputs(formValues => ({ ...formValues, [editor.id]: content }));
-  };
-
   return (
-    <Modal className={darkMode ? `${fontColor} dark-mode` : ''} isOpen={props.isOpen} toggle={props.toggle} style={darkMode ? boxStyleDark : {}}>
-      <ModalHeader toggle={props.toggle} className={`${headerBg}`}>
+    <Modal isOpen={props.isOpen} toggle={props.toggle}>
+      <ModalHeader toggle={props.toggle}>
         Add Lost Time
       </ModalHeader>
-      <ModalBody className={bodyBg}>
+      <ModalBody>
         <Form>
           <FormGroup>
-            <Label className={fontColor}>Type</Label><br/>
+            <Label>Type</Label><br/>
             <div className='type-container'>
               <div className='type-item' style={{paddingLeft: '20px'}} >
                 <Input
@@ -328,7 +298,7 @@ const AddLostTime = props => {
                   value="project"
                   onChange={handleTypeChange}
                 />
-                <Label className={fontColor}>Project</Label>
+                <Label>Project</Label>
               </div>
               <div className='type-item'>
                 <Input  
@@ -338,7 +308,7 @@ const AddLostTime = props => {
                   value="person"
                   onChange={handleTypeChange}
                 />
-                <Label className={fontColor}>Person</Label>
+                <Label>Person</Label>
               </div>
               <div className='type-item'>
                 <Input
@@ -348,7 +318,7 @@ const AddLostTime = props => {
                   value="team"
                   onChange={handleTypeChange}
                 />
-                <Label className={fontColor}>Team</Label>
+                <Label>Team</Label>
               </div>
             </div>
           </FormGroup>
@@ -356,7 +326,7 @@ const AddLostTime = props => {
             <>
               {handleFormContent()}
               <FormGroup>
-                <Label for="dateOfWork" className={fontColor}>Date</Label>
+                <Label for="dateOfWork">Date</Label>
                 <Input
                   type="date"
                   name="dateOfWork"
@@ -371,7 +341,7 @@ const AddLostTime = props => {
                 )}
               </FormGroup>
               <FormGroup>
-              <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
+              <Label for="timeSpent">Time (HH:MM)</Label>
               <Row form>
                 <Col>
                   <Input
@@ -404,28 +374,8 @@ const AddLostTime = props => {
                 </div>
               )}
             </FormGroup>
-            {entryType == 'person' && (
-              <FormGroup>
-                <Label for="notes" className={fontColor}>Notes</Label>
-                <Editor
-                  tinymceScriptSrc="/tinymce/tinymce.min.js"
-                  init={TINY_MCE_INIT_OPTIONS}
-                  id="notes"
-                  name="notes"
-                  className="form-control"
-                  value={inputs.notes}
-                  onEditorChange={handleEditorChange}
-                />
-
-                {'notes' in errors && (
-                  <div className="text-danger">
-                    <small>{errors.notes}</small>
-                  </div>
-                )}
-              </FormGroup>
-            )}
             <FormGroup check>
-              <Label check className={fontColor}>
+              <Label check>
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -445,7 +395,7 @@ const AddLostTime = props => {
           )}
         </Form>
       </ModalBody>
-      <ModalFooter className={bodyBg}>
+      <ModalFooter>
         <Button onClick={handleCancel} color="danger" style={boxStyle}>
           Cancel
         </Button>
@@ -460,7 +410,6 @@ const AddLostTime = props => {
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
   auth: state.auth,
-  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {getUserProfile})(AddLostTime);

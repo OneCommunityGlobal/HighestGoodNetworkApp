@@ -9,7 +9,6 @@ import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
-import { useHistory } from 'react-router-dom';
 import {
   LOGO,
   DASHBOARD,
@@ -133,7 +132,6 @@ export function Header(props) {
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
-  const history = useHistory();
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -204,7 +202,6 @@ export function Header(props) {
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
     props.getWeeklySummaries(user.userid)
-    history.push('/dashboard');
   }
   const closeModal = () => {
     setModalVisible(false);
