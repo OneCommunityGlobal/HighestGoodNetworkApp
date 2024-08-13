@@ -669,11 +669,11 @@ export class WeeklySummariesReport extends Component {
           </Col>
         </Row>
         {chartData.length>=1 &&(
-          <Row>
-          <Col>
+        <Row >
+          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             <SelectTeamPieChart chartData={chartData} COLORS={COLORS} total={total}/>
           </Col>
-          <Col>
+          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
             <TeamChart teamData={structuredTableData} />
           </Col>
         </Row>
