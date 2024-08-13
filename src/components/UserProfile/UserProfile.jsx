@@ -139,12 +139,6 @@ function UserProfile(props) {
     fetchTeamCodeAllUsers();
   }, []);
 
-  // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
-  //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the
-  //        child component with access global redux store data (complexity)
-  // Explaination:
-  //        fetchTeamCodeAllUsers get all weekly summaries and filter out the team codes. (~800ms - 1 sec res time)
-  //        getAllTeamCode() will get all team codes from the database directly with distinct teamcode value (~15ms res time cache enabled).
   const fetchTeamCodeAllUsers = async () => {
     const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
     try {
