@@ -12,20 +12,11 @@ import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
 import hasPermission from 'utils/permissions';
 
-function QuickSetupModal(
-//   {
-//   canAddTitle,
-//   canAssignTitle,
-//   teamsData,
-//   projectsData,
-//   userProfile,
-//   setUserProfile,
-//   handleSubmit,
-//   setSaved,
-//   canViewTitle
-// },
-props) {
+function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode)
+  const canViewTitle=props.hasPermission('viewTitle')
+  const canAddTitle=props.hasPermission('addNewTitle')
+  const canAssignTitle=props.hasPermission('assignTitle')
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
@@ -67,15 +58,15 @@ props) {
     <div className="container pt-3">
       {canViewTitle &&
       <QuickSetupCodes
-        setSaved={setSaved}
-        userProfile={userProfile}
-        setUserProfile={setUserProfile}
+        setSaved={props.setSaved}
+        userProfile={props.userProfile}
+        setUserProfile={props.setUserProfile}
         titles={titles}
         setShowAssignModal={setShowAssignModal}
         setTitleOnClick={setTitleOnClick}
       />}
 
-      {/* <div className="col text-center mt-3">
+       <div className="col text-center mt-3">
         {canAddTitle ? (
           <Button color="primary" onClick={() => setShowAddTitle(true)} style={darkMode ? boxStyleDark : boxStyle}>
             Add A New Title
@@ -87,10 +78,10 @@ props) {
       <div className="col text-center mt-3">
         {canAddTitle ? (
           <SaveButton
-            handleSubmit={handleSaveChanges}
-            userProfile={userProfile}
+            handleSubmit={props.handleSaveChanges}
+            userProfile={props.userProfile}
             disabled={titleOnSet}
-            setSaved={() => setSaved(true)}
+            setSaved={() => props.setSaved(true)}
             darkMode={darkMode}
           />
         ) : (
@@ -99,8 +90,8 @@ props) {
       </div>
       {showAddTitle ? (
         <AddNewTitleModal
-          teamsData={teamsData}
-          projectsData={projectsData}
+          teamsData={props.teamsData}
+          projectsData={props.projectsData}
           isOpen={showAddTitle}
           setIsOpen={setShowAddTitle}
           refreshModalTitles={refreshModalTitles}
@@ -112,10 +103,10 @@ props) {
       )}
       {canAssignTitle && showAssignModal ? (
         <AssignSetUpModal
-          setSaved={() => setSaved(true)}
-          handleSubmit={handleSubmit}
-          userProfile={userProfile}
-          setUserProfile={setUserProfile}
+          setSaved={() => props.setSaved(true)}
+          handleSubmit={props.handleSubmit}
+          userProfile={props.userProfile}
+          setUserProfile={props.setUserProfile}
           isOpen={showAssignModal}
           setIsOpen={setShowAssignModal}
           toggle={setShowAssignModal}
@@ -136,13 +127,11 @@ props) {
             </Button>
           </ModalFooter>
         </Modal>
-      )} */}
+      )} 
     </div> 
   );
 }
 
-const mapDispatchToProps={
-  hasPermission
-};
 
-export default connect(null,mapDispatchToProps)(QuickSetupModal);
+
+export default connect(null,{hasPermission})(QuickSetupModal);

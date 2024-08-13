@@ -846,10 +846,6 @@ function UserProfile(props) {
               ) : null}
             </div>
               <QuickSetupModal
-                canViewTitle={props.hasPermission('viewTitle')}
-
-                canAddTitle={props.hasPermission('addNewTitle')}
-                canAssignTitle={props.hasPermission('assignTitle')}
                 setSaved={setSaved}
                 handleSubmit={handleSubmit}
                 setUserProfile={setUserProfile}
