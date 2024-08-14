@@ -1,0 +1,42 @@
+.card#card_team {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
+    border-radius: 8px;
+    height: 40px;
+    width: 300px;
+    margin-top: 10px;
+    padding: 10px;
+  }
+  
+  .card#card_active {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
+    border-radius: 8px;
+    height: 40px;
+    width: 300px;
+    margin: 10px;
+    padding: 10px;
+  }
+
+  .card-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .card-text {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .card-text i {
+    margin-right: 5px;
+  }

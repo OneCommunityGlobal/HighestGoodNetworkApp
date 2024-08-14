@@ -93,6 +93,7 @@ class UserProfileAdd extends Component {
         actualEmail: 'Actual Email is required',
         actualPassword: 'Actual Password is required',
         actualConfirmedPassword: 'Actual Confirmed Password is required',
+        jobTitle: 'Job Title is required',
       },
       timeZoneFilter: '',
       formSubmitted: false,
@@ -200,7 +201,9 @@ class UserProfileAdd extends Component {
                         value={jobTitle}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
+                        invalid={!!this.state.formErrors.jobTitle}
                       />
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.jobTitle}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -1031,6 +1034,14 @@ class UserProfileAdd extends Component {
           userProfile: {
             ...this.state.userProfile,
             jobTitle: event.target.value,
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: event.target.value.length > 0,
+          },
+          formErrors: {
+            ...formErrors,
+            jobTitle: event.target.value.length > 0 ? '' : 'Job Title is required',
           },
         });
         break;
