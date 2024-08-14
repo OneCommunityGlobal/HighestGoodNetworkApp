@@ -484,6 +484,7 @@ function BadgeReport(props) {
           Export All Badges to PDF
         </Button>
         <Button
+          disabled={numFeatured === 0}
           className="btn--dark-sea-green float-right"
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           onClick={pdfFeaturedDocGenerator}
@@ -684,6 +685,7 @@ function BadgeReport(props) {
             <span>Export All Badges to PDF</span>
           </Button>
           <Button
+            disabled={numFeatured === 0}
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
             onClick={pdfFeaturedDocGenerator}
