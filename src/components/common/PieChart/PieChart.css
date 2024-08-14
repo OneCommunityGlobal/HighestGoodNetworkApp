@@ -64,3 +64,7 @@ div.tooltip-donut {
   pointer-events: none;
   font-size: 1rem;
 }
+
+div.pie-chart-legend-container {
+  min-width: 150px;
+}

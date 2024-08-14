@@ -116,7 +116,7 @@ export const PieChart = ({
   return (
     <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
-      <div>
+      <div className="pie-chart-legend-container">
         <div className="pie-chart-legend-header">
           <div>Name</div>
           <div>{dataLegendHeader}</div>
