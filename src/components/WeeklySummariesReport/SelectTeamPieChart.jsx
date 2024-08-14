@@ -2,6 +2,12 @@ import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
 
 export default function SelectTeamPieChart(props) {
   const { chartData, COLORS,total } = props;
+  if(chartData.length === 0){
+    return <div>
+            <p>Please choose At Least 1 team!</p>
+
+          </div>
+  }
 return (
         <ResponsiveContainer width="100%" height={500}>
                 <PieChart>

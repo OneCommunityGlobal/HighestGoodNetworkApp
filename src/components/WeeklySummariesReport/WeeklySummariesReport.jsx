@@ -78,6 +78,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      chartShow: false,
       // weeklyRecipientAuthPass: '',
     };
   }
@@ -487,6 +488,14 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
+  handleChartStatusToggleChange = () =>{
+    this.setState(
+      prevState => ({
+        chartShow: !prevState.chartShow,
+      })
+    );
+  }
+
   handleBioStatusToggleChange = () => {
     this.setState(
       prevState => ({
@@ -568,6 +577,7 @@ export class WeeklySummariesReport extends Component {
       total,
       COLORS,
       auth,
+      chartShow,
     } = this.state;
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -644,7 +654,7 @@ export class WeeklySummariesReport extends Component {
             </Button>
           </Row>
         )}
-        <Row style={{ marginBottom: '10px' }}>
+        <Row style={{ marginBottom: '10px'}}>
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
             <MultiSelect
@@ -668,7 +678,7 @@ export class WeeklySummariesReport extends Component {
             />
           </Col>
         </Row>
-        {chartData.length>=1 &&(
+        {chartShow &&(
         <Row >
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             <SelectTeamPieChart chartData={chartData} COLORS={COLORS} total={total}/>
@@ -678,37 +688,54 @@ export class WeeklySummariesReport extends Component {
           </Col>
         </Row>
         )}
-        <Row style={{ marginBottom: '10px' }}>
+        <Row style={{ marginBottom: '10px'}}>
           <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
             <div className="filter-container">
+              <div className="filter-style margin-right">
+                  <span>Show Chart</span>
+                  <div className="switch-toggle-control">
+                    <input
+                      type="checkbox"
+                      className="switch-toggle"
+                      id="chart-status-toggle"
+                      onChange={this.handleChartStatusToggleChange}
+                    />
+                    <label className="switch-toggle-label" htmlFor="chart-status-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
+                    </label>
+                  </div>
+                </div>
               {(hasPermissionToFilter || this.canSeeBioHighlight) && (
                 <div className="filter-style margin-right">
                   <span>Filter by Bio Status</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
+                  <div className="switch-toggle-control">
                     <input
                       type="checkbox"
-                      className="custom-control-input"
+                      className="switch-toggle"
                       id="bio-status-toggle"
                       onChange={this.handleBioStatusToggleChange}
                     />
-                    <label className="custom-control-label" htmlFor="bio-status-toggle">
-                      {}
+                    <label className="switch-toggle-label" htmlFor="bio-status-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
                     </label>
                   </div>
                 </div>
               )}
               {hasPermissionToFilter && (
                 <div className="filter-style">
-                  <span>Filter by Over Hours</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
+                  <span>Filter by Over Hours {}</span>
+                  <div className="switch-toggle-control">
                     <input
                       type="checkbox"
-                      className="custom-control-input"
+                      className="switch-toggle"
                       id="over-hours-toggle"
                       onChange={this.handleOverHoursToggleChange}
                     />
-                    <label className="custom-control-label" htmlFor="over-hours-toggle">
-                      {}
+                    <label className="switch-toggle-label" htmlFor="over-hours-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
                     </label>
                   </div>
                 </div>
