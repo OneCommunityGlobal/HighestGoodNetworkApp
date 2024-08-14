@@ -50,15 +50,15 @@
 
 @media (max-width: 670px) {
   .pie-chart-wrapper {
-     flex-direction: column;
+    flex-direction: column;
   }
 }
 
 div.tooltip-donut {
   position: absolute;
   text-align: center;
-  padding: .5rem;
-  background: #FFFFFF;
+  padding: 0.5rem;
+  background: #ffffff;
   color: #313639;
   border-radius: 8px;
   pointer-events: none;
