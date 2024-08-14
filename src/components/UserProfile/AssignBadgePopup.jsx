@@ -5,10 +5,12 @@ import axios from 'axios';
 import AssignTableRow from '../Badge/AssignTableRow';
 import { assignBadgesByUserID, clearNameAndSelected } from '../../actions/badgeManagement';
 import { ENDPOINTS } from '../../utils/URL';
-import { boxStyle } from '../../styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
 
 function AssignBadgePopup(props) {
+  const {darkMode} = props;
   const [searchedName, setSearchedName] = useState('');
   const [badgeList, setBadgeList] = useState([]);
   // Added state to disable confirm button while updating.
@@ -21,7 +23,7 @@ function AssignBadgePopup(props) {
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
     if(props.isRecordBelongsToJaeAndUneditable){
-      alert("STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.");
+      alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
     try {
@@ -76,7 +78,7 @@ function AssignBadgePopup(props) {
         }}
       />
       <div style={{ overflowY: 'scroll', height: '75vh' }}>
-        <Table data-testid="test-badgeResults">
+        <Table data-testid="test-badgeResults" className={darkMode ? 'text-light' : ''}>
           <thead>
             <tr>
               <th>Badge</th>
@@ -111,7 +113,7 @@ function AssignBadgePopup(props) {
       </div>
       <Button
         className="btn--dark-sea-green float-right"
-        style={{ ...boxStyle, margin: 5 }}
+        style={darkMode ? {...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
         onClick={assignBadges}
         disabled={shouldConfirmButtonDisable}
         data-testid="test-button"
@@ -124,6 +126,7 @@ function AssignBadgePopup(props) {
 
 const mapStateToProps = state => ({
   selectedBadges: state.badge.selectedBadges,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => {

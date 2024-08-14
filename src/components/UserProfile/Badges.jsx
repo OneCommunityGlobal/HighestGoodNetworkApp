@@ -61,7 +61,7 @@ export const Badges = props => {
 
   return (
     <>
-      <Card id="badgeCard" className={darkMode ? 'bg-space-cadet' : ''}>
+      <Card id="badgeCard" className={`badgeCard ${darkMode ? 'bg-space-cadet' : ''}`}>
         <CardHeader>
           <div className="badge-header">
 
@@ -75,18 +75,19 @@ export const Badges = props => {
                 fontSize={20}
                 isPermissionPage={true}
                 role={props.role}
+                darkMode={darkMode}
               />
             </span>
 
-            <div >
+            <div className='d-flex'>
               {(props.canEdit || props.role == 'Owner' || props.role == 'Administrator') && (
                 <>
                   <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured
                   </Button>
-                  <Modal size="lg" isOpen={isOpen} toggle={toggle}>
-                    <ModalHeader toggle={toggle}>Full View of Badge History</ModalHeader>
-                    <ModalBody>
+                  <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                    <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Full View of Badge History</ModalHeader>
+                    <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <BadgeReport
                         badges={props.userProfile.badgeCollection}
                         userId={props.userProfile._id}
@@ -99,6 +100,7 @@ export const Badges = props => {
                         handleSubmit={props.handleSubmit}
                         isUserSelf={props.isUserSelf}
                         isRecordBelongsToJaeAndUneditable={isRecordBelongsToJaeAndUneditable}
+                        darkMode={darkMode}
                       />
                     </ModalBody>
                   </Modal>
@@ -113,9 +115,9 @@ export const Badges = props => {
                   >
                     Assign Badges
                   </Button>
-                  <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle}>
-                    <ModalHeader toggle={assignToggle}>Assign Badges</ModalHeader>
-                    <ModalBody>
+                  <Modal size="lg" isOpen={isAssignOpen} toggle={assignToggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                    <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={assignToggle}>Assign Badges</ModalHeader>
+                    <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <AssignBadgePopup
                         allBadgeData={props.allBadgeData}
                         userProfile={props.userProfile}
@@ -151,6 +153,7 @@ export const Badges = props => {
               role={props.role}
               fontSize={20}
               isPermissionPage={true}
+              darkMode={darkMode}
             />
           </span>
         </CardFooter>

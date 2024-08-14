@@ -7,15 +7,16 @@ import {
   WBS,
   PROJECT_CATEGORY,
   INVENTORY,
-  DELETE,
+  ARCHIVE,
 } from './../../../languages/en/ui';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faSort, faArrowUp, faArrowDown} from '@fortawesome/free-solid-svg-icons';
-import Dropdown from 'react-bootstrap/Dropdown';
-import DropdownButton from 'react-bootstrap/DropdownButton';
+import { faSort, faArrowUp, faArrowDown, faSortDown} from '@fortawesome/free-solid-svg-icons';
+import { Dropdown,DropdownButton, Divider } from 'react-bootstrap';
+
+// import DropdownButton from 'react-bootstrap/DropdownButton';
 import { boxStyle } from 'styles';
 import { Button } from 'reactstrap';
 
@@ -23,6 +24,9 @@ import { Button } from 'reactstrap';
 const ProjectTableHeader = props => {
   const { role, darkMode } = props;
   const canDeleteProject = props.hasPermission('deleteProject');
+
+  const categoryList = ['Unspecified', 'Food', 'Energy', 'Housing', 'Education', 'Society', 'Economics', 'Stewardship', 'Other'];
+  const statusList = ['Active', 'Inactive'];
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
@@ -41,34 +45,43 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__category">
          {/* This span holds the header-name and a dropDown component */}
        <span className='d-flex justify-content-between'>{PROJECT_CATEGORY}
-        <DropdownButton id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} >
-            <Dropdown.Item default value="Unspecified">Unspecified</Dropdown.Item>
-            <Dropdown.Item eventKey="Food">Food</Dropdown.Item>
-            <Dropdown.Item eventKey="Energy">Energy</Dropdown.Item>
-            <Dropdown.Item eventKey="Housing">Housing</Dropdown.Item>
-            <Dropdown.Item eventKey="Education">Education</Dropdown.Item>
-            <Dropdown.Item eventKey="Society">Society</Dropdown.Item>
-            <Dropdown.Item eventKey="Economics">Economics</Dropdown.Item>
-            <Dropdown.Item eventKey="Stewardship">Stewardship</Dropdown.Item>
-            <Dropdown.Item eventKey="Other">Other</Dropdown.Item>
-
+        <DropdownButton id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} menuAlign="right">
+          <Dropdown.Item default eventKey="" disabled={!props.selectedValue}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
+          <Dropdown.Divider />
+          {categoryList.map((category, index) => 
+            <Dropdown.Item key={index} eventKey={category} active={props.selectedValue === category}>{category}</Dropdown.Item>
+          )}
         </DropdownButton>
        </span> 
       </th>
       <th scope="col" id="projects__active">
       <span className='d-flex justify-content-between'>{ACTIVE}
-        <DropdownButton className='ml-2' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus} >
-        <Dropdown.Item default value="Unspecified">Choose Status</Dropdown.Item>
-            <Dropdown.Item eventKey="Active">Active</Dropdown.Item>
-            <Dropdown.Item eventKey="Inactive">Inactive</Dropdown.Item>
+        <DropdownButton className='ml-2' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
+        <Dropdown.Item default value="" disabled={!props.showStatus}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
+          {statusList.map((status, index) => 
+            <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status}>{status}</Dropdown.Item>
+          )}
         </DropdownButton>
        </span> 
       </th>
       <th scope="col" id="projects__inv">
-        {INVENTORY}
+        <span className='d-flex justify-content-between'>
+          {INVENTORY}
+          {/* <Button size='sm' className='ml-2' id='SortingByRecentEditedInventory' onClick={props.handleSort}>
+            <FontAwesomeIcon icon={faSortDown} pointerEvents="none"/>
+          </Button>*/}
+        </span> 
       </th>
       <th scope="col" id="projects__members">
-        {MEMBERS}
+        <span className='d-flex justify-content-between'>
+          {MEMBERS}
+          <Button size='sm' className='ml-2' id='SortingByRecentEditedMembers' onClick={props.handleSort}>
+          <FontAwesomeIcon 
+            icon={props.sorted === 'SortingByRecentEditedMembers' ? faSort : faSortDown} 
+            pointerEvents="none"
+          />
+          </Button>
+        </span>
       </th>
       <th scope="col" id="projects__wbs">
         <div className="d-flex align-items-center">
@@ -86,7 +99,7 @@ const ProjectTableHeader = props => {
       </th>
       {canDeleteProject ? (
         <th scope="col" id="projects__delete">
-          {DELETE}
+          {ARCHIVE}
         </th>
       ) : null}
     </tr>

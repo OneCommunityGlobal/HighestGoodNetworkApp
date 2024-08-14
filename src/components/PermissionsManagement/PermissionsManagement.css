@@ -1,7 +1,7 @@
 .permissions-management {
-  padding: 1.5rem 3rem;
+  padding: 0.5rem 1rem;
   width: 40%;
-  min-width: 400px;
+  min-width: 350px;
   margin: 1.5rem auto;
   box-shadow: 1px 1px 8px rgb(158, 158, 158);
   display: flex;
@@ -10,16 +10,8 @@
   border-radius: 8px;
 }
 
-.permissions-management-dark {
-  padding: 1.5rem 3rem;
-  width: 40%;
-  min-width: 400px;
-  margin: 1.5rem auto;
+.dark-box-shadow {
   box-shadow: 1px 1px 8px black;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 8px;
 }
 
 .permissions-management__header {
@@ -114,13 +106,13 @@
   border-radius: 8px;
 }
 
-.role-name{
+.role-name {
   margin: 0;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   font-size: 1.2rem;
   font-weight: 500;
-  cursor: pointer; 
+  cursor: pointer;
   display: flex;
   align-items: center;
 }
@@ -130,22 +122,20 @@
   flex-grow: 1;
 }
 
-.infos{
+.infos {
   margin-left: auto;
   text-align: center;
   align-items: center;
   padding-bottom: 8px;
 }
 
-
 .role-name:hover {
   background-color: lightgrey;
 }
 
 .role-name-dark:hover {
-  background-color: #1C2541;
+  background-color: #2f4157;
 }
-
 
 .loading-message {
   font-size: 30px;
