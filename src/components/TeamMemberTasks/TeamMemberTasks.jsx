@@ -60,15 +60,7 @@ const TeamMemberTasks = React.memo(props => {
   const [selectedTeamNames, setSelectedTeamNames] = useState([]);
   const [selectedCodes, setSelectedCodes] = useState([]);
   const [selectedColors, setSelectedColors] = useState([]);
-
-  const [teams, setTeams] = useState(displayUser.teams);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
-  const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
-  const [userRole, setUserRole] = useState(displayUser.role);
-  const [textButton, setTextButton] = useState('My Team');
   const [innerWidth, setInnerWidth] = useState();
-  const [controlUseEfffect, setControlUseEfffect] = useState(false);
 
   useEffect(() => {
     setInnerWidth(window.innerWidth);
@@ -261,9 +253,8 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
-  useEffect(() => {
-    renderTeamsList();
-  }, [filteredUserTeamIds]);
+  // prettier-ignore
+  useEffect(() => {renderTeamsList()}, [filteredUserTeamIds]);
 
   const renderTeamsList = async () => {
     if (filteredUserTeamIds.length === 0) {
@@ -284,8 +275,8 @@ const TeamMemberTasks = React.memo(props => {
         setTeamList([...usersWithTasks]);
       }
     } else {
-      const usersTaks = usersWithTasks.filter(item => filteredUserTeamIds.includes(item.personId));
-      setTeamList(usersTaks);
+      const usersTask = usersWithTasks.filter(item => filteredUserTeamIds.includes(item.personId));
+      setTeamList(usersTask);
     }
   };
 
@@ -378,9 +369,7 @@ const TeamMemberTasks = React.memo(props => {
 
   useEffect(() => {
     if (!isLoading) {
-      renderTeamsList(
-        !controlUseEfffect || usersSelectedTeam.length === 0 ? null : usersSelectedTeam,
-      );
+      renderTeamsList();
       closeMarkAsDone();
       if (['Administrator', 'Owner', 'Manager', 'Mentor'].some(role => role === displayUser.role)) {
         renderFilters();

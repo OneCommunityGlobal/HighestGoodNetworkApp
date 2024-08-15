@@ -10,11 +10,12 @@ import {
   ModalFooter,
   ModalHeader,
   Button,
-  Dropdown,
+  UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
   Spinner,
+  Input,
 } from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import {
@@ -34,6 +35,7 @@ import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
 import { boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
+import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
@@ -95,7 +97,6 @@ function LeaderBoard({
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
   const [selectedTeamName, setSelectedTeamName] = useState('Show all');
   const [usersSelectedTeam, setUsersSelectedTeam] = useState('Show all');
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
@@ -103,12 +104,17 @@ function LeaderBoard({
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
   const [innerWidth, setInnerWidth] = useState();
   const [isDisplayAlert, setIsDisplayAlert] = useState(false);
+  const [stateOrganizationData, setStateOrganizationData] = useState(organizationData);
+
+  const refTeam = useRef([]);
+  const refInput = useRef('');
 
   useEffect(() => {
     const fetchInitial = async () => {
       const url = ENDPOINTS.USER_PROFILE(displayUserId);
       try {
         const response = await axios.get(url);
+        refTeam.current = response.data.teams;
         setTeams(response.data.teams);
         setUserRole(response.data.role);
       } catch (error) {
@@ -118,6 +124,10 @@ function LeaderBoard({
 
     fetchInitial();
   }, []);
+
+  useEffect(() => {
+    if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
+  }, [organizationData]);
 
   useEffect(() => {
     if (!isEqual(leaderBoardData, teamsUsers)) {
@@ -131,17 +141,40 @@ function LeaderBoard({
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
 
-  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
+  const updateOrganizationData = (usersTaks, contUsers) => {
+    // prettier-ignore
+    const newOrganizationData = usersTaks.reduce((accumulator, item) => {
+        accumulator.name = `HGN Totals: ${contUsers} Members`;
+        accumulator.tangibletime += item.tangibletime;
+        accumulator.totalintangibletime_hrs += item.totalintangibletime_hrs;
+        accumulator.totaltangibletime_hrs += item.totaltangibletime_hrs;
+        accumulator.totaltime += item.totaltime;
+        accumulator.totaltime_hrs += item.totaltime_hrs;
+        accumulator.barprogress += item.barprogress;
+        accumulator.intangibletime += item.intangibletime;
+        accumulator.barcolor = organizationData.barcolor;
+        accumulator.totalweeklycommittedHours += item.weeklycommittedHours;
+        accumulator.weeklycommittedHours += item.weeklycommittedHours;
+        return accumulator;
+      },
+      // prettier-ignore
+      { name: '', totaltime: 0, barprogress: 0, intangibletime: 0,barcolor: '', tangibletime: 0,
+      totalintangibletime_hrs: 0, totaltangibletime_hrs: 0,  totaltime_hrs: 0, 
+      totalweeklycommittedHours: 0, weeklycommittedHours: 0, memberCount: contUsers, _id: 2},
+    );
+    setStateOrganizationData(newOrganizationData);
+  };
 
   const renderTeamsList = async team => {
     setIsDisplayAlert(false);
     if (!team) {
       setIsLoadingTeams(true);
       setFilteredUserTeamIds([]);
+      setStateOrganizationData(organizationData);
 
       setTimeout(() => {
-        setIsLoadingTeams(false);
         setTeamsUsers(leaderBoardData);
+        setIsLoadingTeams(false);
       }, 1000);
     } else {
       try {
@@ -149,7 +182,7 @@ function LeaderBoard({
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
         const idUsers = response.data.map(item => item._id);
         const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
-
+        updateOrganizationData(usersTaks, usersTaks.length);
         // eslint-disable-next-line no-unused-expressions
         usersTaks.length === 0
           ? // eslint-disable-next-line no-unused-expressions
@@ -157,7 +190,7 @@ function LeaderBoard({
           : // eslint-disable-next-line no-unused-expressions
             (setTeamsUsers(usersTaks), setIsLoadingTeams(false), setFilteredUserTeamIds(idUsers));
       } catch (error) {
-        toast.error('Error fetching team members:', error);
+        toast.error('Error fetching team members');
         setIsLoadingTeams(false);
       }
     }
@@ -253,11 +286,35 @@ function LeaderBoard({
   };
 
   const TeamSelected = team => {
+    setTeams(refTeam.current);
+    refInput.current = '';
     if (team === 'Show all') {
       setUsersSelectedTeam(team);
       teamName('Show all', 7);
     } else if (team.teamName.length !== undefined) teamName(team.teamName, team.teamName.length);
     setUsersSelectedTeam(team);
+  };
+
+  const formatSearchInput = result => {
+    return result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+  };
+
+  const handleInputSearchTeams = e => {
+    refInput.current = e.target.value;
+    // prettier-ignore
+    const obj = {_id: 1, teamName: `This team is not found: ${e.target.value}`,}
+
+    const searchTeam = formatSearchInput(e.target.value);
+    if (searchTeam === '') setTeams(refTeam.current);
+    else {
+      // prettier-ignore
+      const filteredTeams = refTeam.current.filter(item => formatSearchInput(item.teamName).includes(searchTeam));
+      // prettier-ignore
+      (() => filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams))();
+    }
   };
 
   return (
@@ -287,46 +344,75 @@ function LeaderBoard({
       </h3>
       {userRole === 'Administrator' || userRole === 'Owner' ? (
         <section className="d-flex flex-row flex-wrap mb-3">
-          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=" mr-3">
-            <DropdownToggle caret>
-              {selectedTeamName} {/* Display selected team or default text */}
-            </DropdownToggle>
-            <DropdownMenu className="overflow-auto" style={{ height: '35rem' }}>
-              <div className=" align-items-center d-flex flex-column">
+          <UncontrolledDropdown className=" mr-3">
+            {/* Display selected team or default text */}
+            <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
+
+            {/* prettier-ignore */}
+            <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-yinmn-blue' : ''}>
+              
+              <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
                 {teams.length === 0 ? (
-                  <DropdownItem
-                    onClick={() => toast.warning('Please, create a team to use the filter.')}
-                  >
+                  <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
                     Please, create a team to use the filter.
-                  </DropdownItem>
+                  </p>
                 ) : (
                   <>
-                    <h5 className="ml-4">All users</h5>
-                    <DropdownItem
-                      onClick={() => TeamSelected('Show all')}
-                      className="cursor-pointer hover-shadow"
-                    >
-                      <ul>
-                        <li>Show all</li>
-                      </ul>
-                    </DropdownItem>
-                    <h5 className="ml-4">My Teams</h5>
-                    {teams.map(team => (
-                      <DropdownItem
+
+                  <div className='align-items-center d-flex flex-column'>
+                    <Input
+                      onChange={e => handleInputSearchTeams(e)}
+                      style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
+                      placeholder="Search teams"
+                      autoFocus
+                      value={refInput.current}
+                    />
+                  </div>
+
+                    <div className='overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle'
+                     style={{ height: teams.length > 8? '30rem' : 'auto', width: '100%' }}
+                     >
+                    <h5 className="text-center">My Teams</h5>
+
+                    {teams.map(team => {
+                      return (
+                        <div>
+                       { team._id !== 1?
+                       <DropdownItem key={team._id} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
                         onClick={() => TeamSelected(team)}
-                        key={team._id}
-                        className="cursor-pointer hover-scale"
-                      >
-                        <ul>
-                          <li>{dropdownName(team.teamName, team.teamName.length)}</li>
+                       >
+                        <ul
+                          className={`${darkMode ? '  text-light' : ''}`}
+                        >
+                           <li>{dropdownName(team.teamName, team.teamName.length)}</li>
                         </ul>
-                      </DropdownItem>
-                    ))}
+                        </DropdownItem>
+                        :
+                        <div className='align-items-center d-flex flex-column'>
+                        <Alert color="danger"style={{ width: '90%' }} >
+                          {dropdownName(team.teamName, team.teamName.length)}
+                         </Alert>
+                        </div>
+                        }
+                        </div>
+                      );
+                    })}
+                    </div>
+                    
+                    <h5 className="ml-4 text-center">All users</h5>
+                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`} 
+                      onClick={() => TeamSelected('Show all')}>
+                    <ul
+                      className={`${darkMode ? '  text-light' : ''}`}
+                    >
+                        <li>Show all</li>
+                    </ul>
+                    </DropdownItem>
                   </>
                 )}
               </div>
             </DropdownMenu>
-          </Dropdown>
+          </UncontrolledDropdown>
 
           {teams.length === 0 ? (
             <Link to="/teams">
@@ -419,12 +505,7 @@ function LeaderBoard({
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
-                <span>
-                  {/* //prettier-ignore */}
-                  {isEqual(leaderBoardData, teamsUsers)
-                    ? organizationData.name
-                    : `HGN Totals: ${teamsUsers.length} Members`}
-                </span>
+                <span>{stateOrganizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
                   <span className="leaderboard-totals-title">
                     0 hrs Totals: {individualsWithZeroHours.length} Members
@@ -433,18 +514,18 @@ function LeaderBoard({
               </th>
               <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
-                <span title="Tangible time">{organizationData.tangibletime || ''}</span>
+                <span title="Tangible time">{stateOrganizationData.tangibletime || ''}</span>
               </td>
               <td className="align-middle" aria-label="Description">
                 <Progress
-                  title={`TangibleEffort: ${organizationData.tangibletime} hours`}
-                  value={organizationData.barprogress}
-                  color={organizationData.barcolor}
+                  title={`TangibleEffort: ${stateOrganizationData.tangibletime} hours`}
+                  value={stateOrganizationData.barprogress}
+                  color={stateOrganizationData.barcolor}
                 />
               </td>
               <td className="align-middle">
                 <span title="Tangible + Intangible time = Total time">
-                  {organizationData.totaltime} of {organizationData.weeklycommittedHours}
+                  {stateOrganizationData.totaltime} of {stateOrganizationData.weeklycommittedHours}
                 </span>
               </td>
             </tr>
