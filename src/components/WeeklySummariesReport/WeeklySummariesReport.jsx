@@ -658,20 +658,88 @@ export class WeeklySummariesReport extends Component {
             </Button>
           </Row>
         )}
-        <Row style={{ marginBottom: '10px'}}>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+        <Row>
+          <Col lg={{ size: 2, offset: 1 }} xs={{ size: 2, offset: 1 }}>
+            {/* <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}> */}
+            <div>
             Select Team Code
-            <MultiSelect
-              className="multi-select-filter"
-              options={teamCodes}
-              value={selectedCodes}
-              onChange={e => {
-                this.handleSelectCodeChange(e);
-              }}
-            />
+            </div>
           </Col>
+          <Col lg={{ size: 2, offset: 1 }} xs={{ size: 2, offset: 1 }}>
+            <div className="filter-container">
+                <div className="filter-style">
+                    <span>Show Chart</span>
+                    <div className="switch-toggle-control">
+                      <input
+                        type="checkbox"
+                        className="switch-toggle"
+                        id="chart-status-toggle"
+                        onChange={this.handleChartStatusToggleChange}
+                      />
+                      <label className="switch-toggle-label" htmlFor="chart-status-toggle">
+                        <span className="switch-toggle-inner" />
+                        <span className="switch-toggle-switch" />
+                      </label>
+                    </div>
+                  </div>
+              </div>
+          </Col>
+          <Col lg={{ size: 2}} xs={{ size: 2}}>
+            <div>
+              Select Color
+            </div>
+          </Col>
+          <Col lg={{ size: 3}} xs={{ size: 3 }}>
+            <div className="filter-container">
+              {(hasPermissionToFilter || this.canSeeBioHighlight) && (
+                  <div className="filter-style">
+                    <span>Filter by Bio Status</span>
+                    <div className="switch-toggle-control">
+                      <input
+                        type="checkbox"
+                        className="switch-toggle"
+                        id="bio-status-toggle"
+                        onChange={this.handleBioStatusToggleChange}
+                      />
+                      <label className="switch-toggle-label" htmlFor="bio-status-toggle">
+                        <span className="switch-toggle-inner" />
+                        <span className="switch-toggle-switch" />
+                      </label>
+                    </div>
+                  </div>
+                )}
+              {hasPermissionToFilter && (
+                <div className="filter-style">
+                  <span>Filter by Over Hours {}</span>
+                  <div className="switch-toggle-control">
+                    <input
+                      type="checkbox"
+                      className="switch-toggle"
+                      id="over-hours-toggle"
+                      onChange={this.handleOverHoursToggleChange}
+                    />
+                    <label className="switch-toggle-label" htmlFor="over-hours-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
+                    </label>
+                  </div>
+                </div>
+              )}
+            </div>
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+            <MultiSelect
+                  className="multi-select-filter"
+                  options={teamCodes}
+                  value={selectedCodes}
+                  onChange={e => {
+                    this.handleSelectCodeChange(e);
+                  }}
+                />
+           </Col>
           <Col lg={{ size: 5 }} xs={{ size: 5 }}>
-            Select Color
             <MultiSelect
               className="multi-select-filter"
               options={colorOptions}
@@ -692,7 +760,7 @@ export class WeeklySummariesReport extends Component {
           </Col>
         </Row>
         )}
-        <Row style={{ marginBottom: '10px'}}>
+        {/* <Row style={{ marginBottom: '10px'}}>
           <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
             <div className="filter-container">
               <div className="filter-style margin-right">
@@ -746,7 +814,7 @@ export class WeeklySummariesReport extends Component {
               )}
             </div>
           </Col>
-        </Row>
+        </Row> */}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
