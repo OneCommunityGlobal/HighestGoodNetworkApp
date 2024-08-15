@@ -102,6 +102,7 @@ function LeaderBoard({
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
   const [innerWidth, setInnerWidth] = useState();
+  const [searchInput, setSearchInput] = useState('');
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -339,6 +340,14 @@ function LeaderBoard({
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+      <div className="search-container">
+        <input
+          type="text"
+          placeholder="Search users..."
+          value={searchInput}
+          onChange={e => setSearchInput(e.target.value)}
+        />
+      </div>
         <Table
           className={`leaderboard table-fixed ${
             darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
