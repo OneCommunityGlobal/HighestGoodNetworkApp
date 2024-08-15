@@ -439,10 +439,14 @@ export class WeeklySummariesReport extends Component {
       }
     } else {
       selectedCodes.forEach(code => {
-        chartData.push({
+        const val = temp.filter(summary => summary.teamCode === code.value).length;
+        if(val > 0){
+          chartData.push({
           name: code.label,
-          value: temp.filter(summary => summary.teamCode === code.value).length,
-        });
+          value: val,
+         });
+        }
+        
         const team = tableData[code.value];
         const index = selectedCodesArray.indexOf(code.value);
         const color = COLORS[index % COLORS.length];
