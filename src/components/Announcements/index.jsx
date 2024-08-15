@@ -116,12 +116,13 @@ function Announcements() {
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-      const editor = tinymce.get('email-editor');
-      if (editor) {
-        editor.insertContent(imageTag);
-        setEmailContent(editor.getContent());
-      }
-  };
+    const editor = tinymce.get('email-editor');
+    if (editor) {
+      editor.insertContent(imageTag);
+      setEmailContent(editor.getContent());
+    }
+    setHeaderContent(''); // Clear the input field after inserting the header
+  };  
   const handleSendEmails = () => {
     const htmlContent = emailContent;
     // Send the HTML content using your sendEmail function
@@ -173,7 +174,7 @@ function Announcements() {
             <hr />
             <p>Insert header or image link</p>
             <div style={{ overflow: 'hidden' }}>
-              <input type="text" onChange={handleHeaderContentChange} className='input-text-for-announcement'/>
+              <input type="text" onChange={handleHeaderContentChange} value={headerContent} className='input-text-for-announcement'/>
             </div>
             <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
               Insert
