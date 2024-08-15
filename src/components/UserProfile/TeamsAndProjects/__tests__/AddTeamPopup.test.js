@@ -97,7 +97,7 @@ describe('AddTeamPopup component', () => {
     renderComponent(false, teamsData, userTeams);
     expect(screen.queryByText('Add Team')).not.toBeInTheDocument();
   });
-  it.skip('check if confirm button works', async () => {
+  it('check if confirm button works', async () => {
     axios.get.mockResolvedValue({
       status: 200,
     });
