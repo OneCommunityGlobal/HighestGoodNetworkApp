@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button, Col, Tooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
@@ -35,40 +35,36 @@ const UserProjectsTable = React.memo(props => {
     setActualType(situation);
   };
 
-  const sortedTasksByNumber = useMemo(() => {
-    return userTasks?.sort((task1, task2) => task1.num - task2.num);
-  }, [userTasks]);
+  const sortedTasksByNumber = userTasks?.sort((task1, task2) => task1.num - task2.num);
 
   const tasksByProject = userProjects?.map(project => {
     const tasks = sortedTasksByNumber?.filter(task => task.projectId.includes(project._id));
     return { ...project, tasks };
   });
 
-  const filterTasksByUserTaskSituation = useMemo(() => {
-    return (situation) => {
-      if (sortedTasksByNumber) {
-        return userProjects?.map(project => {
-          const filteredTasks = sortedTasksByNumber.filter(task => {
-            const isTaskForProject = task.projectId.includes(project._id);
-            const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
-    
-            if (isTaskForProject) {
-              if (situation === 'active' && !isCompletedTask) {
-                return true;
-              } else if (situation === 'complete' && isCompletedTask) {
-                return true;
-              } else if (situation === 'all') {
-                return true;
-              }
+  const filterTasksByUserTaskSituation = situation => {
+    if (sortedTasksByNumber) {
+      return userProjects?.map(project => {
+        const filteredTasks = sortedTasksByNumber.filter(task => {
+          const isTaskForProject = task.projectId.includes(project._id);
+          const isCompletedTask = task.resources?.find(user => user.userID === props.userId)?.completedTask;
+  
+          if (isTaskForProject) {
+            if (situation === 'active' && !isCompletedTask) {
+              return true;
+            } else if (situation === 'complete' && isCompletedTask) {
+              return true;
+            } else if (situation === 'all') {
+              return true;
             }
-            return false;
-          });
-    
-          return { ...project, tasks: filteredTasks };
+          }
+          return false;
         });
-      }
-    };
-  }, [sortedTasksByNumber, props.userId, userProjects]);
+  
+        return { ...project, tasks: filteredTasks };
+      });
+    }
+  };
 
   const [filteredTasks, setFilteredTasks] = useState(filterTasksByUserTaskSituation('active'));
 
@@ -79,20 +75,18 @@ const UserProjectsTable = React.memo(props => {
   const removeOrAddTaskFromUser = (task, method) => {
     const newResources = task.resources?.map(resource => {
       if (resource.userID === props.userId) {
-        return {
-          ...resource,
-          completedTask: method === 'remove'
-        };
+        if (method === 'remove') {
+          task.status = 'Complete';
+          return { ...resource, completedTask: true };
+        } else if (method === 'add') {
+          task.status = "Started"
+          return { ...resource, completedTask: false };
+        }
       }
       return resource;
     });
   
-    const updatedTask = {
-      ...task,
-      resources: newResources,
-      status: method === 'remove' ? 'Complete' : 'Started'
-    };
-  
+    const updatedTask = { ...task, resources: newResources };
     props.updateTask(task._id, updatedTask, method);
   };
 
