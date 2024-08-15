@@ -29,4 +29,5 @@ class TextSearchBox extends React.PureComponent {
     });
   };
 }
+
 export default TextSearchBox;
