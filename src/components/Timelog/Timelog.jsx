@@ -201,7 +201,7 @@ const Timelog = props => {
       '#beforeLastWeek': 3,
       '#dateRange': 4,
       '#weeklySummaries': 5,
-      '#badges': 6,
+      '#badgesearned': 6,
     };
 
   useEffect(() => {

@@ -353,6 +353,15 @@ const SummaryBar = props => {
     setShowSuggestionModal(prev => !prev);
   };
 
+  const onTaskClick = () => {
+    window.location.hash = '#tasks';
+  };
+
+  const onBadgeClick = () => {
+    window.location.hash = '#badgesearned';
+  };
+
+
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
     return latestSummary && new Date() < new Date(latestSummary.dueDate)
@@ -541,38 +550,24 @@ const SummaryBar = props => {
           <div className={"d-flex justify-content-around no-gutters"}>
             &nbsp;&nbsp;
             <div className="image_frame">
+              <div className="redBackgroup">
+                <span>{tasks}</span>
+              </div>
               {isAuthUser || canEditData() ? (
-                <Link to={`/dashboard#tasks`}>
-                  <img className="sum_img" src={task_icon} alt=""></img>
-                  <div className="redBackgroup">
-                    <span>{tasks}</span>
-                  </div>
-                </Link>
+                <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
               ) : (
-                <div>
-                  <img className="sum_img" src={task_icon} alt=""></img>
-                  <div className="redBackgroup">
-                    <span>{tasks}</span>
-                  </div>
-                </div>
+                <img className="sum_img" src={task_icon} alt=""></img>
               )}
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
+              <div className="redBackgroup">
+                <span>{badges}</span>
+              </div>
               {isAuthUser || canEditData() ? (
-                <Link to={`/dashboard#badges`}>
-                    <img className="sum_img" src={badges_icon} alt=""/>
-                    <div className="redBackgroup">
-                      <span>{badges}</span>
-                    </div>
-                </Link>
-              ) : (
-                <div>
-                    <img className="sum_img" src={badges_icon} alt="" />
-                    <div className="redBackgroup">
-                      <span>{badges}</span>
-                    </div>
-                </div>
+                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick}/>
+                ) : (
+                <img className="sum_img" src={badges_icon} alt="" />
               )}
             </div>
             &nbsp;&nbsp;
