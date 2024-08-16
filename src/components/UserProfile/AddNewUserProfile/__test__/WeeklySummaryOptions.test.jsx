@@ -38,4 +38,48 @@ describe('WeeklySummaryOptions Component', () => {
     const select = screen.getByRole('combobox');
     expect(select.value).toBe('Required');
   });
+  test('test_correct_value_attributes', () => {
+    render(<WeeklySummaryOptions handleUserProfile={() => {}} />);
+    const options = screen.getAllByRole('option');
+    const optionValues = [
+      'Required',
+      'Not Required',
+      'Team Fabulous',
+      'Team Marigold',
+      'Team Luminous',
+      'Team Lush',
+      'Team Skye',
+      'Team Azure',
+      'Team Amethyst',
+    ];
+    options.forEach((option, index) => {
+      expect(option).toHaveAttribute('value', optionValues[index]);
+    });
+  });
+  
+  test('test_value_changes_when_different_option_selected', () => {
+    const handleUserProfile = jest.fn();
+    render(<WeeklySummaryOptions handleUserProfile={handleUserProfile} />);
+    const select = screen.getByRole('combobox');
+    fireEvent.change(select, { target: { value: 'Team Marigold' } });
+    expect(select.value).toBe('Team Marigold');
+  });
+  
+  test('test_render_without_default_value', () => {
+    const { container } = render(
+      <WeeklySummaryOptions handleUserProfile={() => {}} />
+    );
+    const select = screen.getByRole('combobox');
+    // If there's no default value, it should have the first option selected
+    expect(select.value).toBe('Required');
+  });
+  
+  test('test_accessibility_attributes', () => {
+    render(<WeeklySummaryOptions handleUserProfile={() => {}} />);
+    const select = screen.getByRole('combobox');
+    expect(select).toHaveAttribute('id', 'weeklySummaryOption');
+    expect(select).toHaveAttribute('name', 'weeklySummaryOption');
+    // Add more checks if there are additional accessibility attributes
+  });
+  
 });
