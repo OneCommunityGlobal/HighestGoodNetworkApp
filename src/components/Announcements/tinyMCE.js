@@ -21,11 +21,14 @@ export default function TinyMCEEditor() {
     <>
       <div style={{ height: '80px', overflow: 'auto' }}>{text}</div>
       <Editor
-        apiKey="rpfrv9z58kbaoauzv9dncv73jeqv7c5lo73gqlk9rx5p726p"
+        tinymceScriptSrc="/tinymce/tinymce.min.js"
+        licenseKey="gpl"
+        // apiKey="rpfrv9z58kbaoauzv9dncv73jeqv7c5lo73gqlk9rx5p726p"
         onEditorChange={onEditorChange}
         value={content}
         onInit={(evt, editor) => (editorRef.current = editor)}
         init={{
+          license_key: 'gpl',
           height: 500,
           menubar: false,
           plugins: [

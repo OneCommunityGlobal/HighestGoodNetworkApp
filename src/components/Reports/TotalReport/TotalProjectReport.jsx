@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './TotalReport.css';
@@ -7,10 +7,13 @@ import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
 import Loading from '../../common/Loading';
+import { set } from 'lodash';
 
 function TotalProjectReport(props) {
-  const [dataLoading, setDataLoading] = useState(true);
-  const [dataRefresh, setDataRefresh] = useState(false);
+  const { startDate, endDate, userProfiles, projects, darkMode } = props;
+
+  const [totalProjectReportDataLoading, setTotalProjectReportDataLoading] = useState(true);
+  const [totalProjectReportDataReady, setTotalProjectReportDataReady] = useState(false);
   const [showTotalProjectTable, setShowTotalProjectTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
   const [allProject, setAllProject] = useState([]);
@@ -19,54 +22,40 @@ function TotalProjectReport(props) {
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
 
-  const { startDate, endDate, userProfiles, projects, darkMode } = props;
+  const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
+  const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
+  const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
+  const projectList = useMemo(() => projects.map(proj => proj._id), [projects]);
 
-  const fromDate = startDate.toLocaleDateString('en-CA');
-  const toDate = endDate.toLocaleDateString('en-CA');
+  const loadTimeEntriesForPeriod = useCallback(async () => {
+    try {
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+      const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
+        projectId: entry.projectId,
+        projectName: entry.projectName,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      })));
 
-  const userList = userProfiles.map(user => user._id);
-  const projectList = projects.map(proj => proj._id);
+      const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+      const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }).then(res => res.data.map(entry => ({
+        projectId: entry.projectId,
+        projectName: entry.projectName,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      })));
 
-  const loadTimeEntriesForPeriod = async () => {
-    let url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
-    const timeEntries = await axios
-      .post(url, { users: userList, fromDate, toDate })
-      .then(res => {
-        return res.data.map(entry => {
-          return {
-            projectId: entry.projectId,
-            projectName: entry.projectName,
-            hours: entry.hours,
-            minutes: entry.minutes,
-            isTangible: entry.isTangible,
-            date: entry.dateOfWork,
-          };
-        });
-      })
-      .catch(err => {
-        // eslint-disable-next-line no-console
-        console.log(err.message);
-      });
+      setAllTimeEntries([...timeEntries, ...projTimeEntries]);
+    } catch (err) {
+      console.error("API error:", err.message);
+    }
+  }, [fromDate, toDate, userList, projectList]);
 
-    url = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
-    const projTimeEntries = await axios
-      .post(url, { projects: projectList, fromDate, toDate })
-      .then(res => {
-        return res.data.map(entry => {
-          return {
-            projectId: entry.projectId,
-            projectName: entry.projectName,
-            hours: entry.hours,
-            minutes: entry.minutes,
-            isTangible: entry.isTangible,
-            date: entry.dateOfWork,
-          };
-        });
-      });
-    setAllTimeEntries([...timeEntries, ...projTimeEntries]);
-  };
-
-  const sumByProject = (objectArray, property) => {
+  const sumByProject = useCallback((objectArray, property) => {
     return objectArray.reduce((acc, obj) => {
       const key = obj[property];
       if (!acc[key]) {
@@ -87,153 +76,120 @@ function TotalProjectReport(props) {
       acc[key].minutes += Number(obj.minutes);
       return acc;
     }, {});
-  };
+  }, []);
 
-  const groupByTimeRange = (objectArray, timeRange) => {
-    let range = 0;
-    if (timeRange === 'month') {
-      range = 7;
-    } else if (timeRange === 'year') {
-      range = 4;
-    } else {
-      // eslint-disable-next-line no-console
-      console.log('The time range should be month or year.');
-    }
+  const groupByTimeRange = useCallback((objectArray, timeRange) => {
+    const range = timeRange === 'month' ? 7 : 4;
     return objectArray.reduce((acc, obj) => {
       const key = obj.date.substring(0, range);
-      const month = acc[key] || [];
-      month.push(obj);
-      acc[key] = month;
+      acc[key] = acc[key] || [];
+      acc[key].push(obj);
       return acc;
     }, {});
-  };
-  const filterOneHourProject = projectTimeList => {
-    const filteredProjects = [];
-    projectTimeList.forEach(element => {
-      const allTimeLogged = element.hours + element.minutes / 60.0;
-      const allTangibleTimeLogged = element.tangibleHours + element.tangibleMinutes / 60.0;
-      if (allTimeLogged >= 1) {
-        filteredProjects.push({
-          projectId: element.projectId,
-          projectName: element.projectName,
-          totalTime: allTimeLogged.toFixed(2),
-          tangibleTime: allTangibleTimeLogged.toFixed(2),
-        });
-      }
-    });
-    return filteredProjects;
-  };
-  const summaryOfTimeRange = timeRange => {
+  }, []);
+
+  const filterOneHourProject = useCallback(projectTimeList => {
+    return projectTimeList
+      .filter(element => (element.hours + element.minutes / 60.0) >= 1)
+      .map(element => ({
+        projectId: element.projectId,
+        projectName: element.projectName,
+        totalTime: (element.hours + element.minutes / 60.0).toFixed(2),
+        tangibleTime: (element.tangibleHours + element.tangibleMinutes / 60.0).toFixed(2),
+      }));
+  }, []);
+
+  const summaryOfTimeRange = useCallback(timeRange => {
     const groupedEntries = Object.entries(groupByTimeRange(allTimeEntries, timeRange));
-    const summaryOfTime = [];
-    groupedEntries.forEach(element => {
-      const groupedProjectsOfTime = Object.values(sumByProject(element[1], 'projectId'));
-      const contributedProjectsOfTime = filterOneHourProject(groupedProjectsOfTime);
-      summaryOfTime.push({ timeRange: element[0], projectsOfTime: contributedProjectsOfTime });
+    return groupedEntries.map(([key, entries]) => {
+      const groupedProjectsOfTime = Object.values(sumByProject(entries, 'projectId'));
+      return { timeRange: key, projectsOfTime: filterOneHourProject(groupedProjectsOfTime) };
     });
-    return summaryOfTime;
-  };
-  const generateBarData = (groupedDate, isYear = false) => {
+  }, [allTimeEntries, groupByTimeRange, sumByProject, filterOneHourProject]);
+
+  const generateBarData = useCallback((groupedDate, isYear = false) => {
     if (isYear) {
       const startMonth = startDate.getMonth();
       const endMonth = endDate.getMonth();
-      const sumData = groupedDate.map(range => {
-        return {
-          label: range.timeRange,
-          value: range.projectsOfTime.length,
-          months: 12,
-        };
-      });
+      const sumData = groupedDate.map(range => ({
+        label: range.timeRange,
+        value: range.projectsOfTime.length,
+        months: 12,
+      }));
       if (sumData.length > 1) {
         sumData[0].months = 12 - startMonth;
         sumData[sumData.length - 1].months = endMonth + 1;
       }
       return sumData;
     }
-    const sumData = groupedDate.map(range => {
-      return {
-        label: range.timeRange,
-        value: range.projectsOfTime.length,
-      };
-    });
-    return sumData;
-  };
-  const checkPeriodForSummary = () => {
+    return groupedDate.map(range => ({
+      label: range.timeRange,
+      value: range.projectsOfTime.length,
+    }));
+  }, [startDate, endDate]);
+
+  const checkPeriodForSummary = useCallback(() => {
     const oneMonth = 1000 * 60 * 60 * 24 * 31;
     const diffDate = endDate - startDate;
     if (diffDate > oneMonth) {
       setProjectInMonth(generateBarData(summaryOfTimeRange('month')));
       setProjectInYear(generateBarData(summaryOfTimeRange('year'), true));
-      if (diffDate <= oneMonth * 12) {
-        setShowMonthly(true);
-      }
-      if (startDate.getFullYear() !== endDate.getFullYear()) {
-        setShowYearly(true);
-      }
+      if (diffDate <= oneMonth * 12) setShowMonthly(true);
+      if (startDate.getFullYear() !== endDate.getFullYear()) setShowYearly(true);
     }
-  };
+  }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
+
 
   useEffect(() => {
-    loadTimeEntriesForPeriod().then(() => {
-      setDataLoading(false);
-      setDataRefresh(true);
+    setTotalProjectReportDataReady(false);
+    const controller = new AbortController();
+    loadTimeEntriesForPeriod(controller).then(() => {
+      setTotalProjectReportDataLoading(false);
+      setTotalProjectReportDataReady(true);
     });
-  }, [startDate, endDate]);
+    return () => controller.abort();
+  }, [loadTimeEntriesForPeriod, startDate, endDate]);
 
   useEffect(() => {
-    if (!dataLoading && dataRefresh) {
+    if (!totalProjectReportDataLoading && totalProjectReportDataReady) {
       setShowMonthly(false);
       setShowYearly(false);
       const groupedProjects = Object.values(sumByProject(allTimeEntries, 'projectId'));
-      const contributedProjects = filterOneHourProject(groupedProjects);
-      setAllProject(contributedProjects);
+      setAllProject(filterOneHourProject(groupedProjects));
       checkPeriodForSummary();
-      setDataRefresh(false);
     }
-  }, [dataRefresh]);
+  }, [totalProjectReportDataLoading,totalProjectReportDataReady,sumByProject, filterOneHourProject, allTimeEntries, checkPeriodForSummary]);
 
-  const onClickTotalProjectDetail = () => {
-    const showDetail = showTotalProjectTable;
-    setShowTotalProjectTable(!showDetail);
-  };
+  const onClickTotalProjectDetail = () => setShowTotalProjectTable(prevState => !prevState);
 
-  const totalProjectTable = totalProject => {
-    let ProjectList = [];
-    if (totalProject.length > 0) {
-      ProjectList = totalProject
-        .sort((a, b) => a.projectName.localeCompare(b.projectName))
-        .map((project, index) => (
+  const totalProjectTable = totalProject => (
+    <table className="table table-bordered table-responsive-sm">
+      <thead>
+        <tr>
+          <th scope="col" id="projects__order">#</th>
+          <th scope="col">Project Name</th>
+          <th scope="col">Total Logged Time (Hrs)</th>
+        </tr>
+      </thead>
+      <tbody>
+        {totalProject.sort((a, b) => a.projectName.localeCompare(b.projectName)).map((project, index) => (
           <tr className="teams__tr" id={`tr_${project.projectId}`} key={project.projectId}>
             <th className="teams__order--input" scope="row">
               <div>{index + 1}</div>
             </th>
             <td>
               {project.projectId ? (
-                <Link to={`/projectReport/${project.projectId}`} className={darkMode ? 'text-light' : ''}>{project.projectName}</Link>
-              ) : (
-                'Unrecorded Project'
-              )}
+                <Link to={`/projectReport/${project.projectId}`} className={darkMode ? 'text-light' : ''}>
+                  {project.projectName}
+                </Link>
+              ) : 'Unrecorded Project'}
             </td>
             <td>{project.totalTime}</td>
           </tr>
-        ));
-    }
-
-    return (
-      <table className="table table-bordered table-responsive-sm">
-        <thead>
-          <tr>
-            <th scope="col" id="projects__order">
-              #
-            </th>
-            <th scope="col">Project Name</th>
-            <th scope="col">Total Logged Time (Hrs) </th>
-          </tr>
-        </thead>
-        <tbody>{ProjectList}</tbody>
-      </table>
-    );
-  };
+        ))}
+      </tbody>
+    </table>
+  );
 
   const totalProjectInfo = totalProject => {
     const totalTangibleTime = totalProject.reduce((acc, obj) => {
@@ -243,7 +199,7 @@ function TotalProjectReport(props) {
       <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Project Report</div>
         <div className="total-period">
-          In the period from {fromDate} to {toDate}:
+        In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
         </div>
         <div className="total-item">
           <div className="total-number">{allProject.length}</div>
@@ -287,7 +243,7 @@ function TotalProjectReport(props) {
 
   return (
     <div>
-      {dataLoading ? (
+      {!totalProjectReportDataReady ? (
         <Loading align="center" darkMode={darkMode}/>
       ) : (
         <div>

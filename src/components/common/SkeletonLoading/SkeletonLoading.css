@@ -60,11 +60,12 @@
 .skeleton-loading-weekly-summary {
   display: flex;
   flex-direction: column;
+  justify-content: center;
   border: 1px solid rgba(0, 0, 0, 0.125);
   background-color: #f3f4f6;
   width: 16rem;
   height: 8rem;
-  margin-top: 1.5rem;
+  margin: 1.5rem 0;
   background: linear-gradient(90deg, #a0a0a0 0%, #c0c0c0 50%, #a0a0a0 100%);
   background-size: 200% 100%;
   animation: skeleton-loading-animation 1.5s ease-in-out infinite;

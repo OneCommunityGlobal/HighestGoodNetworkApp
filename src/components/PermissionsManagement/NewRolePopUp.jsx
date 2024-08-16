@@ -1,13 +1,12 @@
-import React, { useState } from 'react';
-import { FormCheck } from 'react-bootstrap';
+import { useState } from 'react';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 
-function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
+function CreateNewRolePopup({ toggle, roleNames, darkMode }) {
   const [permissionsChecked, setPermissionsChecked] = useState([]);
   const [newRoleName, setNewRoleName] = useState('');
   const [isValidRole, setIsValidRole] = useState(true);
@@ -37,6 +36,19 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     }
   };
 
+  const checkIfDuplicate = value => {
+    let duplicateFound = false;
+
+    roleNames.forEach(val => {
+      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
+        duplicateFound = true;
+        return true;
+      }
+      return 0;
+    });
+    return duplicateFound;
+  };
+
   const handleRoleName = e => {
     const { value } = e.target;
     const regexTest = noSymbolsRegex.test(value);
@@ -60,22 +72,10 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
     }
   };
 
-  const checkIfDuplicate = value => {
-    let duplicateFound = false;
-
-    roleNames.forEach(val => {
-      if (val.localeCompare(value, 'en', { sensitivity: 'base' }) === 0) {
-        duplicateFound = true;
-        return true;
-      }
-    });
-    return duplicateFound;
-  };
-
   return (
     <Form id="createRole" onSubmit={handleSubmit}>
       <FormGroup>
-        <Label>Role Name:</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Role Name:</Label>
         <Input
           placeholder="Please enter a new role name"
           value={newRoleName}
@@ -85,27 +85,33 @@ function CreateNewRolePopup({ toggle, addNewRole, roleNames }) {
           <Alert className="createRole__alert" color="danger">
             {errorMessage}
           </Alert>
-        ) : (
-          <></>
-        )}
+        ) : null}
       </FormGroup>
 
       <FormGroup>
-        <Label>Permissions:</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Permissions:</Label>
         <PermissionList
           rolePermissions={permissionsChecked}
-          editable={true}
+          editable
           setPermissions={setPermissionsChecked}
+          darkMode={darkMode}
         />
       </FormGroup>
-      <Button type="submit" id="createRole" color="primary" size="lg" block style={boxStyle}>
+      <Button
+        type="submit"
+        id="createRole"
+        color="primary"
+        size="lg"
+        block
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
         Create
       </Button>
     </Form>
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles });
+const mapStateToProps = state => ({ roles: state.role.roles, darkMode: state.theme.darkMode });
 
 const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
