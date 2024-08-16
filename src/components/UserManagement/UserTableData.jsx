@@ -20,28 +20,34 @@ import { getAllRoles } from 'actions/role';
  */
 const UserTableData = React.memo(props => {
   const darkMode = props.darkMode;
-  const editUser=props.editUser;
+  const editUser = props.editUser;
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
-  const [formData,updateFormData]=useState({firstName:props.user.firstName,lastName:props.user.lastName,id:props.user._id,role:props.user.role,email:props.user.email,weeklycommittedHours:props.user.weeklycommittedHours,startDate:formatDateYYYYMMDD(props.user.startDate),endDate:formatDateYYYYMMDD(props.user.endDate)})
-  const dispatch=useDispatch();
-  const {roles}=useSelector(state=>state.role)
+  const [formData, updateFormData] = useState({ firstName: props.user.firstName, lastName: props.user.lastName, id: props.user._id, role: props.user.role, email: props.user.email, weeklycommittedHours: props.user.weeklycommittedHours, startDate: formatDateYYYYMMDD(props.user.startDate), endDate: formatDateYYYYMMDD(props.user.endDate) })
+  const dispatch = useDispatch();
+  const { roles } = useSelector(state => state.role)
+
+  // on calling updateFormData whatever is update
   // roles.map((e)=>console.log(e.roleName))
   /**
    * reset the changing state upon rerender with new isActive status
    */
-  // const submitData=(value)=>{
-  //   console.log(value)
-  // }
+
+  const saveUserInformation = (item, value, id) => {
+    updateFormData({ ...formData, [item]: value });
+    // call a dispatch function to send this to the backend.
+    // constants, actions reducers, store state or do we need to make a backend api first? I think backend api first.
+  }
 
   useEffect(() => {
     onReset(false);
     dispatch(getAllRoles())
   }, [props.isActive, props.resetLoading]);
 
-  useEffect(()=>{
-    updateFormData({firstName:props.user.firstName,lastName:props.user.lastName,id:props.user._id,role:props.user.role,email:props.user.email,weeklycommittedHours:props.user.weeklycommittedHours,startDate:formatDateYYYYMMDD(props.user.startDate),endDate:formatDateYYYYMMDD(props.user.endDate)})
-  },[props.user])
+  useEffect(() => {
+    updateFormData({ firstName: props.user.firstName, lastName: props.user.lastName, id: props.user._id, role: props.user.role, email: props.user.email, weeklycommittedHours: props.user.weeklycommittedHours, startDate: formatDateYYYYMMDD(props.user.startDate), endDate: formatDateYYYYMMDD(props.user.endDate) })
+  }, [props.user])
+
   /**
    * Checks whether users should be able to change the record of other users.
    * @returns {boolean} true if the target user record has a owner role, the logged in 
@@ -57,7 +63,7 @@ const UserTableData = React.memo(props => {
   };
 
   return (
-    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : '' }`} id={`tr_user_${props.index}`}>
+    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
@@ -68,61 +74,63 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td className="email_cell">
-     {editUser.first? (<div>
-      <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{formData.firstName} </a>
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(formData.firstName);
-            toast.success('First Name Copied!');
-          }}
-        />
-        </div>):<input type='text' className='edituser_input_firstname' value={formData.firstName} onChange={(e)=>updateFormData({...formData,firstName:e.target.value})}></input>}
+        {editUser.first ? (<div>
+          <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{formData.firstName} </a>
+          <FontAwesomeIcon
+            className="copy_icon"
+            icon={faCopy}
+            onClick={() => {
+              navigator.clipboard.writeText(formData.firstName);
+              toast.success('First Name Copied!');
+            }}
+          />
+        </div>) : <input type='text' className='edituser_input_firstname' value={formData.firstName} onChange={(e) => saveUserInformation('firstName', e.target.value, props.user._id)}></input>}
       </td>
-       <td className="email_cell">
-       {editUser.last?<div><a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{formData.lastName}</a>
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(formData.lastName);
-            toast.success('Last Name Copied!');
-          }}
-        /></div>:<input type='text' className='edituser_input text-center' value={formData.lastName} onChange={(e)=>updateFormData({...formData,lastName:e.target.value})}></input>}
+      <td className="email_cell">
+        {editUser.last ? <div><a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{formData.lastName}</a>
+          <FontAwesomeIcon
+            className="copy_icon"
+            icon={faCopy}
+            onClick={() => {
+              navigator.clipboard.writeText(formData.lastName);
+              toast.success('Last Name Copied!');
+            }}
+          /></div> : <input type='text' className='edituser_input text-center' value={formData.lastName} onChange={(e) => saveUserInformation('lastName', e.target.value, props.user._id)}></input>}
       </td>
 
-      {editUser.role && roles!==undefined?<td>{props.user.role}</td>:
-      <select name="role-select-tag" id="" value={formData.role} onChange={(e)=>updateFormData({...formData,role:e.target.value})}>
-        {roles.map((e,index)=> <option key={index} value={e.roleName} >{e.roleName}</option>)}
-      </select>}
+      {editUser.role && roles !== undefined ? <td>{formData.role}</td> :
+        <select name="role-select-tag" id="" value={formData.role} onChange={(e) => saveUserInformation('role', e.target.value, props.user._id)}>
+          {roles.map((e, index) => <option key={index} value={e.roleName} >{e.roleName}</option>)}
+        </select>}
+
+
       <td className="email_cell">
-        {editUser.email?<div>
-        {formData.email}
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(formData.email);
-            toast.success('Email Copied!');
-          }}
-          /></div>:<input type='text' className='edituser_input' value={formData.email} onChange={(e)=>updateFormData({...formData,email:e.target.value})}></input>
-          }
+        {editUser.email ? <div>
+          {formData.email}
+          <FontAwesomeIcon
+            className="copy_icon"
+            icon={faCopy}
+            onClick={() => {
+              navigator.clipboard.writeText(formData.email);
+              toast.success('Email Copied!');
+            }}
+          /></div> : <input type='text' className='edituser_input' value={formData.email} onChange={(e) => saveUserInformation('email', e.target.value, props.user._id)}></input>
+        }
       </td>
       <td>
-      {editUser.weeklycommittedHours?
-         <span>
-           {formData.weeklycommittedHours}
-         </span>:
-         <input type='number' className='edituser_input' value={formData.weeklycommittedHours} onChange={(e)=>updateFormData({...formData,weeklycommittedHours:e.target.value})}></input>
-      }
+        {editUser.weeklycommittedHours ?
+          <span>
+            {formData.weeklycommittedHours}
+          </span> :
+          <input type='number' className='edituser_input' value={formData.weeklycommittedHours} onChange={(e) => saveUserInformation('weeklycommittedHours', e.target.value, props.user._id)}></input>
+        }
       </td>
       <td>
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
-            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
+            if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
             }
@@ -132,19 +140,18 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
+          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
       </td>
       <td className="centered-td">
         <button
-          className={`btn btn-outline-primary btn-sm${
-            props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
-          }`}
+          className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
+            }`}
           onClick={e => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
+          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -175,7 +182,7 @@ const UserTableData = React.memo(props => {
           type="button"
           className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
           onClick={e => {
-            if(cantUpdateDevAdminDetails(props.user.email , props.authEmail)){
+            if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
             }
@@ -184,7 +191,7 @@ const UserTableData = React.memo(props => {
               props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
             );
           }}
-          style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"}  : boxStyle}
+          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
         >
           {props.isSet ? CANCEL : SET_FINAL_DAY}
         </button>
@@ -196,29 +203,29 @@ const UserTableData = React.memo(props => {
       </td>
       <td>
         {
-          editUser.startDate?
-          <span>
-            {props.user.startDate ? formatDate(formData.startDate) : 'N/A'}
-          </span>:
-          <input type='date' className='edituser_input' value={formData.startDate} onChange={(e)=>updateFormData({...formData,startDate:e.target.value})}></input>
+          editUser.startDate ?
+            <span>
+              {props.user.startDate ? formatDate(formData.startDate) : 'N/A'}
+            </span> :
+            <input type='date' className='edituser_input' value={formData.startDate} onChange={(e) => saveUserInformation('startDate',e.target.value,props.user._id)}></input>
         }
       </td>
 
 
       <td className="email_cell">
-       { editUser.endDate?<div>
-      {props.user.endDate ? formatDate(formData.endDate) : 'N/A'}
-        <FontAwesomeIcon
-          className="copy_icon"
-          icon={faCopy}
-          onClick={() => {
-            navigator.clipboard.writeText(props.user.endDate ? formatDate(formData.endDate) : 'N/A');
-            toast.success('End Date Copied!');
-          }}
+        {editUser.endDate ? <div>
+          {props.user.endDate ? formatDate(formData.endDate) : 'N/A'}
+          <FontAwesomeIcon
+            className="copy_icon"
+            icon={faCopy}
+            onClick={() => {
+              navigator.clipboard.writeText(props.user.endDate ? formatDate(formData.endDate) : 'N/A');
+              toast.success('End Date Copied!');
+            }}
           />
-      </div>:
-      <input type='date' className='edituser_input' value={formData.endDate} onChange={(e)=>{updateFormData({...formData,endDate:e.target.value})}}></input>
-      }
+        </div> :
+          <input type='date' className='edituser_input' value={formData.endDate} onChange={(e) => { saveUserInformation('endDate',e.target.value,props.user._id)}}></input>
+        }
       </td>
       {checkPermissionsOnOwner() ? null : (
         <td>
@@ -229,7 +236,7 @@ const UserTableData = React.memo(props => {
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={darkMode ? {boxShadow: "0 0 0 0", fontWeight: "bold"} : boxStyle}
+              style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
               disabled={props.auth?.user.userid === props.user._id}
             >
               {DELETE}
