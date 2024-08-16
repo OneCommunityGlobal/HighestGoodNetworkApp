@@ -2,10 +2,11 @@
   display: grid;
   grid-auto-flow: row;
   row-gap: 24px;
+  right: 100px;
   color: rgba(0, 0, 0, 0.5);
 }
 
-@media (min-width: 1420px) {
+@media (min-width: 2000px) {
   .people-pie-charts-wrapper {
     grid-auto-flow: column;
     column-gap: 24px;
