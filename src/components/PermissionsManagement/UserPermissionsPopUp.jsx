@@ -92,6 +92,7 @@ function UserPermissionsPopUp({
         toast.success(SUCCESS_MESSAGE, {
           autoClose: 10000,
         });
+        toggle();
       })
       .catch(err => {
         const ERROR_MESSAGE = `

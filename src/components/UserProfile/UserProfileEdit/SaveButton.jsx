@@ -97,13 +97,14 @@ const SaveButton = props => {
         darkMode={darkMode}
       />
       <Button
-        outline
-        color='primary'
+        {...(darkMode ? { outline: false } : {outline: true})}
+        color={darkMode ? 'light' : 'primary'}
         // to={`/userprofile/${this.state.userProfile._id}`}
         //the line below caused the mouse over issue, so I commented it out
         //className='btn btn-outline-primary mr-1 bg-white'
         onClick={handleSave}
         disabled={disabled}
+        className='mr-1'
         style={darkMode ? boxStyleDark : boxStyle}
       >
         Save Changes

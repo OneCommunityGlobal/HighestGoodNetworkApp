@@ -55,6 +55,7 @@
 
 .lightModeHoverText {
   opacity: 0;
+  color: #151515;
   position: absolute;
   margin-left: 6px;
   transition: opacity 100ms linear, transition-delay 300ms linear;
@@ -90,6 +91,7 @@
 .lightModeSliderContainer {
   width: 120px;
   height: 30px;
+  border: 1px solid rgb(212, 212, 212);
   border-radius: 20px;
   display: flex;
   justify-content: flex-start;

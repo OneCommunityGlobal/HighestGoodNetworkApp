@@ -137,7 +137,7 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li className="user-role-tab__permissions pr-2" key={permission} data-testid={permission}>
+      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
         <p
           style={{
             color: isCategory
@@ -154,6 +154,7 @@ function PermissionListItem(props) {
             fontSize: isCategory && '20px',
             textIndent: `${50 * depth}px`,
           }}
+          className="permission-label"
         >
           {label}
         </p>

@@ -4,7 +4,6 @@ import axios from 'axios';
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import './PermissionsManagement.css';
 import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import { useHistory } from 'react-router-dom';
@@ -15,7 +14,6 @@ import { ENDPOINTS } from 'utils/URL';
 import { ModalContext } from 'context/ModalContext';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
-import { addNewRole } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
@@ -46,8 +44,6 @@ function PermissionsManagement(props) {
   roles = roles.filter(role => {
     if (role != null) return role;
   });
-
-  const dispatch = useDispatch();
 
   useEffect(() => {
     if (reminderUser !== null) {
@@ -85,16 +81,6 @@ function PermissionsManagement(props) {
   // eslint-disable-next-line no-shadow
   const roleNames = roles?.map(role => role.roleName);
 
-  useEffect(() => {
-    dispatch(getAllRoles());
-  }, [dispatch]);
-
-  const addRole = async newRole => {
-    // Add the new role
-    const response = await addNewRole(newRole);
-    return response;
-  };
-
   return (
     <div
       className={darkMode ? 'bg-oxford-blue text-light' : ''}
@@ -102,9 +88,7 @@ function PermissionsManagement(props) {
     >
       <div
         key={`${role}+permission`}
-        className={
-          darkMode ? 'permissions-management-dark bg-yinmn-blue' : 'permissions-management'
-        }
+        className={`permissions-management ${darkMode ? 'bg-yinmn-blue dark-box-shadow' : ''}`}
       >
         <h1 className="permissions-management__title">User Roles</h1>
         <div key={`${role}_header`} className="permissions-management__header">
@@ -184,11 +168,7 @@ function PermissionsManagement(props) {
               id="modal-body_new-role--padding"
               className={darkMode ? 'bg-yinmn-blue' : ''}
             >
-              <CreateNewRolePopup
-                toggle={togglePopUpNewRole}
-                roleNames={roleNames}
-                addRole={addRole}
-              />
+              <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} />
             </ModalBody>
           </Modal>
           <Modal
@@ -239,7 +219,6 @@ const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
   updateUserProfile: data => dispatch(updateUserProfile(data)),
   getAllUsers: () => dispatch(getAllUserProfile()),
-  addNewRole: newRole => dispatch(addNewRole(newRole)),
   getUserRole: id => dispatch(getUserProfile(id)),
   hasPermission: action => dispatch(hasPermission(action)),
 });
