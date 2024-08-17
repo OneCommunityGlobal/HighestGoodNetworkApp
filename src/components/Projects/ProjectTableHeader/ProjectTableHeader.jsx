@@ -67,16 +67,13 @@ const ProjectTableHeader = props => {
         </DropdownButton>
        </span> 
       </th>
-      <th scope="col" id="projects__inv">
+      <th scope="col" id="projects__inv" className='align-middle'>
         <span className='d-flex justify-content-between'>
           {INVENTORY}
-          {/* <Button size='sm' className='ml-2' id='SortingByRecentEditedInventory' onClick={props.handleSort}>
-            <FontAwesomeIcon icon={faSortDown} pointerEvents="none"/>
-          </Button>*/}
         </span> 
       </th>
-      <th scope="col" id="projects__members">
-        <span className='d-flex justify-content-between'>
+      <th scope="col" id="projects__members" className='align-middle'>
+        <span className='d-flex'>
           {MEMBERS}
           <Button size='sm' className='ml-2' id='SortingByRecentEditedMembers' onClick={props.handleSort}>
           <FontAwesomeIcon 
