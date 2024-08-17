@@ -36,6 +36,7 @@ const TableFilter = ({
             type="text"
             value={emailFilter}
             onChange={(e) => setEmailFilter(e.target.value)}
+            placeholder='Your Email'
           />
       </td>
       <td id='weekly-committed' style={{ width: '10%' }}></td>

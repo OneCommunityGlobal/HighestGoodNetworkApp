@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import TextSearchBox from './TextSearchBox';
 import DropDownSearchBox from './DropDownSearchBox';
 import userTableDataPermissions from 'utils/userTableDataPermissions';
@@ -8,6 +8,9 @@ import userTableDataPermissions from 'utils/userTableDataPermissions';
  */
 const UserTableSearchHeader = React.memo((props) => {
   const darkMode = props.darkMode;
+  const isMobile = props.isMobile;
+  const mobileFontSize = props.mobileFontSize;
+  const mobileWidth = props.mobileWidth;
 
   const onFirstNameSearch = text => {
     props.onFirstNameSearch(text);
@@ -30,24 +33,24 @@ const UserTableSearchHeader = React.memo((props) => {
   };
 
   return (
-    <tr className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+    <tr className={darkMode ? 'bg-yinmn-blue text-light' : ''} style={{fontSize: isMobile ? mobileFontSize : 'initial'}}>
       <td id="user_active"></td>
       <td id="user_first">
-        <TextSearchBox id={'firts_name_search'} searchCallback={onFirstNameSearch} placeholder=" Search First Name"/>
+        <TextSearchBox id={'firts_name_search'} searchCallback={onFirstNameSearch} placeholder=" Search First Name" style={{fontSize: isMobile ? mobileFontSize : 'initial'}}/>
       </td>
       <td id="user_last_name">
-        <TextSearchBox id={'last_name_search'} searchCallback={onLastNameSearch} placeholder=" Search Last Name"/>
+        <TextSearchBox id={'last_name_search'} searchCallback={onLastNameSearch} placeholder=" Search Last Name" style={{fontSize: isMobile ? mobileFontSize : 'initial'}}/>
       </td>
       <td id="user_role">
-        <DropDownSearchBox id={'role_search'} items={props.roles} searchCallback={onRoleSearch} />
+        <DropDownSearchBox id={'role_search'} items={props.roles} searchCallback={onRoleSearch} width={isMobile ? mobileWidth : 'initial'}/>
       </td>
       <td id="user_email" >
-        <TextSearchBox id={'email_search'} searchCallback={onEmailSearch} style={{ width:'100%' }} placeholder=" Search Email"/>
+        <TextSearchBox id={'email_search'} searchCallback={onEmailSearch} style={{ width: isMobile ? mobileWidth : '100%' }} placeholder=" Search Email"/>
       </td>
       <td id="user_hrs" style= {{ display: 'flex' }}>
         <TextSearchBox
           id={'hrs_search'}
-          style={{ maxWidth: '75px', margin: '0 auto' }}
+          style={{ maxWidth: '75px', margin: '0 auto', width: isMobile ? mobileWidth : 'initial' }}
           searchCallback={onWeeklyHrsSearch}
         />
       </td>
