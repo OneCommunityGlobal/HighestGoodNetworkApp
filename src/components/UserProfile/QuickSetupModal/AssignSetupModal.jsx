@@ -76,19 +76,29 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           {googleDoc.length !== 0 ? '' : <p className="text-danger">{warning.googleDoc}</p>}
 
           <h6>Team Code: {title?.teamCode}</h6>
-          <h6>Project Assignment: {title?.projectAssigned?.projectName}</h6>
-          <h6>Media Folder: {title?.mediaFolder}</h6>
+          <h6>Project Assignment: {title?.projectAssigned?.projectName}</h6> 
+          <h6> {/* Media Folder adjusted */}
+            <span style={{ whiteSpace: 'nowrap'}}>Media Folder: </span>
+            <span style={{ 
+              whiteSpace: 'normal',
+              wordBreak: 'break-all', 
+              overflowWrap: 'anywhere',
+              display: 'inline'
+            }}>
+              {title?.mediaFolder}
+            </span>
+          </h6>
           {title?.teamAssiged?.teamName ? <h6>Team Assignment: {title?.teamAssiged?.teamName}</h6> : '' }
-          <div className="container ml-1">
+          <div className="container ml-1 d-flex align-items-center"> {/* Checkbox alignment fixed */}
             <Input
               type="checkbox"
               required
               id="agreement"
               value="true"
               onClick={() => checkboxOnClick()}
-              style={{ paddingLeft: '10px' }} //padding added
+              style={{ marginRight: '8px', marginTop: '2px' }} 
             />
-            <Label for="agreement" className={fontColor}>
+            <Label for="agreement" className={`${fontColor} mb-0`} style={{ marginLeft: '2px' }}>
               Volunteer Agreement Confirmed
             </Label>
           </div>
