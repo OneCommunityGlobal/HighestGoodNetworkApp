@@ -94,7 +94,8 @@ const Projects = function(props) {
   }
 
   const handleSort = (e) => {
-    setSortedByName(e.target.id);
+    const clickedId = e.target.id;
+    setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
   }
 
   const onUpdateProject = async (updatedProject) => {
@@ -135,6 +136,8 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1;
       } else if (sortedByName === "Descending") {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
+      } else if (sortedByName === "SortingByRecentEditedMembers") {
+        return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
       } else {
         return 0;
       }
@@ -167,7 +170,7 @@ const Projects = function(props) {
           hasInactiveBtn: false,
         });
       }
-  }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects]);
+  }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -195,25 +198,20 @@ const Projects = function(props) {
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container-lg">
-          {fetching || !fetched ? (
-          <div className="loading-center-spinner">
-            <Loading />
-          </div>
-          ) : null}
+        <div className="container py-3">
+          {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center">
-          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <EditableInfoModal
-            areaName="projectsInfoModal"
-            areaTitle="Projects"
-            fontSize={30}
-            isPermissionPage={true}
-            role={role}
-          />
-        </div>
+            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+            <EditableInfoModal
+              areaName="projectsInfoModal"
+              areaTitle="Projects"
+              fontSize={30}
+              isPermissionPage={true}
+              role={role}
+            />
+            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          </div>
 
-          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          
           {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
 
           <SearchProjectByPerson onSearch={handleSearchName}/>

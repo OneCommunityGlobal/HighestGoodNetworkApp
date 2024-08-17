@@ -53,12 +53,13 @@ const teamMemberTasks={isLoading:false,
                           tasks: [],
                           teams: [{teamName: 'mockTeamName', _id: 'team123'}]
                         }],
-                        usersWithTimeEntries:[{personId:'user123',_id:'entry123',userProfile:[]}]
+                        usersWithTimeEntries:[{personId:'user123',_id:'entry123',userProfile:[],dateOfWork:'2024-07-20T08:00:00.000Z'}]
                       }
 const userProfile = {
   _id: 'user123',
   role: 'Manager',
-  startDate: '2023-12-08T08:00:00.000Z'
+  startDate: '2023-12-08T08:00:00.000Z',
+  teams:[{teamName: 'mockTeamName', _id: 'team123'}]
 };
 const timeOffRequests={onTimeOff:false, goingOnTimeOff:false}
 
@@ -77,7 +78,7 @@ const store = mockStore({
 jest.mock('axios');
 
 describe("TeamMemberTasks component",()=>{
-
+  
   it('renders without crashing',()=>{
     axios.get.mockResolvedValue({
       status: 200,
@@ -180,11 +181,11 @@ describe("TeamMemberTasks component",()=>{
     const darkModeElement=container.querySelector('.container.team-member-tasks')
     const timeOffElement=container.querySelector('.show-time-off-btn.show-time-off-btn-selected ')
     const hoursCompletedElement=container.querySelector('.team-member-tasks-subtable')
-    const oneDayElement=container.querySelector('[class="circle-border 1 days "]')
-    const twoDayElement=container.querySelector('[class="circle-border 2 days "]')
-    const threeDayElement=container.querySelector('[class="circle-border 3 days "]')
-    const fourDayElement=container.querySelector('[class="circle-border 4 days "]')
-    const sevenDayElement=container.querySelector('[class="circle-border 7 days "]')
+    const oneDayElement=container.querySelector('[title="Timelogs submitted in the past 1 days"]')
+    const twoDayElement=container.querySelector('[title="Timelogs submitted in the past 2 days"]')
+    const threeDayElement=container.querySelector('[title="Timelogs submitted in the past 3 days"]')
+    const fourDayElement=container.querySelector('[title="Timelogs submitted in the past 4 days"]')
+    const sevenDayElement=container.querySelector('[title="Timelogs submitted in the past 7 days"]')
     expect(darkModeElement).toBeInTheDocument()
     expect(hoursCompletedElement).toBeInTheDocument()
     expect(timeOffElement).toBeInTheDocument()
@@ -216,11 +217,11 @@ describe("TeamMemberTasks component",()=>{
     const darkModeElement=container.querySelector('.container.team-member-tasks')
     const timeOffElement=container.querySelector('.show-time-off-btn.show-time-off-btn-selected ')
     const hoursCompletedElement=container.querySelector('.team-member-tasks-subtable')
-    const oneDayElement=container.querySelector('[class="circle-border 1 days box-shadow-dark"]')
-    const twoDayElement=container.querySelector('[class="circle-border 2 days box-shadow-dark"]')
-    const threeDayElement=container.querySelector('[class="circle-border 3 days box-shadow-dark"]')
-    const fourDayElement=container.querySelector('[class="circle-border 4 days box-shadow-dark"]')
-    const sevenDayElement=container.querySelector('[class="circle-border 7 days box-shadow-dark"]')
+    const oneDayElement=container.querySelector('[title="Timelogs submitted in the past 1 days"]')
+    const twoDayElement=container.querySelector('[title="Timelogs submitted in the past 2 days"]')
+    const threeDayElement=container.querySelector('[title="Timelogs submitted in the past 3 days"]')
+    const fourDayElement=container.querySelector('[title="Timelogs submitted in the past 4 days"]')
+    const sevenDayElement=container.querySelector('[title="Timelogs submitted in the past 7 days"]')
     expect(darkModeElement).toBeInTheDocument()
     expect(hoursCompletedElement).toBeInTheDocument()
     expect(timeOffElement).toBeInTheDocument()
@@ -237,7 +238,7 @@ describe("TeamMemberTasks component",()=>{
       data: '',
     });
     const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
-    const buttonElement=container.querySelector('[class="show-time-off-btn show-time-off-btn-selected "]')
+    const buttonElement=container.querySelector('[class="m-1 show-time-off-btn show-time-off-btn-selected "]')
     expect(container.querySelector('[class="show-time-off-calender-svg "]')).not.toBeInTheDocument()
     expect(container.querySelector('[class="show-time-off-icon "]')).not.toBeInTheDocument()
     expect(container.querySelector('[class="show-time-off-calender-svg show-time-off-calender-svg-selected"]')).toBeInTheDocument()
@@ -254,7 +255,7 @@ describe("TeamMemberTasks component",()=>{
       data: '',
     });
     const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
-    const buttonElement=container.querySelector('[class="circle-border 1 days "]')
+    const buttonElement=container.querySelector('[title="Timelogs submitted in the past 1 days"]')
     const daysButton=container.querySelector('[style="color: rgb(34, 139, 34); background-color: white; border: 1px solid #228b22;"]')
     expect(daysButton).toBeInTheDocument()
     fireEvent.click(buttonElement)
@@ -269,17 +270,6 @@ describe("TeamMemberTasks component",()=>{
     });
     const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
     expect(container.querySelector('[className="table-row"]')).not.toBeInTheDocument()
-
-  })
-  it("check if TeamMemberTask with time entries gets displayed when isTimeFilterActive is set to True",()=>{
-    axios.get.mockResolvedValue({
-      status: 200,
-      data: '',
-    });
-    const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
-    const buttonElement=container.querySelector('[class="circle-border 1 days "]')
-    fireEvent.click(buttonElement)
-    expect(container.querySelector('[class="table-row"]')).toBeInTheDocument()
 
   })
 

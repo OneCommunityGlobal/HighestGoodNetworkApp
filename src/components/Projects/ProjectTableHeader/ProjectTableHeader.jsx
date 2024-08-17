@@ -13,7 +13,7 @@ import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowUp, faArrowDown} from '@fortawesome/free-solid-svg-icons';
+import { faSort, faArrowUp, faArrowDown, faSortDown} from '@fortawesome/free-solid-svg-icons';
 import { Dropdown,DropdownButton, Divider } from 'react-bootstrap';
 
 // import DropdownButton from 'react-bootstrap/DropdownButton';
@@ -67,11 +67,24 @@ const ProjectTableHeader = props => {
         </DropdownButton>
        </span> 
       </th>
-      <th scope="col" id="projects__inv" className='align-middle'>
-        {INVENTORY}
+      <th scope="col" id="projects__inv">
+        <span className='d-flex justify-content-between'>
+          {INVENTORY}
+          {/* <Button size='sm' className='ml-2' id='SortingByRecentEditedInventory' onClick={props.handleSort}>
+            <FontAwesomeIcon icon={faSortDown} pointerEvents="none"/>
+          </Button>*/}
+        </span> 
       </th>
-      <th scope="col" id="projects__members" className='align-middle'>
-        {MEMBERS}
+      <th scope="col" id="projects__members">
+        <span className='d-flex justify-content-between'>
+          {MEMBERS}
+          <Button size='sm' className='ml-2' id='SortingByRecentEditedMembers' onClick={props.handleSort}>
+          <FontAwesomeIcon 
+            icon={props.sorted === 'SortingByRecentEditedMembers' ? faSort : faSortDown} 
+            pointerEvents="none"
+          />
+          </Button>
+        </span>
       </th>
       <th scope="col" id="projects__wbs" className='align-middle'>
         <div className="d-flex align-items-center">

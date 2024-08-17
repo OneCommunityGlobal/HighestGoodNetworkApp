@@ -78,6 +78,7 @@ function LeaderBoard({
   allRequests,
   showTimeOffRequestModal,
   darkMode,
+  getWeeklySummaries,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -203,6 +204,7 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
+    getWeeklySummaries(item.personId);
     dispatch(getUserProfile(item.personId)).then(user => {
       const { _id, role, firstName, lastName, profilePic, email } = user;
       const viewingUser = {
@@ -342,7 +344,7 @@ function LeaderBoard({
             darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
           }`}
         >
-          <thead>
+          <thead className="responsive-font-size">
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
               <th>
@@ -382,8 +384,8 @@ function LeaderBoard({
               </th>
             </tr>
           </thead>
-          <tbody className="my-custome-scrollbar">
-            <tr>
+          <tbody className="my-custome-scrollbar responsive-font-size">
+            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
@@ -463,7 +465,7 @@ function LeaderBoard({
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
                           className="fa fa-star"
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours\nClick to view their Dashboard`}
                           style={{
                             color: assignStarDotColors(
                               item.tangibletime,
@@ -477,7 +479,7 @@ function LeaderBoard({
                         />
                       ) : (
                         <div
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours\nClick to view their Dashboard`}
                           style={{
                             backgroundColor:
                               item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',
@@ -605,7 +607,7 @@ function LeaderBoard({
                   <span
                     title={mouseoverTextValue}
                     id="Total time"
-                    className={item.totalintangibletime_hrs > 0 ? 'boldClass' : null}
+                    className={item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null}
                   >
                     {item.totaltime}
                   </span>
