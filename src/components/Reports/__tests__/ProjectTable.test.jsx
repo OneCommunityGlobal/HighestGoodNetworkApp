@@ -81,10 +81,6 @@ describe('ProjectTable component', () => {
     const table = screen.getByRole('table');
     const thead = table.querySelector('thead');
   
-    // Log classes for debugging
-    console.log('Table classes:', table.className);
-    console.log('Thead classes:', thead.className);
-  
     expect(table).toHaveClass('bg-yinmn-blue');  
     const links = screen.getAllByRole('link');
     links.forEach(link => {
@@ -95,8 +91,18 @@ describe('ProjectTable component', () => {
   it('applies the hover effect class in dark mode', () => {
     renderWithRouter(<ProjectTable projects={mockProjects} darkMode={true} />);
     const rows = screen.getAllByRole('row');
-    rows.slice(1).forEach(row => { // Skip the header row
-      expect(row).toHaveClass('hover-effect-reports-page-dark-mode');
+    
+    // Skip the header row
+    rows.slice(1).forEach(row => {
+      // Simulate hover
+      row.dispatchEvent(new MouseEvent('mouseover', { bubbles: true }));
+      console.log('Table classes:', row.className);
+      // Check if the hover effect class is applied
+      expect(row).toHaveClass('bg-yinmn-blue');
+      
+      // Optionally, you could simulate mouse out and verify the class removal if needed
+      row.dispatchEvent(new MouseEvent('mouseout', { bubbles: true }));
+      expect(row).not.toHaveClass('bg-yinmn-blue');
     });
   });
   
