@@ -1,4 +1,4 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import {
   Button,
@@ -21,9 +21,9 @@ import * as Message from './../../../../../languages/en/messages';
 import { getPopupById } from './../../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from './../../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
-function ControllerRow (props) {
+function ControllerRow(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
@@ -32,7 +32,7 @@ function ControllerRow (props) {
   const canPostTask = props.hasPermission('postTask');
 
   // props from store
-  const { role, userPermissions, roles, popupContent } = props;
+  const { role, userPermissions, roles, popupContent, darkMode } = props;
 
   // states from hooks
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -75,8 +75,8 @@ function ControllerRow (props) {
   */
 
   return (
-    <tr className="wbsTaskController desktop-view" id={`controller_${props.taskId}`}>
-      <td colSpan={props.tableColNum} className="controlTd">
+    <tr className="wbsTaskController" id={`controller_${props.taskId}`}>
+      <td colSpan={props.tableColNum} className={`controlTd ${darkMode ? 'bg-space-cadet' : ''}`}>
         {props.level < 4 && canPostTask ? (
           <AddTaskModal
             key={`addTask_${props.taskId}`}
@@ -110,59 +110,61 @@ function ControllerRow (props) {
           load={props.load}
           setIsLoading={props.setIsLoading}
         />
-        {canDeleteTask ? (
-          <>
+
+        <>
+          {canDeleteTask && (
             <Button
               color="danger"
               size="sm"
               className="controlBtn"
               onClick={showUpDeleteModal}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Remove
             </Button>
+          )}
 
-            <Dropdown
-              direction="up"
-              isOpen={dropdownOpen}
-              toggle={toggle}
-              style={{ ...boxStyle, float: 'left' }}
-            >
-              <DropdownToggle caret color="primary" className='controlBtn' size="sm">
-                Move
-              </DropdownToggle>
-              <DropdownMenu>
-                {props.siblings.map((item, i) => {
-                  if (item.num !== props.num) {
-                    return (
-                      <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
-                        {item.num.split('.0')[0]}
-                      </DropdownItem>
-                    );
-                  }
-                })}
-              </DropdownMenu>
-            </Dropdown>
+          <Dropdown
+            direction="up"
+            isOpen={dropdownOpen}
+            toggle={toggle}
+          >
+            <DropdownToggle caret color="primary" className='controlBtn' size="sm" style={darkMode ? boxStyleDark : boxStyle}>
+              Move
+            </DropdownToggle>
+            <DropdownMenu>
+              {props.siblings.map((item, i) => {
+                if (item.num !== props.num) {
+                  return (
+                    <DropdownItem key={i} onClick={e => onMove(props.num, item.num)}>
+                      {item.num.split('.0')[0]}
+                    </DropdownItem>
+                  );
+                }
+              })}
+            </DropdownMenu>
+          </Dropdown>
 
-            <Button
-              color="secondary"
-              size="sm"
-              className="controlBtn"
-              onClick={() => onCopy(props.taskId)}
-              style={boxStyle}
-            >
-              {isCopied ? 'Copied' : 'Copy'}
-            </Button>
-          </>
-        ) : null}
+          <Button
+            color="secondary"
+            size="sm"
+            className="controlBtn"
+            onClick={() => onCopy(props.taskId)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {isCopied ? 'Copied' : 'Copy'}
+          </Button>
+        </>
+
         <ModalDelete
-          isOpen={modalDelete}
+          isOpen={canDeleteTask && modalDelete}
           closeModal={() => {
             setModalDelete(false);
           }}
           confirmModal={() => deleteTask(props.taskId, props.mother)}
           modalMessage={popupContent || ''}
           modalTitle={Message.CONFIRM_DELETION}
+          darkMode={darkMode}
         />
       </td>
     </tr>
@@ -174,6 +176,7 @@ const mapStateToProps = state => ({
   userPermissions: state.auth.user?.permissions?.frontPermissions,
   roles: state.role.roles,
   popupContent: state.popupEditor.currPopup.popupContent,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {

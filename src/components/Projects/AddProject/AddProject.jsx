@@ -51,7 +51,7 @@ const AddProject = props => {
           <button
             className="btn btn-outline-primary"
             type="button"
-            onClick={e => props.addNewProject(newName, newCategory)}
+            onClick={() => props.onAddNewProject(newName, newCategory)}
           >
             <i className="fa fa-plus" aria-hidden="true"></i>
           </button>
