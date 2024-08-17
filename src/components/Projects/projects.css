@@ -98,12 +98,6 @@ tr:hover {
   background: #e9f6ff;
 }
 
-.loading-center-spinner {
-  max-width: fit-content;
-  margin-left: auto;
-  margin-right: auto;
-}
-
 @media (max-width: 375px) {
   #new_project .form-control {
     flex: 1 1 auto;
