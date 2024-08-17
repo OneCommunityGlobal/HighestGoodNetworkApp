@@ -11,7 +11,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
 import { getUserProfile } from 'actions/userProfile';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
 import ModalDelete from '../../../common/Modal';
 import { deleteTask } from '../../../../actions/task';
@@ -20,8 +20,19 @@ import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 import { formatDate } from 'utils/formatDate';
 
-
+const TINY_MCE_INIT_OPTIONS = 
+  {
+    license_key: 'gpl',
+    menubar: false,
+    toolbar: false,
+    branding: false,
+    min_height: 80,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+};
+  
 function SingleTask(props) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const {taskId} = props.match.params;
   const { user } = props.auth;
   const [task, setTask] = useState({});
@@ -58,17 +69,18 @@ function SingleTask(props) {
 
   return (
     <>
+    <div className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'} h-100`}>
       <ReactTooltip />
       <div className="container-single-task">
         {canPostProject && (
           <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
+            <ol className={`breadcrumb mx-2 ${darkMode ? 'bg-space-cadet text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
-                <Button type="button" className="btn btn-secondary" style={boxStyle}>
+                <Button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>
                   <i className="fa fa-chevron-circle-left" aria-hidden="true" />
                 </Button>
               </NavItem>
-              <div id="single_task_name">
+              <div id="single_task_name" className='ml-2'>
                 See tasks in the same folder as &quot;
                 {task.taskName}
                 &quot;
@@ -77,8 +89,8 @@ function SingleTask(props) {
           </nav>
         )}
 
-        <table className="table table-bordered tasks-table">
-          <thead>
+        <table className={`table table-bordered tasks-table ${darkMode ? 'dark-mode text-light' : ''}`}>
+          <thead className={darkMode ? 'bg-space-cadet' : ''}>
             <tr>
               <th scope="col" data-tip="Action" colSpan="1">
                 Action
@@ -134,7 +146,7 @@ function SingleTask(props) {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <tr>
               <th scope="row">
                 <EditTaskModal
@@ -156,9 +168,9 @@ function SingleTask(props) {
                       <Button
                         type="button"
                         size="sm"
-                        className="btn btn-danger"
+                        className="btn btn-danger mt-1"
                         onClick={() => showUpDeleteModal()}
-                        style={boxStyle}
+                        style={darkMode ? boxStyleDark : boxStyle}
                       >
                         Delete
                         {' '}
@@ -172,6 +184,7 @@ function SingleTask(props) {
                           props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
                         }
                         modalTitle={Message.CONFIRM_DELETION}
+                        darkMode={darkMode}
                       />
                     </>
                   )}
@@ -238,50 +251,36 @@ function SingleTask(props) {
       </div>
 
       <Modal isOpen={modal} toggle={toggleModel}>
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
           <h6>WHY THIS TASK IS IMPORTANT:</h6>
           <Editor
-            init={{
-              menubar: false,
-              toolbar: false,
-              branding: false,
-              min_height: 80,
-              max_height: 300,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            init={TINY_MCE_INIT_OPTIONS}
             disabled
             value={task.whyInfo}
           />
 
           <h6>THE DESIGN INTENT:</h6>
           <Editor
-            init={{
-              menubar: false,
-              toolbar: false,
-              branding: false,
-              min_height: 80,
-              max_height: 300,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            init={TINY_MCE_INIT_OPTIONS}
             disabled
             value={task.intentInfo}
           />
 
           <h6>ENDSTATE:</h6>
           <Editor
-            init={{
-              menubar: false,
-              toolbar: false,
-              branding: false,
-              min_height: 80,
-              max_height: 300,
-              autoresize_bottom_margin: 1,
-            }}
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            licenseKey="gpl"
+            init={TINY_MCE_INIT_OPTIONS}
             disabled
             value={task.endstateInfo}
           />
         </ModalBody>
       </Modal>
+      </div>
     </>
   );
 }
