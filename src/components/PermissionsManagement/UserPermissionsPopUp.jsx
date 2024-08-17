@@ -28,6 +28,7 @@ function UserPermissionsPopUp({
   setReminderModal,
   reminderModal,
   modalStatus,
+  darkMode,
 }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
@@ -113,6 +114,7 @@ function UserPermissionsPopUp({
           reminderModal={reminderModal}
           updateProfileOnSubmit={updateProfileOnSubmit}
           changedAccount={selectedAccount}
+          darkMode={darkMode}
         />
       )}
       <Form
@@ -121,7 +123,10 @@ function UserPermissionsPopUp({
           updateProfileOnSubmit(e);
         }}
       >
-        <div style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}>
+        <div
+          className={darkMode ? 'text-space-cadet' : ''}
+          style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
+        >
           <h4 className="user-permissions-pop-up__title">User name:</h4>
           <Button
             type="button"
@@ -202,7 +207,9 @@ function UserPermissionsPopUp({
           )}
         </Dropdown>
         <div>
-          <h4 className="user-permissions-pop-up__title">Permissions:</h4>
+          <h4 className={`user-permissions-pop-up__title ${darkMode ? 'text-space-cadet' : ''}`}>
+            Permissions:
+          </h4>
           <ul className="user-role-tab__permission-list">
             <PermissionList
               rolePermissions={userPermissions}

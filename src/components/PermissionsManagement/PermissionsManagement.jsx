@@ -200,7 +200,7 @@ function PermissionsManagement(props) {
             <ModalHeader
               toggle={togglePopUpUserPermissions}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet' : ''}
+              className={darkMode ? 'bg-oxford-blue text-light' : ''}
             >
               Manage User Permissions
             </ModalHeader>
@@ -210,6 +210,7 @@ function PermissionsManagement(props) {
                 setReminderModal={setReminderModal}
                 reminderModal={reminderModal}
                 modalStatus={modalStatus}
+                darkMode={darkMode}
               />
             </ModalBody>
           </Modal>

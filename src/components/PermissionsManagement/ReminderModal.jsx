@@ -3,7 +3,13 @@ import './PermissionsManagement.css';
 import { ModalContext } from 'context/ModalContext';
 import { useContext } from 'react';
 
-function ReminderModal({ setReminderModal, reminderModal, updateProfileOnSubmit, changedAccount }) {
+function ReminderModal({
+  setReminderModal,
+  reminderModal,
+  updateProfileOnSubmit,
+  changedAccount,
+  darkMode,
+}) {
   const { modalStatus, updateModalStatus } = useContext(ModalContext);
 
   return (
@@ -11,7 +17,7 @@ function ReminderModal({ setReminderModal, reminderModal, updateProfileOnSubmit,
       <div className="ReminderTitle">
         <h2>Remember to save your changes!</h2>
       </div>
-      <div className="ReminderBody">
+      <div className={`ReminderBody ${darkMode ? 'text-space-cadet' : ''}`}>
         <span>
           Please log out and log back into the {changedAccount} account to see the changes.
         </span>
