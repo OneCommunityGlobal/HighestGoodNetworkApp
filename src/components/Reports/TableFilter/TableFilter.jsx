@@ -4,9 +4,8 @@ import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TableFilter.css';
 import { Checkbox } from 'components/common/Checkbox';
-import TextSuggestion from '../../UserManagement/TextSuggestion';
+import TextSearchBox from '../../UserManagement/TextSearchBox';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
-import { divide } from 'lodash';
 
 const InputWithCalendarIcon = forwardRef(({ value, onClick }, ref) => {
   return (
@@ -33,7 +32,6 @@ function TableFilter({
   searchAssign,
   searchEstimatedHours,
   name,
-  taskNameList = [],
   estimatedHours,
   resources,
   status,
@@ -45,40 +43,27 @@ function TableFilter({
   const [taskAssign, setTaskAssign] = useState(true);
   const [startDate, setStartDate] = useState(new Date('01/01/2010'));
   const [endDate, setEndDate] = useState(new Date());
-  const taskName = taskNameList.map((item) => item.taskName)
-  const taskHour = taskNameList.map((item) => item.estimatedHours)
-  const taskResource = taskNameList.map(function (item) { return [item.resources.map((e) => e[0].name)].join() })
-  const uniquetaskHour = [...new Set(taskHour)];
-  const uniquetaskResource = [...new Set(taskResource)];
-
-
 
   return (
     <div className="table-filter-wrapper">
-
-      <TextSuggestion
+      <TextSearchBox
         id="name_search"
-        list={taskName}
         searchCallback={onTaskNameSearch}
-        className="table-filter-input table-filter-item"
         value={name}
+        className="table-filter-item table-filter-input"
         placeholder="Task name"
       />
-      <TextSuggestion
-        list={uniquetaskHour}
-        id="hour_search"
+      <TextSearchBox
         searchCallback={searchEstimatedHours}
         value={estimatedHours}
         placeholder="Estimated Hours"
         className="table-filter-item table-filter-input"
       />
-      <TextSuggestion
-        list={uniquetaskResource}
+      <TextSearchBox
         searchCallback={searchResources}
         value={resources}
         placeholder="Resources"
         className="table-filter-item table-filter-input"
-
       />
       <DropDownSearchBox
         items={taskStatus}
