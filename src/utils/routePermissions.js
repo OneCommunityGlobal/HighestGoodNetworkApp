@@ -17,6 +17,9 @@ export const RoutePermissions = {
     'deleteBadges',
     'assignBadges'
   ],
+  weeklyVolunteerSummary: ['getWeeklyVolunteerSummary'],
+  userManagement: ['getUserProfiles', 'postUserProfile', 'deleteUserProfile', 'changeUserStatus'],
+  badgeManagement: ['seeBadges', 'createBadges', 'updateBadges', 'deleteBadges', 'assignBadges'],
   projects: [
     'postProject',
     'deleteProject',
@@ -27,19 +30,10 @@ export const RoutePermissions = {
     'deleteWbs',
     'postTask',
     'updateTask',
-    'deleteTask'
+    'deleteTask',
   ],
-  teams: [
-    'postTeam',
-    'putTeam',
-    'deleteTeam',
-    'assignTeamToUsers'
-  ],
-  permissionsManagement: [
-    'postRole',
-    'putRole',
-    'deleteRole'
-  ],
+  teams: ['postTeam', 'putTeam', 'deleteTeam', 'assignTeamToUsers'],
+  permissionsManagement: ['postRole', 'putRole', 'deleteRole'],
   userPermissionsManagement: ['putUserProfilePermissions'],
   inventoryProject: [''],
   inventoryProjectWbs: [''],

@@ -23,7 +23,7 @@ class ResetPasswordButton extends React.PureComponent {
           onReset={this.resetPassword}
         />
         <Button
-          outline
+          {...(this.props.darkMode ? { outline: false } : {outline: true})}
           color="primary"
           className={'btn  btn-outline-success mr-1' + (this.props.isSmallButton ? ' btn-sm' : '')}
           style={this.props.darkMode ? {boxShadow: "0 0 0 0", minWidth: '115px', fontWeight: "bold"} : { ...boxStyle, minWidth: '115px' }}

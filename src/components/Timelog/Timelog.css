@@ -60,7 +60,6 @@
 }
 
 .tab-pane {
-  max-height: 1025px;
   width: 100%;
 }
 
@@ -75,18 +74,19 @@
 
 .timelogPageContainer{
   width: 100%;
-  padding: 0 30%;
+  padding: 0 17%;
 }
 
 @media screen and (max-width: 1400px) and (min-width: 1100px) {
   .timelogPageContainer{
-    padding: 0 20%;
+    padding: 0 10%;
   }
 }
 
 @media screen and (max-width: 1100px) and (min-width: 800px) {
   .timelogPageContainer{
-    padding: 0 10%;
+    padding: 0 7%;
+    margin-left: 15px;
   }
 }
 
@@ -105,7 +105,7 @@
 
 @media (max-width: 544px) {
   .tab-pane {
-    max-height: 500px;
+    max-height: 1000px;
     overflow-y: scroll;
     width: 100%;
   }
@@ -175,11 +175,41 @@
   text-align: center;
 }
 
+.tasks-and-timelog-header-row{
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+}
+
+.tasks-and-timelog-header-add-time-div{
+  float: right;
+}
+
+.taskboard-header-title{
+  font-size: 1.8rem;
+}
+
+@media screen and (max-width: 1240px) {
+  .tasks-and-timelog-header-row{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  .tasks-and-timelog-header-add-time-div{
+    float: none;
+    margin-top: 10px;
+  }
+  .task-and-timelog-card-nav{
+    font-size: .9rem;
+  }
+}
+
 @media (min-width: 992px) { 
   .custom-text-alignment {
       text-align: right;
   }
 }
+
 
 .container-timelog-wrapper{
   min-height: 100%;

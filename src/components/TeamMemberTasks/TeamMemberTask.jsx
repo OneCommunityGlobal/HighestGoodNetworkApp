@@ -26,7 +26,7 @@ import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 import GoogleDocIcon from '../common/GoogleDocIcon';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
-import * as messages from '../../constants/followUpConstants'
+import * as messages from '../../constants/followUpConstants';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -75,7 +75,8 @@ const TeamMemberTask = React.memo(
     // these need to be changed to actual permissions...
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
-    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
+    const isAllowedToResolveTasks =
+      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     // ^^^
 
@@ -108,13 +109,13 @@ const TeamMemberTask = React.memo(
     const followUpMouseoverText = task => {
       const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
       if (progressPersantage < 50) {
-        return messages.MOUSE_OVER_TEXT_UNDER_50
+        return messages.MOUSE_OVER_TEXT_UNDER_50;
       } else if (progressPersantage >= 50 && progressPersantage < 75) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75
+        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75;
       } else if (progressPersantage >= 75 && progressPersantage < 90) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90
+        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90;
       } else if (progressPersantage >= 90) {
-        return messages.MOUSE_OVER_TEXT_OVER_90
+        return messages.MOUSE_OVER_TEXT_OVER_90;
       }
     };
 
@@ -138,7 +139,11 @@ const TeamMemberTask = React.memo(
                 <i
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', color: darkMode ? 'lightgray' : 'black' }}
+                  style={{
+                    fontSize: 24,
+                    cursor: 'pointer',
+                    color: darkMode ? 'lightgray' : 'black',
+                  }}
                   title="Click to see user's timelog"
                 />
               </Link>
@@ -196,7 +201,7 @@ const TeamMemberTask = React.memo(
                               className='team-member-tasks-content-link'
                               to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                               data-testid={`${task.taskName}`}
-                              style={{color: darkMode ? "#007BFF" : undefined}} 
+                              style={{ color: darkMode ? '#007BFF' : undefined }}
                             >
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
@@ -289,7 +294,11 @@ const TeamMemberTask = React.memo(
                               </span>
                               {canSeeFollowUpCheckButton && (
                                 <>
-                                  <FollowupCheckButton moseoverText={followUpMouseoverText(task)} user={user} task={task}/>
+                                  <FollowupCheckButton
+                                    moseoverText={followUpMouseoverText(task)}
+                                    user={user}
+                                    task={task}
+                                  />
                                   <FollowUpInfoModal />
                                 </>
                               )}
@@ -307,7 +316,8 @@ const TeamMemberTask = React.memo(
                         )}
                       </tr>
                     );
-                  })}
+                  })
+                }
                 {canTruncate && (
                   <tr key="truncate-button-row" className="task-break">
                     <td className={`task-align`}>

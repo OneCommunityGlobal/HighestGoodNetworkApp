@@ -42,6 +42,7 @@ import TabToolTips from './ToolTips/TabToolTips';
 import BasicToolTips from './ToolTips/BasicTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
+import { getAllTeamCode } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
 import { updateUserStatus, updateRehireableStatus } from '../../actions/userManagement';
@@ -134,6 +135,7 @@ function UserProfile(props) {
     dispatch(fetchAllProjects());
     dispatch(getAllUserTeams());
     dispatch(getAllTimeOffRequests());
+    dispatch(getAllTeamCode());
     fetchTeamCodeAllUsers();
   }, []);
 
@@ -184,6 +186,7 @@ function UserProfile(props) {
     setOriginalTeams(teams);
     const originalTeamProperties = [];
     originalTeams?.forEach(team => {
+      if (!team) return;
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           originalTeamProperties.push({ [key]: value });
@@ -193,6 +196,7 @@ function UserProfile(props) {
 
     const teamsProperties = [];
     teams?.forEach(team => {
+      if (!team) return;
       for (const [key, value] of Object.entries(team)) {
         if (key == 'teamName') {
           teamsProperties.push({ [key]: value });
@@ -213,7 +217,7 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-    setOriginalProjects(projects);
+
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -322,6 +326,9 @@ function UserProfile(props) {
         await loadSummaryIntroDetails(teamId, response.data);
       }
 
+      // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
+      newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
+      newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
       setTeams(newUserProfile.teams);
       setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
@@ -340,6 +347,8 @@ function UserProfile(props) {
         startDate: newUserProfile?.startDate.split('T')[0],
       });
       setUserStartDate(newUserProfile?.startDate.split('T')[0]);
+      checkIsProjectsEqual();
+      // isTeamSaved(true);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -496,23 +505,36 @@ function UserProfile(props) {
    */
   const modifyBlueSquares = (id, dateStamp, summary, operation) => {
     if (operation === 'add') {
-      const newBlueSquare = {
-        date: dateStamp,
-        description: summary,
-        createdDate: moment
-          .tz('America/Los_Angeles')
-          .toISOString()
-          .split('T')[0],
-      };
-      setOriginalUserProfile({
-        ...originalUserProfile,
-        infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
-      setUserProfile({
-        ...userProfile,
-        infringements: userProfile.infringements?.concat(newBlueSquare),
-      });
-      setModalTitle('Blue Square');
+      /* peizhou: check that the date of the blue square is not future or empty. */
+      if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
+        if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD'))) {
+          console.log('WARNING: Future Blue Square');
+          alert('WARNING: Cannot Assign Blue Square with a Future Date');
+        }
+        if (dateStamp === '') {
+          console.log('WARNING: Empty Date');
+          alert('WARNING: Cannot Assign Blue Square with an Empty Date');
+        }
+      } 
+      else {
+        const newBlueSquare = {
+          date: dateStamp,
+          description: summary,
+          createdDate: moment
+            .tz('America/Los_Angeles')
+            .toISOString()
+            .split('T')[0],
+        };
+        setOriginalUserProfile({
+          ...originalUserProfile,
+          infringements: userProfile.infringements?.concat(newBlueSquare),
+        });
+        setUserProfile({
+          ...userProfile,
+          infringements: userProfile.infringements?.concat(newBlueSquare),
+        });
+        setModalTitle('Blue Square');
+      }
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
       if (dateStamp != null && currentBlueSquares.length !== 0) {
@@ -571,6 +593,20 @@ function UserProfile(props) {
   };
 
   const toggle = modalName => setMenuModalTabletScreen(modalName);
+
+  useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 1025) {
+        setMenuModalTabletScreen('');
+      }
+    };
+
+    window.addEventListener('resize', handleResize);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   const toggleTab = tab => {
     if (activeTab !== tab) setActiveTab(tab);
@@ -753,7 +789,6 @@ function UserProfile(props) {
   const handleEndDate = async endDate => {
     setUserEndDate(endDate);
   };
-
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
@@ -780,7 +815,9 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      <Container className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+      <Container 
+        className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
         <Row>
           <Col md="4" id="profileContainer">
             <div className="profile-img">
@@ -830,7 +867,7 @@ function UserProfile(props) {
             (!isTeamsEqual && !isTeamSaved) ||
             !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '} 
               </Alert>
             ) : null}
             {!codeValid ? (
@@ -927,7 +964,7 @@ function UserProfile(props) {
                 ''
               )}
             </div>
-            <h6 className="text-azure">{jobTitle}</h6>
+            <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
             <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
               {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
               From : <span className={darkMode ? 'text-light' : ''}>{formatDateLocal(userProfile.startDate)}</span>
@@ -1010,7 +1047,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '1' },
                       'nav-link',
-                      darkMode && activeTab === '1' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '1' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={() => toggleTab('1')}
                     id="nabLink-basic"
@@ -1023,7 +1061,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '2' },
                       'nav-link',
-                      darkMode && activeTab === '2' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '2' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={() => toggleTab('2')}
                     id="nabLink-time"
@@ -1036,7 +1075,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '3' },
                       'nav-link',
-                      darkMode && activeTab === '3' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '3' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={() => toggleTab('3')}
                     id="nabLink-teams"
@@ -1049,7 +1089,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '4' },
                       'nav-link',
-                      darkMode && activeTab === '4' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '4' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={() => toggleTab('4')}
                     id="nabLink-projects"
@@ -1062,7 +1103,8 @@ function UserProfile(props) {
                     className={classnames(
                       { active: activeTab === '5' },
                       'nav-link',
-                      darkMode && activeTab === '5' ? 'bg-space-cadet text-light' : 'text-azure',
+                      darkMode && activeTab === '5' ? 'bg-space-cadet' : 'text-azure',
+                      darkMode ? 'text-light' : '',
                     )}
                     onClick={e => {
                       e.preventDefault();
@@ -1239,7 +1281,7 @@ function UserProfile(props) {
                         setTeams(originalTeams);
                         setProjects(resetProjects);
                       }}
-                      className="btn btn-outline-danger mr-1 btn-bottom"
+                      className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                       style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Cancel
@@ -1366,7 +1408,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1374,7 +1416,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1441,7 +1483,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1449,7 +1491,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1537,7 +1579,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1545,7 +1587,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1620,7 +1662,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1628,7 +1670,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1690,7 +1732,7 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className="btn btn-outline-danger mr-1 btn-bottom"
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1698,7 +1740,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        outline
+                        {...(darkMode ? { outline: false } : {outline: true})}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
