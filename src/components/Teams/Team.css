@@ -37,7 +37,7 @@ thead {
 }
 
 .teams__overview--top {
-  background: gray;
+  background: transparent;
 }
 
 .teams__overview--top .card {
