@@ -149,6 +149,7 @@ function UserProfile(props) {
       setInputAutoComplete(stringNoRepeat);
       setInputAutoStatus(response.status);
       setIsLoading(false);
+      return stringNoRepeat;
     } catch (error) {
       console.log(error);
       setIsLoading(false);

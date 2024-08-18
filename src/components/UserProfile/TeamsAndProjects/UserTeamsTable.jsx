@@ -35,12 +35,13 @@ const UserTeamsTable = props => {
   const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   const handleCodeChange = async (e, autoComplete) => {
-    const isUpdateAutoComplete = validationUpdateAutoComplete(autoComplete ? e : e.target.value);
-    const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
-    refInput.current = autoComplete ? e : e.target.value;
+    const validation = autoComplete ? e : e.target.value;
+    const isUpdateAutoComplete = validationUpdateAutoComplete(validation, props.inputAutoComplete);
+    const regexTest = fullCodeRegex.test(validation);
+    refInput.current = validation;
     if (regexTest) {
       props.setCodeValid(true);
-      setTeamCode(autoComplete ? e : e.target.value);
+      setTeamCode(validation);
       if (props.userProfile) {
         try {
           const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
@@ -49,36 +50,34 @@ const UserTeamsTable = props => {
           setTimeout(async () => {
             //prettier-ignore
             if(isUpdateAutoComplete.length === 0){
-              await props.fetchTeamCodeAllUsers();
+             const newAutoComplete = await props.fetchTeamCodeAllUsers();
               toast.info('Auto complete updated!')
+              validationUpdateAutoComplete(refInput.current, newAutoComplete);
             }
           }, 2000);
-          setArrayInputAutoComplete(props.inputAutoComplete);
         } catch {
           toast.error('It is not possible to save the team code.');
         }
       } else {
-        props.onAssignTeamCode(autoComplete ? e : e.target.value);
+        props.onAssignTeamCode(validation);
       }
     } else {
-      setTeamCode(autoComplete ? e : e.target.value);
+      setTeamCode(validation);
       props.setCodeValid(false);
     }
     autoComplete ? setShowDropdown(false) : null;
     autoComplete = false;
   };
 
-  const validationUpdateAutoComplete = e => {
+  const validationUpdateAutoComplete = (e, autoComplete) => {
     if (e !== '' && !props.isLoading) {
-      const isMatchingSearch = props.inputAutoComplete.filter(item =>
+      const isMatchingSearch = autoComplete.filter(item =>
         filterInputAutoComplete(item).includes(filterInputAutoComplete(e)),
       );
       setArrayInputAutoComplete(isMatchingSearch);
       //prettier-ignore
       return isMatchingSearch.filter(item => filterInputAutoComplete(item) === filterInputAutoComplete(e));
-    } else {
-      setArrayInputAutoComplete(props.inputAutoComplete);
-    }
+    } else setArrayInputAutoComplete(props.inputAutoComplete);
   };
   //prettier-ignore
   useEffect(() => {setArrayInputAutoComplete(props.inputAutoComplete)}, [props.inputAutoStatus]);
