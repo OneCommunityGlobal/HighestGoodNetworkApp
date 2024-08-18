@@ -1,3 +1,4 @@
+/* General Styles */
 .pie-chart-title {
   text-align: center;
   margin-bottom: 24px;
@@ -5,15 +6,29 @@
 
 .pie-chart-description {
   display: flex;
-  justify-content: center; /* Center the content horizontally */
+  justify-content: center;
   align-items: center;
-  background-color: white;
   overflow: auto;
-  flex-direction: row; /* Align items horizontally */
+  flex-direction: row;
   width: 100%;
-  margin-bottom: 16px; /* Add some space between sections */
+  margin-bottom: 16px;
+  padding: 0; /* Remove padding to avoid the box effect */
+  background-color: transparent; /* Remove background color */
 }
 
+/* Ensure the text color is dark in light mode and light in dark mode */
 .pie-chart-checkbox {
   margin-left: 8px; /* Space between label and checkbox */
+}
+
+/* General text color for dark mode */
+/* Add this to your CSS file */
+.dark-mode .all-time-total-text {
+  color: #000000; /* Black text */
+}
+
+/* Remove background color differences */
+.dark-mode .pie-chart-description {
+  background-color: transparent; /* Ensure there's no background */
+  color: inherit; /* Inherit the text color from the parent */
 }
