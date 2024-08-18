@@ -360,11 +360,11 @@ const Timelog = props => {
 
   const buildOptions = () => {
     const projectsObject = {};
-    const options = [(
+    const options = [
       <option className='responsive-font-size' value="all" key="TimeLogDefaultProjectOrTask" >
         Select Project/Task (all)
       </option>,
-    )];
+    ];
     displayUserProjects.forEach(project => {
       const { projectId } = project;
       project.WBSObject = {};
