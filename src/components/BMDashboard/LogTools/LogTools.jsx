@@ -306,6 +306,7 @@ function LogTools() {
                       isMulti
                       styles={multiSelectCustomStyles}
                       onChange={handleCodeSelect}
+                      aria-label="Select Tool Code"
                     />
                   </td>
                 </tr>

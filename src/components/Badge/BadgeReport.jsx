@@ -34,6 +34,7 @@ import hasPermission from '../../utils/permissions';
 import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function BadgeReport(props) {
@@ -325,7 +326,7 @@ function BadgeReport(props) {
   return (
     <div>
       <div className="desktop">
-        <div style={{ overflowY: 'scroll', height: '75vh' }}>
+        <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
             <thead style={{ zIndex: '10' }}>
               <tr style={{ zIndex: '10' }}>
@@ -514,7 +515,7 @@ function BadgeReport(props) {
       </div>
       <div className="tablet">
         <div style={{ overflow: 'auto', height: '68vh' }}>
-          <Table>
+          <Table className={darkMode ? 'text-light' : ''}>
             <thead style={{ zIndex: '10' }}>
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '93px' }}>Badge</th>
@@ -668,9 +669,7 @@ function BadgeReport(props) {
             style={{ margin: 5 }}
             onClick={e => {
               if (props.isRecordBelongsToJaeAndUneditable) {
-                alert(
-                  'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
-                );
+                alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
               }
               saveChanges();
             }}
