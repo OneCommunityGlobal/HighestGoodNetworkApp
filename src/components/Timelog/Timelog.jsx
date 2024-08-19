@@ -160,7 +160,8 @@ const Timelog = props => {
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
 
-  const defaultTab = () => {
+  const defaultTab = (data) => {
+    const userHaveTask = doesUserHaveTaskWithWBS(data);
     //change default to time log tab(1) in the following cases:
     const role = authUser.role;
     let tab = 0;
