@@ -228,10 +228,7 @@ function TotalOrgSummary(props) {
           </Col>
         </Row>
       </AccordianWrapper>
-      <AccordianWrapper
-        title="Volunteer Workload and Task Completion Analysis"
-        className={`${darkMode ? 'bg-oxford-blue text-light rounded-lg' : 'cbg--white-smoke'}`}
-      >
+      <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
         <Row
           className={`${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'} rounded-lg`}
         >
