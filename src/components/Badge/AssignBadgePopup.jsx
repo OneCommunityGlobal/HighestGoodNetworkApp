@@ -34,13 +34,7 @@ function AssignBadgePopup(props) {
           onSearch(e.target.value);
         }}
       />
-      <div
-        style={{
-          maxHeight: '300px',
-          overflowY: 'auto',
-          marginBottom: '10px',
-        }}
-      >
+      <div className="overflow-auto mb-2" style={{ maxHeight: '300px' }}>
         <Table className={darkMode ? 'text-light' : ''}>
           <thead>
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
