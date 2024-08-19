@@ -31,9 +31,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   let existTeamCodes = new Set();
   let existTeamName = new Set();
   if (teamsData?.allTeamCode) {
-    const codes = teamsData.allTeamCode.map(team => team.teamCode);
-    const names = teamsData.allTeamCode.map(team => team.teamName);
-    existTeamCodes = new Set(codes);
+    const names = teamsData.allTeams.map(team => team.teamName);
+    existTeamCodes = new Set(teamsData?.allTeamCode?.distinctTeamCodes);
     existTeamName = new Set(names);
   }
   const [selectedTeam, onSelectTeam] = useState(undefined);

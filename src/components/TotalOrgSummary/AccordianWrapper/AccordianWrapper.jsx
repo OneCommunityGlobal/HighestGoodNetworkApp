@@ -1,9 +1,16 @@
 import Collapsible from 'react-collapsible';
 import './AccordianWrapper.css';
+import { useSelector } from 'react-redux';
 
-export default function AccordianWrapper({ children, title, className }) {
+export default function AccordianWrapper({ children, title }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   return (
-    <Collapsible className={className} trigger={title} triggerClassName={className}>
+    <Collapsible
+      className={darkMode ? 'bg-space-cadet text-light' : ''}
+      openedClassName={darkMode ? 'bg-space-cadet text-light' : ''}
+      trigger={title}
+    >
       {children}
     </Collapsible>
   );
