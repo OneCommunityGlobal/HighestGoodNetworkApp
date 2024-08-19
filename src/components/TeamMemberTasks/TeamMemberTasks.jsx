@@ -546,11 +546,11 @@ const TeamMemberTasks = React.memo(props => {
         </section>
         {finishLoading ? (
           <section className=" hours-btn-container flex-wrap ml-2">
-            <div className="mb-2 ">
+            <div className="hours-btn-div">
               <button
                 type="button"
                 className={
-                  ` mr-1 show-time-off-btn ${
+                  `m-1 show-time-off-btn ${
                     showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
                   }` + (darkMode ? ' box-shadow-dark' : '')
                 }

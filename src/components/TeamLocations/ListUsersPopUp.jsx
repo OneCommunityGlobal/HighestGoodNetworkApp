@@ -44,16 +44,15 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                             display: 'flex',
                           }}
                         >
-                          {user.type === 'm_user' && (
-                            <Button
-                              color="danger"
-                              onClick={() => removeUser(user._id)}
-                              style={darkMode ? {} : boxStyle}
-                              className="btn mr-1 btn-sm"
-                            >
-                              Remove
-                            </Button>
-                          )}
+                          
+                          <Button
+                            color="danger"
+                            onClick={() => removeUser(user._id)}
+                            style={darkMode ? {} : boxStyle}
+                            className="btn mr-1 btn-sm"
+                          >
+                            Remove
+                          </Button>
                           <Button
                             color="Primary"
                             className="btn btn-outline-success mr-1 btn-sm"
