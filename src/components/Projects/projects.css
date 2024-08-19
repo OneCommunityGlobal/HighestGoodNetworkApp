@@ -38,9 +38,9 @@ thead {
   text-align: center;
 }
 
-.projects__overview--top {
+/* .projects__overview--top {
   background: gray;
-}
+} */
 
 .projects__overview--top .card {
   width: 200px;
@@ -96,4 +96,11 @@ thead {
 
 tr:hover {
   background: #e9f6ff;
+}
+
+@media (max-width: 375px) {
+  #new_project .form-control {
+    flex: 1 1 auto;
+    width: 50%;
+  }
 }

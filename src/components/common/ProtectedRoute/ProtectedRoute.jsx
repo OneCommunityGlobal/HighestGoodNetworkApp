@@ -14,12 +14,13 @@ const ProtectedRoute = ({
   fallback,
   ...rest
 }) => {
-  const permissions = roles?.find(({ roleName }) => roleName === auth.user.role)?.permissions;
-  const userPermissions = auth.user?.permissions?.frontPermissions;
-  let hasPermissionToAccess = permissions?.some(perm => perm === routePermissions);
+  const rolePermissions = roles?.find(({ roleName }) => roleName === auth.user.role)?.permissions || [];
+  const userPermissions = auth.user?.permissions?.frontPermissions || [];
+  const permissionsAllowed = new Set([...rolePermissions, ...userPermissions]);
+  let hasPermissionToAccess = routePermissions?.some(perm => permissionsAllowed.has(perm));
 
   if (Array.isArray(routePermissions)) {
-    if (permissions?.some(perm => routePermissions.includes(perm))) {
+    if (rolePermissions?.some(perm => routePermissions.includes(perm))) {
       hasPermissionToAccess = true;
     }
 
@@ -28,9 +29,6 @@ const ProtectedRoute = ({
     }
   }
 
-  if (userPermissions?.some(perm => perm === routePermissions)) {
-    hasPermissionToAccess = true;
-  }
   if (allowedRoles?.some(allowRole => allowRole === auth?.user?.role)) {
     hasPermissionToAccess = true;
   }

@@ -3,7 +3,7 @@
  * Author: Henry Ng - 08/01/20
  * Display member of the members list
  ********************************************************************************/
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
 import { deleteWbs } from './../../../../actions/wbs';
@@ -11,9 +11,11 @@ import { getPopupById } from './../../../../actions/popupEditorAction';
 import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { Link } from 'react-router-dom';
+
 
 const WBSItem = props => {
-  const {darkMode} = props;
+  const { darkMode } = props;
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const canDeleteWBS = props.hasPermission('deleteWbs');
@@ -25,7 +27,7 @@ const WBSItem = props => {
 
   return (
     <React.Fragment>
-      <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
+      <tr>
         <th scope="row">
           <div>{props.index}</div>
         </th>
@@ -55,13 +57,14 @@ const WBSItem = props => {
         confirmModal={() => confirmDelete()}
         modalMessage={props.popupEditor.currPopup.popupContent || ''}
         modalTitle="Confirm Deletion"
+        darkMode={darkMode}
       />
     </React.Fragment>
   );
 };
-const mapStateToProps = state => state;
+const mapStateToProps = (state) => state;
 export default connect(mapStateToProps, {
   deleteWbs,
   getPopupById,
-  hasPermission
+  hasPermission,
 })(WBSItem);
