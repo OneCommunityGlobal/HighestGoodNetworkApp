@@ -84,6 +84,15 @@ export function WbsPieChart({
   const handleShowPieChart = () => {
     setIsChecked(!isChecked);
   };
+
+  const noDataPlaceholder = [{
+    name: "No Data",
+    value: 1/1000,
+    projectName: projectName,
+    totalHoursCalculated: 0,
+    lastName: ""
+  }];
+
   return (
     <div className={darkMode ? 'text-light' : ''}>
       <div><h5> Owners, Managers and Admins in {projectName} </h5></div>
@@ -106,7 +115,7 @@ export function WbsPieChart({
 
       </div>)}
       {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
-        <ProjectPieChart userData={userData} windowSize={windowSize.width} darkMode={darkMode}/>
+        <ProjectPieChart userData={totalHours > 0 ? userData : noDataPlaceholder} windowSize={windowSize.width} darkMode={darkMode}/>
       </div>)}
     </div>
   )

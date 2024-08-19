@@ -86,6 +86,10 @@
     padding: 5px 10px;
     margin-bottom: 0.25rem;
   }
+
+  .dropdown-container {
+    z-index: 2;
+  }
 }
 
 .weekly-summary-report-container {
