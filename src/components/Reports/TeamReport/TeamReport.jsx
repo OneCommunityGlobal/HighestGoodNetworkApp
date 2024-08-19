@@ -534,7 +534,8 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
             {allTeamsMembers?.length > 1 ? (
               <tbody className="table">
                 {/* eslint-disable-next-line no-shadow */}
-                {memoizedSearchResults.map((team, index) => (
+                {/* Note: the handleSearch() function will cause the white page error */}
+                {/* handleSearch().map((team, index) => (
                   <tr className={`table-row ${darkMode ? 'bg-yinmn-blue text-light table-hover-dark' : ''}`} key={team._id}>
                     <td>
                       <input
@@ -584,7 +585,7 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
                     <td>{handleDate(team?.createdDatetime)}</td>
                     <td>{handleDate(team?.modifiedDatetime)}</td>
                   </tr>
-                ))}
+                ))*/}
               </tbody>
             ) : (
               <tbody>
