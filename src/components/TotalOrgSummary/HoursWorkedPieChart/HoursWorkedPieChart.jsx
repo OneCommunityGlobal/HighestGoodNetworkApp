@@ -41,7 +41,7 @@ const renderCustomizedLabel = ({
         textAnchor={x > cx ? 'start' : 'end'}
         dominantBaseline="central"
       >
-        {value.toFixed(0)}
+        {value > 0 && value.toFixed(0)}
       </text>
       <text
         x={x}
@@ -51,7 +51,7 @@ const renderCustomizedLabel = ({
         dominantBaseline="central"
         fontSize="8"
       >
-        {`(${(percent * 100).toFixed(0)}%)`}
+        {percent > 0 && `(${(percent * 100).toFixed(0)}%)`}
       </text>
       <text x={cx} y={cy} dy={-7} textAnchor="middle" fill="#696969">
         {title}

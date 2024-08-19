@@ -266,12 +266,12 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <span> task Completed</span>
+              <span className="fw-bold"> Task Completed</span>
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <span>hours completed </span>
+              <span className="fw-bold">Hours Completed </span>
             </div>
           </Col>
         </Row>
