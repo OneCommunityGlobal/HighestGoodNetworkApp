@@ -514,6 +514,13 @@ class PeopleReport extends Component {
       }
     };
 
+    const activeTasks = userTask.reduce((accumulator, item) => {
+      const incompleteTasks = item.resources.filter(
+        task => task.completedTask === false && task.userID === userProfile._id,
+      );
+      return accumulator.concat(incompleteTasks);
+    }, []);
+
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
@@ -575,15 +582,15 @@ class PeopleReport extends Component {
                 >
                   Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
                 </p>
+              ) : activeTasks.length > 0 ? (
+                <>
+                  <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
+                    <h4>Tasks contributed</h4>
+                  </div>
+                  <PeopleDataTable />
+                </>
               ) : (
-                userTask.length > 0 && (
-                  <>
-                    <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
-                      <h4>Tasks contributed</h4>
-                    </div>
-                    <PeopleDataTable />
-                  </>
-                )
+                <p className={`${darkMode ? 'text-light' : ''}`}>No tasks have been found.</p>
               )}
               <div className="Infringementcontainer">
                 <div className="InfringementcontainerInner">
