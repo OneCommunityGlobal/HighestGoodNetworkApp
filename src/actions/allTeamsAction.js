@@ -279,7 +279,7 @@ export const fetchAllTeamCodeSucess = (payload) => ({
 
 export const getAllTeamCode = () => {
 
-  const userTeamsPromise = axios.get(ENDPOINTS.TEAM_ALL_CODE);
+  const userTeamsPromise = axios.get(ENDPOINTS.USER_ALL_TEAM_CODE);
   return async (dispatch) => {
         return userTeamsPromise
           .then((res) => {
@@ -292,4 +292,3 @@ export const getAllTeamCode = () => {
           });
         }
 };
-    

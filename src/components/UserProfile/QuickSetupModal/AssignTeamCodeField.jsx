@@ -11,7 +11,6 @@ const AssignTeamCodeField = React.memo(props => {
     }
   });
   const [isOpen, toggle] = useState(false);
-
   useEffect(() => {
     if (props.selectedTeamCode && props.selectedTeamCode !== searchText) {
       props.onSelectTeamCode(undefined);
@@ -47,7 +46,6 @@ const AssignTeamCodeField = React.memo(props => {
         >
           {[...props.teamCodeData]
                       .filter(teamCode => {
-                         
               if (teamCode.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
                 return teamCode;
               }

@@ -64,7 +64,6 @@ const AssignTeamField = React.memo(props => {
             .slice(0, 10)
             .map(item => (
               <div
-                key={item._id}
                 className="team-auto-complete"
                 onClick={() => {
                   setSearchText(item.teamName);
