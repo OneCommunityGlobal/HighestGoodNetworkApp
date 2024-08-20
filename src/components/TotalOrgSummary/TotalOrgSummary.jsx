@@ -144,20 +144,6 @@ function TotalOrgSummary(props) {
           </Col>
         </Row>
       </AccordianWrapper>
-      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
-        <Row>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <VolunteerHoursDistribution />
-            </div>
-          </Col>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <VolunteerHoursDistribution />
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
     </Container>
   );
 }
