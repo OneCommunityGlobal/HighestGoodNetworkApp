@@ -36,6 +36,11 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { toast } from 'react-toastify';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -96,7 +101,7 @@ class UserManagement extends React.PureComponent {
               darkMode={darkMode}
             />
             <div className="table-responsive" id="user-management-table">
-              <Table className={`table table-bordered noWrap ${darkMode ? 'text-light' : ''}`}>
+              <Table className={`table table-bordered noWrap ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
                 <thead>
                   <UserTableHeader
                     authRole={this.props.state.auth.user.role}
@@ -115,7 +120,7 @@ class UserManagement extends React.PureComponent {
                     darkMode={darkMode}
                   />
                 </thead>
-                <tbody>{userTable}</tbody>
+                <tbody className={darkMode ? 'dark-mode' : ''}>{userTable}</tbody>
               </Table>
             </div>
             <UserTableFooter
@@ -316,8 +321,12 @@ class UserManagement extends React.PureComponent {
    */
   onLogTimeOffClick = user => {
     // Check if target user is Jae's related user and authroized to manage time off requests
-    if(cantUpdateDevAdminDetails(user.email , this.authEmail)){
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+    if (cantUpdateDevAdminDetails(user.email, this.authEmail)) {
+      if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
@@ -340,7 +349,11 @@ class UserManagement extends React.PureComponent {
 
   onFinalDayClick = (user, status) => {
     if(cantUpdateDevAdminDetails(user.email , this.authEmail)) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (user?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     if (status === FinalDay.NotSetFinalDay) {
@@ -486,7 +499,7 @@ class UserManagement extends React.PureComponent {
    */
   onFirstNameSearch = searchText => {
     this.setState({
-      firstNameSearchText: searchText,
+      firstNameSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };
@@ -496,7 +509,7 @@ class UserManagement extends React.PureComponent {
    */
   onLastNameSearch = searchText => {
     this.setState({
-      lastNameSearchText: searchText,
+      lastNameSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };
@@ -516,7 +529,7 @@ class UserManagement extends React.PureComponent {
    */
   onEmailSearch = searchText => {
     this.setState({
-      emailSearchText: searchText,
+      emailSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };
@@ -526,7 +539,7 @@ class UserManagement extends React.PureComponent {
    */
   onWeeklyHrsSearch = searchText => {
     this.setState({
-      weeklyHrsSearchText: searchText,
+      weeklyHrsSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };
@@ -555,7 +568,7 @@ class UserManagement extends React.PureComponent {
    */
   onWildCardSearch = searchText => {
     this.setState({
-      wildCardSearchText: searchText,
+      wildCardSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };

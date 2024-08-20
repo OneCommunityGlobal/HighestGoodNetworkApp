@@ -17,7 +17,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
 
     const [teamCode, setTeamCode] = useState(team.teamCode);
     const [hasError, setHasError] = useState(false);
-    const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+    const fullCodeRegex = /^.{5,7}$/;
 
     const handleOnChange = (value, team) => {
       updateTeam(team.teamName, team._id, team.isActive, value);
@@ -54,7 +54,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
                 invalid={hasError}
               />
               <FormFeedback>
-              The code format must be A-AAA or AAAAA.
+                 NOT SAVED! The code must be between 5 and 7 characters long
               </FormFeedback>
             </FormGroup>
           </div>
@@ -67,7 +67,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
 
   if (allTeams.length > 0) {
     TeamsList = allTeams.map((team, index) => (
-      <tr id={`tr_${team._id}`} key={team._id} className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <tr id={`tr_${team._id}`} key={team._id}>
         <th scope="row">
           <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
         </th>
@@ -95,8 +95,8 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
     <table 
       className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
       style={darkMode ? boxStyleDark : boxStyle}>
-      <thead className={darkMode ? "bg-space-cadet text-light" : ""}>
-        <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <thead>
+        <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
             #
           </th>
@@ -107,7 +107,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
           <th style={{width: '30%'}} scope="col">Team Code</th>
         </tr>
       </thead>
-      <tbody>{TeamsList}</tbody>
+      <tbody className={darkMode ? 'dark-mode' : ''}>{TeamsList}</tbody>
     </table>
   );
 }

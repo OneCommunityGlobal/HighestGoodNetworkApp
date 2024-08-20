@@ -16,6 +16,8 @@ import {
   NavItem,
   NavLink,
   Button,
+  Input,
+  Spinner,
 } from 'reactstrap';
 import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
@@ -23,6 +25,9 @@ import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -34,7 +39,7 @@ import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
-
+const fullCodeRegex = /^.{5,7}$/;
 export class WeeklySummariesReport extends Component {
   weekDates = Array.from({ length: 4 }).map((_, index) => ({
     fromDate: moment()
@@ -70,6 +75,9 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      replaceCode: '',
+      replaceCodeError: null,
+      replaceCodeLoading: false,
       // weeklyRecipientAuthPass: '',
     };
   }
@@ -137,6 +145,7 @@ export class WeeklySummariesReport extends Component {
         teamCodes.push({
           value: code,
           label: `${code} (${teamCodeGroup[code].length})`,
+          _ids: teamCodeGroup[code]?.map(item => item._id),
         });
       }
     });
@@ -153,6 +162,7 @@ export class WeeklySummariesReport extends Component {
       .push({
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+        _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
       });
     this.setState({
       loading,
@@ -327,6 +337,34 @@ export class WeeklySummariesReport extends Component {
     return 0;
   };
 
+  handleRefresh = async () => {
+    this.setState({ loading: true });
+
+    try {
+      const res = await this.props.getWeeklySummariesReport();
+      const summaries = res?.data ?? this.props.summaries;
+
+      const summariesCopy = this.alphabetize(summaries);
+      const updatedSummaries = summariesCopy.map(summary => {
+        const promisedHoursByWeek = this.weekDates.map(weekDate =>
+          this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+        );
+        return { ...summary, promisedHoursByWeek };
+      });
+
+      this.setState({
+        loading: false,
+        summaries: updatedSummaries,
+        filteredSummaries: updatedSummaries,
+      });
+
+      toast.success('Successfully Updated Weekly Summaries Report');
+    } catch (error) {
+      this.setState({ loading: false });
+      toast.error('Failed to update Weekly Summaries Report');
+    }
+  };
+
   toggleTab = tab => {
     const { activeTab } = this.state;
     if (activeTab !== tab) {
@@ -402,55 +440,133 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
-  handleTeamCodeChange = (oldTeamCode, newTeamCode, userId) => {
-    this.setState(prevState => {
-      let { teamCodes, summaries, selectedCodes } = prevState;
-
-      // Find and update the user's team code in summaries
-      summaries = summaries.map(summary => {
-        if (summary._id === userId) {
-          return { ...summary, teamCode: newTeamCode };
-        }
-        return summary;
-      });
-
-      // Count the occurrences of each team code
-      const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
-        acc[teamCode] = (acc[teamCode] || 0) + 1;
-        return acc;
-      }, {});
-
-      // Update teamCodes by filtering out those with zero count
-      teamCodes = Object.entries(teamCodeCounts)
-        .filter(([count]) => count > 0)
-        .map(([code, count]) => ({
-          label: `${code} (${count})`,
-          value: code,
-        }));
-
-      // Update selectedCodes labels and filter out those with zero count
-      selectedCodes = selectedCodes
-        .map(selected => {
-          const count = teamCodeCounts[selected.value];
-          if (count !== undefined && count > 0) {
-            return { ...selected, label: `${selected.value} (${count})` };
+  handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
+    try {
+      this.setState(prevState => {
+        let { teamCodes, summaries, selectedCodes } = prevState;
+        // Find and update the user's team code in summaries
+        summaries = summaries.map(summary => {
+          if (userIdObj[summary._id]) {
+            return { ...summary, teamCode: newTeamCode };
           }
-          return null;
-        })
-        .filter(Boolean);
+          return summary;
+        });
+        let noTeamCodeCount = 0;
+        summaries.forEach(summary => {
+          if (summary.teamCode.length <= 0) {
+            noTeamCodeCount += 1;
+          }
+        });
+        // Count the occurrences of each team code
+        const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
+          acc[teamCode] = (acc[teamCode] || 0) + 1;
+          return acc;
+        }, {});
+        const teamCodeWithUserId = summaries.reduce((acc, { _id, teamCode }) => {
+          if (acc && acc[teamCode]) {
+            acc[teamCode].push(_id);
+          } else {
+            acc[teamCode] = [_id];
+          }
+          return acc;
+        }, {});
+        // console.log(Object.entries(teamCodeCounts), 'teamCodecounts');
+        // Update teamCodes by filtering out those with zero count
+        teamCodes = Object.entries(teamCodeCounts)
+          .filter(([code, count]) => code.length > 0 && count > 0)
+          .map(([code, count]) => ({
+            label: `${code} (${count})`,
+            value: code,
+            _ids: teamCodeWithUserId[code],
+          }));
+        // Update selectedCodes labels and filter out those with zero count
+        selectedCodes = selectedCodes
+          .map(selected => {
+            const count = teamCodeCounts[selected.value];
+            const ids = teamCodeWithUserId[selected.value];
+            if (selected?.label.includes('Select All With NO Code') && noTeamCodeCount > 0) {
+              return {
+                ...selected,
+                label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+                _ids: ids,
+              };
+            }
+            if (count !== undefined && count > 0) {
+              return { ...selected, label: `${selected.value} (${count})`, _ids: ids };
+            }
+            return null;
+          })
+          .filter(Boolean);
 
-      if (!selectedCodes.find(code => code.value === newTeamCode)) {
-        selectedCodes.push({
-          label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
-          value: newTeamCode,
+        if (!selectedCodes.find(code => code.value === newTeamCode)) {
+          const ids = teamCodeWithUserId[newTeamCode];
+          if (newTeamCode !== undefined && newTeamCode.length > 0) {
+            selectedCodes.push({
+              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
+              value: newTeamCode,
+              _ids: ids,
+            });
+          }
+        }
+        // Sort teamCodes by label
+        teamCodes
+          .sort((a, b) => a.label.localeCompare(b.label))
+          .push({
+            value: '',
+            label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+            _ids: teamCodeWithUserId[''],
+          });
+        return { summaries, teamCodes, selectedCodes };
+      });
+    } catch (error) {
+      // console.log(error);
+    }
+  };
+
+  handleAllTeamCodeReplace = async () => {
+    try {
+      const { replaceCode } = this.state;
+      this.setState({ replaceCodeLoading: true });
+      const boolean = fullCodeRegex.test(replaceCode);
+      if (boolean) {
+        const userIds = this.state.selectedCodes.flatMap(item => item._ids);
+        const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
+        const payload = {
+          userIds,
+          replaceCode,
+        };
+        try {
+          const data = await axios.patch(url, payload);
+          const userObjs = userIds.reduce((acc, curr) => {
+            acc[curr] = true;
+            return acc;
+          }, {});
+          if (data?.data?.isUpdated) {
+            this.handleTeamCodeChange('', replaceCode, userObjs);
+            this.setState({ replaceCode: '', replaceCodeError: null });
+            this.filterWeeklySummaries();
+          } else {
+            this.setState({
+              replaceCode: '',
+              replaceCodeError: 'Update failed Please try again with another code!',
+            });
+          }
+        } catch (err) {
+          this.setState({ replaceCode: '', replaceCodeError: err.toJSON().message });
+        }
+      } else {
+        this.setState({
+          replaceCodeError: 'NOT SAVED! The code must be between 5 and 7 characters long.',
         });
       }
-
-      // Sort teamCodes by label
-      teamCodes.sort((a, b) => a.label.localeCompare(b.label));
-
-      return { summaries, teamCodes, selectedCodes };
-    });
+    } catch (error) {
+      this.setState({
+        replaceCode: '',
+        replaceCodeError: 'Something went wrong please try again!',
+      });
+    } finally {
+      this.setState({ replaceCodeLoading: false });
+    }
   };
 
   render() {
@@ -468,6 +584,9 @@ export class WeeklySummariesReport extends Component {
       colorOptions,
       teamCodes,
       auth,
+      replaceCode,
+      replaceCodeError,
+      replaceCodeLoading,
     } = this.state;
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -503,6 +622,7 @@ export class WeeklySummariesReport extends Component {
         </Container>
       );
     }
+
     return (
       <Container
         fluid
@@ -517,6 +637,15 @@ export class WeeklySummariesReport extends Component {
             <h3 className="mt-3 mb-5">
               <div className="d-flex align-items-center">
                 <span className="mr-2">Weekly Summaries Reports page</span>
+                <i
+                  data-toggle="tooltip"
+                  data-placement="right"
+                  title="Click to refresh the report"
+                  style={{ fontSize: 24, cursor: 'pointer' }}
+                  aria-hidden="true"
+                  className={`fa fa-refresh ${this.state.loading ? 'animation' : ''} mr-2`}
+                  onClick={this.handleRefresh}
+                />
                 <EditableInfoModal
                   areaName="WeeklySummariesReport"
                   areaTitle="Weekly Summaries Report"
@@ -548,18 +677,19 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
             <MultiSelect
-              className="multi-select-filter"
+              className="multi-select-filter text-dark"
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
                 this.handleSelectCodeChange(e);
               }}
+              labelledBy="Select"
             />
           </Col>
           <Col lg={{ size: 5 }} xs={{ size: 5 }}>
             Select Color
             <MultiSelect
-              className="multi-select-filter"
+              className="multi-select-filter text-dark"
               options={colorOptions}
               value={selectedColors}
               onChange={e => {
@@ -606,6 +736,37 @@ export class WeeklySummariesReport extends Component {
             </div>
           </Col>
         </Row>
+        {this.codeEditPermission && selectedCodes.length > 0 && (
+          <Row style={{ marginBottom: '10px' }}>
+            <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+              Replace With
+              <Input
+                type="string"
+                placeholder="replace"
+                value={replaceCode}
+                onChange={e => {
+                  this.setState({ replaceCode: e.target.value });
+                }}
+              />
+              {replaceCodeLoading ? (
+                <Spinner className="mt-3 mr-1" color="primary" />
+              ) : (
+                <Button
+                  className="mr-1 mt-3 btn-bottom"
+                  color="primary"
+                  onClick={this.handleAllTeamCodeReplace}
+                >
+                  Replace
+                </Button>
+              )}
+              {replaceCodeError && (
+                <Alert className="code-alert" color="danger">
+                  {replaceCodeError}
+                </Alert>
+              )}
+            </Col>
+          </Row>
+        )}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
