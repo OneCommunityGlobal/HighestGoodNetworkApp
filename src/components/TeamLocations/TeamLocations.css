@@ -174,22 +174,18 @@
 }
 
 /* Dark mode styles */
-.dark-mode {
+.team-locations-container.dark-mode {
   background-color: #0d1b2a !important;
   color: #fff !important;
 }
 
-.dark-mode-input {
+.team-locations-container .dark-mode-input {
   background-color: #1a2b3c !important;
   color: #fff !important;
   border: 1px solid #4a4a4a !important;
 }
 
-.dark-mode-dropdown {
+.team-locations-container .dark-mode-dropdown {
   background-color: #1a2b3c !important;
-  color: #fff !important;
-}
-
-.dark-mode .table .table-bordered .table-responsive-md tbody tr td{
   color: #fff !important;
 }

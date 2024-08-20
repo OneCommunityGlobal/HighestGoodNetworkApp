@@ -191,7 +191,7 @@ function TeamLocations() {
   });
 
   return (
-    <Container fluid className={`${darkMode ? 'bg-oxford-blue text-light dark-mode' : ''}`} style={{minHeight: "100%", paddingBottom: "73px"}}>
+    <Container fluid className={`${darkMode ? 'bg-oxford-blue text-light team-locations-container dark-mode' : ''}`} style={{minHeight: "100%", paddingBottom: "73px"}}>
       {isAbleToEdit && (
         <>
           <AddOrEditPopup
@@ -245,7 +245,7 @@ function TeamLocations() {
                     style={{ height: '300px' }}
                   >
                     {filteredMapMarkers.length > 0 ? (
-                      <table className="table table-bordered table-responsive-md">
+                      <table className={`table table-bordered table-responsive-md ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
                         <tbody>
                           {filteredMapMarkers.map(profile => {
                             let userName = '';
