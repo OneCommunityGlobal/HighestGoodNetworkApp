@@ -93,6 +93,7 @@ export const ENDPOINTS = {
   // TITLES: () => `${APIEndpoint}/title/deleteAll`,
   TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
   CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
+  EDIT_OLD_TITLE:  ()=>`${APIEndpoint}/title/update`,
   DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
 
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>

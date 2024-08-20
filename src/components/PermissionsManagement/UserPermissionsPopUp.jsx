@@ -17,6 +17,7 @@ import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
 function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
+  console.log("Thats the page")
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();

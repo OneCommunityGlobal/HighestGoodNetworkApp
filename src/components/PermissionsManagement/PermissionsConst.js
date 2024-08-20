@@ -404,13 +404,13 @@ export const permissionLabels = [
         description: 'Gives user permission to add new title in quick setup functions.',
       },
       {
-        label: 'Edit Title',
+        label: 'Assign Title',
         key: 'assignTitle',
         description: 'Gives user permission to edit existing title in quick setup functions.',
       },
       {
-        label: 'View Titles',
-        key: 'viewTitle',
+        label: 'Edit Titles',
+        key: 'editTitle',
         description: 'Gives user permission to view existing title in quick setup functions.',
       },
     ],
