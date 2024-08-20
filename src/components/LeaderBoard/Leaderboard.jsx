@@ -258,6 +258,10 @@ function LeaderBoard({
     setTextButton('My Team');
   };
 
+  const filteredUsers = teamsUsers.filter(user =>
+    user.name.toLowerCase().includes(searchInput.toLowerCase()),
+  );
+
   return (
     <div>
       <h3>
@@ -340,14 +344,14 @@ function LeaderBoard({
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search users..."
-          value={searchInput}
-          onChange={e => setSearchInput(e.target.value)}
-        />
-      </div>
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search users..."
+            value={searchInput}
+            onChange={e => setSearchInput(e.target.value)}
+          />
+        </div>
         <Table
           className={`leaderboard table-fixed ${
             darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
@@ -400,28 +404,40 @@ function LeaderBoard({
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
                   <span className="leaderboard-totals-title">
-                    0 hrs Totals: {individualsWithZeroHours.length} Members
+                    0 hrs Totals:{' '}
+                    {filteredUsers.filter(user => user.weeklycommittedHours === 0).length} Members
                   </span>
                 )}
               </th>
               <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
-                <span title="Tangible time">{organizationData.tangibletime || ''}</span>
+                <span title="Tangible time">
+                  {filteredUsers.reduce((total, user) => total + user.tangibletime, 0).toFixed(2)}
+                </span>
               </td>
               <td className="align-middle" aria-label="Description">
                 <Progress
-                  title={`TangibleEffort: ${organizationData.tangibletime} hours`}
-                  value={organizationData.barprogress}
-                  color={organizationData.barcolor}
+                  title={`TangibleEffort: ${filteredUsers
+                    .reduce((total, user) => total + user.tangibletime, 0)
+                    .toFixed(2)} hours`}
+                  value={
+                    (filteredUsers.reduce((total, user) => total + user.tangibletime, 0) /
+                      filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)) *
+                    100
+                  }
+                  color="primary"
                 />
               </td>
               <td className="align-middle">
                 <span title="Tangible + Intangible time = Total time">
-                  {organizationData.totaltime} of {organizationData.weeklycommittedHours}
+                  {filteredUsers
+                    .reduce((total, user) => total + parseFloat(user.totaltime), 0)
+                    .toFixed(2)}{' '}
+                  of {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
                 </span>
               </td>
             </tr>
-            {teamsUsers.map(item => (
+            {filteredUsers.map(item => (
               <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
