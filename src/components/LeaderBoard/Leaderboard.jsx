@@ -270,7 +270,6 @@ function LeaderBoard({
     } else if (moment().isBefore(moment(mostRecentRequest.startingDate))) {
       additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks');
     }
-
     return { isCurrentlyOff, additionalWeeks };
   };
 
@@ -574,7 +573,7 @@ function LeaderBoard({
                         justifyContent: 'center',
                       }}
                     >
-                      {additionalWeeks > 0 && (
+                      {(isCurrentlyOff || additionalWeeks > 0) && (
                         <button
                           type="button"
                           onClick={() => {
