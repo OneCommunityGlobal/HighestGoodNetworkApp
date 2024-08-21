@@ -76,7 +76,7 @@ export function ProjectReport({ match }) {
       }
       return acc;
     }, {});
-    setMergedProjectUsersArray(Object.values(mergedProjectUsers));   
+    setMergedProjectUsersArray(Object.values(mergedProjectUsers));
   }, [projectUsers]);
 
   useEffect(() => {
@@ -110,7 +110,7 @@ export function ProjectReport({ match }) {
     }
 
     return setHoursCommitted(0);
-    
+
   }, [tasksState, wbs]);
 
   useEffect(() => {
@@ -145,7 +145,7 @@ export function ProjectReport({ match }) {
       )}
       darkMode={darkMode}
     >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div> 
+      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>

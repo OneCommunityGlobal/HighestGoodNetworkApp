@@ -65,6 +65,7 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
+import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -628,16 +629,29 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = isActive => {
+  const setActiveInactive = async(isActive) => {
     setActiveInactivePopupOpen(false);
+    let endDate;
+
+    if (!isActive) {
+      endDate = await dispatch(getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate));
+      if (endDate == "N/A"){
+        endDate = userProfile.createdDate
+      }
+    }
     const newUserProfile = {
       ...userProfile,
-      isActive: !userProfile.isActive,
-      endDate: userProfile.isActive ? moment(new Date()).format('YYYY-MM-DD') : undefined,
+      isActive: isActive,
+      endDate: endDate || undefined,
     };
-    updateUserStatus(newUserProfile, isActive ? UserStatus.Active : UserStatus.InActive, undefined);
-    setUserProfile(newUserProfile);
-    setOriginalUserProfile(newUserProfile);
+
+    try{
+      await updateUserStatus(newUserProfile, isActive? UserStatus.Active : UserStatus.InActive, undefined);
+      setUserProfile(newUserProfile);
+      setOriginalUserProfile(newUserProfile);
+    } catch (error) {
+      console.error("Failed to update user status:", error);
+    }
   };
 
   const activeInactivePopupClose = () => {
