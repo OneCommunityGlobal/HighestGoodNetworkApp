@@ -17,9 +17,9 @@ export const TeamMember = props => {
 
   const toggle = () => setIsOpenModalTeamMember(!isOpenModalTeamMember);
 
-  //const allUserProfiles = useSelector(state => state.allUserProfiles.userProfiles);
+  const allUserProfiles = useSelector(state => state.allUserProfiles?.userProfiles || []);
 
-  //const allTeams = useSelector(state => state.allTeamsData.allTeams);
+  const allTeams = useSelector(state => state.allTeamsData?.allTeams || []);
 
   const [members, setMembers] = useState([]);
 
@@ -68,9 +68,9 @@ export const TeamMember = props => {
           onClose={toggle}
           members={members}
           onDeleteClick={deleteMyTeamMember}
-          usersdata={allUserProfiles || []}
+          usersdata={allUserProfiles}
           onAddUser={addMyTeamMember}
-          teamData={allTeams || []}
+          teamData={allTeams}
           onUpdateTeamMemberVisibility={updateTeamMemeberVisibility}
           selectedTeamName={teamName}
         />
