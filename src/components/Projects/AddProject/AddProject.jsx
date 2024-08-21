@@ -22,13 +22,16 @@
  
    const handleAddProject = () => {
      setLoading(true); // Start loading
-     props.onAddNewProject(newName, newCategory).then(() => {
-       // Reset fields after project is added
-       setNewName('');
-       setNewCategory('Unspecified');
-       setShowAddButton(false);
-       setLoading(false); // Stop loading
-     });
+     Promise.resolve(props.onAddNewProject(newName, newCategory))
+    .then(() => {
+      // Reset fields after the project is added
+      setNewName('');
+      setNewCategory('Unspecified');
+      setShowAddButton(false);
+    })
+    .finally(() => {
+      setLoading(false); // Stop loading
+    });
    };
  
    return (
