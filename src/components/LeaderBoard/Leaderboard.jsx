@@ -559,6 +559,23 @@ function LeaderBoard({
                     {hasVisibilityIconPermission && !item.isVisible && (
                       <i className="fa fa-eye-slash" title="User is invisible" />
                     )}
+                    {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
+                      <span
+                        style={{
+                          marginLeft: '20px',
+                          color: '#17a2b8',
+                          fontSize: '15px',
+                          justifyItems: 'center',
+                        }}
+                        title={
+                          isCurrentlyOff
+                            ? `${additionalWeeks} additional weeks off`
+                            : `${additionalWeeks} weeks until next time off`
+                        }
+                      >
+                        {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                      </span>
+                    )}
                   </th>
                   <td className="align-middle">
                     <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
@@ -609,22 +626,6 @@ function LeaderBoard({
                             </svg>
                           </i>
                         </button>
-                      )}
-                      {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
-                        <span
-                          style={{
-                            color: '#007BFF',
-                            fontSize: '15px',
-                            justifyItems: 'center',
-                          }}
-                          title={
-                            isCurrentlyOff
-                              ? `${additionalWeeks} additional weeks off`
-                              : `${additionalWeeks} weeks until next time off`
-                          }
-                        >
-                          {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
-                        </span>
                       )}
                     </div>
                   </td>
