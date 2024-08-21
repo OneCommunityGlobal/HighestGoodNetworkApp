@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import './Leaderboard.css';
-import { isEqual } from 'lodash';
+import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
 import {
   Table,
@@ -103,6 +103,7 @@ function LeaderBoard({
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
   const [innerWidth, setInnerWidth] = useState();
   const [searchInput, setSearchInput] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -195,9 +196,6 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
-  const individualsWithZeroHours = leaderBoardData.filter(
-    individuals => individuals.weeklycommittedHours === 0,
-  );
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -258,9 +256,19 @@ function LeaderBoard({
     setTextButton('My Team');
   };
 
-  const filteredUsers = teamsUsers.filter(user =>
-    user.name.toLowerCase().includes(searchInput.toLowerCase()),
+  const debouncedFilterUsers = useCallback(
+    debounce(query => {
+      setFilteredUsers(
+        teamsUsers.filter(user => user.name.toLowerCase().includes(query.toLowerCase())),
+      );
+    }, 1000),
+    [teamsUsers],
   );
+
+  const handleSearch = e => {
+    setSearchInput(e.target.value);
+    debouncedFilterUsers(e.target.value);
+  };
 
   return (
     <div>
@@ -346,10 +354,11 @@ function LeaderBoard({
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <div className="search-container">
           <input
+            class="form-control col-12 my-2"
             type="text"
             placeholder="Search users..."
             value={searchInput}
-            onChange={e => setSearchInput(e.target.value)}
+            onChange={handleSearch}
           />
         </div>
         <Table
