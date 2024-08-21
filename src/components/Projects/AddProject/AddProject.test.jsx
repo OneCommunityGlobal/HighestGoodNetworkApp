@@ -76,19 +76,15 @@ describe('AddProject component state handlers', () => {
     const inputField = screen.getByRole('textbox');
     const selectElement = screen.getByRole('combobox');
 
-    // Type into the input field to make the button appear
     fireEvent.change(inputField, { target: { value: 'New Project' } });
     fireEvent.change(selectElement, { target: { value: 'Food' } });
 
-    // Now find the button element
     const buttonElement = screen.getByRole('button');
 
-    // Click the button
     await act(async () => {
       fireEvent.click(buttonElement);
     });
 
-    // Assert that the mock function was called with the correct arguments
     expect(mockAddNewProject).toHaveBeenCalledWith('New Project', 'Food');
   });
 });

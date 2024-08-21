@@ -1,8 +1,3 @@
-/*********************************************************************************
- * Component: postProject
- * Author: Henry Ng - 01/17/20
- * This component is used to add more project into the database
- ********************************************************************************/
  import React, { useState } from 'react';
 
  const AddProject = props => {
