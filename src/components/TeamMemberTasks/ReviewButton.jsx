@@ -24,10 +24,16 @@ const ReviewButton = ({
   const [link, setLink] = useState("");
   const [verifyModal, setVerifyModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const toggleModal = () => {
     setModal(!modal);
   };
+
+  const modalCancelButtonHandler = () => {
+    toggleModal();
+    setIsSubmitting(false);
+  }
 
   const toggleVerify = () => {
     setVerifyModal(!verifyModal);
@@ -77,16 +83,18 @@ const ReviewButton = ({
         setLink("");
       } else {
         alert('Invalid URL. Please enter a valid URL of at least 20 characters');
+        setIsSubmitting(false);
         return;
       }
     }
     updateTask(task._id, updatedTask);
     setModal(false);
+    setIsSubmitting(true);
   };
 
   const buttonFormat = () => {
     if (user.personId === myUserId && reviewStatus === "Unsubmitted") {
-      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={darkMode ? boxStyleDark : boxStyle}>
+      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={darkMode ? boxStyleDark : boxStyle} disabled = { isSubmitting }>
         Submit for Review
       </Button>;
      } else if (reviewStatus === "Submitted")  {
@@ -211,7 +219,7 @@ const ReviewButton = ({
               : `Complete`}
           </Button>
           <Button
-            onClick={toggleModal}
+            onClick={modalCancelButtonHandler}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             Cancel
