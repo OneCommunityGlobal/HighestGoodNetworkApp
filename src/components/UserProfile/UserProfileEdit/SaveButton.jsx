@@ -97,7 +97,7 @@ const SaveButton = props => {
         darkMode={darkMode}
       />
       <Button
-        outline
+        {...(darkMode ? { outline: false } : {outline: true})}
         color={darkMode ? 'light' : 'primary'}
         // to={`/userprofile/${this.state.userProfile._id}`}
         //the line below caused the mouse over issue, so I commented it out

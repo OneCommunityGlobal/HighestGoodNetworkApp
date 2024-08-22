@@ -1,10 +1,18 @@
 import { connect } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import 'moment-timezone';
 
 import hasPermission from 'utils/permissions';
-import { getTotalOrgSummary, getTaskAndProjectStats } from 'actions/totalOrgSummary';
+
+// actions
+import { getTotalOrgSummary } from 'actions/totalOrgSummary';
+import { getAllUserProfile } from 'actions/userManagement';
+import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
+import { getTimeEntryForOverDate } from 'actions/index';
+import { getTaskAndProjectStats } from 'actions/totalOrgSummary';
+
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -13,23 +21,151 @@ import './TotalOrgSummary.css';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
+import HoursWorkList from './HoursWorkList/HoursWorkList';
+import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
+import Loading from '../common/Loading';
 
-const startDate = '2016-01-01';
-const endDate = new Date().toISOString().split('T')[0];
-const lastStartDate = '2022-01-01';
-const lastEndDate = '2024-01-01';
+function calculateFromDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
+  currentDate.setDate(currentDate.getDate() - daysToSubtract - 7);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateToDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToAdd = dayOfWeek === 6 ? 0 : -1 - dayOfWeek;
+  currentDate.setDate(currentDate.getDate() + daysToAdd);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateFromOverDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToSubtract = dayOfWeek === 0 ? 0 : dayOfWeek;
+  currentDate.setDate(currentDate.getDate() - daysToSubtract - 14);
+  return currentDate.toISOString().split('T')[0];
+}
+
+function calculateToOverDate() {
+  const currentDate = new Date();
+  currentDate.setHours(0, 0, 0, 0);
+  const dayOfWeek = currentDate.getDay();
+  const daysToAdd = dayOfWeek === 6 ? 0 : -8 - dayOfWeek;
+  currentDate.setDate(currentDate.getDate() + daysToAdd);
+  return currentDate.toISOString().split('T')[0];
+}
+
+const fromDate = calculateFromDate();
+const toDate = calculateToDate();
+const fromOverDate = calculateFromOverDate();
+const toOverDate = calculateToOverDate();
+
+const aggregateTimeEntries = userTimeEntries => {
+  const aggregatedEntries = {};
+
+  userTimeEntries.forEach(entry => {
+    const { personId, hours, minutes } = entry;
+    if (!aggregatedEntries[personId]) {
+      aggregatedEntries[personId] = {
+        hours: parseInt(hours, 10),
+        minutes: parseInt(minutes, 10),
+      };
+    } else {
+      aggregatedEntries[personId].hours += parseInt(hours, 10);
+      aggregatedEntries[personId].minutes += parseInt(minutes, 10);
+    }
+  });
+
+  Object.keys(aggregatedEntries).forEach(personId => {
+    const totalMinutes = aggregatedEntries[personId].minutes;
+    const additionalHours = Math.floor(totalMinutes / 60);
+    aggregatedEntries[personId].hours += additionalHours;
+    aggregatedEntries[personId].minutes = totalMinutes % 60;
+  });
+
+  const result = Object.entries(aggregatedEntries).map(([personId, { hours, minutes }]) => ({
+    personId,
+    hours,
+    minutes,
+  }));
+
+  return result;
+};
 
 function TotalOrgSummary(props) {
-  const { darkMode, loading, error } = props;
+  const { darkMode, loading, error, allUserProfiles } = props;
+
+  const [usersId, setUsersId] = useState([]);
+  const [usersTimeEntries, setUsersTimeEntries] = useState([]);
+  const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
   const [taskProjectHours, setTaskProjectHours] = useState([]);
 
+  const dispatch = useDispatch();
+
+  const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+
   useEffect(() => {
+    dispatch(getAllUserProfile());
+  }, []);
+
+  useEffect(() => {
+    if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
+      const idsList = allUserProfiles.userProfiles.reduce((acc, user) => {
+        if (user.isActive) acc.push(user._id);
+        return acc;
+      }, []);
+      setUsersId(idsList);
+    }
+  }, [allUserProfiles]);
+
+  useEffect(() => {
+    if (Array.isArray(usersId) && usersId.length > 0 && fromDate && toDate) {
+      dispatch(getAllUsersTimeEntries(usersId, fromDate, toDate));
+    }
+  }, [usersId, fromDate, toDate, dispatch]);
+
+  useEffect(() => {
+    if (
+      !Array.isArray(allUsersTimeEntries.usersTimeEntries) ||
+      allUsersTimeEntries.usersTimeEntries.length === 0
+    ) {
+      return;
+    }
+    const aggregatedEntries = aggregateTimeEntries(allUsersTimeEntries.usersTimeEntries);
+    setUsersTimeEntries(aggregatedEntries);
+  }, [allUsersTimeEntries]);
+
+  useEffect(() => {
+    if (Array.isArray(usersId) && usersId.length > 0) {
+      getTimeEntryForOverDate(usersId, fromOverDate, toOverDate)
+        .then(response => {
+          if (response && Array.isArray(response)) {
+            setUsersOverTimeEntries(response);
+          } else {
+            // eslint-disable-next-line no-console
+            console.log('error on fetching data');
+          }
+        })
+        .catch(() => {
+          // eslint-disable-next-line no-console
+          console.log('error on fetching data');
+        });
+    }
+    
+  }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
+    useEffect(() => {
     async function fetchData() {
-      const { taskHours, projectHours } = await props.getTaskAndProjectStats(startDate, endDate);
+      const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
       const {
         taskHours: lastTaskHours,
         projectHours: lastProjectHours,
-      } = await props.getTaskAndProjectStats(lastStartDate, lastEndDate);
+      } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
 
       if (taskHours && projectHours) {
         setTaskProjectHours({
@@ -38,12 +174,10 @@ function TotalOrgSummary(props) {
           lastTaskHours,
           lastProjectHours,
         });
-      }
-      getTotalOrgSummary(startDate, endDate);
-      hasPermission('');
+      
     }
     fetchData();
-  }, [startDate, endDate, lastStartDate, lastEndDate, getTotalOrgSummary, hasPermission]);
+  }, [fromDate, toDate, fromOverDate, toOverDate]);
 
   if (error) {
     return (
@@ -118,15 +252,41 @@ function TotalOrgSummary(props) {
         </Row>
       </AccordianWrapper>
       <AccordianWrapper title="Volunteer Workload and Task Completion Analysis">
-        <Row>
+        <Row
+          className={`${darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'} rounded-lg`}
+        >
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              {(allUserProfiles.fetching || allUsersTimeEntries.loading) && (
+                <div className="d-flex justify-content-center align-items-center0">
+                  <div className="w-100vh ">
+                    <Loading />
+                  </div>
+                </div>
+              )}
+              <div className="d-flex flex-row justify-content-center flex-wrap">
+                {Array.isArray(usersTimeEntries) && usersTimeEntries.length > 0 && (
+                  <>
+                    <VolunteerHoursDistribution
+                      darkMode={darkMode}
+                      usersTimeEntries={usersTimeEntries}
+                      usersOverTimeEntries={usersOverTimeEntries}
+                    />
+                    <div className="d-flex flex-column align-items-center justify-content-center">
+                      <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />
+                      <NumbersVolunteerWorked
+                        usersTimeEntries={usersTimeEntries}
+                        darkMode={darkMode}
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <span className="fw-bold"> Task Completed</span>
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
@@ -185,16 +345,18 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  volunteerstats: state.volunteerstats,
+  totalOrgSummary: state.totalOrgSummary,
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
+  allUserProfiles: state.allUserProfiles,
 });
 
 const mapDispatchToProps = dispatch => ({
   getTotalOrgSummary: () => dispatch(getTotalOrgSummary(startDate, endDate)),
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(startDate, endDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
+  getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);
