@@ -14,7 +14,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
-import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
+import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
   ListGroup,
@@ -37,6 +37,7 @@ import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
 import GoogleDocIcon from '../common/GoogleDocIcon';
+import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
 const textColors = {
   Default: '#000000',
@@ -51,8 +52,8 @@ const textColors = {
   'Team Amethyst': '#9400D3',
 };
 
-function ListGroupItem({ children }) {
-  return <LGI className="px-0 border-0 py-1">{children}</LGI>;
+function ListGroupItem({ children, darkMode }) {
+  return <LGI className={`px-0 border-0 py-1 ${darkMode ? 'bg-yinmn-blue' : ''}`}>{children}</LGI>;
 }
 
 function FormattedReport({
@@ -65,8 +66,11 @@ function FormattedReport({
   canEditTeamCode,
   auth,
   canSeeBioHighlight,
+  darkMode,
+  handleTeamCodeChange,
 }) {
-  // if (auth?.user?.role){console.log(auth.user.role)}
+  const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
+
   const dispatch = useDispatch();
   const isEditCount = dispatch(hasPermission('totalValidWeeklySummaries'));
 
@@ -75,6 +79,7 @@ function FormattedReport({
       <ListGroup flush>
         {summaries.map(summary => (
           <ReportDetails
+            loggedInUserEmail={loggedInUserEmail}
             key={summary._id}
             summary={summary}
             weekIndex={weekIndex}
@@ -83,8 +88,11 @@ function FormattedReport({
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
-            loadBadges={loadBadges}
+            loadBzadges={loadBadges}
             canSeeBioHighlight={canSeeBioHighlight}
+            darkMode={darkMode}
+            handleTeamCodeChange={handleTeamCodeChange}
+            auth={auth}
           />
         ))}
       </ListGroup>
@@ -173,6 +181,18 @@ function EmailsList({ summaries, auth }) {
   return null;
 }
 
+function getTextColorForHoursLogged(hoursLogged, promisedHours) {
+  const percentage = (hoursLogged / promisedHours) * 100;
+
+  if (percentage < 50) {
+    return 'red';
+  }
+  if (percentage < 100) {
+    return '#0B6623';
+  }
+  return 'black';
+}
+
 function ReportDetails({
   summary,
   weekIndex,
@@ -183,9 +203,14 @@ function ReportDetails({
   loadBadges,
   canEditTeamCode,
   canSeeBioHighlight,
+  loggedInUserEmail,
+  darkMode,
+  handleTeamCodeChange,
+  auth,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
+  const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const isMeetCriteria =
@@ -199,47 +224,50 @@ function ReportDetails({
   }, []);
 
   return (
-    <li className="list-group-item px-0" ref={ref}>
+    <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
-        <ListGroupItem>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
+        <ListGroupItem darkMode={darkMode}>
+          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} auth={auth} />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
-            <ListGroupItem>
-              <TeamCodeRow canEditTeamCode={canEditTeamCode} summary={summary} />
+            <ListGroupItem darkMode={darkMode}>
+              <TeamCodeRow
+                canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
+                summary={summary}
+                handleTeamCodeChange={handleTeamCodeChange}
+              />
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <div style={{ width: '200%', backgroundColor: isMeetCriteria ? 'yellow' : 'none' }}>
                 <Bio
-                  bioCanEdit={bioCanEdit}
+                  bioCanEdit={bioCanEdit && !cantEditJaeRelatedRecord}
                   userId={summary._id}
                   bioPosted={summary.bioPosted}
                   summary={summary}
                 />
               </div>
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <TotalValidWeeklySummaries
                 summary={summary}
-                canEditSummaryCount={canEditSummaryCount}
+                canEditSummaryCount={canEditSummaryCount && !cantEditJaeRelatedRecord}
               />
             </ListGroupItem>
-            <ListGroupItem>
-              {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-                <p style={{ color: 'red' }}>
-                  Hours logged: {''}
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              )}
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-                <p>
-                  Hours logged: {''}
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              )}
+            <ListGroupItem darkMode={darkMode}>
+              <p
+                style={{
+                  color: getTextColorForHoursLogged(
+                    hoursLogged,
+                    summary.promisedHoursByWeek[weekIndex],
+                  ),
+                  fontWeight: 'bold',
+                }}
+              >
+                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+              </p>
             </ListGroupItem>
-            <ListGroupItem>
+            <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
             </ListGroupItem>
           </Col>
@@ -315,15 +343,18 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary }) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^.{5,7}$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
-    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
+    const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
     try {
-      await axios.patch(url, { key: 'teamCode', value: newStatus });
+      await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
+      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
+        [userProfileSummary._id]: true,
+      }); // Update the team code dynamically
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -334,8 +365,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
 
   const handleCodeChange = e => {
     const { value } = e.target;
-
-    if (value.length <= 5) {
+    if (value.length <= 7) {
       const regexTest = fullCodeRegex.test(value);
       if (regexTest) {
         setHasError(false);
@@ -347,6 +377,10 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
       }
     }
   };
+
+  useEffect(() => {
+    setTeamCode(summary?.teamCode);
+  }, [summary.teamCode]);
 
   return (
     <>
@@ -374,7 +408,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
       </div>
       {hasError ? (
         <Alert className="code-alert" color="danger">
-          NOT SAVED! The code format must be A-AAA or AAAAA.
+          NOT SAVED! The code must be between 5 and 7 characters long.
         </Alert>
       ) : null}
     </>
@@ -388,7 +422,7 @@ function MediaUrlLink({ summary }) {
         href={summary.mediaUrl}
         target="_blank"
         rel="noopener noreferrer"
-        style={{ paddingLeft: '5px' }}
+        style={{ paddingLeft: '5px', color: '#007BFF' }}
       >
         Open link to media files
       </a>
@@ -598,7 +632,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo }) {
+function Index({ summary, weekIndex, allRoleInfo, auth }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
@@ -621,20 +655,28 @@ function Index({ summary, weekIndex, allRoleInfo }) {
             currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
             currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
-              : undefined,
+              : '#007BFF',
         }}
         title="View Profile"
       >
         {summary.firstName} {summary.lastName}
       </Link>
 
-      <GoogleDocIcon link={googleDocLink} />
-      <span>
-        <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
-      </span>
-      {summary.role !== 'Volunteer' && (
-        <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)} />
-      )}
+      <div style={{ display: 'inline-block' }}>
+        <div style={{ display: 'flex' }}>
+          <GoogleDocIcon link={googleDocLink} />
+          <span>
+            <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+          </span>
+          {summary.role !== 'Volunteer' && (
+            <RoleInfoModal
+              info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
+              auth={auth}
+            />
+          )}
+        </div>
+      </div>
+
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"

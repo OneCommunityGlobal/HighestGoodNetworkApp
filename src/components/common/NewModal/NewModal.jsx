@@ -22,7 +22,8 @@ const NewModal = ({ header, children, trigger }) => {
       <div className="popup-modal-wrapper">
         <div className="popup-header">
           <h5 style={{ margin: 0 }}>{header}</h5>
-          <div onClick={closePopup}
+          <div
+            onClick={closePopup}
             onKeyDown={event => {
               if (event.key === 'Enter' || event.key === ' ') {
                 closePopup();

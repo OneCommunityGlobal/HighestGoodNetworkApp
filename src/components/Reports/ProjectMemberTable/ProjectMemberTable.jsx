@@ -2,8 +2,9 @@ import { Stub } from '../../common/Stub';
 import React, { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
+import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 
-export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount, darkMode }) => {
+export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount, darkMode, counts }) => {
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
@@ -41,7 +42,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile"  className={darkMode ? "text-light" : ""}>
+      <Link to={`/userprofile/${member._id}`} title="View Profile"  className={`project-member-table-name-column ${darkMode ? "text-light" : ""}`}>
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`}          
         </div>
@@ -57,7 +58,10 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           </div>
         )}
       </div>
-      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>      
+      <div className='project-member-table-id-column'>
+        <CopyToClipboard writeText={member._id} message={`Copied "${member._id}".`} />
+        {member._id}
+      </div> 
     </div>
   ));
 
@@ -66,7 +70,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div>
         <div>{skip + index + 1}</div>
       </div>
-      <Link to={`/userprofile/${member._id}`} title="View Profile" className={darkMode ? 'text-light' : ''}>
+      <Link to={`/userprofile/${member._id}`} title="View Profile" className={`project-member-table-name-column ${darkMode ? 'text-light' : ''}`}>
         <div>
         {window.innerWidth >= 1100 ? `${member.firstName} ${member.lastName}` : `${member.firstName.substring(0, 10)} ${member.lastName.substring(0, 1)}`} 
         </div>
@@ -82,7 +86,10 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
           </div>
         )}
       </div>
-      <div>{window.innerWidth >= 1100 ? member._id : member._id.substring(0, 10)}</div>    
+      <div className='project-member-table-id-column'>
+        <CopyToClipboard writeText={member._id} message={`Copied "${member._id}".`} />
+        {member._id}
+      </div>     
     </div>
   ));
 
@@ -102,18 +109,18 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       >
         <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
         <label htmlFor="active" id="project-active-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ACTIVE: {foundUsers.length}
+          ACTIVE: {counts.activeMemberCount}
         </label>
         <input type="radio" name="memberFilter" value="all-time" id="all-time" />
         <label htmlFor="all-time" id="project-all-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ALL-TIME: {members.length}
+          ALL-TIME: {counts.memberCount}
         </label>
       </div>
       </div>
       <div className={`reports-table-head-members ${darkMode ? 'bg-space-cadet' : ''}`}>
         <div className="reports-table-head-cell">#</div>
         <div className="reports-table-head-cell">Name</div>
-        <div className="reports-table-head-cell">Active</div>
+        <div className="reports-table-head-cell project-member-table-active-column">Active</div>
         <div className="reports-table-head-cell">ID</div>
       </div>
       <div>

@@ -16,13 +16,18 @@ import {
   NavItem,
   NavLink,
   Button,
+  Input,
+  Spinner,
 } from 'reactstrap';
 import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
 import 'moment-timezone';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { toast } from 'react-toastify';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -34,7 +39,7 @@ import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
-
+const fullCodeRegex = /^.{5,7}$/;
 export class WeeklySummariesReport extends Component {
   weekDates = Array.from({ length: 4 }).map((_, index) => ({
     fromDate: moment()
@@ -70,6 +75,9 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      replaceCode: '',
+      replaceCodeError: null,
+      replaceCodeLoading: false,
       // weeklyRecipientAuthPass: '',
     };
   }
@@ -137,6 +145,7 @@ export class WeeklySummariesReport extends Component {
         teamCodes.push({
           value: code,
           label: `${code} (${teamCodeGroup[code].length})`,
+          _ids: teamCodeGroup[code]?.map(item => item._id),
         });
       }
     });
@@ -153,6 +162,7 @@ export class WeeklySummariesReport extends Component {
       .push({
         value: '',
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+        _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
       });
     this.setState({
       loading,
@@ -327,6 +337,34 @@ export class WeeklySummariesReport extends Component {
     return 0;
   };
 
+  handleRefresh = async () => {
+    this.setState({ loading: true });
+
+    try {
+      const res = await this.props.getWeeklySummariesReport();
+      const summaries = res?.data ?? this.props.summaries;
+
+      const summariesCopy = this.alphabetize(summaries);
+      const updatedSummaries = summariesCopy.map(summary => {
+        const promisedHoursByWeek = this.weekDates.map(weekDate =>
+          this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+        );
+        return { ...summary, promisedHoursByWeek };
+      });
+
+      this.setState({
+        loading: false,
+        summaries: updatedSummaries,
+        filteredSummaries: updatedSummaries,
+      });
+
+      toast.success('Successfully Updated Weekly Summaries Report');
+    } catch (error) {
+      this.setState({ loading: false });
+      toast.error('Failed to update Weekly Summaries Report');
+    }
+  };
+
   toggleTab = tab => {
     const { activeTab } = this.state;
     if (activeTab !== tab) {
@@ -402,8 +440,137 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
+  handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
+    try {
+      this.setState(prevState => {
+        let { teamCodes, summaries, selectedCodes } = prevState;
+        // Find and update the user's team code in summaries
+        summaries = summaries.map(summary => {
+          if (userIdObj[summary._id]) {
+            return { ...summary, teamCode: newTeamCode };
+          }
+          return summary;
+        });
+        let noTeamCodeCount = 0;
+        summaries.forEach(summary => {
+          if (summary.teamCode.length <= 0) {
+            noTeamCodeCount += 1;
+          }
+        });
+        // Count the occurrences of each team code
+        const teamCodeCounts = summaries.reduce((acc, { teamCode }) => {
+          acc[teamCode] = (acc[teamCode] || 0) + 1;
+          return acc;
+        }, {});
+        const teamCodeWithUserId = summaries.reduce((acc, { _id, teamCode }) => {
+          if (acc && acc[teamCode]) {
+            acc[teamCode].push(_id);
+          } else {
+            acc[teamCode] = [_id];
+          }
+          return acc;
+        }, {});
+        // console.log(Object.entries(teamCodeCounts), 'teamCodecounts');
+        // Update teamCodes by filtering out those with zero count
+        teamCodes = Object.entries(teamCodeCounts)
+          .filter(([code, count]) => code.length > 0 && count > 0)
+          .map(([code, count]) => ({
+            label: `${code} (${count})`,
+            value: code,
+            _ids: teamCodeWithUserId[code],
+          }));
+        // Update selectedCodes labels and filter out those with zero count
+        selectedCodes = selectedCodes
+          .map(selected => {
+            const count = teamCodeCounts[selected.value];
+            const ids = teamCodeWithUserId[selected.value];
+            if (selected?.label.includes('Select All With NO Code') && noTeamCodeCount > 0) {
+              return {
+                ...selected,
+                label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+                _ids: ids,
+              };
+            }
+            if (count !== undefined && count > 0) {
+              return { ...selected, label: `${selected.value} (${count})`, _ids: ids };
+            }
+            return null;
+          })
+          .filter(Boolean);
+
+        if (!selectedCodes.find(code => code.value === newTeamCode)) {
+          const ids = teamCodeWithUserId[newTeamCode];
+          if (newTeamCode !== undefined && newTeamCode.length > 0) {
+            selectedCodes.push({
+              label: `${newTeamCode} (${teamCodeCounts[newTeamCode]})`,
+              value: newTeamCode,
+              _ids: ids,
+            });
+          }
+        }
+        // Sort teamCodes by label
+        teamCodes
+          .sort((a, b) => a.label.localeCompare(b.label))
+          .push({
+            value: '',
+            label: `Select All With NO Code (${noTeamCodeCount || 0})`,
+            _ids: teamCodeWithUserId[''],
+          });
+        return { summaries, teamCodes, selectedCodes };
+      });
+    } catch (error) {
+      // console.log(error);
+    }
+  };
+
+  handleAllTeamCodeReplace = async () => {
+    try {
+      const { replaceCode } = this.state;
+      this.setState({ replaceCodeLoading: true });
+      const boolean = fullCodeRegex.test(replaceCode);
+      if (boolean) {
+        const userIds = this.state.selectedCodes.flatMap(item => item._ids);
+        const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
+        const payload = {
+          userIds,
+          replaceCode,
+        };
+        try {
+          const data = await axios.patch(url, payload);
+          const userObjs = userIds.reduce((acc, curr) => {
+            acc[curr] = true;
+            return acc;
+          }, {});
+          if (data?.data?.isUpdated) {
+            this.handleTeamCodeChange('', replaceCode, userObjs);
+            this.setState({ replaceCode: '', replaceCodeError: null });
+            this.filterWeeklySummaries();
+          } else {
+            this.setState({
+              replaceCode: '',
+              replaceCodeError: 'Update failed Please try again with another code!',
+            });
+          }
+        } catch (err) {
+          this.setState({ replaceCode: '', replaceCodeError: err.toJSON().message });
+        }
+      } else {
+        this.setState({
+          replaceCodeError: 'NOT SAVED! The code must be between 5 and 7 characters long.',
+        });
+      }
+    } catch (error) {
+      this.setState({
+        replaceCode: '',
+        replaceCodeError: 'Something went wrong please try again!',
+      });
+    } finally {
+      this.setState({ replaceCodeLoading: false });
+    }
+  };
+
   render() {
-    const { role } = this.props;
+    const { role, darkMode } = this.props;
     const {
       loading,
       activeTab,
@@ -417,6 +584,9 @@ export class WeeklySummariesReport extends Component {
       colorOptions,
       teamCodes,
       auth,
+      replaceCode,
+      replaceCodeError,
+      replaceCodeLoading,
     } = this.state;
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
@@ -426,8 +596,12 @@ export class WeeklySummariesReport extends Component {
 
     if (error) {
       return (
-        <Container>
-          <Row className="align-self-center" data-testid="error">
+        <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
+          <Row
+            className="align-self-center pt-2"
+            data-testid="error"
+            style={{ width: '30%', margin: '0 auto' }}
+          >
             <Col>
               <Alert color="danger">Error! {error.message}</Alert>
             </Col>
@@ -438,15 +612,24 @@ export class WeeklySummariesReport extends Component {
 
     if (loading) {
       return (
-        <Container fluid style={{ backgroundColor: '#f3f4f6' }}>
+        <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
           <Row className="text-center" data-testid="loading">
-            <SkeletonLoading template="WeeklySummariesReport" />
+            <SkeletonLoading
+              template="WeeklySummariesReport"
+              className={darkMode ? 'bg-yinmn-blue' : ''}
+            />
           </Row>
         </Container>
       );
     }
+
     return (
-      <Container fluid className="bg--white-smoke py-3 mb-5">
+      <Container
+        fluid
+        className={`container-wsr-wrapper py-3 mb-5 ${
+          darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
+        }`}
+      >
         {this.passwordInputModalToggle()}
         {this.popUpElements()}
         <Row>
@@ -454,6 +637,15 @@ export class WeeklySummariesReport extends Component {
             <h3 className="mt-3 mb-5">
               <div className="d-flex align-items-center">
                 <span className="mr-2">Weekly Summaries Reports page</span>
+                <i
+                  data-toggle="tooltip"
+                  data-placement="right"
+                  title="Click to refresh the report"
+                  style={{ fontSize: 24, cursor: 'pointer' }}
+                  aria-hidden="true"
+                  className={`fa fa-refresh ${this.state.loading ? 'animation' : ''} mr-2`}
+                  onClick={this.handleRefresh}
+                />
                 <EditableInfoModal
                   areaName="WeeklySummariesReport"
                   areaTitle="Weekly Summaries Report"
@@ -461,6 +653,7 @@ export class WeeklySummariesReport extends Component {
                   fontSize={24}
                   isPermissionPage
                   className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  darkMode={darkMode}
                 />
               </div>
             </h3>
@@ -474,7 +667,7 @@ export class WeeklySummariesReport extends Component {
               className="permissions-management__button"
               type="button"
               onClick={() => this.onClickRecepients()}
-              style={boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Weekly Summary Report Recipients
             </Button>
@@ -484,18 +677,19 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
             Select Team Code
             <MultiSelect
-              className="multi-select-filter"
+              className="multi-select-filter text-dark"
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
                 this.handleSelectCodeChange(e);
               }}
+              labelledBy="Select"
             />
           </Col>
           <Col lg={{ size: 5 }} xs={{ size: 5 }}>
             Select Color
             <MultiSelect
-              className="multi-select-filter"
+              className="multi-select-filter text-dark"
               options={colorOptions}
               value={selectedColors}
               onChange={e => {
@@ -542,6 +736,37 @@ export class WeeklySummariesReport extends Component {
             </div>
           </Col>
         </Row>
+        {this.codeEditPermission && selectedCodes.length > 0 && (
+          <Row style={{ marginBottom: '10px' }}>
+            <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+              Replace With
+              <Input
+                type="string"
+                placeholder="replace"
+                value={replaceCode}
+                onChange={e => {
+                  this.setState({ replaceCode: e.target.value });
+                }}
+              />
+              {replaceCodeLoading ? (
+                <Spinner className="mt-3 mr-1" color="primary" />
+              ) : (
+                <Button
+                  className="mr-1 mt-3 btn-bottom"
+                  color="primary"
+                  onClick={this.handleAllTeamCodeReplace}
+                >
+                  Replace
+                </Button>
+              )}
+              {replaceCodeError && (
+                <Alert className="code-alert" color="danger">
+                  {replaceCodeError}
+                </Alert>
+              )}
+            </Col>
+          </Row>
+        )}
         <Row>
           <Col lg={{ size: 10, offset: 1 }}>
             <Nav tabs>
@@ -558,7 +783,10 @@ export class WeeklySummariesReport extends Component {
                 </NavItem>
               ))}
             </Nav>
-            <TabContent activeTab={activeTab} className="p-4">
+            <TabContent
+              activeTab={activeTab}
+              className={`p-4 ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
+            >
               {navItems.map((item, index) => (
                 <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
                   <Row>
@@ -571,17 +799,21 @@ export class WeeklySummariesReport extends Component {
                         summaries={filteredSummaries}
                         weekIndex={index}
                         weekDates={this.weekDates[index]}
+                        darkMode={darkMode}
                       />
                       {hasSeeBadgePermission && (
                         <Button
                           className="btn--dark-sea-green"
-                          style={boxStyle}
+                          style={darkMode ? boxStyleDark : boxStyle}
                           onClick={() => this.setState({ loadBadges: !loadBadges })}
                         >
                           {loadBadges ? 'Hide Badges' : 'Load Badges'}
                         </Button>
                       )}
-                      <Button className="btn--dark-sea-green" style={boxStyle}>
+                      <Button
+                        className="btn--dark-sea-green"
+                        style={darkMode ? boxStyleDark : boxStyle}
+                      >
                         Load Trophies
                       </Button>
                     </Col>
@@ -604,6 +836,8 @@ export class WeeklySummariesReport extends Component {
                         canEditTeamCode={this.codeEditPermission}
                         auth={auth}
                         canSeeBioHighlight={this.canSeeBioHighlight}
+                        darkMode={darkMode}
+                        handleTeamCodeChange={this.handleTeamCodeChange}
                       />
                     </Col>
                   </Row>
@@ -632,6 +866,7 @@ const mapStateToProps = state => ({
   infoCollections: state.infoCollections.infos,
   role: state.auth.user.role,
   auth: state.auth,
+  darkMode: state.theme.darkMode,
   authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
 });
 

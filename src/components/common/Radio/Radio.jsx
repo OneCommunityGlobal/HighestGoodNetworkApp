@@ -1,5 +1,3 @@
-
-
 // eslint-disable-next-line react/function-component-definition
 const Radio = ({ name, label, options, error, value, ...rest }) => {
   return (

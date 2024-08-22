@@ -29,8 +29,11 @@ import { warningsByUserIdReducer } from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
+import notificationReducer from './notificationReducer';
 import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer";
 import { followUpReducer } from "./followUpReducer";
+import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
+import {userProjectsByUserNameReducer} from './userProjectsByUserNameReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -43,8 +46,9 @@ import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
-import { timeOffRequestsReducer } from "./timeOffRequestReducer"
-
+import { timeOffRequestsReducer } from "./timeOffRequestReducer";
+import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
+import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -70,10 +74,16 @@ const localReducers = {
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients:weeklySummaryRecipientsReducer,
+  notification: notificationReducer,
   userFollowUp : followUpReducer,
+  userProjectsByUserNameReducer: userProjectsByUserNameReducer,
+  blueSquareEmailAssignment : BlueSquareEmailAssignment,
+  totalOrgSummary: totalOrgSummaryReducer,
+  allUsersTimeEntries: allUsersTimeEntriesReducer,
 
   // bmdashboard
   materials: materialsReducer,
+  tools: toolReducer,
   bmProjects: bmProjectReducer,
   bmInvTypes: bmInvTypeReducer,
   timeOffRequests: timeOffRequestsReducer,

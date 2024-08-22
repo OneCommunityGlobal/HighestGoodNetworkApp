@@ -10,9 +10,9 @@ import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { formatDate } from 'utils/formatDate';
+import { formatDateLocal } from 'utils/formatDate';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
@@ -20,7 +20,8 @@ import { toast } from 'react-toastify';
 
 
 const Name = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
+
   const { firstName, lastName } = userProfile;
 
   if (canEdit) {
@@ -54,12 +55,12 @@ const Name = props => {
               // className={styleProfile.profileText}
               onChange={e => {
                 setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
-                setFormValid({ ...formValid, lastName: !!e.target.value });
+                setFormValid({ ...formValid, lastName: !!e.target.value && e.target.value.trim().length >=2 });
               }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
             />
-            <FormFeedback>Last Name Can&apos;t be empty</FormFeedback>
+            <FormFeedback>Last Name Can&apos;t have less than 2 characters</FormFeedback>
           </FormGroup>
         </Col>
       </>
@@ -69,14 +70,15 @@ const Name = props => {
   return (
     <>
       <Col>
-        <p className="text-right">{`${firstName} ${lastName}`}</p>
+        <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{`${firstName} ${lastName}`}</p>
       </Col>
     </>
   );
 };
 
 const Title = props => {
-  const { userProfile, setUserProfile, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, canEdit, desktopDisplay, darkMode } = props;
+
   const { jobTitle } = userProfile;
 
   if (canEdit) {
@@ -102,14 +104,15 @@ const Title = props => {
   return (
     <>
       <Col>
-        <p className='text-right'>{`${jobTitle}`}</p>
+        <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{`${jobTitle}`}</p>
       </Col>
     </>
   );
 };
 
 const Email = props => {
-  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
+
   const { email, privacySettings, emailSubscriptions } = userProfile;
 
   const emailPattern = new RegExp(/^\w+([-+.']\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/i);
@@ -123,12 +126,14 @@ const Email = props => {
               switchType="email"
               state={privacySettings?.email}
               handleUserProfile={props.handleUserProfile}
+              darkMode={darkMode}
             />
 
             <ToggleSwitch
               switchType="email-subcription"
-              state={emailSubscriptions? emailSubscriptions : false}
+              state={emailSubscriptions ? emailSubscriptions : false}
               handleUserProfile={props.handleUserProfile}
+              darkMode={darkMode}
             />
 
             <Input
@@ -153,7 +158,7 @@ const Email = props => {
     <>
       {privacySettings?.email && (
         <Col>
-          <p className='text-right'>{email}</p>
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{email}</p>
         </Col>
       )}
     </>
@@ -191,7 +196,7 @@ const formatPhoneNumber = str => {
   return str;
 };
 const Phone = props => {
-  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay } = props;
+  const { userProfile, setUserProfile, handleUserProfile, canEdit, desktopDisplay, darkMode } = props;
   const { phoneNumber, privacySettings } = userProfile;
   if (canEdit) {
     return (
@@ -202,6 +207,7 @@ const Phone = props => {
               switchType="phone"
               state={privacySettings?.phoneNumber}
               handleUserProfile={handleUserProfile}
+              darkMode={darkMode}
             />
             <PhoneInput
               inputClass="phone-input-style"
@@ -220,7 +226,7 @@ const Phone = props => {
     <>
       {privacySettings?.phoneNumber && (
         <Col>
-          <p className='text-right'>{formatPhoneNumber(phoneNumber)}</p>
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{formatPhoneNumber(phoneNumber)}</p>
         </Col>
       )}
     </>
@@ -228,7 +234,8 @@ const Phone = props => {
 };
 
 const TimeZoneDifference = props => {
-  const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay } = props;
+  const { isUserSelf, errorOccurred, setErrorOccurred, desktopDisplay, darkMode } = props;
+
   const [signedOffset, setSignedOffset] = useState('');
   const viewingTimeZone = props.userProfile.timeZone;
   const yourLocalTimeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
@@ -269,7 +276,7 @@ const TimeZoneDifference = props => {
     return (
       <>
         <Col md="6">
-          <p className='text-right'>{signedOffset} hours</p>
+          <p className={`text-right ${darkMode ? 'text-light' : ''}`}>{signedOffset} hours</p>
         </Col>
       </>
     );
@@ -278,7 +285,7 @@ const TimeZoneDifference = props => {
   return (
     <>
       <Col md={desktopDisplay ? '6' : ''}>
-        <p className={desktopDisplay ? 'text-right' : 'text-left'}>This is your own profile page</p>
+        <p className={`${darkMode ? 'text-light' : ''} ${desktopDisplay ? 'text-right' : 'text-left'}`}>This is your own profile page</p>
       </Col>
     </>
   );
@@ -297,6 +304,7 @@ const BasicInformationTab = props => {
     roles,
     role,
     loadUserProfile,
+    darkMode
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
@@ -327,10 +335,10 @@ const BasicInformationTab = props => {
 
     axios.get(ENDPOINTS.TIMEZONE_LOCATION(userProfile.location.userProvided)).then(res => {
       if (res.status === 200) {
-        const {timezone, currentLocation } = res.data;
+        const { timezone, currentLocation } = res.data;
         setTimeZoneFilter(timezone);
         setUserProfile({ ...userProfile, timeZone: timezone, location: currentLocation });
-      } 
+      }
     }).catch(err => {
       toast.error(`An error occurred : ${err.response.data}`);
       if (errorOccurred) setErrorOccurred(false);
@@ -357,7 +365,7 @@ const BasicInformationTab = props => {
   const nameComponent = (
     <>
       <Col>
-        <Label>Name</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Name</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -377,6 +385,7 @@ const BasicInformationTab = props => {
         formValid={formValid}
         role={props.role}
         canEdit={canEdit}
+        darkMode={darkMode}
         desktopDisplay={desktopDisplay}
       />
     </>
@@ -385,7 +394,7 @@ const BasicInformationTab = props => {
   const titleComponent = (
     <>
       <Col>
-        <Label>Title</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Title</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -404,6 +413,7 @@ const BasicInformationTab = props => {
         formValid={formValid}
         role={props.role}
         canEdit={canEdit}
+        darkMode={darkMode}
         desktopDisplay={desktopDisplay}
       />
     </>
@@ -412,7 +422,7 @@ const BasicInformationTab = props => {
   const emailComponent = (
     <>
       <Col>
-        <Label>Email</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Email</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -432,6 +442,7 @@ const BasicInformationTab = props => {
         setFormValid={setFormValid}
         role={props.role}
         canEdit={canEdit}
+        darkMode={darkMode}
         desktopDisplay={desktopDisplay}
       />
     </>
@@ -440,7 +451,7 @@ const BasicInformationTab = props => {
   const phoneComponent = (
     <>
       <Col>
-        <Label>Phone</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Phone</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -459,6 +470,7 @@ const BasicInformationTab = props => {
         formValid={formValid}
         role={props.role}
         canEdit={canEdit}
+        darkMode={darkMode}
         desktopDisplay={desktopDisplay}
       />
     </>
@@ -467,7 +479,7 @@ const BasicInformationTab = props => {
   const videoCallPreferenceComponent = (
     <>
       <Col>
-        <Label>Video Call Preference</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Video Call Preference</Label>
       </Col>
       <Col md={desktopDisplay ? '6' : ''}>
         {canEdit ? (
@@ -493,7 +505,7 @@ const BasicInformationTab = props => {
   const roleComponent = (
     <>
       <Col>
-        <Label>Role</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Role</Label>
       </Col>
       <Col md={desktopDisplay ? '6' : ''}>
         {canEditRole ? (
@@ -533,7 +545,7 @@ const BasicInformationTab = props => {
       {desktopDisplay ? (
         <Col md="1">
           <div style={{ marginTop: topMargin, marginLeft: '-20px' }}>
-            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={20}/>
+            <EditableInfoModal role={role} areaName={'roleInfo'} areaTitle="Roles" fontSize={20} darkMode={darkMode}/>
           </div>
         </Col>
       ) : (
@@ -547,7 +559,7 @@ const BasicInformationTab = props => {
       {canEdit && (
         <>
           <Col md={{ size: 5, offset: 0 }}>
-            <Label>Location</Label>
+            <Label className={darkMode ? 'text-light' : ''}>Location</Label>
           </Col>
           {desktopDisplay ? (
             <Col md='6'>
@@ -563,7 +575,7 @@ const BasicInformationTab = props => {
                     color="secondary"
                     block
                     onClick={onClickGetTimeZone}
-                    style={boxStyle}
+                    style={darkMode ? boxStyleDark : boxStyle}
                     className="px-0"
                   >
                     Get Time Zone
@@ -589,10 +601,10 @@ const BasicInformationTab = props => {
   const timeZoneComponent = (
     <>
       <Col>
-        <Label>Time Zone</Label>
+        <Label className={darkMode ? 'text-light' : ''}>Time Zone</Label>
       </Col>
       <Col md={desktopDisplay ? '6' : ''}>
-        {!canEdit && <p>{userProfile.timeZone}</p>}
+        {!canEdit && <p className={darkMode ? 'text-light' : ''}>{userProfile.timeZone}</p>}
         {canEdit && (
           <TimeZoneDropDown
             filter={timeZoneFilter}
@@ -609,7 +621,7 @@ const BasicInformationTab = props => {
   const timeZoneDifferenceComponent = (
     <>
       <Col md={desktopDisplay ? '5' : ''}>
-        <label>Difference in this Time Zone from Your Local</label>
+        <label className={darkMode ? 'text-light' : ''}>Difference in this Time Zone from Your Local</label>
       </Col>
       <TimeZoneDifference
         userProfile={userProfile}
@@ -619,6 +631,7 @@ const BasicInformationTab = props => {
         formValid={formValid}
         errorOccurred={errorOccurred}
         setErrorOccurred={setErrorOccurred}
+        darkMode={darkMode}
         desktopDisplay={desktopDisplay}
       />
     </>
@@ -627,9 +640,9 @@ const BasicInformationTab = props => {
   const endDateComponent = (
     <>
       <Col md={desktopDisplay ? '8' : ''} className={desktopDisplay ? 'mr-5' : ''}>
-        <Label className='mr-1'>
+        <Label className={`mr-1 ${darkMode ? 'text-light' : ''}`}>
           {userProfile.endDate
-            ? 'End Date ' + formatDate(userProfile.endDate)
+            ? 'End Date ' + formatDateLocal(userProfile.endDate)
             : 'End Date ' + 'N/A'}
         </Label>
         {canEdit && !desktopDisplay && (
@@ -638,6 +651,7 @@ const BasicInformationTab = props => {
             setUserProfile={setUserProfile}
             isBigBtn={true}
             userProfile={userProfile}
+            darkMode={darkMode}
           />
         )}
       </Col>
@@ -648,6 +662,7 @@ const BasicInformationTab = props => {
             setUserProfile={setUserProfile}
             isBigBtn={true}
             userProfile={userProfile}
+            darkMode={darkMode}
           />
         </Col>
       )}
@@ -659,14 +674,14 @@ const BasicInformationTab = props => {
       {desktopDisplay ? (
         <>
           <Col md="8" className="mr-5">
-            <Label>Status</Label>
+            <Label className={darkMode ? 'text-light' : ''}>Status</Label>
           </Col>
           <Col>
-            <Label>
+            <Label className={darkMode ? 'text-light' : ''}>
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
                 : 'Inactive'}
             </Label>
             &nbsp;
@@ -676,6 +691,7 @@ const BasicInformationTab = props => {
                 loadUserProfile={loadUserProfile}
                 isBigBtn={true}
                 userProfile={userProfile}
+                darkMode={darkMode}
               />
             )}
           </Col>
@@ -683,13 +699,13 @@ const BasicInformationTab = props => {
       ) : (
         <>
           <Col>
-            <Label>Status</Label>
+            <Label className={darkMode ? 'text-light' : ''}>Status</Label>
             <div>
-              <Label style={{ fontWeight: 'normal' }}>
+              <Label style={{ fontWeight: 'normal' }} className={darkMode ? 'text-light' : ''}>
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + formatDate(userProfile.reactivationDate)
+                  ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
                   : 'Inactive'}
               </Label>
               &nbsp;
@@ -699,6 +715,7 @@ const BasicInformationTab = props => {
                   loadUserProfile={loadUserProfile}
                   isBigBtn={true}
                   userProfile={userProfile}
+                  darkMode={darkMode}
                 />
               )}
             </div>
@@ -710,7 +727,7 @@ const BasicInformationTab = props => {
   );
 
   return (
-    <div>
+    <div className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
       <div
         data-testid="basic-info-tab"
         className={desktopDisplay ? 'basic-info-tab-desktop' : 'basic-info-tab-tablet'}

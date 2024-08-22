@@ -1,18 +1,22 @@
-import { Button, Modal, ModalBody, ModalFooter, ModalHeader } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { useSelector } from 'react-redux';
+import { Button, Modal, ModalHeader, ModalFooter, ModalBody } from 'reactstrap';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css'
 
 function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
+  const darkMode = useSelector(state => state.theme.darkMode)
+
   return (
-    <Modal isOpen={open} toggle={onClose} className="modal-dialog modal-md">
-      <ModalHeader toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
+    <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
         Add New User Location
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div style={{ maxHeight: '300px', overflow: 'auto', margin: '4px' }}>
           {userProfiles.length > 0 ? (
-            <table className="table table-bordered table-responsive-md">
+            <table className={`table table-bordered table-responsive-md ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
               <thead>
-                <tr>
+                <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   <th style={{ width: '70px' }}>#</th>
                   <th>Name</th>
                   <th>Location</th>
@@ -40,21 +44,20 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
                             display: 'flex',
                           }}
                         >
-                          {user.type === 'm_user' && (
-                            <Button
-                              color="danger"
-                              onClick={() => removeUser(user._id)}
-                              style={boxStyle}
-                              className="btn mr-1 btn-sm"
-                            >
-                              Remove
-                            </Button>
-                          )}
+                          
+                          <Button
+                            color="danger"
+                            onClick={() => removeUser(user._id)}
+                            style={darkMode ? {} : boxStyle}
+                            className="btn mr-1 btn-sm"
+                          >
+                            Remove
+                          </Button>
                           <Button
                             color="Primary"
                             className="btn btn-outline-success mr-1 btn-sm"
                             onClick={() => setEdit(user)}
-                            style={boxStyle}
+                            style={darkMode ? {} : boxStyle}
                           >
                             Edit
                           </Button>
@@ -72,8 +75,8 @@ function ListUsersPopUp({ open, onClose, userProfiles, removeUser, setEdit }) {
           )}
         </div>
       </ModalBody>
-      <ModalFooter>
-        <Button color="secondary" onClick={onClose} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="secondary" onClick={onClose} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>

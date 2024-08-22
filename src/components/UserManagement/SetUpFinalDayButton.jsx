@@ -5,7 +5,7 @@ import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { updateUserFinalDayStatus } from 'actions/userManagement';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 /**
  * @param {*} props
@@ -14,6 +14,7 @@ import { boxStyle } from 'styles';
  * @returns
  */
 const SetUpFinalDayButton = props => {
+  const {darkMode} = props;
   const [isSet, setIsSet] = useState(false);
   const [finalDayDateOpen, setFinalDayDateOpen] = useState(false);
   const dispatch = useDispatch();
@@ -57,15 +58,15 @@ const SetUpFinalDayButton = props => {
         onSave={deactiveUser}
       />
       <Button
-        outline
-        color="primary"
-        className={`btn btn-outline-${isSet ? 'warning' : 'success'} ${
+        {...(darkMode ? { outline: false } : {outline: true})}
+        color={isSet ? 'warning' : 'success'}
+        className={`btn ${darkMode ? '' : `btn-outline-${isSet ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={e => {
           onFinalDayClick(props.userProfile, isSet);
         }}
-        style={boxStyle}
+        style={darkMode ? boxStyleDark : boxStyle}
       >
         {isSet ? CANCEL : SET_FINAL_DAY}
       </Button>

@@ -9,7 +9,7 @@ export default {
       role: 'Administrator',
       permissions: {
         frontPermissions: [],
-        backPermissions: []
+        backPermissions: [],
       },
       expiryTimestamp: dt.toISOString(),
       iat: 1596944165,
@@ -105,7 +105,7 @@ export default {
     role: 'Administrator',
     permissions: {
       frontPermissions: [],
-      backPermissions: []
+      backPermissions: [],
     },
     firstName: 'Dev',
     lastName: 'Admin',
@@ -1628,11 +1628,13 @@ export default {
             'postUserProfile',
             'putUserProfile',
             'putUserProfileImportantInfo',
+            'updateSummaryRequirements',
             'updatePassword',
             'deleteUserProfile',
             'addInfringements',
             'editInfringements',
             'deleteInfringements',
+            'manageAdminLinks',
             // WBS
             'postWbs',
             'deleteWbs',
@@ -1803,6 +1805,7 @@ export default {
             'getTimeZoneAPIKey',
             'checkLeadTeamOfXplus',
             'editTeamCode',
+            'manageAdminLinks',
           ],
         },
       ]

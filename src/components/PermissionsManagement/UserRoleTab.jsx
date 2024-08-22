@@ -1,13 +1,14 @@
-import React, { useEffect } from 'react';
-import RolePermissions from './RolePermissions';
+import { useEffect } from 'react';
 import { connect } from 'react-redux';
 import './UserRoleTab.css';
 import { getUserProfile } from 'actions/userProfile';
 import { useHistory } from 'react-router-dom';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import RolePermissions from './RolePermissions';
 
+function UserRoleTab(props) {
+  const { darkMode } = props;
 
-const UserRoleTab = props => {
   useEffect(() => {
     props.getUserRole(props.auth?.user.userid);
   }, []);
@@ -30,38 +31,43 @@ const UserRoleTab = props => {
   }
 
   const actualRole = props.roles[roleIndex];
-  const permissions = actualRole.permissions;
-  const roleName = actualRole.roleName;
+  const { permissions } = actualRole;
+  const { roleName } = actualRole;
   const roleId = actualRole._id;
 
   return (
-    <div className="userRoleTab__container">
-      <button
-        onClick={() => history.push('/permissionsmanagement')}
-        className="userRoleTab__backBtn"
-        style={boxStyle}
-      >
-        Back
-      </button>
-      <RolePermissions
-        userRole={props.userProfile.role}
-        role={roleName}
-        roleId={roleId}
-        header={`${roleName} Permissions:`}
-        permissions={permissions}
-      />
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
+      <div className="userRoleTab__container pb-5">
+        <button
+          type="button"
+          onClick={() => history.push('/permissionsmanagement')}
+          className="userRoleTab__backBtn"
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Back
+        </button>
+        <RolePermissions
+          userRole={props.userProfile.role}
+          role={roleName}
+          roleId={roleId}
+          header={`${roleName} Permissions:`}
+          permissions={permissions}
+          darkMode={darkMode}
+        />
+      </div>
     </div>
   );
-};
+}
 
-// export default UserRoleTab;
 const mapStateToProps = state => ({
   roles: state.role.roles,
   auth: state.auth,
   userProfile: state.userProfile,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({
+  // eslint-disable-next-line no-undef
   getAllRoles: () => dispatch(getAllRoles()),
   getUserRole: id => dispatch(getUserProfile(id)),
 });
