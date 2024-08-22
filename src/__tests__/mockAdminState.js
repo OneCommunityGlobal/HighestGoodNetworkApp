@@ -1631,10 +1631,7 @@ export default {
             'updateSummaryRequirements',
             'updatePassword',
             'deleteUserProfile',
-            'addInfringements',
-            'editInfringements',
-            'deleteInfringements',
-            'manageAdminLinks',
+            'infringementAuthorizer',
             // WBS
             'postWbs',
             'deleteWbs',
