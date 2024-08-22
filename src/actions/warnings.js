@@ -40,8 +40,8 @@ export const postWarningByUserId = warningData => {
       const response = await dispatch(postWarningsByUserId(res.data));
       return response.payload.warnings;
     } catch (error) {
-      if (error.response && error.response.status === 400) {
-        return { error: 'Error occured when posting' };
+      if (error.response && error.response.status === 200) {
+        return { error: error.message };
       } else {
         return { error: 'Something else went wrong' };
       }

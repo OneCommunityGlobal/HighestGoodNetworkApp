@@ -106,7 +106,8 @@
   margin-top: 0.5em;
   padding: 0.3em 0.5em !important;
 }
-.cancel__btn {
+
+.form__btn__add {
   margin-left: 0.5em;
 }
 
@@ -114,17 +115,29 @@
   display: flex;
   flex-direction: column;
   align-items: center;
+  padding: 0.5em 1em;
+  max-width: 500px;
+  width: 70%;
+  margin-top: 0.5em;
+  box-shadow: lightgray 2px 2px 4px 1px;
+}
+.warning__form__title {
+  font-weight: bold;
 }
 .warning__title {
-  margin: 0;
+  margin: 0.3em 0;
+  text-align: left;
+}
+.warning__permanent {
+  margin: 0.5em 0.5em;
 }
 
+.warning__form__btns {
+  margin-top: 1em;
+}
 .warning__input {
   border-radius: 3px;
   border: 1px solid #000;
-  margin: 0.3em 0 0.5em 0;
-  padding: 0.5em 1em;
-  width: 250px;
 }
 .warning__reorder {
   width: 18px;

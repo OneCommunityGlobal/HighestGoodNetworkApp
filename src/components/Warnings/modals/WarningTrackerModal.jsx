@@ -43,8 +43,9 @@ function WarningTrackerModal({
   const [warningEdited, setWarningEdited] = useState(false);
   const [editedWarning, setEditedWarning] = useState(null);
   const [warningWasEdited, setWarningWasEdited] = useState(false);
-
+  const [isPermanent, setIsPermanent] = useState(false);
   const [error, setError] = useState(null);
+
   const dispatch = useDispatch();
 
   const fetchWarningDescriptions = async () => {
@@ -138,6 +139,7 @@ function WarningTrackerModal({
 
   const handleEditWarningDescription = (e, warningId) => {
     setWarningEdited(true);
+    console.log('warning was ediited');
 
     const updatedWarningDescriptions = warningDescriptions.map(warning => {
       if (warning._id === warningId) {
@@ -173,26 +175,38 @@ function WarningTrackerModal({
       setWarningWasEdited(true);
     });
   };
+  const handlePermanentWarningClicked = isPermanent => {
+    console.log('warnign', isPermanent);
+    if (isPermanent) {
+      console.log(
+        'This warning is permanent and cannot be edited or deleted, it can only be deactivated',
+      );
+
+      return;
+    }
+  };
   // eslint-disable-next-line no-shadow
   const handleAddNewWarning = (e, newWarning) => {
     e.preventDefault();
 
     if (newWarning === '') return;
     const trimmedWarning = newWarning.trim();
-    dispatch(postNewWarning({ newWarning: trimmedWarning, activeWarning: true })).then(res => {
-      setNewWarning('');
-      if (res?.error) {
-        setError(res.error);
-        return;
-      }
-      if (res?.message) {
-        setError(res.message);
-        return;
-      }
-      setWarningDescriptions(res.newWarnings);
-      getUsersWarnings();
-      setError(null);
-    });
+    dispatch(postNewWarning({ newWarning: trimmedWarning, activeWarning: true, isPermanent })).then(
+      res => {
+        setNewWarning('');
+        if (res?.error) {
+          setError(res.error);
+          return;
+        }
+        if (res?.message) {
+          setError(res.message);
+          return;
+        }
+        setWarningDescriptions(res.newWarnings);
+        getUsersWarnings();
+        setError(null);
+      },
+    );
   };
 
   if (toggleDeleteModal) {
@@ -305,7 +319,10 @@ function WarningTrackerModal({
               type="text"
               onChange={e => handleEditWarningDescription(e, warning._id)}
               value={warning.warningTitle}
-              disabled={warning?.disabled}
+              disabled={warning?.disabled || warning.isPermanent}
+              onFocus={e => {
+                handlePermanentWarningClicked(warning.isPermanent);
+              }}
               placeholder="warning title"
               className={`warnings__descriptions__title ${
                 warning.activeWarning ? '' : 'warnings__descriptions__title--gray'
@@ -337,6 +354,8 @@ function WarningTrackerModal({
 
           {toggeleWarningInput && (
             <form className="warning__form" onSubmit={e => handleAddNewWarning(e, newWarning)}>
+              <h5 className="warning__form__title">New Warning Tracker</h5>
+
               <label htmlFor="warning" className="warning__title">
                 Warning Tracker Title
               </label>
@@ -348,19 +367,31 @@ function WarningTrackerModal({
                 value={newWarning}
                 onChange={e => setNewWarning(e.target.value)}
               />
+
               <div>
-                <Button color="primary" type="submit">
-                  Add
-                </Button>
+                <label htmlFor="isPermanent" className="warning__permanent">
+                  Is Permanent?
+                </label>
+                <input
+                  type="checkbox"
+                  label="Is Permanent?"
+                  id="isPermanent"
+                  onChange={() => setIsPermanent(prev => !prev)}
+                  value={isPermanent}
+                />
+              </div>
+              <div className="warning__form__btns">
                 <Button
                   color="danger"
-                  className="cancel__btn"
                   onClick={() => {
                     setNewWarning(null);
                     setToggeleWarningInput(false);
                   }}
                 >
                   Cancel
+                </Button>
+                <Button color="primary" type="submit" className="form__btn__add">
+                  Add
                 </Button>
               </div>
             </form>
