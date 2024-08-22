@@ -7,11 +7,16 @@ import './PermissionsManagement.css';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle, boxStyleDark } from 'styles';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
-function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
+function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -47,8 +52,13 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
     e.preventDefault();
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
     if (shouldPreventEdit) {
-      // eslint-disable-next-line no-alert
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      if (actualUserProfile?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        // eslint-disable-next-line no-alert, prettier/prettier
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
     const userId = actualUserProfile?._id;
@@ -67,6 +77,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
         toast.success(SUCCESS_MESSAGE, {
           autoClose: 10000,
         });
+        toggle();
       })
       .catch(err => {
         const ERROR_MESSAGE = `
@@ -97,7 +108,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
             setToDefault();
           }}
           disabled={!actualUserProfile}
-          style={boxStyle}
+          style={darkMode ? boxStyleDark : boxStyle}
         >
           Reset to Default
         </Button>

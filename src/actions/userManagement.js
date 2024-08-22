@@ -9,6 +9,7 @@ import {
 } from '../constants/userManagement';
 import { ENDPOINTS } from '../utils/URL';
 import { UserStatus } from '../utils/enums';
+import { getTimeEndDateEntriesByPeriod } from './timeEntries';
 
 /**
  * fetching all user profiles
@@ -38,19 +39,33 @@ export const updateUserStatus = (user, status, reactivationDate) => {
   userProfile.isActive = status === UserStatus.Active;
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status, reactivationDate };
-  if (status === UserStatus.InActive) {
-    patchData.endDate = moment(new Date()).format('YYYY-MM-DD');
-    userProfile.endDate = moment(new Date()).format('YYYY-MM-DD');
-  } else {
-    patchData.endDate = undefined;
-    userProfile.endDate = undefined;
-  }
-
-  const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
   return async dispatch => {
-    updateProfilePromise.then(res => {
-      dispatch(userProfileUpdateAction(userProfile));
-    });
+    if (status === UserStatus.InActive) {
+      try {
+        //Check for last week of work
+        const lastEnddate = await dispatch(getTimeEndDateEntriesByPeriod(user._id, user.createdDate, userProfile.toDate));
+        if (lastEnddate !== "N/A") { //if work exists, set EndDate to that week
+          patchData.endDate = moment(lastEnddate).format('YYYY-MM-DDTHH:mm:ss');
+          userProfile.endDate = moment(lastEnddate).format('YYYY-MM-DDTHH:mm:ss');
+        } else { //No work exists, set end date to start date
+          patchData.endDate = moment(user.createdDate).format('YYYY-MM-DDTHH:mm:ss');
+          userProfile.endDate = moment(user.createdDate).format('YYYY-MM-DDTHH:mm:ss');
+        }
+        const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+        updateProfilePromise.then(res => {
+          dispatch(userProfileUpdateAction(userProfile));
+        });
+      } catch (error) {
+        console.error("Error updating user status:", error);
+      }
+    } else {//user is active
+      patchData.endDate = undefined;
+      userProfile.endDate = undefined;
+      const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
+      updateProfilePromise.then(res => {
+        dispatch(userProfileUpdateAction(userProfile));
+      });
+    }
   };
 };
 

@@ -162,6 +162,10 @@
   padding-right: 10px;
 }
 
+.profileEditButtonContainer {
+  margin-top: 20px;
+}
+
 .profileEditButton {
   border: none;
   border-radius: 1.5rem;
@@ -178,12 +182,20 @@
 }
 
 .profilePicture {
+  //this should fix the image formatting issue
   display: flex;
   max-width: 240px;
   max-height: 240px;
   width: auto;
   height: auto;
   margin: auto;
+}
+
+@media only screen and (max-width: 991px) {
+  .profilePicture {
+    max-width: 180px;
+    max-height: 180px;
+  }
 }
 
 .whoSection {
@@ -279,14 +291,14 @@
 }
 
 .Blue-Square-Email-BCC-tooltip::before {
-  content: ''; 
+  content: '';
   position: absolute;
-  top: -16px; 
-  left: 50%; 
-  transform: translateX(-50%); 
-  border-width: 8px; 
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
   border-style: solid;
-  border-color: transparent transparent black transparent; 
+  border-color: transparent transparent black transparent;
 }
 
 .Blue-Square-Email-BCC-tooltip {
@@ -294,13 +306,16 @@
   background-color: white;
   color: black;
   text-align: center;
-  border: 1px solid black; 
+  border: 1px solid black;
   padding: 5px;
   border-radius: 5px;
   position: relative;
   z-index: 1;
   font-size: 0.8rem;
-  top: 10px; 
+  top: 10px;
+}
+.Blue-Square-Email-BCC-div{
+  height:6em;
 }
 
 .Blue-Square-Email-BCC-div:hover div {
@@ -382,4 +397,12 @@
   .detailSection {
     width: 240px;
   }
+}
+
+.btn-outline-primary:disabled {
+  margin-right:5px;
+}
+
+button.btn.btn-outline-primary {
+  margin-right:5px;
 }
