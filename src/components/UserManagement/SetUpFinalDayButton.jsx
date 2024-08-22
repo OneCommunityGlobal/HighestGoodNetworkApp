@@ -24,10 +24,11 @@ const SetUpFinalDayButton = props => {
   }, []);
 
   const onFinalDayClick = async (user, status) => {
+    const activeStatus = props.userProfile.isActive? 'Active':'Inactive';
     if (isSet) {
-      await updateUserFinalDayStatus(props.userProfile, 'Active', undefined)(dispatch);
+      await updateUserFinalDayStatus(props.userProfile, activeStatus, undefined)(dispatch);
       setIsSet(!isSet);
-      updateUserFinalDayStatusIsSet(props.userProfile, 'Active', props.userProfile.endDate, FinalDay.NotSetFinalDay)(dispatch)
+      updateUserFinalDayStatusIsSet(props.userProfile, activeStatus, props.userProfile.endDate, FinalDay.NotSetFinalDay)(dispatch)
       setTimeout(async () => {
         await props.loadUserProfile();
         toast.success("This user's final day has been deleted.");
