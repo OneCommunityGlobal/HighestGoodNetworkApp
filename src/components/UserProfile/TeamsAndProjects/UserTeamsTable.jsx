@@ -4,7 +4,6 @@ import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
-import { boxStyle } from 'styles';
 import Switch from './Switch';
 import './TeamsAndProjects.css';
 import './UserTeamsTable.css';
