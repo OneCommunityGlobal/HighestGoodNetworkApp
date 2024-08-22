@@ -19,6 +19,8 @@ import './members.css';
 import hasPermission from '../../../utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import ToggleSwitch from 'components/UserProfile/UserProfileEdit/ToggleSwitch';
+import Loading from 'components/common/Loading';
+
 
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
@@ -27,13 +29,19 @@ const Members = props => {
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
   const [lastTimeoutId, setLastTimeoutId] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
   useEffect(() => {
-    props.fetchAllMembers(projectId);
+    const fetchMembers = async () => {
+      setIsLoading(true);
+      setMembersList([]); 
+      await props.fetchAllMembers(projectId);
+      setIsLoading(false);
+    };
+    fetchMembers();
   }, [projectId]);
 
   const assignAll = async () => {
@@ -50,8 +58,10 @@ const Members = props => {
   };
 
   useEffect(() => {
-    setMembersList(props.state.projectMembers.members);
-  }, [props.state.projectMembers.members]);
+    if (!isLoading) {
+      setMembersList(props.state.projectMembers.members);
+    }
+  }, [props.state.projectMembers.members, isLoading]);
 
   // ADDED: State for toggling display of active members only
   const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
@@ -95,7 +105,7 @@ const Members = props => {
               <div id="member_project__name">PROJECTS {props.projectId}</div>
             </ol>
           </nav>
-          {canGetProjectMembers ? (
+          {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
                 <span className="input-group-text">Find user</span>
@@ -181,29 +191,31 @@ const Members = props => {
             handleUserProfile={handleToggle}
           />
 
-          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
-            <thead>
-              <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                <th scope="col" id="members__order">
-                  #
-                </th>
-                <th scope="col" id="members__name"></th>
-                {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
-              </tr>
-            </thead>
-            <tbody>
-              {displayedMembers.map((member, i) => (
-                <Member
-                  index={i}
-                  key={member._id}
-                  projectId={projectId}
-                  uid={member._id}
-                  fullName={member.firstName + ' ' + member.lastName}
-                  darkMode={darkMode}
-                />
-              ))}
-            </tbody>
-          </table>
+          {isLoading ? ( <Loading align="center" /> ) : (
+            <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
+              <thead>
+                <tr className={darkMode ? 'bg-space-cadet' : ''}>
+                  <th scope="col" id="members__order">
+                    #
+                  </th>
+                  <th scope="col" id="members__name"></th>
+                  {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
+                </tr>
+              </thead>
+              <tbody>
+                {displayedMembers.map((member, i) => (
+                  <Member
+                    index={i}
+                    key={member._id ?? i}
+                    projectId={projectId}
+                    uid={member._id}
+                    fullName={member.firstName + ' ' + member.lastName}
+                    darkMode={darkMode}
+                  />
+                ))}
+              </tbody>
+            </table> 
+          )}
         </div>
       </div>
     </React.Fragment>

@@ -31,12 +31,18 @@ import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css'
 
+// Images are not allowed in timelog
+const customImageUploadHandler = () =>
+  new Promise((_, reject) => {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    reject({ message: 'Pictures are not allowed here!', remove: true });
+  });
+
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
   menubar: false,
   placeholder: 'Description (10-word minimum) and reference link',
-  plugins:
-    'advlist autolink autoresize lists link charmap table paste help wordcount',
+  plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
   toolbar:
     'bold italic underline link removeformat | bullist numlist outdent indent |\
                     styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
@@ -46,6 +52,7 @@ const TINY_MCE_INIT_OPTIONS = {
   max_height: 300,
   autoresize_bottom_margin: 1,
   content_style: 'body { cursor: text !important; }',
+  images_upload_handler: customImageUploadHandler,
 };
 
 /**
@@ -74,12 +81,14 @@ const TimeEntryForm = props => {
   // props from store
   const { authUser } = props;
 
+  const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}'); 
+
   const initialFormValues = Object.assign(
     {
       dateOfWork: moment()
         .tz('America/Los_Angeles')
         .format('YYYY-MM-DD'),
-      personId: authUser.userid,
+      personId: viewingUser.userId ?? authUser.userid,
       projectId: '',
       wbsId: '',
       taskId: '',
@@ -92,7 +101,9 @@ const TimeEntryForm = props => {
     data,
   );
 
-  const timeEntryUserId = from === 'Timer' ? authUser.userid : data.personId;
+  const timeEntryUserId = from === 'Timer' 
+    ? (viewingUser.userId ?? authUser.userid)
+    : data.personId;
 
   const {
     dateOfWork: initialDateOfWork,
@@ -136,12 +147,16 @@ const TimeEntryForm = props => {
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
-  const canEditTimeEntry =
-    props.hasPermission('editTimelogInfo') || props.hasPermission('editTimeEntry');
+  const canEditTimeEntryTime = props.hasPermission('editTimeEntryTime');
+  const canEditTimeEntryDescription = props.hasPermission('editTimeEntryDescription');
+  const canEditTimeEntryToggleTangible = isForAuthUser ?
+    props.hasPermission('toggleTangibleTime'):
+    props.hasPermission('editTimeEntryToggleTangible');
+  const canEditTimeEntryDate = props.hasPermission('editTimeEntryDate');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
 // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-  const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntry || isSameDayAuthUserEdit) ;
+  const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntryTime || isSameDayAuthUserEdit) ;
 
   /*---------------- methods -------------- */
   const toggleRemainder = () =>
@@ -222,7 +237,7 @@ const TimeEntryForm = props => {
 
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required';
     if (!isDateValid) errorObj.dateOfWork = 'Invalid date';
-    if (from !== 'Timer' && !canChangeTime) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
+    if (from !== 'Timer' && from !== 'WeeklyTab' && !canChangeTime) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
     if (!formValues.hours && !formValues.minutes)
       errorObj.time = 'Time should be greater than 0 minutes';
     if (!formValues.projectId) errorObj.projectId = 'Project/Task is required';
@@ -467,7 +482,7 @@ const TimeEntryForm = props => {
     if (isOpen) {
       loadAsyncData(timeEntryUserId);
     }
-  }, [isOpen]);
+  }, [isOpen, timeEntryUserId]);
 
   useEffect(() => {
     setFormValues({ ...formValues, ...data})
@@ -488,7 +503,7 @@ const TimeEntryForm = props => {
             ) : (
               <span style={{ color: 'orange' }}>Intangible </span>
             )}
-            Time Entry{' '}
+            Time Entry{viewingUser.userId ? ` for ${viewingUser.firstName} ${viewingUser.lastName} ` : ' '}
             <i
               className="fa fa-info-circle"
               data-tip
@@ -513,8 +528,8 @@ const TimeEntryForm = props => {
                 id="dateOfWork"
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
-                // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate ? userProfile?.startDate.split('T')[0] : null} 
-                disabled={!canEditTimeEntry}
+                // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]} 
+                disabled={!canEditTimeEntryDate}
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -585,6 +600,7 @@ const TimeEntryForm = props => {
                 className="form-control"
                 value={formValues.notes}
                 onEditorChange={handleEditorChange}
+                disabled={!(isSameDayAuthUserEdit || canEditTimeEntryDescription)}
               />
 
               {'notes' in errors && (
@@ -600,7 +616,7 @@ const TimeEntryForm = props => {
                   name="isTangible"
                   checked={formValues.isTangible}
                   onChange={handleInputChange}
-                  disabled={!(canEditTimeEntry || from === 'Timer')}
+                  disabled={!canEditTimeEntryToggleTangible}
                 />
                 Tangible&nbsp;
                 <i

@@ -1,6 +1,6 @@
 import axios from "axios";
 import { ENDPOINTS } from "utils/URL";
-import GET_EQUIPMENT_BY_ID,{SET_EQUIPMENTS}from 'constants/bmdashboard/equipmentConstants';
+import GET_EQUIPMENT_BY_ID, {SET_EQUIPMENTS} from 'constants/bmdashboard/equipmentConstants';
 import { GET_ERRORS } from 'constants/errors';
 
 export const fetchEquipmentById = (equipmentId) => {
@@ -16,7 +16,7 @@ export const fetchEquipmentById = (equipmentId) => {
   }
 }
 
-export const fetchAllEQUIPMENTS = () => {
+export const fetchAllEquipments = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_EQUIPMENTS)
       .then(res => {
@@ -47,7 +47,7 @@ export const addEquipmentType = async (body) => {
 
 export const setEquipment = payload => {
   return {
-    type: GET_EQUIPMENT_BY_ID,
+    type: SET_EQUIPMENTS,
     payload
   }
 }

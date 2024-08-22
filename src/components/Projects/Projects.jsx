@@ -6,6 +6,7 @@ import {
   modifyProject,
   clearError,
 } from '../../actions/projects';
+import {getProjectsByUsersName} from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
@@ -17,6 +18,8 @@ import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
+import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
+import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
 
 const Projects = function(props) {
   const role = props.state.userProfile.role;
@@ -43,6 +46,26 @@ const Projects = function(props) {
     category: '',
   });
   const [projectList, setProjectList] = useState(null);
+  const [searchName, setSearchName] = useState("");
+  const [allProjects, setAllProjects] = useState(null);
+
+  const useDebounce = (value, delay) => {
+    const [debouncedValue, setDebouncedValue] = useState(value);
+  
+    useEffect(() => {
+      const handler = setTimeout(() => {
+        setDebouncedValue(value);
+      }, delay);
+  
+      return () => {
+        clearTimeout(handler);
+      };
+    }, [value, delay]);
+  
+    return debouncedValue;
+  };
+
+  const debouncedSearchName = useDebounce(searchName, 300);
 
   const canPostProject = props.hasPermission('postProject');
 
@@ -71,7 +94,8 @@ const Projects = function(props) {
   }
 
   const handleSort = (e) => {
-    setSortedByName(e.target.id);
+    const clickedId = e.target.id;
+    setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
   }
 
   const onUpdateProject = async (updatedProject) => {
@@ -112,6 +136,8 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? -1 : 1;
       } else if (sortedByName === "Descending") {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
+      } else if (sortedByName === "SortingByRecentEditedMembers") {
+        return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
       } else {
         return 0;
       }
@@ -126,6 +152,7 @@ const Projects = function(props) {
         />
     ));
     setProjectList(projectList);
+    setAllProjects(projectList);
   }
 
   useEffect(() => {
@@ -143,27 +170,51 @@ const Projects = function(props) {
           hasInactiveBtn: false,
         });
       }
-  }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects]);
+  }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
 
+  useEffect(() => {
+    const fetchProjects = async () => {
+      if (debouncedSearchName) {
+        const projects = await props.getProjectsByUsersName(debouncedSearchName);
+        if (projects) {
+          const newProjectList = allProjects.filter(project => 
+            projects.some(p => p === project.key)
+          );
+          setProjectList(newProjectList);
+        }else{
+          setProjectList(allProjects);
+        }
+      } else {
+        setProjectList(allProjects);
+      }
+    };
+    fetchProjects();
+  }, [debouncedSearchName]);
+
+  const handleSearchName = (searchNameInput) => {
+    setSearchName(searchNameInput);
+  };
 
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
         <div className="container py-3">
-          {fetching || !fetched ? <Loading /> : null}
+          {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center">
-          <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
-          <EditableInfoModal
-            areaName="projectsInfoModal"
-            areaTitle="Projects"
-            fontSize={30}
-            isPermissionPage={true}
-            role={role}
-          />
-        </div>
+            <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
+            <EditableInfoModal
+              areaName="projectsInfoModal"
+              areaTitle="Projects"
+              fontSize={30}
+              isPermissionPage={true}
+              role={role}
+            />
+            <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+          </div>
 
-          <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
+
+          <SearchProjectByPerson onSearch={handleSearchName}/>
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
@@ -177,7 +228,7 @@ const Projects = function(props) {
               darkMode={darkMode}
             />
             </thead>
-            <tbody>{projectList}</tbody>
+            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
           </table>
         </div>
 
@@ -205,4 +256,5 @@ export default connect(mapStateToProps, {
   clearError,
   getPopupById,
   hasPermission,
+  getProjectsByUsersName
 })(Projects);
