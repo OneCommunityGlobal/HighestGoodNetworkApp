@@ -465,11 +465,11 @@ function LeaderBoard({
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
                           className="fa fa-star"
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours\nClick to view their Dashboard`}
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours ${item.role === 'Core Team' ? `\n Additional make-up hours this week: ${item.missedHours}` : ""} \n Click to view their Dashboard`}
                           style={{
                             color: assignStarDotColors(
                               item.tangibletime,
-                              item.weeklycommittedHours,
+                              (item.weeklycommittedHours + item.missedHours),
                             ),
                             fontSize: '20px',
                             display: 'flex',
@@ -479,10 +479,10 @@ function LeaderBoard({
                         />
                       ) : (
                         <div
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours\nClick to view their Dashboard`}
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours ${item.role === 'Core Team' ? `\n Additional make-up hours this week: ${item.missedHours}` : ""} \n Click to view their Dashboard`}
                           style={{
                             backgroundColor:
-                              item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',
+                              item.tangibletime >= (item.weeklycommittedHours + item.missedHours) ? '#32CD32' : 'red',
                             width: 15,
                             height: 15,
                             borderRadius: 7.5,
