@@ -1,8 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import TeamMembersPopup from './../../Teams/TeamMembersPopup.jsx';
-import DeleteTeamPopup from './../../Teams/DeleteTeamPopup';
-
 import {
   deleteTeamMember,
   addTeamMember,
@@ -29,7 +26,6 @@ export const TeamMember = props => {
         ? setMembers(prev => [...prev, newUser])
         : id &&
           setMembers(prev => {
-            newUser && prev.push(newUser);
             const index = prev.findIndex(item => item._id === id);
             if (index !== -1) {
               const updatedMembers = [...prev];
