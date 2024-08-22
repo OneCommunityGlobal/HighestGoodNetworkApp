@@ -286,11 +286,13 @@ class Form extends Component {
     this.handleState = (name, value) => {
       const { errors, data } = this.state;
       data[name] = value;
-      const errorMessage = this.validateProperty(name, value);
-      if (errorMessage) {
-        errors[name] = errorMessage;
-      } else {
-        delete errors[name];
+      for(const field in data){
+        const errorMessage = this.validateProperty(field, data[field]);
+        if (errorMessage) {
+          errors[field] = errorMessage;
+        } else {
+          delete errors[field];
+        }
       }
       this.setState({ data, errors });
     };
