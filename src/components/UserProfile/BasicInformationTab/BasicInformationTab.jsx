@@ -677,7 +677,7 @@ const BasicInformationTab = props => {
             <Label className={darkMode ? 'text-light' : ''}>Status</Label>
           </Col>
           <Col>
-            <Label className={darkMode ? 'text-light' : ''}>
+            <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
