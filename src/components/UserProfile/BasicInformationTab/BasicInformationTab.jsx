@@ -365,7 +365,7 @@ const BasicInformationTab = props => {
   const nameComponent = (
     <>
       <Col>
-        <Label className={darkMode ? 'text-light' : ''}>Name</Label>
+        <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>Name</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -394,7 +394,7 @@ const BasicInformationTab = props => {
   const titleComponent = (
     <>
       <Col>
-        <Label className={darkMode ? 'text-light' : ''}>Title</Label>
+        <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>Title</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -422,7 +422,7 @@ const BasicInformationTab = props => {
   const emailComponent = (
     <>
       <Col>
-        <Label className={darkMode ? 'text-light' : ''}>Email</Label>
+        <Label className={darkMode ? 'text-light label-with-icon' : ' label-with-icon'}>Email</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -451,7 +451,7 @@ const BasicInformationTab = props => {
   const phoneComponent = (
     <>
       <Col>
-        <Label className={darkMode ? 'text-light' : ''}>Phone</Label>
+        <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>Phone</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
