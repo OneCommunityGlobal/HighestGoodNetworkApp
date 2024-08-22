@@ -20,6 +20,11 @@ const AssignTeamField = React.memo(props => {
     }
   }, [props.searchText]);
 
+  const sTeam = props.teamsData.allTeams.find(team => team.teamName === '2021 Test new');
+  if (sTeam) {
+    console.log('sTeam', sTeam);
+  }
+  
   return (
     <Dropdown
       isOpen={isOpen}
@@ -55,7 +60,6 @@ const AssignTeamField = React.memo(props => {
             .slice(0, 10)
             .map(item => (
               <div
-                key={item._id}
                 className="team-auto-complete"
                 key={item._id}
                 onClick={() => {

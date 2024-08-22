@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Container,
   Row,
@@ -42,7 +42,8 @@ const SummaryBar = props => {
     in: false,
     information: '',
   };
-  const weeklyCommittedHours = displayUserProfile?.weeklycommittedHours + (displayUserProfile?.missedHours ?? 0);
+  const weeklyCommittedHours =
+    displayUserProfile?.weeklycommittedHours + (displayUserProfile?.missedHours ?? 0);
 
   const [userProfile, setUserProfile] = useState(undefined);
   const [infringements, setInfringements] = useState(0);
@@ -50,11 +51,113 @@ const SummaryBar = props => {
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState(null);
   const [tasks, setTasks] = useState(undefined);
+
+  const [categoryDescription, setCategoryDescription] = useState();
+  const sortableContainerRef = useRef(null);
+
+  const editRadioButtonSelected = value => {
+    // dynamic way to set description rather than using tenerary operators.
+
+    setEditType(value);
+
+    if (value === 'add') {
+      setCategoryDescription('Add Category');
+    } else if (value === 'edit') {
+      setCategoryDescription('Edit Categories');
+    } else if (value === 'delete') {
+      setCategoryDescription(
+        'Delete category (Write the suggestion category number from the dropdown to delete it).',
+      );
+    } else {
+      setCategoryDescription('');
+    }
+  };
+
+  const closeSuggestionModal = () => {
+    editRadioButtonSelected('');
+    setExtraFieldForSuggestionForm('');
+  };
+
+  const onDragToggleDraggingClass = event => {
+    event.currentTarget.classList.toggle('sortable-draggable-dragging');
+  };
+
+  const onSortableDragOver = event => {
+    event.preventDefault();
+    const draggedElement = event.currentTarget.querySelector('.sortable-draggable-dragging');
+    const nextElement = getDraggedNextElement(sortableContainerRef.current, event.clientY);
+
+    if (nextElement == null && draggedElement) {
+      sortableContainerRef.current.appendChild(draggedElement);
+    } else {
+      sortableContainerRef.current.insertBefore(draggedElement, nextElement);
+    }
+  };
+
+  const getDraggedNextElement = (container, yMouse) => {
+    // grab all draggable elements that are not being dragged.
+    const draggableElements = [
+      ...container.querySelectorAll('.sortable-draggable:not(.sortable-dragging)'),
+    ];
+
+    // below uses the array of draggable elements and uses the offset to find the closest draggable element after
+    // the element is dragged
+    if (draggableElements) {
+      return draggableElements.reduce(
+        (closest, child) => {
+          const box = child.getBoundingClientRect();
+          const offset = yMouse - box.top - box.height / 2;
+
+          if (offset < 0 && offset > closest.offset) {
+            return { offset: offset, element: child };
+          } else {
+            return closest;
+          }
+        },
+        { offset: Number.NEGATIVE_INFINITY },
+      ).element;
+    }
+  };
+
+  const handleEditClick = event => {
+    let currentTarget = event.currentTarget;
+
+    if (currentTarget) {
+      const textNode = currentTarget.parentNode.querySelector('p');
+
+      if (currentTarget.classList.contains('fa-edit') && textNode) {
+        // Going to edit mode
+        textNode.contentEditable = true;
+        currentTarget.parentNode.draggable = false;
+        currentTarget.parentNode.style.cursor = 'default';
+
+        const range = document.createRange();
+        const selection = window.getSelection();
+
+        range.selectNodeContents(textNode);
+        range.collapse(false);
+        selection.removeAllRanges();
+        selection.addRange(range);
+
+        textNode.style.cursor = 'text';
+        textNode.focus();
+      } else if (textNode) {
+        // Going to draggable mode
+        textNode.style.cursor = 'grab';
+        currentTarget.parentNode.draggable = true;
+        currentTarget.parentNode.style.cursor = 'grab';
+      }
+
+      currentTarget.classList.toggle('fa-edit');
+      currentTarget.classList.toggle('fa-check');
+    }
+  };
+
   const [suggestionCategory, setSuggestionCategory] = useState([]);
   const [inputFiled, setInputField] = useState([]);
   const [takeInput, setTakeInput] = useState(false);
   const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('');
-  const [editType, seteditType] = useState('');
+  const [editType, setEditType] = useState('');
   const [showSuggestionModal, setShowSuggestionModal] = useState(false);
   const [report, setBugReport] = useState(initialInfo);
 
@@ -89,7 +192,9 @@ const SummaryBar = props => {
 
   //Get infringement count from userProfile
   const getInfringements = () => {
-    return displayUserProfile && displayUserProfile.infringements ? displayUserProfile.infringements.length : 0;
+    return displayUserProfile && displayUserProfile.infringements
+      ? displayUserProfile.infringements.length
+      : 0;
   };
 
   //Get badges count from userProfile
@@ -102,7 +207,8 @@ const SummaryBar = props => {
       if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
         totalBadges += 1;
       } else {
-        totalBadges += Math.round(Number(badge.count));
+        const badgeCount = badge?.count ? Number(badge.count) : 0;
+        totalBadges += Math.round(badgeCount);
       }
     });
 
@@ -123,6 +229,22 @@ const SummaryBar = props => {
       }
     });
 
+    if (data && data.action && data.action == 'edit') {
+      const updatedSuggestionCategory = Array.from(sortableContainerRef.current.children).map(
+        child => {
+          return child.textContent;
+        },
+      );
+
+      updatedSuggestionCategory.forEach(function(value, key) {
+        if (value.trim() === '') {
+          isvalid = false;
+        }
+      });
+
+      data.updatedSuggestionCategory = updatedSuggestionCategory;
+    }
+
     return isvalid ? data : null;
   };
 
@@ -141,21 +263,29 @@ const SummaryBar = props => {
     data['firstName'] = displayUserProfile.firstName;
     data['lastName'] = displayUserProfile.lastName;
     data['email'] = displayUserProfile.email;
-    httpService.post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile._id}`, data).catch(e => {});
+    httpService
+      .post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile._id}`, data)
+      .catch(e => {});
     openReport();
   };
 
   const setnewfields = (fielddata, setfield) => {
-    setfield(prev => {
-      let newarr = prev;
-      if (fielddata.action === 'add') newarr.unshift(fielddata.newField);
-      if (fielddata.action === 'delete') {
-        newarr = newarr.filter((item, index) => {
-          return fielddata.field ? fielddata.newField !== item : +fielddata.newField !== index + 1;
-        });
-      }
-      return newarr;
-    });
+    if (fielddata?.action == 'edit' && fielddata?.updatedSuggestionCategory) {
+      setfield(fielddata.updatedSuggestionCategory);
+    } else {
+      setfield(prev => {
+        let newarr = [...prev];
+        if (fielddata.action === 'add') newarr.unshift(fielddata.newField);
+        if (fielddata.action === 'delete') {
+          newarr = newarr.filter((item, index) => {
+            return fielddata.field
+              ? fielddata.newField !== item
+              : +fielddata.newField !== index + 1;
+          });
+        }
+        return newarr;
+      });
+    }
   };
   //add new text field or suggestion category by owner class and update the backend
   const editField = async event => {
@@ -172,7 +302,7 @@ const SummaryBar = props => {
         setnewfields(data, setInputField);
       }
       setExtraFieldForSuggestionForm('');
-      seteditType('');
+      setEditType('');
       httpService
         .post(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`, data)
         .catch(e => {});
@@ -205,7 +335,9 @@ const SummaryBar = props => {
   const openSuggestionModal = async () => {
     if (!showSuggestionModal) {
       try {
-        let res = await httpService.get(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`);
+        let res = await httpService.get(
+          `${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`,
+        );
         if (res && res.status === 200) {
           setSuggestionCategory(res.data.suggestion);
           setInputField(res.data.field);
@@ -229,6 +361,7 @@ const SummaryBar = props => {
     window.location.hash = '#badgesearned';
   };
 
+
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
     return latestSummary && new Date() < new Date(latestSummary.dueDate)
@@ -236,10 +369,12 @@ const SummaryBar = props => {
       : '';
   };
 
-  const canEditData = () => !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') && canPutUserProfileImportantInfo;
+  const canEditData = () =>
+    !(displayUserProfile.role === 'Owner' && authUser.role !== 'Owner') &&
+    canPutUserProfileImportantInfo;
 
   useEffect(() => {
-    setUserProfile(userProfile);
+   setUserProfile(userProfile);
   }, [userProfile]);
 
   useEffect(() => {
@@ -248,10 +383,10 @@ const SummaryBar = props => {
       loadUserProfile();
       getUserTasks();
     } else {
-      setUserProfile(userProfile);
+      setUserProfile(authUser);
       setTasks(displayUserTask.length);
     }
-  }, [displayUserId]);
+  }, [isAuthUser]);
 
   useEffect(() => {
     if (summaryBarData && displayUserProfile !== undefined) {
@@ -289,8 +424,9 @@ const SummaryBar = props => {
                 </font>
                 <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
                   <div className='font-weight-bold'>
-                    {displayUserProfile.firstName + ' '}
-                    {displayUserProfile.lastName}
+                    {userProfile?.firstName || displayUserProfile.firstName}
+                    {' '}
+                    {userProfile?.lastName || displayUserProfile.lastName}
                   </div>
                 </CardTitle>
               </div>
@@ -410,178 +546,216 @@ const SummaryBar = props => {
               </Row>
             </Col>
 
-            <Col className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? "bg-space-cadet" : ""}`}>
-              <div className={"d-flex justify-content-around no-gutters"}>
-                &nbsp;&nbsp;
-                <div className="image_frame">
-                  <div className="redBackgroup">
-                    <span>{tasks}</span>
-                  </div>
-                  {isAuthUser || canEditData() ? (
-                    <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
-                  ) : (
-                    <img className="sum_img" src={task_icon} alt=""></img>
-                  )}
-                </div>
-                &nbsp;&nbsp;
-                <div className="image_frame">
-                  {isAuthUser || canEditData() ? (
-                    <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
-                  ) : (
-                    <img className="sum_img" src={badges_icon} alt="" />
-                  )}
-                  <div className="redBackgroup">
-                    <span>{badges}</span>
-                  </div>
-                </div>
-                &nbsp;&nbsp;
-                <div className="image_frame">
-                  {isAuthUser || canEditData() ? (
-                    <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
-                      <img className="sum_img" src={bluesquare_icon} alt="" />
-                      <div className="redBackgroup">
-                        <span>{infringements}</span>
-                      </div>
-                    </Link>
-                  ) : (
-                    <div>
-                      <img className="sum_img" src={bluesquare_icon} alt="" />
-                      <div className="redBackgroup">
-                        <span>{infringements}</span>
-                      </div>
-                    </div>
-                  )}
-                </div>
-                &nbsp;&nbsp;
-                <div className="image_frame">
-                  {isAuthUser || canEditData() ? (
-                    <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
-                  ) : (
-                    <img className="sum_img" src={report_icon} alt="" />
-                  )}
-                </div>
-                &nbsp;&nbsp;
-                <div className="image_frame">
-                  {isAuthUser || canEditData() ? (
-                    <img
-                      className="sum_img"
-                      src={suggestions_icon}
-                      alt=""
-                      onClick={openSuggestionModal}
-                    />
-                  ) : (
-                    <img className="sum_img" src={suggestions_icon} alt="" />
-                  )}
-                </div>
+        <Col className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? "bg-space-cadet" : ""}`}>
+          <div className={"d-flex justify-content-around no-gutters"}>
+            &nbsp;&nbsp;
+            <div className="image_frame">
+              <div className="redBackgroup">
+                <span>{tasks}</span>
               </div>
-            </Col>
-            <Modal isOpen={showSuggestionModal} toggle={openSuggestionModal} className={darkMode ? 'text-light' : ''}>
-              <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
-              <ModalBody className={bodyBg}>
-                {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
+              {isAuthUser || canEditData() ? (
+                <img className="sum_img" src={task_icon} alt="" onClick={onTaskClick}></img>
+              ) : (
+                <img className="sum_img" src={task_icon} alt=""></img>
+              )}
+            </div>
+            &nbsp;&nbsp;
+            <div className="image_frame">
+              <div className="redBackgroup">
+                <span>{badges}</span>
+              </div>
+              {isAuthUser || canEditData() ? (
+                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick}/>
+                ) : (
+                <img className="sum_img" src={badges_icon} alt="" />
+              )}
+            </div>
+            &nbsp;&nbsp;
+            <div className="image_frame">
+              {isAuthUser || canEditData() ? (
+                <Link to={`/userprofile/${displayUserProfile._id}#bluesquare`}>
+                  <img className="sum_img" src={bluesquare_icon} alt="" />
+                  <div className="redBackgroup">
+                    <span>{infringements}</span>
+                  </div>
+                </Link>
+              ) : (
+                <div>
+                  <img className="sum_img" src={bluesquare_icon} alt="" />
+                  <div className="redBackgroup">
+                    <span>{infringements}</span>
+                  </div>
+                </div>
+              )}
+            </div>
+            &nbsp;&nbsp;
+            <div className="image_frame">
+              {isAuthUser || canEditData() ? (
+                <img className="sum_img" src={report_icon} alt="" onClick={openReport} />
+              ) : (
+                <img className="sum_img" src={report_icon} alt="" />
+              )}
+            </div>
+            &nbsp;&nbsp;
+            <div className="image_frame">
+              {isAuthUser || canEditData() ? (
+                <img
+                  className="sum_img"
+                  src={suggestions_icon}
+                  alt=""
+                  onClick={openSuggestionModal}
+                />
+              ) : (
+                <img className="sum_img" src={suggestions_icon} alt="" />
+              )}
+            </div>
+          </div>
+        </Col>
+        <Modal
+          isOpen={showSuggestionModal}
+          onClosed={() => closeSuggestionModal()}
+          toggle={openSuggestionModal} className={darkMode ? 'text-light' : ''}
+        >
+          <ModalHeader className={headerBg}>User Suggestion</ModalHeader>
+          <ModalBody className={bodyBg}>
+            {displayUserProfile.role === 'Owner' && !extraFieldForSuggestionForm && (
+              <FormGroup>
+                <Button
+                  onClick={() => setExtraFieldForSuggestionForm('suggestion')}
+                  type="button"
+                  color="success"
+                  size="md"
+                >
+                  Edit Category
+                </Button>{' '}
+                &nbsp;&nbsp;&nbsp;
+                <Button
+                  onClick={() => setExtraFieldForSuggestionForm('field')}
+                  type="button"
+                  color="success"
+                  size="md"
+                >
+                  Edit Field
+                </Button>
+              </FormGroup>
+            )}
+
+            {extraFieldForSuggestionForm && (
+              <Form
+                onSubmit={editField}
+                id="newFieldForm"
+                style={{ border: '1px solid gray', padding: '5px 10px', margin: '5px 10px' }}
+              >
+                <FormGroup tag="fieldset" id="fieldsetinner">
+                  <legend style={{ fontSize: '16px' }}>Select Action type:</legend>
+                  <FormGroup check>
+                    <Label check className={fontColor}>
+                      <Input
+                        onChange={e => editRadioButtonSelected(e.target.value)}
+                        type="radio"
+                        name="action"
+                        value={'add'}
+                        required
+                      />{' '}
+                      Add
+                    </Label>
+                  </FormGroup>
+                  {extraFieldForSuggestionForm === 'suggestion' && (
+                    <FormGroup check>
+                      <Label check className={fontColor}>
+                        <Input
+                          onChange={e => editRadioButtonSelected(e.target.value)}
+                          type="radio"
+                          name="action"
+                          value={'edit'}
+                          required
+                        />{' '}
+                        Edit
+                      </Label>
+                    </FormGroup>
+                  )}
+                  <FormGroup check>
+                    <Label check className={fontColor}>
+                      <Input
+                        onChange={e => editRadioButtonSelected(e.target.value)}
+                        type="radio"
+                        name="action"
+                        value={'delete'}
+                        required
+                        disabled={
+                          extraFieldForSuggestionForm === 'field' && inputFiled.length === 0
+                        }
+                      />{' '}
+                      Delete
+                    </Label>
+                  </FormGroup>
+                </FormGroup>
+                {editType !== '' && (
                   <FormGroup>
-                    <Button
-                      onClick={() => setExtraFieldForSuggestionForm('suggestion')}
-                      type="button"
-                      color="success"
-                      size="md"
-                    >
-                      Edit Category
-                    </Button>{' '}
-                    &nbsp;&nbsp;&nbsp;
-                    <Button
-                      onClick={() => setExtraFieldForSuggestionForm('field')}
-                      type="button"
-                      color="success"
-                      size="md"
-                    >
-                      Edit Field
-                    </Button>
+                    <Label for="newField" className={fontColor}>
+                      {extraFieldForSuggestionForm === 'suggestion' && categoryDescription}
+                    </Label>
+                    {editType !== 'edit' && (
+                      <Input
+                        type="textarea"
+                        name="newField"
+                        id="newField"
+                        placeholder={
+                          extraFieldForSuggestionForm === 'suggestion'
+                            ? editType === 'delete'
+                              ? 'write the category number, like 1 or 2 etc'
+                              : 'write the category name'
+                            : 'write the field name'
+                        }
+                        required
+                      />
+                    )}
+                    {editType === 'edit' && (
+                      <div
+                        className="sortable-container"
+                        ref={sortableContainerRef}
+                        onDragOver={e => onSortableDragOver(e)}
+                      >
+                        {suggestionCategory.map((value, index) => (
+                          <div
+                            className={`sortable-content ${bodyBg} sortable-draggable`}
+                            key={index}
+                            draggable="true"
+                            onDragStart={event => onDragToggleDraggingClass(event)}
+                            onDragEnd={event => onDragToggleDraggingClass(event)}
+                          >
+                            <p>{value}</p>
+                            <button
+                              type="button"
+                              className="edit-icon fa fa-edit"
+                              onClick={event => handleEditClick(event)}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    )}
                   </FormGroup>
                 )}
-
-                {extraFieldForSuggestionForm && (
-                  <Form
-                    onSubmit={editField}
-                    id="newFieldForm"
-                    style={{ border: '1px solid gray', padding: '5px 10px', margin: '5px 10px' }}
-                  >
-                    <FormGroup tag="fieldset" id="fieldsetinner">
-                      <legend style={{ fontSize: '16px' }}>Select Action type:</legend>
-                      <FormGroup check>
-                        <Label check className={fontColor}>
-                          <Input
-                            onChange={() => seteditType('add')}
-                            type="radio"
-                            name="action"
-                            value={'add'}
-                            required
-                          />{' '}
-                          Add
-                        </Label>
-                      </FormGroup>
-                      <FormGroup check>
-                        <Label check className={fontColor}>
-                          <Input
-                            onChange={() => seteditType('delete')}
-                            type="radio"
-                            name="action"
-                            value={'delete'}
-                            required
-                            disabled={
-                              extraFieldForSuggestionForm === 'field' && inputFiled.length === 0
-                            }
-                          />{' '}
-                          Delete
-                        </Label>
-                      </FormGroup>
-                    </FormGroup>
-                    {editType !== '' && (
-                      <FormGroup>
-                        <Label for="newField" className={fontColor}>
-                          {extraFieldForSuggestionForm === 'suggestion'
-                            ? editType === 'delete'
-                              ? 'Delete category (Write the suggestion category number from the dropdown to delete it).'
-                              : 'Add category'
-                            : editType === 'add'
-                            ? 'Add Field'
-                            : 'Delete field (Copy the field name to delete it).'}
-                        </Label>
-                        <Input
-                          type="textarea"
-                          name="newField"
-                          id="newField"
-                          placeholder={
-                            extraFieldForSuggestionForm === 'suggestion'
-                              ? editType === 'delete'
-                                ? 'write the category number, like 1 or 2 etc'
-                                : 'write the category name'
-                              : 'write the field name'
-                          }
-                          required
-                        />
-                      </FormGroup>
-                    )}
-                    <Button id="add" type="submit" color="success" size="md">
-                      Submit
-                    </Button>{' '}
-                    &nbsp;&nbsp;&nbsp;
-                    <Button
-                      onClick={() => {
-                        seteditType('');
-                        setExtraFieldForSuggestionForm('');
-                      }}
-                      type="button"
-                      color="danger"
-                      size="md"
-                    >
-                      Cancel
-                    </Button>
-                  </Form>
-                )}
-                <Form onSubmit={sendUserSuggestion} id="suggestionForm">
-                  <FormGroup>
-                    <Label for="suggestioncate" className={fontColor}>Please select a category of your suggestion:</Label>
+                <Button id="add" type="submit" color="success" size="md">
+                  Submit
+                </Button>{' '}
+                &nbsp;&nbsp;&nbsp;
+                <Button
+                  onClick={() => {
+                    setEditType('');
+                    setExtraFieldForSuggestionForm('');
+                  }}
+                  type="button"
+                  color="danger"
+                  size="md"
+                >
+                  Cancel
+                </Button>
+              </Form>
+            )}
+            <Form onSubmit={sendUserSuggestion} id="suggestionForm">
+              <FormGroup>
+                <Label for="suggestioncate" className={fontColor}>Please select a category of your suggestion:</Label>
 
                     <Input
                       onChange={() => setTakeInput(true)}
