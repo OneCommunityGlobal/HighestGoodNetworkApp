@@ -25,11 +25,10 @@ import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import TeamChart from './TeamChart';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
-import { toast } from 'react-toastify';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
+import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -450,13 +449,13 @@ export class WeeklySummariesReport extends Component {
     } else {
       selectedCodes.forEach(code => {
         const val = temp.filter(summary => summary.teamCode === code.value).length;
-        if(val > 0){
+        if (val > 0) {
           chartData.push({
-          name: code.label,
-          value: val,
-         });
+            name: code.label,
+            value: val,
+          });
         }
-        
+
         const team = tableData[code.value];
         const index = selectedCodesArray.indexOf(code.value);
         const color = COLORS[index % COLORS.length];
@@ -477,7 +476,7 @@ export class WeeklySummariesReport extends Component {
     chartData.sort();
     temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
     structuredTeamTableData.sort();
-    this.setState({ total: temptotal, });
+    this.setState({ total: temptotal });
     this.setState({ filteredSummaries: temp });
     this.setState({ chartData });
     this.setState({ structuredTableData: structuredTeamTableData });
@@ -502,13 +501,11 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
-  handleChartStatusToggleChange = () =>{
-    this.setState(
-      prevState => ({
-        chartShow: !prevState.chartShow,
-      })
-    );
-  }
+  handleChartStatusToggleChange = () => {
+    this.setState(prevState => ({
+      chartShow: !prevState.chartShow,
+    }));
+  };
 
   handleBioStatusToggleChange = () => {
     this.setState(
@@ -751,33 +748,29 @@ export class WeeklySummariesReport extends Component {
         )}
         <Row>
           <Col lg={{ size: 2, offset: 1 }} xs={{ size: 2, offset: 1 }}>
-            <div>
-            Select Team Code
-            </div>
+            <div>Select Team Code</div>
           </Col>
           <Col lg={{ size: 2, offset: 1 }} xs={{ size: 2, offset: 1 }}>
             <div className="filter-container">
-                <div className="filter-style">
-                    <span>Show Chart</span>
-                    <div className="switch-toggle-control">
-                      <input
-                        type="checkbox"
-                        className="switch-toggle"
-                        id="chart-status-toggle"
-                        onChange={this.handleChartStatusToggleChange}
-                      />
-                      <label className="switch-toggle-label" htmlFor="chart-status-toggle">
-                        <span className="switch-toggle-inner" />
-                        <span className="switch-toggle-switch" />
-                      </label>
-                    </div>
-                  </div>
+              <div className="filter-style">
+                <span>Show Chart</span>
+                <div className="switch-toggle-control">
+                  <input
+                    type="checkbox"
+                    className="switch-toggle"
+                    id="chart-status-toggle"
+                    onChange={this.handleChartStatusToggleChange}
+                  />
+                  <label className="switch-toggle-label" htmlFor="chart-status-toggle">
+                    <span className="switch-toggle-inner" />
+                    <span className="switch-toggle-switch" />
+                  </label>
+                </div>
               </div>
-          </Col>
-          <Col lg={{ size: 5}} xs={{ size: 5}}>
-            <div>
-              Select Color
             </div>
+          </Col>
+          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
+            <div>Select Color</div>
           </Col>
         </Row>
         <Row>
@@ -791,7 +784,7 @@ export class WeeklySummariesReport extends Component {
               }}
               labelledBy="Select"
             />
-           </Col>
+          </Col>
           <Col lg={{ size: 5 }} xs={{ size: 5 }}>
             <MultiSelect
               className="multi-select-filter text-dark"
@@ -803,20 +796,19 @@ export class WeeklySummariesReport extends Component {
             />
           </Col>
         </Row>
-        {chartShow &&(
-        <Row >
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
-            <SelectTeamPieChart chartData={chartData} COLORS={COLORS} total={total}/>
-          </Col>
-          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
-            <TeamChart teamData={structuredTableData} />
-          </Col>
-        </Row>
+        {chartShow && (
+          <Row>
+            <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+              <SelectTeamPieChart chartData={chartData} COLORS={COLORS} total={total} />
+            </Col>
+            <Col lg={{ size: 5 }} xs={{ size: 5 }}>
+              <TeamChart teamData={structuredTableData} />
+            </Col>
+          </Row>
         )}
-        <Row style={{ marginBottom: '10px'}}>
+        <Row style={{ marginBottom: '10px' }}>
           <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
             <div className="filter-container">
-
               {(hasPermissionToFilter || this.canSeeBioHighlight) && (
                 <div className="filter-style margin-right">
                   <span>Filter by Bio Status</span>
