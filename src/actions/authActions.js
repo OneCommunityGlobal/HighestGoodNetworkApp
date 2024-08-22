@@ -31,7 +31,6 @@ export const loginUser = credentials => dispatch => {
         });
       }else if (err.response && err.response.status === 403){
         errors = {email: err.response.data.message};
-  
         dispatch({
           type: GET_ERRORS,
           payload: errors,

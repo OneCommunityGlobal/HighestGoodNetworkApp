@@ -49,11 +49,10 @@ export class Login extends Form {
   doSubmit = async () => {
     const { email, password } = this.state.data;
     const formattedEmail = email.replace(/[A-Z]/g, char => char.toLowerCase());
-    await this.props.loginUser({ email:formattedEmail, password });
-    if(this.props.errors){
+    await this.props.loginUser({ email: formattedEmail, password });
+    if (this.props.errors) {
       this.setState({ errors: this.props.errors });
     }
-    
   };
 
   render() {
