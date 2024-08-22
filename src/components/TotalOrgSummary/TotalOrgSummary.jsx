@@ -157,9 +157,8 @@ function TotalOrgSummary(props) {
           console.log('error on fetching data');
         });
     }
-    
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
-    useEffect(() => {
+  useEffect(() => {
     async function fetchData() {
       const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
       const {
@@ -174,7 +173,7 @@ function TotalOrgSummary(props) {
           lastTaskHours,
           lastProjectHours,
         });
-      
+      }
     }
     fetchData();
   }, [fromDate, toDate, fromOverDate, toOverDate]);
@@ -353,8 +352,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(startDate, endDate)),
-  getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(startDate, endDate)),
+  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
+  getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
