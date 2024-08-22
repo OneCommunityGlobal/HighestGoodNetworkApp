@@ -256,6 +256,13 @@ function LeaderBoard({
     setTextButton('My Team');
   };
 
+  useEffect(() => {
+    setFilteredUsers(teamsUsers);
+    return () => {
+      setSearchInput('');
+    };
+  }, [teamsUsers]);
+
   const debouncedFilterUsers = useCallback(
     debounce(query => {
       setFilteredUsers(
@@ -352,9 +359,9 @@ function LeaderBoard({
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-        <div className="search-container">
+        <div className="search-container mx-1">
           <input
-            class="form-control col-12 my-2"
+            className="form-control col-12 mb-2"
             type="text"
             placeholder="Search users..."
             value={searchInput}
