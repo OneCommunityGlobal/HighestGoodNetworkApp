@@ -63,6 +63,11 @@ export const permissionLabels = [
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
+      {
+        label: 'Submit Weekly Summary for Others',
+        key: 'submitWeeklySummaryForOthers',
+        description: 'Gives the manager roles and above the ability to edit other peoples weekly summary.',
+      },
     ],
   },
   {
@@ -120,6 +125,7 @@ export const permissionLabels = [
         key: 'changeUserRehireableStatus',
         description: 'Gives the user permission to change the user status of rehireable or not.',
       },
+      
     ],
   },
   {

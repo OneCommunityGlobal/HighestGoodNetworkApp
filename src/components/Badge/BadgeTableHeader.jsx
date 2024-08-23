@@ -1,15 +1,54 @@
 import { UncontrolledTooltip } from 'reactstrap';
+import { useState } from 'react';
 
-function BadgeTableHeader({ darkMode }) {
+function BadgeTableHeader({ darkMode, sortNameState, sortRankState, onRankSort, onNameSort }) {
+  const [sortOrder, setSortOrder] = useState('none');
+  // function taken from TeamTableHeader 
+  const getSortNameIcon = (sortNameState) => {
+    console.log("switching name icon");
+    switch (sortNameState) {
+      case 'ascending':
+        return '↑';
+      case 'descending':
+        return '↓';
+      default:
+        return '⇵';
+    }
+
+  };
+
+  const getSortRankIcon = () => {
+    console.log("switching rank icon");
+    switch (sortRankState) {
+      case 'ascending':
+        return '↑';
+      case 'descending':
+        return '↓';
+      default:
+        return '⇵';
+    }
+  };
+
+
   return (
     <tr className={darkMode ? 'bg-space-cadet' : ''}>
       <th>Badge</th>
-      <th>Name</th>
+      <th>
+        Name{' '}
+        <button onClick={onNameSort} style={{ background: 'none', border: 'none' }} className={darkMode ? 'text-light' : ''}>
+          {getSortNameIcon(sortNameState)}
+        </button>
+      </th>
       <th className="d-xl-table-cell d-none">Description</th>
-      <th>Type</th>
+      <th>
+        Type
+      </th>
       <th className="d-xl-table-cell d-none">Details</th>
       <th>
-        Ranking{' '}
+        Ranking{' '}{' '}
+        <button onClick={onRankSort} style={{ background: 'none', border: 'none' }} className={darkMode ? 'text-light' : ''}>
+          {getSortRankIcon()}
+        </button>
         <i className="fa fa-info-circle" id="SortRankingInfo" style={{ marginLeft: '5px' }} />
         <UncontrolledTooltip
           placement="right"

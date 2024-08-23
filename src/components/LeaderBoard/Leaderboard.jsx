@@ -83,6 +83,8 @@ function LeaderBoard({
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+  const editWeeklySummaryPermission = hasPermission('submitWeeklySummaryForOthers');
+  
   const isOwner = ['Owner'].includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
@@ -217,7 +219,8 @@ function LeaderBoard({
       };
 
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
-      window.dispatchEvent(new Event('storage'));
+      window.dispatch
+      Event(new Event('storage'));
       dashboardClose();
     });
   };
@@ -255,6 +258,37 @@ function LeaderBoard({
     }
     setUsersSelectedTeam(team);
     setTextButton('My Team');
+  };
+
+  const manager = 'Manager';
+  const adm = 'Administrator';
+  const owner = 'Owner';
+
+  const handleDashboardAccess = item => {
+    // check the logged in user is manager and if the dashboard is admin and owner
+    if (loggedInUser.role === manager && [adm, owner].includes(item.role)) {
+      // check the logged in user is admin and if dashboard is owner
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    }
+    // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
+    else if (
+      loggedInUser.role !== manager &&
+      loggedInUser.role !== adm &&
+      loggedInUser.role !== owner
+    ) {
+      if ([manager, adm, owner].includes(item.role)) {
+        // prevent access
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else {
+        // allow access to the painel
+        dashboardToggle(item);
+      }
+    } else {
+      // allow access to the painel
+      dashboardToggle(item);
+    }
   };
 
   return (
@@ -453,11 +487,11 @@ function LeaderBoard({
                       role="button"
                       tabIndex={0}
                       onClick={() => {
-                        dashboardToggle(item);
+                        handleDashboardAccess(item);
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter') {
-                          dashboardToggle(item);
+                          handleDashboardAccess(item);
                         }
                       }}
                     >
