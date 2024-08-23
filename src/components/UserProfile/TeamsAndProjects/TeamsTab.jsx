@@ -45,6 +45,7 @@ const TeamsTab = props => {
 
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
+    isTeamSaved(true); // Disables Save button after closing popup without changes
   };
   const onSelectDeleteTeam = teamId => {
     setRemovedTeams([...removedTeams, teamId]);

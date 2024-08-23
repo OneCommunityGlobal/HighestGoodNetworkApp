@@ -35,6 +35,7 @@ const AddTeamPopup = React.memo(props => {
       props.onSelectAssignTeam(selectedTeam);
       toast.success('Team assigned successfully'); // toast notification
       onSelectTeam(undefined);
+      closePopup() // automatically closes the popup after team assigned
     } else {
       // when the user typed something but didn't select a team
       onValidation(false);
