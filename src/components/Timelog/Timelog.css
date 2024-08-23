@@ -126,13 +126,10 @@
     overflow-y: scroll;
     width: 100%;
   }
-
+/* 
   .right-padding-temp-fix {
     padding-right: 0px !important;
-  }
-  .search-time-entries-btn{
-    padding: 3px 6px !important;
-  }
+  } */
 }
 
 
@@ -190,6 +187,11 @@
 
 .custom-text-alignment {
   text-align: center;
+}
+@media (max-width:377px){
+  .timelogPageContainer .col-md-12{
+    padding: 0 4px;
+  }
 }
 
 .tasks-and-timelog-header-row{
