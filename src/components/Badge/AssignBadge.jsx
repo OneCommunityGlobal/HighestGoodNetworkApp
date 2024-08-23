@@ -33,7 +33,7 @@ function AssignBadge(props) {
   const [isOpen, setOpen] = useState(false);
   const [fullName, setFullName] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserId, setSelectedUserId] = useState([]);
 
   useEffect(() => {
     props.getAllUserProfile();
@@ -164,9 +164,9 @@ function AssignBadge(props) {
                 >
                   <td>
                     <input
-                      type="radio"
+                      type="checkbox"
                       name="user"
-                      checked={selectedUserId === user._id}
+                      checked={selectedUserIds.includes(user._id)}
                       readOnly
                     />
                   </td>
