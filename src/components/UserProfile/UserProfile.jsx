@@ -409,7 +409,7 @@ function UserProfile(props) {
   };
 
   const onAssignTeam = assignedTeam => {
-    setTeams(prevState => [...prevState, assignedTeam]);
+    setTeams(prevTeams => [...prevTeams, assignedTeam]);
   };
 
   const onAssignProject = assignedProject => {
@@ -1191,8 +1191,8 @@ function UserProfile(props) {
                     !formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    (!(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
-                      !isTeamSaved)
+                    (!(isProfileEqual && isTasksEqual  && isProjectsEqual) 
+                  )
                   }
                   canEditTeamCode={
                     props.hasPermission('editTeamCode') ||
@@ -1556,7 +1556,7 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual  && isProjectsEqual)
                     }
                     canEditTeamCode={
                       props.hasPermission('editTeamCode') ||
