@@ -55,12 +55,12 @@ const Name = props => {
               // className={styleProfile.profileText}
               onChange={e => {
                 setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
-                setFormValid({ ...formValid, lastName: !!e.target.value });
+                setFormValid({ ...formValid, lastName: !!e.target.value && e.target.value.trim().length >=2 });
               }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
             />
-            <FormFeedback>Last Name Can&apos;t be empty</FormFeedback>
+            <FormFeedback>Last Name Can&apos;t have less than 2 characters</FormFeedback>
           </FormGroup>
         </Col>
       </>
