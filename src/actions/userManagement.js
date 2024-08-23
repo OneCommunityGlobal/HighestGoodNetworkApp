@@ -8,7 +8,10 @@ import {
   USER_PROFILE_DELETE,
   ENABLE_USER_PROFILE_EDIT,
   DISABLE_USER_PROFILE_EDIT,
-  CHANGE_USER_PROFILE_PAGE
+  CHANGE_USER_PROFILE_PAGE,
+  START_USER_INFO_UPDATE,
+  FINISH_USER_INFO_UPDATE,
+  ERROR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '../utils/URL';
 import { UserStatus } from '../utils/enums';
@@ -209,3 +212,16 @@ export const disableEditUserInfo=(value)=>(dispatch,getState)=>{
 export const changePagination=(value)=>(dispatch,getState)=>{
   dispatch({type:CHANGE_USER_PROFILE_PAGE,payload:value});
 }
+
+export const updateUserInformation=(value)=>async(dispatch,getState)=>{
+  try {
+    dispatch({type:START_USER_INFO_UPDATE})
+    var response=await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE,value);
+    const {data} = await axios.get(ENDPOINTS.USER_PROFILES);
+    dispatch({type:FINISH_USER_INFO_UPDATE,payload:data})
+  } catch (error) {
+    console.log(error)
+    dispatch({type:ERROR_USER_INFO_UPDATE})
+  }
+}
+

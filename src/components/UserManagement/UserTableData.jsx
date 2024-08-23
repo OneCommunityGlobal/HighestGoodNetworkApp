@@ -13,7 +13,8 @@ import { formatDate, formatDateYYYYMMDD } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { useDispatch } from 'react-redux';
 import { getAllRoles } from 'actions/role';
-
+import { updateUserInformation } from 'actions/userManagement';
+import { update } from 'lodash';
 
 /**
  * The body row of the user table
@@ -26,23 +27,36 @@ const UserTableData = React.memo(props => {
   const [formData, updateFormData] = useState({ firstName: props.user.firstName, lastName: props.user.lastName, id: props.user._id, role: props.user.role, email: props.user.email, weeklycommittedHours: props.user.weeklycommittedHours, startDate: formatDateYYYYMMDD(props.user.startDate), endDate: formatDateYYYYMMDD(props.user.endDate) })
   const dispatch = useDispatch();
   const { roles } = useSelector(state => state.role)
-
   // on calling updateFormData whatever is update
   // roles.map((e)=>console.log(e.roleName))
   /**
    * reset the changing state upon rerender with new isActive status
    */
 
-  const saveUserInformation = (item, value, id) => {
-    updateFormData({ ...formData, [item]: value });
-    // call a dispatch function to send this to the backend.
-    // constants, actions reducers, store state or do we need to make a backend api first? I think backend api first.
-  }
-
   useEffect(() => {
     onReset(false);
     dispatch(getAllRoles())
   }, [props.isActive, props.resetLoading]);
+
+  useEffect(()=>{
+    if(props.user.firstName!==formData.firstName){
+      dispatch(updateUserInformation({item:'firstName',value:formData.firstName,id:props.user._id}))
+    }
+    else if(props.user.lastName!==formData.lastName){
+      dispatch(updateUserInformation({item:'lastName',value:formData.lastName,id:props.user._id}))
+    }else if(props.user.role!==formData.role){
+      dispatch(updateUserInformation({item:'role',value:formData.role,id:props.user._id}))
+    }else if(props.user.email!==formData.email){
+      dispatch(updateUserInformation({item:'email',value:formData.email,id:props.user._id}))
+    }else if(props.user.weeklycommittedHours!==formData.weeklycommittedHours){
+      dispatch(updateUserInformation({item:'weeklycommittedHours',value:formData.weeklycommittedHours,id:props.user._id}))
+    }else if(props.user.startDate!==formData.startDate){
+      dispatch(updateUserInformation({item:'startDate',value:formData.startDate,id:props.user._id}))
+    }else if(props.user.endDate!==formData.endDate){
+      dispatch(updateUserInformation({item:'endDate',value:formData.endDate,id:props.user._id}))
+    }else{}
+
+  },[formData.firstName,formData.lastName,formData.role,formData.email,formData.weeklycommittedHours,formData.startDate,formData.endDate])
 
   useEffect(() => {
     updateFormData({ firstName: props.user.firstName, lastName: props.user.lastName, id: props.user._id, role: props.user.role, email: props.user.email, weeklycommittedHours: props.user.weeklycommittedHours, startDate: formatDateYYYYMMDD(props.user.startDate), endDate: formatDateYYYYMMDD(props.user.endDate) })
@@ -84,7 +98,7 @@ const UserTableData = React.memo(props => {
               toast.success('First Name Copied!');
             }}
           />
-        </div>) : <input type='text' className='edituser_input_firstname' value={formData.firstName} onChange={(e) => saveUserInformation('firstName', e.target.value, props.user._id)}></input>}
+        </div>) : <input type='text' className='edituser_input_firstname' value={formData.firstName} onChange={(e) => updateFormData({...formData,firstName:e.target.value})}></input>}
       </td>
       <td className="email_cell">
         {editUser.last ? <div><a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{formData.lastName}</a>
@@ -95,11 +109,11 @@ const UserTableData = React.memo(props => {
               navigator.clipboard.writeText(formData.lastName);
               toast.success('Last Name Copied!');
             }}
-          /></div> : <input type='text' className='edituser_input text-center' value={formData.lastName} onChange={(e) => saveUserInformation('lastName', e.target.value, props.user._id)}></input>}
+          /></div> : <input type='text' className='edituser_input text-center' value={formData.lastName} onChange={(e) => updateFormData({...formData,lastName:e.target.value})}></input>}
       </td>
 
       {editUser.role && roles !== undefined ? <td>{formData.role}</td> :
-        <select name="role-select-tag" id="" value={formData.role} onChange={(e) => saveUserInformation('role', e.target.value, props.user._id)}>
+        <select name="role-select-tag" id="" value={formData.role} onChange={(e) => updateFormData({...formData,role:e.target.value})}>
           {roles.map((e, index) => <option key={index} value={e.roleName} >{e.roleName}</option>)}
         </select>}
 
@@ -114,7 +128,7 @@ const UserTableData = React.memo(props => {
               navigator.clipboard.writeText(formData.email);
               toast.success('Email Copied!');
             }}
-          /></div> : <input type='text' className='edituser_input' value={formData.email} onChange={(e) => saveUserInformation('email', e.target.value, props.user._id)}></input>
+          /></div> : <input type='text' className='edituser_input' value={formData.email} onChange={(e) => updateFormData({...formData,email:e.target.value})}></input>
         }
       </td>
       <td>
@@ -122,7 +136,7 @@ const UserTableData = React.memo(props => {
           <span>
             {formData.weeklycommittedHours}
           </span> :
-          <input type='number' className='edituser_input' value={formData.weeklycommittedHours} onChange={(e) => saveUserInformation('weeklycommittedHours', e.target.value, props.user._id)}></input>
+          <input type='number' className='edituser_input' value={formData.weeklycommittedHours} onChange={(e) => updateFormData({...formData,'weeklycommittedHours':e.target.value})}></input>
         }
       </td>
       <td>
@@ -207,7 +221,7 @@ const UserTableData = React.memo(props => {
             <span>
               {props.user.startDate ? formatDate(formData.startDate) : 'N/A'}
             </span> :
-            <input type='date' className='edituser_input' value={formData.startDate} onChange={(e) => saveUserInformation('startDate',e.target.value,props.user._id)}></input>
+            <input type='date' className='edituser_input' value={formData.startDate} onChange={(e) => updateFormData({...formData,startDate:e.target.value})}></input>
         }
       </td>
 
@@ -224,7 +238,7 @@ const UserTableData = React.memo(props => {
             }}
           />
         </div> :
-          <input type='date' className='edituser_input' value={formData.endDate} onChange={(e) => { saveUserInformation('endDate',e.target.value,props.user._id)}}></input>
+          <input type='date' className='edituser_input' value={formData.endDate} onChange={(e) => updateFormData({...formData,endDate:e.target.value})}></input>
         }
       </td>
       {checkPermissionsOnOwner() ? null : (

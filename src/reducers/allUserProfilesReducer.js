@@ -1,3 +1,4 @@
+import { update } from 'lodash';
 import * as types from '../constants/userManagement';
 
 const userProfilesInitial = {
@@ -7,6 +8,7 @@ const userProfilesInitial = {
   editable: { 'first': 1, 'last': 1, 'role': 1, 'email': 1, 'weeklycommittedHours': 1 ,'startDate':1,'endDate':1},
   pagestats: { pageSize: 10, selectedPage: 1 },
   status: 404,
+  updating:false
 };
 
 export const updateObject = (oldObject, updatedProperties) => {
@@ -78,5 +80,17 @@ export const changeUserPageStatusReducer = (userProfile = userProfilesInitial, a
 
       return updateObject(userProfile.pagestats, action.payload)
     default: return userProfile
+  }
+}
+
+export const updateUserInfoReducer=(userProfile=userProfilesInitial,action)=>{
+  switch(action.type){
+    case "START_USER_INFO_UPDATE":
+      return userProfile
+    case "FINISH_USER_INFO_UPDATE":
+      return updateObject(userProfile,{updating:!userProfile.updating})
+    case "ERROR_USER_INFO_UPDATE":
+      return userProfile
+    default: return userProfile;
   }
 }
