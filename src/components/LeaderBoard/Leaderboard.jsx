@@ -466,7 +466,7 @@ function LeaderBoard({
                         <i
                           className="fa fa-star"
                           title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                            item.role === 'Core Team'
+                            item.role === 'Core Team' && item.missedHours > 0
                               ? `\n Additional make-up hours this week: ${item.missedHours}`
                               : ''
                           } \n Click to view their Dashboard`}
@@ -484,7 +484,7 @@ function LeaderBoard({
                       ) : (
                         <div
                           title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                            item.role === 'Core Team'
+                            item.role === 'Core Team' && item.missedHours > 0
                               ? `\n Additional make-up hours this week: ${item.missedHours}`
                               : ''
                           } \n Click to view their Dashboard`}
