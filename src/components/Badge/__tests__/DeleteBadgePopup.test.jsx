@@ -1,5 +1,6 @@
 import React from 'react';
 import { render, screen, fireEvent } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 import DeleteBadgePopup from '../DeleteBadgePopup';
@@ -14,7 +15,7 @@ describe('DeleteBadgePopup Component', () => {
   beforeEach(() => {
     store = mockStore({
       theme: {
-        darkMode: false, // or true to test dark mode
+        darkMode: false,
       },
     });
     mockSetDeletePopup = jest.fn();
@@ -34,52 +35,57 @@ describe('DeleteBadgePopup Component', () => {
           open={open}
           setDeletePopup={mockSetDeletePopup}
           deleteBadge={mockDeleteBadge}
-          badgeId={1}
-          badgeName="Test Badge"
+          badgeId="mockBadgeId"
+          badgeName="Mock Badge"
         />
       </Provider>
     );
   };
 
-  test('renders correctly in light mode', () => {
+  test('renders DeleteBadgePopup component in light mode', () => {
     renderComponent(false);
 
-    expect(screen.getByText(/Confirm Delete Badge/i)).toBeInTheDocument();
-    expect(screen.getByText(/Hold up there Sparky/i)).toBeInTheDocument();
-    expect(screen.getByText(/Badge Name: Test Badge/i)).toBeInTheDocument();
+    expect(screen.getByText('Confirm Delete Badge')).toBeInTheDocument();
+    expect(screen.getByText(/are you sure you want to delete this badge/i)).toBeInTheDocument();
+    expect(screen.getByText(/badge name: mock badge/i)).toBeInTheDocument();
+    expect(screen.getByText(/consider your next move carefully/i)).toBeInTheDocument();
+    expect(screen.getByText('Delete')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 
-  test('renders correctly in dark mode', () => {
+  test('renders DeleteBadgePopup component in dark mode', () => {
     renderComponent(true);
 
-    expect(screen.getByText(/Confirm Delete Badge/i)).toBeInTheDocument();
-    expect(screen.getByText(/Hold up there Sparky/i)).toBeInTheDocument();
-    expect(screen.getByText(/Badge Name: Test Badge/i)).toBeInTheDocument();
-    // Add more assertions to check specific dark mode styles if necessary
+    expect(screen.getByText('Confirm Delete Badge')).toBeInTheDocument();
+    expect(screen.getByText(/are you sure you want to delete this badge/i)).toBeInTheDocument();
+    expect(screen.getByText(/badge name: mock badge/i)).toBeInTheDocument();
+    expect(screen.getByText(/consider your next move carefully/i)).toBeInTheDocument();
+    expect(screen.getByText('Delete')).toBeInTheDocument();
+    expect(screen.getByText('Cancel')).toBeInTheDocument();
   });
 
-  test('calls deleteBadge and closes popup on delete', () => {
+  test('calls setDeletePopup when Cancel button is clicked', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByRole('button', { name: /Delete/i }));
-    expect(mockDeleteBadge).toHaveBeenCalledWith(1);
-    expect(mockSetDeletePopup).toHaveBeenCalledWith(false);
-  });
-
-  test('closes popup on cancel', () => {
-    renderComponent();
-
-    fireEvent.click(screen.getByText(/Cancel/i));
+    fireEvent.click(screen.getByText('Cancel'));
 
     expect(mockSetDeletePopup).toHaveBeenCalledWith(false);
     expect(mockDeleteBadge).not.toHaveBeenCalled();
   });
 
+  test('calls deleteBadge and setDeletePopup when Delete button is clicked', () => {
+    renderComponent();
+
+    fireEvent.click(screen.getByText('Delete'));
+
+    expect(mockDeleteBadge).toHaveBeenCalledWith('mockBadgeId');
+    expect(mockSetDeletePopup).toHaveBeenCalledWith(false);
+  });
+
   test('closes popup when close button is clicked', () => {
     renderComponent();
 
-    fireEvent.click(screen.getByLabelText(/close/i)); // Assuming the close button has an aria-label="close"
-
+    fireEvent.click(screen.getByLabelText(/close/i)); 
     expect(mockSetDeletePopup).toHaveBeenCalledWith(false);
     expect(mockDeleteBadge).not.toHaveBeenCalled();
   });
@@ -93,15 +99,77 @@ describe('DeleteBadgePopup Component', () => {
 
   test('toggles modal when toggle is called', () => {
     renderComponent();
-  
-    // Close the modal using the close button (X)
+
     fireEvent.click(screen.getByLabelText(/close/i));
     expect(mockSetDeletePopup).toHaveBeenCalledWith(false);
-  
-    // Click the delete button to confirm deletion
+
     fireEvent.click(screen.getByRole('button', { name: /Delete/i }));
     expect(mockSetDeletePopup).toHaveBeenCalledWith(false);
-    expect(mockDeleteBadge).toHaveBeenCalledWith(1);
+    expect(mockDeleteBadge).toHaveBeenCalledWith('mockBadgeId');
+  });
+
+  test('closes modal when header close button is clicked', () => {
+    renderComponent();
+  
+    fireEvent.click(screen.getByLabelText(/close/i));
+    expect(mockSetDeletePopup).toHaveBeenCalledWith(false);
+  });
+
+  test('does not crash when badgeId is null or undefined', () => {
+    render(
+      <Provider store={store}>
+        <DeleteBadgePopup
+          open={true}
+          setDeletePopup={mockSetDeletePopup}
+          deleteBadge={mockDeleteBadge}
+          badgeId={null}
+          badgeName="Test Badge"
+        />
+      </Provider>
+    );
+  
+    fireEvent.click(screen.getByRole('button', { name: /Delete/i }));
+    expect(mockDeleteBadge).toHaveBeenCalledWith(null);
+    expect(mockSetDeletePopup).toHaveBeenCalledWith(false);
+  });
+  test('applies correct styles in light mode', () => {
+    renderComponent(false);
+  
+    expect(screen.getByText(/Confirm Delete Badge/i)).not.toHaveClass('bg-space-cadet');
+    expect(screen.getByText(/Hold up there Sparky/i).parentElement).not.toHaveClass('bg-yinmn-blue');
+    expect(screen.getByRole('button', { name: /Delete/i })).toHaveClass('btn-danger');
+  });
+  
+  test('applies correct styles in dark mode', () => {
+    renderComponent(true);
+  
+    const header = screen.getByText(/Confirm Delete Badge/i).closest('.modal-header');
+    expect(header).toHaveClass('bg-space-cadet');
+  
+    const body = screen.getByText(/Hold up there Sparky/i).closest('.modal-body');
+    expect(body).toHaveClass('bg-yinmn-blue');
+  
+    const deleteButton = screen.getByRole('button', { name: /Delete/i });
+    expect(deleteButton).toHaveClass('btn-danger');
+  });
+  
+  
+  test('handles empty badge name gracefully', () => {
+    render(
+      <Provider store={store}>
+        <DeleteBadgePopup
+          open={true}
+          setDeletePopup={mockSetDeletePopup}
+          deleteBadge={mockDeleteBadge}
+          badgeId="mockBadgeId"
+          badgeName=""
+        />
+      </Provider>
+    );
+  
+    const badgeNameElement = screen.getByText(/Badge Name:/i);
+    expect(badgeNameElement).toBeInTheDocument();
+    expect(badgeNameElement.textContent).toBe('Badge Name: ');
   });
   
 });
