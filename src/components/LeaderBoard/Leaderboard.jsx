@@ -241,9 +241,10 @@ function LeaderBoard({
 
   const getTimeOffStatus = personId => {
     if (!allRequests[personId] || allRequests[personId].length === 0) {
-      return { isCurrentlyOff: false, additionalWeeks: 0 };
+      return { hasTimeOff: false, isCurrentlyOff: false, additionalWeeks: 0 };
     }
 
+    const hasTimeOff = true;
     const sortedRequests = allRequests[personId].sort((a, b) =>
       moment(a.startingDate).diff(moment(b.startingDate)),
     );
@@ -268,9 +269,9 @@ function LeaderBoard({
       );
       // weeks before time off
     } else if (moment().isBefore(moment(mostRecentRequest.startingDate))) {
-      additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks');
+      additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks') + 1;
     }
-    return { isCurrentlyOff, additionalWeeks };
+    return { hasTimeOff, isCurrentlyOff, additionalWeeks };
   };
 
   const teamName = (name, maxLength) =>
@@ -447,7 +448,9 @@ function LeaderBoard({
               </td>
             </tr>
             {teamsUsers.map(item => {
-              const { isCurrentlyOff, additionalWeeks } = getTimeOffStatus(item.personId);
+              const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
+                item.personId,
+              );
 
               return (
                 <tr key={item.personId}>
@@ -590,7 +593,7 @@ function LeaderBoard({
                         justifyContent: 'center',
                       }}
                     >
-                      {(isCurrentlyOff || additionalWeeks > 0) && (
+                      {hasTimeOff && (
                         <button
                           type="button"
                           onClick={() => {
