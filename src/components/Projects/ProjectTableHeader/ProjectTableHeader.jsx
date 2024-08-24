@@ -30,21 +30,23 @@ const ProjectTableHeader = props => {
 
   return (
     <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
-      <th scope="col" id="projects__order">
+      <th scope="col" id="projects__order" className='align-middle'>
         #
       </th>
       {/* <th scope="col">{PROJECT_NAME}</th> */}
-      <th scope="col" className='d-flex justify-content-between'>{PROJECT_NAME}
-      {/* Below tag adds an up arrow and a downArrow buttons to sort Product names alphabetically- Sucheta */}
-      <span className='d-flex flex-wrap'>
-      <Button size='sm' className='ml-3' id='Ascending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowDown} pointerEvents="none"/></Button>
-      <Button size='sm' className='ml-2' id='Descending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowUp} pointerEvents="none"/></Button>
-
-      </span>
+      <th scope="col" className='align-middle'>        
+        <span className='d-flex justify-content-between align-middle mt-1'>
+          {PROJECT_NAME}
+          <div>
+            <Button size='sm' className='ml-3 mb-1' id='Ascending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowDown} pointerEvents="none"/></Button>
+            <Button size='sm' className='ml-3 mb-1' id='Descending' onClick={props.handleSort}><FontAwesomeIcon icon={faArrowUp} pointerEvents="none"/></Button>
+          </div>
+        </span>
       </th>
-      <th scope="col" id="projects__category">
+      <th scope="col" id="projects__category" className='align-middle'>
          {/* This span holds the header-name and a dropDown component */}
-       <span className='d-flex justify-content-between'>{PROJECT_CATEGORY}
+       <span className='d-flex justify-content-between align-middle mt-1'>
+        {PROJECT_CATEGORY}
         <DropdownButton id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} menuAlign="right">
           <Dropdown.Item default eventKey="" disabled={!props.selectedValue}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
           <Dropdown.Divider />
@@ -54,9 +56,10 @@ const ProjectTableHeader = props => {
         </DropdownButton>
        </span> 
       </th>
-      <th scope="col" id="projects__active">
-      <span className='d-flex justify-content-between'>{ACTIVE}
-        <DropdownButton className='ml-2' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
+      <th scope="col" id="projects__active" className='align-middle'>
+      <span className='d-flex justify-content-between align-middle mt-1'>
+        {ACTIVE}
+        <DropdownButton className='ml-2 align-middle' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
         <Dropdown.Item default value="" disabled={!props.showStatus}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
           {statusList.map((status, index) => 
             <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status}>{status}</Dropdown.Item>
@@ -64,16 +67,13 @@ const ProjectTableHeader = props => {
         </DropdownButton>
        </span> 
       </th>
-      <th scope="col" id="projects__inv">
+      <th scope="col" id="projects__inv" className='align-middle'>
         <span className='d-flex justify-content-between'>
           {INVENTORY}
-          {/* <Button size='sm' className='ml-2' id='SortingByRecentEditedInventory' onClick={props.handleSort}>
-            <FontAwesomeIcon icon={faSortDown} pointerEvents="none"/>
-          </Button>*/}
         </span> 
       </th>
-      <th scope="col" id="projects__members">
-        <span className='d-flex justify-content-between'>
+      <th scope="col" id="projects__members" className='align-middle'>
+        <span className='d-flex'>
           {MEMBERS}
           <Button size='sm' className='ml-2' id='SortingByRecentEditedMembers' onClick={props.handleSort}>
           <FontAwesomeIcon 
@@ -83,7 +83,7 @@ const ProjectTableHeader = props => {
           </Button>
         </span>
       </th>
-      <th scope="col" id="projects__wbs">
+      <th scope="col" id="projects__wbs" className='align-middle'>
         <div className="d-flex align-items-center">
           <span className="mr-2">{WBS}</span>
           <EditableInfoModal
@@ -98,7 +98,7 @@ const ProjectTableHeader = props => {
         </div>
       </th>
       {canDeleteProject ? (
-        <th scope="col" id="projects__delete">
+        <th scope="col" id="projects__delete" className='align-middle'>
           {ARCHIVE}
         </th>
       ) : null}

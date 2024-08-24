@@ -184,8 +184,32 @@ const Timelog = props => {
     if (!props.isDashboard) {
       tab = 1;
     }
+
+    if (location.hash) {
+      const redirectToTab = tabMapping[location.hash];
+      if (redirectToTab !== undefined) {
+        tab = redirectToTab;
+      }
+    }
     return tab;
   };
+
+    const tabMapping = {
+      '#tasks': 0,
+      '#currentWeek': 1,
+      '#lastWeek': 2,
+      '#beforeLastWeek': 3,
+      '#dateRange': 4,
+      '#weeklySummaries': 5,
+      '#badgesearned': 6,
+    };
+
+  useEffect(() => {
+    const tab = tabMapping[location.hash];
+    if (tab !== undefined) {
+      changeTab(tab);
+    }
+  }, [location.hash]);  // This effect will run whenever the hash changes
 
   /*---------------- methods -------------- */
   const updateTimeEntryItems = () => {
@@ -300,6 +324,12 @@ const Timelog = props => {
     if (tab === 6) {
       props.resetBadgeCount(displayUserId);
     }
+
+    // Clear the hash to trigger the useEffect on hash change
+    if (location.hash) {
+      window.location.hash='';
+    }
+
     setTimeLogState({
       ...timeLogState,
       activeTab: tab,
@@ -486,8 +516,11 @@ const Timelog = props => {
   }, []);
 
   return (
-    <div className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
-      style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}>
+
+    <div 
+      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`} 
+      style={darkMode ? (!props.isDashboard ? {padding: "0 15px 300px 15px"} : {}) : {}}>
+    
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
