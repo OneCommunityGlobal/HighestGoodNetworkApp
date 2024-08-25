@@ -83,7 +83,6 @@ class UserManagement extends React.PureComponent {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-
     let editable = this.props.state.userProfileEdit.editable
     let edit_prev = this.state.editable;
     let search_state = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || (prevState.lastNameSearchText !== this.state.lastNameSearchText) || (prevState.roleSearchText !== this.state.roleSearchText) || (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || (prevState.emailSearchText !== this.state.emailSearchText);
@@ -333,7 +332,6 @@ class UserManagement extends React.PureComponent {
    */
   userCreated = () => {
     const text = this.state.wildCardSearchText;
-
     this.props.getAllUserProfile();
     this.setState({
       newUserPopupOpen: false,

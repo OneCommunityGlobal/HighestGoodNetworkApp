@@ -7,7 +7,7 @@ const userProfilesInitial = {
   userProfiles: [],
   editable: { 'first': 1, 'last': 1, 'role': 1, 'email': 1, 'weeklycommittedHours': 1 ,'startDate':1,'endDate':1},
   pagestats: { pageSize: 10, selectedPage: 1 },
-  status: 404,
+  status: 100,
   updating:false
 };
 
@@ -88,9 +88,9 @@ export const updateUserInfoReducer=(userProfile=userProfilesInitial,action)=>{
     case "START_USER_INFO_UPDATE":
       return userProfile
     case "FINISH_USER_INFO_UPDATE":
-      return updateObject(userProfile,{updating:!userProfile.updating})
+      return {status:200}
     case "ERROR_USER_INFO_UPDATE":
-      return userProfile
+      return {status:404}
     default: return userProfile;
   }
 }
