@@ -28,6 +28,7 @@ export const rejectTaskEditSuggestionHTTP = async taskEditSuggestionId => {
     return response.data;
   } catch (error) {
     console.log(`reject task edit suggestion http error ${  error}`);
+    throw error;
   }
 };
 

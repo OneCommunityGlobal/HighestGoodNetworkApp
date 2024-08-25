@@ -17,7 +17,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
 
     const [teamCode, setTeamCode] = useState(team.teamCode);
     const [hasError, setHasError] = useState(false);
-    const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
+    const fullCodeRegex = /^.{5,7}$/;
 
     const handleOnChange = (value, team) => {
       updateTeam(team.teamName, team._id, team.isActive, value);
@@ -39,6 +39,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
   
     return (
       <>
+        <div className='team-code-form-field'>
         {canEditTeamCode ?
           <div style={{paddingRight: "5px"}}>
             <FormGroup>
@@ -61,13 +62,14 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
         : 
           `${teamCode == ''? "No assigned code!": teamCode}`
         }
+        </div>
       </>
     )
   };
 
   if (allTeams.length > 0) {
     TeamsList = allTeams.map((team, index) => (
-      <tr id={`tr_${team._id}`} key={team._id} className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <tr id={`tr_${team._id}`} key={team._id}>
         <th scope="row">
           <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
         </th>
@@ -95,8 +97,8 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
     <table 
       className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
       style={darkMode ? boxStyleDark : boxStyle}>
-      <thead className={darkMode ? "bg-space-cadet text-light" : ""}>
-        <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <thead>
+        <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
             #
           </th>
@@ -107,7 +109,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
           <th style={{width: '30%'}} scope="col">Team Code</th>
         </tr>
       </thead>
-      <tbody>{TeamsList}</tbody>
+      <tbody className={darkMode ? 'dark-mode' : ''}>{TeamsList}</tbody>
     </table>
   );
 }

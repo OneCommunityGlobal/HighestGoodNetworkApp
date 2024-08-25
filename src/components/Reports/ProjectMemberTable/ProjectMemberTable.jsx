@@ -4,7 +4,7 @@ import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
 
-export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount, darkMode }) => {
+export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount, darkMode, counts }) => {
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
@@ -12,7 +12,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
 
   useEffect(() => {
     handleMemberCount(activeMemberList.length);
-  })
+  }, [activeMemberList])
 
   useEffect(() => {
     if (fetched) {
@@ -109,11 +109,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       >
         <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
         <label htmlFor="active" id="project-active-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ACTIVE: {foundUsers.length}
+          ACTIVE: {counts.activeMemberCount}
         </label>
         <input type="radio" name="memberFilter" value="all-time" id="all-time" />
         <label htmlFor="all-time" id="project-all-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ALL-TIME: {members.length}
+          ALL-TIME: {counts.memberCount}
         </label>
       </div>
       </div>
