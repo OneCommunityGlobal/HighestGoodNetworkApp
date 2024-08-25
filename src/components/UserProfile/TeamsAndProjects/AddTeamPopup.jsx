@@ -68,6 +68,7 @@ const AddTeamPopup = React.memo(props => {
       setSearchText('');
 
       selectedTeam && (onSelectTeam(undefined), onValidation(false));
+      closePopup() // automatically closes the popup after team assigned
     } else
       toast.error(
         'Your user has been found in this team. Please select another team to add your user.',
