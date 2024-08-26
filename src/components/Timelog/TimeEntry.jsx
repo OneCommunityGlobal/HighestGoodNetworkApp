@@ -52,6 +52,11 @@ const TimeEntry = (props) => {
   const [filteredColor,setFilteredColor] = useState(hrsFilterBtnColorMap[7]);
   const dispatch = useDispatch();
 
+  const hasATimeEntryEditPermission = props.hasPermission('editTimeEntryTime') ||
+    props.hasPermission('editTimeEntryDescription') ||
+    props.hasPermission('editTimeEntryDate');
+
+
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(timeEntryUserProfile?.email ? timeEntryUserProfile.email : '', authUser.email);
 
   const toggle = () => setTimeEntryFormModal(modal => !modal);
@@ -180,21 +185,23 @@ const TimeEntry = (props) => {
             </div>
           </Col>
           <Col md={5} className="pl-2 pr-0">
-            <div className="text-muted">Notes:</div>
-            {ReactHtmlParser(notes)}
-            <div className="buttons">
-              {((true || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
-                && from === 'WeeklyTab' 
-                && (
+            <div className="time-entry-container">
+              <div className="notes-section">
+                <div className="text-muted">Notes:</div>
+                {ReactHtmlParser(notes)}
+              </div>
+              <div className="buttons">
+                {((hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord) && (
                   <button className="mr-3 text-primary">
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
                   </button>
                 )}
-              {canDelete && from === 'WeeklyTab' && (
-                <button className='text-primary'>
-                  <DeleteModal timeEntry={data} />
-                </button>
-              )}
+                {canDelete && (
+                  <button className='text-primary'>
+                    <DeleteModal timeEntry={data} />
+                  </button>
+                )}
+              </div>
             </div>
           </Col>
         </Row>
@@ -216,4 +223,8 @@ const mapStateToProps = (state) => ({
   authUser: state.auth.user,
 })
 
-export default connect(mapStateToProps, null)(TimeEntry);
+const mapDispatchToProps = dispatch => ({
+  hasPermission: permission => dispatch(hasPermission(permission)),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(TimeEntry);

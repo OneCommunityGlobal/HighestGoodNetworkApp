@@ -3,10 +3,10 @@ import { useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
-import { updateUserFinalDayStatus } from 'actions/userManagement';
+import { updateUserFinalDayStatus,updateUserFinalDayStatusIsSet } from 'actions/userManagement';
 import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
-
+import { FinalDay } from '../../utils/enums';
 /**
  * @param {*} props
  * @param {Boolean} props.isBigBtn
@@ -24,9 +24,11 @@ const SetUpFinalDayButton = props => {
   }, []);
 
   const onFinalDayClick = async (user, status) => {
+    const activeStatus = props.userProfile.isActive? 'Active':'Inactive';
     if (isSet) {
-      await updateUserFinalDayStatus(props.userProfile, 'Active', undefined)(dispatch);
+      await updateUserFinalDayStatus(props.userProfile, activeStatus, undefined)(dispatch);
       setIsSet(!isSet);
+      updateUserFinalDayStatusIsSet(props.userProfile, activeStatus, props.userProfile.endDate, FinalDay.NotSetFinalDay)(dispatch)
       setTimeout(async () => {
         await props.loadUserProfile();
         toast.success("This user's final day has been deleted.");
@@ -44,6 +46,7 @@ const SetUpFinalDayButton = props => {
     await updateUserFinalDayStatus(props.userProfile, 'Active', finalDayDate)(dispatch);
     setIsSet(true);
     setFinalDayDateOpen(false);
+    updateUserFinalDayStatusIsSet(props.userProfile, 'Active', finalDayDate, FinalDay.FinalDay)(dispatch)
     setTimeout(async () => {
       await props.loadUserProfile();
       toast.success("This user's final day has been set.");
@@ -58,9 +61,9 @@ const SetUpFinalDayButton = props => {
         onSave={deactiveUser}
       />
       <Button
-        outline
-        color="primary"
-        className={`btn btn-outline-${isSet ? 'warning' : 'success'} ${
+        {...(darkMode ? { outline: false } : {outline: true})}
+        color={isSet ? 'warning' : 'success'}
+        className={`btn ${darkMode ? '' : `btn-outline-${isSet ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={e => {

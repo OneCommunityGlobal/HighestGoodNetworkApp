@@ -8,6 +8,8 @@ import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
+import { FaInfoCircle } from 'react-icons/fa'; // Importing react-icons for the info icon
+import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip functionality
 import '../Header/DarkMode.css';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
@@ -74,11 +76,36 @@ function PermissionsManagement(props) {
     >
       <div
         key={`${role}+permission`}
-        className={
-          darkMode ? 'permissions-management-dark bg-yinmn-blue' : 'permissions-management'
-        }
+        className={`permissions-management ${darkMode ? 'bg-yinmn-blue dark-box-shadow' : ''}`}
       >
-        <h1 className="permissions-management__title">User Roles</h1>
+        <h1 className="permissions-management__title">
+          User Roles
+          {/* Added description for the i icon of permissions management page */}
+          <FaInfoCircle
+            data-tip="<div style='text-align: left;'>
+                      <p>Welcome to the Permissions Management Page!</p>
+                      <p>This page gives access to all the One Community Roles, and the ability to create and delete Roles. Each Role has various permissions within the system, categorized by functionality. These permissions relate to:</p>
+                      <ul>
+                        <li>Reports: 📊 Viewing and editing analytics and summaries.</li>
+                        <li>User Management: 👤 Managing user accounts, statuses, and blue squares.</li>
+                        <li>Badge Management: 🏅 Creating, editing, and assigning badges.</li>
+                        <li>Project Management: 🛠️ Adding, editing, and assigning projects.</li>
+                        <li>Work Breakdown Structures: 🗂️ Adding and deleting WBS.</li>
+                        <li>Tasks: 📋 Managing tasks and interactions.</li>
+                        <li>Teams Management: 👥 Creating, editing, and assigning teams.</li>
+                        <li>Timelog Management: 🕒 Managing time entries and logs.</li>
+                        <li>Permissions Management: 🔑 Editing roles and user permissions.</li>
+                      </ul>
+                    </div>"
+            style={{
+              fontSize: '24px',
+              cursor: 'pointer',
+              color: 'rgb(0, 204, 255)',
+              marginLeft: '10px',
+            }}
+          />
+          <ReactTooltip place="right" type="dark" effect="solid" html />
+        </h1>
         <div key={`${role}_header`} className="permissions-management__header">
           {canPutRole && (
             <div key={`${role}_name`} className="role-name-container">
@@ -148,7 +175,7 @@ function PermissionsManagement(props) {
             <ModalHeader
               toggle={togglePopUpNewRole}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet' : ''}
+              className={darkMode ? 'bg-space-cadet text-light' : ''}
             >
               Create New Role
             </ModalHeader>
