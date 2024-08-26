@@ -22,6 +22,7 @@ import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
+import { AnniversaryCelebrated } from './AnniversaryCelebrated/AnniversaryCelebrated';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -97,6 +98,9 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
+  // eslint-disable-next-line no-console
+  console.log({ props });
+
   const { darkMode, loading, error, allUserProfiles } = props;
 
   const [usersId, setUsersId] = useState([]);
@@ -106,6 +110,7 @@ function TotalOrgSummary(props) {
   const dispatch = useDispatch();
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+
 
   useEffect(() => {
     dispatch(getAllUserProfile());
@@ -277,12 +282,12 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <AnniversaryCelebrated />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <AnniversaryCelebrated />
             </div>
           </Col>
         </Row>
@@ -330,7 +335,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
+  // eslint-disable-next-line no-shadow
+  getTotalOrgSummary: (fromDate, toDate) => dispatch(getTotalOrgSummary(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
