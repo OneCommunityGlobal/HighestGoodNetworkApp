@@ -28,7 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import { Spinner } from 'reactstrap';
+import { Spinner, Alert } from 'reactstrap';
 import { updateRehireableStatus } from '../../../actions/userManagement'
 
 class PeopleReport extends Component {
@@ -586,7 +586,7 @@ class PeopleReport extends Component {
                   <PeopleDataTable />
                 </>
               ) : (
-                <p className={`${darkMode ? 'text-light' : ''}`}>No tasks have been found.</p>
+                <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
               )}
               <div className="Infringementcontainer">
                 <div className="InfringementcontainerInner">
