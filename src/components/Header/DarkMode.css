@@ -91,6 +91,7 @@
 .lightModeSliderContainer {
   width: 120px;
   height: 30px;
+  border: 1px solid rgb(212, 212, 212);
   border-radius: 20px;
   display: flex;
   justify-content: flex-start;
