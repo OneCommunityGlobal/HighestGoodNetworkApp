@@ -129,13 +129,8 @@ function LeaderBoard({
     if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
   }, [organizationData]);
 
-  useEffect(() => {
-    if (!isEqual(leaderBoardData, teamsUsers)) {
-      if (selectedTeamName === 'Show all') {
-        setTeamsUsers(leaderBoardData);
-      }
-    }
-  }, [leaderBoardData]);
+  // prettier-ignore
+  useEffect(() => { setTeamsUsers(leaderBoardData)}, [leaderBoardData]);
 
   useEffect(() => {
     setInnerWidth(window.innerWidth);
@@ -144,7 +139,7 @@ function LeaderBoard({
   const updateOrganizationData = (usersTaks, contUsers) => {
     // prettier-ignore
     const newOrganizationData = usersTaks.reduce((accumulator, item) => {
-        accumulator.name = `HGN Totals: ${contUsers} Members`;
+        accumulator.name = `Totals of ${contUsers}  team members`;
         accumulator.tangibletime += item.tangibletime;
         accumulator.totalintangibletime_hrs += item.totalintangibletime_hrs;
         accumulator.totaltangibletime_hrs += item.totaltangibletime_hrs;
@@ -349,7 +344,7 @@ function LeaderBoard({
             <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
 
             {/* prettier-ignore */}
-            <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
               
               <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
                 {teams.length === 0 ? (
