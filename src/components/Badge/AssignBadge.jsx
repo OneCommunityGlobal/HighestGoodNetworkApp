@@ -59,16 +59,17 @@ function AssignBadge(props) {
   };
 
   const handleUserSelect = user => {
-    if (selectedUserId === user._id) {
-      setSelectedUserId(null);
-      props.clearNameAndSelected();
+    if (selectedUserIds.includes(user._id)) {
+      setSelectedUserIds(selectedUserIds.filter(id => id !== user._id));
+      if (selectedUserIds.length === 1) {
+        props.clearNameAndSelected();
+      }
     } else {
-      setSelectedUserId(user._id);
+      setSelectedUserIds([...selectedUserIds, user._id]);
       props.getFirstName(user.firstName);
       props.getLastName(user.lastName);
       props.getUserId(user._id);
     }
-  };
 
   const toggle = (didSubmit = false) => {
     const { selectedBadges, firstName, lastName, userId } = props;
