@@ -18,22 +18,25 @@ export const TeamMember = props => {
 
   const allTeams = useSelector(state => state.allTeamsData?.allTeams || []);
 
+  const teamData = allTeams.filter(item => item._id === myTeamId);
+
   const [members, setMembers] = useState([]);
 
   const updateMyTeamMember = (id, newUser) => {
     setTimeout(() => {
-      newUser
-        ? setMembers(prev => [...prev, newUser])
-        : id &&
-          setMembers(prev => {
-            const index = prev.findIndex(item => item._id === id);
-            if (index !== -1) {
-              const updatedMembers = [...prev];
-              updatedMembers.splice(index, 1);
-              return updatedMembers;
-            }
-            return prev;
-          });
+      setMembers(prev => {
+        if (newUser) {
+          return [...prev, newUser];
+        } else if (id) {
+          const index = prev.findIndex(item => item._id === id);
+          if (index !== -1) {
+            const updatedMembers = [...prev];
+            updatedMembers.splice(index, 1);
+            return updatedMembers;
+          }
+        }
+        return prev;
+      });
     }, 5000);
   };
 
@@ -44,6 +47,10 @@ export const TeamMember = props => {
     addTeamMember(myTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
     updateMyTeamMember(null, user);
   };
+
+  const updateTeamMemberVisibility = (userId, visibility) =>
+    updateTeamMemeberVisibility(myTeamId, userId, visibility);
+
   // prettier-ignore
   useEffect(() => {myTeamId && TeamMembers();}, [myTeamId]);
 
@@ -66,8 +73,8 @@ export const TeamMember = props => {
           onDeleteClick={deleteMyTeamMember}
           usersdata={allUserProfiles}
           onAddUser={addMyTeamMember}
-          teamData={allTeams}
-          onUpdateTeamMemberVisibility={updateTeamMemeberVisibility}
+          teamData={teamData}
+          onUpdateTeamMemberVisibility={updateTeamMemberVisibility}
           selectedTeamName={teamName}
         />
       )}
@@ -77,12 +84,6 @@ export const TeamMember = props => {
 
 const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
-  //! getAllUserProfile,
-  // ! getAllUserTeams,
-  // ! postNewTeam,
-  // !deleteTeam,
-  //! updateTeam,
-  // ! getTeamMembers,
   deleteTeamMember,
   addTeamMember,
   updateTeamMemeberVisibility,

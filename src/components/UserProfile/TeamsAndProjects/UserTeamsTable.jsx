@@ -212,7 +212,7 @@ const UserTeamsTable = props => {
                     {canAssignTeamToUsers ? (
                       <>
                         <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>
-                          '
+                          Team Name
                         </th>
 
                         <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
@@ -232,9 +232,10 @@ const UserTeamsTable = props => {
                       <td>{`${team.teamName}`}</td>
                       {props.edit && props.role && (
                         <>
-                          <td>
+                          <td style={{ textAlign: 'center', width: '10%' }}>
                             <button
                               style={darkMode ? {} : boxStyle}
+                              disabled={!canAssignTeamToUsers}
                               type="button"
                               className="btn btn-outline-info"
                               data-testid="members-btn"
@@ -276,6 +277,9 @@ const UserTeamsTable = props => {
           <TeamMember
             isOpenModalTeamMember={isOpenModalTeamMember}
             setIsOpenModalTeamMember={setIsOpenModalTeamMember}
+            myTeams={props.userTeamsById}
+            teamName={myTeamName}
+            myTeamId={myTeamId}
           />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {props.canEditVisibility && (
@@ -394,6 +398,7 @@ const UserTeamsTable = props => {
                           <td>
                             <button
                               style={darkMode ? {} : boxStyle}
+                              disabled={!canAssignTeamToUsers}
                               type="button"
                               className="btn btn-outline-info"
                               data-testid="members-btn"
