@@ -205,7 +205,7 @@ const Timelog = props => {
     };
 
   useEffect(() => {
-    const tab = location.hash ? tabMapping[location.hash] : defaultTab();
+    const tab = tabMapping[location.hash];
     if (tab !== undefined) {
       changeTab(tab);
     }
@@ -324,6 +324,12 @@ const Timelog = props => {
     if (tab === 6) {
       props.resetBadgeCount(displayUserId);
     }
+
+    // Clear the hash to trigger the useEffect on hash change
+    if (location.hash) {
+      window.location.hash='';
+    }
+
     setTimeLogState({
       ...timeLogState,
       activeTab: tab,
@@ -510,8 +516,11 @@ const Timelog = props => {
   }, []);
 
   return (
-    <div className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
-      style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}>
+
+    <div 
+      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`} 
+      style={darkMode ? (!props.isDashboard ? {padding: "0 15px 300px 15px"} : {}) : {}}>
+    
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
