@@ -629,12 +629,11 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = async(isActive) => {
-    setActiveInactivePopupOpen(false);
+  const setActiveInactive = (isActive) => {
     let endDate;
 
     if (!isActive) {
-      endDate = await dispatch(getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate));
+      endDate = dispatch(getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate));
       if (endDate == "N/A"){
         endDate = userProfile.createdDate
       }
@@ -646,12 +645,13 @@ function UserProfile(props) {
     };
 
     try{
-      await updateUserStatus(newUserProfile, isActive? UserStatus.Active : UserStatus.InActive, undefined);
+      props.updateUserStatus(newUserProfile, isActive? UserStatus.Active : UserStatus.InActive, undefined);
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
     } catch (error) {
       console.error("Failed to update user status:", error);
     }
+    setActiveInactivePopupOpen(false);
   };
 
   const activeInactivePopupClose = () => {
@@ -939,7 +939,6 @@ function UserProfile(props) {
                         e.preventDefault();
                         props.history.push(`/timelog/${targetUserId}`);
                       }
-                      setActiveInactivePopupOpen(true);
                     }}
                   />
                 </span>
@@ -1786,4 +1785,4 @@ function UserProfile(props) {
   );
 }
 
-export default connect(null, { hasPermission })(UserProfile);
+export default connect(null, { hasPermission, updateUserStatus })(UserProfile);
