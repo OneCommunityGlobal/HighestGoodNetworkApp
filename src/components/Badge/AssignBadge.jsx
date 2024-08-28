@@ -33,12 +33,15 @@ function AssignBadge(props) {
   const [isOpen, setOpen] = useState(false);
   const [fullName, setFullName] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState([]);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
 
   useEffect(() => {
-    props.getAllUserProfile();
-    props.clearNameAndSelected();
-    props.closeAlert();
+    const fetchData = async () => {
+      await props.getAllUserProfile();
+      props.clearNameAndSelected();
+      props.closeAlert();
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -70,26 +73,28 @@ function AssignBadge(props) {
       props.getLastName(user.lastName);
       props.getUserId(user._id);
     }
+  };
 
   const toggle = (didSubmit = false) => {
-    const { selectedBadges, firstName, lastName, userId } = props;
+    const { selectedBadges } = props;
     if (isOpen && didSubmit === true) {
-      if (userId) {
-        props.assignBadgesByUserID(userId, selectedBadges);
-      } else {
-        props.assignBadges(firstName, lastName, selectedBadges);
+      if (selectedUserIds.length > 0) {
+        selectedUserIds.forEach(userId => {
+          props.assignBadgesByUserID(userId, selectedBadges);
+        });
       }
       setOpen(prevIsOpen => !prevIsOpen);
       props.clearNameAndSelected();
-    } else if (firstName && lastName) {
+      setSelectedUserIds([]);
+    } else if (selectedUserIds.length > 0) {
       setOpen(prevIsOpen => !prevIsOpen);
     } else {
-      props.validateBadges(firstName, lastName);
+      props.validateBadges(props.firstName, props.lastName);
     }
   };
 
-  const submit = () => {
-    toggle(true);
+  const submit = async () => {
+    await toggle(true); // Ensure toggle waits for async operations
   };
 
   return (
@@ -122,9 +127,9 @@ function AssignBadge(props) {
               auto-generated. Then you........ CHOOSE ONE!
             </p>
             <p className="badge_info_icon_text">
-              After selecting a person, click &quot;Assign Badge&quot; and choose one or multiple
-              badges. Click &quot;confirm&quot; then &quot;submit&quot; and those badges will be
-              assigned.
+              After selecting one or multiple persons, click &quot;Assign Badge&quot; and choose one
+              or multiple badges. Click &quot;confirm&quot; then &quot;submit&quot; and those badges
+              will be assigned.
             </p>
           </UncontrolledTooltip>
         </Label>
@@ -134,7 +139,7 @@ function AssignBadge(props) {
             placeholder="Full Name"
             value={fullName}
             onChange={handleFullNameChange}
-            className="form-control"
+            className="form-control col-sm-12"
           />
         </div>
       </div>
@@ -159,9 +164,11 @@ function AssignBadge(props) {
                   onClick={() => handleUserSelect(user)}
                   style={{
                     cursor: 'pointer',
-                    backgroundColor: selectedUserId === user._id ? '#e9ecef' : '',
+                    backgroundColor: selectedUserIds.includes(user._id) ? '#e9ecef' : '',
                   }}
-                  className={darkMode && selectedUserId === user._id ? 'bg-dark text-light' : ''}
+                  className={
+                    darkMode && selectedUserIds.includes(user._id) ? 'bg-dark text-light' : ''
+                  }
                 >
                   <td>
                     <input
@@ -184,7 +191,7 @@ function AssignBadge(props) {
           className="btn--dark-sea-green"
           onClick={toggle}
           style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
-          disabled={!fullName}
+          disabled={!fullName || selectedUserIds.length === 0}
         >
           Assign Badge
         </Button>
