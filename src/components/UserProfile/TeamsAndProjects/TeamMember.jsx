@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import TeamMembersPopup from './../../Teams/TeamMembersPopup.jsx';
 import {
   deleteTeamMember,
@@ -6,76 +6,46 @@ import {
   updateTeamMemeberVisibility,
 } from '../../../actions/allTeamsAction.js';
 import { useSelector, connect } from 'react-redux';
-import axios from 'axios';
-import { ENDPOINTS } from '../../../utils/URL.js';
 
 export const TeamMember = props => {
-  const { isOpenModalTeamMember, setIsOpenModalTeamMember, teamName, myTeamId } = props;
+  const { isOpenModalTeamMember, setIsOpenModalTeamMember, members, fetchTeamSelected } = props;
 
   const toggle = () => setIsOpenModalTeamMember(!isOpenModalTeamMember);
 
   const allUserProfiles = useSelector(state => state.allUserProfiles?.userProfiles || []);
 
-  const allTeams = useSelector(state => state.allTeamsData?.allTeams || []);
-
-  const teamData = allTeams.filter(item => item._id === myTeamId);
-
-  const [members, setMembers] = useState([]);
-
-  const updateMyTeamMember = (id, newUser) => {
+  const updateMyTeamMember = () => {
     setTimeout(() => {
-      setMembers(prev => {
-        if (newUser) {
-          return [...prev, newUser];
-        } else if (id) {
-          const index = prev.findIndex(item => item._id === id);
-          if (index !== -1) {
-            const updatedMembers = [...prev];
-            updatedMembers.splice(index, 1);
-            return updatedMembers;
-          }
-        }
-        return prev;
-      });
-    }, 5000);
+      fetchTeamSelected(members.myTeamId, members.myTeamName, true);
+    }, 3000);
   };
 
   // prettier-ignore
-  const deleteMyTeamMember = id => {deleteTeamMember(myTeamId, id); updateMyTeamMember(id)};
+  const deleteMyTeamMember = id => {deleteTeamMember(members.myTeamId, id); updateMyTeamMember()};
 
   const addMyTeamMember = user => {
-    addTeamMember(myTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
-    updateMyTeamMember(null, user);
+    addTeamMember(members.myTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
+    updateMyTeamMember();
   };
 
-  const updateTeamMemberVisibility = (userId, visibility) =>
-    updateTeamMemeberVisibility(myTeamId, userId, visibility);
-
-  // prettier-ignore
-  useEffect(() => {myTeamId && TeamMembers();}, [myTeamId]);
-
-  const TeamMembers = async () => {
-    const url = ENDPOINTS.TEAM_USERS(myTeamId);
-    try {
-      const response = await axios.get(url);
-      setMembers(response.data);
-    } catch (error) {
-      console.log(error);
-    }
+  const updateTeamMemberVisibility = (userId, visibility) => {
+    updateTeamMemeberVisibility(members.myTeamId, userId, visibility);
+    updateMyTeamMember();
   };
+
   return (
     <>
       {isOpenModalTeamMember && (
         <TeamMembersPopup
           open={isOpenModalTeamMember}
           onClose={toggle}
-          members={members}
+          members={members.members}
           onDeleteClick={deleteMyTeamMember}
           usersdata={allUserProfiles}
           onAddUser={addMyTeamMember}
-          teamData={teamData}
+          teamData={members.TeamData}
           onUpdateTeamMemberVisibility={updateTeamMemberVisibility}
-          selectedTeamName={teamName}
+          selectedTeamName={members.myTeamName}
         />
       )}
     </>

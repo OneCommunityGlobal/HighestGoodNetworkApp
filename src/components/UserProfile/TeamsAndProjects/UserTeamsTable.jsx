@@ -9,6 +9,9 @@ import { connect } from 'react-redux';
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 import './../../Teams/Team.css';
 import { TeamMember } from './TeamMember';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL.js';
+import { toast } from 'react-toastify';
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
@@ -30,8 +33,13 @@ const UserTeamsTable = props => {
   );
 
   const [isOpenModalTeamMember, setIsOpenModalTeamMember] = useState(false);
-  const [myTeamName, setMyTeamName] = useState('');
-  const [myTeamId, setMyTeamId] = useState();
+
+  const [members, setMembers] = useState({
+    members: [],
+    TeamData: [],
+    myTeamId: null,
+    myTeamName: '',
+  });
 
   const refDropdown = useRef();
 
@@ -87,6 +95,29 @@ const UserTeamsTable = props => {
 
   const toggleTeamCodeExplainTooltip = () => setTeamCodeExplainTooltip(!teamCodeExplainTooltip);
 
+  const fetchTeamSelected = async (teamId, teamName, isUpdate) => {
+    const urlTeamData = ENDPOINTS.TEAM_BY_ID(teamId);
+    const urlTeamMembers = ENDPOINTS.TEAM_USERS(teamId);
+    try {
+      const TeamDataMember = await axios.get(urlTeamMembers);
+      const TeamData = await axios.get(urlTeamData);
+
+      const array = [];
+      array.push(TeamData.data);
+
+      setMembers({
+        members: TeamDataMember.data,
+        TeamData: array,
+        myTeamId: teamId,
+        myTeamName: teamName,
+      });
+
+      isUpdate ? toast.info('Team updated successfully') : setIsOpenModalTeamMember(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       {innerWidth >= 1025 ? (
@@ -94,9 +125,8 @@ const UserTeamsTable = props => {
           <TeamMember
             isOpenModalTeamMember={isOpenModalTeamMember}
             setIsOpenModalTeamMember={setIsOpenModalTeamMember}
-            myTeams={props.userTeamsById}
-            teamName={myTeamName}
-            myTeamId={myTeamId}
+            members={members}
+            fetchTeamSelected={fetchTeamSelected}
           />
           <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
             {props.canEditVisibility && (
@@ -239,11 +269,7 @@ const UserTeamsTable = props => {
                               type="button"
                               className="btn btn-outline-info"
                               data-testid="members-btn"
-                              onClick={() => {
-                                setMyTeamName(team.teamName);
-                                setIsOpenModalTeamMember(true);
-                                setMyTeamId(team._id);
-                              }}
+                              onClick={() => fetchTeamSelected(team._id, team.teamName)}
                             >
                               <i className="fa fa-users" aria-hidden="true" />
                             </button>
@@ -277,9 +303,8 @@ const UserTeamsTable = props => {
           <TeamMember
             isOpenModalTeamMember={isOpenModalTeamMember}
             setIsOpenModalTeamMember={setIsOpenModalTeamMember}
-            myTeams={props.userTeamsById}
-            teamName={myTeamName}
-            myTeamId={myTeamId}
+            members={members}
+            fetchTeamSelected={fetchTeamSelected}
           />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {props.canEditVisibility && (
@@ -402,7 +427,7 @@ const UserTeamsTable = props => {
                               type="button"
                               className="btn btn-outline-info"
                               data-testid="members-btn"
-                              onClick={() => setIsOpenModalTeamMember(true)}
+                              onClick={() => fetchTeamSelected(team._id, team.teamName)}
                             >
                               <i className="fa fa-users" aria-hidden="true" />
                             </button>
