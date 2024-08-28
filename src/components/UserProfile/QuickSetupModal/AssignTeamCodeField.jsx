@@ -48,7 +48,7 @@ const AssignTeamCodeField = React.memo(props => {
             .map(item => (
               <div
                 className="project-auto-complete"
-                key={item._id}
+                key={item}
                 onClick={() => {
                   onInputChange(item);
                   toggle(false);
