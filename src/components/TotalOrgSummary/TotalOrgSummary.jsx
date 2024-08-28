@@ -22,7 +22,7 @@ import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
-import { AnniversaryCelebrated } from './AnniversaryCelebrated/AnniversaryCelebrated';
+import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -111,10 +111,23 @@ function TotalOrgSummary(props) {
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
 
+  // const anniversaryStatsOnSetDate = useSelector(
+  //   state => state.totalOrgSummary.volunteerstats.anniversaryStats,
+  // );
+  // // eslint-disable-next-line no-console
+  // console.log({ anniversaryStatsOnSetDate });
 
   useEffect(() => {
     dispatch(getAllUserProfile());
   }, []);
+
+  // useEffect(() => {
+  //   props.getTotalOrgSummary(fromDate, toDate);
+  // }, []);
+
+  // useEffect(() => {
+  //   props.getTotalOrgSummary(fromOverDate, toOverDate);
+  // }, []);
 
   useEffect(() => {
     if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
@@ -282,12 +295,24 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <AnniversaryCelebrated />
+              <AnniversaryCelebrated
+                fromDate={fromDate}
+                toDate={toDate}
+                fromOverDate={fromOverDate}
+                toOverDate={toOverDate}
+                darkMode={darkMode}
+              />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <AnniversaryCelebrated />
+              <AnniversaryCelebrated
+                fromDate={fromDate}
+                toDate={toDate}
+                fromOverDate={fromOverDate}
+                toOverDate={toOverDate}
+                darkMode={darkMode}
+              />
             </div>
           </Col>
         </Row>
