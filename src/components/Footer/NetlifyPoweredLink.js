@@ -1,6 +1,4 @@
-import React from 'react';
-
-const NetlifyPoweredLink = () => {
+function NetlifyPoweredLink() {
   return (
     <span style={{ color: 'black' }}>
       This site is powered by{' '}
@@ -14,6 +12,6 @@ const NetlifyPoweredLink = () => {
       </a>
     </span>
   );
-};
+}
 
 export default NetlifyPoweredLink;
