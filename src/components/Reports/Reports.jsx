@@ -29,7 +29,6 @@ import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 
 const DATE_PICKER_MIN_DATE = '01/01/2010';
-
 class ReportsPage extends Component {
   constructor(props) {
     super(props);
@@ -165,7 +164,7 @@ class ReportsPage extends Component {
 
   filteredPeopleList = userProfiles => {
     const filteredList = userProfiles.filter(userProfile => {
-      // Applying the search filters before creating each team table data element
+      // Applying the search filters before creating each team table data element 
       if (
         (userProfile.firstName &&
           searchWithAccent(userProfile.firstName, this.state.teamNameSearchText) &&
