@@ -94,7 +94,16 @@ function AssignBadge(props) {
   };
 
   const submit = async () => {
-    await toggle(true); // Ensure toggle waits for async operations
+    if (selectedUserIds.length > 0) {
+      await Promise.all(
+        selectedUserIds.map(async userId => {
+          if (userId) {
+            await props.assignBadgesByUserID(userId, props.selectedBadges);
+          }
+        }),
+      );
+    }
+    toggle(true);
   };
 
   return (
@@ -127,7 +136,7 @@ function AssignBadge(props) {
               auto-generated. Then you........ CHOOSE ONE!
             </p>
             <p className="badge_info_icon_text">
-              After selecting one or multiple persons, click &quot;Assign Badge&quot; and choose one
+              After selecting one or multiple people, click &quot;Assign Badge&quot; and choose one
               or multiple badges. Click &quot;confirm&quot; then &quot;submit&quot; and those badges
               will be assigned.
             </p>
@@ -225,7 +234,7 @@ function AssignBadge(props) {
 }
 
 const mapStateToProps = state => ({
-  selectedBadges: state.badge.selectedBadges,
+  selectedBadges: state.badge.selectedBadges || [],
   firstName: state.badge.firstName,
   lastName: state.badge.lastName,
   userId: state.badge.userId,
