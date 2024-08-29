@@ -290,7 +290,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <HoursCompletedBarChart data={taskProjectHours} />
+              <HoursCompletedBarChart data={taskProjectHours} darkMode={darkMode}/>
             </div>
           </Col>
         </Row>
