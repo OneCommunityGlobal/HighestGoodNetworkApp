@@ -240,7 +240,7 @@ function LeaderBoard({
   };
 
   const getTimeOffStatus = personId => {
-    if (!allRequests[personId] || allRequests[personId].length === 0) {
+    if (!allRequests || !allRequests[personId] || allRequests[personId].length === 0) {
       return { hasTimeOff: false, isCurrentlyOff: false, additionalWeeks: 0 };
     }
 
