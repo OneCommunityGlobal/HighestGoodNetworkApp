@@ -514,7 +514,6 @@ const Timelog = props => {
       window.removeEventListener('storage', handleStorageEvent);
     };
   }, []);
-
   return (
 
     <div 

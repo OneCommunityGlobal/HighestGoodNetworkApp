@@ -29,7 +29,21 @@ import axios from 'axios';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
-
+import moment from 'moment';
+const startOfWeek = offset => {
+  return moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(offset, 'weeks')
+    .format('YYYY-MM-DD');
+};
+const endOfWeek = offset => {
+  return moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(offset, 'weeks')
+    .format('YYYY-MM-DD');
+};
 const SummaryBar = props => {
   // from parent
   const { displayUserId, summaryBarData } = props;
@@ -155,6 +169,7 @@ const SummaryBar = props => {
 
   const [suggestionCategory, setSuggestionCategory] = useState([]);
   const [inputFiled, setInputField] = useState([]);
+  const [badgeCountLastWeek,setBadgeCount]=useState();
   const [takeInput, setTakeInput] = useState(false);
   const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('');
   const [editType, setEditType] = useState('');
@@ -202,19 +217,24 @@ const SummaryBar = props => {
     if (!displayUserProfile || !displayUserProfile.badgeCollection) {
       return 0;
     }
+    const startDate= new Date(startOfWeek(0));
+    const lastDate= new Date(endOfWeek(0))
     let totalBadges = 0;
     displayUserProfile.badgeCollection.forEach(badge => {
-      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-        totalBadges += 1;
-      } else {
-        const badgeCount = badge?.count ? Number(badge.count) : 0;
-        totalBadges += Math.round(badgeCount);
+
+      for(let date of badge.earnedDate){
+        console.log(date)
+          let dateElement= new Date(date)
+          if(  dateElement >= startDate && dateElement <= lastDate){
+            totalBadges++
+          }
       }
+
     });
 
     return totalBadges;
   };
-
+  
   //refactored for rading form values
   const readFormData = formid => {
     let form = document.getElementById(formid);
