@@ -593,23 +593,6 @@ const Timelog = props => {
                               }}
                             />
                           </span>
-
-                          <span className="mr-2" style={{ padding: '1px' }}>
-                            <ActiveCell
-                              isActive={displayUserProfile.isActive}
-                              user={displayUserProfile}
-                              onClick={() => {
-                                props.updateUserProfile({
-                                  ...displayUserProfile,
-                                  isActive: !displayUserProfile.isActive,
-                                  endDate:
-                                    !displayUserProfile.isActive === false
-                                      ? moment(new Date()).format('YYYY-MM-DD')
-                                      : undefined,
-                                });
-                              }}
-                            />
-                          </span>
                           <ProfileNavDot userId={displayUserId} style={{ marginLeft: '2px', padding: '1px' }} />
                         </div>
                       </CardTitle>
