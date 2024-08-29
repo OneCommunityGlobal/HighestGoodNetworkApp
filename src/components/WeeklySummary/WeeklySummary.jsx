@@ -51,7 +51,6 @@ import {
   updateWeeklySummaries,
 } from '../../actions/weeklySummaries';
 import CurrentPromptModal from './CurrentPromptModal';
-// import WriteItForMeModal from './WriteForMeModal';
 
 // Images are not allowed in weekly summary
 const customImageUploadHandler = () =>
@@ -845,14 +844,6 @@ export class WeeklySummary extends Component {
                                 </DropdownMenu>
                               </UncontrolledDropdown>
                             )}
-                            {/* <div style={{ width: '10rem' }}>
-                            <CurrentPromptModal
-                              userRole={userRole}
-                              userId={displayUserId}
-                              darkMode={darkMode}
-                            />
-                            <WriteItForMeModal pasteResponse={this.pasteResponse} />
-                          </div> */}
                           </div>
                         </Label>
                         <Editor
@@ -1097,4 +1088,12 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
+<<<<<<< HEAD
 export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummary);
+=======
+export default connect(mapStateToProps, mapDispatchToProps)(WeeklySummary);
+
+
+
+
+>>>>>>> fdc2d1936 (Fix: Resolve blank page issue when selecting featured badges)
