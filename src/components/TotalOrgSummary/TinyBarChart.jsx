@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 
 export default function TinyBarChart(props) {
-  const { chartData, maxY, tickInterval, renderCustomizedLabel} = props;
+  const { chartData, maxY, tickInterval, renderCustomizedLabel } = props;
   return (
     <ResponsiveContainer maxWidth={600} maxHeight={600} minWidth={180} minHeight={320}>
       <BarChart
@@ -28,7 +28,7 @@ export default function TinyBarChart(props) {
           tickCount={Math.floor(maxY / tickInterval) + 1}
           interval={0}
         />
-        <Tooltip cursor={{fill: 'transparent'}} />
+        <Tooltip cursor={{ fill: 'transparent' }} />
         <Bar dataKey="amount" fill="#8884d8">
           {chartData.map((entry, index) => (
             /* eslint-disable react/no-array-index-key */
