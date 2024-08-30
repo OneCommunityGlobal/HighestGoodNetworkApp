@@ -136,7 +136,7 @@ const Timelog = props => {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
-
+  const [badges, setBadges] = useState(0);
   const { userId: urlId } = useParams();
   const [userprofileId, setUserProfileId] = useState(urlId || authUser.userid);
 
@@ -454,7 +454,28 @@ const Timelog = props => {
     updateTimeEntryItems();
     makeBarData(userId)
   };
+   //Get badges count from userProfile
+   const getBadges = () => {
+    if (!displayUserProfile || !displayUserProfile.badgeCollection) {
+      return 0;
+    }
+    const startDate= new Date(startOfWeek(1));
+    const lastDate= new Date(endOfWeek(1))
+    let totalBadges = 0;
+    console.log(startDate,lastDate)
+    displayUserProfile.badgeCollection.forEach(badge => {
 
+      for(let date of badge.earnedDate){
+          let dateElement= new Date(date)
+          if(  dateElement >= startDate && dateElement <= lastDate){
+            totalBadges++
+          }
+      }
+
+    });
+    console.log(totalBadges)
+    return totalBadges;
+  };
   const handleUpdateTask = useCallback(() => {
     setShouldFetchData(true);
   }, []);
@@ -483,7 +504,7 @@ const Timelog = props => {
   }, [userprofileId]);
 
   useEffect(() => {
-    props.getBadgeCount(displayUserId);
+    setBadges(getBadges());
   }, [displayUserId, props]);
 
 
@@ -794,7 +815,7 @@ const Timelog = props => {
                         href="#"
                         to="#"
                       >
-                        Badges<span className="badge badge-pill badge-danger ml-2">{props.badgeCount}</span>
+                        Badges<span className="badge badge-pill badge-danger ml-2">{badges}</span>
                       </NavLink>
                     </NavItem>
                   </Nav>

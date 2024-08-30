@@ -62,6 +62,7 @@ const SummaryBar = props => {
   const [userProfile, setUserProfile] = useState(undefined);
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
+  const [viewed, setViewed]=useState(false);
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState(null);
   const [tasks, setTasks] = useState(undefined);
@@ -169,7 +170,6 @@ const SummaryBar = props => {
 
   const [suggestionCategory, setSuggestionCategory] = useState([]);
   const [inputFiled, setInputField] = useState([]);
-  const [badgeCountLastWeek,setBadgeCount]=useState();
   const [takeInput, setTakeInput] = useState(false);
   const [extraFieldForSuggestionForm, setExtraFieldForSuggestionForm] = useState('');
   const [editType, setEditType] = useState('');
@@ -223,7 +223,6 @@ const SummaryBar = props => {
     displayUserProfile.badgeCollection.forEach(badge => {
 
       for(let date of badge.earnedDate){
-        console.log(date)
           let dateElement= new Date(date)
           if(  dateElement >= startDate && dateElement <= lastDate){
             totalBadges++
@@ -378,6 +377,7 @@ const SummaryBar = props => {
   };
 
   const onBadgeClick = () => {
+    setViewed(true);
     window.location.hash = '#badgesearned';
   };
 
@@ -581,9 +581,11 @@ const SummaryBar = props => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              <div className="redBackgroup">
+              {!viewed?(
+                <div className="redBackgroup">
                 <span>{badges}</span>
               </div>
+              ): <span></span>}
               {isAuthUser || canEditData() ? (
                 <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick}/>
                 ) : (
