@@ -78,7 +78,8 @@ export class WeeklySummariesReport extends Component {
       replaceCode: '',
       replaceCodeError: null,
       replaceCodeLoading: false,
-      // weeklyRecipientAuthPass: '',
+      // New state to track loaded tabs
+      loadedTabs: [navItems[1]], // Initialize with the default active tab
     };
   }
 
@@ -366,9 +367,20 @@ export class WeeklySummariesReport extends Component {
   };
 
   toggleTab = tab => {
-    const { activeTab } = this.state;
+    const { activeTab, loadedTabs } = this.state; // Destructure loadedTabs from state
     if (activeTab !== tab) {
-      this.setState({ activeTab: tab }, () => this.filterWeeklySummaries());
+      // If the tab is not already loaded, add it to loadedTabs
+      if (!loadedTabs.includes(tab)) {
+        this.setState(
+          prevState => ({
+            activeTab: tab,
+            loadedTabs: [...prevState.loadedTabs, tab], // Add the new tab to loadedTabs
+          }),
+          () => this.filterWeeklySummaries(),
+        );
+      } else {
+        this.setState({ activeTab: tab }, () => this.filterWeeklySummaries());
+      }
       sessionStorage.setItem('tabSelection', tab);
     }
   };
@@ -587,7 +599,8 @@ export class WeeklySummariesReport extends Component {
       replaceCode,
       replaceCodeError,
       replaceCodeLoading,
-    } = this.state;
+      loadedTabs, // Destructure loadedTabs from state
+    } = this.state; // Updated to include loadedTabs
     const { error } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
     const { authEmailWeeklySummaryRecipient } = this.props;
@@ -788,59 +801,65 @@ export class WeeklySummariesReport extends Component {
               className={`p-4 ${darkMode ? 'bg-yinmn-blue border-0' : ''}`}
             >
               {navItems.map((item, index) => (
+                // Modified to conditionally render content based on loadedTabs
                 <WeeklySummariesReportTab tabId={item} key={item} hidden={item !== activeTab}>
-                  <Row>
-                    <Col sm="12" md="6" className="mb-2">
-                      From <b>{this.weekDates[index].fromDate}</b> to{' '}
-                      <b>{this.weekDates[index].toDate}</b>
-                    </Col>
-                    <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                      <GeneratePdfReport
-                        summaries={filteredSummaries}
-                        weekIndex={index}
-                        weekDates={this.weekDates[index]}
-                        darkMode={darkMode}
-                      />
-                      {hasSeeBadgePermission && (
-                        <Button
-                          className="btn--dark-sea-green"
-                          style={darkMode ? boxStyleDark : boxStyle}
-                          onClick={() => this.setState({ loadBadges: !loadBadges })}
-                        >
-                          {loadBadges ? 'Hide Badges' : 'Load Badges'}
-                        </Button>
-                      )}
-                      <Button
-                        className="btn--dark-sea-green"
-                        style={darkMode ? boxStyleDark : boxStyle}
-                      >
-                        Load Trophies
-                      </Button>
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <b>Total Team Members:</b> {filteredSummaries.length}
-                    </Col>
-                  </Row>
-                  <Row>
-                    <Col>
-                      <FormattedReport
-                        summaries={filteredSummaries}
-                        weekIndex={index}
-                        bioCanEdit={this.bioEditPermission}
-                        canEditSummaryCount={this.canEditSummaryCount}
-                        allRoleInfo={allRoleInfo}
-                        badges={badges}
-                        loadBadges={loadBadges}
-                        canEditTeamCode={this.codeEditPermission}
-                        auth={auth}
-                        canSeeBioHighlight={this.canSeeBioHighlight}
-                        darkMode={darkMode}
-                        handleTeamCodeChange={this.handleTeamCodeChange}
-                      />
-                    </Col>
-                  </Row>
+                  {/* Only render the tab content if it has been loaded */}
+                  {loadedTabs.includes(item) && (
+                    <>
+                      <Row>
+                        <Col sm="12" md="6" className="mb-2">
+                          From <b>{this.weekDates[index].fromDate}</b> to{' '}
+                          <b>{this.weekDates[index].toDate}</b>
+                        </Col>
+                        <Col sm="12" md="6" style={{ display: 'flex', justifyContent: 'flex-end' }}>
+                          <GeneratePdfReport
+                            summaries={filteredSummaries}
+                            weekIndex={index}
+                            weekDates={this.weekDates[index]}
+                            darkMode={darkMode}
+                          />
+                          {hasSeeBadgePermission && (
+                            <Button
+                              className="btn--dark-sea-green"
+                              style={darkMode ? boxStyleDark : boxStyle}
+                              onClick={() => this.setState({ loadBadges: !loadBadges })}
+                            >
+                              {loadBadges ? 'Hide Badges' : 'Load Badges'}
+                            </Button>
+                          )}
+                          <Button
+                            className="btn--dark-sea-green"
+                            style={darkMode ? boxStyleDark : boxStyle}
+                          >
+                            Load Trophies
+                          </Button>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <b>Total Team Members:</b> {filteredSummaries.length}
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col>
+                          <FormattedReport
+                            summaries={filteredSummaries}
+                            weekIndex={index}
+                            bioCanEdit={this.bioEditPermission}
+                            canEditSummaryCount={this.canEditSummaryCount}
+                            allRoleInfo={allRoleInfo}
+                            badges={badges}
+                            loadBadges={loadBadges}
+                            canEditTeamCode={this.codeEditPermission}
+                            auth={auth}
+                            canSeeBioHighlight={this.canSeeBioHighlight}
+                            darkMode={darkMode}
+                            handleTeamCodeChange={this.handleTeamCodeChange}
+                          />
+                        </Col>
+                      </Row>
+                    </>
+                  )}
                 </WeeklySummariesReportTab>
               ))}
             </TabContent>
