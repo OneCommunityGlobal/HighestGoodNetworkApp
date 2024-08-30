@@ -49,6 +49,7 @@ const TeamsTab = props => {
 
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
+    if (isTeamSaved) isTeamSaved(true);
   };
   const onSelectDeleteTeam = teamId => {
     setRemovedTeams([...removedTeams, teamId]);

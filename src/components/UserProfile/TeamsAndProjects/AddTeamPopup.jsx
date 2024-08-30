@@ -68,6 +68,7 @@ const AddTeamPopup = React.memo(props => {
       setSearchText('');
 
       selectedTeam && (onSelectTeam(undefined), onValidation(false));
+      closePopup() // automatically closes the popup after team assigned
     } else
       toast.error(
         'Your user has been found in this team. Please select another team to add your user.',
@@ -90,14 +91,13 @@ const AddTeamPopup = React.memo(props => {
       clearTimeout(timeout);
       if (response.status === 200) {
         setDuplicateTeam(false);
-
+        !isNotDisplayAlert && setIsNotDisplayAlert(true);
         // Get updated teams list and select the new team
         await dispatch(getAllUserTeams());
         toast.success('Team created successfully');
         const newTeam = response.data; // Assuming response contains the new team data
-        onSelectTeam(newTeam);
-        setSearchText(newTeam.teamName); // Update search text to reflect new team name
         setIsLoading(false);
+        onAssignTeam(newTeam);
       } else {
         setIsLoading(false);
         const messageToastError =
@@ -150,7 +150,23 @@ const AddTeamPopup = React.memo(props => {
           </Button>
         </div>
         {!isNotDisplayAlert && (
-          <Alert color="danger">Oops, this team does not exist! Create it if you want it.</Alert>
+          <>
+            <Alert color="danger">Oops, this team does not exist! Create it if you want it.</Alert>
+            <div
+              style={{
+                marginBottom: '10px',
+                display: 'flex',
+                flexDirection: 'row',
+                gap: '10px',
+                justifyContent: 'center',
+              }}
+            >
+              {/* prettier-ignore  */}
+              <Button color="info" onClick={onCreateTeam}><b>Create Team</b></Button>
+              {/* prettier-ignore  */}
+              <Button color="danger" onClick={() => setIsNotDisplayAlert(true)}><b>Cancel team creation </b></Button>
+            </div>
+          </>
         )}
 
         {!isValidTeam && !searchText && (

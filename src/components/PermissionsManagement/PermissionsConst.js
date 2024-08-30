@@ -407,6 +407,19 @@ export const permissionLabels = [
   },
 ];
 
+export const roleOperationLabels = [
+  {
+    label: 'Save',
+    key: 'save',
+    description: 'Save current changes',
+  },
+  {
+    label: 'Delete',
+    key: 'delete',
+    description: 'Delete the role',
+  },
+];
+
 // returns an array of all the keys for permissions
 export const getAllPermissionKeys = () => {
   return getAllSubpermissionKeys(permissionLabels);
