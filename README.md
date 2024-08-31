@@ -130,12 +130,12 @@ We are committed to providing a welcoming environment for all members of our com
 #### Prohibited Behaviors
 We do not tolerate harassment or discrimination in any form. This includes, but is not limited to:
 
-Offensive comments related to personal characteristics
-Sharing inappropriate or explicit content
-Intimidation or stalking
-Disruptive behavior during community events or discussions
-Hate speech, racism, sexism, or any form of discrimination
-Spamming or trolling
+1. Offensive comments related to personal characteristics
+2. Sharing inappropriate or explicit content
+3. Intimidation or stalking
+4. Disruptive behavior during community events or discussions
+5. Hate speech, racism, sexism, or any form of discrimination
+6. Spamming or trolling
 
 #### Communication Guidelines
 We expect all community members to communicate respectfully. Please be mindful of your language and avoid jokes or comments that could be offensive to others. Constructive criticism is encouraged, but it must be delivered politely and focus on the content or ideas rather than attacking individuals. If you’re unsure whether something is appropriate, it’s best to err on the side of caution.
