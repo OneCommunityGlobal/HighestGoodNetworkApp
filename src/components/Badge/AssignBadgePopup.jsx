@@ -1,8 +1,8 @@
 import { useState } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
 import AssignTableRow from './AssignTableRow';
 import { useSelector } from 'react-redux';
+import './AssignBadgePopup.css';
 
 function AssignBadgePopup(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -28,16 +28,16 @@ function AssignBadgePopup(props) {
     <div>
       <input
         type="text"
-        className="form-control assign_badge_search_box"
+        className="form-control assign_badge_search_box mb-3"
         placeholder="Search Badge Name"
         onChange={e => {
           onSearch(e.target.value);
         }}
       />
-      <div className="overflow-auto mb-2" style={{ maxHeight: '300px' }}>
-        <Table className={darkMode ? 'text-light' : ''}>
+      <div className={`overflow-auto mb-2 max-h-300 ${darkMode ? 'bg-dark text-light' : ''}`}>
+        <Table className={darkMode ? 'table-dark' : ''}>
           <thead>
-            <tr className={darkMode ? 'bg-space-cadet' : ''}>
+            <tr>
               <th>Badge</th>
               <th>Name</th>
               <th>
@@ -45,7 +45,7 @@ function AssignBadgePopup(props) {
                 <UncontrolledTooltip
                   placement="right"
                   target="SelectInfo"
-                  style={{ backgroundColor: '#666', color: '#fff' }}
+                  className="bg-secondary text-light"
                 >
                   <p className="badge_info_icon_text">
                     Hmmm, little blank boxes... what could they mean? Yep, you guessed it, check those
@@ -73,8 +73,7 @@ function AssignBadgePopup(props) {
         </Table>
       </div>
       <Button
-        className="btn--dark-sea-green float-right"
-        style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
+        className={`btn btn-success float-right ${darkMode ? 'bg-dark text-light' : 'bg-success text-white'}`}
         onClick={props.submit}
       >
         Confirm
