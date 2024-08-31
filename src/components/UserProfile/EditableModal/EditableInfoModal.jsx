@@ -244,7 +244,7 @@ export class EditableInfoModal extends Component {
           {editableModalOpen && (
             <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
               <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
-              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <ModalBody className={`${darkMode ? 'bg-yinmn-blue' : ''} text-center`} style={{ padding: '20px 40px' }}>
                 {this.state.editing
                   ? <RichTextEditor
                     disabled={!this.state.editing}
