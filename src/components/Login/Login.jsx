@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
+import NetlifyPoweredLink from 'components/Footer/NetlifyPoweredLink';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
@@ -36,7 +37,6 @@ export class Login extends Form {
         this.props.history.push('/dashboard');
       }
     }
-
     if (prevProps.errors.email !== this.props.errors.email) {
       this.setState({ errors: this.props.errors });
     }
@@ -55,7 +55,6 @@ export class Login extends Form {
 
   render() {
     const { darkMode } = this.props;
-
     return (
       <div
         className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
@@ -63,7 +62,6 @@ export class Login extends Form {
         }`}
       >
         <h2>Please Sign in</h2>
-
         <form className="col-md-4 xs-12" onSubmit={e => this.handleSubmit(e)}>
           {this.renderInput({ name: 'email', label: 'Email:', darkMode })}
           {this.renderInput({
@@ -89,6 +87,9 @@ export class Login extends Form {
             </Link>
           </div>
         </form>
+        <footer>
+          <NetlifyPoweredLink />
+        </footer>
       </div>
     );
   }
