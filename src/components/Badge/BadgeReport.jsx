@@ -31,7 +31,7 @@ import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import hasPermission from '../../utils/permissions';
-import { changeBadgesByUserID } from '../../actions/badgeManagement';
+import { updateBadgesById } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
@@ -308,19 +308,25 @@ function BadgeReport(props) {
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
     }
-
-    await props.changeBadgesByUserID(props.userId, newBadgeCollection);
-    await props.getUserProfile(props.userId);
-
-    props.setUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.setOriginalUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.handleSubmit();
-    //close the modal
-    props.close();
+  
+    try {
+      await props.updateBadgesById(props.userId, newBadgeCollection);
+      await props.getUserProfile(props.userId);
+  
+      props.setUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+      props.setOriginalUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+      props.handleSubmit();
+      props.close();
+    } catch (error) {
+      console.error('Error updating badges:', error);
+      // You might want to show an error message to the user here
+    } finally {
+      setSavingChanges(false);
+    }
   };
 
   return (
@@ -723,7 +729,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  changeBadgesByUserID: (userId, badges) => dispatch(changeBadgesByUserID(userId, badges)),
+  updateBadgesById: (userId, badges) => dispatch(updateBadgesById(userId, badges)),
   getUserProfile: userId => dispatch(getUserProfile(userId)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });

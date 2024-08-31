@@ -1,4 +1,6 @@
 import axios from 'axios';
+import moment from 'moment';
+import { formatDate } from 'utils/formatDate';
 import {
   GET_ALL_BADGE_DATA,
   ADD_SELECT_BADGE,
@@ -14,8 +16,6 @@ import {
   RESET_BADGE_COUNT,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
-import moment from 'moment';
-import { formatDate } from 'utils/formatDate';
 
 const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
@@ -62,7 +62,7 @@ export const resetBadgeCount = userId => async dispatch => {
       });
     }
   } catch (error) {
-    console.error("Failed to reset badge count", error);
+    console.error('Failed to reset badge count', error);
   }
 };
 
@@ -129,6 +129,47 @@ export const validateBadges = (firstName, lastName) => {
   };
 };
 
+export const assignBadgesByUserID = (userIds, selectedBadges) => {
+  return async dispatch => {
+    if (selectedBadges.length === 0) {
+      dispatch(
+        getMessage(
+          "Um no, that didn't work. Badge Select Function must include actual selection of badges to work. Better luck next time!",
+          'danger',
+        ),
+      );
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+      return;
+    }
+
+    try {
+      const response = await axios.post(ENDPOINTS.BADGE_ASSIGN, {
+        userIds,
+        selectedBadges,
+      });
+
+      if (response.status === 200) {
+        dispatch(
+          getMessage(
+            "Awesomesauce! You've increased badges and proportionally increased life happiness for multiple users!",
+            'success',
+          ),
+        );
+      } else {
+        throw new Error('Failed to assign badges');
+      }
+    } catch (error) {
+      dispatch(getMessage('Oops, something went wrong while assigning badges!', 'danger'));
+    } finally {
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    }
+  };
+};
+
 export const assignBadges = (firstName, lastName, selectedBadges) => {
   return async dispatch => {
     if (selectedBadges.length === 0) {
@@ -146,43 +187,23 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
 
     const userAssigned = `${firstName} ${lastName}`;
 
-    const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
+    try {
+      const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
 
-    if (res.data.length === 0) {
+      if (res.data.length === 0) {
+        throw new Error("Can't find that user.");
+      }
+
+      const userToBeAssignedBadge = res.data[0]._id;
+      await dispatch(assignBadgesByUserID([userToBeAssignedBadge], selectedBadges));
+    } catch (error) {
       dispatch(
         getMessage(
-          "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!",
+          error.message ||
+            "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!",
           'danger',
         ),
       );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-      return;
-    }
-
-    const { badgeCollection } = res.data[0];
-    const userToBeAssignedBadge = res.data[0]._id;
-    // return a new badgeCollection for udpate
-    const newBadgeCollection = returnUpdatedBadgesCollection(badgeCollection, selectedBadges);
-
-    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
-    try {
-      await axios.put(url, {
-        badgeCollection: newBadgeCollection,
-        newBadges: selectedBadges.length,
-      });
-      dispatch(
-        getMessage(
-          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-          'success',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-    } catch (e) {
-      dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -190,12 +211,12 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
   };
 };
 
-export const assignBadgesByUserID = (userId, selectedBadges) => {
+export const updateBadgesById = (userId, updatedBadges) => {
   return async dispatch => {
-    if (selectedBadges.length === 0) {
+    if (updatedBadges.length === 0) {
       dispatch(
         getMessage(
-          "Um no, that didn't work. Badge Select Function must include actual selection of badges to work. Better luck next time!",
+          "Um no, that didn't work. Badge Update Function must include actual badges to update. Better luck next time!",
           'danger',
         ),
       );
@@ -205,47 +226,25 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       return;
     }
 
-    const res = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-
-    if (res.data.length === 0) {
-      dispatch(
-        getMessage(
-          "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!",
-          'danger',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-      return;
-    }
-    const { badgeCollection } = res.data;
-    // Update the badgeCollection.badge object to badge._id string for backend
-    for (let i = 0; i < badgeCollection.length; i++) {
-      badgeCollection[i].badge = badgeCollection[i].badge._id;
-    }
-
-    const userToBeAssignedBadge = res.data._id;
-    // return a new badgeCollection for udpate
-    const newBadgeCollection = returnUpdatedBadgesCollection(badgeCollection, selectedBadges);
-    // send updated badgeCollection to backend
-    const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
     try {
-      await axios.put(url, {
-        badgeCollection: newBadgeCollection,
-        newBadges: selectedBadges.length,
+      const url = ENDPOINTS.BADGE_ASSIGN_BY_ID(userId);
+      const response = await axios.put(url, {
+        badgeCollection: updatedBadges,
       });
-      dispatch(
-        getMessage(
-          "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-          'success',
-        ),
-      );
-      setTimeout(() => {
-        dispatch(closeAlert());
-      }, 6000);
-    } catch (e) {
-      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+
+      if (response.status === 200 || response.status === 201) {
+        dispatch(
+          getMessage(
+            "Awesomesauce! You've successfully updated the badges, potentially increasing life happiness!",
+            'success',
+          ),
+        );
+      } else {
+        throw new Error('Failed to update badges');
+      }
+    } catch (error) {
+      dispatch(getMessage(error.message || 'Oops, something went wrong!', 'danger'));
+    } finally {
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -255,10 +254,10 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 
 // Return updated badgeCollection
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
-  let newBadgeCollection = Array.from(badgeCollection);
+  const newBadgeCollection = Array.from(badgeCollection);
 
   // object to track updated or newly added badges to prevent duplicates
-  let updatedOrAddedBadges = {};
+  const updatedOrAddedBadges = {};
 
   selectedBadgesId.forEach(originalBadgeId => {
     let badgeId = originalBadgeId;
@@ -267,8 +266,8 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
 
     if (!updatedOrAddedBadges[badgeId]) {
       let included = false;
-      let currentTs = Date.now();
-      let currentDate = formatDate();
+      const currentTs = Date.now();
+      const currentDate = formatDate();
 
       newBadgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
@@ -326,7 +325,6 @@ export const sendUpdatedBadgeCollectionReq = async (
       dispatch(closeAlert());
     }, 6000);
   }
-  return;
 };
 
 export const changeBadgesByUserID = (userId, badgeCollection) => {

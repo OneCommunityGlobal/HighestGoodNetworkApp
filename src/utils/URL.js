@@ -80,7 +80,8 @@ export const ENDPOINTS = {
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
   USER_UNREAD_TASK_NOTIFICATIONS: userId => `${APIEndpoint}/tasknotification/user/${userId}`,
   BADGE: () => `${APIEndpoint}/badge`,
-  BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
+  BADGE_ASSIGN: `${APIEndpoint}/badge/assign`,
+  BADGE_ASSIGN_BY_ID: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
 
   TEAM_MEMBER_TASKS: userId => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
