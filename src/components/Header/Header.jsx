@@ -65,6 +65,7 @@ import {
 import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
+import NotificationBell from './NotificationBell';
 
 export function Header(props) {
   const darkMode = props.darkMode;
@@ -374,14 +375,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem>
-                  <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
-                    <i className="fa fa-bell i-large">
-                      <i className="badge badge-pill badge-danger badge-notify">
-                        {/* Pull number of unread messages */}
-                      </i>
-                      <span className="sr-only">unread messages</span>
-                    </i>
-                  </NavLink>
+                  <NotificationBell />
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
@@ -389,55 +383,55 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar>
-                    <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
-                    </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {canAccessUserManagement ? (
-                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
-                          {USER_MANAGEMENT}
-                        </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
-                      {canAccessBadgeManagement ? (
-                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
-                          {BADGE_MANAGEMENT}
-                        </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
-                      {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
-                          {PROJECTS}
-                        </DropdownItem>
-                      )}
-                      {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
-                          {TEAMS}
-                        </DropdownItem>
-                      )}
-                      {canAccessPermissionsManagement && (
-                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
-                          {SEND_EMAILS}
-                        </DropdownItem>
-                      )}
-                      {canAccessPermissionsManagement && (
-                        <>
-                          <DropdownItem divider />
-                          <DropdownItem
-                            tag={Link}
-                            to="/permissionsmanagement"
-                            className={fontColor}
-                          >
-                            {PERMISSIONS_MANAGEMENT}
+                    <UncontrolledDropdown nav inNavbar>
+                      <DropdownToggle nav caret>
+                        <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                      </DropdownToggle>
+                      <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                        {canAccessUserManagement ? (
+                          <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
+                            {USER_MANAGEMENT}
                           </DropdownItem>
-                        </>
-                      )}
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                )}
+                        ) : (
+                          <React.Fragment></React.Fragment>
+                        )}
+                        {canAccessBadgeManagement ? (
+                          <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
+                            {BADGE_MANAGEMENT}
+                          </DropdownItem>
+                        ) : (
+                          <React.Fragment></React.Fragment>
+                        )}
+                        {canAccessProjects && (
+                          <DropdownItem tag={Link} to="/projects" className={fontColor}>
+                            {PROJECTS}
+                          </DropdownItem>
+                        )}
+                        {canAccessTeams && (
+                          <DropdownItem tag={Link} to="/teams" className={fontColor}>
+                            {TEAMS}
+                          </DropdownItem>
+                        )}
+                        {canAccessPermissionsManagement && (
+                          <DropdownItem tag={Link} to="/announcements" className={fontColor}>
+                            {SEND_EMAILS}
+                          </DropdownItem>
+                        )}
+                        {canAccessPermissionsManagement && (
+                          <>
+                            <DropdownItem divider />
+                            <DropdownItem
+                              tag={Link}
+                              to="/permissionsmanagement"
+                              className={fontColor}
+                            >
+                              {PERMISSIONS_MANAGEMENT}
+                            </DropdownItem>
+                          </>
+                        )}
+                      </DropdownMenu>
+                    </UncontrolledDropdown>
+                  )}
                 <NavItem>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
@@ -470,14 +464,14 @@ export function Header(props) {
                       props.userProfile.email,
                       props.userProfile.email,
                     ) && (
-                      <DropdownItem
-                        tag={Link}
-                        to={`/updatepassword/${displayUserId}`}
-                        className={fontColor}
-                      >
-                        {UPDATE_PASSWORD}
-                      </DropdownItem>
-                    )}
+                        <DropdownItem
+                          tag={Link}
+                          to={`/updatepassword/${displayUserId}`}
+                          className={fontColor}
+                        >
+                          {UPDATE_PASSWORD}
+                        </DropdownItem>
+                      )}
                     <DropdownItem>
                       <DarkModeButton />
                     </DropdownItem>
