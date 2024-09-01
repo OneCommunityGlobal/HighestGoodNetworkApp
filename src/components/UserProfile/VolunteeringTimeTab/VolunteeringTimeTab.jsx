@@ -35,14 +35,14 @@ const StartDate = props => {
       id="startDate"
       className={startEndDateValidation(props) ? 'border-error-validation' : null}
       value={props.userProfile.startDate}
-      min={formatDateYYYYMMDD(props.userProfile.createdDate)}
+      min={props.userProfile.createdDate}
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
         props.onStartDateComponent(e.target.value);
       }}
       placeholder="Start Date"
       invalid={!props.canEdit}
-      max={props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : ''}
+      max={props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : '9999-12-31'}
     />
   );
 };
@@ -67,7 +67,7 @@ const EndDate = props => {
       name="EndDate"
       id="endDate"
       value={
-        props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : ''
+        props.userProfile.endDate ? props.userProfile.endDate : ''
       }
       onChange={e => {
         props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
@@ -77,9 +77,10 @@ const EndDate = props => {
       invalid={!props.canEdit}
       min={
         props.userProfile.startDate
-          ? formatDateYYYYMMDD(props.userProfile.startDate)
+          ? props.userProfile.startDate
           : ''
       }
+      max={'9999-12-31'}
     />
   );
 };
@@ -250,10 +251,9 @@ const ViewTab = props => {
   const [historyModal, setHistoryModal] = useState(false);
 
   const handleStartDates = async startDate => {
-
-    if(!userProfile.isFirstTimelog) {
-      alert('This user has already logged time in the system. Are you sure you want to change the start date?');
-    }
+    // if(!userProfile.isFirstTimelog) {
+    //   alert('This user has already logged time in the system. Are you sure you want to change the start date?');
+    // }
     props.onStartDate(startDate);
   };
 

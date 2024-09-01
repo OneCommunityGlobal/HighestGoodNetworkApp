@@ -66,6 +66,9 @@ import {
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
 import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
+import { formatDateYYYYMMDD } from 'utils/formatDate.js';
+
+const CREATED_DATE_CRITERIA = '2022-01-01';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -345,13 +348,19 @@ function UserProfile(props) {
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        startDate: newUserProfile?.startDate.split('T')[0],
+        // startDate: newUserProfile?.startDate.split('T')[0],
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
+        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
       });
       setOriginalUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        startDate: newUserProfile?.startDate.split('T')[0],
+        // startDate: newUserProfile?.startDate.split('T')[0],
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
+        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
       });
       setUserStartDate(newUserProfile?.startDate.split('T')[0]);
       checkIsProjectsEqual();
@@ -810,6 +819,17 @@ function UserProfile(props) {
   const handleEndDate = async endDate => {
     setUserEndDate(endDate);
   };
+
+  const startDateValidation = (createdDate, startDate) => {
+    // console.log("userProfile:createdDate, startDate", createdDate, startDate === '' ? "EMPTY" : startDate);
+    return startDate === '' ? false : (createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate);
+  };
+  
+  const endDateValidation = (startDate, endDate) => {
+    console.log("userProfile:startDate, endDate", startDate === '' ? "EMPTY" : startDate, endDate === '' ? "EMPTY" : endDate );
+    return endDate ? (startDate <= endDate) : true;
+  }
+
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
@@ -1278,6 +1298,7 @@ function UserProfile(props) {
               {canEdit && activeTab && (
                 <>
                   <SaveButton
+                    index={1}
                     className="mr-1 btn-bottom"
                     handleSubmit={async () => await handleSubmit()}
                     disabled={
@@ -1285,7 +1306,9 @@ function UserProfile(props) {
                       !formValid.lastName ||
                       !formValid.email ||
                       !codeValid ||
-                      (userStartDate > userEndDate && userEndDate !== '') ||
+                      // (userStartDate > userEndDate && userEndDate !== '') ||
+                      !startDateValidation(userProfile.createdDate, userProfile.startDate) ||
+                      !endDateValidation(userProfile.startDate, userProfile.endDate) ||
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
                       isTeamSaved
                     }
@@ -1409,6 +1432,7 @@ function UserProfile(props) {
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
+                            index={2}
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
@@ -1484,6 +1508,7 @@ function UserProfile(props) {
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
+                            index={3}
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
@@ -1491,6 +1516,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
+                              !startDateValidation(userProfile.createdDate, userProfile.startDate) ||
                               (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
@@ -1580,6 +1606,7 @@ function UserProfile(props) {
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
+                            index={4}
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
@@ -1663,6 +1690,7 @@ function UserProfile(props) {
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
+                            index={5}
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
@@ -1733,6 +1761,7 @@ function UserProfile(props) {
                       {canEdit && (activeTab == '1' || canPutUserProfile) && (
                         <>
                           <SaveButton
+                            index={6}
                             className="mr-1 btn-bottom"
                             handleSubmit={async () => await handleSubmit()}
                             disabled={
