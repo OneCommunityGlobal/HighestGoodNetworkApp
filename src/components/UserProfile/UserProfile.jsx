@@ -572,8 +572,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(userProfileRef.current);
-
+      const result = await props.updateUserProfile(userProfileRef.current);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -582,9 +581,11 @@ function UserProfile(props) {
       await fetchTeamCodeAllUsers();
       setSaved(false);
     } catch (err) {
-      console.log(err);
-      alert('An error occurred while attempting to save this profile.');
-      return err.message;
+      if (err.response && err.response.data && err.response.data.error) {
+        const errorMessage = err.response.data.error.join('\n');
+        alert(errorMessage);
+      }
+      return err;
     }
   };
 

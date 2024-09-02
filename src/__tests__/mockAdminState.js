@@ -1770,6 +1770,7 @@ export default {
             'assignTeamToUsers',
             'editTimeEntry',
             'deleteTimeEntry',
+            'sendEmails',
             'updatePassword',
             'getUserProfiles',
             'getProjectMembers',
