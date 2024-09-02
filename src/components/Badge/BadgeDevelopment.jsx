@@ -6,7 +6,7 @@ import CreateNewBadgePopup from './CreateNewBadgePopup';
 import '../Header/DarkMode.css';
 
 function BadgeDevelopment(props) {
-  const { darkMode, allBadgeData } = props;
+  const { darkMode, allBadgeData = [] } = props; 
 
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
   const [isAddFiltersOpen, setAddFiltersOpen] = useState(false);
@@ -17,7 +17,7 @@ function BadgeDevelopment(props) {
   const toggle = () => setCreateNewBadgePopupOpen(prevIsOpen => !prevIsOpen);
   const toggleFilters = () => setAddFiltersOpen(prevState => !prevState);
 
-  // Filter badge data based on type, report, and rank
+  // filter badge data based on type, report, and rank
   const filteredBadgeData = allBadgeData.filter(badge => {
     const matchesType = searchType === '' || badge.type.toLowerCase().includes(searchType.toLowerCase());
     const matchesRank = badge.ranking <= rankFilter;
@@ -44,30 +44,35 @@ function BadgeDevelopment(props) {
       </Button>
       {isAddFiltersOpen && (
         <div style={{ marginTop: '20px', paddingLeft: '20px' }}>
-          <p>Search for a badge:</p>
-          <input
-            type="text"
-            placeholder="Enter name here"
-            value={searchName}
-            onChange={(e) => setSearchName(e.target.value)}
-          />
-          <p style ={{paddingTop: '10px'}}>Filter by Type:</p>
-          <input
-            type="text"
-            placeholder="Enter type here"
-            value={searchType}
-            onChange={(e) => setSearchType(e.target.value)}
-          />
-          <p style ={{paddingTop: '10px'}}>Filter by Rank (0 - {rankFilter}):</p>
-          <input
-            type="range"
-            id="rank-filter"
-            min="0"
-            max="300"
-            value={rankFilter}
-            onChange={(e) => setRankFilter(e.target.value)}
-          />
-          
+          <div style={{ marginBottom: '10px' }}>
+            <p style={{ display: 'inline', marginRight: '8px' }}>Search for a badge:</p>
+            <input
+              type="text"
+              placeholder="Enter name here"
+              value={searchName}
+              onChange={(e) => setSearchName(e.target.value)}
+            />
+          </div>
+          <div style={{ marginBottom: '10px' }}>
+            <p style={{ display: 'inline', marginRight: '8px' }}>Filter by Type:</p>
+            <input
+              type="text"
+              placeholder="Enter type here"
+              value={searchType}
+              onChange={(e) => setSearchType(e.target.value)}
+            />
+          </div>
+          <div>
+            <p style={{ display: 'inline', marginRight: '8px' }}>Filter by Rank (0 - {rankFilter}):</p>
+            <input
+              type="range"
+              id="rank-filter"
+              min="0"
+              max="300"
+              value={rankFilter}
+              onChange={(e) => setRankFilter(e.target.value)}
+            />
+          </div>
         </div>
       )}
       <Modal

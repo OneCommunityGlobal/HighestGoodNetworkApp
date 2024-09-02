@@ -83,8 +83,7 @@ function LeaderBoard({
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  const editWeeklySummaryPermission = hasPermission('submitWeeklySummaryForOthers');
-  
+
   const isOwner = ['Owner'].includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
@@ -219,7 +218,6 @@ function LeaderBoard({
       };
 
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
-      window.dispatch
       Event(new Event('storage'));
       dashboardClose();
     });

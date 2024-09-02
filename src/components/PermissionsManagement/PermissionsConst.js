@@ -66,7 +66,8 @@ export const permissionLabels = [
       {
         label: 'Submit Weekly Summary for Others',
         key: 'submitWeeklySummaryForOthers',
-        description: 'Gives the manager roles and above the ability to edit other peoples weekly summary.',
+        description:
+          'Gives the manager roles and above the ability to edit other peoples weekly summary.',
       },
     ],
   },
@@ -110,12 +111,6 @@ export const permissionLabels = [
           'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
       },
       {
-        label: 'Edit Summary Submit Requirement (Others)',
-        key: 'updateSummaryRequirements',
-        description:
-          'Gives the user permission to change the requirement to the user to submit a summary.',
-      },
-      {
         label: 'Manage Time Off Requests',
         key: 'manageTimeOffRequests',
         description: 'Gives the user permission to Add/Delete/Edit Time off requests.',
@@ -125,7 +120,6 @@ export const permissionLabels = [
         key: 'changeUserRehireableStatus',
         description: 'Gives the user permission to change the user status of rehireable or not.',
       },
-      
     ],
   },
   {
