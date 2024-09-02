@@ -1,4 +1,4 @@
-// Version: 1.1.2 - Improved Notification Handling for Multiple Tasks and Dynamic Updates
+// Version: 1.2.0 - Improved Notification Handling and Bug Fixes
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { connect } from 'react-redux';
@@ -16,6 +16,7 @@ const NotificationBell = React.memo(({ authUser, usersWithTasks, darkMode }) => 
     '50%': `${userId}_50percent`,
     '75%': `${userId}_75percent`,
     '90%': `${userId}_90percent`,
+    '100%': `${userId}_100percent`, // Added milestone for 100% completion
   };
 
   // Function to calculate completion percentage based on logged hours and estimated hours
@@ -24,7 +25,7 @@ const NotificationBell = React.memo(({ authUser, usersWithTasks, darkMode }) => 
     if (hoursLogged === 0 && estimatedHours > 0) return '0%';
     if (hoursLogged && estimatedHours) {
       const percentage = (hoursLogged / estimatedHours) * 100;
-      if (percentage >= 100) return null; // Ignore tasks that are 100% or more complete
+      if (percentage >= 100) return '100%'; // Notify on 100% completion
       if (percentage >= 90) return '90%';
       if (percentage >= 75) return '75%';
       if (percentage >= 50) return '50%';
@@ -51,6 +52,14 @@ const NotificationBell = React.memo(({ authUser, usersWithTasks, darkMode }) => 
     localStorage.setItem(key, 'true');
   };
 
+  // Function to reset milestones for a task when estimated hours change
+  const resetMilestonesForTask = (taskId) => {
+    Object.keys(milestoneStorageKeys).forEach((milestone) => {
+      const key = `${taskId}_${milestoneStorageKeys[milestone]}`;
+      localStorage.removeItem(key); // Clear stored milestones for the task
+    });
+  };
+
   // Function to calculate notifications based on task progress and milestones
   const calculateNotifications = useCallback(() => {
     if (!authUser || !usersWithTasks) return;
@@ -63,10 +72,14 @@ const NotificationBell = React.memo(({ authUser, usersWithTasks, darkMode }) => 
     userTasks.tasks.forEach((task) => {
       if (isTaskSubmittedOrCompleted(task)) return; // Skip tasks that are submitted or completed
 
-      const currentPercentage = calculateCompletionPercentage(
-        task.hoursLogged,
-        task.estimatedHours
-      );
+      // Check if estimated hours have changed; reset milestones if they have
+      const previousEstimatedHours = parseFloat(localStorage.getItem(`${task._id}_estimatedHours`)) || 0;
+      if (previousEstimatedHours !== task.estimatedHours) {
+        resetMilestonesForTask(task._id);
+        localStorage.setItem(`${task._id}_estimatedHours`, task.estimatedHours); // Store new estimated hours
+      }
+
+      const currentPercentage = calculateCompletionPercentage(task.hoursLogged, task.estimatedHours);
 
       if (currentPercentage && !hasMilestoneBeenSeen(task._id, currentPercentage)) {
         const milestoneMessages = {
@@ -74,6 +87,7 @@ const NotificationBell = React.memo(({ authUser, usersWithTasks, darkMode }) => 
           '50%': `Well done! You've completed 50% of ${task.taskName}. Keep up the good work!`,
           '75%': `Great progress! ${task.taskName} is now 75% complete. You're doing well.`,
           '90%': `Almost there! ${task.taskName} is 90% complete. Let's finish this task successfully.`,
+          '100%': `Congratulations! You've completed ${task.taskName}. Fantastic job!`, // Notification for 100% completion
         };
 
         newNotifications.push({
@@ -97,7 +111,11 @@ const NotificationBell = React.memo(({ authUser, usersWithTasks, darkMode }) => 
 
   // Calculate notifications whenever dependencies change
   useEffect(() => {
-    calculateNotifications();
+    const debounceTimeout = setTimeout(() => {
+      calculateNotifications();
+    }, 300); // Debounce to handle rapid changes
+
+    return () => clearTimeout(debounceTimeout); // Cleanup on unmount
   }, [calculateNotifications, usersWithTasks]); // Add usersWithTasks to dependency array to ensure updates on task changes
 
   // Toggle the visibility of the notification modal and clear notifications when closed
@@ -107,6 +125,14 @@ const NotificationBell = React.memo(({ authUser, usersWithTasks, darkMode }) => 
       setNotifications([]); // Clear notifications when the modal is closed
     }
   };
+
+  // Handle dark mode toggling to ensure modal style consistency
+  useEffect(() => {
+    if (isModalOpen) {
+      setIsModalOpen(false); // Close and reopen to apply new styles
+      setTimeout(() => setIsModalOpen(true), 0);
+    }
+  }, [darkMode]);
 
   return (
     <div>
@@ -141,7 +167,11 @@ const NotificationBell = React.memo(({ authUser, usersWithTasks, darkMode }) => 
           ) : (
             <ul>
               {notifications.map((notification, index) => (
-                <li key={index}>{notification.message}</li>
+                <li key={index}>
+                  {notification.message.length > 200
+                    ? notification.message.substring(0, 200) + '...'
+                    : notification.message}
+                </li>
               ))}
             </ul>
           )}
