@@ -103,7 +103,7 @@ function LeaderBoard({
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
   const [innerWidth, setInnerWidth] = useState();
-  
+
   const [isDisplayAlert, setIsDisplayAlert] = useState(false);
   const [stateOrganizationData, setStateOrganizationData] = useState(organizationData);
 
@@ -181,13 +181,15 @@ function LeaderBoard({
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
         const idUsers = response.data.map(item => item._id);
         const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
-        updateOrganizationData(usersTaks, usersTaks.length);
         // eslint-disable-next-line no-unused-expressions
         usersTaks.length === 0
           ? // eslint-disable-next-line no-unused-expressions
             (setIsDisplayAlert(true), setIsLoadingTeams(false), null)
           : // eslint-disable-next-line no-unused-expressions
-            (setTeamsUsers(usersTaks), setIsLoadingTeams(false), setFilteredUserTeamIds(idUsers));
+            (setTeamsUsers(usersTaks),
+            setIsLoadingTeams(false),
+            setFilteredUserTeamIds(idUsers),
+            updateOrganizationData(usersTaks, usersTaks.length));
       } catch (error) {
         toast.error('Error fetching team members');
         setIsLoadingTeams(false);
@@ -230,9 +232,6 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
-  const individualsWithZeroHours = teamsUsers.filter(
-    individuals => individuals.weeklycommittedHours === 0,
-  );
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -544,16 +543,6 @@ function LeaderBoard({
               </th>
               <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
-                 {/*  
-                <span title="Tangible time">{stateOrganizationData.tangibletime || ''}</span>
-              </td>
-              <td className="align-middle" aria-label="Description">
-                <Progress
-                  title={`TangibleEffort: ${stateOrganizationData.tangibletime} hours`}
-                  value={stateOrganizationData.barprogress}
-                  color={stateOrganizationData.barcolor}
-                  */}
-
                 <span title="Tangible time">
                   {filteredUsers.reduce((total, user) => total + user.tangibletime, 0).toFixed(2)}
                 </span>
@@ -572,9 +561,7 @@ function LeaderBoard({
                 />
               </td>
               <td className="align-middle">
-                <span title="Tangible + Intangible time = Total time">          
-                  {/*{stateOrganizationData.totaltime} of {stateOrganizationData.weeklycommittedHours}*/}
-                  
+                <span title="Tangible + Intangible time = Total time">
                   {filteredUsers
                     .reduce((total, user) => total + parseFloat(user.totaltime), 0)
                     .toFixed(2)}{' '}
