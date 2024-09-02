@@ -124,13 +124,6 @@ export function Dashboard(props) {
               filteredUserTeamIds={filteredUserTeamIds}
             />
           </div>
-          <div className="my-5">
-            <Badge
-              userId={displayUserId}
-              role={authUser.role}
-              isNotAllowedToEdit={isNotAllowedToEdit}
-            />
-          </div>
         </Col>
       </Row>
       <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />

@@ -9,7 +9,7 @@ export default {
       role: 'Administrator',
       permissions: {
         frontPermissions: [],
-        backPermissions: []
+        backPermissions: [],
       },
       expiryTimestamp: dt.toISOString(),
       iat: 1596944165,
@@ -105,7 +105,7 @@ export default {
     role: 'Administrator',
     permissions: {
       frontPermissions: [],
-      backPermissions: []
+      backPermissions: [],
     },
     firstName: 'Dev',
     lastName: 'Admin',
@@ -1770,6 +1770,7 @@ export default {
             'assignTeamToUsers',
             'editTimeEntry',
             'deleteTimeEntry',
+            'sendEmails',
             'updatePassword',
             'getUserProfiles',
             'getProjectMembers',
