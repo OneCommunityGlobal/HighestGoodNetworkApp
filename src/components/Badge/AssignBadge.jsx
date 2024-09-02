@@ -42,15 +42,16 @@ function AssignBadge(props) {
   }, []);
 
   useEffect(() => {
-    if (fullName) {
+    const trimmedName = fullName.trim(); // Trim any leading/trailing spaces
+    if (trimmedName) {
       setFilteredUsers(
         props.allUserProfiles.filter(user => {
           const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-          return userFullName.includes(fullName.toLowerCase());
+          return userFullName.includes(trimmedName.toLowerCase());
         }),
       );
     } else {
-      setFilteredUsers([]);
+      setFilteredUsers([]); // Clear the list if the input is empty or only spaces
     }
   }, [fullName, props.allUserProfiles]);
 
@@ -183,7 +184,7 @@ function AssignBadge(props) {
           className="btn--dark-sea-green"
           onClick={toggle}
           style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
-          disabled={!fullName}
+          disabled={!selectedUserId} // Enable button only if a user is selected
         >
           Assign Badge
         </Button>
