@@ -19,7 +19,7 @@ import {
   getFirstName,
   getLastName,
   assignBadges,
-  assignBadgesByUserID,
+  assignBadgesToMultipleUserID,
   clearNameAndSelected,
   closeAlert,
   validateBadges,
@@ -83,7 +83,7 @@ function AssignBadge(props) {
 
   const submit = async () => {
     if (selectedUserIds.length > 0 && props.selectedBadges.length > 0) {
-      await props.assignBadgesByUserID(selectedUserIds, props.selectedBadges);
+      await props.assignBadgesToMultipleUserID(selectedUserIds, props.selectedBadges);
       setOpen(false);
       setSelectedUserIds([]);
       props.clearNameAndSelected();
@@ -234,7 +234,7 @@ const mapDispatchToProps = dispatch => ({
   getUserId: userId => dispatch(getUserId(userId)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-  assignBadgesByUserID: (userIds, selectedBadges) => dispatch(assignBadgesByUserID(userIds, selectedBadges)),
+  assignBadgesToMultipleUserID: (userIds, selectedBadges) => dispatch(assignBadgesToMultipleUserID(userIds, selectedBadges)),
   assignBadges: (firstName, lastName, selectedBadge) =>
     dispatch(assignBadges(firstName, lastName, selectedBadge)),
   validateBadges: (firstName, lastName) => dispatch(validateBadges(firstName, lastName)),
