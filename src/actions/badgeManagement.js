@@ -158,13 +158,11 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       return;
     }
     const { badgeCollection } = res.data;
-    // Update the badgeCollection.badge object to badge._id string for backend
     for (let i = 0; i < badgeCollection.length; i++) {
       badgeCollection[i].badge = badgeCollection[i].badge._id;
     }
 
     const userToBeAssignedBadge = res.data._id;
-    // return a new badgeCollection for udpate
     const newBadgeCollection = returnUpdatedBadgesCollectionSingleUser(
       badgeCollection,
       selectedBadges,
@@ -275,7 +273,6 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
   };
 };
 
-// Return updated badgeCollection
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
   const newBadgeCollection = Array.from(badgeCollection);
 
@@ -328,12 +325,10 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
 export const returnUpdatedBadgesCollectionSingleUser = (badgeCollection, selectedBadgesId) => {
   const newBadgeCollection = Array.from(badgeCollection);
 
-  // object to track updated or newly added badges to prevent duplicates
   const updatedOrAddedBadges = {};
 
   selectedBadgesId.forEach(originalBadgeId => {
     let badgeId = originalBadgeId;
-    // Remove "assign-badge-" from badgeId
     if (badgeId.includes('assign-badge-')) badgeId = badgeId.replace('assign-badge-', '');
 
     if (!updatedOrAddedBadges[badgeId]) {
@@ -344,19 +339,15 @@ export const returnUpdatedBadgesCollectionSingleUser = (badgeCollection, selecte
       newBadgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
           if (!included) {
-            // Only update the first instance
-            // Increment count only for the first instance found
             badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1;
             badgeObj.lastModified = currentTs;
             badgeObj.earnedDate.push(currentDate);
             included = true;
           }
-          // Note this badge ID as updated so it's not added again
           updatedOrAddedBadges[badgeId] = true;
         }
       });
 
-      // Add the new badge record to badgeCollection if not included already
       if (!included) {
         newBadgeCollection.push({
           badge: badgeId,
@@ -364,7 +355,6 @@ export const returnUpdatedBadgesCollectionSingleUser = (badgeCollection, selecte
           lastModified: currentTs,
           earnedDate: [currentDate],
         });
-        // Note this badge ID as added
         updatedOrAddedBadges[badgeId] = true;
       }
     }
@@ -373,7 +363,6 @@ export const returnUpdatedBadgesCollectionSingleUser = (badgeCollection, selecte
   return newBadgeCollection;
 };
 
-// Make API call to update badgeCollection
 export const sendUpdatedBadgeCollectionReq = async (
   badgeCollection,
   selectedBadges,

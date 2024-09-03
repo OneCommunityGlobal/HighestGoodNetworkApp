@@ -31,7 +31,7 @@ import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import hasPermission from '../../utils/permissions';
-import { updateBadgesById } from '../../actions/badgeManagement';
+import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
@@ -54,8 +54,14 @@ function BadgeReport(props) {
     const ctx = canvas.getContext('2d');
     const baseImage = new Image();
     baseImage.crossOrigin = 'anonymous';
+
+    // Fallback image URL or blank image data URL
+    const fallbackImage =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/4H6YwAAAABJRU5ErkJggg=='; // 1x1 transparent PNG
+
     baseImage.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
     baseImage.src = baseImage.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+
     baseImage.onload = function handleImageLoad() {
       canvas.width = baseImage.width;
       canvas.height = baseImage.height;
@@ -66,37 +72,50 @@ function BadgeReport(props) {
 
       canvas.remove();
     };
+
+    baseImage.onerror = function handleImageError() {
+      // Use fallback image on error
+      canvas.width = 1;
+      canvas.height = 1;
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, 1, 1);
+      const uri = canvas.toDataURL('image/png');
+      callback(uri);
+
+      canvas.remove();
+    };
   }
 
   const FormatReportForPdf = (badges, callback) => {
     const bgReport = [];
     bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+  <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
       props.lastName
     }</h4></div>
-    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+  <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+
     for (let i = 0; i < badges.length; i += 1) {
       imageToUri(badges[i].badge.imageUrl, function(uri) {
         bgReport[i + 1] = `
-        <table>
-          <thead>
-            <tr>
-              <th>Badge Image</th>
-              <th>Badge Name, Count Awarded & Badge Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="width:160px">
-                <div><img height="150" width="150" src=${uri}/></div>
-              </td>
-              <td style="width:500px">
-                <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
-                <div><b>Count:</b> ${badges[i].count}</div>
-                <div><b>Description:</b> ${badges[i].badge.description}</div>
-              </td>
-            </tr>
-          </tbody>
+      <table>
+        <thead>
+          <tr>
+            <th>Badge Image</th>
+            <th>Badge Name, Count Awarded & Badge Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="width:160px">
+              <div><img height="150" width="150" src=${uri}/></div>
+            </td>
+            <td style="width:500px">
+              <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
+              <div><b>Count:</b> ${badges[i].count}</div>
+              <div><b>Description:</b> ${badges[i].badge.description}</div>
+            </td>
+          </tr>
+        </tbody>
       </table>
       ${
         (i + 1) % 4 === 0 && i + 1 !== badges.length
@@ -308,25 +327,19 @@ function BadgeReport(props) {
     for (let i = 0; i < newBadgeCollection.length; i++) {
       newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
     }
-  
-    try {
-      await props.updateBadgesById(props.userId, newBadgeCollection);
-      await props.getUserProfile(props.userId);
-  
-      props.setUserProfile(prevProfile => {
-        return { ...prevProfile, badgeCollection: sortBadges };
-      });
-      props.setOriginalUserProfile(prevProfile => {
-        return { ...prevProfile, badgeCollection: sortBadges };
-      });
-      props.handleSubmit();
-      props.close();
-    } catch (error) {
-      console.error('Error updating badges:', error);
-      // You might want to show an error message to the user here
-    } finally {
-      setSavingChanges(false);
-    }
+
+    await props.changeBadgesByUserID(props.userId, newBadgeCollection);
+    await props.getUserProfile(props.userId);
+
+    props.setUserProfile(prevProfile => {
+      return { ...prevProfile, badgeCollection: sortBadges };
+    });
+    props.setOriginalUserProfile(prevProfile => {
+      return { ...prevProfile, badgeCollection: sortBadges };
+    });
+    props.handleSubmit();
+    //close the modal
+    props.close();
   };
 
   return (
@@ -490,6 +503,7 @@ function BadgeReport(props) {
           Export All Badges to PDF
         </Button>
         <Button
+          disabled={numFeatured === 0}
           className="btn--dark-sea-green float-right"
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           onClick={pdfFeaturedDocGenerator}
@@ -690,6 +704,7 @@ function BadgeReport(props) {
             <span>Export All Badges to PDF</span>
           </Button>
           <Button
+            disabled={numFeatured === 0}
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
             onClick={pdfFeaturedDocGenerator}
@@ -729,7 +744,7 @@ const mapStateToProps = state => {
 };
 
 const mapDispatchToProps = dispatch => ({
-  updateBadgesById: (userId, badges) => dispatch(updateBadgesById(userId, badges)),
+  changeBadgesByUserID: (userId, badges) => dispatch(changeBadgesByUserID(userId, badges)),
   getUserProfile: userId => dispatch(getUserProfile(userId)),
   hasPermission: permission => dispatch(hasPermission(permission)),
 });

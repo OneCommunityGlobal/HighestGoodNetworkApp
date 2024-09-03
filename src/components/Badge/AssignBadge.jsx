@@ -182,7 +182,7 @@ function AssignBadge(props) {
         <Button
           className="btn--dark-sea-green"
           onClick={toggle}
-          style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
+          style={darkMode ? { ...boxStyleDark } : { ...boxStyle }}
           disabled={selectedUserIds.length === 0}
         >
           Assign Badge
