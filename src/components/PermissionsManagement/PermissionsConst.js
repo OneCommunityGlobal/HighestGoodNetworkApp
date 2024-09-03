@@ -347,6 +347,17 @@ export const permissionLabels = [
     ],
   },
   {
+    label: 'Announcements',
+    description: 'Category to communicate',
+    subperms: [
+      {
+        label: 'Send Emails',
+        key: 'sendEmails',
+        description: 'Gives the user permission to send email communications to other users. ',
+      },
+    ],
+  },
+  {
     label: 'Permissions Management',
     description: 'Category for all permissions related to permissions management',
     subperms: [
