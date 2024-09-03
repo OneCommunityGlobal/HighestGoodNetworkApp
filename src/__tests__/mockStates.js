@@ -1254,6 +1254,7 @@ export const rolesMock = {
           'assignTeamToUsers',
           'editTimeEntry',
           'deleteTimeEntry',
+          'sendEmails',
           'updatePassword',
           'getUserProfiles',
           'getProjectMembers',

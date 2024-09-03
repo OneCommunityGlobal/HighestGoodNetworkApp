@@ -572,8 +572,7 @@ function UserProfile(props) {
       axios.put(url, updatedTask.updatedTask).catch(err => console.log(err));
     }
     try {
-      await props.updateUserProfile(userProfileRef.current);
-
+      const result = await props.updateUserProfile(userProfileRef.current);
       if (userProfile._id === props.auth.user.userid && props.auth.user.role !== userProfile.role) {
         await props.refreshToken(userProfile._id);
       }
@@ -582,9 +581,11 @@ function UserProfile(props) {
       await fetchTeamCodeAllUsers();
       setSaved(false);
     } catch (err) {
-      console.log(err);
-      alert('An error occurred while attempting to save this profile.');
-      return err.message;
+      if (err.response && err.response.data && err.response.data.error) {
+        const errorMessage = err.response.data.error.join('\n');
+        alert(errorMessage);
+      }
+      return err;
     }
   };
 
@@ -629,12 +630,11 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = async(isActive) => {
-    setActiveInactivePopupOpen(false);
+  const setActiveInactive = (isActive) => {
     let endDate;
 
     if (!isActive) {
-      endDate = await dispatch(getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate));
+      endDate = dispatch(getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate));
       if (endDate == "N/A"){
         endDate = userProfile.createdDate
       }
@@ -646,12 +646,13 @@ function UserProfile(props) {
     };
 
     try{
-      await updateUserStatus(newUserProfile, isActive? UserStatus.Active : UserStatus.InActive, undefined);
+      props.updateUserStatus(newUserProfile, isActive? UserStatus.Active : UserStatus.InActive, undefined);
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
     } catch (error) {
       console.error("Failed to update user status:", error);
     }
+    setActiveInactivePopupOpen(false);
   };
 
   const activeInactivePopupClose = () => {
@@ -939,7 +940,6 @@ function UserProfile(props) {
                         e.preventDefault();
                         props.history.push(`/timelog/${targetUserId}`);
                       }
-                      setActiveInactivePopupOpen(true);
                     }}
                   />
                 </span>
@@ -1786,4 +1786,4 @@ function UserProfile(props) {
   );
 }
 
-export default connect(null, { hasPermission })(UserProfile);
+export default connect(null, { hasPermission, updateUserStatus })(UserProfile);
