@@ -19,9 +19,9 @@ function BadgeDevelopment(props) {
 
   // filter badge data based on type, report, and rank
   const filteredBadgeData = allBadgeData.filter(badge => {
-    const matchesType = searchType === '' || badge.type.toLowerCase().includes(searchType.toLowerCase());
+    const matchesType = searchType === '' || badge.type.replace(/\s+/g, '').toLowerCase().includes(searchType.replace(/\s+/g, '').toLowerCase());
     const matchesRank = badge.ranking <= rankFilter;
-    const matchesName = searchName === '' || badge.badgeName.toLowerCase().includes(searchName.toLowerCase());
+    const matchesName = searchName === '' || badge.badgeName.replace(/\s+/g, '').toLowerCase().includes(searchName.replace(/\s+/g, '').toLowerCase());
 
     return matchesType && matchesRank && matchesName;
   });
