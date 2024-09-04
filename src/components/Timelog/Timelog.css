@@ -109,9 +109,10 @@
 
 @media screen and (max-width: 800px) {
   .timelogPageContainer{
-    padding: 0;
-    margin-left: 15px;
+    padding:0 10%;
+    margin-left: 15px; 
   }
+
 }
 
 @media screen and (max-width: 575px) and (min-width: 399px) {
@@ -131,7 +132,6 @@
     padding-right: 0px !important;
   } */
 }
-
 
 #projectSelected {
   max-width: 100%;
@@ -188,11 +188,7 @@
 .custom-text-alignment {
   text-align: center;
 }
-@media (max-width:377px){
-  .timelogPageContainer .col-md-12{
-    padding: 0 4px;
-  }
-}
+
 
 .tasks-and-timelog-header-row{
   display: grid;
