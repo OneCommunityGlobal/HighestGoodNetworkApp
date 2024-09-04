@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
-import { isEqual, debounce } from 'lodash';
+import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import {
   Table,
@@ -103,8 +103,8 @@ function LeaderBoard({
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
   const [innerWidth, setInnerWidth] = useState();
-  const [searchInput, setSearchInput] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
+  const [searchInput] = useState('');
+  const [filteredUsers] = useState(teamsUsers);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -257,7 +257,6 @@ function LeaderBoard({
     setTextButton('My Team');
   };
 
-
   return (
     <div>
       <h3>
@@ -346,7 +345,6 @@ function LeaderBoard({
             type="text"
             placeholder="Search users..."
             value={searchInput}
-            onChange={handleSearch}
           />
         </div>
         <Table
@@ -471,18 +469,7 @@ function LeaderBoard({
                     }}
                   >
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => {
-                        handleDashboardAccess(item);
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          handleDashboardAccess(item);
-                        }
-                      }}
-                    >
+                    <div role="button" tabIndex={0}>
                       {hasLeaderboardPermissions(item.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
