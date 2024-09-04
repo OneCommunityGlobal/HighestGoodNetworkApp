@@ -1,4 +1,38 @@
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { PieChart, Pie, Cell, ResponsiveContainer, Sector } from 'recharts';
+import { useEffect, useState } from 'react';
+const renderCustomizedLabel = ({ cx, cy, midAngle, outerRadius, percent, name, fontSize, index, fill }) => {
+  const RADIAN = Math.PI / 180
+  const sin = Math.sin(RADIAN * midAngle)
+  const cos = Math.cos(RADIAN * midAngle)
+  const startX = cx + (outerRadius) * cos
+  const startY = cy + (outerRadius) * -sin
+  const middleY = cy + (outerRadius + 100 * Math.abs(sin)) * -sin 
+  let endX = startX + (cos >= 0 ? 1 : -1) * 50
+  let textAnchor = cos >= 0 ? 'start' : 'end'
+  const mirrorNeeded = midAngle > 180 && midAngle < -30 && percent < 0.02 && index % 2 === 1
+  if (mirrorNeeded) {
+    endX = startX + outerRadius * -cos * 2
+    textAnchor = 'start'
+  }
+
+  return (
+    <g>
+      <path
+        d={`M${startX},${startY}L${startX},${middleY}L${endX},${middleY}`}
+        fill="none"
+        stroke='#8884d8'
+        strokeWidth={1}
+      />
+      <text
+        x={endX + (cos >= 0 || mirrorNeeded ? 1 : -1) * 5}
+        y={middleY + fontSize /2}
+        textAnchor={textAnchor}
+        fontSize={fontSize}
+        fill={fill}
+      >{`${name || ''} ${(percent * 100).toFixed(0)}%`}</text>
+    </g>
+  )
+}
 
 export default function SelectTeamPieChart(props) {
   const { chartData, COLORS, total } = props;
@@ -8,26 +42,90 @@ export default function SelectTeamPieChart(props) {
         <p>There are ZERO persons after FILTERING!</p>
       </div>
     );
+  }else if(chartData.length > 20){
+    return (
+      <div>
+        <p>PLEASE Choose AT MOST 20 teams!</p>
+      </div>
+    );
   }
+  const [radiusSize, setRadiusSize] = useState(150);
+  const [activeIndex, setActiveIndex] = useState(-1);
+  const updateRadiusSize = () => {
+    if (window.innerWidth <= 1560) {
+      setRadiusSize(110);
+    }else if(window.innerWidth <= 1230){
+      setRadiusSize(80);
+    }else if(window.innerWidth <= 1180){
+      setRadiusSize(60);
+    }
+
+  };
+  useEffect(() => {
+    window.addEventListener('resize', updateRadiusSize);
+    updateRadiusSize();
+    return () => {
+      window.removeEventListener('resize', updateRadiusSize);
+    };
+  }, []);
+  const onPieEnter = (_, index) => {
+    setActiveIndex(index);
+  };
+
+  const onPieLeave = () => {
+    setActiveIndex(-1);
+  };
+  
   return (
-    <ResponsiveContainer width="100%" height={500} style={{ marginRight: '10px' }}>
+    <ResponsiveContainer minWidth={400} Height={200}>
       <PieChart>
         <Pie
           data={chartData}
+          margin={{
+            left: 5,
+          }}
           dataKey="value"
           nameKey="name"
           cx="50%"
           cy="50%"
-          outerRadius={150}
-          fill="#8884d8"
-          label={({ name, value }) => `${name}:(${Math.round((value / total) * 100)}%)`}
+          outerRadius={radiusSize}
+          startAngle={90}
+          endAngle={-270}
+          labelLine={false}
+          paddingAngle={0}
+          fontSize={10}
+          label={renderCustomizedLabel}
+          activeIndex={activeIndex}
+          activeShape={(props) => (
+            <g>
+              <path
+                d={`M${props.cx},${props.cy}L${props.cx},${props.cy}`}
+                fill="none"
+                stroke={props.fill}
+                strokeWidth={2}
+              />
+              <Sector
+                cx={props.cx}
+                cy={props.cy}
+                innerRadius={props.innerRadius}
+                outerRadius={props.outerRadius + 10} // Increase size on hover
+                startAngle={props.startAngle}
+                endAngle={props.endAngle}
+                fill={props.fill}
+              />
+            </g>
+          )}
+          onMouseEnter={onPieEnter}
+          onMouseLeave={onPieLeave}
         >
           {chartData.map((entry, index) => (
             /* eslint-disable react/no-array-index-key */
-            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+            <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} stroke={index === activeIndex ? '#000' : '#fff'}
+            strokeWidth={index === activeIndex ? 2 : 1}
+          />
           ))}
         </Pie>
-        <text x="50%" y="50%" textAnchor="middle" dominantBaseline="middle">
+        <text x="50%" y="50%" style={{fontWeight:'bold'}}  textAnchor="middle" dominantBaseline="middle">
           Total: {total}
         </text>
       </PieChart>

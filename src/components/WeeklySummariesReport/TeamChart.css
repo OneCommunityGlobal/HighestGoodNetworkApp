@@ -10,8 +10,9 @@ table {
   /* Style for table headers */
   th {
     background-color: #f2f2f2;
-    text-align: left;
+    text-align: center;
     padding: 8px;
+    color:black;
   }
   
   /* Alternate row colors for better readability */

@@ -137,14 +137,26 @@ export class WeeklySummariesReport extends Component {
     const colorOptionGroup = new Set();
     const colorOptions = [];
     const COLORS = [
+      '#e8a71c',
       '#0088FE',
-      '#00C49F',
+      '#43BFC7',
+      '#08b493',
+      '#c861c8',
       '#FFBB28',
-      '#FF8042',
-      '#FF00FF',
-      '#800080',
-      '#FFFF00',
-      '#00FFFF',
+      '#76916a',
+      '#ac4f7c',
+      '#E2725B',
+      '#6B8E23',
+      '#253342',
+      '#43a5be',
+      '#7698B3',
+      '#F07857',
+      '#87CEEB',
+      '#FF8243',
+      '#4169E1',
+      '#009999',
+      '#9ACD32',
+      '#C8A2C8',
     ];
 
     summariesCopy.forEach(summary => {
@@ -747,10 +759,10 @@ export class WeeklySummariesReport extends Component {
           </Row>
         )}
         <Row>
-          <Col lg={{ size: 2, offset: 1 }} xs={{ size: 2, offset: 1 }}>
+          <Col lg={{ size: 2, offset: 1 }} md={{ size: 3, offset: -1 }}>
             <div>Select Team Code</div>
           </Col>
-          <Col lg={{ size: 2, offset: 1 }} xs={{ size: 2, offset: 1 }}>
+          <Col lg={{ size: 2, offset: 1 }} xs={{ size: 3, offset: -1 }}>
             <div className="filter-container">
               <div className="filter-style">
                 <span>Show Chart</span>
@@ -774,7 +786,7 @@ export class WeeklySummariesReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }}>
             <MultiSelect
               className="multi-select-filter text-dark"
               options={teamCodes}
@@ -785,7 +797,7 @@ export class WeeklySummariesReport extends Component {
               labelledBy="Select"
             />
           </Col>
-          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
+          <Col lg={{ size: 5 }} md={{ size: 6, offset: -1}}>
             <MultiSelect
               className="multi-select-filter text-dark"
               options={colorOptions}
@@ -798,12 +810,12 @@ export class WeeklySummariesReport extends Component {
         </Row>
         {chartShow && (
           <Row>
-            <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
+            <Col lg={{ size: 6, offset: 1 }} md={{ size: 10, offset: 1 }}>
               <SelectTeamPieChart chartData={chartData} COLORS={COLORS} total={total} />
             </Col>
-            <Col lg={{ size: 5 }} xs={{ size: 5 }}>
+            <Col lg={{ size: 4 }} md={{ size: 11 }}>
               <TeamChart teamData={structuredTableData} />
-            </Col>
+            </Col> 
           </Row>
         )}
         <Row style={{ marginBottom: '10px' }}>
