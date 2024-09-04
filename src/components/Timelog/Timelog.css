@@ -20,6 +20,23 @@
   margin-bottom:1px;
 }
 
+.time-entry-container {
+  display: flex;
+  flex-direction: column;
+}
+
+.notes-section {
+  flex: 1;
+  margin-bottom: 13px; 
+  overflow-wrap: break-word; 
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px; 
+}
+
 .buttons {
   right: 0;
   bottom: 0;
@@ -59,17 +76,62 @@
   border: 1px solid rgba(0, 0, 0, 0.125);
 }
 
+.tab-pane {
+  width: 100%;
+}
+
+.search-time-entries-btn{
+  margin-left: 6px;
+  margin-top: 0px;
+}
+
+.min-width-100{
+  min-width: 100%;
+}
+
+.timelogPageContainer{
+  width: 100%;
+  padding: 0 17%;
+}
+
+@media screen and (max-width: 1400px) and (min-width: 1100px) {
+  .timelogPageContainer{
+    padding: 0 10%;
+  }
+}
+
+@media screen and (max-width: 1100px) and (min-width: 800px) {
+  .timelogPageContainer{
+    padding: 0 7%;
+    margin-left: 15px;
+  }
+}
+
+@media screen and (max-width: 800px) {
+  .timelogPageContainer{
+    padding: 0;
+    margin-left: 15px;
+  }
+}
+
+@media screen and (max-width: 575px) and (min-width: 399px) {
+  .search-time-entries-btn{
+    margin-top: 15px;
+  }
+}
+
 @media (max-width: 544px) {
   .tab-pane {
-    height: 300px;
+    max-height: 1000px;
     overflow-y: scroll;
     width: 100%;
   }
-
+/* 
   .right-padding-temp-fix {
     padding-right: 0px !important;
-  }
+  } */
 }
+
 
 #projectSelected {
   max-width: 100%;
@@ -126,6 +188,40 @@
 .custom-text-alignment {
   text-align: center;
 }
+@media (max-width:377px){
+  .timelogPageContainer .col-md-12{
+    padding: 0 4px;
+  }
+}
+
+.tasks-and-timelog-header-row{
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+}
+
+.tasks-and-timelog-header-add-time-div{
+  float: right;
+}
+
+.taskboard-header-title{
+  font-size: 1.8rem;
+}
+
+@media screen and (max-width: 1240px) {
+  .tasks-and-timelog-header-row{
+    display: grid;
+    grid-template-columns: 1fr;
+    grid-template-rows: auto auto;
+  }
+  .tasks-and-timelog-header-add-time-div{
+    float: none;
+    margin-top: 10px;
+  }
+  .task-and-timelog-card-nav{
+    font-size: .9rem;
+  }
+}
 
 @media (min-width: 992px) { 
   .custom-text-alignment {
@@ -133,6 +229,20 @@
   }
 }
 
+
 .container-timelog-wrapper{
   min-height: 100%;
+  min-width: 100%;
+}
+
+@media only screen and (max-width: 544px) {
+  .responsive-font-size{
+    font-size: 0.75rem !important;
+  }
+}
+
+@media only screen and (max-width: 575px) {
+  .date-selector-form{
+    margin-left: 5px;
+  }
 }

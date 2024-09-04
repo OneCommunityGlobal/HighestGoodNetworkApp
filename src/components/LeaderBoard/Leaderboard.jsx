@@ -1,8 +1,21 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import './Leaderboard.css';
-import { isEqual } from 'lodash';
+import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
-import { Table, Progress, Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import {
+  Table,
+  Progress,
+  Modal,
+  ModalBody,
+  ModalFooter,
+  ModalHeader,
+  Button,
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Spinner,
+} from 'reactstrap';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -15,10 +28,13 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { boxStyle } from 'styles';
+import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
 import { boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
+import { ENDPOINTS } from '../../utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -62,6 +78,7 @@ function LeaderBoard({
   allRequests,
   showTimeOffRequestModal,
   darkMode,
+  getWeeklySummaries,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -76,6 +93,81 @@ function LeaderBoard({
     getMouseoverText();
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
+  const [teams, setTeams] = useState([]);
+  const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
+  const [textButton, setTextButton] = useState('My Team');
+  const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
+  const [isLoadingTeams, setIsLoadingTeams] = useState(false);
+  const [userRole, setUserRole] = useState();
+  const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
+  const [innerWidth, setInnerWidth] = useState();
+  const [searchInput, setSearchInput] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
+
+  useEffect(() => {
+    const fetchInitial = async () => {
+      const url = ENDPOINTS.USER_PROFILE(displayUserId);
+      try {
+        const response = await axios.get(url);
+        setTeams(response.data.teams);
+        setUserRole(response.data.role);
+      } catch (error) {
+        toast.error(error);
+      }
+    };
+
+    fetchInitial();
+  }, []);
+
+  useEffect(() => {
+    if (!isEqual(leaderBoardData, teamsUsers)) {
+      if (selectedTeamName === 'Select a Team') {
+        setTeamsUsers(leaderBoardData);
+      }
+    }
+  }, [leaderBoardData]);
+
+  useEffect(() => {
+    setInnerWidth(window.innerWidth);
+  }, [window.innerWidth]);
+
+  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
+
+  const renderTeamsList = async team => {
+    if (!team) {
+      setIsLoadingTeams(true);
+
+      setTimeout(() => {
+        setIsLoadingTeams(false);
+        setTeamsUsers(leaderBoardData);
+      }, 1000);
+    } else {
+      try {
+        setIsLoadingTeams(true);
+        const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
+        const idUsers = response.data.map(item => item._id);
+        const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
+        setTeamsUsers(usersTaks);
+        setIsLoadingTeams(false);
+      } catch (error) {
+        toast.error('Error fetching team members:', error);
+        setIsLoadingTeams(false);
+      }
+    }
+  };
+
+  const handleToggleButtonClick = () => {
+    if (textButton === 'View All') {
+      setTextButton('My Team');
+      renderTeamsList(null);
+    } else if (usersSelectedTeam.length === 0) {
+      toast.error(`You have not selected a team or the selected team does not have any members.`);
+    } else {
+      setTextButton('View All');
+      renderTeamsList(usersSelectedTeam);
+    }
+  };
 
   const handleMouseoverTextUpdate = text => {
     setMouseoverTextValue(text);
@@ -90,7 +182,7 @@ function LeaderBoard({
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
-          const elem = document.getElementById(`id${userId}`); //
+          const elem = document.getElementById(`id${userId}`);
 
           if (elem) {
             const topPos = elem.offsetTop;
@@ -104,9 +196,6 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
-  const individualsWithZeroHours = leaderBoardData.filter(
-    individuals => individuals.weeklycommittedHours === 0,
-  );
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -114,6 +203,7 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
+    getWeeklySummaries(item.personId);
     dispatch(getUserProfile(item.personId)).then(user => {
       const { _id, role, firstName, lastName, profilePic, email } = user;
       const viewingUser = {
@@ -132,13 +222,59 @@ function LeaderBoard({
   };
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
-    await getLeaderboardData(userId);
+    if (isEqual(leaderBoardData, teamsUsers)) {
+      await getLeaderboardData(userId);
+      setTeamsUsers(leaderBoardData);
+    } else {
+      await getLeaderboardData(userId);
+      renderTeamsList(usersSelectedTeam);
+      setTextButton('View All');
+    }
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
   };
 
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
+  };
+
+  const teamName = (name, maxLength) =>
+    setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
+
+  const dropdownName = (name, maxLength) => {
+    if (innerWidth > 457) {
+      return maxLength > 50 ? `${name.substring(0, 50)}...` : name;
+    }
+    return maxLength > 27 ? `${name.substring(0, 27)}...` : name;
+  };
+
+  const TeamSelected = team => {
+    if (team.teamName.length !== undefined) {
+      teamName(team.teamName, team.teamName.length);
+    }
+    setUsersSelectedTeam(team);
+    setTextButton('My Team');
+  };
+
+  useEffect(() => {
+    setFilteredUsers(teamsUsers);
+    return () => {
+      setSearchInput('');
+    };
+  }, [teamsUsers]);
+
+  const debouncedFilterUsers = useCallback(
+    debounce(query => {
+      setFilteredUsers(
+        teamsUsers.filter(user => user.name.toLowerCase().includes(query.toLowerCase())),
+      );
+    }, 1000),
+    [teamsUsers],
+  );
+
+  const handleSearch = e => {
+    setSearchInput(e.target.value);
+    debouncedFilterUsers(e.target.value);
   };
 
   return (
@@ -166,6 +302,47 @@ function LeaderBoard({
           />
         </div>
       </h3>
+      {userRole === 'Administrator' || userRole === 'Owner' ? (
+        <section className="d-flex flex-row flex-wrap mb-3">
+          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=" mr-3">
+            <DropdownToggle caret>
+              {selectedTeamName} {/* Display selected team or default text */}
+            </DropdownToggle>
+            <DropdownMenu>
+              {teams.length === 0 ? (
+                <DropdownItem
+                  onClick={() => toast.warning('Please, create a team to use the filter.')}
+                >
+                  Please, create a team to use the filter.
+                </DropdownItem>
+              ) : (
+                teams.map(team => (
+                  <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
+                    {dropdownName(team.teamName, team.teamName.length)}
+                  </DropdownItem>
+                ))
+              )}
+            </DropdownMenu>
+          </Dropdown>
+
+          {teams.length === 0 ? (
+            <Link to="/teams">
+              <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                Create Team
+              </Button>
+            </Link>
+          ) : (
+            <Button
+              color="primary"
+              onClick={handleToggleButtonClick}
+              disabled={isLoadingTeams}
+              boxstyle={boxStyle}
+            >
+              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : textButton}
+            </Button>
+          )}
+        </section>
+      ) : null}
       {!isVisible && (
         <Alert color="warning">
           <div className="d-flex align-items-center">
@@ -182,12 +359,21 @@ function LeaderBoard({
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+        <div className="search-container mx-1">
+          <input
+            className="form-control col-12 mb-2"
+            type="text"
+            placeholder="Search users..."
+            value={searchInput}
+            onChange={handleSearch}
+          />
+        </div>
         <Table
           className={`leaderboard table-fixed ${
             darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
           }`}
         >
-          <thead>
+          <thead className="responsive-font-size">
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th>Status</th>
               <th>
@@ -227,35 +413,47 @@ function LeaderBoard({
               </th>
             </tr>
           </thead>
-          <tbody className="my-custome-scrollbar">
-            <tr>
+          <tbody className="my-custome-scrollbar responsive-font-size">
+            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
                   <span className="leaderboard-totals-title">
-                    0 hrs Totals: {individualsWithZeroHours.length} Members
+                    0 hrs Totals:{' '}
+                    {filteredUsers.filter(user => user.weeklycommittedHours === 0).length} Members
                   </span>
                 )}
               </th>
               <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
-                <span title="Tangible time">{organizationData.tangibletime || ''}</span>
+                <span title="Tangible time">
+                  {filteredUsers.reduce((total, user) => total + user.tangibletime, 0).toFixed(2)}
+                </span>
               </td>
               <td className="align-middle" aria-label="Description">
                 <Progress
-                  title={`TangibleEffort: ${organizationData.tangibletime} hours`}
-                  value={organizationData.barprogress}
-                  color={organizationData.barcolor}
+                  title={`TangibleEffort: ${filteredUsers
+                    .reduce((total, user) => total + user.tangibletime, 0)
+                    .toFixed(2)} hours`}
+                  value={
+                    (filteredUsers.reduce((total, user) => total + user.tangibletime, 0) /
+                      filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)) *
+                    100
+                  }
+                  color="primary"
                 />
               </td>
               <td className="align-middle">
                 <span title="Tangible + Intangible time = Total time">
-                  {organizationData.totaltime} of {organizationData.weeklycommittedHours}
+                  {filteredUsers
+                    .reduce((total, user) => total + parseFloat(user.totaltime), 0)
+                    .toFixed(2)}{' '}
+                  of {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
                 </span>
               </td>
             </tr>
-            {leaderBoardData.map(item => (
+            {filteredUsers.map(item => (
               <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
@@ -304,11 +502,11 @@ function LeaderBoard({
                         }
                       }}
                     >
-                      {hasLeaderboardPermissions(loggedInUser.role) &&
+                      {hasLeaderboardPermissions(item.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
                           className="fa fa-star"
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours\nClick to view their Dashboard`}
                           style={{
                             color: assignStarDotColors(
                               item.tangibletime,
@@ -322,7 +520,7 @@ function LeaderBoard({
                         />
                       ) : (
                         <div
-                          title={`Weekly Committed: ${item.weeklycommittedHours} hours`}
+                          title={`Weekly Committed: ${item.weeklycommittedHours} hours\nClick to view their Dashboard`}
                           style={{
                             backgroundColor:
                               item.tangibletime >= item.weeklycommittedHours ? '#32CD32' : 'red',

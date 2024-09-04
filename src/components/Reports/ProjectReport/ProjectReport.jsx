@@ -65,24 +65,27 @@ export function ProjectReport({ match }) {
     }).catch(() => {
       console.log('error on fetching data');
     });
-  }, [projectId, fromDate, toDate, dispatch]);
+  }, [projectId]);
 
   useEffect(() => {
     const mergedProjectUsers = projectUsers.reduce((acc, curr) => {
       if (curr.personId && !acc[curr.personId._id]) {
-        // Si el usuario no existe en el acumulador, lo inicializamos con el objeto actual
         acc[curr.personId._id] = {...curr};
       } else if (curr.personId) {
-        // Si el usuario ya existe, sumamos totalSeconds al existente
         acc[curr.personId._id].totalSeconds += curr.totalSeconds;
       }
       return acc;
     }, {});
-    setMergedProjectUsersArray(Object.values(mergedProjectUsers));    // console.log('merged project users', mergedProjectUsersArray);
-    // console.log('length of merged project users', mergedProjectUsersArray.length);
+    setMergedProjectUsersArray(Object.values(mergedProjectUsers));
   }, [projectUsers]);
 
   useEffect(() => {
+
+    setMemberCount(0);
+    setActiveMemberCount(0);
+    setNonActiveMemberCount(0);
+    setHoursCommitted(0);
+
     if (match) {
       const { projectId } = match.params;
       dispatch(getProjectDetail(projectId));
@@ -90,7 +93,7 @@ export function ProjectReport({ match }) {
       dispatch(fetchAllMembers(projectId));
       setTasks([]);
     }
-  }, [dispatch, match]);
+  }, [match?.params.projectId]);
 
   useEffect(() => {
     if (wbs.fetching === false) {
@@ -103,9 +106,12 @@ export function ProjectReport({ match }) {
   useEffect(() => {
     if (tasksState.taskItems.length > 0) {
       setTasks(tasksState.taskItems);
-      setHoursCommitted(tasksState.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
+      return setHoursCommitted(tasksState.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
     }
-  }, [tasksState]);
+
+    return setHoursCommitted(0);
+
+  }, [tasksState, wbs]);
 
   useEffect(() => {
     if (projectMembers.members) {
@@ -139,7 +145,7 @@ export function ProjectReport({ match }) {
       )}
       darkMode={darkMode}
     >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div> 
+      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>

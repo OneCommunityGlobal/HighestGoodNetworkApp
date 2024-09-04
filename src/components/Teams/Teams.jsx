@@ -98,7 +98,6 @@ class Teams extends React.PureComponent {
   render() {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
-
     const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
 
@@ -119,21 +118,22 @@ class Teams extends React.PureComponent {
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
                 darkMode={darkMode}
               />
-
-              <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}>
-                <thead>
-                  <TeamTableHeader 
-                    onTeamNameSort={this.toggleTeamNameSort} 
-                    onTeamActiveSort={this.toggleTeamActiveSort} 
-                    sortTeamNameState={this.state.sortTeamNameState}
-                    sortTeamActiveState={this.state.sortTeamActiveState} 
-                    darkMode={darkMode}
-                    />
-                </thead>
-                  <tbody className={darkMode ? 'dark-mode' : ''}> 
-                    {this.state.sortedTeams}
-                  </tbody>
-              </table>
+                <div className="overflow-container">
+                  <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}>
+                    <thead>
+                      <TeamTableHeader 
+                        onTeamNameSort={this.toggleTeamNameSort} 
+                        onTeamActiveSort={this.toggleTeamActiveSort} 
+                        sortTeamNameState={this.state.sortTeamNameState}
+                        sortTeamActiveState={this.state.sortTeamActiveState} 
+                        darkMode={darkMode}
+                      />
+                    </thead>
+                    <tbody className={`fixed-scrollbar ${darkMode ? 'dark-mode' : ''}`}>
+                      {this.state.sortedTeams}
+                    </tbody>
+                  </table>
+                </div>
               </div>
           </React.Fragment>
         )}
@@ -449,6 +449,11 @@ class Teams extends React.PureComponent {
 
   sortTeams = () => {
     const { teams, sortTeamNameState, sortTeamActiveState } = this.state;
+    
+    if (!Array.isArray(teams)) {
+    console.error("Teams is not an array:", teams);
+    return;
+  }
     const sortedTeams = [...teams].sort((a, b) => {
       const dateA = new Date(a.props.team.modifiedDatetime);
       const dateB = new Date(b.props.team.modifiedDatetime);

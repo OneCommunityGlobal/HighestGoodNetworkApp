@@ -361,6 +361,7 @@ const SummaryBar = props => {
     window.location.hash = '#badgesearned';
   };
 
+
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
     return latestSummary && new Date() < new Date(latestSummary.dueDate)
@@ -382,10 +383,10 @@ const SummaryBar = props => {
       loadUserProfile();
       getUserTasks();
     } else {
-      setUserProfile(userProfile);
+      setUserProfile(authUser);
       setTasks(displayUserTask.length);
     }
-  }, [displayUserId]);
+  }, [isAuthUser]);
 
   useEffect(() => {
     if (summaryBarData && displayUserProfile !== undefined) {
@@ -423,7 +424,8 @@ const SummaryBar = props => {
                 </font>
                 <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
                   <div className='font-weight-bold'>
-                    {userProfile?.firstName ||displayUserProfile.firstName + ' '}
+                    {userProfile?.firstName || displayUserProfile.firstName}
+                    {' '}
                     {userProfile?.lastName || displayUserProfile.lastName}
                   </div>
                 </CardTitle>
@@ -559,14 +561,14 @@ const SummaryBar = props => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              {isAuthUser || canEditData() ? (
-                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
-              ) : (
-                <img className="sum_img" src={badges_icon} alt="" />
-              )}
               <div className="redBackgroup">
                 <span>{badges}</span>
               </div>
+              {isAuthUser || canEditData() ? (
+                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick}/>
+                ) : (
+                <img className="sum_img" src={badges_icon} alt="" />
+              )}
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">

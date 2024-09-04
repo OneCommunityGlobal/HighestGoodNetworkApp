@@ -568,7 +568,7 @@ class UserManagement extends React.PureComponent {
    */
   onWildCardSearch = searchText => {
     this.setState({
-      wildCardSearchText: searchText.trim(),
+      wildCardSearchText: searchText,
       selectedPage: 1,
     });
   };
