@@ -45,6 +45,9 @@ const ReviewButton = ({
 
   const validURL = (url) => {
     try {
+      if(url === "")
+        return false;
+      
       const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
       return pattern.test(url);
     } catch (err) {
@@ -146,6 +149,18 @@ const ReviewButton = ({
     httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
+  const submitReviewRequest = (event) => {
+    // If link is valid, update the review status to submitted and send review request to email
+    if(validURL(link)) {
+      updReviewStat("Submitted");
+      sendReviewReq(event);
+    }
+    else {
+      alert('Invalid URL. Please enter a valid URL of at least 20 characters');
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <>
     {/* Verification Modal */}
@@ -160,9 +175,9 @@ const ReviewButton = ({
               toggleVerify();
               if (selectedAction === 'More Work Needed') {
                 updReviewStat("Unsubmitted");
+                setIsSubmitting(false);
               } else if (reviewStatus === "Unsubmitted") {
-                updReviewStat("Submitted");
-                sendReviewReq(e);
+                submitReviewRequest(e);
               } else {
                 updReviewStat("Reviewed");
               }
@@ -205,10 +220,12 @@ const ReviewButton = ({
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             onClick={(e) => {
-              reviewStatus === "Unsubmitted"
-              ? (updReviewStat("Submitted"),
-                sendReviewReq(e))
-              : updReviewStat("Reviewed");
+              if(reviewStatus === "Unsubmitted") {
+                submitReviewRequest(e);
+              }
+              else {
+                updReviewStat("Reviewed");
+              }
             }}
             color="primary"
             className="float-left"
