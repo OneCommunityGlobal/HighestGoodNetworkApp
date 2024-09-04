@@ -1657,6 +1657,7 @@ export default {
             // 'getReportsPage',?
             'getTimeZoneAPIKey',
             'checkLeadTeamOfXplus',
+            'userManagementFullFunctionality',
           ],
         },
         {
@@ -1799,6 +1800,7 @@ export default {
             'checkLeadTeamOfXplus',
             'editTeamCode',
             'manageAdminLinks',
+            'userManagementFullFunctionality',
           ],
         },
       ]

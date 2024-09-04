@@ -1115,6 +1115,7 @@ export const rolesMock = {
           'updatePassword',
           'deleteUserProfile',
           'infringementAuthorizer',
+          'userManagementFullFunctionality',
           // WBS
           'postWbs',
           'deleteWbs',
@@ -1284,6 +1285,7 @@ export const rolesMock = {
           'getTimeZoneAPIKey',
           'checkLeadTeamOfXplus',
           'editTeamCode',
+          'userManagementFullFunctionality',
         ],
       },
       {

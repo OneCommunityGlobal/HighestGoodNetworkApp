@@ -3,6 +3,20 @@
 export const RoutePermissions = {
   reports: ['getReports'],
   weeklySummariesReport: ['getWeeklySummaries'],
+  userManagement: [
+    'getUserProfiles',
+    'postUserProfile',
+    'deleteUserProfile',
+    'changeUserStatus',
+    'userManagementFullFunctionality',
+  ],
+  badgeManagement: [
+    'seeBadges',
+    'createBadges',
+    'updateBadges',
+    'deleteBadges',
+    'assignBadges'
+  ],
   weeklyVolunteerSummary: ['getWeeklyVolunteerSummary'],
   userManagement: ['getUserProfiles', 'postUserProfile', 'deleteUserProfile', 'changeUserStatus'],
   badgeManagement: ['seeBadges', 'createBadges', 'updateBadges', 'deleteBadges', 'assignBadges'],

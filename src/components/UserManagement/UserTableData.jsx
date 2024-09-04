@@ -44,12 +44,14 @@ const UserTableData = React.memo(props => {
 
   const isCurrentUser = props.user.email === props.authEmail;
 
+  const hasFullFunctionality = props.hasPermission('userManagementFullFunctionality');
+  const canChangeUserStatus = props.hasPermission('changeUserStatus');
   return (
     <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
-          canChange={true}
+          canChange={canChangeUserStatus || hasFullFunctionality}
           key={`active_cell${props.index}`}
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
@@ -99,6 +101,10 @@ const UserTableData = React.memo(props => {
               alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
               return;
             }
+            if(!hasFullFunctionality){
+              toast.warn('You do not have permission to perform this action.');
+              return;
+            }
             onReset(true);
             props.onPauseResumeClick(
               props.user,
@@ -143,16 +149,21 @@ const UserTableData = React.memo(props => {
         )}
       </td>
       <td>
-        {!isCurrentUser && (
+        {(!isCurrentUser || hasFullFunctionality) && (
           <button
             type="button"
             className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
             onClick={e => {
+            
               if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
                 alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
                 return;
               }
 
+            if(!hasFullFunctionality){
+              toast.warn('You do not have permission to perform this action.');
+              return;
+            }
               props.onFinalDayClick(
                 props.user,
                 props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
@@ -189,6 +200,10 @@ const UserTableData = React.memo(props => {
               type="button"
               className="btn btn-outline-danger btn-sm"
               onClick={e => {
+                if(!hasFullFunctionality){
+                  toast.warn('You do not have permission to perform this action.');
+                  return;
+                }
                 props.onDeleteClick(props.user, 'archive');
               }}
               style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
@@ -198,7 +213,7 @@ const UserTableData = React.memo(props => {
             </button>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton />
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton canResetPassword={hasFullFunctionality} />
           </span>
         </td>
       )}
