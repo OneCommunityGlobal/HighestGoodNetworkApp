@@ -109,10 +109,9 @@
 
 @media screen and (max-width: 800px) {
   .timelogPageContainer{
-    padding:0 10%;
+    padding:0 9%;
     margin-left: 15px; 
   }
-
 }
 
 @media screen and (max-width: 575px) and (min-width: 399px) {
