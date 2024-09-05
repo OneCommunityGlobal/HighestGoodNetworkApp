@@ -76,7 +76,7 @@ function QuickSetupModal({
       <div className="col text-center mt-3">
         {canAddTitle ? (
           <Button color="primary" onClick={() => setShowAddTitle(true)} style={darkMode ? boxStyleDark : boxStyle}>
-            Add A New Title
+            Add New QST
           </Button>
         ) : (
           ''

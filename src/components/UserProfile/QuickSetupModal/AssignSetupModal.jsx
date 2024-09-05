@@ -11,7 +11,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
   });
   const [googleDoc, setGoogleDoc] = useState('');
   const [warning, setWarning] = useState({
-    googleDoc: 'Linked is required',
+    googleDoc: 'Link is required',
     checkbox: 'Need to be confirmed',
   });
 
