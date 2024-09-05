@@ -117,6 +117,9 @@
 }
 
 .circle-border {
+  vertical-align: middle;
+  align-items: center;
+  justify-content: center;
   border-radius: 6px;
   width: 42px;
   height: 42px;
@@ -194,6 +197,7 @@
   color: white;
   box-shadow: 2px 2px 4px 1px lightgray;
   box-sizing: border-box;
+  vertical-align: middle;
 }
 
 .show-time-off-btn-selected {
