@@ -1,11 +1,13 @@
 import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Tooltip } from 'reactstrap';
-import './TeamsAndProjects.css';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
+import Switch from './Switch';
+import './TeamsAndProjects.css';
+import './UserTeamsTable.css';
+
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 
 const UserTeamsTable = props => {
@@ -92,12 +94,11 @@ const UserTeamsTable = props => {
                 <Col md="7">
                   <span className="teams-span">Visibility</span>
                 </Col>
-                <Col md="5">
-                  <ToggleSwitch
-                    switchType="visible"
-                    state={props.isVisible}
-                    handleUserProfile={props.onUserVisibilitySwitch}
-                    darkMode={darkMode}
+                <Col md='5'>
+                  <Switch
+                    isOn={props.isVisible}
+                    handleToggle={props.onUserVisibilitySwitch }
+                  
                   />
                 </Col>
               </div>
