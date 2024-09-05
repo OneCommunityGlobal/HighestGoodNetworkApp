@@ -21,7 +21,7 @@ const auth={user: {
 const theme={darkMode:false}
 
 const userProfile={
-  infringements:[{_id:"user123", date:'2024-04-04T12:00:00.000+00:00',createdDate:'2024-04-04T12:00:00.000+00:00',description:"This is a test blue square"}],
+  infringements:[{_id:"user123", date:'2024-04-04T12:00:00.000+00:00',createdDate:'2024-04-04T12:01:00.000+00:00',description:"This is a test blue square"}],
   personalLinks:[],
   adminLinks:[]
 }
@@ -52,7 +52,7 @@ const renderComponent = (testStore,type,isOpen) =>{
     modalMessage={"modal message"}
     type={type}
     userProfile={userProfile}
-    id={"user123"}
+    id="user123"
     /></Provider>)
 }
 

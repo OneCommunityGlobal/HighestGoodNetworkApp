@@ -38,7 +38,7 @@ const UserProfileModal = props => {
     },
   ];
 
-  if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
+  if (type !== 'message' && type !== 'addBlueSquare') {
     if (id.length > 0) {
       blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
     }
@@ -47,6 +47,8 @@ const UserProfileModal = props => {
   const darkMode = useSelector(state=>state.theme.darkMode);
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canEditInfringements = props.hasPermission('editInfringements');
+  const canDeleteInfringements = props.hasPermission('deleteInfringements');
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -143,7 +145,7 @@ const UserProfileModal = props => {
   };
 
   function checkFields(field1, field2) {
-    console.log('f1:', field1, ' f2:', field2);
+    // console.log('f1:', field1, ' f2:', field2);
 
     if (field1 != null && field2 != null) {
       setAddButton(false);
@@ -346,8 +348,9 @@ const UserProfileModal = props => {
         {type === 'modBlueSquare' && (
           <>
             <FormGroup>
-              <Label className={fontColor} for="date">Date</Label>
-              <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              <Label className={fontColor} for="date">Date:</Label>
+              {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              : <span> {blueSquare[0]?.date}</span>}
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
@@ -366,7 +369,7 @@ const UserProfileModal = props => {
             )}
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
-              <Input 
+              {canEditInfringements ? <Input 
                 type="textarea" 
                 id="summary" 
                 onChange={handleChange} 
@@ -374,6 +377,7 @@ const UserProfileModal = props => {
                 style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
                 onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
               />
+              :<p>{blueSquare[0]?.description}</p>}
             </FormGroup>
             {blueSquare[0]?.editedBy && (
               <FormGroup>
@@ -389,12 +393,12 @@ const UserProfileModal = props => {
           </>
         )}
 
-        {type === 'viewBlueSquare' && (
+        {type === 'viewBlueSquare'  && (
           <>
             <FormGroup>
               <Label className={fontColor} for="date">
-                Date:
-                {blueSquare[0]?.date}
+                Date: 
+                <span>{blueSquare[0]?.date}</span>
               </Label>
             </FormGroup>
             <FormGroup>
@@ -404,7 +408,7 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
-              <Label className={fontColor}>{blueSquare[0]?.description}</Label>
+              <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
         )}
@@ -432,25 +436,29 @@ const UserProfileModal = props => {
         )}
 
         {type === 'modBlueSquare' && (
-          <>
-            <Button
-              color="info"
-              onClick={() => {
-                modifyBlueSquares(id, dateStamp, summary, 'update');
-              }}
-              style={boxStyling}
-            >
-              Update
-            </Button>
-            <Button
-              color="danger"
-              onClick={() => {
-                modifyBlueSquares(id, dateStamp, summary, 'delete');
-              }}
-              style={boxStyling}
-            >
-              Delete
-            </Button>
+            <>
+            {canEditInfringements && 
+              <Button
+                color="info"
+                onClick={() => {
+                  modifyBlueSquares(id, dateStamp, summary, 'update');
+                }}
+                style={boxStyling}
+              >
+                Update
+              </Button>
+              }
+            {canDeleteInfringements &&
+              <Button
+                color="danger"
+                onClick={() => {
+                  modifyBlueSquares(id, dateStamp, summary, 'delete');
+                }}
+                style={boxStyling}
+              >
+                Delete
+              </Button>
+            }
           </>
         )}
 

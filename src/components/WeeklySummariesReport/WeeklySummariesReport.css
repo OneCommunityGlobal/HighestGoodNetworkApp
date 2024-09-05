@@ -65,7 +65,7 @@
 .multi-select-filter {
   .options {
     max-height: 570px;
-    overflow-y: scroll;
+    overflow-y: auto;
     font-family: 'Courier New', Courier, monospace;
   }
 
@@ -85,6 +85,10 @@
   .select-item {
     padding: 5px 10px;
     margin-bottom: 0.25rem;
+  }
+
+  .dropdown-container {
+    z-index: 2;
   }
 }
 

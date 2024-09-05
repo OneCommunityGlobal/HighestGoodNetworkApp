@@ -52,6 +52,12 @@ export const permissionLabels = [
           'Under "Reports" -> "Weekly Summaries Reports", make the "Bio announcement" row highlighted yellow if that user is eligible for their bio to be posted (they have at least 80 tangible hours, 60 days on the team, and still don\'t have their bio posted)',
       },
       {
+        label: 'See Volunteer Weekly Summaries',
+        key: 'getVolunteerWeeklySummary',
+        description:
+          'Makes ONLY the "Reports" -> "Volunteer Summary Reports" option appear/accessible.',
+      },
+      {
         label: 'Edit Team 4-Digit Codes',
         key: 'editTeamCode',
         description:
@@ -87,10 +93,19 @@ export const permissionLabels = [
           'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
       },
       {
-        label: 'Handle Blue Squares',
-        key: 'infringementAuthorizer',
-        description:
-          'Gives the user permission to Create/Edit/Delete any blue square and assign them to any user.',
+        label: 'Assign Blue Squares',
+        key: 'addInfringements',
+        description: 'Gives the user permission to add blue squares to any user.',
+      },
+      {
+        label: 'Edit Blue Squares',
+        key: 'editInfringements',
+        description: 'Gives the user permission to edit any blue square.',
+      },
+      {
+        label: 'Delete Blue Squares',
+        key: 'deleteInfringements',
+        description: 'Gives the user permission to delete any blue square.',
       },
       {
         label: 'Modify Important User Info',
@@ -312,12 +327,12 @@ export const permissionLabels = [
             description: 'Category for all permissions related to editing timelogs',
             subperms: [
               {
-                label: 'Edit Timelog Time',
+                label: 'Edit Timelog Time (Self and Others)',
                 key: 'editTimeEntryTime',
                 description: 'Gives the user permission to edit the time of any time log entry.',
               },
               {
-                label: 'Edit Timelog Description',
+                label: 'Edit Timelog Description (Self and Others)',
                 key: 'editTimeEntryDescription',
                 description:
                   'Gives the user permission to edit the description of any time log entry.',
@@ -329,7 +344,7 @@ export const permissionLabels = [
                   'Gives the user permission to toggle the tangible check when editing a time entry of another user.',
               },
               {
-                label: 'Change Time Entry Date',
+                label: 'Change Time Entry Date (Self and Others)',
                 key: 'editTimeEntryDate',
                 description:
                   'Gives the user permission to edit the date when adding an intangible time entry.',
@@ -337,6 +352,17 @@ export const permissionLabels = [
             ],
           },
         ],
+      },
+    ],
+  },
+  {
+    label: 'Announcements',
+    description: 'Category to communicate',
+    subperms: [
+      {
+        label: 'Send Emails',
+        key: 'sendEmails',
+        description: 'Gives the user permission to send email communications to other users. ',
       },
     ],
   },
@@ -387,6 +413,19 @@ export const permissionLabels = [
       //   description: 'WIP - not implemented',
       // },
     ],
+  },
+];
+
+export const roleOperationLabels = [
+  {
+    label: 'Save',
+    key: 'save',
+    description: 'Save current changes',
+  },
+  {
+    label: 'Delete',
+    key: 'delete',
+    description: 'Delete the role',
   },
 ];
 
