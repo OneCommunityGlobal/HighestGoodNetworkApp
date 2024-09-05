@@ -13,6 +13,13 @@ export const MemberAutoComplete = props => {
 
   const validation = props.userProfileData?.userProfiles || props.userProfileData;
 
+  const filterInputAutoComplete = result => {
+    return result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+  };
+
   return (
     <Dropdown
       isOpen={isOpen}
@@ -121,10 +128,11 @@ export const MemberAutoComplete = props => {
             >
               {validation
                 .filter(user => {
+                  const fullName = user.firstName + user.lastName;
                   if (
                     user.isActive &&
-                    (user.firstName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1 ||
-                      user.lastName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1)
+                    // prettier-ignore
+                    filterInputAutoComplete(fullName).indexOf(filterInputAutoComplete(props.searchText)) > -1
                   ) {
                     return user;
                   }
