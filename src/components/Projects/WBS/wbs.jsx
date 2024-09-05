@@ -82,26 +82,29 @@ const WBS = props => {
 };
 
 
-  return (
-    <React.Fragment>
-      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className="container pt-2">
-          <nav aria-label="breadcrumb">
-            <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
-              <NavItem tag={Link} to={`/projects/`}>
-                <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
-                  <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
-                </button>
-              </NavItem>
-
+return (
+  <React.Fragment>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
+      <div className="container pt-2">
+        <nav aria-label="breadcrumb">
+          <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+            <NavItem tag={Link} to={`/projects/`}>
+              <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
+                <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
+              </button>
+            </NavItem>
             <div id="member_project__name">Return to Projects</div>
             <div className="wbs-title">{projectName}</div>
           </ol>
         </nav>
 
-        <AddWBS projectId={projectId} toggleSortAscending={toggleSortAscending} toggleSortDescending={toggleSortDescending}  />
+        <AddWBS
+          projectId={projectId}
+          toggleSortAscending={toggleSortAscending}
+          toggleSortDescending={toggleSortDescending}
+        />
 
-        <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light' : '' }`}>
+        <table className={`table table-bordered table-responsive-sm ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
           <thead>
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
               <th scope="col" id="members__order">
@@ -114,7 +117,7 @@ const WBS = props => {
             </tr>
           </thead>
           <tbody>
-            {sortWBSItems().map((item, i) =>
+            {sortedItems.map((item, i) =>
               item ? (
                 <WBSItem
                   index={i + 1}
@@ -124,13 +127,14 @@ const WBS = props => {
                   name={item.wbsName}
                   darkMode={darkMode}
                 />
-              ) : null,
+              ) : null
             )}
           </tbody>
         </table>
       </div>
-    </React.Fragment>
-  );
+    </div>
+  </React.Fragment>
+);
 };
 
 const mapStateToProps = state => ({
