@@ -1,4 +1,4 @@
-function QuickSetupCodes({ titles, setShowAssignModal, setTitleOnClick,setShowAddTitle,editMode }) {
+function QuickSetupCodes({ titles, setShowAssignModal, setTitleOnClick,setShowAddTitle,editMode,assignMode }) {
   return (
     <div className="blueSquares mt-3" id="qsc-outer-wrapper">
       {titles.map((title) => (
@@ -10,7 +10,7 @@ function QuickSetupCodes({ titles, setShowAssignModal, setTitleOnClick,setShowAd
           onClick={() => {
             if(editMode){
               setShowAddTitle(true)
-            }else{
+            }else if(assignMode){
               setShowAssignModal(true);
             }
             setTitleOnClick(title);

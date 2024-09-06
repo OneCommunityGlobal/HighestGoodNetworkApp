@@ -25,7 +25,6 @@ function QuickSetupModal(props) {
   const [editMode, setEditMode]=useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
-  
   useEffect(() => {
     getAllTitle()
       .then(res => {
@@ -56,7 +55,7 @@ function QuickSetupModal(props) {
 
   return (
     <div className="container pt-3">
-      {(canAssignTitle || canEditTitle)?
+      {(canAssignTitle || canEditTitle || canAddTitle)?
       <QuickSetupCodes
         setSaved={props.setSaved}
         userProfile={props.userProfile}
@@ -65,13 +64,14 @@ function QuickSetupModal(props) {
         setShowAssignModal={setShowAssignModal}
         setTitleOnClick={setTitleOnClick}
         editMode={editMode}
+        assignMode={canAssignTitle}
         setShowAddTitle={setShowAddTitle}
       />: ('')
       }
 
        <div className="col text-center mt-3 flex">
         {canAddTitle ? (
-          <Button color="primary mx-2" onClick={() => setShowAddTitle(true)} style={darkMode ? boxStyleDark : boxStyle}>
+          <Button color="primary mx-2" onClick={() => setShowAddTitle(true)} style={darkMode ? boxStyleDark : boxStyle} disabled={editMode==true?true:false}>
             Add A New Title
           </Button>
         ) : (
@@ -88,9 +88,9 @@ function QuickSetupModal(props) {
         )):('')}
       </div>
       <div className="col text-center mt-3">
-        {canAddTitle ? (
+        {canAssignTitle ? (
           <SaveButton
-            handleSubmit={props.handleSaveChanges}
+            handleSubmit={props.handleSubmit}
             userProfile={props.userProfile}
             disabled={titleOnSet}
             setSaved={() => props.setSaved(true)}
@@ -116,7 +116,7 @@ function QuickSetupModal(props) {
         ''
       )}
 
-      {(canAssignTitle && showAssignModal) ? (
+      {(canAssignTitle && showAssignModal && editMode===false) ? (
         <AssignSetUpModal
           setSaved={() => props.setSaved(true)}
           handleSubmit={props.handleSubmit}

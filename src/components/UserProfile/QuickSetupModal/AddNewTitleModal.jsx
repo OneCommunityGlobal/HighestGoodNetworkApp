@@ -17,7 +17,6 @@ import AssignTeamCodeField from './AssignTeamCodeField';
 import { useSelector } from 'react-redux';
 import "../../Header/DarkMode.css"
 import { useEffect } from 'react';
-import { IoGameController } from 'react-icons/io5';
 
 function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData, setWarningMessage, setShowMessage,editMode,title }) {
   const darkMode = useSelector(state => state.theme.darkMode)
@@ -29,7 +28,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
         mediaFolder: title.mediaFolder,
         teamCode: title.teamCode,
         projectAssigned: title.projectAssigned,
-        teamAssiged:title.teamAssiged
+        teamAssiged:title.teamAssiged==undefined?{teamName:'',_id:''}:title.teamAssiged
       }
     }else
     return {
@@ -40,7 +39,6 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
       teamAssiged:{}
     }
   });
-
   useEffect(()=>{
     if(editMode && Object.keys(title).length!==0){
       setTitleData({
@@ -57,7 +55,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
       mediaFolder: '',
       teamCode: '',
       projectAssigned: '',
-      teamAssiged:{}
+      teamAssiged: {}
     })
   },[title])
 
@@ -78,8 +76,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
   const selectProject = project => {
     onSelectProject(project);
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData( ({
+      ...titleData,
       projectAssigned: {
         projectName: project.projectName,
         _id: project._id,
@@ -92,15 +90,15 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
   const selectTeamCode = teamCode => {
     onSelectTeamCode(teamCode);
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData( ({
+      ...titleData,
       teamCode: teamCode,
     }));
   };  
 
   const cleanProjectAssign = () => {
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData( ({
+      ...titleData,
       projectAssigned: "",
     }));
   };
@@ -118,8 +116,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   };
 
   const cleanTeamCodeAssign = () => {
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData( ({
+      ...titleData,
       teamCode: "",
     }));
   };
@@ -132,8 +130,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   };
 
   const undoTeamAssigned = () => {
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData(({
+      ...titleData,
       teamAssiged: {
         teamName: searchText,
         _id: "N/A",
@@ -155,7 +153,6 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
           setWarningMessage({ title: "Error", content: resp.message });
           setShowMessage(true);
         } else {
-          console.log(resp)
           setIsOpen(false);
           refreshModalTitles();
         };
@@ -165,6 +162,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
       });
       
     }else{ 
+
       addTitle(titleData)
       .then((resp) => {
         if (resp.status !== 200) {
@@ -189,13 +187,13 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     if (!isValidFormat) {
       setWarningMessage({ title: "Error", content: "Invalid Team Code Format" });
       setShowMessage(true);
-      setTitleData(prev => ({ ...prev, teamCode: '' }));
+      setTitleData(({ ...titleData, teamCode: '' }));
       return;
     } 
     if(!existTeamCodes.has(teamCode)) {
       setWarningMessage({ title: "Error", content: "Team Code Not Exists" });
       setShowMessage(true);
-      setTitleData(prev => ({ ...prev, teamCode: '' }));
+      setTitleData(({ ...titleData, teamCode: '' }));
       return;
     }
     setShowMessage(false);
@@ -234,7 +232,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               value={titleData.titleName}
               onChange={e => {
                 e.persist();
-                setTitleData(prev => ({ ...prev, titleName: e.target.value }));
+                setTitleData(({ ...titleData, titleName: e.target.value }));
               }}
             />
 
@@ -246,7 +244,7 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               value={titleData.mediaFolder}
               onChange={e => {
                 e.persist();
-                setTitleData(prev => ({ ...prev, mediaFolder: e.target.value }));
+                setTitleData({ ...titleData, mediaFolder: e.target.value });
               }}
             />
             <Label className={fontColor}>Team Code<span className='qsm-modal-required'>*</span>:</Label>

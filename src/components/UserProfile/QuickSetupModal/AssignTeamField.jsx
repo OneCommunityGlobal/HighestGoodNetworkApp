@@ -6,7 +6,7 @@ const AssignTeamField = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
   const [searchText,setSearchText]=useState(()=>{
     if(props.editMode){
-      return (props.value.teamName)
+      return (props.value==undefined?"":props.value.teamName)
     }else{
       return props.searchText
     }
@@ -62,8 +62,9 @@ const AssignTeamField = React.memo(props => {
               }
             })
             .slice(0, 10)
-            .map(item => (
+            .map((item,index) => (
               <div
+                key={index}
                 className="team-auto-complete"
                 onClick={() => {
                   setSearchText(item.teamName);
