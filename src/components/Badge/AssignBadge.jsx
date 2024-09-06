@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -19,7 +19,7 @@ import {
   getFirstName,
   getLastName,
   assignBadges,
-  assignBadgesByUserID,
+  assignBadgesToMultipleUserID,
   clearNameAndSelected,
   closeAlert,
   validateBadges,
@@ -33,12 +33,15 @@ function AssignBadge(props) {
   const [isOpen, setOpen] = useState(false);
   const [fullName, setFullName] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
-  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [selectedUserIds, setSelectedUserIds] = useState([]);
 
   useEffect(() => {
-    props.getAllUserProfile();
-    props.clearNameAndSelected();
-    props.closeAlert();
+    const fetchData = async () => {
+      await props.getAllUserProfile();
+      props.clearNameAndSelected();
+      props.closeAlert();
+    };
+    fetchData();
   }, []);
 
   useEffect(() => {
@@ -59,36 +62,32 @@ function AssignBadge(props) {
   };
 
   const handleUserSelect = user => {
-    if (selectedUserId === user._id) {
-      setSelectedUserId(null);
-      props.clearNameAndSelected();
-    } else {
-      setSelectedUserId(user._id);
-      props.getFirstName(user.firstName);
-      props.getLastName(user.lastName);
-      props.getUserId(user._id);
-    }
+    setSelectedUserIds(prevSelected => {
+      if (prevSelected.includes(user._id)) {
+        return prevSelected.filter(id => id !== user._id);
+      } else {
+        return [...prevSelected, user._id];
+      }
+    });
   };
 
   const toggle = (didSubmit = false) => {
-    const { selectedBadges, firstName, lastName, userId } = props;
     if (isOpen && didSubmit === true) {
-      if (userId) {
-        props.assignBadgesByUserID(userId, selectedBadges);
-      } else {
-        props.assignBadges(firstName, lastName, selectedBadges);
-      }
-      setOpen(prevIsOpen => !prevIsOpen);
-      props.clearNameAndSelected();
-    } else if (firstName && lastName) {
+      submit();
+    } else if (selectedUserIds.length > 0) {
       setOpen(prevIsOpen => !prevIsOpen);
     } else {
-      props.validateBadges(firstName, lastName);
+      props.validateBadges(props.firstName, props.lastName);
     }
   };
 
-  const submit = () => {
-    toggle(true);
+  const submit = async () => {
+    if (selectedUserIds.length > 0 && props.selectedBadges.length > 0) {
+      await props.assignBadgesToMultipleUserID(selectedUserIds, props.selectedBadges);
+      setOpen(false);
+      setSelectedUserIds([]);
+      props.clearNameAndSelected();
+    }
   };
 
   return (
@@ -118,12 +117,11 @@ function AssignBadge(props) {
           >
             <p className="badge_info_icon_text">
               Start typing a name and a list of the active members (matching what you type) will be
-              auto-generated. Then you........ CHOOSE ONE!
+              auto-generated. Then you can select one or multiple users.
             </p>
             <p className="badge_info_icon_text">
-              After selecting a person, click &quot;Assign Badge&quot; and choose one or multiple
-              badges. Click &quot;confirm&quot; then &quot;submit&quot; and those badges will be
-              assigned.
+              After selecting users, click "Assign Badge" and choose one or multiple badges. Click
+              "confirm" then "submit" and those badges will be assigned to all selected users.
             </p>
           </UncontrolledTooltip>
         </Label>
@@ -133,7 +131,7 @@ function AssignBadge(props) {
             placeholder="Full Name"
             value={fullName}
             onChange={handleFullNameChange}
-            className="form-control"
+            className="form-control col-sm-12"
           />
         </div>
       </div>
@@ -158,15 +156,17 @@ function AssignBadge(props) {
                   onClick={() => handleUserSelect(user)}
                   style={{
                     cursor: 'pointer',
-                    backgroundColor: selectedUserId === user._id ? '#e9ecef' : '',
+                    backgroundColor: selectedUserIds.includes(user._id) ? '#e9ecef' : '',
                   }}
-                  className={darkMode && selectedUserId === user._id ? 'bg-dark text-light' : ''}
+                  className={
+                    darkMode && selectedUserIds.includes(user._id) ? 'bg-dark text-light' : ''
+                  }
                 >
                   <td>
                     <input
-                      type="radio"
+                      type="checkbox"
                       name="user"
-                      checked={selectedUserId === user._id}
+                      checked={selectedUserIds.includes(user._id)}
                       readOnly
                     />
                   </td>
@@ -182,34 +182,34 @@ function AssignBadge(props) {
         <Button
           className="btn--dark-sea-green"
           onClick={toggle}
-          style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
-          disabled={!fullName}
+          style={darkMode ? { ...boxStyleDark } : { ...boxStyle }}
+          disabled={selectedUserIds.length === 0}
         >
           Assign Badge
         </Button>
         <Modal
           isOpen={isOpen}
-          toggle={toggle}
+          toggle={() => toggle(false)}
           backdrop="static"
           className={darkMode ? 'text-light dark-mode' : ''}
         >
-          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
+          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={() => toggle(false)}>
             Assign Badge
           </ModalHeader>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <AssignBadgePopup
               allBadgeData={props.allBadgeData}
-              submit={submit}
+              submit={() => toggle(true)}
               selectedBadges={props.selectedBadges}
             />
           </ModalBody>
         </Modal>
         <FormText color={darkMode ? 'white' : 'muted'}>
-          Please select a badge from the badge list.
+          Please select badge(s) from the badge list.
         </FormText>
         <Alert color="dark" className="mt-3">
-          {' '}
-          {props.selectedBadges ? props.selectedBadges.length : '0'} badges selected
+          {selectedUserIds.length} user(s) selected,{' '}
+          {props.selectedBadges ? props.selectedBadges.length : '0'} badge(s) selected
         </Alert>
       </FormGroup>
     </Form>
@@ -217,7 +217,7 @@ function AssignBadge(props) {
 }
 
 const mapStateToProps = state => ({
-  selectedBadges: state.badge.selectedBadges,
+  selectedBadges: state.badge.selectedBadges || [],
   firstName: state.badge.firstName,
   lastName: state.badge.lastName,
   userId: state.badge.userId,
@@ -234,7 +234,7 @@ const mapDispatchToProps = dispatch => ({
   getUserId: userId => dispatch(getUserId(userId)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
   clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-  assignBadgesByUserID: (id, selectedBadge) => dispatch(assignBadgesByUserID(id, selectedBadge)),
+  assignBadgesToMultipleUserID: (userIds, selectedBadges) => dispatch(assignBadgesToMultipleUserID(userIds, selectedBadges)),
   assignBadges: (firstName, lastName, selectedBadge) =>
     dispatch(assignBadges(firstName, lastName, selectedBadge)),
   validateBadges: (firstName, lastName) => dispatch(validateBadges(firstName, lastName)),
