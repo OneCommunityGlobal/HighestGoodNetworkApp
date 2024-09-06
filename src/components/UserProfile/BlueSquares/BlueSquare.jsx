@@ -4,12 +4,14 @@ import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
 
 const BlueSquare = props => {
-  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare, darkMode } = props;
+  const canAddInfringements = props.hasPermission('addInfringements');
+  const canEditInfringements = props.hasPermission('editInfringements');
+  const canDeleteInfringements = props.hasPermission('deleteInfringements');
+  const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements
+  const { blueSquares, handleBlueSquare } = props;
 
   return (
-    <div className={`blueSquareContainer ${darkMode ? 'bg-space-cadet' : ''}`}>
+    <div className="blueSquareContainer">
       <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length > 0
           ? blueSquares
@@ -20,19 +22,32 @@ const BlueSquare = props => {
                   role="button"
                   id="wrapper"
                   data-testid="blueSquare"
-                  className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
+                  className="blueSquareButton"
                   onClick={() => {
                     if (!blueSquare._id) {
                       handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
-                    } else if (canPutUserProfileImportantInfo) {
+                    } else if (canEditInfringements || canDeleteInfringements) {
                       handleBlueSquare(
-                        canPutUserProfileImportantInfo,
+                        canEditInfringements || canDeleteInfringements,
                         'modBlueSquare',
                         blueSquare._id,
                       );
-                    } else {
+                    // } else if(canEditInfringements) {
+                    //   handleBlueSquare(
+                    //     canEditInfringements,
+                    //     'editBlueSquare',
+                    //     blueSquare._id,
+                    //   );
+                    // } else if (canDeleteInfringements){
+                    //   handleBlueSquare(
+                    //     canDeleteInfringements,
+                    //     'deleteBlueSquare',
+                    //     blueSquare._id,
+                    //   );
+
+                    }else{
                       handleBlueSquare(
-                        !canPutUserProfileImportantInfo,
+                        true,
                         'viewBlueSquare',
                         blueSquare._id,
                       );
@@ -54,12 +69,12 @@ const BlueSquare = props => {
                 </div>
               ))
           : <div>No blue squares.</div>}
-        {isInfringementAuthorizer && (
+        {canAddInfringements && (
           <div
             onClick={() => {
               handleBlueSquare(true, 'addBlueSquare', '');
             }}
-            className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
+            className="blueSquareButton"
             color="primary"
             data-testid="addBlueSquare"
           >

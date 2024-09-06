@@ -12,17 +12,17 @@ import PropTypes from 'prop-types';
 
 const Member = props => {
   const {darkMode} = props;
-  const canGetUserProfiles = props.hasPermission('getUserProfiles');
-  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
+  const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+ 
   return (
     <React.Fragment>
-      <tr className={`members__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+      <tr className={`members__tr`}>
         <th scope="row">
           <div>{typeof props.index === 'number' ? props.index + 1 : null}</div>
         </th>
         <td className="members__name">
-          {canGetUserProfiles ? (
+          {canGetProjectMembers ? (
             <a href={`/userprofile/${props.uid}`} className={darkMode ? 'text-azure' : ''}>{props.fullName}</a>
           ) : (
             props.fullName

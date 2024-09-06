@@ -13,9 +13,9 @@
 }
 
 .badge_dropdown {
-  height: 25vh;
-  overflow-y: scroll;
-  overflow: auto;
+  max-height: 150px; /* Limits the dropdown height */
+  overflow-y: auto;  /* Allows scrolling if needed */
+  height: auto;      /* Allows height to adjust based on content */
 }
 
 .badge_count_report {

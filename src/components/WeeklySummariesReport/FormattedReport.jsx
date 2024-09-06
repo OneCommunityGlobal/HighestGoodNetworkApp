@@ -346,13 +346,15 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
+  const fullCodeRegex = /^.{5,7}$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
-    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
+    const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
     try {
-      await axios.patch(url, { key: 'teamCode', value: newStatus });
-      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, userProfileSummary._id); // Update the team code dynamically
+      await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
+      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
+        [userProfileSummary._id]: true,
+      }); // Update the team code dynamically
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -375,6 +377,10 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
       }
     }
   };
+
+  useEffect(() => {
+    setTeamCode(summary?.teamCode);
+  }, [summary.teamCode]);
 
   return (
     <>
@@ -402,7 +408,7 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
       </div>
       {hasError ? (
         <Alert className="code-alert" color="danger">
-          NOT SAVED! The code format must be A-AAA1A or AAA2AAA.
+          NOT SAVED! The code must be between 5 and 7 characters long.
         </Alert>
       ) : null}
     </>

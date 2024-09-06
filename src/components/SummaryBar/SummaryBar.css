@@ -16,6 +16,13 @@
   color: #fff !important;
 }
 
+.greyed-out {
+  background-color: #f0f0f0; 
+  color: #a0a0a0; 
+  border: 1px solid #d0d0d0;
+  cursor: not-allowed; 
+}
+
 .btn--white-smoke:hover:not([disabled]) {
   background-color: #ffffff !important;
 }
@@ -141,7 +148,7 @@
   display: inline-block;
   padding: 5px;
   margin-bottom: 5px;
-  min-width: 60px;
+  min-width: 40px;
 }
 
 .badge-list {
@@ -179,7 +186,7 @@
 }
 
 /* Large devices (landscape phones, 544px and down) */
-@media (max-width: 992px) {
+@media (max-width: 991px) {
   .large_text_summary {
     font-size: 2rem;
   }
@@ -200,9 +207,54 @@
   .large_text_summary {
     font-size: 1.5rem;
   }
+  .redBackgroup {
+    font-size: 0.75rem;
+    height: 20px;
+    max-width: 20px;
+    min-width: 20px;
+    padding: 0;
+  }
 }
 
 .text-center{
   display: flex;
   justify-content: center;
+}
+
+.sortable-container {
+  background-color: #333;
+  padding: 1rem;
+  margin: 1rem;
+  overflow: hidden;
+}
+
+.sortable-content {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 2.5%;
+}
+
+.sortable-content p {
+  outline: none;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.sortable-draggable {
+  padding: 1rem;
+  background-color: white;
+  border: 1px solid black;
+  cursor: grab;
+  word-break: break-word;
+  white-space: normal;
+}
+  
+.sortable-draggable-dragging {
+  opacity: .5;
+  cursor: grabbing;
+}
+
+.edit-icon {
+  cursor: pointer;
 }

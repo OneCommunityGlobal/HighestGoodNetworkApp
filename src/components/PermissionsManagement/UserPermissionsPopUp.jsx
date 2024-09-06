@@ -16,7 +16,7 @@ import PermissionList from './PermissionList';
 import { addNewRole, getAllRoles } from '../../actions/role';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 
-function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
+function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, authUser, darkMode }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
@@ -77,6 +77,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
         toast.success(SUCCESS_MESSAGE, {
           autoClose: 10000,
         });
+        toggle();
       })
       .catch(err => {
         const ERROR_MESSAGE = `
@@ -107,7 +108,7 @@ function UserPermissionsPopUp({ allUserProfiles, getAllUsers, roles, authUser, d
             setToDefault();
           }}
           disabled={!actualUserProfile}
-          style={boxStyle}
+          style={darkMode ? boxStyleDark : boxStyle}
         >
           Reset to Default
         </Button>
