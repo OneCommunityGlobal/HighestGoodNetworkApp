@@ -42,10 +42,10 @@ export default function SelectTeamPieChart(props) {
         <p>There are ZERO persons after FILTERING!</p>
       </div>
     );
-  }else if(chartData.length > 20){
+  }else if(chartData.length > 100){
     return (
       <div>
-        <p>PLEASE Choose AT MOST 20 teams!</p>
+        <p>PLEASE Choose AT MOST 100 teams!</p>
       </div>
     );
   }
