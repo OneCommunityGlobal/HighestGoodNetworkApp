@@ -884,7 +884,6 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual ||
             !isTasksEqual ||
-            (!isTeamsEqual && !isTeamSaved) ||
             !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '} 
