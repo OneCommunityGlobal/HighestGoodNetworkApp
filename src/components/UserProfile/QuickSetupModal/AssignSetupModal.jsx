@@ -2,10 +2,18 @@ import { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import { deleteTitleById } from 'actions/title';
 import { useSelector } from 'react-redux';
-import "../../Header/DarkMode.css"
+import '../../Header/DarkMode.css';
 
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles}) {
-  const darkMode = useSelector(state => state.theme.darkMode)
+function AssignSetUpModal({
+  isOpen,
+  setIsOpen,
+  title,
+  userProfile,
+  setUserProfile,
+  setTitleOnSet,
+  refreshModalTitles,
+}) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [validation, setValid] = useState({
     volunteerAgree: false,
   });
@@ -25,13 +33,20 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
   // add QSC into user profile (and needs to save by clicking the save button)
   const setAssignedOnClick = () => {
     if (validation.volunteerAgree && googleDoc.length !== 0) {
-      
       const originalTeamId = userProfile.teams.map(team => team._id);
       const originalProjectId = userProfile.projects.map(project => project._id);
       // If the title has team assigned, add the team to the user profile. Remove duplicate teams
-      const teamsAssigned = title.teamAssiged ? originalTeamId.includes(title?.teamAssiged._id) ? userProfile.teams : [...userProfile.teams, title.teamAssiged] : userProfile.teams;
+      const teamsAssigned = title.teamAssiged
+        ? originalTeamId.includes(title?.teamAssiged._id)
+          ? userProfile.teams
+          : [...userProfile.teams, title.teamAssiged]
+        : userProfile.teams;
       // If the title has project assigned, add the project to the user profile. Remove duplicate projects
-      const projectAssigned = title.projectAssigned ? originalProjectId.includes(title?.projectAssigned._id) ? userProfile.projects : [...userProfile.projects, title.projectAssigned] : userProfile.projects;
+      const projectAssigned = title.projectAssigned
+        ? originalProjectId.includes(title?.projectAssigned._id)
+          ? userProfile.projects
+          : [...userProfile.projects, title.projectAssigned]
+        : userProfile.projects;
 
       const data = {
         teams: teamsAssigned,
@@ -39,7 +54,6 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         projects: projectAssigned,
         teamCode: title.teamCode,
       };
-      
 
       setUserProfile(prev => ({ ...prev, ...data }));
 
@@ -55,7 +69,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
   };
 
   // delete this title
-  const deleteTitle = (titleId) => {
+  const deleteTitle = titleId => {
     deleteTitleById(titleId)
       .then(() => {
         refreshModalTitles();
@@ -64,12 +78,25 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       .catch(e => {
         console.log(e);
       });
-  }
+  };
+
+  const isLink = str => {
+    try {
+      const url = new URL(str);
+      return true;
+    } catch (_) {
+      return false;
+    }
+  };
 
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
-    <Modal isOpen={isOpen} toggle={() => setIsOpen(false)} className={darkMode ? 'text-light dark-mode' : ''}>
+    <Modal
+      isOpen={isOpen}
+      toggle={() => setIsOpen(false)}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
       <ModalHeader toggle={() => setIsOpen(false)} className={darkMode ? 'bg-space-cadet' : ''}>
         Assign {userProfile?.firstName} as {title?.titleName}
       </ModalHeader>
@@ -78,13 +105,39 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           <Label className={fontColor}>
             <h6>Google Doc: </h6>
           </Label>
-          <Input type="text" onChange={e => setGoogleDoc(e.target.value)}></Input>
+          <Input type="text" onChange={e => setGoogleDoc(e.target.value)} />
           {googleDoc.length !== 0 ? '' : <p className="text-danger">{warning.googleDoc}</p>}
 
           <h6>Team Code: {title?.teamCode}</h6>
           <h6>Project Assignment: {title?.projectAssigned?.projectName}</h6>
-          <h6>Media Folder: {title?.mediaFolder}</h6>
-          {title?.teamAssiged?.teamName ? <h6>Team Assignment: {title?.teamAssiged?.teamName}</h6> : '' }
+          <h6>
+            Media Folder:{' '}
+            {isLink(title?.mediaFolder) ? (
+              <a
+                href={title?.mediaFolder}
+                target="_blank"
+                rel="noopener noreferrer"
+                style={{
+                  display: 'inline-block',
+                  maxWidth: '100%',
+                  wordBreak: 'break-all',
+                  overflowWrap: 'break-word',
+                  color: darkMode ? 'white' : 'black',
+                }}
+              >
+                {title?.mediaFolder}
+              </a>
+            ) : (
+              <span style={{ wordBreak: 'break-all', overflowWrap: 'break-word' }}>
+                {title?.mediaFolder}
+              </span>
+            )}
+          </h6>
+          {title?.teamAssiged?.teamName ? (
+            <h6>Team Assignment: {title?.teamAssiged?.teamName}</h6>
+          ) : (
+            ''
+          )}
           <div className="container ml-1">
             <Input
               type="checkbox"
@@ -108,7 +161,9 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           <Button className="bg-danger m-3" onClick={() => setNoOnClick()}>
             No
           </Button>
-          <Button className="bg-danger m-3" onClick={() => deleteTitle(title._id)}>Delete QSC</Button>
+          <Button className="bg-danger m-3" onClick={() => deleteTitle(title._id)}>
+            Delete QSC
+          </Button>
         </div>
       </ModalFooter>
     </Modal>
