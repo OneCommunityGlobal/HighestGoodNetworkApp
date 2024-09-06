@@ -1,5 +1,5 @@
 import { React, useState, useEffect, useRef } from 'react';
-import { Button, Col, Tooltip, Input } from 'reactstrap';
+import { Button, Col, Tooltip } from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
@@ -273,26 +273,20 @@ const UserTeamsTable = props => {
                 <span className="teams-span">Teams</span>
               </Col>
               <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
-                {props.canEditTeamCode ? (
-                  <AutoCompleteTeamCode
-                    refDropdown={refDropdown}
-                    teamCode={teamCode}
-                    showDropdown={showDropdown}
-                    handleCodeChange={handleCodeChange}
-                    setShowDropdown={setShowDropdown}
-                    arrayInputAutoComplete={arrayInputAutoComplete}
-                    inputAutoStatus={props.inputAutoStatus}
-                    isLoading={props.isLoading}
-                    fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
-                    darkMode={darkMode}
-                    isMobile={true}
-                    canEditTeamCode={props.canEditTeamCode}
-                  />
-                ) : (
-                  <div style={{ paddingTop: '6px', textAlign: 'center' }}>
-                    {teamCode == '' ? 'No assigned team code' : teamCode}
-                  </div>
-                )}
+                <AutoCompleteTeamCode
+                  refDropdown={refDropdown}
+                  teamCode={teamCode}
+                  showDropdown={showDropdown}
+                  handleCodeChange={handleCodeChange}
+                  setShowDropdown={setShowDropdown}
+                  arrayInputAutoComplete={arrayInputAutoComplete}
+                  inputAutoStatus={props.inputAutoStatus}
+                  isLoading={props.isLoading}
+                  fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                  darkMode={darkMode}
+                  isMobile={true}
+                  canEditTeamCode={props.canEditTeamCode}
+                />
               </Col>
             </div>
             {props.edit && props.role && (
