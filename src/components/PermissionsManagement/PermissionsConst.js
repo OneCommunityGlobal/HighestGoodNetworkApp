@@ -23,6 +23,11 @@ export const permissionLabels = [
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
       },
+      {
+        label: 'Edit Header Message',
+        key: 'editHeaderMessage',
+        description: 'Gives the user permission to edit the message displayed in the header',
+      },
     ],
   },
   {
