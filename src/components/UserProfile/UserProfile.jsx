@@ -96,7 +96,6 @@ function UserProfile(props) {
   const [id, setId] = useState('');
   const [activeTab, setActiveTab] = useState('1');
   const [formValid, setFormValid] = useState(initialFormValid);
-  const [blueSquareChanged, setBlueSquareChanged] = useState(false);
   const [type, setType] = useState('');
   const [menuModalTabletScreen, setMenuModalTabletScreen] = useState('');
   const [showModal, setShowModal] = useState(false);
@@ -183,11 +182,6 @@ function UserProfile(props) {
     loadUserTasks();
   }, [props?.match?.params?.userId]);
 
-  useEffect(() => {
-    if (!blueSquareChanged) return;
-    setBlueSquareChanged(false);
-    handleSubmit();
-  }, [blueSquareChanged]);
 
   const checkIsTeamsEqual = () => {
     setOriginalTeams(teams);
@@ -510,7 +504,8 @@ function UserProfile(props) {
    * @param {String} summary
    * @param {String} operation 'add' | 'update' | 'delete'
    */
-  const modifyBlueSquares = (id, dateStamp, summary, operation) => {
+  const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
+    setShowModal(false);
     if (operation === 'add') {
       /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
@@ -532,7 +527,14 @@ function UserProfile(props) {
             .toISOString()
             .split('T')[0],
         };
-        setOriginalUserProfile({
+        setModalTitle('Blue Square');
+      await axios.post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), {
+        blueSquare: newBlueSquare,
+      }).catch(error => {
+        toast.error('Failed to add Blue Square!');
+      });
+      toast.success('Blue Square Added!');
+      setOriginalUserProfile({
           ...originalUserProfile,
           infringements: userProfile.infringements?.concat(newBlueSquare),
         });
@@ -540,7 +542,7 @@ function UserProfile(props) {
           ...userProfile,
           infringements: userProfile.infringements?.concat(newBlueSquare),
         });
-        setModalTitle('Blue Square');
+        
       }
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
@@ -550,19 +552,34 @@ function UserProfile(props) {
       if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
-
+      
+      await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+        dateStamp,
+        summary,
+      }).catch(error => {
+        toast.error('Failed to update Blue Square!');
+      });
+      toast.success('Blue Square Updated!');
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
+
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
+        
+        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id))
+        .catch(error => {
+          toast.error('Failed to delete Blue Square!');
+        });
+        toast.success('Blue Square Deleted!');
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
-      }
+
+      }  
     }
-    setShowModal(false);
-    setBlueSquareChanged(true);
+    
+    
   };
 
   const handleSubmit = async () => {
