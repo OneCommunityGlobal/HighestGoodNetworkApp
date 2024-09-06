@@ -128,6 +128,10 @@ function UserProfile(props) {
   const [inputAutoStatus, setInputAutoStatus] = useState();
   const [isLoading, setIsLoading] = useState(false);
 
+  const { userid: requestorId, role: requestorRole } = props.auth.user;
+
+  const canEditTeamCode = props.hasPermission('editTeamCode');
+
   /* useEffect functions */
   useEffect(() => {
     loadUserProfile();
@@ -136,7 +140,7 @@ function UserProfile(props) {
     dispatch(getAllUserTeams());
     dispatch(getAllTimeOffRequests());
     dispatch(getAllTeamCode());
-    fetchTeamCodeAllUsers();
+    canEditTeamCode && fetchTeamCodeAllUsers();
   }, []);
 
   // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
@@ -182,7 +186,6 @@ function UserProfile(props) {
     loadUserTasks();
   }, [props?.match?.params?.userId]);
 
-
   const checkIsTeamsEqual = () => {
     setOriginalTeams(teams);
     const originalTeamProperties = [];
@@ -218,7 +221,6 @@ function UserProfile(props) {
   };
 
   const checkIsProjectsEqual = () => {
-
     const originalProjectProperties = [];
     originalProjects?.forEach(project => {
       for (const [key, value] of Object.entries(project)) {
@@ -517,8 +519,7 @@ function UserProfile(props) {
           console.log('WARNING: Empty Date');
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
-      } 
-      else {
+      } else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
@@ -528,13 +529,15 @@ function UserProfile(props) {
             .split('T')[0],
         };
         setModalTitle('Blue Square');
-      await axios.post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), {
-        blueSquare: newBlueSquare,
-      }).catch(error => {
-        toast.error('Failed to add Blue Square!');
-      });
-      toast.success('Blue Square Added!');
-      setOriginalUserProfile({
+        await axios
+          .post(ENDPOINTS.ADD_BLUE_SQUARE(userProfile._id), {
+            blueSquare: newBlueSquare,
+          })
+          .catch(error => {
+            toast.error('Failed to add Blue Square!');
+          });
+        toast.success('Blue Square Added!');
+        setOriginalUserProfile({
           ...originalUserProfile,
           infringements: userProfile.infringements?.concat(newBlueSquare),
         });
@@ -542,7 +545,6 @@ function UserProfile(props) {
           ...userProfile,
           infringements: userProfile.infringements?.concat(newBlueSquare),
         });
-        
       }
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
@@ -552,34 +554,31 @@ function UserProfile(props) {
       if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
-      
-      await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
-        dateStamp,
-        summary,
-      }).catch(error => {
-        toast.error('Failed to update Blue Square!');
-      });
+
+      await axios
+        .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+          dateStamp,
+          summary,
+        })
+        .catch(error => {
+          toast.error('Failed to update Blue Square!');
+        });
       toast.success('Blue Square Updated!');
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
-
     } else if (operation === 'delete') {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id))
-        .catch(error => {
+
+        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
           toast.error('Failed to delete Blue Square!');
         });
         toast.success('Blue Square Deleted!');
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
-
-      }  
+      }
     }
-    
-    
   };
 
   const handleSubmit = async () => {
@@ -647,13 +646,15 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = (isActive) => {
+  const setActiveInactive = isActive => {
     let endDate;
 
     if (!isActive) {
-      endDate = dispatch(getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate));
-      if (endDate == "N/A"){
-        endDate = userProfile.createdDate
+      endDate = dispatch(
+        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate),
+      );
+      if (endDate == 'N/A') {
+        endDate = userProfile.createdDate;
       }
     }
     const newUserProfile = {
@@ -662,12 +663,16 @@ function UserProfile(props) {
       endDate: endDate || undefined,
     };
 
-    try{
-      props.updateUserStatus(newUserProfile, isActive? UserStatus.Active : UserStatus.InActive, undefined);
+    try {
+      props.updateUserStatus(
+        newUserProfile,
+        isActive ? UserStatus.Active : UserStatus.InActive,
+        undefined,
+      );
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
     } catch (error) {
-      console.error("Failed to update user status:", error);
+      console.error('Failed to update user status:', error);
     }
     setActiveInactivePopupOpen(false);
   };
@@ -775,7 +780,6 @@ function UserProfile(props) {
   const { firstName, lastName, profilePic, jobTitle = '' } = userProfile;
 
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
-  const { userid: requestorId, role: requestorRole } = props.auth.user;
 
   /**  Login User's email */
   const authEmail = props.auth?.user?.email;
@@ -853,9 +857,15 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      <Container 
+      <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', flexDirection: 'column'}}>
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          flexDirection: 'column',
+        }}
+      >
         <Row>
           <Col md="4" id="profileContainer">
             <div className="profile-img">
@@ -905,7 +915,7 @@ function UserProfile(props) {
             (!isTeamsEqual && !isTeamSaved) ||
             !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on &quot;Save changes&quot; to save the changes you have made.{' '} 
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
             {!codeValid ? (
@@ -1004,9 +1014,15 @@ function UserProfile(props) {
             <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
             <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
               {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
-              From : <span className={darkMode ? 'text-light' : ''}>{formatDateLocal(userProfile.startDate)}</span>
+              From :{' '}
+              <span className={darkMode ? 'text-light' : ''}>
+                {formatDateLocal(userProfile.startDate)}
+              </span>
               {'   '}
-              To: <span className={darkMode ? 'text-light' : ''}>{userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}</span>
+              To:{' '}
+              <span className={darkMode ? 'text-light' : ''}>
+                {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+              </span>
             </p>
             {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
             {showSelect && summaries !== undefined ? (
@@ -1211,11 +1227,8 @@ function UserProfile(props) {
                     (!(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
                       !isTeamSaved)
                   }
-                  canEditTeamCode={
-                    props.hasPermission('editTeamCode') ||
-                    requestorRole == 'Owner' ||
-                    !targetIsDevAdminUneditable
-                  }
+                  canEditTeamCode={canEditTeamCode}
+                  //  !targetIsDevAdminUneditable
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
@@ -1318,7 +1331,9 @@ function UserProfile(props) {
                         setTeams(originalTeams);
                         setProjects(resetProjects);
                       }}
-                      className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
+                      className={`btn mr-1 btn-bottom ${
+                        darkMode ? 'btn-danger' : 'btn-outline-danger '
+                      }`}
                       style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Cancel
@@ -1445,7 +1460,9 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
+                            className={`btn mr-1 btn-bottom ${
+                              darkMode ? 'btn-danger' : 'btn-outline-danger '
+                            }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1453,7 +1470,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        {...(darkMode ? { outline: false } : {outline: true})}
+                        {...(darkMode ? { outline: false } : { outline: true })}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1520,7 +1537,9 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
+                            className={`btn mr-1 btn-bottom ${
+                              darkMode ? 'btn-danger' : 'btn-outline-danger '
+                            }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1528,7 +1547,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        {...(darkMode ? { outline: false } : {outline: true})}
+                        {...(darkMode ? { outline: false } : { outline: true })}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1575,11 +1594,7 @@ function UserProfile(props) {
                       !formValid.email ||
                       !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
                     }
-                    canEditTeamCode={
-                      props.hasPermission('editTeamCode') ||
-                      requestorRole === 'Owner' ||
-                      requestorRole === 'Administrator'
-                    }
+                    canEditTeamCode={canEditTeamCode}
                     setUserProfile={setUserProfile}
                     userProfile={userProfile}
                     codeValid={codeValid}
@@ -1616,7 +1631,9 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
+                            className={`btn mr-1 btn-bottom ${
+                              darkMode ? 'btn-danger' : 'btn-outline-danger '
+                            }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1624,7 +1641,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        {...(darkMode ? { outline: false } : {outline: true})}
+                        {...(darkMode ? { outline: false } : { outline: true })}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1699,7 +1716,9 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
+                            className={`btn mr-1 btn-bottom ${
+                              darkMode ? 'btn-danger' : 'btn-outline-danger '
+                            }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1707,7 +1726,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        {...(darkMode ? { outline: false } : {outline: true})}
+                        {...(darkMode ? { outline: false } : { outline: true })}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -1769,7 +1788,9 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '}`}
+                            className={`btn mr-1 btn-bottom ${
+                              darkMode ? 'btn-danger' : 'btn-outline-danger '
+                            }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1777,7 +1798,7 @@ function UserProfile(props) {
                         </>
                       )}
                       <Button
-                        {...(darkMode ? { outline: false } : {outline: true})}
+                        {...(darkMode ? { outline: false } : { outline: true })}
                         onClick={() => loadUserProfile()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >

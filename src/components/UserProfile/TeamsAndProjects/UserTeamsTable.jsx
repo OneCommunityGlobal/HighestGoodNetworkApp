@@ -1,5 +1,5 @@
 import { React, useState, useEffect, useRef } from 'react';
-import { Button, Col, Tooltip } from 'reactstrap';
+import { Button, Col, Tooltip, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
@@ -13,7 +13,7 @@ const UserTeamsTable = props => {
 
   const [tooltipOpen, setTooltip] = useState(false);
 
-  const [ teamCodeExplainTooltip, setTeamCodeExplainTooltip ] = useState(false);
+  const [teamCodeExplainTooltip, setTeamCodeExplainTooltip] = useState(false);
 
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -79,7 +79,6 @@ const UserTeamsTable = props => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
 
-
   const toggleTeamCodeExplainTooltip = () => setTeamCodeExplainTooltip(!teamCodeExplainTooltip);
 
   return (
@@ -138,15 +137,15 @@ const UserTeamsTable = props => {
                     </>
                   ) : (
                     <>
-                        <Button
-                          id='teamCodeAssign'
-                          className="btn-addteam"
-                          color="primary"
-                          onClick={() => {
-                            props.onButtonClick();
-                          }}
-                          style={darkMode ? {} : boxStyle}
-                        >
+                      <Button
+                        id="teamCodeAssign"
+                        className="btn-addteam"
+                        color="primary"
+                        onClick={() => {
+                          props.onButtonClick();
+                        }}
+                        style={darkMode ? {} : boxStyle}
+                      >
                         Assign Team
                       </Button>
                       <Tooltip
@@ -155,37 +154,30 @@ const UserTeamsTable = props => {
                         target="teamCodeAssign"
                         toggle={toggleTeamCodeExplainTooltip}
                       >
-                      This team code should only used by admin/owner, and has nothing to do with the team data model.
+                        This team code should only used by admin/owner, and has nothing to do with
+                        the team data model.
                       </Tooltip>
                     </>
                   )}
                 </Col>
               )}
               <Col md="2" style={{ padding: '0' }}>
-                {props.canEditTeamCode ? (
-                  <>
-                    <AutoCompleteTeamCode
-                      refDropdown={refDropdown}
-                      teamCode={teamCode}
-                      showDropdown={showDropdown}
-                      handleCodeChange={handleCodeChange}
-                      setShowDropdown={setShowDropdown}
-                      arrayInputAutoComplete={arrayInputAutoComplete}
-                      inputAutoStatus={props.inputAutoStatus}
-                      isLoading={props.isLoading}
-                      fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
-                      darkMode={darkMode}
-                      isMobile={false}
-                    />
-                  </>
-                ) : (
-                  <div id="teamCodeAssignText"
-                    style={{ fontSize: '12px', textAlign: 'center' }}
-                  >
-                    {teamCode == '' ? 'No assigned team code' : teamCode}
-                  </div>
-                  )}
-                 
+                <>
+                  <AutoCompleteTeamCode
+                    refDropdown={refDropdown}
+                    teamCode={teamCode}
+                    showDropdown={showDropdown}
+                    handleCodeChange={handleCodeChange}
+                    setShowDropdown={setShowDropdown}
+                    arrayInputAutoComplete={arrayInputAutoComplete}
+                    inputAutoStatus={props.inputAutoStatus}
+                    isLoading={props.isLoading}
+                    fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                    darkMode={darkMode}
+                    isMobile={false}
+                    canEditTeamCode={props.canEditTeamCode}
+                  />
+                </>
               </Col>
             </div>
           </div>
@@ -294,6 +286,7 @@ const UserTeamsTable = props => {
                     fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
                     darkMode={darkMode}
                     isMobile={true}
+                    canEditTeamCode={props.canEditTeamCode}
                   />
                 ) : (
                   <div style={{ paddingTop: '6px', textAlign: 'center' }}>
@@ -303,10 +296,7 @@ const UserTeamsTable = props => {
               </Col>
             </div>
             {props.edit && props.role && (
-              <Col 
-                md="12"
-                style={{ padding: '0' }}
-              >
+              <Col md="12" style={{ padding: '0' }}>
                 {canAssignTeamToUsers ? (
                   props.disabled ? (
                     <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
@@ -383,6 +373,6 @@ const UserTeamsTable = props => {
       )}
     </div>
   );
-  };
-  
+};
+
 export default connect(null, { hasPermission })(UserTeamsTable);
