@@ -41,7 +41,7 @@ const TeamsTab = props => {
         setRemovedTeams([]);
       });
     }
-  }, [saved]);
+  }, [saved,removedTeams]);
 
   const onAddTeamPopupShow = () => {
     setaddTeamPopupOpen(true);
@@ -50,17 +50,27 @@ const TeamsTab = props => {
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
   };
-  const onSelectDeleteTeam = teamId => {
-    setRemovedTeams([...removedTeams, teamId]);
-    onDeleteTeam(teamId);
-    if (isTeamSaved) isTeamSaved(false);
+  const onSelectDeleteTeam = async (teamId) => {
+    try {
+      // Immediately delete the team from the backend
+      await deleteTeamMember(teamId, userProfile._id);
+  
+      // Update the frontend state to remove the team from the user's teams
+      setRemovedTeams([...removedTeams, teamId]);
+      onDeleteTeam(teamId);
+  
+      if (isTeamSaved) isTeamSaved(false); // Mark as not saved if necessary
+    } catch (error) {
+      console.error("Error deleting the team:", error);
+      // Optionally, add error handling or show a message to the user.
+    }
   };
 
   const onSelectAssignTeam = team => {
-    // if (userProfile._id) {
-    //   addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-    //   if (isTeamSaved) isTeamSaved(false);
-    // }
+    if (userProfile._id) {
+      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
+      if (isTeamSaved) isTeamSaved(false);
+    }
     onAssignTeam(team);
     setRenderedOn(Date.now());
   };
