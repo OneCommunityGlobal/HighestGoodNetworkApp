@@ -4,11 +4,6 @@ import { Dropdown, Input } from 'reactstrap';
 const AssignTeamField = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
 
-//   React.useEffect(() => {
-//     if (!props.selectedTeam) props.setSearchText('');
-//     else props.setSearchText(props.selectedTeam.teamName);
-//   }, [props.selectedTeam, props.setSearchText]);
-
   React.useEffect(() => {
     if (props.selectedTeam && props.selectedTeam.teamName !== props.searchText) {
       props.onSelectTeam(undefined);
@@ -19,7 +14,7 @@ const AssignTeamField = React.memo(props => {
       props.cleanTeamAssigned();
     }
   }, [props.searchText]);
-
+  
   return (
     <Dropdown
       isOpen={isOpen}
@@ -55,7 +50,6 @@ const AssignTeamField = React.memo(props => {
             .slice(0, 10)
             .map(item => (
               <div
-                key={item._id}
                 className="team-auto-complete"
                 key={item._id}
                 onClick={() => {
