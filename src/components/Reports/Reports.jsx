@@ -103,7 +103,7 @@ class ReportsPage extends Component {
     this.projectTableRef = createRef();
     this.peopleTableRef = createRef();
     this.teamsTableRef = createRef();
-    this.debouncedSearch = this.debounce(this.handleSearch, 500);
+    this.debouncedSearch = this.debounce(this.handleSearch, 1500);
   }
 
   async componentDidMount() {
