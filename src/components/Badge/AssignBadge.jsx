@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -57,12 +57,18 @@ function AssignBadge(props) {
         setFilteredUsers(filtered);
       } else {
         setFilteredUsers([]);
+        // Clear selectedUserId when input is empty
+        setSelectedUserId(null);
+        props.clearNameAndSelected();
       }
       setError(null);
     } catch (err) {
       console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);
+      // Also clear selection on error
+      setSelectedUserId(null);
+      props.clearNameAndSelected();
     }
   }, [fullName, props.allUserProfiles]);
 
@@ -92,6 +98,7 @@ function AssignBadge(props) {
       }
       setOpen(prevIsOpen => !prevIsOpen);
       props.clearNameAndSelected();
+      setSelectedUserId(null);
     } else if (firstName && lastName) {
       setOpen(prevIsOpen => !prevIsOpen);
     } else {
