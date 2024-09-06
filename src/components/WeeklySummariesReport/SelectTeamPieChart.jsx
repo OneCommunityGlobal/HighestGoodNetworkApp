@@ -68,13 +68,6 @@ export default function SelectTeamPieChart(props) {
       window.removeEventListener('resize', updateRadiusSize);
     };
   }, []);
-  const onPieEnter = (_, index) => {
-    setActiveIndex(index);
-  };
-
-  const onPieLeave = () => {
-    setActiveIndex(-1);
-  };
   
   return (
     <ResponsiveContainer minWidth={400} Height={200}>
@@ -95,28 +88,8 @@ export default function SelectTeamPieChart(props) {
           paddingAngle={0}
           fontSize={10}
           label={renderCustomizedLabel}
-          activeIndex={activeIndex}
-          activeShape={(props) => (
-            <g>
-              <path
-                d={`M${props.cx},${props.cy}L${props.cx},${props.cy}`}
-                fill="none"
-                stroke={props.fill}
-                strokeWidth={2}
-              />
-              <Sector
-                cx={props.cx}
-                cy={props.cy}
-                innerRadius={props.innerRadius}
-                outerRadius={props.outerRadius + 10} // Increase size on hover
-                startAngle={props.startAngle}
-                endAngle={props.endAngle}
-                fill={props.fill}
-              />
-            </g>
-          )}
-          onMouseEnter={onPieEnter}
-          onMouseLeave={onPieLeave}
+
+
         >
           {chartData.map((entry, index) => (
             /* eslint-disable react/no-array-index-key */
