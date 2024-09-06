@@ -39,6 +39,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
   
     return (
       <>
+        <div className='team-code-form-field'>
         {canEditTeamCode ?
           <div style={{paddingRight: "5px"}}>
             <FormGroup>
@@ -61,6 +62,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
         : 
           `${teamCode == ''? "No assigned code!": teamCode}`
         }
+        </div>
       </>
     )
   };
