@@ -83,6 +83,7 @@ function LeaderBoard({
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+
   const isOwner = ['Owner'].includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
@@ -102,6 +103,8 @@ function LeaderBoard({
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
   const [innerWidth, setInnerWidth] = useState();
+  const [searchInput] = useState('');
+  const [filteredUsers] = useState(teamsUsers);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -194,9 +197,6 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
-  const individualsWithZeroHours = leaderBoardData.filter(
-    individuals => individuals.weeklycommittedHours === 0,
-  );
 
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
@@ -217,7 +217,7 @@ function LeaderBoard({
       };
 
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
-      window.dispatchEvent(new Event('storage'));
+      Event(new Event('storage'));
       dashboardClose();
     });
   };
@@ -339,6 +339,14 @@ function LeaderBoard({
         </Alert>
       )}
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+        <div className="search-container mx-1">
+          <input
+            className="form-control col-12 mb-2"
+            type="text"
+            placeholder="Search users..."
+            value={searchInput}
+          />
+        </div>
         <Table
           className={`leaderboard table-fixed ${
             darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
@@ -391,28 +399,40 @@ function LeaderBoard({
                 <span>{organizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
                   <span className="leaderboard-totals-title">
-                    0 hrs Totals: {individualsWithZeroHours.length} Members
+                    0 hrs Totals:{' '}
+                    {filteredUsers.filter(user => user.weeklycommittedHours === 0).length} Members
                   </span>
                 )}
               </th>
               <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
-                <span title="Tangible time">{organizationData.tangibletime || ''}</span>
+                <span title="Tangible time">
+                  {filteredUsers.reduce((total, user) => total + user.tangibletime, 0).toFixed(2)}
+                </span>
               </td>
               <td className="align-middle" aria-label="Description">
                 <Progress
-                  title={`TangibleEffort: ${organizationData.tangibletime} hours`}
-                  value={organizationData.barprogress}
-                  color={organizationData.barcolor}
+                  title={`TangibleEffort: ${filteredUsers
+                    .reduce((total, user) => total + user.tangibletime, 0)
+                    .toFixed(2)} hours`}
+                  value={
+                    (filteredUsers.reduce((total, user) => total + user.tangibletime, 0) /
+                      filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)) *
+                    100
+                  }
+                  color="primary"
                 />
               </td>
               <td className="align-middle">
                 <span title="Tangible + Intangible time = Total time">
-                  {organizationData.totaltime} of {organizationData.weeklycommittedHours}
+                  {filteredUsers
+                    .reduce((total, user) => total + parseFloat(user.totaltime), 0)
+                    .toFixed(2)}{' '}
+                  of {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
                 </span>
               </td>
             </tr>
-            {teamsUsers.map(item => (
+            {filteredUsers.map(item => (
               <tr key={item.personId}>
                 <td className="align-middle">
                   <div>
@@ -449,18 +469,7 @@ function LeaderBoard({
                     }}
                   >
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => {
-                        dashboardToggle(item);
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          dashboardToggle(item);
-                        }
-                      }}
-                    >
+                    <div role="button" tabIndex={0}>
                       {hasLeaderboardPermissions(item.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
