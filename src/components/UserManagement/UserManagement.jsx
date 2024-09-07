@@ -142,6 +142,7 @@ class UserManagement extends React.PureComponent {
                     authRole={this.props.state.auth.user.role}
                     roleSearchText={this.state.roleSearchText}
                     darkMode={darkMode}
+                    editUser={this.state.editable}
                   />
                   <UserTableSearchHeader
                     onFirstNameSearch={this.onFirstNameSearch}
@@ -155,7 +156,7 @@ class UserManagement extends React.PureComponent {
                     darkMode={darkMode}
                   />
                 </thead>
-                <tbody className={darkMode ? 'dark-mode' : ''}>{userTable}</tbody>
+                <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.userTableItems}</tbody>
               </Table>
             </div>
             <UserTableFooter

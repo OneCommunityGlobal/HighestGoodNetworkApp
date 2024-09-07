@@ -14,9 +14,11 @@ import { formatDateLocal } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { useDispatch } from 'react-redux';
 import { getAllRoles } from 'actions/role';
-import { updateUserInformation } from 'actions/userManagement';
+import { getAllUserProfile, updateUserInformation } from 'actions/userManagement';
 import { START_USER_INFO_UPDATE } from 'constants/userManagement';
 import { useRef } from 'react';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
 
 /**
  * The body row of the user table
@@ -32,18 +34,6 @@ const UserTableData = React.memo(props => {
   const updateInfo=useSelector(state=>state.updateUserInfo)
   const toastShown = useRef(false);
 
-  // if(updateInfo!==undefined && updateInfo.status!==undefined && updateInfo.status==200){
-  //   toast.success("Data updated successfully !")
-  //   dispatch({type:START_USER_INFO_UPDATE})
-  // }else if(updateInfo!==undefined && updateInfo.status!==undefined && updateInfo.status==404){
-  //   toast.error("Error Retrieving Data")
-  //   dispatch({type:START_USER_INFO_UPDATE})
-  // }
-  // on calling updateFormData whatever is update
-  // roles.map((e)=>console.log(e.roleName))
-  /**
-   * reset the changing state upon rerender with new isActive status
-   */
   const joinTimeStamp=(date)=>{
     const now = new Date();
       var formattedTimestamp = now.toISOString();
@@ -52,8 +42,13 @@ const UserTableData = React.memo(props => {
   }
   const saveUserInformation = async (item, value, id) => {
     try {
-      await dispatch(updateUserInformation({ item: item, value: value, id: id }))
-      toast.success("Data updated successfully !")
+      var response=await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE,{ item: item, value: value, id: id });
+      if(response.status==200){
+        dispatch(getAllUserProfile())
+        toast.success("Data updated successfully !")
+      }else{
+        toast.error("Error Updating Data!")
+      }
     } catch (error) {
       toast.error("Error Updating Data ! ")
     }
