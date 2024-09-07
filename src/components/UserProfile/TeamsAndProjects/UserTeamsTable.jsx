@@ -303,9 +303,9 @@ const UserTeamsTable = props => {
               </Col>
             </div>
             {props.edit && props.role && (
-              <Col
+              <Col 
                 md="12"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ padding: '0' }}
               >
                 {canAssignTeamToUsers ? (
                   props.disabled ? (
