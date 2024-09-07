@@ -86,14 +86,24 @@ class UserProfileAdd extends Component {
       },
       formValid: {},
       formErrors: {
-        firstName: 'First Name is required',
-        lastName: 'Last Name is required',
-        email: 'Email is required',
-        phoneNumber: 'Phone Number is required',
-        actualEmail: 'Actual Email is required',
-        actualPassword: 'Actual Password is required',
-        actualConfirmedPassword: 'Actual Confirmed Password is required',
-        jobTitle: 'Job Title is required',
+        firstName: '',
+        lastName: '',
+        email: '',
+        phoneNumber: '',
+        actualEmail: '',
+        actualPassword: '',
+        actualConfirmedPassword: '',
+        jobTitle: '',
+      },
+      formTouched: {
+        firstName: false,
+        lastName: false,
+        email: false,
+        phoneNumber: false,
+        actualEmail: false,
+        actualPassword: false,
+        actualConfirmedPassword: false,
+        jobTitle: false,
       },
       timeZoneFilter: '',
       formSubmitted: false,
@@ -155,9 +165,16 @@ class UserProfileAdd extends Component {
           <Row>
             <Col md="12">
               <Form>
+                <Row>
+                  <Col md="12">
+                    <p><span style={{ color: 'red' }}>*</span> Fields marked with an asterisk are required</p>
+                  </Col>
+                </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Name</Label>
+                    <Label className={fontColor}>
+                      Name <span style={{ color: 'red' }}>*</span>
+                    </Label>
                   </Col>
                   <Col md="3">
                     <FormGroup>
@@ -170,7 +187,9 @@ class UserProfileAdd extends Component {
                         placeholder="First Name"
                         invalid={!!this.state.formErrors.firstName}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.firstName}</FormFeedback>
+                      <FormFeedback>
+                        {this.state.formTouched.firstName && this.state.formErrors.firstName}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -184,13 +203,17 @@ class UserProfileAdd extends Component {
                         placeholder="Last Name"
                         invalid={!!this.state.formErrors.lastName}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.lastName}</FormFeedback>
+                      <FormFeedback>
+                        {this.state.formTouched.lastName && this.state.formErrors.lastName}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Job Title</Label>
+                    <Label className={fontColor}>
+                      Job Title <span style={{ color: 'red' }}>*</span>
+                    </Label>
                   </Col>
                   <Col md={{ size: 6 }}>
                     <FormGroup>
@@ -203,13 +226,18 @@ class UserProfileAdd extends Component {
                         placeholder="Job Title"
                         invalid={!!this.state.formErrors.jobTitle}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.jobTitle}</FormFeedback>
+                      <FormFeedback>
+                        {this.state.formTouched.jobTitle && this.state.formErrors.jobTitle}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Email</Label>
+                    <Label className={fontColor}>
+                      Email <span style={{ color: 'red' }}>*</span>
+                    </Label>
+
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -222,7 +250,9 @@ class UserProfileAdd extends Component {
                         placeholder="Email"
                         invalid={!!this.state.formErrors.email}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.email}</FormFeedback>
+                      <FormFeedback>
+                        {this.state.formTouched.email && this.state.formErrors.email}
+                      </FormFeedback>
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -233,7 +263,9 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Phone</Label>
+                    <Label className={fontColor}>
+                      Phone <span style={{ color: 'red' }}>*</span>
+                    </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -259,7 +291,9 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Weekly Committed Hours</Label>
+                    <Label className={fontColor}>
+                      Weekly Committed Hours <span style={{ color: 'red' }}>*</span>
+                    </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -296,7 +330,9 @@ class UserProfileAdd extends Component {
                             : !this.state.formValid.weeklyCommittedHours
                         }
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback>
+                        {this.state.formTouched.weeklyCommittedHours && this.state.formErrors.weeklyCommittedHours}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -330,7 +366,9 @@ class UserProfileAdd extends Component {
                   <>
                     <Row className="user-add-row">
                       <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                        <Label className={fontColor}>Actual Email</Label>
+                        <Label className={fontColor}>
+                          Actual Email <span style={{ color: 'red' }}>*</span>
+                        </Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
@@ -343,13 +381,17 @@ class UserProfileAdd extends Component {
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
                           />
-                          <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
+                          <FormFeedback>
+                            {this.state.formTouched.actualEmail && this.state.formErrors.actualEmail}
+                          </FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
                     <Row className="user-add-row">
                       <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label className={fontColor}>Actual Password</Label>
+                        <Label className={fontColor}>
+                          Password <span style={{ color: 'red' }}>*</span>
+                        </Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
@@ -368,7 +410,9 @@ class UserProfileAdd extends Component {
                     </Row>
                     <Row className="user-add-row">
                       <Col md={{ size: 4 }} className="text-md-right my-2">
-                        <Label className={fontColor}>Confirm Actual Password</Label>
+                        <Label className={fontColor}>
+                          Confirm Password <span style={{ color: 'red' }}>*</span>
+                        </Label>
                       </Col>
                       <Col md="6">
                         <FormGroup>
@@ -550,7 +594,6 @@ class UserProfileAdd extends Component {
             </Col>
           </Row>
           <Row>
-            {/* <Col></Col> */}
             <Col md="12">
               <div className="w-50 pt-4 mx-auto">
                 <Button
@@ -621,7 +664,6 @@ class UserProfileAdd extends Component {
     this.setState({ projects: initialUserProject });
   };
 
-  // Function to call TimeZoneService with location 
   onClickGetTimeZone = () => {
     const location = this.state.userProfile.location.userProvided;
 
@@ -631,7 +673,7 @@ class UserProfileAdd extends Component {
     }
 
     axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if(res.status === 200) {
+      if (res.status === 200) {
         const { timezone, currentLocation } = res.data;
         this.setState({
           ...this.state,
@@ -859,7 +901,7 @@ class UserProfileAdd extends Component {
             }
             toast.error(
               err.response?.data?.error ||
-                'An unknown error occurred while attempting to create this user.',
+              'An unknown error occurred while attempting to create this user.',
             );
           });
       }
@@ -933,7 +975,7 @@ class UserProfileAdd extends Component {
       },
       formErrors: {
         ...formErrors,
-        phoneNumber: phone.length > 10 ? '' : 'Please enter valid phone number',
+        phoneNumber: phone.length > 10 ? '' : 'Please enter phone number',
       },
     });
   };
@@ -949,239 +991,56 @@ class UserProfileAdd extends Component {
     this.handleUserProfile(e);
   };
 
-  handleUserProfile = event => {
-    const { userProfile, formValid, formErrors } = this.state;
+  handleUserProfile = (event) => {
+    const { id, value } = event.target;
+  
+    this.setState((prevState) => ({
+      userProfile: {
+        ...prevState.userProfile,
+        [id]: value,
+      },
+      formErrors: {
+        ...prevState.formErrors,
+        [id]: value === '' ? `${id.charAt(0).toUpperCase() + id.slice(1).replace(/([A-Z])/g, ' $1').trim()} required` : '',
+      },
+      formTouched: {
+        ...prevState.formTouched,
+        [id]: true,
+      },
+    }));
+  };  
 
-    switch (event.target.id) {
+  validateField = (fieldName, value) => {
+    let errorMsg = '';
+    const emailRegex = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
+
+    switch (fieldName) {
       case 'firstName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-            // [event.target.id]: event.target.value.trim(),   removed trim to allow space in name field
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: event.target.value.length > 0,
-          },
-          formErrors: {
-            ...formErrors,
-            firstName: event.target.value.length > 0 ? '' : 'First Name required',
-          },
-        });
-        break;
       case 'lastName':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: event.target.value.length > 0,
-          },
-          formErrors: {
-            ...formErrors,
-            lastName: event.target.value.length > 0 ? '' : 'Last Name required',
-          },
-        });
+      case 'jobTitle':
+      case 'actualEmail':
+      case 'actualPassword':
+      case 'actualConfirmedPassword':
+        if (!value) errorMsg = `${fieldName.charAt(0).toUpperCase() + fieldName.slice(1).replace(/([A-Z])/g, ' $1').trim()} is required`;
+        if (fieldName === 'actualConfirmedPassword' && this.state.userProfile.actualPassword !== value) {
+          errorMsg = 'Passwords do not match';
+        }
         break;
       case 'email':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value
-              .trim()
-              .replace(/[A-Z]/g, char => char.toLowerCase()),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: event.target.value.match(patt),
-          },
-          formErrors: {
-            ...formErrors,
-            email: event.target.value.match(patt) ? '' : 'Email is not valid',
-          },
-        });
+        if (!value) errorMsg = 'Email is required';
+        else if (!emailRegex.test(value)) errorMsg = 'Email is not valid';
         break;
-      case 'location':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: { ...userProfile.location, userProvided: event.target.value.trim() },
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'timeZone':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'jobTitle':
-        this.setState({
-          ...this.state,
-          userProfile: {
-            ...this.state.userProfile,
-            jobTitle: event.target.value,
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: event.target.value.length > 0,
-          },
-          formErrors: {
-            ...formErrors,
-            jobTitle: event.target.value.length > 0 ? '' : 'Job Title is required',
-          },
-        });
+      case 'phoneNumber':
+        if (!value || value.length < 10) errorMsg = 'Phone Number is required';
         break;
       case 'weeklyCommittedHours':
-        let val = Number(event.target.value);
-        if (val > 168) {
-          val = 168
-        } else if (val < 0) {
-          val = 0
-        } 
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: val.toString(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: true,
-          },
-          formErrors: {
-            ...formErrors,
-            weeklyCommittedHours: '',
-          },
-        });
-        break;
-      case 'weeklySummaryOption':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'collaborationPreference':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'role':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value.trim(),
-          },
-          formValid: {
-            ...formValid,
-            [event.target.id]: !!event.target.value,
-          },
-        });
-        break;
-      case 'googleDoc':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-          },
-        });
-        break;
-      case 'dropboxDoc':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            [event.target.id]: event.target.value,
-          },
-        });
-        break;
-      case 'emailPubliclyAccessible':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            privacySettings: {
-              ...userProfile.privacySettings,
-              email: !userProfile.privacySettings?.email,
-            },
-          },
-        });
-        break;
-      case 'phonePubliclyAccessible':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            privacySettings: {
-              ...userProfile.privacySettings,
-              phoneNumber: !userProfile.privacySettings?.phoneNumber,
-            },
-          },
-        });
-        break;
-      case 'actualEmail':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            actualEmail: event.target.value,
-          },
-          formErrors: {
-            ...formErrors,
-            actualEmail: event.target.value.match(patt) ? '' : 'Actual Email is not valid',
-          },
-        });
-        break;
-      case 'actualPassword':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            actualPassword: event.target.value,
-          },
-          formErrors: {
-            ...formErrors,
-            actualPassword: event.target.value.length > 0 ? '' : 'Actual Password is required',
-          },
-        });
-        break;
-      case 'actualConfirmedPassword':
-        this.setState({
-          userProfile: {
-            ...userProfile,
-            actualConfirmedPassword: event.target.value,
-          },
-          formErrors: {
-            ...formErrors,
-            actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
-          },
-        });
+        let val = parseInt(value, 10);
+        if (isNaN(val) || val < 0 || val > 168) errorMsg = 'Weekly Committed Hours must be between 0 and 168';
         break;
       default:
-        this.setState({
-          ...userProfile,
-        });
+        break;
     }
+    return errorMsg;
   };
 }
 
@@ -1205,3 +1064,4 @@ export default connect(mapStateToProps, {
   fetchAllProjects,
   hasPermission,
 })(UserProfileAdd);
+
