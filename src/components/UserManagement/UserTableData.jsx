@@ -10,6 +10,7 @@ import { toast } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useSelector } from 'react-redux';
 import { formatDate, formatDateYYYYMMDD } from 'utils/formatDate';
+import { formatDateLocal } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { useDispatch } from 'react-redux';
 import { getAllRoles } from 'actions/role';
@@ -81,6 +82,8 @@ const UserTableData = React.memo(props => {
       || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
   };
 
+  const isCurrentUser = props.user.email === props.authEmail;
+
   return (
     <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_user_${props.index}`}>
       <td className="usermanagement__active--input">
@@ -115,6 +118,7 @@ const UserTableData = React.memo(props => {
               toast.success('Last Name Copied!');
             }}
           /></div> : <input type='text' className='edituser_input text-center' value={formData.lastName} onChange={(e) => { updateFormData({ ...formData, lastName: e.target.value }); saveUserInformation('lastName', e.target.value, props.user._id) }}></input>}
+
       </td>
 
       {editUser.role && roles !== undefined ? <td>{formData.role}</td> :
@@ -197,27 +201,30 @@ const UserTableData = React.memo(props => {
         )}
       </td>
       <td>
-        <button
-          type="button"
-          className={`btn btn-outline-${props.isSet ? 'warning' : 'success'} btn-sm`}
-          onClick={e => {
-            if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
-              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
-              return;
-            }
-            props.onFinalDayClick(
-              props.user,
-              props.isSet ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
-            );
-          }}
-          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
-        >
-          {props.isSet ? CANCEL : SET_FINAL_DAY}
-        </button>
+        {!isCurrentUser && (
+          <button
+            type="button"
+            className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
+            onClick={e => {
+              if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
+                alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+                return;
+              }
+
+              props.onFinalDayClick(
+                props.user,
+                props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
+              );
+            }}
+            style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
+          >
+            {props.user.endDate ? CANCEL : SET_FINAL_DAY}
+          </button>
+        )}
       </td>
       <td>
         {props.user.isActive === false && props.user.reactivationDate
-          ? formatDate(props.user.reactivationDate)
+          ? formatDateLocal(props.user.reactivationDate)
           : ''}
       </td>
       <td>
@@ -231,8 +238,6 @@ const UserTableData = React.memo(props => {
             <input type='date' className='edituser_input' value={formData.startDate} onChange={(e) => { updateFormData({ ...formData, startDate: (e.target.value)}); saveUserInformation('startDate',joinTimeStamp(e.target.value), props.user._id);}}></input>
         }
       </td>
-
-
       <td className="email_cell">
         {editUser.endDate ? <div>
           {props.user.endDate ? formatDate(formData.endDate) : 'N/A'}
@@ -274,6 +279,7 @@ const UserTableData = React.memo(props => {
 
 const mapStateToProps = state => ({
   auth: state.auth,
+  authEmail: state.auth.user.email,
 });
 
 export default connect(mapStateToProps, { hasPermission })(UserTableData);

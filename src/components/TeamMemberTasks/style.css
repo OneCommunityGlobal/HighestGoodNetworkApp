@@ -1,5 +1,6 @@
 .team-member-tasks {
   background-color: white;
+  overflow: hidden;
 }
 
 .team-member-tasks h1 {
@@ -8,6 +9,7 @@
 }
 
 .task_table-container {
+  overflow: hidden;
   position: relative;
 }
 
@@ -95,13 +97,14 @@
   font-size: 15px;
   width: 25px;
   top: 3px;
-  right: -13px;
+  right: -11px;
 }
 
 .team-clocks {
   display: flex;
   justify-content: space-around;
 }
+
 
 .team-clocks-header {
   height: 73.5px;
@@ -110,9 +113,7 @@
 
 .hours-btn-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  column-gap: 1rem;
 }
 
 .circle-border {
@@ -128,9 +129,13 @@
 
 .header-box {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 10px;
   justify-content: space-between;
+}
+
+#taskboard-card-header-title{
+  font-size: 1.5rem;
 }
 
 .complete-task-button {
@@ -326,6 +331,7 @@
   grid-column: 1 / span 1;
   grid-row: 1 / span 1;
   align-self: center;
+  
 }
 
 .team-task-progress-time-volunteers {
@@ -346,11 +352,62 @@
   margin-top: 5px;
 }
 
+.task_table-container{
+  width: 100%;
+  overflow-y: hidden;
+}
+
+.hours-btn-div{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.team-selector-container{
+  display: flex;
+  flex-direction: row;
+}
+
+@media (max-width: 1240px) and (min-width: 992px) {
+  .header-box {
+    flex-direction: column;
+  }
+  .hours-btn-container {
+    margin-top: 10px;
+    justify-content:flex-start;
+    align-items: center;
+  }
+  .team-task-progress-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, auto);
+  }
+  .team-task-progress-time,.team-task-progress-time-volunteers {
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 1;
+  }
+  
+  .followup-tooltip-container {
+    grid-column: 2 / span 1;
+    grid-row: 3 / span 1;
+    justify-self: start;
+  }
+  
+  .team-task-progress-bar {
+    grid-column: 1 / span 3;
+    grid-row: 2 / span 1;
+    margin-bottom: 3px;
+  }
+
+}
+
 @media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
   .team-task-progress {
     width: 100%; /* or any other value that fits your design */
     min-width: auto;
     max-width: none;
+  }
+  .task-table{
+    max-height: 900px;
   }
 }
 
@@ -370,8 +427,10 @@
     justify-content: space-between;
     align-items: center;
     min-width: 165px;
-    padding: 0 15%;
+    padding: 0 5%;
   }
+
+ 
 
   .card-body {
     padding-left: 0 !important;
@@ -402,10 +461,19 @@
   .table-row {
     border: solid #e9ecef 2px;
     background: #faf7fc;
+    font-size: 0.75rem !important;
+  }
+
+  .table-row td{
+    padding: 2px !important;
   }
 
   .spacer {
     height: 20px;
+  }
+
+  .deadlineCount {
+    right: 2px;
   }
 }
 
@@ -414,15 +482,95 @@
     font-size: 24px;
   }
 
-  .header-box {
+  /* .header-box {
     flex-direction: unset;
-  }
-}
+  } */
 
-@media only screen and (min-width: 768px) {
   .team-member-tasks h1 {
     font-size: 28px;
   }
 }
 
+@media only screen and (min-width: 768px) {
+ .mobile-view-select{
+    display: none;
+  } 
+}
 
+@media only screen and (max-width: 767px) {
+  .hours-btn-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mobile-view-select{
+    width: 63px;
+    color: white;
+  } 
+  .responsive-btn-size{
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 530px) {
+  .hours-btn-container{
+    min-width: none;
+    padding: 0;
+  }
+  .team-selector-container{
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media only screen and (max-width: 440px) {
+  .hours-btn-container{
+    column-gap: 0.2em;
+  }
+  .team-member-tasks h1 {
+    color: black;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+}
+
+@media only screen and (max-width: 544px) {
+  .responsive-font-size{
+    font-size: 0.75rem !important;
+  }
+  .multi-select-filter{
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 1075px) and (min-width: 992px) {
+  .header-box h1{
+    font-size: 1.25rem !important;
+    margin-right: 10px;
+  }
+  .team-member-task-remove{
+    margin: 0;
+  }
+}
+
+@media screen and (max-width: 1200px) and (min-width: 992px) {
+  .team-member-tasks-user-name-link{
+    font-size: 14px !important;
+  }
+  .hours-completed-column{
+    width: 50px;
+  }
+  .team-clocks{
+    font-size: 0.75rem !important;
+  }
+  .team-member-tasks-content-link{
+    font-size: 0.75rem !important;
+  }
+  .team-task-progress-time{
+    font-size: 0.75rem !important;
+  }
+  .team-task-progress-time-volunteers{
+    font-size: 0.75rem !important;
+  }
+}
