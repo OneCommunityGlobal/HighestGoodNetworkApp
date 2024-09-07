@@ -823,7 +823,7 @@ export class WeeklySummariesReport extends Component {
               />
             </Col>
             <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
-              <TeamChart teamData={structuredTableData} darkMode={darkMode}/>
+              <TeamChart teamData={structuredTableData} darkMode={darkMode} />
             </Col>
           </Row>
         )}

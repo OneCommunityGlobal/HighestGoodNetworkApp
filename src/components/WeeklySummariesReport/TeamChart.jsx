@@ -45,9 +45,30 @@ function TeamChart({ teamData, darkMode }) {
     <table>
       <thead>
         <tr>
-          <th style={{backgroundColor:darkMode? 'oxide-dark' : 'oxide', color:darkMode? 'white' : 'black'}}>Name</th>
-          <th style={{backgroundColor:darkMode? 'oxide-dark' : 'oxide', color:darkMode? 'white' : 'black'}}>Role</th>
-          <th style={{backgroundColor:darkMode? 'oxide-dark' : 'oxide', color:darkMode? 'white' : 'black'}}>Total Members</th>
+          <th
+            style={{
+              backgroundColor: darkMode ? 'oxide-dark' : 'oxide',
+              color: darkMode ? 'white' : 'black',
+            }}
+          >
+            Name
+          </th>
+          <th
+            style={{
+              backgroundColor: darkMode ? 'oxide-dark' : 'oxide',
+              color: darkMode ? 'white' : 'black',
+            }}
+          >
+            Role
+          </th>
+          <th
+            style={{
+              backgroundColor: darkMode ? 'oxide-dark' : 'oxide',
+              color: darkMode ? 'white' : 'black',
+            }}
+          >
+            Total Members
+          </th>
         </tr>
       </thead>
       <tbody>
