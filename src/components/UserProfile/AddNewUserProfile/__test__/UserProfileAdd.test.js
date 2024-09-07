@@ -66,16 +66,11 @@ describe('AddUserProfile page structure', () => {
   });
 
   it('should correctly update the error message in the state if input field is empty', () => {
-    const mockEvent = { target: { value: '', id: 'firstName' } }; // Simulate empty firstName
-    instance.handleUserProfile(mockEvent); // Trigger input change
-  
-    // Simulate the button click to trigger form submission
-    const createButton = mountedUserProfileAdd.find({ 'data-testid': 'create-userProfile' });
-    createButton.at(0).simulate('click');
-  
-    // Now check if the error message was correctly set in the state
+    const firstname = '';
+    const mockEvent = { target: { value: firstname, id: 'firstName' } };
+    instance.handleUserProfile(mockEvent);
     expect(instance.state.formErrors.firstName).toEqual('First Name required');
-  });  
+  });
 
   it('should call createUserProfile when create button is clicked', () => {
     const createButton = mountedUserProfileAdd.find({ 'data-testid': 'create-userProfile' });
