@@ -14,6 +14,7 @@ import Loading from './common/Loading';
 
 import config from '../config.json';
 import '../App.css';
+import { ModalProvider } from 'context/ModalContext';
 
 const { persistor, store } = configureStore();
 const {tokenKey} = config;
@@ -51,7 +52,9 @@ class App extends Component {
     return (
       <Provider store={store}>
         <PersistGate loading={<Loading />} persistor={persistor}>
+          <ModalProvider>
           <Router>{routes}</Router>
+          </ModalProvider>
         </PersistGate>
       </Provider>
     );
