@@ -23,6 +23,11 @@ export const permissionLabels = [
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
       },
+      {
+        label: 'Edit Header Message',
+        key: 'editHeaderMessage',
+        description: 'Gives the user permission to edit the message displayed in the header',
+      },
     ],
   },
   {
@@ -63,6 +68,12 @@ export const permissionLabels = [
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
+      {
+        label: 'Submit Weekly Summary for Others',
+        key: 'submitWeeklySummaryForOthers',
+        description:
+          'Gives the manager roles and above the ability to edit other peoples weekly summary.',
+      },
     ],
   },
   {
@@ -93,22 +104,25 @@ export const permissionLabels = [
           'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
       },
       {
-        label: 'Handle Blue Squares',
-        key: 'infringementAuthorizer',
-        description:
-          'Gives the user permission to Create/Edit/Delete any blue square and assign them to any user.',
+        label: 'Assign Blue Squares',
+        key: 'addInfringements',
+        description: 'Gives the user permission to add blue squares to any user.',
+      },
+      {
+        label: 'Edit Blue Squares',
+        key: 'editInfringements',
+        description: 'Gives the user permission to edit any blue square.',
+      },
+      {
+        label: 'Delete Blue Squares',
+        key: 'deleteInfringements',
+        description: 'Gives the user permission to delete any blue square.',
       },
       {
         label: 'Modify Important User Info',
         key: 'putUserProfileImportantInfo',
         description:
           'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
-      },
-      {
-        label: 'Edit Summary Submit Requirement (Others)',
-        key: 'updateSummaryRequirements',
-        description:
-          'Gives the user permission to change the requirement to the user to submit a summary.',
       },
       {
         label: 'Manage Time Off Requests',
@@ -343,6 +357,17 @@ export const permissionLabels = [
             ],
           },
         ],
+      },
+    ],
+  },
+  {
+    label: 'Announcements',
+    description: 'Category to communicate',
+    subperms: [
+      {
+        label: 'Send Emails',
+        key: 'sendEmails',
+        description: 'Gives the user permission to send email communications to other users. ',
       },
     ],
   },
