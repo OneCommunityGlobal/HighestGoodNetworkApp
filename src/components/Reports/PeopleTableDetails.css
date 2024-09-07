@@ -1,31 +1,52 @@
 .wrapper.container-fluid {
-  padding: 0;
+  overflow-x: auto;
+  width: 100%;
+  padding: 0 16px;
+  box-sizing: border-box;
 }
 
 .reports-table-head {
+  /* display: flex; */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+  justify-content: space-between;
+  align-items: center;
+  vertical-align: middle;
+  overflow: hidden;
   background-color: #eee7f8;
   margin-bottom: 4px;
   border-radius: 4px;
   min-height: 32px;
   padding: 8px 16px;
+  font-size: 18px;
+  width: 100%;
 }
 
 .people-table-row {
-  display: flex;
-  flex-wrap: wrap;
-  flex-direction: row;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   justify-content: space-between;
   align-items: center;
+  vertical-align: middle;
   min-height: 42px;
   padding: 0 16px;
   cursor: pointer;
   border-bottom: 3px solid #f8f7f8;
+  width: 100%;
 }
+/* flex-wrap: wrap;
+flex-direction: row; */
 
+.reports-table-head,
 .people-table-row > div {
   padding: 1%;
   text-align: center;
-  margin:1%;
+  margin: 1%;
+  vertical-align: middle;
+  max-width: 800px;
+  font-size: 16px;
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .people-table-row:hover {
@@ -69,7 +90,7 @@
   resize: none;
   border-radius: 8px;
   border: solid 2px #e4e4e4;
-  margin: 8px 0 16px 0;
+  margin: auto;
   padding: 8px;
 }
 
@@ -87,6 +108,49 @@
 .extra1 {
   border: none !important;
 }
+
+@media only screen and (max-width: 1400px){
+  .people-table-row{
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    padding: 0 8px;
+  }
+
+  .report-table-head{
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    padding: 0 8px;
+  }
+
+  .reports-table-head > div,
+  .people-table-row > div{
+    padding: 1%;
+    text-align: center;
+    margin: 1%;
+    vertical-align: middle;
+    font-size: 16px;
+  }
+}
+
+@media only screen and (max-width: 732px){
+  .people-table-row{
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    padding: 0 8px;
+  }
+  .report-table-head{
+    grid-template-columns: repeat(auto-fill, minmax(100px, 1fr));
+    padding: 0 8px;
+  }
+
+  .reports-table-head > div,
+  .people-table-row > div{
+    padding: 1%;
+    text-align: center;
+    margin: 1%;
+    vertical-align: middle;
+    font-size: 16px;
+  }
+}
+
+
 /* .modal > .header {
   width: 100%;
   border-bottom: 1px solid gray;
