@@ -6,6 +6,15 @@ import configureStore from 'redux-mock-store';
 import mockAdminState from '__tests__/mockAdminState';
 import WBSItem from './WBSItem';
 
+jest.mock('react-router-dom', () => ({
+  Link: ({ 
+    children, 
+    to, 
+    ...rest 
+  }) => 
+  <a href={to} {...rest}>{children}</a>,
+}));
+
 
 const mockStore = configureStore([thunk]);
 
@@ -62,6 +71,9 @@ describe('WBSItem Component', () => {
             popupEditor: {
                 currPopup: { popupContent: 'Are you sure you want to delete?' },
             },
+            getPopupById: jest.fn(),  // Mock function
+            deleteWbs: jest.fn(),  // Mock function
+            hasPermission: jest.fn().mockReturnValue(true),  // Example mock
         };
     })
 

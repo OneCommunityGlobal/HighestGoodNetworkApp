@@ -12,37 +12,41 @@ import { WBS_DELETE_POPUP_ID } from './../../../../constants/popupId';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import { Link } from 'react-router-dom';
+import { NavItem } from 'reactstrap';
 
 
-const WBSItem = props => {
-  const { darkMode } = props;
+const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, deleteWbs, hasPermission, popupEditor }) => {
   const [showModalDelete, setShowModalDelete] = useState(false);
 
-  const canDeleteWBS = props.hasPermission('deleteWbs');
+  const canDeleteWBS = hasPermission('deleteWbs');
 
-  const confirmDelete = () => {
-    props.deleteWbs(props.wbsId);
+  const handleDelete = () => {
+    deleteWbs(wbsId);
     setShowModalDelete(false);
+  };
+
+  const handleOpenDeleteModal = () => {
+    setShowModalDelete(true);
+    getPopupById(WBS_DELETE_POPUP_ID);
   };
 
   return (
     <React.Fragment>
       <tr>
         <th scope="row">
-          <div>{props.index}</div>
+          <div>{index}</div>
         </th>
         <td className="members__name">
-          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</a>
+          <NavItem tag={Link} to={`/wbs/tasks/${wbsId}/${projectId}/${name}`} className={darkMode ? 'text-azure' : ''}>
+            {name}
+          </NavItem>
         </td>
         {canDeleteWBS ? (
           <td className="members__assign">
             <button
               className="btn btn-outline-danger btn-sm"
               type="button"
-              onClick={e => {
-                setShowModalDelete(true);
-                props.getPopupById(WBS_DELETE_POPUP_ID);
-              }}
+              onClick={handleOpenDeleteModal}
               style={darkMode ? {} : boxStyle}
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
@@ -54,8 +58,8 @@ const WBSItem = props => {
       <ModalDelete
         isOpen={showModalDelete}
         closeModal={() => setShowModalDelete(false)}
-        confirmModal={() => confirmDelete()}
-        modalMessage={props.popupEditor.currPopup.popupContent || ''}
+        confirmModal={handleDelete}
+        modalMessage={popupEditor.currPopup.popupContent || ''}
         modalTitle="Confirm Deletion"
         darkMode={darkMode}
       />
