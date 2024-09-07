@@ -993,7 +993,7 @@ class UserProfileAdd extends Component {
 
   handleUserProfile = (event) => {
     const { id, value } = event.target;
-  
+
     this.setState((prevState) => ({
       userProfile: {
         ...prevState.userProfile,
@@ -1008,7 +1008,7 @@ class UserProfileAdd extends Component {
         [id]: true,
       },
     }));
-  };  
+  };
 
   validateField = (fieldName, value) => {
     let errorMsg = '';
