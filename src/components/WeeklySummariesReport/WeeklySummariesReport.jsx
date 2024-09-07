@@ -759,7 +759,11 @@ export class WeeklySummariesReport extends Component {
           </Row>
         )}
         <Row>
-          <Col lg={{ size: 2, offset: 1 }} md={{ size: 3, offset: -1 }}>
+          <Col
+            lg={{ size: 2, offset: 1 }}
+            md={{ size: 3, offset: -1 }}
+            xs={{ size: 3, offset: -1 }}
+          >
             <div>Select Team Code</div>
           </Col>
           <Col lg={{ size: 2, offset: 1 }} xs={{ size: 3, offset: -1 }}>
@@ -786,7 +790,7 @@ export class WeeklySummariesReport extends Component {
           </Col>
         </Row>
         <Row>
-          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }}>
+          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <MultiSelect
               className="multi-select-filter text-dark"
               options={teamCodes}
@@ -797,7 +801,7 @@ export class WeeklySummariesReport extends Component {
               labelledBy="Select"
             />
           </Col>
-          <Col lg={{ size: 5 }} md={{ size: 6, offset: -1}}>
+          <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
             <MultiSelect
               className="multi-select-filter text-dark"
               options={colorOptions}
@@ -810,16 +814,21 @@ export class WeeklySummariesReport extends Component {
         </Row>
         {chartShow && (
           <Row>
-            <Col lg={{ size: 6, offset: 1 }} md={{ size: 10, offset: 1 }}>
-              <SelectTeamPieChart chartData={chartData} COLORS={COLORS} total={total} />
+            <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
+              <SelectTeamPieChart
+                chartData={chartData}
+                COLORS={COLORS}
+                total={total}
+                style={{ width: '100%' }}
+              />
             </Col>
-            <Col lg={{ size: 4 }} md={{ size: 11 }}>
+            <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
               <TeamChart teamData={structuredTableData} />
-            </Col> 
+            </Col>
           </Row>
         )}
         <Row style={{ marginBottom: '10px' }}>
-          <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+          <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 2 }}>
             <div className="filter-container">
               {(hasPermissionToFilter || this.canSeeBioHighlight) && (
                 <div className="filter-style margin-right">
