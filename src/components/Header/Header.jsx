@@ -134,6 +134,8 @@ export function Header(props) {
   const canAccessPopups =
     props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+  // SendEmails
+  const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
   // Permissions
   const canAccessPermissionsManagement =
     props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
@@ -388,6 +390,7 @@ export function Header(props) {
                   canAccessProjects ||
                   canAccessTeams ||
                   canAccessPopups ||
+                  canAccessSendEmails ||
                   canAccessPermissionsManagement) && (
                   <UncontrolledDropdown nav inNavbar>
                     <DropdownToggle nav caret>
@@ -418,7 +421,7 @@ export function Header(props) {
                           {TEAMS}
                         </DropdownItem>
                       )}
-                      {canAccessPermissionsManagement && (
+                      {canAccessSendEmails && (
                         <DropdownItem tag={Link} to="/announcements" className={fontColor}>
                           {SEND_EMAILS}
                         </DropdownItem>
