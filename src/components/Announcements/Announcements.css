@@ -8,13 +8,18 @@ h3 {
 
 label {
   display: block;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
   font-weight: bold;
   color: #333;
 }
 
+.emails p {
+  margin-bottom: 3px;  /* Reduce margin between the text and input field */
+}
+
 .input-text-for-announcement,
 textarea {
+  margin-top: 3px;  /* Equal spacing above both input fields */
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -28,7 +33,7 @@ button.send-button {
   border-radius: 4px;
   padding: 10px 20px;
   cursor: pointer;
-  margin-top: 20px;
+  margin-top: 10px;
 }
 
 button.send-button:hover {
@@ -66,6 +71,7 @@ button.send-button:hover {
   width: 300px;
   /* Set a fixed width for the email inputs container */
 }
+
 
 .emails h3 {
   margin-top: 0;
