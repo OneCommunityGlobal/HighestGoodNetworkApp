@@ -228,15 +228,15 @@ export const changePagination=(value)=>(dispatch,getState)=>{
   dispatch({type:CHANGE_USER_PROFILE_PAGE,payload:value});
 }
 
-export const updateUserInformation=(value)=>async(dispatch,getState)=>{
-  try {
-    dispatch({type:START_USER_INFO_UPDATE})
-    var response=await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE,value);
-    const {data} = await axios.get(ENDPOINTS.USER_PROFILES);
-    dispatch({type:FINISH_USER_INFO_UPDATE,payload:data})
-  } catch (error) {
-    console.log(error)
-    dispatch({type:ERROR_USER_INFO_UPDATE})
-  }
-}
+// export const updateUserInformation=(value)=>async(dispatch,getState)=>{
+//   try {
+//     dispatch({type:START_USER_INFO_UPDATE})
+//     var response=await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE,value);
+//     const {data} = await axios.get(ENDPOINTS.USER_PROFILES);
+//     dispatch({type:FINISH_USER_INFO_UPDATE,payload:data})
+//   } catch (error) {
+//     console.log(error)
+//     dispatch({type:ERROR_USER_INFO_UPDATE})
+//   }
+// }
 

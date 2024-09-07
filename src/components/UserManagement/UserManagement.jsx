@@ -73,7 +73,7 @@ class UserManagement extends React.PureComponent {
       userForTimeOff: '',
       userTableItems: [],
       editable: props.state.userPagination.editable,
-      updating:props.state.updateUserInfo.updating
+      // updating:props.state.updateUserInfo.updating
     };
   }
 

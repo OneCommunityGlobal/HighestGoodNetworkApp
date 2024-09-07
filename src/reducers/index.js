@@ -97,7 +97,7 @@ const localReducers = {
 };
 
 const sessionReducers = {
-  updateUserInfo:updateUserInfoReducer,
+  // updateUserInfo:updateUserInfoReducer,
   userPagination:changeUserPageStatusReducer,
   userProfileEdit:enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,

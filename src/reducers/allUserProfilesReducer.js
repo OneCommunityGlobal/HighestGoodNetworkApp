@@ -83,14 +83,14 @@ export const changeUserPageStatusReducer = (userProfile = userProfilesInitial, a
   }
 }
 
-export const updateUserInfoReducer=(userProfile=userProfilesInitial,action)=>{
-  switch(action.type){
-    case "START_USER_INFO_UPDATE":
-      return userProfile
-    case "FINISH_USER_INFO_UPDATE":
-      return {status:200}
-    case "ERROR_USER_INFO_UPDATE":
-      return {status:404}
-    default: return userProfile;
-  }
-}
+// export const updateUserInfoReducer=(userProfile=userProfilesInitial,action)=>{
+//   switch(action.type){
+//     case "START_USER_INFO_UPDATE":
+//       return userProfile
+//     case "FINISH_USER_INFO_UPDATE":
+//       return {status:200}
+//     case "ERROR_USER_INFO_UPDATE":
+//       return {status:404}
+//     default: return userProfile;
+//   }
+// }
