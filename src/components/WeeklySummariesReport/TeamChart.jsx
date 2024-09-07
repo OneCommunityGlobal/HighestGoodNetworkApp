@@ -29,7 +29,7 @@ function TeamRow({ rowData }) {
   return null;
 }
 
-function TeamChart({ teamData }) {
+function TeamChart({ teamData, darkMode }) {
   const tableData = [];
   useEffect(() => {}, [teamData]);
 
@@ -45,9 +45,9 @@ function TeamChart({ teamData }) {
     <table>
       <thead>
         <tr>
-          <th>Name</th>
-          <th>Role</th>
-          <th>Total Members</th>
+          <th style={{backgroundColor:darkMode? 'oxide-dark' : 'oxide', color:darkMode? 'white' : 'black'}}>Name</th>
+          <th style={{backgroundColor:darkMode? 'oxide-dark' : 'oxide', color:darkMode? 'white' : 'black'}}>Role</th>
+          <th style={{backgroundColor:darkMode? 'oxide-dark' : 'oxide', color:darkMode? 'white' : 'black'}}>Total Members</th>
         </tr>
       </thead>
       <tbody>

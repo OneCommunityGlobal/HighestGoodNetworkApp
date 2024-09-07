@@ -9,16 +9,10 @@ table {
   
   /* Style for table headers */
   th {
-    background-color: #f2f2f2;
     text-align: center;
     padding: 8px;
-    color:black;
   }
-  
-  /* Alternate row colors for better readability */
-  tbody tr:nth-child(even) {
-    background-color: #f9f9f9;
-  }
+
   
   /* Style for table data cells */
   td {
