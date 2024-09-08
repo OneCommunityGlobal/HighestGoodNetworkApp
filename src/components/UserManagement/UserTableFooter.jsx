@@ -1,10 +1,8 @@
 import React from 'react';
-import { useDispatch } from 'react-redux';
 const NUMBER_OF_PAGE_LINK = 5;
 
 const UserTableFooter = React.memo(props => {
   const darkMode = props.darkMode;
-  const dispatch = useDispatch()
   const onSelectPageSize = pageSize => {
     props.onSelectPageSize(parseInt(pageSize));
   };

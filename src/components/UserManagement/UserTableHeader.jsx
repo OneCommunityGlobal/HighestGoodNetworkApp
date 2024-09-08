@@ -1,5 +1,5 @@
-import React from 'react';
-import { useState } from 'react';
+import React,{useState} from 'react';
+// import { useDispatch } from 'react-redux';
 import {
   ACTIVE,
   FIRST_NAME,
@@ -15,24 +15,24 @@ import {
   REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 import userTableDataPermissions from 'utils/userTableDataPermissions';
-import { disableEditUserInfo, enableEditUserInfo } from 'actions/userManagement';
-import { useDispatch } from 'react-redux';
+// import { disableEditUserInfo, enableEditUserInfo } from 'actions/userManagement';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
 
 /**
  * The header row of the user table.
- */
-const UserTableHeader = React.memo(({ authRole, roleSearchText, darkMode, editUser }) => {
+*/
+const UserTableHeader = React.memo(({ authRole, roleSearchText, darkMode, editUser,enableEditUserInfo,disableEditUserInfo }) => {
+  // const dispatch = useDispatch();
   const [editFlag, setEditFlag] = useState(editUser)
-  const dispatch = useDispatch();
   const enableEdit = (value) => {
     setEditFlag(value)
-    dispatch(enableEditUserInfo(value))
+    enableEditUserInfo(value)
   }
   const disableEdit = (value) => {
+    // const dispatch = useDispatch();
     setEditFlag(value)
-    dispatch(disableEditUserInfo(value))
+    disableEditUserInfo(value)
   }
 
   return (

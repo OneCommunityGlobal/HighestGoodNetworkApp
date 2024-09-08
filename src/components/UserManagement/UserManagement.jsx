@@ -143,6 +143,8 @@ class UserManagement extends React.PureComponent {
                     roleSearchText={this.state.roleSearchText}
                     darkMode={darkMode}
                     editUser={this.state.editable}
+                    enableEditUserInfo={this.props.enableEditUserInfo}
+                    disableEditUserInfo={this.props.disableEditUserInfo}
                   />
                   <UserTableSearchHeader
                     onFirstNameSearch={this.onFirstNameSearch}
@@ -712,5 +714,7 @@ export default connect(mapStateToProps, {
   getAllTimeOffRequests,
   enableEditUserInfo,
   disableEditUserInfo,
-  getAllRoles
+  getAllRoles,
+  disableEditUserInfo,
+  enableEditUserInfo
 })(UserManagement);

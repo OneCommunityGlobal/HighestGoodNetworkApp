@@ -14,7 +14,7 @@ import { formatDateLocal } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { useDispatch } from 'react-redux';
 import { getAllRoles } from 'actions/role';
-import { getAllUserProfile } from 'actions/userManagement';
+import {getAllUserProfile } from 'actions/userManagement';
 // import { START_USER_INFO_UPDATE } from 'constants/userManagement';
 import { useRef } from 'react';
 import { ENDPOINTS } from 'utils/URL';
@@ -25,7 +25,8 @@ import axios from 'axios';
  */
 const UserTableData = React.memo(props => {
   const darkMode = props.darkMode;
-  const editUser = props.editUser;
+  const editUser = props.editUser!==undefined?props.editUser:{ 'first': 1, 'last': 1, 'role': 1, 'email': 1, 'weeklycommittedHours': 1 ,'startDate':1,'endDate':1};
+  // console.log(props.editUser)
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const [formData, updateFormData] = useState({ firstName: props.user.firstName, lastName: props.user.lastName, id: props.user._id, role: props.user.role, email: props.user.email, weeklycommittedHours: props.user.weeklycommittedHours, startDate: formatDate(props.user.startDate), endDate: formatDate(props.user.endDate) })
@@ -116,10 +117,10 @@ const UserTableData = React.memo(props => {
 
       </td>
 
-      {editUser.role && roles !== undefined ? <td>{formData.role}</td> :
-        <select name="role-select-tag" id="" value={formData.role} onChange={(e) => { updateFormData({ ...formData, role: e.target.value }); saveUserInformation('role', e.target.value, props.user._id) }}>
-          {roles.map((e, index) => <option key={index} value={e.roleName} >{e.roleName}</option>)}
-        </select>}
+      {editUser.role && roles !== undefined ? (<td>{formData.role}</td>) :
+       ( <td><select name="role-select-tag" id="" value={formData.role} onChange={(e) => { updateFormData({ ...formData, role: e.target.value }); saveUserInformation('role', e.target.value, props.user._id) }}>
+          {roles?.map((e, index) => <option key={index} value={e.roleName} >{e.roleName}</option>)}
+        </select></td>)}
 
 
       <td className="email_cell">
@@ -276,5 +277,7 @@ const mapStateToProps = state => ({
   auth: state.auth,
   authEmail: state.auth.user.email,
 });
+
+
 
 export default connect(mapStateToProps, { hasPermission })(UserTableData);
