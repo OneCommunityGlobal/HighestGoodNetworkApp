@@ -14,7 +14,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
     googleDoc: 'Linked is required',
     checkbox: 'Need to be confirmed',
   });
-
+console.log("title",title)
   const checkboxOnClick = () => {
     // eslint-disable-next-line no-unused-expressions
     validation.volunteerAgree
@@ -32,6 +32,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         teamCode: title.teamCode,
       };
       // remove duplicate project and teams
+      console.log("data",data)
       userProfile.teams.includes(title?.teamAssiged) ? data.teams.pop() : '';
       userProfile.projects.includes(title.projectAssigned) ? data.projects.pop() : '';
 

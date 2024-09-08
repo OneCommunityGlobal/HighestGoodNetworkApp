@@ -7,7 +7,7 @@ import { getAllTitle } from '../../../actions/title';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './QuickSetupModal.css';
-import '../../Header/DarkMode.css'
+import '../../Header/DarkMode.css';
 import { useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
 
@@ -21,7 +21,7 @@ function QuickSetupModal({
   handleSubmit,
   setSaved,
 }) {
-  const darkMode = useSelector(state => state.theme.darkMode)
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
@@ -33,7 +33,7 @@ function QuickSetupModal({
   const [warningMessage, setWarningMessage] = useState({});
 
   useEffect(() => {
-    console.log(userProfile);
+    console.log("USER PROFILE",userProfile);
 
     getAllTitle()
       .then(res => {
@@ -75,7 +75,11 @@ function QuickSetupModal({
 
       <div className="col text-center mt-3">
         {canAddTitle ? (
-          <Button color="primary" onClick={() => setShowAddTitle(true)} style={darkMode ? boxStyleDark : boxStyle}>
+          <Button
+            color="primary"
+            onClick={() => setShowAddTitle(true)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             Add A New Title
           </Button>
         ) : (
@@ -125,9 +129,20 @@ function QuickSetupModal({
         ''
       )}
       {showMessage && (
-        <Modal isOpen={showMessage} toggle={() => setShowMessage(false)} className={darkMode ? 'text-light dark-mode' : ''}>
-          <ModalHeader toggle={() => setShowMessage(false)} className={darkMode ? 'bg-space-cadet' : ''}>{warningMessage.title}</ModalHeader>
-          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{warningMessage.content}</ModalBody>
+        <Modal
+          isOpen={showMessage}
+          toggle={() => setShowMessage(false)}
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader
+            toggle={() => setShowMessage(false)}
+            className={darkMode ? 'bg-space-cadet' : ''}
+          >
+            {warningMessage.title}
+          </ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+            {warningMessage.content}
+          </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button color="primary" onClick={() => setShowMessage(false)}>
               Close
