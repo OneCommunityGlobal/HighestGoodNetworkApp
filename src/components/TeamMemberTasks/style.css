@@ -361,6 +361,10 @@
   align-items: center;
 }
 
+.team-selector-container{
+  display: flex;
+  flex-direction: row;
+}
 
 @media (max-width: 1240px) and (min-width: 992px) {
   .header-box {
@@ -412,7 +416,7 @@
 
   .team-member-tasks h1 {
     color: black;
-    font-size: 12px;
+    font-size: 20px;
     text-align: center;
   }
 
@@ -485,10 +489,35 @@
   }
 }
 
+@media only screen and (min-width: 768px) {
+ .mobile-view-select{
+    display: none;
+  } 
+}
+
+@media only screen and (max-width: 767px) {
+  .hours-btn-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mobile-view-select{
+    width: 63px;
+    color: white;
+  } 
+  .responsive-btn-size{
+    display: none;
+  }
+}
+
 @media only screen and (max-width: 530px) {
   .hours-btn-container {
     min-width: none;
     padding: 0;
+  }
+  .team-selector-container{
+    display: flex;
+    flex-direction: column;
   }
 }
 
@@ -496,6 +525,12 @@
   .hours-btn-container {
     column-gap: 0.2em;
   }
+  .team-member-tasks h1 {
+    color: black;
+    font-size: 14px;
+    text-align: center;
+  }
+  
 }
 
 @media only screen and (max-width: 544px) {

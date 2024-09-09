@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import './Leaderboard.css';
-import { isEqual, debounce } from 'lodash';
+import { isEqual } from 'lodash';
 import { Link } from 'react-router-dom';
 import {
   Table,
@@ -86,6 +86,7 @@ function LeaderBoard({
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
+
   const isOwner = ['Owner'].includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
@@ -110,8 +111,8 @@ function LeaderBoard({
   const refTeam = useRef([]);
   const refInput = useRef('');
 
-  const [searchInput, setSearchInput] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
+  const [searchInput] = useState('');
+  const [filteredUsers] = useState(teamsUsers);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -252,7 +253,7 @@ function LeaderBoard({
       };
 
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
-      window.dispatchEvent(new Event('storage'));
+      Event(new Event('storage'));
       dashboardClose();
     });
   };
@@ -313,27 +314,6 @@ function LeaderBoard({
       // prettier-ignore
       (() => filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams))();
     }
-  };
-
-  useEffect(() => {
-    setFilteredUsers(teamsUsers);
-    return () => {
-      setSearchInput('');
-    };
-  }, [teamsUsers]);
-
-  const debouncedFilterUsers = useCallback(
-    debounce(query => {
-      setFilteredUsers(
-        teamsUsers.filter(user => user.name.toLowerCase().includes(query.toLowerCase())),
-      );
-    }, 1000),
-    [teamsUsers],
-  );
-
-  const handleSearch = e => {
-    setSearchInput(e.target.value);
-    debouncedFilterUsers(e.target.value);
   };
 
   return (
@@ -481,7 +461,6 @@ function LeaderBoard({
             type="text"
             placeholder="Search users..."
             value={searchInput}
-            onChange={handleSearch}
           />
         </div>
         <Table
@@ -606,18 +585,7 @@ function LeaderBoard({
                     }}
                   >
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div
-                      role="button"
-                      tabIndex={0}
-                      onClick={() => {
-                        dashboardToggle(item);
-                      }}
-                      onKeyDown={e => {
-                        if (e.key === 'Enter') {
-                          dashboardToggle(item);
-                        }
-                      }}
-                    >
+                    <div role="button" tabIndex={0}>
                       {hasLeaderboardPermissions(item.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
