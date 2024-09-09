@@ -203,7 +203,7 @@ function TotalProjectReport(props) {
       ProjectList = totalProject
         .sort((a, b) => a.projectName.localeCompare(b.projectName))
         .map((project, index) => (
-          <tr className="teams__tr" id={`tr_${project.projectId}`} key={project.projectId}>
+          <tr className={darkMode ? 'teams__tr hover-effect-reports-page-dark-mode text-light' : 'teams__tr'} id={`tr_${project.projectId}`} key={project.projectId}>
             <th className="teams__order--input" scope="row">
               <div>{index + 1}</div>
             </th>
@@ -221,7 +221,7 @@ function TotalProjectReport(props) {
 
     return (
       <table className="table table-bordered table-responsive-sm">
-        <thead>
+        <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{pointerEvents: 'none' }}>
           <tr>
             <th scope="col" id="projects__order">
               #
@@ -230,7 +230,7 @@ function TotalProjectReport(props) {
             <th scope="col">Total Logged Time (Hrs) </th>
           </tr>
         </thead>
-        <tbody>{ProjectList}</tbody>
+        <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>{ProjectList}</tbody>
       </table>
     );
   };

@@ -353,8 +353,8 @@ function TotalTeamReport(props) {
         .map((team, index) => {
           const nameList = getMemberName(team.teamId, userNameList2);
           return (
-            <tbody key={team.teamId}>
-              <tr id={`tr_${team.teamId}`} key={`${team.teamId}_parent`}>
+            <tbody key={team.teamId} className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+              <tr id={`tr_${team.teamId}`} key={`${team.teamId}_parent`} className={darkMode ? 'hover-effect-reports-page-dark-mode text-light' : ''}>
                 <th scope="row">
                   <div>{index + 1}</div>
                 </th>
@@ -370,6 +370,7 @@ function TotalTeamReport(props) {
                         onClickTeamName(team.teamId);
                       }
                     }}
+                    className={darkMode ? 'text-light' : ''}
                   >
                     {team.teamName}
                   </button>
@@ -390,7 +391,7 @@ function TotalTeamReport(props) {
 
     return (
       <table className="table table-bordered table-responsive-sm team-table">
-        <thead>
+        <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{pointerEvents: 'none' }}>
           <tr>
             <th scope="col" id="projects__order">
               #
