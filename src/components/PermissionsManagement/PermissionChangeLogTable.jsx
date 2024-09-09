@@ -65,6 +65,24 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
     }));
   };
 
+  const renderPermissions = (permissions, rowId) => {
+    // Filter out empty or falsy values before joining the permissions
+    const filteredPermissions = permissions.filter(permission => permission);
+
+    return (
+      <div className="permissions-cell">
+        {expandedRows[rowId]
+          ? filteredPermissions.join(', ') // Show all filtered permissions if expanded
+          : filteredPermissions.slice(0, 5).join(', ') +
+            (filteredPermissions.length > 5 ? ', ...' : '')}
+        {filteredPermissions.length > 5 && (
+          <button className="toggle-button" onClick={() => toggleExpandRow(rowId)} type="button">
+            {expandedRows[rowId] ? <FiChevronUp /> : <FiChevronDown />}
+          </button>
+        )}
+      </div>
+    );
+  };
   return (
     <>
       <div className="table-responsive">
@@ -97,27 +115,13 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                   {log.roleName}
                 </td>
                 <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
-                  <div className="permissions-cell">
-                    {expandedRows[log._id]
-                      ? log.permissions.join(', ')
-                      : log.permissions.slice(0, 5).join(', ') +
-                        (log.permissions.length > 5 ? ', ...' : '')}
-                    {log.permissions.length > 5 && (
-                      <button
-                        className="toggle-button"
-                        onClick={() => toggleExpandRow(log._id)}
-                        type="button"
-                      >
-                        {expandedRows[log._id] ? <FiChevronUp /> : <FiChevronDown />}
-                      </button>
-                    )}
-                  </div>
+                  {renderPermissions(log.permissions, log._id)}
                 </td>
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
-                  {log.permissionsAdded.join(', ')}
+                  {renderPermissions(log.permissionsAdded, `${log._id}_added`)}
                 </td>
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
-                  {log.permissionsRemoved.join(', ')}
+                  {renderPermissions(log.permissionsRemoved, `${log._id}_removed`)}
                 </td>
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
                   {log.requestorRole}
