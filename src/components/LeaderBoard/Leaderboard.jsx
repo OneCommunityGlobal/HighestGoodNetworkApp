@@ -102,7 +102,7 @@ function LeaderBoard({
   const [usersSelectedTeam, setUsersSelectedTeam] = useState('Show all');
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [userRole, setUserRole] = useState();
-  const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
+  const [teamsUsers, setTeamsUsers] = useState([]);
   const [innerWidth, setInnerWidth] = useState();
 
   const [isDisplayAlert, setIsDisplayAlert] = useState(false);
@@ -112,7 +112,7 @@ function LeaderBoard({
   const refInput = useRef('');
 
   const [searchInput] = useState('');
-  const [filteredUsers] = useState(teamsUsers);
+  const [filteredUsers, setFilteredUsers] = useState([]);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -134,8 +134,12 @@ function LeaderBoard({
     if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
   }, [organizationData]);
 
+  useEffect(() => {
+    //  eslint-disable-next-line
+    leaderBoardData.length > 0 && teamsUsers.length === 0 && setTeamsUsers(leaderBoardData);
+  }, [leaderBoardData]);
   // prettier-ignore
-  useEffect(() => { setTeamsUsers(leaderBoardData)}, [leaderBoardData]);
+  useEffect(() => { setFilteredUsers(teamsUsers)}, [teamsUsers]);
 
   useEffect(() => {
     setInnerWidth(window.innerWidth);
@@ -316,6 +320,9 @@ function LeaderBoard({
     }
   };
 
+  const toastError = () =>
+    toast.error('Please wait for the users to appear in the Leaderboard table.');
+
   return (
     <div>
       <h3>
@@ -341,14 +348,15 @@ function LeaderBoard({
           />
         </div>
       </h3>
-      {userRole === 'Administrator' || userRole === 'Owner' ? (
-        <section className="d-flex flex-row flex-wrap mb-3">
-          <UncontrolledDropdown className=" mr-3">
-            {/* Display selected team or default text */}
-            <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
+      {userRole === 'Administrator' ||
+        (userRole === 'Owner' && (
+          <section className="d-flex flex-row flex-wrap mb-3">
+            <UncontrolledDropdown className=" mr-3">
+              {/* Display selected team or default text */}
+              <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
 
-            {/* prettier-ignore */}
-            <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
+              {/* prettier-ignore */}
+              <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
               
               <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
                 {teams.length === 0 ? (
@@ -411,26 +419,26 @@ function LeaderBoard({
                 )}
               </div>
             </DropdownMenu>
-          </UncontrolledDropdown>
+            </UncontrolledDropdown>
 
-          {teams.length === 0 ? (
-            <Link to="/teams">
-              <Button color="success" className="fw-bold" boxstyle={boxStyle}>
-                Create Team
+            {teams.length === 0 ? (
+              <Link to="/teams">
+                <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                  Create Team
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                color="primary"
+                onClick={filteredUsers.length > 0 ? handleToggleButtonClick : toastError}
+                disabled={isLoadingTeams}
+                boxstyle={boxStyle}
+              >
+                {isLoadingTeams ? <Spinner animation="border" size="sm" /> : 'My Team'}
               </Button>
-            </Link>
-          ) : (
-            <Button
-              color="primary"
-              onClick={handleToggleButtonClick}
-              disabled={isLoadingTeams}
-              boxstyle={boxStyle}
-            >
-              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : 'My Team'}
-            </Button>
-          )}
-        </section>
-      ) : null}
+            )}
+          </section>
+        ))}
 
       {isDisplayAlert && (
         <Alert color="danger">
