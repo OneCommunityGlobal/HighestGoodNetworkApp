@@ -97,3 +97,10 @@ thead {
 tr:hover {
   background: #e9f6ff;
 }
+
+@media (max-width: 375px) {
+  #new_project .form-control {
+    flex: 1 1 auto;
+    width: 50%;
+  }
+}

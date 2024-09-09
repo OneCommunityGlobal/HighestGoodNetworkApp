@@ -185,20 +185,23 @@ const TimeEntry = (props) => {
             </div>
           </Col>
           <Col md={5} className="pl-2 pr-0">
-            <div className="text-muted">Notes:</div>
-            {ReactHtmlParser(notes)}
-            <div className="buttons">
-              {((hasATimeEntryEditPermission || isAuthUserAndSameDayEntry )&& !cantEditJaeRelatedRecord) 
-                && (
+            <div className="time-entry-container">
+              <div className="notes-section">
+                <div className="text-muted">Notes:</div>
+                {ReactHtmlParser(notes)}
+              </div>
+              <div className="buttons">
+                {((hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord) && (
                   <button className="mr-3 text-primary">
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />
                   </button>
                 )}
-              {canDelete && (
-                <button className='text-primary'>
-                  <DeleteModal timeEntry={data} />
-                </button>
-              )}
+                {canDelete && (
+                  <button className='text-primary'>
+                    <DeleteModal timeEntry={data} />
+                  </button>
+                )}
+              </div>
             </div>
           </Col>
         </Row>

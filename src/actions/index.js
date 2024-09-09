@@ -1,5 +1,8 @@
 import httpService from '../services/httpService';
+import axios from 'axios';
 import { ApiEndpoint } from '../utils/URL';
+import { ENDPOINTS } from '../utils/URL';
+
 
 const APIEndpoint = ApiEndpoint;
 
@@ -258,3 +261,14 @@ export function getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate
     });
   };
 };
+
+export function getTimeEntryForOverDate(users, fromDate, toDate) {
+
+  const url = ENDPOINTS.TIME_ENTRIES_USER_LIST;
+
+  return axios.post(url, { users, fromDate, toDate })
+  .then(response => response.data)
+  .catch(error => {
+    throw error;
+  });
+}

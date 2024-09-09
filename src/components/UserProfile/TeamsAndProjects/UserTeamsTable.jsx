@@ -7,13 +7,18 @@ import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
+import './../../Teams/Team.css';
+import { TeamMember } from './TeamMember';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL.js';
+import { toast } from 'react-toastify';
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
 
   const [tooltipOpen, setTooltip] = useState(false);
 
-  const [ teamCodeExplainTooltip, setTeamCodeExplainTooltip ] = useState(false);
+  const [teamCodeExplainTooltip, setTeamCodeExplainTooltip] = useState(false);
 
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -26,6 +31,15 @@ const UserTeamsTable = props => {
   const [teamCode, setTeamCode] = useState(
     props.userProfile ? props.userProfile.teamCode : props.teamCode,
   );
+
+  const [isOpenModalTeamMember, setIsOpenModalTeamMember] = useState(false);
+
+  const [members, setMembers] = useState({
+    members: [],
+    TeamData: [],
+    myTeamId: null,
+    myTeamName: '',
+  });
 
   const refDropdown = useRef();
 
@@ -79,13 +93,41 @@ const UserTeamsTable = props => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
 
-
   const toggleTeamCodeExplainTooltip = () => setTeamCodeExplainTooltip(!teamCodeExplainTooltip);
+
+  const fetchTeamSelected = async (teamId, teamName, isUpdate) => {
+    const urlTeamData = ENDPOINTS.TEAM_BY_ID(teamId);
+    const urlTeamMembers = ENDPOINTS.TEAM_USERS(teamId);
+    try {
+      const TeamDataMember = await axios.get(urlTeamMembers);
+      const TeamData = await axios.get(urlTeamData);
+
+      const array = [];
+      array.push(TeamData.data);
+
+      setMembers({
+        members: TeamDataMember.data,
+        TeamData: array,
+        myTeamId: teamId,
+        myTeamName: teamName,
+      });
+
+      isUpdate ? toast.info('Team updated successfully') : setIsOpenModalTeamMember(true);
+    } catch (error) {
+      console.log(error);
+    }
+  };
 
   return (
     <div>
       {innerWidth >= 1025 ? (
         <div className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
+          <TeamMember
+            isOpenModalTeamMember={isOpenModalTeamMember}
+            setIsOpenModalTeamMember={setIsOpenModalTeamMember}
+            members={members}
+            fetchTeamSelected={fetchTeamSelected}
+          />
           <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
             {props.canEditVisibility && (
               <div className="row ml-1">
@@ -138,15 +180,15 @@ const UserTeamsTable = props => {
                     </>
                   ) : (
                     <>
-                        <Button
-                          id='teamCodeAssign'
-                          className="btn-addteam"
-                          color="primary"
-                          onClick={() => {
-                            props.onButtonClick();
-                          }}
-                          style={darkMode ? {} : boxStyle}
-                        >
+                      <Button
+                        id="teamCodeAssign"
+                        className="btn-addteam"
+                        color="primary"
+                        onClick={() => {
+                          props.onButtonClick();
+                        }}
+                        style={darkMode ? {} : boxStyle}
+                      >
                         Assign Team
                       </Button>
                       <Tooltip
@@ -155,7 +197,8 @@ const UserTeamsTable = props => {
                         target="teamCodeAssign"
                         toggle={toggleTeamCodeExplainTooltip}
                       >
-                      This team code should only used by admin/owner, and has nothing to do with the team data model.
+                        This team code should only used by admin/owner, and has nothing to do with
+                        the team data model.
                       </Tooltip>
                     </>
                   )}
@@ -179,13 +222,10 @@ const UserTeamsTable = props => {
                     />
                   </>
                 ) : (
-                  <div id="teamCodeAssignText"
-                    style={{ fontSize: '12px', textAlign: 'center' }}
-                  >
+                  <div id="teamCodeAssignText" style={{ fontSize: '12px', textAlign: 'center' }}>
                     {teamCode == '' ? 'No assigned team code' : teamCode}
                   </div>
-                  )}
-                 
+                )}
               </Col>
             </div>
           </div>
@@ -200,9 +240,13 @@ const UserTeamsTable = props => {
                       #
                     </th>
                     {canAssignTeamToUsers ? (
-                      <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>
-                        Team Name
-                      </th>
+                      <>
+                        <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '100px' }}>
+                          Team Name
+                        </th>
+
+                        <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
+                      </>
                     ) : null}
                     {props.userTeamsById.length > 0 ? (
                       <th className={darkMode ? 'bg-space-cadet' : ''}></th>
@@ -217,18 +261,33 @@ const UserTeamsTable = props => {
                       <td style={{ textAlign: 'center', width: '10%' }}>{index + 1}</td>
                       <td>{`${team.teamName}`}</td>
                       {props.edit && props.role && (
-                        <td style={{ textAlign: 'center', width: '20%' }}>
-                          <Button
-                            disabled={!canAssignTeamToUsers}
-                            color="danger"
-                            onClick={e => {
-                              props.onDeleteClick(team._id);
-                            }}
-                            style={darkMode ? boxStyleDark : boxStyle}
-                          >
-                            Delete
-                          </Button>
-                        </td>
+                        <>
+                          <td style={{ textAlign: 'center', width: '10%' }}>
+                            <button
+                              style={darkMode ? {} : boxStyle}
+                              disabled={!canAssignTeamToUsers}
+                              type="button"
+                              className="btn btn-outline-info"
+                              data-testid="members-btn"
+                              onClick={() => fetchTeamSelected(team._id, team.teamName)}
+                            >
+                              <i className="fa fa-users" aria-hidden="true" />
+                            </button>
+                          </td>
+
+                          <td style={{ textAlign: 'center', width: '20%' }}>
+                            <Button
+                              disabled={!canAssignTeamToUsers}
+                              color="danger"
+                              onClick={e => {
+                                props.onDeleteClick(team._id);
+                              }}
+                              style={darkMode ? boxStyleDark : boxStyle}
+                            >
+                              Delete
+                            </Button>
+                          </td>
+                        </>
                       )}
                     </tr>
                   ))
@@ -241,6 +300,12 @@ const UserTeamsTable = props => {
         </div>
       ) : (
         <div className={`teamtable-container tablet  ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+          <TeamMember
+            isOpenModalTeamMember={isOpenModalTeamMember}
+            setIsOpenModalTeamMember={setIsOpenModalTeamMember}
+            members={members}
+            fetchTeamSelected={fetchTeamSelected}
+          />
           <div style={{ display: 'flex', flexDirection: 'column' }}>
             {props.canEditVisibility && (
               <>
@@ -303,9 +368,9 @@ const UserTeamsTable = props => {
               </Col>
             </div>
             {props.edit && props.role && (
-              <Col
+              <Col 
                 md="12"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                style={{ padding: '0' }}
               >
                 {canAssignTeamToUsers ? (
                   props.disabled ? (
@@ -337,9 +402,12 @@ const UserTeamsTable = props => {
                     <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
                     <th className={darkMode ? 'bg-space-cadet' : ''}>Team Name</th>
                     {canAssignTeamToUsers ? (
-                      <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
-                        {}
-                      </th>
+                      <>
+                        <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
+                        <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
+                          {}
+                        </th>
+                      </>
                     ) : null}
                   </tr>
                 )}
@@ -351,25 +419,40 @@ const UserTeamsTable = props => {
                       <td>{index + 1}</td>
                       <td>{`${team.teamName}`}</td>
                       {props.edit && props.role && (
-                        <td>
-                          <div
-                            style={{
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          >
-                            <Button
+                        <>
+                          <td>
+                            <button
+                              style={darkMode ? {} : boxStyle}
                               disabled={!canAssignTeamToUsers}
-                              color="danger"
-                              onClick={e => {
-                                props.onDeleteClick(team._id);
+                              type="button"
+                              className="btn btn-outline-info"
+                              data-testid="members-btn"
+                              onClick={() => fetchTeamSelected(team._id, team.teamName)}
+                            >
+                              <i className="fa fa-users" aria-hidden="true" />
+                            </button>
+                          </td>
+
+                          <td>
+                            <div
+                              style={{
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
                               }}
                             >
-                              Delete
-                            </Button>
-                          </div>
-                        </td>
+                              <Button
+                                disabled={!canAssignTeamToUsers}
+                                color="danger"
+                                onClick={e => {
+                                  props.onDeleteClick(team._id);
+                                }}
+                              >
+                                Delete
+                              </Button>
+                            </div>
+                          </td>
+                        </>
                       )}
                     </tr>
                   ))
@@ -383,6 +466,6 @@ const UserTeamsTable = props => {
       )}
     </div>
   );
-  };
-  
+};
+
 export default connect(null, { hasPermission })(UserTeamsTable);
