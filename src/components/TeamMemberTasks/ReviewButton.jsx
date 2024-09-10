@@ -107,19 +107,19 @@ const ReviewButton = ({
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
               Ready for Review
             </DropdownToggle>
-            <DropdownMenu>
+            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
             {task.relatedWorkLinks && task.relatedWorkLinks.map((link, index) => (
-              <DropdownItem key={index} href={link} target="_blank">
+              <DropdownItem key={index} href={link} target="_blank" className={darkMode ? 'text-light dark-mode-btn' : ''}>
                 View Link
               </DropdownItem>
             ))}
-            <DropdownItem onClick={() => { setSelectedAction('Complete and Remove'); toggleVerify(); }}>
+            <DropdownItem onClick={() => { setSelectedAction('Complete and Remove'); toggleVerify(); }} className={darkMode ? 'text-light dark-mode-btn' : ''}>
               <FontAwesomeIcon
                 className="team-member-tasks-done"
                 icon={faCheck}
               /> as complete and remove task
             </DropdownItem>
-            <DropdownItem onClick={() => { setSelectedAction('More Work Needed'); toggleVerify()}}>
+            <DropdownItem onClick={() => { setSelectedAction('More Work Needed'); toggleVerify()}} className={darkMode ? 'text-light dark-mode-btn' : ''}>
               More work needed, reset this button
             </DropdownItem>
             </DropdownMenu>

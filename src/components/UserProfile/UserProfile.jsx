@@ -790,7 +790,6 @@ function UserProfile(props) {
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');
   const canSeeQSC = props.hasPermission('seeQSC');
-
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -884,11 +883,7 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-
-            {canSeeQSC && (
               <QuickSetupModal
-                canAddTitle={props.hasPermission('addNewTitle')}
-                canAssignTitle={props.hasPermission('assignTitle')}
                 setSaved={setSaved}
                 handleSubmit={handleSubmit}
                 setUserProfile={setUserProfile}
@@ -897,7 +892,7 @@ function UserProfile(props) {
                 teamsData={props?.allTeams?.allTeamsData || []}
                 projectsData={props?.allProjects?.projects || []}
               />
-            )}
+             
           </Col>
           <Col md="8">
             {!isProfileEqual ||
@@ -1064,7 +1059,7 @@ function UserProfile(props) {
                 canEdit={canEdit || canManageAdminLinks}
                 darkMode={darkMode}
               />
-              <BlueSquareLayout
+               <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}

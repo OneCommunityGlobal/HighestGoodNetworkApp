@@ -19,6 +19,7 @@ import {
   Input,
   Spinner,
 } from 'reactstrap';
+import ReactTooltip from 'react-tooltip';
 import { MultiSelect } from 'react-multi-select-component';
 import './WeeklySummariesReport.css';
 import moment from 'moment';
@@ -407,7 +408,8 @@ export class WeeklySummariesReport extends Component {
 
       const isOverHours =
         !selectedOverTime ||
-        (hoursLogged > 0 &&
+        (summary.weeklycommittedHours > 0 &&
+          hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
       return (
@@ -847,20 +849,39 @@ export class WeeklySummariesReport extends Component {
                 </div>
               )}
               {hasPermissionToFilter && (
-                <div className="filter-style">
-                  <span>Filter by Over Hours {}</span>
-                  <div className="switch-toggle-control">
-                    <input
-                      type="checkbox"
-                      className="switch-toggle"
-                      id="over-hours-toggle"
-                      onChange={this.handleOverHoursToggleChange}
-                    />
-                    <label className="switch-toggle-label" htmlFor="over-hours-toggle">
-                      <span className="switch-toggle-inner" />
-                      <span className="switch-toggle-switch" />
-                    </label>
+                <div>
+                  <div
+                    id="filterOverHoursTooltip"
+                    className="filter-style"
+                    data-tip
+                    data-for="filterTooltip"
+                    style={{ cursor: 'pointer' }}
+                  >
+                    <span>Filter by Over Hours</span>
+                    <div className="custom-control custom-switch custom-control-smaller">
+                      <input
+                        type="checkbox"
+                        className="custom-control-input"
+                        id="over-hours-toggle"
+                        onChange={this.handleOverHoursToggleChange}
+                      />
+                      <label className="custom-control-label" htmlFor="over-hours-toggle">
+                        {}
+                      </label>
+                    </div>
                   </div>
+                  <ReactTooltip
+                    id="filterTooltip"
+                    place="top"
+                    effect="solid"
+                    className="custom-tooltip"
+                  >
+                    <span
+                      style={{ whiteSpace: 'normal', wordWrap: 'break-word', maxWidth: '200px' }}
+                    >
+                      Filter people who contributed more than 25% of their committed hours
+                    </span>
+                  </ReactTooltip>
                 </div>
               )}
             </div>
