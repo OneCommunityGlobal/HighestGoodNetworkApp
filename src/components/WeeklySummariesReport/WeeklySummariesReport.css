@@ -48,49 +48,9 @@
   display: flex;
   flex-direction: row;
 }
-
-@media (min-width: 482px) {
-  .teamcode-wrapper {
-    display: flex;
-    white-space: nowrap;
-    align-items: center;
-  }
-}
-
-.code-alert {
-  margin: 10px 0 0 0;
-  padding: 8px;
-}
-
-.multi-select-filter {
-  .options {
-    max-height: 570px;
-    overflow-y: auto;
-    font-family: 'Courier New', Courier, monospace;
-  }
-
-  .options::-webkit-scrollbar {
-    width: 5px;
-  }
-
-  .options::-webkit-scrollbar-track {
-    background: rgb(0, 0, 0, 0);
-  }
-
-  .options::-webkit-scrollbar-thumb {
-    background: rgb(206, 212, 218);
-    border-radius: 8px;
-  }
-
-  .select-item {
-    padding: 5px 10px;
-    margin-bottom: 0.25rem;
-  }
-
-  .dropdown-container {
-    z-index: 2;
-  }
-}
+/* .text-right{
+  margin
+} */
 
 /**  switch toggle*/
 .switch-toggle-control{
@@ -180,28 +140,23 @@
   display: flex;
   justify-content: flex-end;
 }
+.filter-container-teamcode {
+  display: flex;
+  justify-content: space-between;
+}
+
 
 .filter-style {
-  font-size: 0.8em;
+  font-size: 0.7em;
   display: flex;
   align-items: center;
 }
 
-/* .custom-control-label:hover {
-  cursor: pointer;
-} */
-
-/* .custom-control-label{
-  cursor: pointer;
-} */
 
 .margin-right {
   margin-right: 20px;
 }
 
-/* .custom-control-label {
-  margin-left: 8px;
-} */
 
 .container-wsr-wrapper {
   min-height: 100%;
@@ -215,4 +170,69 @@
   .responsive-font-size {
     font-size: 0.75rem !important;
   }
+  .switch-toggle-control{
+    margin-left: -6px;
+  }
+}
+@media screen and (max-width: 490px) {
+  .responsive-font-size {
+    font-size: 0.5rem !important;
+  }
+  .switch-toggle-control{
+    width: 33px;
+  }
+  
+}
+
+@media screen and (max-width: 400px) {
+  .responsive-font-size {
+    font-size: 0.3rem !important;
+  }  
+  .switch-toggle-control{
+    width: 40px;
+  }
+}
+
+@media (min-width: 482px) {
+  .teamcode-wrapper {
+    display: flex;
+    white-space: nowrap;
+    align-items: center;
+  }
+}
+
+.code-alert {
+  margin: 10px 0 0 0;
+  padding: 8px;
+}
+
+.multi-select-filter {
+  .options {
+    max-height: 570px;
+    overflow-y: auto;
+    font-family: 'Courier New', Courier, monospace;
+  }
+
+  .options::-webkit-scrollbar {
+    width: 5px;
+  }
+
+  .options::-webkit-scrollbar-track {
+    background: rgb(0, 0, 0, 0);
+  }
+
+  .options::-webkit-scrollbar-thumb {
+    background: rgb(206, 212, 218);
+    border-radius: 8px;
+  }
+
+  .select-item {
+    padding: 5px 10px;
+    margin-bottom: 0.25rem;
+  }
+
+  .dropdown-container {
+    z-index: 2;
+  }
+
 }

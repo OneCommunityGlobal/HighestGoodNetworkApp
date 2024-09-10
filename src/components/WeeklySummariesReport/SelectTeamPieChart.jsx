@@ -66,9 +66,19 @@ const renderCustomizedLabel = ({
 export default function SelectTeamPieChart(props) {
   const { chartData, COLORS, total } = props;
   const [radiusSize, setRadiusSize] = useState(150);
+  const [fontSize, setFontSize] = useState(12);
   const updateRadiusSize = () => {
     const width = window.innerWidth;
-    if (width <= 992) {
+    if (width <= 400) {
+      setRadiusSize(30);
+      setFontSize(10);
+    } else if (width <= 500) {
+      setRadiusSize(60);
+      setFontSize(10);
+    } else if (width <= 634) {
+      setRadiusSize(80);
+      setFontSize(10);
+    } else if (width <= 992) {
       setRadiusSize(120);
     } else if (width <= 1180) {
       setRadiusSize(60);
@@ -78,6 +88,7 @@ export default function SelectTeamPieChart(props) {
       setRadiusSize(110);
     } else {
       setRadiusSize(150);
+      setFontSize(15);
     }
   };
   useEffect(() => {
@@ -103,7 +114,7 @@ export default function SelectTeamPieChart(props) {
     );
   }
   return (
-    <ResponsiveContainer width="100%" height={600}>
+    <ResponsiveContainer minWidth={400} height={600}>
       <PieChart>
         <Pie
           data={processedData}
@@ -120,7 +131,7 @@ export default function SelectTeamPieChart(props) {
           endAngle={-270}
           labelLine={false}
           paddingAngle={0}
-          fontSize={10}
+          fontSize={fontSize}
           label={renderCustomizedLabel}
         >
           {processedData.map((entry, index) => (
