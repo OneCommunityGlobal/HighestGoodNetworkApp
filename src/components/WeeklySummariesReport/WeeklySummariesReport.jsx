@@ -761,11 +761,7 @@ export class WeeklySummariesReport extends Component {
           </Row>
         )}
         <Row>
-          <Col
-            lg={{ size: 5, offset: 1 }}
-            md={{ size: 6 }}
-            xs={{ size: 6 }}
-          >
+          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <div className="filter-container-teamcode">
               <div>Select Team Code</div>
               <div className="filter-style">
@@ -782,11 +778,10 @@ export class WeeklySummariesReport extends Component {
                     <span className="switch-toggle-switch" />
                   </label>
                 </div>
+              </div>
             </div>
-            </div>
-            
           </Col>
-          <Col lg={{ size: 6}} md={{ size: 6 }} xs={{ size: 6 }}>
+          <Col lg={{ size: 6 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <div>Select Color</div>
           </Col>
         </Row>
