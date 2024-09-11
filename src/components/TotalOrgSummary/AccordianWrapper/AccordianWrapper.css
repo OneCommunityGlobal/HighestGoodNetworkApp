@@ -23,7 +23,6 @@
   display: block;
   font-weight: 600;
   text-decoration: none;
-  color: black;
   padding-left: 2%;
   font-size: 30px;
 }
@@ -58,5 +57,4 @@
   padding: 5px;
   font-size: 12px;
   background-color: #cbb700;
-  color: black;
 }

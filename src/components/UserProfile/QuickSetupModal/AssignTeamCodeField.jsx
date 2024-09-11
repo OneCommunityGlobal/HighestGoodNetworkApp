@@ -3,9 +3,14 @@ import { Dropdown, Input } from 'reactstrap';
 
 
 const AssignTeamCodeField = React.memo(props => {
-  const [searchText, onInputChange] = useState('');
+  const [searchText, onInputChange] = useState(()=>{
+    if(props.editMode){
+      return props.value
+    }else{
+      return ''
+    }
+  });
   const [isOpen, toggle] = useState(false);
-
   useEffect(() => {
     if (props.selectedTeamCode && props.selectedTeamCode !== searchText) {
       props.onSelectTeamCode(undefined);
@@ -41,16 +46,15 @@ const AssignTeamCodeField = React.memo(props => {
         >
           {[...props.teamCodeData]
                       .filter(teamCode => {
-                          console.log(teamCode);
               if (teamCode.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
                 return teamCode;
               }
             })
             .slice(0, 10)
-            .map(item => (
+            .map((item,index) => (
               <div
                 className="project-auto-complete"
-                key={item._id}
+                key={index}
                 onClick={() => {
                   onInputChange(item);
                   toggle(false);
