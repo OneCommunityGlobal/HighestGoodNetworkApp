@@ -93,7 +93,6 @@ export default function Warning({ personId, username, userRole }) {
   return (
     (userRole === 'Administrator' || userRole === 'Owner') && (
       <div className="warnings-container">
-<<<<<<< HEAD
         <div className="button__container">
           <Button
             className="btn btn-warning warning-btn tracking__btn"
@@ -129,11 +128,6 @@ export default function Warning({ personId, username, userRole }) {
             getUsersWarnings={fetchUsersWarningsById}
           />
         )}
-=======
-        <Button className="btn btn-warning warning-btn ml-auto" size="sm" onClick={handleToggle}>
-          {toggle ? 'Hide' : 'Tracking'}
-        </Button>
->>>>>>> development
 
         <div className="warning-wrapper"> {warnings}</div>
         <div className="error-container">
