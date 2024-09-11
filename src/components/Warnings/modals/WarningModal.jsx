@@ -65,7 +65,6 @@ function WarningModal({
           <Button
             onClick={() => {
               // email will be sent and logged
-              alert('EMAIL SENT!!');
               handleIssueWarning({ ...warning, colorAssigned: 'yellow' });
               setToggleModal(false);
             }}

@@ -17,7 +17,7 @@ import './Warnings.css';
 // Log Time to Action Items (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
 // Intangible Time Log w/o Reason (“i” = ,itlr = The timer should be used for all time logged, so any time logged as intangible must also include in the time log description an explanation for why you didn’t use the timer.
 
-export default function Warning({ personId, username, userRole }) {
+export default function Warning({ personId, username, userRole, displayUser }) {
   const dispatch = useDispatch();
   const [usersWarnings, setUsersWarnings] = useState([]);
 
@@ -58,12 +58,20 @@ export default function Warning({ personId, username, userRole }) {
     todaysDate: dateAssigned,
     warningText,
   }) => {
+    const { firstName, lastName, email } = displayUser;
+    const monitorData = {
+      firstName,
+      lastName,
+      email,
+    };
+
     const data = {
       userId: personId,
       iconId: id,
       color,
       date: dateAssigned,
       description: warningText,
+      monitorData,
     };
 
     dispatch(postWarningByUserId(data)).then(res => {

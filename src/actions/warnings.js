@@ -81,7 +81,7 @@ export const getWarningDescriptions = () => {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
       } else {
-        return { error: 'error occured try again' };
+        return { error: error };
       }
     }
   };
