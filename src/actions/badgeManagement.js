@@ -119,7 +119,7 @@ export const validateBadges = (firstName, lastName) => {
       dispatch(
         getMessage(
           'The Name Find function does not work without entering first and last name. Nice try though.',
-          'danger',
+          'light',
         ),
       );
       setTimeout(() => {
@@ -135,7 +135,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       dispatch(
         getMessage(
           "Um no, that didn't work. Badge Select Function must include actual selection of badges to work. Better luck next time!",
-          'danger',
+          'light',
         ),
       );
       setTimeout(() => {
@@ -152,7 +152,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       dispatch(
         getMessage(
           "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!",
-          'danger',
+          'light',
         ),
       );
       setTimeout(() => {
@@ -175,14 +175,14 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
       dispatch(
         getMessage(
           "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-          'success',
+          'light',
         ),
       );
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
     } catch (e) {
-      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'light'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -196,7 +196,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       dispatch(
         getMessage(
           "Um no, that didn't work. Badge Select Function must include actual selection of badges to work. Better luck next time!",
-          'danger',
+          'light',
         ),
       );
       setTimeout(() => {
@@ -211,7 +211,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       dispatch(
         getMessage(
           "Can't find that user. Step 1 to getting badges: Be in the system. Not in the system? No badges for you!",
-          'danger',
+          'light',
         ),
       );
       setTimeout(() => {
@@ -238,14 +238,14 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       dispatch(
         getMessage(
           "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-          'success',
+          'light',
         ),
       );
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
     } catch (e) {
-      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'light'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -314,14 +314,14 @@ export const sendUpdatedBadgeCollectionReq = async (
     dispatch(
       getMessage(
         "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-        'success',
+        'light',
       ),
     );
     setTimeout(() => {
       dispatch(closeAlert());
     }, 6000);
   } catch (e) {
-    dispatch(getMessage('Oops, something is wrong!', 'danger'));
+    dispatch(getMessage('Oops, something is wrong!', 'light'));
     setTimeout(() => {
       dispatch(closeAlert());
     }, 6000);
@@ -337,14 +337,14 @@ export const changeBadgesByUserID = (userId, badgeCollection) => {
       dispatch(
         getMessage(
           "Awesomesauce! Not only have you increased a person's badges, you've also proportionally increased their life happiness!",
-          'success',
+          'light',
         ),
       );
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
     } catch (e) {
-      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'light'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -358,7 +358,7 @@ export const createNewBadge = newBadge => async dispatch => {
     dispatch(
       getMessage(
         'Awesomesauce! You have successfully uploaded a new badge to the system!',
-        'success',
+        'light',
       ),
     );
     setTimeout(() => {
@@ -367,12 +367,12 @@ export const createNewBadge = newBadge => async dispatch => {
     dispatch(fetchAllBadges());
   } catch (e) {
     if (e.response.status === 403 || 400) {
-      dispatch(getMessage(e.response.data.error, 'danger'));
+      dispatch(getMessage(e.response.data.error, 'light'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
     } else {
-      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'light'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -386,12 +386,12 @@ export const updateBadge = (badgeId, badgeData) => async dispatch => {
     dispatch(fetchAllBadges());
   } catch (e) {
     if (e.response.status === 403 || 400) {
-      dispatch(getMessage(e.response.data.error, 'danger'));
+      dispatch(getMessage(e.response.data.error, 'light'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
     } else {
-      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'light'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
@@ -402,19 +402,19 @@ export const updateBadge = (badgeId, badgeData) => async dispatch => {
 export const deleteBadge = badgeId => async dispatch => {
   try {
     const res = await axios.delete(ENDPOINTS.BADGE_BY_ID(badgeId));
-    dispatch(getMessage(res.data.message, 'success'));
+    dispatch(getMessage(res.data.message, 'light'));
     setTimeout(() => {
       dispatch(closeAlert());
     }, 6000);
     dispatch(fetchAllBadges());
   } catch (e) {
     if (e.response.status === 403 || 400) {
-      dispatch(getMessage(e.response.data.error, 'danger'));
+      dispatch(getMessage(e.response.data.error, 'light'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
     } else {
-      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      dispatch(getMessage('Oops, something is wrong!', 'light'));
       setTimeout(() => {
         dispatch(closeAlert());
       }, 6000);
