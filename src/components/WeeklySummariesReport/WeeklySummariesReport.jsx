@@ -844,19 +844,19 @@ export class WeeklySummariesReport extends Component {
                 </div>
               )}
               {hasPermissionToFilter && (
-                 <div className="filter-style">
-                 <span>Filter by Over Hours {}</span>
-                 <div className="switch-toggle-control">
-                   <input
-                     type="checkbox"
-                     className="switch-toggle"
-                     id="over-hours-toggle"
-                     onChange={this.handleOverHoursToggleChange}
-                   />
-                   <label className="switch-toggle-label" htmlFor="over-hours-toggle">
-                     <span className="switch-toggle-inner" />
-                     <span className="switch-toggle-switch" />
-                   </label>
+                <div className="filter-style">
+                  <span>Filter by Over Hours {}</span>
+                  <div className="switch-toggle-control">
+                    <input
+                      type="checkbox"
+                      className="switch-toggle"
+                      id="over-hours-toggle"
+                      onChange={this.handleOverHoursToggleChange}
+                    />
+                    <label className="switch-toggle-label" htmlFor="over-hours-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
+                    </label>
                   </div>
                   <ReactTooltip
                     id="filterTooltip"

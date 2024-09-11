@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import '../WeeklySummariesReport/TeamChart.css';
+import './TeamChart.css';
 
 function TeamRow({ rowData }) {
   const { type, data } = rowData;
@@ -41,20 +41,14 @@ function TeamChart({ teamData, darkMode }) {
     });
   });
 
-const theadClass = darkMode ? 'thead-dark' : 'thead-light';
+  const theadClass = darkMode ? 'thead-dark' : 'thead-light';
   return (
     <table>
       <thead className={theadClass}>
         <tr>
-          <th>  
-            Name
-          </th>
-          <th>
-            Role
-          </th>
-          <th>
-            Total Members
-          </th>
+          <th>Name</th>
+          <th>Role</th>
+          <th>Total Members</th>
         </tr>
       </thead>
       <tbody>
