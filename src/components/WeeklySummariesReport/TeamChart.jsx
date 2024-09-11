@@ -1,12 +1,12 @@
 import { useEffect } from 'react';
-import './TeamChart.css';
+import '../WeeklySummariesReport/TeamChart.css';
 
 function TeamRow({ rowData }) {
   const { type, data } = rowData;
   if (type === 'team') {
     return (
       <tr>
-        <td colSpan="3" style={{ backgroundColor: data.color, color: 'white' }}>
+        <td colSpan="3" style={{ backgroundColor: data.color, color: 'oxide' }}>
           {data.team}
         </td>
       </tr>
@@ -41,32 +41,18 @@ function TeamChart({ teamData, darkMode }) {
     });
   });
 
+const theadClass = darkMode ? 'thead-dark' : 'thead-light';
   return (
     <table>
-      <thead>
+      <thead className={theadClass}>
         <tr>
-          <th
-            style={{
-              backgroundColor: darkMode ? 'oxide-dark' : 'oxide',
-              color: darkMode ? 'white' : 'black',
-            }}
-          >
+          <th>  
             Name
           </th>
-          <th
-            style={{
-              backgroundColor: darkMode ? 'oxide-dark' : 'oxide',
-              color: darkMode ? 'white' : 'black',
-            }}
-          >
+          <th>
             Role
           </th>
-          <th
-            style={{
-              backgroundColor: darkMode ? 'oxide-dark' : 'oxide',
-              color: darkMode ? 'white' : 'black',
-            }}
-          >
+          <th>
             Total Members
           </th>
         </tr>
