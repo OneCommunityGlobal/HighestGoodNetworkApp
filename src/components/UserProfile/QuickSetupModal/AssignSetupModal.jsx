@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
 import { deleteTitleById } from 'actions/title';
 import { useSelector } from 'react-redux';
@@ -14,6 +14,8 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
     googleDoc: 'Linked is required',
     checkbox: 'Need to be confirmed',
   });
+  const [isGoogleDocValid, setIsGoogleDocValid] = useState(true);
+  const [mediaFolder, setMediaFolder] = useState("")
 console.log("title",title)
   const checkboxOnClick = () => {
     // eslint-disable-next-line no-unused-expressions
@@ -24,12 +26,26 @@ console.log("title",title)
 
   // add QSC into user profile (and needs to save by clicking the save button)
   const setAssignedOnClick = () => {
+    const googleDocRegex = /^https:\/\/docs\.google\.com\/document\/d\/.+$/;
+
+    if (!googleDocRegex.test(googleDoc)) {
+      setWarning(prev => ({ ...prev, googleDoc: 'Invalid Google Doc link' }));
+      setIsGoogleDocValid(false);
+      return;
+    }
     if (validation.volunteerAgree && googleDoc.length !== 0) {
+
       const data = {
         teams: [...userProfile.teams, title.teamAssiged],
         jobTitle: title.titleName,
         projects: [...userProfile.projects, title.projectAssigned],
         teamCode: title.teamCode,
+        adminLinks: userProfile.adminLinks.map(obj => {
+          if(obj.Name == "Media Folder") obj.Link = mediaFolder;
+          if (obj.Name == "Google Doc") obj.Link = googleDoc
+          return obj;
+        } )
+
       };
       // remove duplicate project and teams
       console.log("data",data)
@@ -60,7 +76,24 @@ console.log("title",title)
         console.log(e);
       });
   }
+    // UseEffect to get the media folder when userProfile or isOpen changes
+    useEffect(() => {
+      if (isOpen && userProfile) {
+        getMediaFolder(userProfile);
+      }
+    }, [isOpen, userProfile]);
 
+    const getMediaFolder = (userProfile) => {
+      const currMediaFile = userProfile.adminLinks.find(obj => obj.Name === "Media Folder");
+
+      if (currMediaFile && currMediaFile.Link) {
+        setMediaFolder(currMediaFile.Link);
+      } else {
+        setMediaFolder(userProfile.mediaUrl);
+      }
+    };
+
+  console.log('mediaFolder',mediaFolder)
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
@@ -74,11 +107,11 @@ console.log("title",title)
             <h6>Google Doc: </h6>
           </Label>
           <Input type="text" onChange={e => setGoogleDoc(e.target.value)}></Input>
-          {googleDoc.length !== 0 ? '' : <p className="text-danger">{warning.googleDoc}</p>}
+          {!isGoogleDocValid || googleDoc === ""?  <p className="text-danger">{warning.googleDoc}</p> : null}
 
           <h6>Team Code: {title?.teamCode}</h6>
           <h6>Project Assignment: {title?.projectAssigned?.projectName}</h6>
-          <h6>Media Folder: {title?.mediaFolder}</h6>
+          <h6>Media Folder: {mediaFolder}</h6>
           {title?.teamAssiged?.teamName ? <h6>Team Assignment: {title?.teamAssiged?.teamName}</h6> : '' }
           <div className="container ml-1">
             <Input
