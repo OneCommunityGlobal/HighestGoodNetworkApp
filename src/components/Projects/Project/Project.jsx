@@ -7,6 +7,9 @@ import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';  
+import { modifyProject, clearError } from '../../../actions/projects';
+import ModalTemplate from './../../common/Modal';
+import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
 
 const Project = props => {
   const { darkMode, index } = props;
@@ -14,7 +17,20 @@ const Project = props => {
   const [projectData, setProjectData] = useState(props.projectData);
   const { projectName, category, isActive, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
+  const initialModalData = {
+    showModal: false,
+    modalMessage: "",
+    modalTitle: "",
+    hasConfirmBtn: false,
+    hasInactiveBtn: false,
+  };
 
+  const [modalData, setModalData] = useState(initialModalData);
+
+  const onCloseModal = () => {
+    setModalData(initialModalData);
+    props.clearError();
+  };
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
 
@@ -51,18 +67,38 @@ const Project = props => {
   }
 
   const onArchiveProject = () => {
-    props.onClickArchiveBtn(projectData);
+    setModalData({
+      showModal: true,
+      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
+      modalTitle: CONFIRM_ARCHIVE,
+      hasConfirmBtn: true,
+      hasInactiveBtn: isActive,
+    });
   }
   
+  const setProjectInactive = () => {
+    updateProject('isActive', !isActive);
+    onCloseModal(); 
+  }
+  const confirmArchive = () => {
+    updateProject('isActive', !isActive);
+    onCloseModal(); 
+  };
+
   useEffect(() => {
-    if (firstLoad) {
-      setFirstLoad(false);
-    } else {
-      props.onUpdateProject(projectData)
-    }
+    const onUpdateProject = async () => {
+      if (firstLoad) {
+        setFirstLoad(false);
+      } else {
+        await props.modifyProject(projectData);
+      }
+    };
+
+    onUpdateProject();
   }, [projectData]);
 
   return (
+    <>
     <tr className="projects__tr" id={'tr_' + props.projectId}>
 
       <th className="projects__order--input" scope="row">
@@ -172,7 +208,17 @@ const Project = props => {
         </td>
       ) : null}
     </tr>
+      <ModalTemplate
+          isOpen={modalData.showModal}
+          closeModal={onCloseModal}
+          confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
+          setInactiveModal={modalData.hasInactiveBtn ? setProjectInactive : null}
+          modalMessage={modalData.modalMessage}
+          modalTitle={modalData.modalTitle}
+        />
+    </>
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps, { hasPermission })(Project);
+export default connect(mapStateToProps, { hasPermission, modifyProject, clearError })(Project);
+
