@@ -353,8 +353,8 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
-        <Route path="*" component={notFoundPage} />
         <ProtectedRoute path="/" exact component={Dashboard} />
+        <Route path="*" component={notFoundPage} />
       </Switch>
     </>
   </Switch>
