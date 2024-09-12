@@ -91,6 +91,17 @@ function WarningTrackerModal({
         </Popover>
       );
     }
+
+    if (title === 'isPermanent') {
+      return (
+        <Popover id="details">
+          <Popover.Title as="h4">Information</Popover.Title>
+          <Popover.Content>
+            This warning is permanent and cannot be edited or deleted, it can only be deactivated
+          </Popover.Content>
+        </Popover>
+      );
+    }
     return (
       <Popover id="details">
         <Popover.Title as="h4">Description</Popover.Title>
@@ -139,7 +150,6 @@ function WarningTrackerModal({
 
   const handleEditWarningDescription = (e, warningId) => {
     setWarningEdited(true);
-    console.log('warning was ediited');
 
     const updatedWarningDescriptions = warningDescriptions.map(warning => {
       if (warning._id === warningId) {
@@ -175,16 +185,7 @@ function WarningTrackerModal({
       setWarningWasEdited(true);
     });
   };
-  const handlePermanentWarningClicked = isPermanent => {
-    console.log('warnign', isPermanent);
-    if (isPermanent) {
-      console.log(
-        'This warning is permanent and cannot be edited or deleted, it can only be deactivated',
-      );
 
-      return;
-    }
-  };
   // eslint-disable-next-line no-shadow
   const handleAddNewWarning = (e, newWarning) => {
     e.preventDefault();
@@ -306,28 +307,39 @@ function WarningTrackerModal({
                 </Button>
               </OverlayTrigger>
             )}
-
             <Button
               color="danger"
               className="warning__descriptions__btn"
               onClick={() => handleTriggerDeleteWarningDescription(warning)}
+              disabled={warning.isPermanent}
             >
               <FontAwesomeIcon icon={faTimes} />
             </Button>
-
-            <input
-              type="text"
-              onChange={e => handleEditWarningDescription(e, warning._id)}
-              value={warning.warningTitle}
-              disabled={warning?.disabled || warning.isPermanent}
-              onFocus={e => {
-                handlePermanentWarningClicked(warning.isPermanent);
-              }}
-              placeholder="warning title"
-              className={`warnings__descriptions__title ${
-                warning.activeWarning ? '' : 'warnings__descriptions__title--gray'
-              }`}
-            />
+            {warning.isPermanent ? (
+              <OverlayTrigger
+                placement="top"
+                delay={{ show: 100, hide: 250 }}
+                overlay={handleOverlayTrigger('isPermanent')}
+              >
+                <input
+                  type="text"
+                  value={warning.warningTitle}
+                  disabled={warning?.disabled || warning.isPermanent}
+                  placeholder="warnings__descriptions__title warning title"
+                  className="isPermanent"
+                />
+              </OverlayTrigger>
+            ) : (
+              <input
+                type="text"
+                value={warning.warningTitle}
+                onChange={e => handleEditWarningDescription(e, warning._id)}
+                className={`warnings__descriptions__title ${
+                  warning.activeWarning ? '' : 'warnings__descriptions__title--gray'
+                }`}
+                disabled={warning.disabled}
+              />
+            )}
           </div>
         ))}
         {warningEdited && (
