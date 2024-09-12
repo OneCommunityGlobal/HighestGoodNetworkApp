@@ -23,6 +23,11 @@ export const permissionLabels = [
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
       },
+      {
+        label: 'Edit Header Message',
+        key: 'editHeaderMessage',
+        description: 'Gives the user permission to edit the message displayed in the header',
+      },
     ],
   },
   {
@@ -412,6 +417,45 @@ export const permissionLabels = [
       //   key: 'deletePopup',
       //   description: 'WIP - not implemented',
       // },
+    ],
+  },
+  {
+    label: 'Quick Setup Functions',
+    description: 'Category for permissions related to Quick Setup functions.',
+    subperms: [
+      {
+        label: 'Add New Title',
+        key: 'addNewTitle',
+        description: 'Gives user permission to add new title in quick setup functions.',
+      },
+      {
+        label: 'Assign Title',
+        key: 'assignTitle',
+        description: 'Gives user permission to edit existing title in quick setup functions.',
+      },
+      {
+        label: 'Edit Titles',
+        key: 'editTitle',
+        description: 'Gives user permission to view existing title in quick setup functions.',
+      },
+    ],
+  },
+  {
+    label: 'Misc/Unsorted',
+    description: 'Category for all permissions not related to other categories',
+    subperms: [
+      {
+        label: 'Edit Team 4-Digit Codes',
+        key: 'editTeamCode',
+        description:
+          'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
+      },
+      {
+        label: 'See All Users in Dashboard and Leaderboard',
+        key: 'seeUsersInDashboard',
+        description:
+          'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
     ],
   },
 ];

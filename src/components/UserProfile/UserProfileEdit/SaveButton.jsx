@@ -31,7 +31,7 @@ const stillSavingMessage = 'Saving, will take just a second...';
  * @returns
  */
 const SaveButton = props => {
-  const { handleSubmit, disabled, userProfile, setSaved, darkMode } = props;
+  const {handleSubmit, disabled, userProfile, setSaved, darkMode} = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
   const [isLoading,setIsLoading] = useState(false);

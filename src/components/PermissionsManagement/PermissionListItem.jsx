@@ -40,29 +40,26 @@ function PermissionListItem(props) {
     setinfoRoleModal(!infoRoleModal);
   };
 
-  // eslint-disable-next-line no-shadow
-  const togglePermission = permission => {
-    if (rolePermissions.includes(permission) || immutablePermissions.includes(permission)) {
-      setPermissions(previous => previous.filter(perm => perm !== permission));
+  const togglePermission = permissionKey => {
+    if (rolePermissions.includes(permissionKey) || immutablePermissions.includes(permissionKey)) {
+      setPermissions(previous => previous.filter(perm => perm !== permissionKey));
     } else if (rolePermissions.includes('showModal')) {
-      setPermissions(previous => [...previous, permission]);
+      setPermissions(previous => [...previous, permissionKey]);
     } else {
-      setPermissions(previous => [...previous, permission, 'showModal']);
+      setPermissions(previous => [...previous, permissionKey]);
     }
 
     props.onChange();
   };
 
-  // eslint-disable-next-line no-shadow
-  const setSubpermissions = (subperms, adding) => {
-    // eslint-disable-next-line no-restricted-syntax
-    for (const subperm of subperms) {
+  const setSubpermissions = (recursiveSubperms, adding) => {
+    recursiveSubperms.forEach(subperm => {
       if (subperm.subperms) {
         setSubpermissions(subperm.subperms, adding);
       } else if (adding !== rolePermissions.includes(subperm.key)) {
         togglePermission(subperm.key);
       }
-    }
+    });
   };
 
   // returns 'All', 'None', or 'Some' depending on if that role has that selection of permissions
