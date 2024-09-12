@@ -379,10 +379,10 @@ function TotalTeamReport(props) {
               </tr>
               <tr
                 id={`tr_${team.teamId}_child`}
-                className="teams_child"
+                className={darkMode ? 'teams_child bg-yinmn-blue text-light' : 'teams_child'}
                 key={`${team.teamId}_child`}
               >
-                <td colSpan={3}>Members include: {nameList}</td>
+                <td className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''} colSpan={3}>Members include: {nameList}</td>
               </tr>
             </tbody>
           );
