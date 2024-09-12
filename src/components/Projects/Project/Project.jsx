@@ -66,7 +66,7 @@ const Project = props => {
     <tr className="projects__tr" id={'tr_' + props.projectId}>
 
       <th className="projects__order--input" scope="row">
-        <div>{index + 1}</div>
+        <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
       </th>
 
 
