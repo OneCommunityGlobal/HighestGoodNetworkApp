@@ -25,7 +25,6 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
   // add QSC into user profile (and needs to save by clicking the save button)
   const setAssignedOnClick = () => {
     if (validation.volunteerAgree && googleDoc.length !== 0) {
-      
       const originalTeamId = userProfile.teams.map(team => team._id);
       const originalProjectId = userProfile.projects.map(project => project._id);
       // If the title has team assigned, add the team to the user profile. Remove duplicate teams
@@ -39,8 +38,6 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
         projects: projectAssigned,
         teamCode: title.teamCode,
       };
-      
-
       setUserProfile(prev => ({ ...prev, ...data }));
 
       setTitleOnSet(false);
