@@ -8,6 +8,8 @@ export const ENDPOINTS = {
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
+  ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
+  MODIFY_BLUE_SQUARE: (userId, blueSquareId) => `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   USERS_ALLTEAMCODE_CHANGE : `${APIEndpoint}/AllTeamCodeChanges`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
@@ -94,6 +96,7 @@ export const ENDPOINTS = {
   // TITLES: () => `${APIEndpoint}/title/deleteAll`,
   TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
   CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
+  EDIT_OLD_TITLE:  ()=>`${APIEndpoint}/title/update`,
   DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
 
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
