@@ -64,8 +64,16 @@
   align-items: flex-end;
   padding-bottom: 5px;
   padding-top: 5px;
+  word-wrap: break-word; 
+  overflow-wrap: break-word; 
+  max-width: 100%;
 }
-
+.permission-label {
+  word-break: break-word;
+  white-space: normal; 
+  max-width: calc(100% - 60px); 
+  margin-right: 10px; 
+}
 #info-icon__permissions {
   cursor: pointer;
   align-self: flex-end;

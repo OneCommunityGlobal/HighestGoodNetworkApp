@@ -1,6 +1,6 @@
 /* eslint-disable react/jsx-no-useless-fragment */
 /* eslint-disable no-nested-ternary */
-import { useState, useContext } from 'react';
+import { useState, useContext, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -27,9 +27,19 @@ function PermissionListItem(props) {
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
   const [modalContent, setContent] = useState(null);
+  const [isMobile, setIsMobile] = useState(false);
   const hasThisPermission =
     rolePermissions.includes(permission) || immutablePermissions.includes(permission);
   const { updateModalStatus } = useContext(ModalContext);
+
+  const handleResize = () => {
+    setIsMobile(window.innerWidth <= 768);
+  };
+  useEffect(() => {
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const handleModalOpen = () => {
     setContent(description);
@@ -227,7 +237,7 @@ function PermissionListItem(props) {
             setPermissions={setPermissions}
             // eslint-disable-next-line react/destructuring-assignment
             onChange={props.onChange}
-            depth={depth + 1}
+            depth={isMobile ? depth : depth + 1}
             darkMode={darkMode}
           />
         </li>
