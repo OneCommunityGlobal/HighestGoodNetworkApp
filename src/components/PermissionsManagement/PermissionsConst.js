@@ -68,12 +68,6 @@ export const permissionLabels = [
         description:
           'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
       },
-      {
-        label: 'Submit Weekly Summary for Others',
-        key: 'submitWeeklySummaryForOthers',
-        description:
-          'Gives the manager roles and above the ability to edit other peoples weekly summary.',
-      },
     ],
   },
   {
@@ -123,6 +117,12 @@ export const permissionLabels = [
         key: 'putUserProfileImportantInfo',
         description:
           'Gives the user the ability to modify several protected parts of users profiles. This includes changing admin links,  weekly summary options, committed hours, role, isRehireable, email, date created, bio status, and more. It also allows to circumvent permissions related to assigning teams or projects and changing active status.',
+      },
+      {
+        label: 'Edit Summary Submit Requirement (Others)',
+        key: 'updateSummaryRequirements',
+        description:
+          'Gives the user permission to change the requirement to the user to submit a summary.',
       },
       {
         label: 'Manage Time Off Requests',
