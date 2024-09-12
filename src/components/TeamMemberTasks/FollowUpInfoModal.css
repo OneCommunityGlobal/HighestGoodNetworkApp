@@ -16,7 +16,7 @@
 
 .followup-tooltip {
   visibility: hidden;
-  width: 400px;
+  width: 440px;
   background-color: #333;
   color: #fff;
   text-align: left;
@@ -24,18 +24,17 @@
   padding: 15px;
   position: fixed;
   z-index: 1000;
-  left: 50%;
+  left: 60%;
   top: 50%;
   transform: translate(-50%, -50%);
   opacity: 0;
   transition: opacity 0.3s, visibility 0.3s;
-  max-height: 80vh;
+  max-height: 100vh;
   overflow-y: auto;
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.followup-tooltip-button:hover .followup-tooltip,
-.followup-tooltip-button:focus .followup-tooltip {
+.followup-tooltip-button:hover .followup-tooltip {
   visibility: visible;
   opacity: 1;
 }
@@ -55,5 +54,8 @@
   .followup-tooltip {
     width: 90%;
     max-width: 400px;
+    left: 50%;
+    overflow-y: auto;
+    max-height: 32vh;
   }
 }
