@@ -138,7 +138,6 @@ function LeaderBoard({
     leaderBoardData.length > 0 && teamsUsers.length === 0 && setTeamsUsers(leaderBoardData);
   }, [leaderBoardData]);
   // prettier-ignore
-  useEffect(() => { setFilteredUsers(teamsUsers)}, [teamsUsers]);
 
   useEffect(() => {
     setInnerWidth(window.innerWidth);
