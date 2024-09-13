@@ -1,6 +1,6 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import './Leaderboard.css';
-import { isEqual } from 'lodash';
+import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
 import {
   Table,
@@ -86,7 +86,6 @@ function LeaderBoard({
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-
   const isOwner = ['Owner'].includes(loggedInUser.role);
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
@@ -111,8 +110,8 @@ function LeaderBoard({
   const refTeam = useRef([]);
   const refInput = useRef('');
 
-  const [searchInput] = useState('');
-  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [searchInput, setSearchInput] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
 
   useEffect(() => {
     const fetchInitial = async () => {
@@ -257,7 +256,7 @@ function LeaderBoard({
       };
 
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
-      Event(new Event('storage'));
+      window.dispatchEvent(new Event('storage'));
       dashboardClose();
     });
   };
@@ -322,6 +321,27 @@ function LeaderBoard({
 
   const toastError = () =>
     toast.error('Please wait for the users to appear in the Leaderboard table.');
+
+  useEffect(() => {
+    setFilteredUsers(teamsUsers);
+    return () => {
+      setSearchInput('');
+    };
+  }, [teamsUsers]);
+
+  const debouncedFilterUsers = useCallback(
+    debounce(query => {
+      setFilteredUsers(
+        teamsUsers.filter(user => user.name.toLowerCase().includes(query.toLowerCase())),
+      );
+    }, 1000),
+    [teamsUsers],
+  );
+
+  const handleSearch = e => {
+    setSearchInput(e.target.value);
+    debouncedFilterUsers(e.target.value);
+  };
 
   return (
     <div>
@@ -469,6 +489,7 @@ function LeaderBoard({
             type="text"
             placeholder="Search users..."
             value={searchInput}
+            onChange={handleSearch}
           />
         </div>
         <Table
@@ -593,7 +614,18 @@ function LeaderBoard({
                     }}
                   >
                     {/* <Link to={`/dashboard/${item.personId}`}> */}
-                    <div role="button" tabIndex={0}>
+                    <div
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => {
+                        dashboardToggle(item);
+                      }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter') {
+                          dashboardToggle(item);
+                        }
+                      }}
+                    >
                       {hasLeaderboardPermissions(item.role) &&
                       showStar(item.tangibletime, item.weeklycommittedHours) ? (
                         <i
