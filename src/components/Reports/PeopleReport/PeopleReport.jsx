@@ -28,7 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import { updateRehireableStatus } from '../../../actions/userManagement'
+import { updateRehireableStatus } from '../../../actions/userManagement';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -122,7 +122,6 @@ class PeopleReport extends Component {
           ...timeEntries,
         },
       });
-
     }
   }
 
@@ -291,7 +290,6 @@ class PeopleReport extends Component {
     // eslint-disable-next-line no-unused-vars
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
-
 
     let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
@@ -523,7 +521,7 @@ class PeopleReport extends Component {
               className="people-report-time-log-block"
               darkMode={darkMode}
             >
-              <h3 className='text-light'>{weeklycommittedHours}</h3>
+              <h3 className="text-light">{weeklycommittedHours}</h3>
               <p>Weekly Committed Hours</p>
             </ReportPage.ReportBlock>
 
@@ -536,7 +534,7 @@ class PeopleReport extends Component {
                 className="people-report-time-log-block"
                 darkMode={darkMode}
               >
-                <h3 className='text-light'>{tangibleHoursReportedThisWeek}</h3>
+                <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
                 <p>Hours Logged This Week</p>
               </ReportPage.ReportBlock>
             )}
@@ -547,7 +545,7 @@ class PeopleReport extends Component {
               className="people-report-time-log-block"
               darkMode={darkMode}
             >
-              <h3 className='text-light'>{infringements.length}</h3>
+              <h3 className="text-light">{infringements.length}</h3>
               <p>Blue squares</p>
             </ReportPage.ReportBlock>
             <ReportPage.ReportBlock
@@ -556,13 +554,12 @@ class PeopleReport extends Component {
               className="people-report-time-log-block"
               darkMode={darkMode}
             >
-              <h3 className='text-light'>{totalTangibleHrsRound}</h3>
+              <h3 className="text-light">{totalTangibleHrsRound}</h3>
               <p>Total Hours Logged</p>
             </ReportPage.ReportBlock>
           </div>
 
           <PeopleTasksPieChart darkMode={darkMode} />
-
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
               <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
@@ -581,7 +578,12 @@ class PeopleReport extends Component {
                     timeEntries={timeEntries}
                   />
                   <div className="visualizationDiv">
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
+                    <TimeEntriesViz
+                      timeEntries={timeEntries}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                      darkMode={darkMode}
+                    />
                   </div>
                   <div className="visualizationDiv">
                     <InfringementsViz
@@ -597,10 +599,15 @@ class PeopleReport extends Component {
                         authId={auth.user.userid}
                         userId={match.params.userId}
                         badges={userProfile.badgeCollection}
+                        personalBestMaxHrs={userProfile.personalBestMaxHrs}
                       />
                     </div>
                     <div className="BadgeSummaryPreviewDiv">
-                      <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
+                      <BadgeSummaryPreview
+                        badges={userProfile.badgeCollection}
+                        darkMode={darkMode}
+                        personalBestMaxHrs={userProfile.personalBestMaxHrs}
+                      />
                     </div>
                   </div>
                 </div>
