@@ -26,9 +26,10 @@ import moment from 'moment';
 import 'moment-timezone';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { toast } from 'react-toastify';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
+import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
@@ -38,6 +39,7 @@ import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import SelectTeamPieChart from './SelectTeamPieChart';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -59,6 +61,11 @@ export class WeeklySummariesReport extends Component {
     super(props);
 
     this.state = {
+      tableData: [],
+      structuredTableData: [],
+      chartData: [],
+      total: 0,
+      COLORS: [],
       loading: true,
       summaries: [],
       activeTab: navItems[1],
@@ -76,6 +83,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      chartShow: false,
       replaceCode: '',
       replaceCodeError: null,
       replaceCodeLoading: false,
@@ -129,6 +137,28 @@ export class WeeklySummariesReport extends Component {
     const teamCodes = [];
     const colorOptionGroup = new Set();
     const colorOptions = [];
+    const COLORS = [
+      '#e8a71c',
+      '#0088FE',
+      '#43BFC7',
+      '#08b493',
+      '#c861c8',
+      '#FFBB28',
+      '#76916a',
+      '#ac4f7c',
+      '#E2725B',
+      '#6B8E23',
+      '#253342',
+      '#43a5be',
+      '#7698B3',
+      '#F07857',
+      '#87CEEB',
+      '#FF8243',
+      '#4169E1',
+      '#009999',
+      '#9ACD32',
+      '#C8A2C8',
+    ];
 
     summariesCopy.forEach(summary => {
       const code = summary.teamCode || 'noCodeLabel';
@@ -165,6 +195,7 @@ export class WeeklySummariesReport extends Component {
         label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
         _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
       });
+    const chartData = [];
     this.setState({
       loading,
       allRoleInfo: [],
@@ -176,6 +207,9 @@ export class WeeklySummariesReport extends Component {
       badges: allBadgeData,
       hasSeeBadgePermission: badgeStatusCode === 200,
       filteredSummaries: summariesCopy,
+      tableData: teamCodeGroup,
+      chartData,
+      COLORS,
       colorOptions,
       teamCodes,
       auth,
@@ -338,34 +372,6 @@ export class WeeklySummariesReport extends Component {
     return 0;
   };
 
-  handleRefresh = async () => {
-    this.setState({ loading: true });
-
-    try {
-      const res = await this.props.getWeeklySummariesReport();
-      const summaries = res?.data ?? this.props.summaries;
-
-      const summariesCopy = this.alphabetize(summaries);
-      const updatedSummaries = summariesCopy.map(summary => {
-        const promisedHoursByWeek = this.weekDates.map(weekDate =>
-          this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-        );
-        return { ...summary, promisedHoursByWeek };
-      });
-
-      this.setState({
-        loading: false,
-        summaries: updatedSummaries,
-        filteredSummaries: updatedSummaries,
-      });
-
-      toast.success('Successfully Updated Weekly Summaries Report');
-    } catch (error) {
-      this.setState({ loading: false });
-      toast.error('Failed to update Weekly Summaries Report');
-    }
-  };
-
   toggleTab = tab => {
     const { activeTab } = this.state;
     if (activeTab !== tab) {
@@ -381,7 +387,12 @@ export class WeeklySummariesReport extends Component {
       summaries,
       selectedOverTime,
       selectedBioStatus,
+      tableData,
+      COLORS,
     } = this.state;
+    const chartData = [];
+    let temptotal = 0;
+    const structuredTeamTableData = [];
 
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
@@ -409,7 +420,80 @@ export class WeeklySummariesReport extends Component {
         isBio
       );
     });
+
+    if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
+      if (selectedCodes.length >= 52) {
+        selectedCodes.forEach(code => {
+          if (code.value === '') return;
+          chartData.push({
+            name: code.label,
+            value: temp.filter(summary => summary.teamCode === code.value).length,
+          });
+          const team = tableData[code.value];
+          const index = selectedCodesArray.indexOf(code.value);
+          const color = COLORS[index % COLORS.length];
+          const members = [];
+          team.forEach(member => {
+            members.push({
+              name: `${member.firstName} ${member.lastName}`,
+              role: member.role,
+              id: member._id,
+            });
+          });
+          structuredTeamTableData.push({ team: code.value, color, members });
+        });
+      } else {
+        chartData.push({
+          name: 'All With NO Code',
+          value: temp.filter(summary => summary.teamCode === '').length,
+        });
+        const team = tableData.noCodeLabel;
+        const index = selectedCodesArray.indexOf('noCodeLabel');
+        const color = COLORS[index % COLORS.length];
+        const members = [];
+        team.forEach(member => {
+          members.push({
+            name: `${member.firstName} ${member.lastName}`,
+            role: member.role,
+            id: member._id,
+          });
+        });
+        structuredTeamTableData.push({ team: 'noCodeLabel', color, members });
+      }
+    } else {
+      selectedCodes.forEach(code => {
+        const val = temp.filter(summary => summary.teamCode === code.value).length;
+        if (val > 0) {
+          chartData.push({
+            name: code.label,
+            value: val,
+          });
+        }
+
+        const team = tableData[code.value];
+        const index = selectedCodesArray.indexOf(code.value);
+        const color = COLORS[index % COLORS.length];
+        const members = [];
+        if (team !== undefined) {
+          team.forEach(member => {
+            members.push({
+              name: `${member.firstName} ${member.lastName}`,
+              role: member.role,
+              id: member._id,
+            });
+          });
+          structuredTeamTableData.push({ team: code.value, color, members });
+        }
+      });
+    }
+
+    chartData.sort();
+    temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
+    structuredTeamTableData.sort();
+    this.setState({ total: temptotal });
     this.setState({ filteredSummaries: temp });
+    this.setState({ chartData });
+    this.setState({ structuredTableData: structuredTeamTableData });
   };
 
   handleSelectCodeChange = event => {
@@ -429,6 +513,12 @@ export class WeeklySummariesReport extends Component {
         this.filterWeeklySummaries();
       },
     );
+  };
+
+  handleChartStatusToggleChange = () => {
+    this.setState(prevState => ({
+      chartShow: !prevState.chartShow,
+    }));
   };
 
   handleBioStatusToggleChange = () => {
@@ -585,7 +675,12 @@ export class WeeklySummariesReport extends Component {
       filteredSummaries,
       colorOptions,
       teamCodes,
+      structuredTableData,
+      chartData,
+      total,
+      COLORS,
       auth,
+      chartShow,
       replaceCode,
       replaceCodeError,
       replaceCodeLoading,
@@ -624,7 +719,6 @@ export class WeeklySummariesReport extends Component {
         </Container>
       );
     }
-
     return (
       <Container
         fluid
@@ -639,15 +733,6 @@ export class WeeklySummariesReport extends Component {
             <h3 className="mt-3 mb-5">
               <div className="d-flex align-items-center">
                 <span className="mr-2">Weekly Summaries Reports page</span>
-                <i
-                  data-toggle="tooltip"
-                  data-placement="right"
-                  title="Click to refresh the report"
-                  style={{ fontSize: 24, cursor: 'pointer' }}
-                  aria-hidden="true"
-                  className={`fa fa-refresh ${this.state.loading ? 'animation' : ''} mr-2`}
-                  onClick={this.handleRefresh}
-                />
                 <EditableInfoModal
                   areaName="WeeklySummariesReport"
                   areaTitle="Weekly Summaries Report"
@@ -675,9 +760,33 @@ export class WeeklySummariesReport extends Component {
             </Button>
           </Row>
         )}
-        <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 5, offset: 1 }} xs={{ size: 5, offset: 1 }}>
-            Select Team Code
+        <Row>
+          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
+            <div className="filter-container-teamcode">
+              <div>Select Team Code</div>
+              <div className="filter-style">
+                <span>Show Chart</span>
+                <div className="switch-toggle-control">
+                  <input
+                    type="checkbox"
+                    className="switch-toggle"
+                    id="chart-status-toggle"
+                    onChange={this.handleChartStatusToggleChange}
+                  />
+                  <label className="switch-toggle-label" htmlFor="chart-status-toggle">
+                    <span className="switch-toggle-inner" />
+                    <span className="switch-toggle-switch" />
+                  </label>
+                </div>
+              </div>
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }} md={{ size: 6 }} xs={{ size: 6 }}>
+            <div>Select Color</div>
+          </Col>
+        </Row>
+        <Row>
+          <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <MultiSelect
               className="multi-select-filter text-dark"
               options={teamCodes}
@@ -688,8 +797,7 @@ export class WeeklySummariesReport extends Component {
               labelledBy="Select"
             />
           </Col>
-          <Col lg={{ size: 5 }} xs={{ size: 5 }}>
-            Select Color
+          <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
             <MultiSelect
               className="multi-select-filter text-dark"
               options={colorOptions}
@@ -700,46 +808,55 @@ export class WeeklySummariesReport extends Component {
             />
           </Col>
         </Row>
+        {chartShow && (
+          <Row>
+            <Col lg={{ size: 6, offset: 1 }} md={{ size: 12 }} xs={{ size: 11 }}>
+              <SelectTeamPieChart
+                chartData={chartData}
+                COLORS={COLORS}
+                total={total}
+                style={{ width: '100%' }}
+              />
+            </Col>
+            <Col lg={{ size: 4 }} md={{ size: 12 }} xs={{ size: 11 }} style={{ width: '100%' }}>
+              <TeamChart teamData={structuredTableData} darkMode={darkMode} />
+            </Col>
+          </Row>
+        )}
         <Row style={{ marginBottom: '10px' }}>
-          <Col g={{ size: 10, offset: 1 }} xs={{ size: 10, offset: 1 }}>
+          <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
             <div className="filter-container">
               {(hasPermissionToFilter || this.canSeeBioHighlight) && (
                 <div className="filter-style margin-right">
                   <span>Filter by Bio Status</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
+                  <div className="switch-toggle-control">
                     <input
                       type="checkbox"
-                      className="custom-control-input"
+                      className="switch-toggle"
                       id="bio-status-toggle"
                       onChange={this.handleBioStatusToggleChange}
                     />
-                    <label className="custom-control-label" htmlFor="bio-status-toggle">
-                      {}
+                    <label className="switch-toggle-label" htmlFor="bio-status-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
                     </label>
                   </div>
                 </div>
               )}
               {hasPermissionToFilter && (
-                <div>
-                  <div
-                    id="filterOverHoursTooltip"
-                    className="filter-style"
-                    data-tip
-                    data-for="filterTooltip"
-                    style={{ cursor: 'pointer' }}
-                  >
-                    <span>Filter by Over Hours</span>
-                    <div className="custom-control custom-switch custom-control-smaller">
-                      <input
-                        type="checkbox"
-                        className="custom-control-input"
-                        id="over-hours-toggle"
-                        onChange={this.handleOverHoursToggleChange}
-                      />
-                      <label className="custom-control-label" htmlFor="over-hours-toggle">
-                        {}
-                      </label>
-                    </div>
+                <div className="filter-style">
+                  <span>Filter by Over Hours {}</span>
+                  <div className="switch-toggle-control">
+                    <input
+                      type="checkbox"
+                      className="switch-toggle"
+                      id="over-hours-toggle"
+                      onChange={this.handleOverHoursToggleChange}
+                    />
+                    <label className="switch-toggle-label" htmlFor="over-hours-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
+                    </label>
                   </div>
                   <ReactTooltip
                     id="filterTooltip"
@@ -897,6 +1014,7 @@ const mapDispatchToProps = dispatch => ({
   getWeeklySummariesReport: () => dispatch(getWeeklySummariesReport()),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
+  getAllUserTeams: () => dispatch(getAllUserTeams()),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
