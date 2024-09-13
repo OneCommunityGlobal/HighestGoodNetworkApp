@@ -121,6 +121,7 @@ function Announcements() {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
       }
+      setHeaderContent(''); // Clear the input field after inserting the header
   };
 
   const validateEmail = (email) => {
@@ -128,7 +129,7 @@ function Announcements() {
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
   };
-  
+
   const handleSendEmails = () => {
     const htmlContent = emailContent;
     
@@ -186,7 +187,7 @@ function Announcements() {
             <hr />
             <p>Insert header or image link</p>
             <div style={{ overflow: 'hidden' }}>
-              <input type="text" onChange={handleHeaderContentChange} className='input-text-for-announcement'/>
+              <input type="text" onChange={handleHeaderContentChange} value={headerContent} className='input-text-for-announcement'/>
             </div>
             <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
               Insert
