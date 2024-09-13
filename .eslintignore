@@ -20,6 +20,7 @@ src/components/AutoReload/**
 src/components/Badge/**
 src/components/common/**
 src/components/Header/**
+src/components/BiddingDashboard/**
 src/components/BMDashboard/BMHeader/**
 src/components/MonthlyEffort/**
 src/components/ProfileLinks/**
