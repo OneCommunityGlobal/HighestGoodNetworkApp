@@ -15,7 +15,7 @@ const Project = props => {
   const { darkMode, index } = props;
   const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName, category, isActive, _id: projectId } = projectData;
+  const { projectName, category, isActive,isArchived, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
   const initialModalData = {
     showModal: false,
@@ -81,7 +81,7 @@ const Project = props => {
     onCloseModal(); 
   }
   const confirmArchive = () => {
-    updateProject('isActive', !isActive);
+    updateProject('isArchived', !isArchived);
     onCloseModal(); 
   };
 
@@ -202,6 +202,7 @@ const Project = props => {
             className="btn btn-outline-danger"
             onClick={onArchiveProject}
             style={darkMode ? {} : boxStyle}
+            disabled = {isArchived}
           >
             {ARCHIVE}
           </button>
