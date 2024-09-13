@@ -11,6 +11,7 @@ export const ENDPOINTS = {
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) => `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   USERS_ALLTEAMCODE_CHANGE : `${APIEndpoint}/AllTeamCodeChanges`,
+  USER_AUTOCOMPLETE: (searchText) => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
