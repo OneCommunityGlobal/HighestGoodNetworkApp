@@ -54,14 +54,17 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
   const toggle = () => setIsOpen(prev => !prev);
 
   return (
-    <div>
-      <Button
-        onClick={toggle}
-        style={darkMode ? boxStyleDark : boxStyle}
-        className={`${dashboard && 'btn--dark-sea-green float-right'}`}
-      >
-        {dashboard ? 'Badge Report' : 'Show Badges'}
-      </Button>
+    <div className="w-100">
+      <div className="d-flex justify-content-end mb-3">
+        <Button
+          onClick={toggle}
+          style={darkMode ? boxStyleDark : boxStyle}
+          className={`px-3 py-2 text-nowrap ${dashboard &&
+            'btn--dark-sea-green float-right mx-auto'}`}
+        >
+          <span className="d-none d-sm-inline">{dashboard ? 'Badge Report' : 'Show Badges'}</span>
+        </Button>
+      </div>
       <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light' : ''}>
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -84,19 +87,41 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                       sortedBadges &&
                       sortedBadges.map(
                         (value, index) =>
+                        value =>
                           value && (
                             <tr key={value.badge._id}>
                               <td className="badge_image_sm">
                                 {' '}
-                                <BadgeImage
-                                  personalBestMaxHrs={personalBestMaxHrs}
-                                  count={value.count}
-                                  badgeData={value.badge}
-                                  index={index}
-                                  // key={index}
-                                  cssSuffix="_viz"
+                                <img
+                                  src={value.badge.imageUrl}
+                                  id={`popover_${value.badge._id}`}
+                                  alt="badge"
                                 />
                               </td>
+                              <UncontrolledPopover
+                                trigger="hover"
+                                target={`popover_${value.badge._id}`}
+                              >
+                                <Card className="text-center">
+                                  <CardImg
+                                    className="badge_image_lg"
+                                    src={value?.badge?.imageUrl}
+                                  />
+                                  <CardBody>
+                                    <CardTitle
+                                      style={{
+                                        fontWeight: 'bold',
+                                        fontSize: 18,
+                                        color: '#285739',
+                                        marginBottom: 15,
+                                      }}
+                                    >
+                                      {value.badge?.badgeName}
+                                    </CardTitle>
+                                    <CardText>{value.badge?.description}</CardText>
+                                  </CardBody>
+                                </Card>
+                              </UncontrolledPopover>
                               <td>{value.badge.badgeName}</td>
                               <td>
                                 {typeof value.lastModified === 'string'
@@ -114,9 +139,9 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                                     Dates
                                   </DropdownToggle>
                                   <DropdownMenu>
-                                    {value.earnedDate.map((date, valIndex) => (
+                                    {value.earnedDate.map((date, index) => (
                                       // eslint-disable-next-line react/no-array-index-key
-                                      <DropdownItem key={`date-${value._id}-${valIndex}`}>
+                                      <DropdownItem key={`date-${value._id}-${index}`}>
                                         {date}
                                       </DropdownItem>
                                     ))}
@@ -175,20 +200,38 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                     {badges && badges.length ? (
                       sortedBadges &&
                       sortedBadges.map(
-                        (value, index) =>
+                        value =>
                           value && (
                             <tr key={value._id}>
                               <td className="badge_image_sm">
                                 {' '}
-                                <BadgeImage
-                                  personalBestMaxHrs={personalBestMaxHrs}
-                                  count={value.count}
-                                  badgeData={value.badge}
-                                  index={index}
-                                  // key={index}
-                                  cssSuffix="_viz"
+                                <img
+                                  src={value?.badge.imageUrl}
+                                  id={`popover_${value._id}`}
+                                  alt="badge"
                                 />
                               </td>
+                              <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                                <Card className="text-center">
+                                  <CardImg
+                                    className="badge_image_lg"
+                                    src={value?.badge?.imageUrl}
+                                  />
+                                  <CardBody>
+                                    <CardTitle
+                                      style={{
+                                        fontWeight: 'bold',
+                                        fontSize: 18,
+                                        color: '#285739',
+                                        marginBottom: 15,
+                                      }}
+                                    >
+                                      {value?.badge?.badgeName}
+                                    </CardTitle>
+                                    <CardText>{value?.badge?.description}</CardText>
+                                  </CardBody>
+                                </Card>
+                              </UncontrolledPopover>
                               <td>{value?.badge?.badgeName}</td>
                               <td>
                                 {typeof value.lastModified === 'string'
