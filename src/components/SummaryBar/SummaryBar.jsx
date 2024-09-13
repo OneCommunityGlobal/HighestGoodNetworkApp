@@ -35,9 +35,7 @@ const SummaryBar = props => {
   const location = useLocation();
 
   useEffect(() => {
-    // prettier-ignore
-    const isCallOpenSuggestionModal = location.search === '?openModalReport' && openSuggestionModal();
-    console.log(isCallOpenSuggestionModal);
+    location.search === '?openModalReport' && openSuggestionModal();
   }, []);
 
   // from parent
