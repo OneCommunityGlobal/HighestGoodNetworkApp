@@ -123,6 +123,7 @@ export default function HoursCompletedBarChart({ data, darkMode }) {
         maxY={maxY}
         tickInterval={tickInterval}
         renderCustomizedLabel={renderCustomizedLabel}
+        darkMode={darkMode}
       />
     </div>
   );

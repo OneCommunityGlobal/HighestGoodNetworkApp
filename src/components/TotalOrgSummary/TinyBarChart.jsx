@@ -10,7 +10,7 @@ import {
 } from 'recharts';
 
 export default function TinyBarChart(props) {
-  const { chartData, maxY, tickInterval, renderCustomizedLabel } = props;
+  const { chartData, maxY, tickInterval, renderCustomizedLabel, darkMode } = props;
   return (
     <ResponsiveContainer maxWidth={600} maxHeight={600} minWidth={180} minHeight={320}>
       <BarChart
@@ -20,8 +20,9 @@ export default function TinyBarChart(props) {
           bottom: 20,
         }}
       >
-        <XAxis dataKey="name" />
+        <XAxis dataKey="name" stroke={darkMode ? 'white' : 'gray'} />
         <YAxis
+          stroke={darkMode ? 'white' : 'gray'}
           domain={[0, maxY]}
           axisLine={false}
           tickLine={false}
