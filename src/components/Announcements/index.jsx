@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import './Announcements.css';
-https://github.com/OneCommunityGlobal/HighestGoodNetworkApp/pull/2575/conflict?name=src%252Fcomponents%252FAnnouncements%252Findex.jsx&ancestor_oid=d359cf24954d0b51edd6e545a22d5b1090958f8a&base_oid=22ef56aa7038df9c99072943db323b9b57fa671c&head_oid=fa2258c5f8876ad3212a6ba44d33d37be18de1e9import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -116,13 +116,12 @@ function Announcements() {
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-
       const editor = tinymce.get('email-editor');
       if (editor) {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
       }
-      setHeaderContent(''); // Clear the input field after inserting the header
+      //setHeaderContent(''); // Clear the input field after inserting the header
   };
 
   const validateEmail = (email) => {
@@ -188,7 +187,7 @@ function Announcements() {
             <hr />
             <p>Insert header or image link</p>
             <div style={{ overflow: 'hidden' }}>
-              <input type="text" onChange={handleHeaderContentChange} value={headerContent} className='input-text-for-announcement'/>
+              <input type="text" onChange={handleHeaderContentChange} className='input-text-for-announcement'/>
             </div>
             <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
               Insert
