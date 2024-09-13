@@ -10,29 +10,61 @@ import {
   Label,
   Input,
 } from 'reactstrap';
-import { addTitle } from '../../../actions/title';
+import { addTitle, editTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
 import AssignTeamCodeField from './AssignTeamCodeField';
 import { useSelector } from 'react-redux';
 import "../../Header/DarkMode.css"
+import { useEffect } from 'react';
 
-function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData, setWarningMessage, setShowMessage }) {
+function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, projectsData, setWarningMessage, setShowMessage,editMode,title }) {
   const darkMode = useSelector(state => state.theme.darkMode)
-
-  const [titleData, setTitleData] = useState({
-    titleName: '',
-    mediaFolder: '',
-    teamCode: '',
-    projectAssigned: '',
-    // teamAssiged: {},
+  const [titleData, setTitleData] = useState(()=>{
+    if(editMode && Object.keys(title).length!==0){
+      return {
+        id:title._id,
+        titleName: title.titleName,
+        mediaFolder: title.mediaFolder,
+        teamCode: title.teamCode,
+        projectAssigned: title.projectAssigned,
+        teamAssiged:title.teamAssiged==undefined?{teamName:'',_id:''}:title.teamAssiged
+      }
+    }else
+    return {
+      titleName: '',
+      mediaFolder: '',
+      teamCode: '',
+      projectAssigned: '',
+      teamAssiged:{}
+    }
   });
+  useEffect(()=>{
+    if(editMode && Object.keys(title).length!==0){
+      setTitleData({
+        id:title._id,
+        titleName: title.titleName,
+        mediaFolder: title.mediaFolder,
+        teamCode: title.teamCode,
+        projectAssigned: title.projectAssigned,
+        teamAssiged:title.teamAssiged,
+      })
+    }else
+    setTitleData({
+      titleName: '',
+      mediaFolder: '',
+      teamCode: '',
+      projectAssigned: '',
+      teamAssiged: {}
+    })
+  },[title])
 
   let existTeamCodes = new Set();
   let existTeamName = new Set();
-  if (teamsData?.allTeamCode) {
-    const codes = teamsData.allTeamCode.map(team => team.teamCode);
-    const names = teamsData.allTeamCode.map(team => team.teamName);
+
+  if (teamsData?.allTeams) {
+    const codes = teamsData.allTeams.map(team =>team.teamCode);
+    const names = teamsData.allTeams.map(team => team.teamName);
     existTeamCodes = new Set(codes);
     existTeamName = new Set(names);
   }
@@ -44,8 +76,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
   const selectProject = project => {
     onSelectProject(project);
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData( ({
+      ...titleData,
       projectAssigned: {
         projectName: project.projectName,
         _id: project._id,
@@ -55,17 +87,18 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     onValidation(true);
   };
 
+
   const selectTeamCode = teamCode => {
     onSelectTeamCode(teamCode);
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData( ({
+      ...titleData,
       teamCode: teamCode,
     }));
   };  
 
   const cleanProjectAssign = () => {
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData( ({
+      ...titleData,
       projectAssigned: "",
     }));
   };
@@ -83,8 +116,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   };
 
   const cleanTeamCodeAssign = () => {
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData( ({
+      ...titleData,
       teamCode: "",
     }));
   };
@@ -97,8 +130,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   };
 
   const undoTeamAssigned = () => {
-    setTitleData(prev => ({
-      ...prev,
+    setTitleData(({
+      ...titleData,
       teamAssiged: {
         teamName: searchText,
         _id: "N/A",
@@ -109,12 +142,12 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
   // confirm and save
     const confirmOnClick = () => {
-    // debugger;
-    const isValidTeamName = onTeamNameValidation(selectedTeam);
+    const isValidTeamName = onTeamNameValidation(titleData.teamAssiged);
     if (!isValidTeamName) {
-      return;
+        return;
     }
-    addTitle(titleData)
+    if(editMode){
+      editTitle(titleData)
       .then((resp) => {
         if (resp.status !== 200) {
           setWarningMessage({ title: "Error", content: resp.message });
@@ -127,6 +160,23 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
       .catch(e => {
         console.log(e);
       });
+      
+    }else{ 
+
+      addTitle(titleData)
+      .then((resp) => {
+        if (resp.status !== 200) {
+          setWarningMessage({ title: "Error", content: resp.message });
+          setShowMessage(true);
+        } else {
+          setIsOpen(false);
+          refreshModalTitles();
+        };
+      })
+      .catch(e => {
+        console.log(e);
+      });
+    }
   };
 
   const onTeamCodeValidation = (teamCode) => {
@@ -137,21 +187,20 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     if (!isValidFormat) {
       setWarningMessage({ title: "Error", content: "Invalid Team Code Format" });
       setShowMessage(true);
-      setTitleData(prev => ({ ...prev, teamCode: '' }));
+      setTitleData(({ ...titleData, teamCode: '' }));
       return;
     } 
     if(!existTeamCodes.has(teamCode)) {
       setWarningMessage({ title: "Error", content: "Team Code Not Exists" });
       setShowMessage(true);
-      setTitleData(prev => ({ ...prev, teamCode: '' }));
+      setTitleData(({ ...titleData, teamCode: '' }));
       return;
     }
     setShowMessage(false);
   }
 
   const onTeamNameValidation = (teamName) => {
-    if (teamName !== '') {
-      // debugger;
+    if (teamName && teamName !== '') {
       if (!existTeamName.has(teamName.teamName)) {
         setWarningMessage({ title: "Error", content: "Team Name Not Exists" });
         setShowMessage(true);
@@ -168,7 +217,10 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
 
   return (
     <Modal isOpen={isOpen} toggle={() => setIsOpen(false)} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader toggle={() => setIsOpen(false)} className={darkMode ? "bg-space-cadet" : ""}>Add A New Title</ModalHeader>
+
+      {editMode?
+      <ModalHeader toggle={() => setIsOpen(false)} className={darkMode ? "bg-space-cadet" : ""}>Edit Title</ModalHeader>
+      :<ModalHeader toggle={() => setIsOpen(false)} className={darkMode ? "bg-space-cadet" : ""}>Add A New Title</ModalHeader>}
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <FormGroup>
@@ -177,9 +229,10 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               type="text"
               name="text"
               id="mediafolder"
+              value={titleData.titleName}
               onChange={e => {
                 e.persist();
-                setTitleData(prev => ({ ...prev, titleName: e.target.value }));
+                setTitleData(({ ...titleData, titleName: e.target.value }));
               }}
             />
 
@@ -188,9 +241,10 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               type="text"
               name="text"
               id="mediafolder"
+              value={titleData.mediaFolder}
               onChange={e => {
                 e.persist();
-                setTitleData(prev => ({ ...prev, mediaFolder: e.target.value }));
+                setTitleData({ ...titleData, mediaFolder: e.target.value });
               }}
             />
             <Label className={fontColor}>Team Code<span className='qsm-modal-required'>*</span>:</Label>
@@ -210,6 +264,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               selectedTeamCode={selectedTeamCode}
               cleanTeamCodeAssign={cleanTeamCodeAssign}
               onSelectTeamCode={onSelectTeamCode}
+              editMode={editMode}
+              value={titleData.teamCode}
             />
 
             <Label className={fontColor}>Project Assignment<span className='qsm-modal-required'>*</span>:</Label>
@@ -219,6 +275,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               selectedProject={selectedProject}
               cleanProjectAssign={cleanProjectAssign}
               onSelectProject={onSelectProject}
+              editMode={editMode}
+              value={titleData.projectAssigned}
             />
             <Label className={fontColor}>Team Assignment:</Label>
             <AssignTeamField
@@ -230,6 +288,8 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
               cleanTeamAssigned={cleanTeamAssigned}
               onSelectTeam={onSelectTeam}
               undoTeamAssigned={undoTeamAssigned}
+              editMode={editMode}
+              value={titleData.teamAssiged}
             />
           </FormGroup>
         </Form>

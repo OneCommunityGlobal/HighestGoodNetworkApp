@@ -86,7 +86,7 @@ export default function Warning({ personId, username, userRole }) {
   return (
     (userRole === 'Administrator' || userRole === 'Owner') && (
       <div className="warnings-container">
-        <Button className="btn btn-warning warning-btn" size="sm" onClick={handleToggle}>
+        <Button className="btn btn-warning warning-btn ml-auto" size="sm" onClick={handleToggle}>
           {toggle ? 'Hide' : 'Tracking'}
         </Button>
 
