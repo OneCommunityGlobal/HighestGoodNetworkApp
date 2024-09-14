@@ -105,6 +105,9 @@
   justify-content: space-around;
 }
 
+.dashboard-team-clocks{
+  color: #339CFF !important;
+}
 
 .team-clocks-header {
   height: 73.5px;
