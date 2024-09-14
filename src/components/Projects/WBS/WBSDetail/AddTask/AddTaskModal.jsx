@@ -338,7 +338,7 @@ function AddTaskModal(props) {
             Reset
           </button>
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
           <table className={`table table-bordered responsive ${fontColor}`}>
             <tbody>
               <tr>
@@ -687,7 +687,7 @@ function AddTaskModal(props) {
           </table>
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button color="primary" onClick={addNewTask} disabled={taskName === '' || hoursWarning || isLoading} style={darkMode ? boxStyleDark : boxStyle}>
+          <Button color="primary" onClick={addNewTask} disabled={taskName === '' || hoursWarning || isLoading || startDateError || endDateError} style={darkMode ? boxStyleDark : boxStyle}>
             {isLoading ? "Adding Task..." : "Save"}
           </Button>
         </ModalFooter>

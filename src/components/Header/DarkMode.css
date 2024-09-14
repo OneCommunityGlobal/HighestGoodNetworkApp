@@ -19,3 +19,35 @@
   color: #f0f0f0;
   opacity: 1; 
 }
+
+/* Dark mode for DayPicker (AddTaskModal) */
+.dark-mode .DayPicker {
+  background-color: #3A506B;
+  color: #ffffff;
+}
+/* .dark-mode .DayPicker-wrapper {
+  background-color: #1C2541;
+} */
+.dark-mode .DayPicker-Caption {
+  color: #ffffff;
+}
+.dark-mode .DayPicker-NavButton {
+  /* background: none; */
+}
+.dark-mode .DayPicker-Month {
+  background-color: #3A506B;
+}
+.dark-mode .DayPicker-NavButton--prev::before,
+.dark-mode .DayPicker-NavButton--next::before {
+  border-color: #ffffff;
+}
+.dark-mode .DayPicker-Day {
+  color: #ffffff;
+}
+.dark-mode .DayPicker-Weekday {
+  color: #ffffff;
+}
+.dark-mode .DayPicker-Day:hover {
+  background-color: #1C2541 !important; /* Remove background color on hover */
+  color: #ffffff !important; /* Ensure text color remains white */
+}
