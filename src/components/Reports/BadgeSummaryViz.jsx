@@ -11,7 +11,7 @@ import {
   UncontrolledDropdown,
   DropdownMenu,
   DropdownItem,
-  UncontrolledTooltip,
+  UncontrolledTooltip
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import BadgeImage from 'components/Badge/BadgeImage';
@@ -47,24 +47,22 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
         setSortedBadges([]);
       }
     } catch (error) {
-      setSortedBadges([]);
+       console.log(error);
     }
+   
   }, [badges]);
 
   const toggle = () => setIsOpen(prev => !prev);
 
   return (
-    <div className="w-100">
-      <div className="d-flex justify-content-end mb-3">
-        <Button
-          onClick={toggle}
-          style={darkMode ? boxStyleDark : boxStyle}
-          className={`px-3 py-2 text-nowrap ${dashboard &&
-            'btn--dark-sea-green float-right mx-auto'}`}
-        >
-          <span className="d-none d-sm-inline">{dashboard ? 'Badge Report' : 'Show Badges'}</span>
-        </Button>
-      </div>
+    <div>
+      <Button
+        onClick={toggle}
+        style={darkMode ? boxStyleDark : boxStyle}
+        className={`${dashboard && 'btn--dark-sea-green float-right'}`}
+      >
+        {dashboard ? 'Badge Report' : 'Show Badges'}
+      </Button>
       <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light' : ''}>
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Badge Summary</ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -83,96 +81,82 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                     </tr>
                   </thead>
                   <tbody>
-                    {badges && badges.length > 0 ? (
+                    {badges && badges.length>0 ? (
                       sortedBadges &&
-                      sortedBadges.map(
-                        (value, index) =>
-                        value =>
-                          value && (
-                            <tr key={value.badge._id}>
-                              <td className="badge_image_sm">
-                                {' '}
-                                <img
-                                  src={value.badge.imageUrl}
-                                  id={`popover_${value.badge._id}`}
-                                  alt="badge"
-                                />
-                              </td>
-                              <UncontrolledPopover
-                                trigger="hover"
-                                target={`popover_${value.badge._id}`}
-                              >
-                                <Card className="text-center">
-                                  <CardImg
-                                    className="badge_image_lg"
-                                    src={value?.badge?.imageUrl}
-                                  />
-                                  <CardBody>
-                                    <CardTitle
-                                      style={{
-                                        fontWeight: 'bold',
-                                        fontSize: 18,
-                                        color: '#285739',
-                                        marginBottom: 15,
-                                      }}
-                                    >
-                                      {value.badge?.badgeName}
-                                    </CardTitle>
-                                    <CardText>{value.badge?.description}</CardText>
-                                  </CardBody>
-                                </Card>
-                              </UncontrolledPopover>
-                              <td>{value.badge.badgeName}</td>
-                              <td>
-                                {typeof value.lastModified === 'string'
-                                  ? value.lastModified.substring(0, 10)
-                                  : value.lastModified.toLocaleString().substring(0, 10)}
-                              </td>
-                              <td style={{ display: 'flex', alignItems: 'center' }}>
-                                {' '}
-                                <UncontrolledDropdown className="me-2" direction="down">
-                                  <DropdownToggle
-                                    caret
-                                    color="primary"
-                                    style={darkMode ? boxStyleDark : boxStyle}
-                                  >
-                                    Dates
-                                  </DropdownToggle>
-                                  <DropdownMenu>
-                                    {value.earnedDate.map((date, index) => (
-                                      // eslint-disable-next-line react/no-array-index-key
-                                      <DropdownItem key={`date-${value._id}-${index}`}>
-                                        {date}
-                                      </DropdownItem>
-                                    ))}
-                                  </DropdownMenu>
-                                </UncontrolledDropdown>
-                                {value?.hasBadgeDeletionImpact &&
-                                value?.hasBadgeDeletionImpact === true ? (
-                                  <>
-                                    <span
-                                      id="mismatchExplainationTooltip"
-                                      style={{ paddingLeft: '3px' }}
-                                    >
-                                      {'  '} *
-                                    </span>
-                                    <UncontrolledTooltip
-                                      placement="bottom"
-                                      target="mismatchExplainationTooltip"
-                                      style={{ maxWidth: '300px' }}
-                                    >
-                                      This record contains a mismatch in the badge count and
-                                      associated dates. It indicates that a badge has been deleted.
-                                      Despite the deletion, we retain the earned date to ensure a
-                                      record of the badge earned for historical purposes.
-                                    </UncontrolledTooltip>
-                                  </>
-                                ) : null}
-                              </td>
-                              <td>{value.count}</td>
-                            </tr>
-                          ),
-                      )
+                      sortedBadges.map(value => value &&(
+                        <tr key={value.badge._id}>
+                          <td className="badge_image_sm">
+                            {' '}
+                            <img
+                              src={value.badge.imageUrl}
+                              id={`popover_${value.badge._id}`}
+                              alt="badge"
+                            />
+                          </td>
+                          <UncontrolledPopover
+                            trigger="hover"
+                            target={`popover_${value.badge._id}`}
+                          >
+                            <Card className="text-center">
+                              <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                              <CardBody>
+                                <CardTitle
+                                  style={{
+                                    fontWeight: 'bold',
+                                    fontSize: 18,
+                                    color: '#285739',
+                                    marginBottom: 15,
+                                  }}
+                                >
+                                  {value.badge?.badgeName}
+                                </CardTitle>
+                                <CardText>{value.badge?.description}</CardText>
+                              </CardBody>
+                            </Card>
+                          </UncontrolledPopover>
+                          <td>{value.badge.badgeName}</td>
+                          <td>
+                            {typeof value.lastModified === 'string'
+                              ? value.lastModified.substring(0, 10)
+                              : value.lastModified.toLocaleString().substring(0, 10)}
+                          </td>
+                          <td style={{ display: 'flex', alignItems: 'center' }}>
+                            <>
+                              {' '}
+                              <UncontrolledDropdown className="me-2" direction="down">
+                                <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
+                                  Dates
+                                </DropdownToggle>
+                                <DropdownMenu>
+                                  {value.earnedDate.map((date, index) => (
+                                    // eslint-disable-next-line react/no-array-index-key
+                                    <DropdownItem key={`date-${value._id}-${index}`}>
+                                      {date}
+                                    </DropdownItem>
+                                  ))}
+                                </DropdownMenu>
+                              </UncontrolledDropdown>
+                              {value?.hasBadgeDeletionImpact && value?.hasBadgeDeletionImpact === true ?
+                              (<>
+                                <span id="mismatchExplainationTooltip" style={{paddingLeft: '3px'}}>
+                                  {'  '} *
+                                </span>
+                                <UncontrolledTooltip
+                                  placement="bottom"
+                                  target="mismatchExplainationTooltip"
+                                  style={{ maxWidth: '300px' }}
+                                >
+                                  This record contains a mismatch in the badge count and associated dates. It indicates that a badge has been deleted. 
+                                  Despite the deletion, we retain the earned date to ensure a record of the badge earned for historical purposes.
+                                </UncontrolledTooltip>
+                              </>)
+                              : null
+                              } 
+                            </>
+                          </td>
+                          <td>{value.count}</td>
+                        </tr>
+                      ))
                     ) : (
                       <tr>
                         <td colSpan={5} style={{ textAlign: 'center' }}>{`${
@@ -187,9 +171,9 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
             {/* --- TABLET VERSION OF MODAL --- */}
             <div className="tablet">
               <div style={{ overflow: 'auto', height: '68vh' }}>
-                <Table className={darkMode ? 'text-light dark-mode' : ''}>
+                <Table  className={darkMode ? 'text-light dark-mode' : ''}>
                   <thead style={{ zIndex: '10' }}>
-                    <tr style={{ zIndex: '10' }} className={darkMode ? 'bg-space-cadet' : ''}>
+                    <tr style={{ zIndex: '10' }}  className={darkMode ? 'bg-space-cadet' : ''}>
                       <th style={{ width: '25%' }}>Badge</th>
                       <th style={{ width: '25%' }}>Name</th>
                       <th style={{ width: '25%' }}>Modified</th>
@@ -199,49 +183,43 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
                   <tbody>
                     {badges && badges.length ? (
                       sortedBadges &&
-                      sortedBadges.map(
-                        value =>
-                          value && (
-                            <tr key={value._id}>
-                              <td className="badge_image_sm">
-                                {' '}
-                                <img
-                                  src={value?.badge.imageUrl}
-                                  id={`popover_${value._id}`}
-                                  alt="badge"
-                                />
-                              </td>
-                              <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                                <Card className="text-center">
-                                  <CardImg
-                                    className="badge_image_lg"
-                                    src={value?.badge?.imageUrl}
-                                  />
-                                  <CardBody>
-                                    <CardTitle
-                                      style={{
-                                        fontWeight: 'bold',
-                                        fontSize: 18,
-                                        color: '#285739',
-                                        marginBottom: 15,
-                                      }}
-                                    >
-                                      {value?.badge?.badgeName}
-                                    </CardTitle>
-                                    <CardText>{value?.badge?.description}</CardText>
-                                  </CardBody>
-                                </Card>
-                              </UncontrolledPopover>
-                              <td>{value?.badge?.badgeName}</td>
-                              <td>
-                                {typeof value.lastModified === 'string'
-                                  ? value.lastModified.substring(0, 10)
-                                  : value.lastModified.toLocaleString().substring(0, 10)}
-                              </td>
-                              <td>{value?.count}</td>
-                            </tr>
-                          ),
-                      )
+                      sortedBadges.map(value => value &&(
+                        <tr key={value._id}>
+                          <td className="badge_image_sm">
+                            {' '}
+                            <img
+                              src={value?.badge.imageUrl}
+                              id={`popover_${value._id}`}
+                              alt="badge"
+                            />
+                          </td>
+                          <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                            <Card className="text-center">
+                              <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
+                              <CardBody>
+                                <CardTitle
+                                  style={{
+                                    fontWeight: 'bold',
+                                    fontSize: 18,
+                                    color: '#285739',
+                                    marginBottom: 15,
+                                  }}
+                                >
+                                  {value?.badge?.badgeName}
+                                </CardTitle>
+                                <CardText>{value?.badge?.description}</CardText>
+                              </CardBody>
+                            </Card>
+                          </UncontrolledPopover>
+                          <td>{value?.badge?.badgeName}</td>
+                          <td>
+                            {typeof value.lastModified === 'string'
+                              ? value.lastModified.substring(0, 10)
+                              : value.lastModified.toLocaleString().substring(0, 10)}
+                          </td>
+                          <td>{value?.count}</td>
+                        </tr>
+                      ))
                     ) : (
                       <tr>
                         <td colSpan={4} style={{ textAlign: 'center' }}>{`${
