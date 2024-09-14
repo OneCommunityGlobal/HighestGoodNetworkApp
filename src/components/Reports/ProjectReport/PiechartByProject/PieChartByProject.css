@@ -1,7 +1,7 @@
-/* General Styles */
 .pie-chart-title {
   text-align: center;
   margin-bottom: 24px;
+  color: white; /* Ensure title text is white in dark mode */
 }
 
 .pie-chart-description {
@@ -12,23 +12,31 @@
   flex-direction: row;
   width: 100%;
   margin-bottom: 16px;
-  padding: 0; /* Remove padding to avoid the box effect */
-  background-color: transparent; /* Remove background color */
+  padding: 0;
+  background-color: transparent;
+  color: white; /* Ensure description text is white */
 }
 
-/* Ensure the text color is dark in light mode and light in dark mode */
 .pie-chart-checkbox {
-  margin-left: 8px; /* Space between label and checkbox */
+  margin-left: 8px; 
 }
 
-/* General text color for dark mode */
-/* Add this to your CSS file */
 .dark-mode .all-time-total-text {
-  color: #000000; /* Black text */
+  color: white; /* Ensure the 'all-time-total-text' is white in dark mode */
 }
 
-/* Remove background color differences */
 .dark-mode .pie-chart-description {
-  background-color: transparent; /* Ensure there's no background */
-  color: inherit; /* Inherit the text color from the parent */
+  background-color: transparent;
+  color: white; /* Apply white text color in dark mode */
+}
+
+/* Additional styling for general text in dark mode */
+.dark-mode label,
+.dark-mode h5,
+.dark-mode p {
+  color: white !important; /* Set all labels, headings, and paragraphs to white in dark mode */
+}
+
+.dark-mode .switchContainer {
+  color: white; /* Text in switch container in dark mode */
 }
