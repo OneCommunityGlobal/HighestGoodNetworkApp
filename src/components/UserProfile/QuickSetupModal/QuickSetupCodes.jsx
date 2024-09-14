@@ -1,26 +1,33 @@
-function QuickSetupCodes({ titles, setShowAssignModal, setTitleOnClick,setShowAddTitle,editMode,assignMode }) {
+function QuickSetupCodes({
+  titles,
+  setShowAssignModal,
+  setTitleOnClick,
+  setShowAddTitle,
+  editMode,
+  assignMode,
+}) {
   return (
     <div className="blueSquares mt-3" id="qsc-outer-wrapper">
-      {titles.map((title) => (
+      {titles.map(title => (
         <div
           key={title._id}
           role="button"
           id="wrapper"
-          className="role-button bg-warning"
+          className="role-button"
           onClick={() => {
-            if(editMode){
-              setShowAddTitle(true)
-            }else if(assignMode){
+            if (editMode) {
+              setShowAddTitle(true);
+            } else if (assignMode) {
               setShowAssignModal(true);
             }
             setTitleOnClick(title);
           }}
           value={title.titleName}
         >
-          {title?.shortName}
-          <div className="title">
+          {title?.titleName.substring(0, 5)}
+          {/* <div className="title">
             <span className="setup-title-name">{title?.titleName}</span>
-          </div>
+          </div> */}
         </div>
       ))}
     </div>
