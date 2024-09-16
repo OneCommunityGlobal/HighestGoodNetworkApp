@@ -80,9 +80,14 @@ const Projects = function(props) {
     props.clearError();
   };
 
+  const handleProjectArchived = () => {
+    props.fetchAllProjects();
+  };
+
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
-    const projectList = projects.filter(project => {
+    const filteredProjects = projects.filter(project => !project.isArchived)
+      .filter(project => {
       if (categorySelectedForSort && showStatus){
         return project.category === categorySelectedForSort && project.isActive === showStatus;
       } else if (categorySelectedForSort) {
@@ -108,10 +113,11 @@ const Projects = function(props) {
           index={index}
           projectData={project}
           darkMode={darkMode}
+          onProjectArchived={handleProjectArchived}
         />
     ));
-    setProjectList(projectList);
-    setAllProjects(projectList);
+    setProjectList(filteredProjects);
+    setAllProjects(filteredProjects);
   }
 
   useEffect(() => {

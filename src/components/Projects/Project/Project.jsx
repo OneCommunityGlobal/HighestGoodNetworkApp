@@ -82,6 +82,7 @@ const Project = props => {
   }
   const confirmArchive = () => {
     updateProject('isArchived', !isArchived);
+    props.onProjectArchived();
     onCloseModal(); 
   };
 
