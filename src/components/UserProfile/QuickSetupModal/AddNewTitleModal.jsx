@@ -63,11 +63,13 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
   let existTeamName = new Set();
 
   if (teamsData?.allTeams) {
-    const codes = teamsData.allTeams.map(team =>team.teamCode);
     const names = teamsData.allTeams.map(team => team.teamName);
-    existTeamCodes = new Set(codes);
+    // Use allTeamCode rather than allTeams since team code is not related to records in the Team table.
+    // It is all distinct team codes from the UserProfile teamCode field.
+    existTeamCodes = new Set(teamsData?.allTeamCode?.distinctTeamCodes);
     existTeamName = new Set(names);
   }
+  
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
   const [selectedTeamCode, onSelectTeamCode] = useState(undefined);
@@ -179,25 +181,6 @@ function AddNewTitleModal({ isOpen, setIsOpen, refreshModalTitles, teamsData, pr
     }
   };
 
-  const onTeamCodeValidation = (teamCode) => {
-    const format1 = /^[A-Za-z]-[A-Za-z]{3}$/;
-    const format2 = /^[A-Z]{5}$/;
-    // Check if the input value matches either of the formats
-    const isValidFormat = format1.test(teamCode) || format2.test(teamCode);
-    if (!isValidFormat) {
-      setWarningMessage({ title: "Error", content: "Invalid Team Code Format" });
-      setShowMessage(true);
-      setTitleData(({ ...titleData, teamCode: '' }));
-      return;
-    } 
-    if(!existTeamCodes.has(teamCode)) {
-      setWarningMessage({ title: "Error", content: "Team Code Not Exists" });
-      setShowMessage(true);
-      setTitleData(({ ...titleData, teamCode: '' }));
-      return;
-    }
-    setShowMessage(false);
-  }
 
   const onTeamNameValidation = (teamName) => {
     if (teamName && teamName !== '') {
