@@ -20,6 +20,11 @@
   opacity: 1; 
 }
 
+.no-hover tr:hover {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
 /* Dark mode for DayPicker (AddTaskModal) */
 .dark-mode .DayPicker {
   background-color: #3A506B;

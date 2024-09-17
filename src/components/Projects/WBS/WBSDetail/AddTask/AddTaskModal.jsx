@@ -338,7 +338,7 @@ function AddTaskModal(props) {
             Reset
           </button>
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode no-hover' : ''}>
           <table className={`table table-bordered responsive ${fontColor}`}>
             <tbody>
               <tr>
