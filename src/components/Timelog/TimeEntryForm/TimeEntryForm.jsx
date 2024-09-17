@@ -31,12 +31,18 @@ import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css'
 
+// Images are not allowed in timelog
+const customImageUploadHandler = () =>
+  new Promise((_, reject) => {
+    // eslint-disable-next-line prefer-promise-reject-errors
+    reject({ message: 'Pictures are not allowed here!', remove: true });
+  });
+
 const TINY_MCE_INIT_OPTIONS = {
   license_key: 'gpl',
   menubar: false,
   placeholder: 'Description (10-word minimum) and reference link',
-  plugins:
-    'advlist autolink autoresize lists link charmap table paste help wordcount',
+  plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
   toolbar:
     'bold italic underline link removeformat | bullist numlist outdent indent |\
                     styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
@@ -46,6 +52,7 @@ const TINY_MCE_INIT_OPTIONS = {
   max_height: 300,
   autoresize_bottom_margin: 1,
   content_style: 'body { cursor: text !important; }',
+  images_upload_handler: customImageUploadHandler,
 };
 
 /**
@@ -70,7 +77,7 @@ const TINY_MCE_INIT_OPTIONS = {
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile, darkMode } = props;
   // props from store
   const { authUser } = props;
 
