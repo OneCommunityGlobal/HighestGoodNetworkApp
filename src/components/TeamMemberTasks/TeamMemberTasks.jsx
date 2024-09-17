@@ -525,11 +525,7 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   return (
-    <div
-      className={`container team-member-tasks ${
-        darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
-      }`}
-    >
+    <div className={`container-fluid team-member-tasks ${darkMode ? " bg-space-cadet border-left border-right border-secondary" : ""}`}>
       <header className="header-box">
         <section className="d-flex flex-column">
           <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
@@ -690,14 +686,9 @@ const TeamMemberTasks = React.memo(props => {
           </Col>
         </Row>
       )}
-      <div className="task_table-container">
-        <Table
-          className={`task-table ${darkMode ? 'dark-teammember-row' : 'light-teammember-row'}`}
-        >
-          <thead
-            className={`pc-component ${darkMode ? 'bg-space-cadet' : ''}`}
-            style={{ position: 'sticky', top: 0 }}
-          >
+      <div className="task_table-container table-responsive">
+        <Table className='task-table'>
+          <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
               <th
                 colSpan={3}

@@ -734,15 +734,13 @@ export class WeeklySummary extends Component {
           darkMode ? 'bg-space-cadet text-azure box-shadow-dark' : 'bg--white-smoke'
         }`}
       >
-        <h3 className="mb-4">Weekly Summaries</h3>
+        <h3>Weekly Summaries</h3>
         {/* Before clicking Save button, summariesCountShowing is 0 */}
-        <Row className="mb-4 mx-auto align-items-center">
-          <Col xs={12} sm={6} className="mb-2 p-0 mb-sm-0">
-          <span className="responsive-font-size">
+        <Row className="w-100 ml-1">
+          <Col className="pl-0">
             Total submitted: {summariesCountShowing || formElements.weeklySummariesCount}
-          </span>
           </Col>
-          <Col xs={12} sm={6} className="text-sm-right p-0">
+          <Col className="text-right">
             <Button
               className="btn--dark-sea-green responsive-font-size"
               onClick={this.handleClose}
@@ -773,7 +771,7 @@ export class WeeklySummary extends Component {
           </Nav>
           <TabContent
             activeTab={activeTab}
-            className={`p-3 weeklysummarypane ${darkMode ? ' bg-yinmn-blue border-light' : ''}`}
+            className={`p-2 weeklysummarypane ${darkMode ? ' bg-yinmn-blue border-light' : ''}`}
           >
             {Object.keys(summariesLabels).map((summaryName, i) => {
               const tId = String(i + 1);
