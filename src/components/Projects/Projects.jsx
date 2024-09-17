@@ -126,6 +126,7 @@ const Projects = function(props) {
   // Fetch autocomplete suggestions
   useEffect(() => {
     const fetchSuggestions = async () => {
+      try {
       if (debouncedSearchName) {
         const userSuggestions = await props.getUserByAutocomplete(debouncedSearchName);
         if (userSuggestions) {
@@ -136,6 +137,11 @@ const Projects = function(props) {
       } else {
         setSuggestions([]); // Clear suggestions when input is cleared
       }
+    }
+    catch (error) {
+      console.error("Error fetching user suggestions:", error);
+      setSuggestions([]); // Clearing suggestions on error
+    }
     };
 
     fetchSuggestions();
@@ -143,20 +149,25 @@ const Projects = function(props) {
 
   // Handle selection of a user from suggestions
   const handleSelectSuggestion = async (user) => {
-    setSearchName(`${user.firstName} ${user.lastName}`);
-    setSelectedUser(user); // Store selected user
+    try {
+      setSearchName(`${user.firstName} ${user.lastName}`);
+      setSelectedUser(user); // Store selected user
 
-    // Fetch projects by selected user's name
-    const userProjects = await props.getProjectsByUsersName(`${user.firstName} ${user.lastName}`);
+      // Fetch projects by selected user's name
+      const userProjects = await props.getProjectsByUsersName(`${user.firstName} ${user.lastName}`);
 
 
-    if (userProjects) {
-      const newProjectList = allProjects.filter(project => 
-        userProjects.some(p => p === project.key)
-      );
-      setProjectList(newProjectList);
-    }else{
-      setProjectList(allProjects);
+      if (userProjects) {
+        const newProjectList = allProjects.filter(project => 
+          userProjects.some(p => p === project.key)
+        );
+        setProjectList(newProjectList);
+      }else{
+        setProjectList(allProjects);
+      }
+    } catch (error) {
+      console.error("Error fetching projects for selected user:", error);
+      setProjectList(allProjects); // Showing all projects on error
     }
   };
 
