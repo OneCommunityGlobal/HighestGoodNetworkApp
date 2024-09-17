@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   fetchAllProjects,
@@ -124,8 +124,7 @@ const Projects = function(props) {
   };
 
   // Fetch autocomplete suggestions
-  useEffect(() => {
-    const fetchSuggestions = async () => {
+  const fetchSuggestions = useCallback(async () => {
       try {
       if (debouncedSearchName) {
         const userSuggestions = await props.getUserByAutocomplete(debouncedSearchName);
@@ -142,11 +141,12 @@ const Projects = function(props) {
       console.error("Error fetching user suggestions:", error);
       setSuggestions([]); // Clearing suggestions on error
     }
-    };
+  }, [debouncedSearchName, props.getUserByAutocomplete]);
 
+  useEffect(() => {
     fetchSuggestions();
-  }, [debouncedSearchName]);
-
+  }, [fetchSuggestions]);
+  
   // Handle selection of a user from suggestions
   const handleSelectSuggestion = async (user) => {
     try {
