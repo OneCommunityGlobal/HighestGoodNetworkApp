@@ -8,7 +8,13 @@ export default function SearchProjectByPerson({ onSearch, suggestions, onSelectS
   const handleInputChange = ({ target: { value } }) => {
     setInputValue(value);
     onSearch(value); // Trigger search in the parent component
-    setShowSuggestions(true); // Show suggestions when the user types
+    if (value.trim() === '') {
+      // When input is cleared, notify the parent to reset the project list
+      onSelectSuggestion(null); // Pass null or reset value to parent to fetch all projects
+      setShowSuggestions(false); // Hide suggestions if input is empty
+    } else {
+      setShowSuggestions(true); // Show suggestions when the user types
+    }
   };
 
   // Handle when a suggestion is clicked

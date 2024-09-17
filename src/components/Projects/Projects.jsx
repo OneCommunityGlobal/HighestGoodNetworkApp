@@ -146,16 +146,24 @@ const Projects = function(props) {
   useEffect(() => {
     fetchSuggestions();
   }, [fetchSuggestions]);
-  
+
   // Handle selection of a user from suggestions
   const handleSelectSuggestion = async (user) => {
+
+    if (!user) {
+      // If the user is null, reset to show all projects
+      setSearchName(''); // Clear search name
+      setProjectList(allProjects); // Reset project list to all projects
+      setSelectedUser(null); // Clear selected user
+      return;
+    } 
+
     try {
       setSearchName(`${user.firstName} ${user.lastName}`);
       setSelectedUser(user); // Store selected user
 
       // Fetch projects by selected user's name
       const userProjects = await props.getProjectsByUsersName(`${user.firstName} ${user.lastName}`);
-
 
       if (userProjects) {
         const newProjectList = allProjects.filter(project => 
