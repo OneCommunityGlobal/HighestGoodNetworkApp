@@ -168,9 +168,8 @@ const SummaryBar = props => {
   const [report, setBugReport] = useState(initialInfo);
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(
-    displayUserProfile?.weeklySummaryOption === 'Not Required',
-  );
+  
+  const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(displayUserProfile?.weeklySummaryOption === "Not Required");
 
   // Similar to UserProfile component function
   // Loads component depending on displayUserId passed as prop
@@ -409,25 +408,16 @@ const SummaryBar = props => {
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
-  return displayUserProfile !== undefined && summaryBarData !== undefined ? (
-    <Container
-      fluid
-      className={
-        'px-lg-0 rounded ' +
-        (isAuthUser || canEditData()
-          ? darkMode
-            ? 'bg-space-cadet text-light box-shadow-dark'
-            : 'bg--bar text--black box-shadow-light'
-          : darkMode
-          ? 'bg-space-cadet disabled-bar text-light box-shadow-dark'
-          : 'bg--bar disabled-bar text--black box-shadow-light')
-      }
-      style={{ width: '97%' }}
-    >
-      <Row className="no-gutters row-eq-height">
-        <Col
-          className="d-flex justify-content-center align-items-center col-lg-2 col-12 text-list"
-          align="center"
+  return (
+    displayUserProfile !== undefined && summaryBarData !== undefined
+    ? <Container
+          fluid
+          className={"px-lg-0 rounded " + (
+            isAuthUser || canEditData()
+              ? (darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'bg--bar text--black box-shadow-light')
+              : (darkMode ? 'bg-space-cadet disabled-bar text-light box-shadow-dark' : 'bg--bar disabled-bar text--black box-shadow-light'))
+          }
+          style={{width: '97%'}}
         >
           <div>
             <font className="align-middle" size="3">
@@ -524,53 +514,32 @@ const SummaryBar = props => {
                 </div>
               )
             ) : (
-              <div className={`border-green col-4 bg--dark-green`}>
-                <div className="py-1"> </div>
-                <p
-                  onClick={props.toggleSubmitForm}
-                  className="text-center large_text_summary summary-toggle"
+                <div
+                  className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                  style={{border: "1px solid black"}}
                 >
-                  ✓
-                </p>
-                <font className="text-center" size="3">
-                  SUMMARY
-                </font>
-                <div className="py-2"> </div>
-              </div>
-            )}
-
-            <div
-              className={`col-8 d-flex align-items-center ${
-                darkMode ? 'bg-yinmn-blue' : 'bg-white'
-              }`}
-              style={{ border: '1px solid black' }}
-            >
-              <div className="m-auto p-2 text-center">
-                <font
-                  onClick={props.toggleSubmitForm}
-                  className="med_text_summary align-middle summary-toggle"
-                  size="3"
-                >
-                  {weeklySummary || props.submittedSummary ? (
-                    'You have submitted your weekly summary.'
-                  ) : isAuthUser ? (
-                    <span className="summary-toggle" onClick={props.toggleSubmitForm}>
-                      {weeklySummaryNotReq
-                        ? 'You don’t need to complete a weekly summary, but you still can. Click here to submit it.'
-                        : 'You still need to complete the weekly summary. Click here to submit it.'}
-                    </span>
-                  ) : (
-                    <span className="summary-toggle">
-                      {weeklySummaryNotReq
-                        ? 'You don’t need to complete a weekly summary, but you still can. Click here to submit it.'
-                        : 'You still need to complete the weekly summary. Click here to submit it.'}
-                    </span>
-                  )}
-                </font>
-              </div>
-            </div>
-          </Row>
-        </Col>
+                  <div className="m-auto p-2 text-center">
+                    <font onClick={props.toggleSubmitForm} className="med_text_summary align-middle summary-toggle" size="3">
+                      {weeklySummary || props.submittedSummary ? (
+                        'You have submitted your weekly summary.'
+                        ) : isAuthUser ? (
+                          <span className="summary-toggle" onClick={props.toggleSubmitForm}>
+                          {weeklySummaryNotReq
+                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
+                        : "You still need to complete the weekly summary. Click here to submit it."}
+                        </span>
+                      ) : (
+                        <span className="summary-toggle">
+                        {weeklySummaryNotReq
+                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
+                        : "You still need to complete the weekly summary. Click here to submit it."}
+                        </span>
+                      )}
+                    </font>
+                  </div>
+                </div>
+              </Row>
+            </Col>
 
         <Col
           className={`m-auto mt-2 col-lg-4 col-12 badge-list ${darkMode ? 'bg-space-cadet' : ''}`}
