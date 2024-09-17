@@ -94,6 +94,11 @@ thead {
   padding-left: 20px;
 }
 
+.search-project-person {
+  position: relative;
+  width: 100%;
+}
+
 .suggestions-list {
   position: absolute;
   background-color: white;
@@ -106,7 +111,7 @@ thead {
 }
 
 .suggestion-item {
-  padding: 10px;
+  padding: 8px;
   cursor: pointer;
 }
 
