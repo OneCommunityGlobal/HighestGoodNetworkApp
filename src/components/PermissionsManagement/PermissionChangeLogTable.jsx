@@ -117,10 +117,10 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                   {renderPermissions(log.permissions, log._id)}
                 </td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
+                <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                   {renderPermissions(log.permissionsAdded, `${log._id}_added`)}
                 </td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
+                <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                   {renderPermissions(log.permissionsRemoved, `${log._id}_removed`)}
                 </td>
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
