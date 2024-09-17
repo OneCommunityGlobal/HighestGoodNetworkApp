@@ -66,7 +66,7 @@ const Project = props => {
     <tr className="projects__tr" id={'tr_' + props.projectId}>
 
       <th className="projects__order--input" scope="row">
-        <div>{index + 1}</div>
+        <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
       </th>
 
 
@@ -92,15 +92,13 @@ const Project = props => {
           <select
 
             data-testid="projects__category--input" //added for unit test
-            value={props.category}
+            value={category}
             onChange={e => {
-              setCategory(e.target.value);
+              onUpdateProjectCategory(e);
             }}
 
           >
-            <option default value="Unspecified">
-              Unspecified
-            </option>
+            <option value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>
             <option value="Housing">Housing</option>

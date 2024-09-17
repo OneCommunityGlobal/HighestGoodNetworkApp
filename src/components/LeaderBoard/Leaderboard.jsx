@@ -558,7 +558,7 @@ function LeaderBoard({
                         ) &&
                         currentDate.isBefore(moment(item.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                           ? 'rgba(128, 128, 128, 0.5)'
-                          : '#007BFF',
+                          : '#339CFF',
                     }}
                   >
                     {item.name}
