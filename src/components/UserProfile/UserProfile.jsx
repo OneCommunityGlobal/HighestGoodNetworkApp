@@ -1228,7 +1228,6 @@ function UserProfile(props) {
                       !isTeamSaved)
                   }
                   canEditTeamCode={canEditTeamCode}
-                  //  !targetIsDevAdminUneditable
                   setUserProfile={setUserProfile}
                   userProfile={userProfile}
                   codeValid={codeValid}
