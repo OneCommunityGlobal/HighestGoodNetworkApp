@@ -164,7 +164,7 @@ const TeamMemberTask = React.memo(
                           ) &&
                           currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                             ? 'rgba(128, 128, 128, 0.5)'
-                            : darkMode ? "#007BFF" : undefined,
+                            : darkMode ? "#339CFF" : undefined,
                         fontSize: '20px'
                       }}
                     >{`${user.name}`}</Link>
@@ -180,7 +180,7 @@ const TeamMemberTask = React.memo(
                     />
                   </td>
                   <td data-label="Time" className={`team-clocks ${darkMode ? "text-light" : ""}`}>
-                    <u className={darkMode ? "text-azure" : ""}>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
+                    <u className={darkMode ? "dashboard-team-clocks" : ""}>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                     <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                   </td>
@@ -201,7 +201,7 @@ const TeamMemberTask = React.memo(
                               className='team-member-tasks-content-link'
                               to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                               data-testid={`${task.taskName}`}
-                              style={{ color: darkMode ? '#007BFF' : undefined }}
+                              style={{ color: darkMode ? '#339CFF' : undefined }}
                             >
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
