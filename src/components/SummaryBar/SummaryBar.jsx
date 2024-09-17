@@ -62,7 +62,6 @@ const SummaryBar = props => {
   const [userProfile, setUserProfile] = useState(undefined);
   const [infringements, setInfringements] = useState(0);
   const [badges, setBadges] = useState(0);
-  const [viewed, setViewed]=useState(false);
   const [totalEffort, setTotalEffort] = useState(0);
   const [weeklySummary, setWeeklySummary] = useState(null);
   const [tasks, setTasks] = useState(undefined);
@@ -213,24 +212,45 @@ const SummaryBar = props => {
   };
 
   //Get badges count from userProfile
+  const viewedBadges=async()=>{
+    let newBadgeCollection = Array.from(displayUserProfile.badgeCollection);
+    newBadgeCollection.forEach(badge=>{
+      badge.viewed=true
+    })
+
+    const url = ENDPOINTS.BADGE_VIEWED(displayUserId)
+    try{
+      await axios.put(url,{
+      badgeCollection:newBadgeCollection
+      })
+    }catch(e){
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    }
+
+  }
   const getBadges = () => {
     if (!displayUserProfile || !displayUserProfile.badgeCollection) {
       return 0;
     }
+    console.log(displayUserProfile.badgeCollection)
     const startDate= new Date(startOfWeek(0));
     const lastDate= new Date(endOfWeek(0))
     let totalBadges = 0;
+    console.log( displayUserProfile.badgeCollection)
     displayUserProfile.badgeCollection.forEach(badge => {
-
       for(let date of badge.earnedDate){
           let dateElement= new Date(date)
           if(  dateElement >= startDate && dateElement <= lastDate){
-            totalBadges++
+            if(badge.viewed==false){
+              totalBadges++
+            }
           }
       }
 
     });
-
     return totalBadges;
   };
   
@@ -376,9 +396,15 @@ const SummaryBar = props => {
     window.location.hash = '#tasks';
   };
 
-  const onBadgeClick = () => {
-    setViewed(true);
+  const onBadgeClick = async() => {
+    try{
+      viewedBadges();
+    setBadges(0);
     window.location.hash = '#badgesearned';
+    }catch(e){
+
+    }
+    
   };
 
 
@@ -581,7 +607,7 @@ const SummaryBar = props => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              {!viewed?(
+              {badges>0?(
                 <div className="redBackgroup">
                 <span>{badges}</span>
               </div>

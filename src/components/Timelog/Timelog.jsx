@@ -473,7 +473,6 @@ const Timelog = props => {
       }
 
     });
-    console.log(totalBadges)
     return totalBadges;
   };
   const handleUpdateTask = useCallback(() => {

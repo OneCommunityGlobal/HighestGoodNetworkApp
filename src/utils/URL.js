@@ -82,6 +82,7 @@ export const ENDPOINTS = {
   BADGE: () => `${APIEndpoint}/badge`,
   BADGE_ASSIGN: userId => `${APIEndpoint}/badge/assign/${userId}`,
   BADGE_BY_ID: badgeId => `${APIEndpoint}/badge/${badgeId}`,
+  BADGE_VIEWED: userId => `${APIEndpoint}/badge/viewed/${userId}`,
 
   TEAM_MEMBER_TASKS: userId => `${ENDPOINTS.APIEndpoint()}/user/${userId}/teams/tasks`,
   CREATE_OR_UPDATE_TASK_NOTIFICATION: taskId =>
