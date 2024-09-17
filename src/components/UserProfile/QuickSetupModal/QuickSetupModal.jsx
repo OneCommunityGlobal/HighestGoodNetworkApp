@@ -48,6 +48,8 @@ function QuickSetupModal({
     getAllTitle()
       .then(res => {
         setTitles(res.data);
+        setUserProfile(userProfile)
+        setUserProfile(prev => ({ ...prev,adminLinks: adminLinks }));
       })
       .catch(err => console.log(err));
   };

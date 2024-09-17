@@ -1,11 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
+import hasPermission from '../../../utils/permissions';
 import { deleteTitleById } from 'actions/title';
 import { useSelector } from 'react-redux';
 import "../../Header/DarkMode.css"
 
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles}) {
+function AssignSetUpModal ({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles}) {
   const darkMode = useSelector(state => state.theme.darkMode)
+
   const [validation, setValid] = useState({
     volunteerAgree: false,
   });
@@ -16,7 +18,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
   });
   const [isGoogleDocValid, setIsGoogleDocValid] = useState(true);
   const [mediaFolder, setMediaFolder] = useState("")
-console.log("title",title)
+
   const checkboxOnClick = () => {
     // eslint-disable-next-line no-unused-expressions
     validation.volunteerAgree
@@ -33,31 +35,34 @@ console.log("title",title)
       setIsGoogleDocValid(false);
       return;
     }
-    if (validation.volunteerAgree && googleDoc.length !== 0) {
 
+    if (validation.volunteerAgree && googleDoc.length !== 0) {
+      const updatedAdminLinks = userProfile.adminLinks.map(obj => {
+        if (obj.Name === "Media Folder") obj.Link = mediaFolder || '';
+        if (obj.Name === "Google Doc") obj.Link = googleDoc || '';
+        return obj;
+      });
       const data = {
         teams: [...userProfile.teams, title.teamAssiged],
         jobTitle: title.titleName,
         projects: [...userProfile.projects, title.projectAssigned],
         teamCode: title.teamCode,
-        adminLinks: userProfile.adminLinks.map(obj => {
-          if(obj.Name == "Media Folder") obj.Link = mediaFolder;
-          if (obj.Name == "Google Doc") obj.Link = googleDoc
-          return obj;
-        } )
-
-      };
+        // adminLinks: updatedAdminLinks
+      }
       // remove duplicate project and teams
       console.log("data",data)
       userProfile.teams.includes(title?.teamAssiged) ? data.teams.pop() : '';
       userProfile.projects.includes(title.projectAssigned) ? data.projects.pop() : '';
 
-      setUserProfile(prev => ({ ...prev, ...data }));
+      if(hasPermission("manageAdminLinks")){
+        setUserProfile(prev => ({ ...prev, ...data,adminLinks: updatedAdminLinks }));
+      }
 
       setTitleOnSet(false);
       setValid(() => ({ volunteerAgree: false }));
       setIsOpen(false);
     }
+
   };
 
   // close the modal
@@ -76,6 +81,7 @@ console.log("title",title)
         console.log(e);
       });
   }
+
     // UseEffect to get the media folder when userProfile or isOpen changes
     useEffect(() => {
       if (isOpen && userProfile) {
@@ -93,7 +99,6 @@ console.log("title",title)
       }
     };
 
-  console.log('mediaFolder',mediaFolder)
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
