@@ -34,6 +34,7 @@ function AssignBadge(props) {
   const [fullName, setFullName] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUserIds, setSelectedUserIds] = useState([]);
+  const selectedBadges = useSelector(state => state.badge.selectedBadges || []);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -200,7 +201,7 @@ function AssignBadge(props) {
             <AssignBadgePopup
               allBadgeData={props.allBadgeData}
               submit={() => toggle(true)}
-              selectedBadges={props.selectedBadges}
+              selectedBadges={selectedBadges}
             />
           </ModalBody>
         </Modal>
@@ -208,8 +209,8 @@ function AssignBadge(props) {
           Please select badge(s) from the badge list.
         </FormText>
         <Alert color="dark" className="mt-3">
-          {selectedUserIds.length} user(s) selected,{' '}
-          {props.selectedBadges ? props.selectedBadges.length : '0'} badge(s) selected
+          {selectedUserIds.length} user(s) selected,
+          {selectedBadges.length} badge(s) selected
         </Alert>
       </FormGroup>
     </Form>

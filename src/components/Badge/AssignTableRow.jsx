@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 function AssignTableRow(props) {
+  const dispatch = useDispatch();
   const [isOpen, setOpen] = useState(false);
   const [isSelect, setSelect] = useState(false);
 
@@ -19,10 +20,10 @@ function AssignTableRow(props) {
 
   const handleCheckBoxChange = e => {
     if (e.target.checked) {
-      props.addSelectBadge(e.target.id);
+      dispatch(addSelectBadge(e.target.id));
       setSelect(true);
     } else {
-      props.removeSelectBadge(e.target.id);
+      dispatch(removeSelectBadge(e.target.id));
       setSelect(false);
     }
   };
