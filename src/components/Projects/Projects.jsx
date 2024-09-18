@@ -100,6 +100,8 @@ const Projects = function(props) {
 
   const onUpdateProject = async (updatedProject) => {
     await props.modifyProject(updatedProject);  
+    /* refresh the page after updating the project */
+    await props.fetchAllProjects();
   };
 
   const confirmArchive = async () => {
