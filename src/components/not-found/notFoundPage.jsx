@@ -7,16 +7,20 @@ function NotFoundPage() {
 
   return (
     <section
-      // prettier-ignore
-      className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'} h-100 d-flex   align-items-center  flex-column
-        ${!validateUserLogin && 'justify-content-center'} `}
+      className={`${
+        darkMode ? 'bg-oxford-blue' : 'bg-white'
+      } h-100 d-flex   align-items-center  flex-column
+        justify-content-center `}
     >
       <div>
         <h2 style={{ color: darkMode ? 'white' : 'black', textAlign: 'center' }}>
           {' '}
           404 | Page not found
         </h2>
-        <div className={`${darkMode ? 'text-light' : 'text-dark'}`}>
+        <div
+          className={`${darkMode ? 'text-light' : 'text-dark'}`}
+          style={{ marginBottom: '20rem' }}
+        >
           {validateUserLogin ? (
             <div className="col-12">
               <p>
@@ -28,7 +32,7 @@ function NotFoundPage() {
             </div>
           ) : (
             // eslint-disable-next-line react/jsx-curly-brace-presence
-            <p className={`col-12`} style={{ marginBottom: !validateUserLogin && '20rem' }}>
+            <p className={`col-12`}>
               It seems like you&apos;ve reached a page that doesn&apos;t exist. In addition
               You&apos;re not currently logged in. Please go back to the &nbsp;
               <Link to="/login">login page</Link>
