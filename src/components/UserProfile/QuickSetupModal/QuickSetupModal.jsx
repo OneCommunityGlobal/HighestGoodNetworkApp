@@ -32,9 +32,8 @@ function QuickSetupModal({
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
   const [adminLinks, setAdminLinks] = useState([])
-  console.log("userProfile", userProfile,"adminLinks", userProfile.adminLinks)
+
   useEffect(() => {
-    console.log("USER PROFILE",userProfile);
 
     getAllTitle()
       .then(res => {
