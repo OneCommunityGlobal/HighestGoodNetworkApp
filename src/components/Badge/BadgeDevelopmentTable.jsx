@@ -34,6 +34,7 @@ function BadgeDevelopmentTable(props) {
 
   const [editBadgeValues, setEditBadgeValues] = useState('');
   const [editPopup, setEditPopup] = useState(false);
+  const [chalked, setChalked] = useState(false);
 
   const detailsText = badegValue => {
     let returnText = '';
@@ -151,6 +152,13 @@ function BadgeDevelopmentTable(props) {
 
   const filteredBadges = filterBadges(props.allBadgeData);
 
+  const handleInputChange = (badgeValue, checkValue) => {
+    setChalked(prev => !prev);
+    badgeValue.showReport = !badgeValue.showReport;
+    const updatedValue = { ...badgeValue, showReport: !checkValue };
+    props.updateBadge(badgeValue._id, updatedValue);
+  };
+
   // Badge Development checkbox
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
@@ -162,10 +170,7 @@ function BadgeDevelopmentTable(props) {
           id={badgeValue._id}
           name="reportable"
           checked={badgeValue.showReport || false}
-          onChange={() => {
-            const updatedValue = { ...badgeValue, showReport: !checkValue };
-            props.updateBadge(badgeValue._id, updatedValue);
-          }}
+          onChange={() => handleInputChange(badgeValue, checkValue)}
           style={{
             display: 'inline-block',
             width: '20px',

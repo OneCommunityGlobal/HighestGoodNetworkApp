@@ -62,7 +62,7 @@ export const resetBadgeCount = userId => async dispatch => {
       });
     }
   } catch (error) {
-    console.error("Failed to reset badge count", error);
+    console.error('Failed to reset badge count', error);
   }
 };
 
@@ -383,7 +383,6 @@ export const createNewBadge = newBadge => async dispatch => {
 export const updateBadge = (badgeId, badgeData) => async dispatch => {
   try {
     await axios.put(ENDPOINTS.BADGE_BY_ID(badgeId), badgeData);
-    dispatch(fetchAllBadges());
   } catch (e) {
     if (e.response.status === 403 || 400) {
       dispatch(getMessage(e.response.data.error, 'danger'));
