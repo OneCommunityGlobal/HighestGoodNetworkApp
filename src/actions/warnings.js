@@ -43,7 +43,7 @@ export const postWarningByUserId = warningData => {
       if (error.response && error.response.status === 200) {
         return { error: error.message };
       } else {
-        return { error: 'Something else went wrong' };
+        return { error: error };
       }
     }
   };

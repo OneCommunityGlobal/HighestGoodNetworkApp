@@ -8,6 +8,8 @@ function WarningModal({
   handleIssueWarning,
   deleteWarningTriggered,
   deleteWarning,
+  numberOfWarnings,
+  containsRedWarning,
 }) {
   const { colorAssigned, warningText, username } = warning || {};
 
@@ -45,14 +47,14 @@ function WarningModal({
         <ModalBody>
           <h3>Are you sure you want to issue a warning to: {username}?</h3>
           <p>
-            The warning will be because they didn&apos;t meet the criteria for the following
-            warning: {warningText}
+            The warning will be because they didn&apos;t meet the criteria for the following area:{' '}
+            {warningText}
           </p>
           <p>The color will be {colorAssigned}</p>
         </ModalBody>
 
         <ModalFooter className="warning-modal-footer">
-          <Button
+          {/* <Button
             onClick={() => {
               handleIssueWarning(warning);
               // subtmit wanring here to backend
@@ -60,18 +62,19 @@ function WarningModal({
             }}
           >
             Log Warning Only
-          </Button>
-
-          <Button
-            onClick={() => {
-              // email will be sent and logged
-              handleIssueWarning({ ...warning, colorAssigned: 'yellow' });
-              setToggleModal(false);
-            }}
-            color="warning"
-          >
-            Issue Warning
-          </Button>
+          </Button> */}
+          {!containsRedWarning && (
+            <Button
+              onClick={() => {
+                // email will be sent and logged
+                handleIssueWarning({ ...warning, colorAssigned: 'yellow' });
+                setToggleModal(false);
+              }}
+              color="warning"
+            >
+              Issue Warning
+            </Button>
+          )}
 
           <Button
             onClick={() => {

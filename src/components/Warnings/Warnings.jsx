@@ -6,7 +6,6 @@ import {
   postWarningByUserId,
   deleteWarningsById,
 } from '../../actions/warnings';
-import WarningsModal from './WarningsModal';
 import WarningTrackerModal from './modals/WarningTrackerModal';
 
 import WarningItem from './WarningItem';
@@ -52,6 +51,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       setUsersWarnings(res);
     });
   };
+
   const handlePostWarningDetails = async ({
     id,
     colorAssigned: color,
@@ -120,14 +120,14 @@ export default function Warning({ personId, username, userRole, displayUser }) {
             </Button>
           )}
         </div>
-        {toggleWarningModal && (
+        {/* {toggleWarningModal && (
           <WarningsModal
             toggleWarningModal={toggleWarningModal}
             personId={personId}
             setToggleWarningModal={setToggleWarningModal}
             getUsersWarnings={fetchUsersWarningsById}
           />
-        )}
+        )} */}
         {toggleWarningTrackerModal && (
           <WarningTrackerModal
             toggleWarningTrackerModal={toggleWarningTrackerModal}

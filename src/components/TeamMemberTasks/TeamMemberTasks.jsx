@@ -114,31 +114,36 @@ const TeamMemberTasks = React.memo(props => {
     setCurrentUserId('');
   };
 
-  const onUpdateTask = useCallback((taskId, updatedTask) => {
-    const newTask = {
-      updatedTask,
-      taskId,
-    };
-    submitTasks(newTask);
-      
-    // optimistic update while waiting for data being updated
-    const newUsersWithTasks = usersWithTasks.map(userWithTasks => (
-      userWithTasks.tasks.some(task => task._id === taskId)
-        ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
-          ? ({
-            ...userWithTasks,
-            tasks: userWithTasks.tasks.map(task => task._id === taskId ? updatedTask : task),
-          })
-          : ({
-            ...userWithTasks,
-            tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
-          })
-        : userWithTasks
-    ));
-    dispatch(fetchTeamMembersTaskSuccess({
-      usersWithTasks: newUsersWithTasks,
-    }));
-  }, [usersWithTasks]);
+  const onUpdateTask = useCallback(
+    (taskId, updatedTask) => {
+      const newTask = {
+        updatedTask,
+        taskId,
+      };
+      submitTasks(newTask);
+
+      // optimistic update while waiting for data being updated
+      const newUsersWithTasks = usersWithTasks.map(userWithTasks =>
+        userWithTasks.tasks.some(task => task._id === taskId)
+          ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
+            ? {
+                ...userWithTasks,
+                tasks: userWithTasks.tasks.map(task => (task._id === taskId ? updatedTask : task)),
+              }
+            : {
+                ...userWithTasks,
+                tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
+              }
+          : userWithTasks,
+      );
+      dispatch(
+        fetchTeamMembersTaskSuccess({
+          usersWithTasks: newUsersWithTasks,
+        }),
+      );
+    },
+    [usersWithTasks],
+  );
 
   const submitTasks = async updatedTasks => {
     const url = ENDPOINTS.TASK_UPDATE(updatedTasks.taskId);
@@ -149,36 +154,41 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
-  const updateTaskStatus = useCallback(async (taskId, updatedTask) => {
-    const newTask = {
-      updatedTask,
-      taskId,
-    };
-    const url = ENDPOINTS.TASK_UPDATE_STATUS(newTask.taskId);
-    try {
-      await axios.put(url, newTask.updatedTask);
-    } catch (error) {
-      toast.error('Failed to update task');
-    }
+  const updateTaskStatus = useCallback(
+    async (taskId, updatedTask) => {
+      const newTask = {
+        updatedTask,
+        taskId,
+      };
+      const url = ENDPOINTS.TASK_UPDATE_STATUS(newTask.taskId);
+      try {
+        await axios.put(url, newTask.updatedTask);
+      } catch (error) {
+        toast.error('Failed to update task');
+      }
 
-    // optimistic update while waiting for data being updated
-    const newUsersWithTasks = usersWithTasks.map(userWithTasks => (
-      userWithTasks.tasks.some(task => task._id === taskId)
-        ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
-          ? ({
-            ...userWithTasks,
-            tasks: userWithTasks.tasks.map(task => task._id === taskId ? updatedTask : task),
-          })
-          : ({
-            ...userWithTasks,
-            tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
-          })
-        : userWithTasks
-    ));
-    dispatch(fetchTeamMembersTaskSuccess({
-      usersWithTasks: newUsersWithTasks
-    }));
-  }, [usersWithTasks]);
+      // optimistic update while waiting for data being updated
+      const newUsersWithTasks = usersWithTasks.map(userWithTasks =>
+        userWithTasks.tasks.some(task => task._id === taskId)
+          ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
+            ? {
+                ...userWithTasks,
+                tasks: userWithTasks.tasks.map(task => (task._id === taskId ? updatedTask : task)),
+              }
+            : {
+                ...userWithTasks,
+                tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
+              }
+          : userWithTasks,
+      );
+      dispatch(
+        fetchTeamMembersTaskSuccess({
+          usersWithTasks: newUsersWithTasks,
+        }),
+      );
+    },
+    [usersWithTasks],
+  );
 
   const handleOpenTaskNotificationModal = useCallback((userId, task, taskNotifications = []) => {
     setCurrentUserId(userId);
@@ -484,7 +494,11 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   return (
-    <div className={`container team-member-tasks ${darkMode ? " bg-space-cadet border-left border-right border-secondary" : ""}`}>
+    <div
+      className={`container team-member-tasks ${
+        darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
+      }`}
+    >
       <header className="header-box">
         <section className="d-flex flex-column">
           <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
@@ -646,10 +660,8 @@ const TeamMemberTasks = React.memo(props => {
       )}
       {['Administrator', 'Owner', 'Manager', 'Mentor'].some(role => role === displayUser.role) && (
         <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 4}} xs={{ size: 12}} className='ml-3'>
-            <span className={darkMode ? "text-light responsive-font-size" : ""}>
-              Select Team
-            </span>
+          <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
+            <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Team</span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
               options={teamNames}
@@ -659,9 +671,9 @@ const TeamMemberTasks = React.memo(props => {
               }}
             />
           </Col>
-          <Col lg={{ size: 4}} xs={{ size: 12}} className='ml-3'>
-            <span className={darkMode ? "text-light responsive-font-size" : ""}>
-            Select Team Code
+          <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
+            <span className={darkMode ? 'text-light responsive-font-size' : ''}>
+              Select Team Code
             </span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
@@ -672,10 +684,8 @@ const TeamMemberTasks = React.memo(props => {
               }}
             />
           </Col>
-          <Col lg={{ size: 4 }} xs={{ size: 12 }} className='ml-3'>
-            <span className={darkMode ? "text-light responsive-font-size" : ""}>
-            Select Color
-            </span>
+          <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
+            <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Color</span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
               options={colors}
@@ -688,14 +698,26 @@ const TeamMemberTasks = React.memo(props => {
         </Row>
       )}
       <div className="task_table-container">
-        <Table className='task-table'>
-          <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
+        <Table className="task-table">
+          <thead
+            className={`pc-component ${darkMode ? 'bg-space-cadet' : ''}`}
+            style={{ position: 'sticky', top: 0 }}
+          >
             <tr>
               {/* Empty column header for hours completed icon */}
-              <th colSpan={1} className={`hours-completed-column ${darkMode ? "bg-space-cadet" : ""}`}/>
-              <th colSpan={2} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
-                <Table borderless className={`team-member-tasks-subtable ${darkMode ? "text-light" : ""}`}>
-                  <thead className={darkMode ? "bg-space-cadet" : ""}>
+              <th
+                colSpan={1}
+                className={`hours-completed-column ${darkMode ? 'bg-space-cadet' : ''}`}
+              />
+              <th
+                colSpan={2}
+                className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}
+              >
+                <Table
+                  borderless
+                  className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
+                >
+                  <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
                       <th
                         className={`team-member-tasks-headers team-member-tasks-user-name ${
@@ -777,6 +799,7 @@ const TeamMemberTasks = React.memo(props => {
                         showWhoHasTimeOff={showWhoHasTimeOff}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                        displayUser={displayUser}
                       />
                     );
                   } else {
