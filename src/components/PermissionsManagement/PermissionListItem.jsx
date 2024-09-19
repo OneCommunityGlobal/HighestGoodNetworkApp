@@ -36,18 +36,18 @@ function PermissionListItem(props) {
     setinfoRoleModal(!infoRoleModal);
   };
 
-  const togglePermission = () => {
-    if (rolePermissions.includes(permission) || immutablePermissions.includes(permission)) {
-      setPermissions(previous => previous.filter(perm => perm !== permission));
+  const togglePermission = permissionKey => {
+    if (rolePermissions.includes(permissionKey) || immutablePermissions.includes(permissionKey)) {
+      setPermissions(previous => previous.filter(perm => perm !== permissionKey));
     } else {
-      setPermissions(previous => [...previous, permission]);
+      setPermissions(previous => [...previous, permissionKey]);
     }
     // eslint-disable-next-line react/destructuring-assignment
     props.onChange();
   };
 
-  const setSubpermissions = adding => {
-    subperms.forEach(subperm => {
+  const setSubpermissions = (recursiveSubperms, adding) => {
+    recursiveSubperms.forEach(subperm => {
       if (subperm.subperms) {
         setSubpermissions(subperm.subperms, adding);
       } else if (adding !== rolePermissions.includes(subperm.key)) {
@@ -91,18 +91,20 @@ function PermissionListItem(props) {
   let color;
   if (isCategory) {
     if (howManySubpermsInRole === 'All') {
-      color = 'green';
+      color = darkMode ? 'lightgreen' : 'green';
     } else if (howManySubpermsInRole === 'Some') {
       color = darkMode ? 'white' : 'black';
     } else {
-      color = 'red';
+      color = darkMode ? '#f94144' : 'red';
     }
+  } else if (darkMode) {
+    color = hasThisPermission ? 'lightgreen' : '#f94144';
   } else {
     color = hasThisPermission ? 'green' : 'red';
   }
 
   const fontSize = isCategory ? '20px' : undefined;
-  const textIndent = `${50 * depth}px`;
+  const paddingLeft = `${50 * depth}px`;
   const textShadow = darkMode ? '0.5px 0.5px 2px black' : '';
 
   const getColor = () => {
@@ -117,14 +119,15 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li className="user-role-tab__permissions pr-2" key={permission} data-testid={permission}>
+      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
         <p
           style={{
             color,
             fontSize,
-            textIndent,
+            paddingLeft,
             textShadow,
           }}
+          className="permission-label"
         >
           {label}
         </p>
@@ -139,6 +142,7 @@ function PermissionListItem(props) {
               onClick={() => {
                 handleModalOpen(description);
               }}
+              style={{ color: darkMode ? 'white' : 'black' }}
             />
           </div>
           {/* eslint-disable-next-line no-nested-ternary */}
@@ -147,13 +151,14 @@ function PermissionListItem(props) {
               className="icon-button"
               color={getColor()}
               onClick={() => {
+                // eslint-disable-next-line no-debugger
                 // const state = howManySubpermsInRole !== 'None';
                 setSubpermissions(subperms, howManySubpermsInRole !== 'All');
                 // eslint-disable-next-line react/destructuring-assignment
                 props.onChange();
               }}
               // eslint-disable-next-line react/destructuring-assignment
-              disabled={!props.hasPermission('putRole')}
+              disabled={immutablePermissions.includes(permission)}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -165,10 +170,7 @@ function PermissionListItem(props) {
               onClick={() => {
                 togglePermission(permission);
               }}
-              disabled={
-                // eslint-disable-next-line react/destructuring-assignment
-                !props.hasPermission('putRole') || immutablePermissions.includes(permission)
-              }
+              disabled={immutablePermissions.includes(permission)}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {hasThisPermission ? 'Delete' : 'Add'}
@@ -203,9 +205,11 @@ function PermissionListItem(props) {
         id="#modal2-body_new-role--padding"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <ModalHeader toggle={toggleInfoRoleModal}>Permission Info</ModalHeader>
-        <ModalBody>{modalContent}</ModalBody>
-        <ModalFooter>
+        <ModalHeader toggle={toggleInfoRoleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Permission Info
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalContent}</ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button onClick={toggleInfoRoleModal} color="secondary" className="float-left">
             {' '}
             Ok{' '}

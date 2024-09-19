@@ -51,9 +51,9 @@ function AssignSetUpModal ({ isOpen, setIsOpen, title, userProfile, setUserProfi
       }
 
       const data = {
-        teams: [...userProfile.teams, title.teamAssiged],
+        teams: teamsAssigned,
         jobTitle: title.titleName,
-        projects: [...userProfile.projects, title.projectAssigned],
+        projects: projectAssigned,
         teamCode: title.teamCode,
         adminLinks: updatedAdminLinks,
       };
