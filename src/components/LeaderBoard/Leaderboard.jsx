@@ -238,6 +238,37 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
+  const manager = 'Manager';
+  const adm = 'Administrator';
+  const owner = 'Owner';
+
+  const handleDashboardAccess = item => {
+    // check the logged in user is manager and if the dashboard is admin and owner
+    if (loggedInUser.role === manager && [adm, owner].includes(item.role)) {
+      // check the logged in user is admin and if dashboard is owner
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    } else if (loggedInUser.role === adm && [owner].includes(item.role)) {
+      toast.error("Oops! You don't have the permission to access this user's dashboard!");
+    }
+    // check the logged in user isn't manager, administrator or owner and if they can access the dashboard
+    else if (
+      loggedInUser.role !== manager &&
+      loggedInUser.role !== adm &&
+      loggedInUser.role !== owner
+    ) {
+      if ([manager, adm, owner].includes(item.role)) {
+        // prevent access
+        toast.error("Oops! You don't have the permission to access this user's dashboard!");
+      } else {
+        // allow access to the painel
+        dashboardToggle(item);
+      }
+    } else {
+      // allow access to the painel
+      dashboardToggle(item);
+    }
+  };
+
   const teamName = (name, maxLength) =>
     setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
 
@@ -470,7 +501,9 @@ function LeaderBoard({
                         Jump to personal Dashboard
                       </ModalHeader>
                       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                        <p>Are you sure you wish to view this {item.name} dashboard?</p>
+                        <p className="title-dashboard">
+                          Are you sure you wish to view the dashboard for {item.name}?
+                        </p>
                       </ModalBody>
                       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                         <Button variant="primary" onClick={() => showDashboard(item)}>
@@ -494,11 +527,11 @@ function LeaderBoard({
                       role="button"
                       tabIndex={0}
                       onClick={() => {
-                        dashboardToggle(item);
+                        handleDashboardAccess(item);
                       }}
                       onKeyDown={e => {
                         if (e.key === 'Enter') {
-                          dashboardToggle(item);
+                          handleDashboardAccess(item);
                         }
                       }}
                     >
