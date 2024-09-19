@@ -8,7 +8,7 @@ import { getAllTitle } from '../../../actions/title';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css';
-import { useSelector } from 'react-redux';
+import { connect,useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
 import hasPermission from 'utils/permissions';
 
