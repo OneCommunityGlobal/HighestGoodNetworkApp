@@ -29,22 +29,32 @@ const AddProject = (props) => {
     setShowAddButton(name.length > 0);
   };
 
-    // Handle adding a new WBS
+  // adding a new WBS
   const addWBS = () => {
-    if (wbsName) {
+    if (wbsName && !wbsList.includes(wbsName)) {
       setWbsList([...wbsList, wbsName]);
-      setWbsName('');
+    } else if (wbsList.includes(wbsName)) {
+      console.log('This WBS already exists');
     }
+    setWbsName('');
   };
 
-  // Handle adding a new member
+  // adding a new member
   const addMember = (user) => {
     const newMember = {
       _id: user._id,
       firstName: user.firstName,
       lastName: user.lastName
     };
-    setMembersList([...membersList, newMember]);
+    
+    const isDuplicate = membersList.some(member => member._id === newMember._id);
+    
+    if (!isDuplicate) {
+      setMembersList([...membersList, newMember]);
+
+    } else {
+      console.log('This member is already in the list');
+    }
     setMemberName('');
     setShowFoundUserList(false);
   };
