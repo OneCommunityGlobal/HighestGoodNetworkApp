@@ -4,7 +4,7 @@
  * Display member of the members list
  ********************************************************************************/
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
 import { deleteWbs } from './../../../../actions/wbs';
 import { getPopupById } from './../../../../actions/popupEditorAction';
@@ -15,7 +15,7 @@ import { Link } from 'react-router-dom';
 
 
 const WBSItem = props => {
-  const { darkMode } = props;
+  const darkMode = useSelector(state => state.theme.darkMode)
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const canDeleteWBS = props.hasPermission('deleteWbs');
