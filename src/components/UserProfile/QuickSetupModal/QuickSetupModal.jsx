@@ -7,23 +7,16 @@ import { getAllTitle } from '../../../actions/title';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './QuickSetupModal.css';
-import '../../Header/DarkMode.css';
-import { connect,useSelector } from 'react-redux';
+import '../../Header/DarkMode.css'
+import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
 import hasPermission from 'utils/permissions';
 
-function QuickSetupModal({
-  canAddTitle,
-  canAssignTitle,
-  teamsData,
-  projectsData,
-  userProfile,
-  setUserProfile,
-  handleSubmit,
-  setSaved,
-}) {
-  const darkMode = useSelector(state => state.theme.darkMode);
-
+function QuickSetupModal(props) {
+  const darkMode = useSelector(state => state.theme.darkMode)
+  const canEditTitle=props.hasPermission('editTitle')
+  const canAddTitle=props.hasPermission('addNewTitle')
+  const canAssignTitle=props.hasPermission('assignTitle')
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
@@ -48,8 +41,8 @@ function QuickSetupModal({
     getAllTitle()
       .then(res => {
         setTitles(res.data);
-        setUserProfile(userProfile)
-        setUserProfile(prev => ({ ...prev,adminLinks: adminLinks }));
+        props.setUserProfile(props.userProfile)
+        props.setUserProfile(prev => ({ ...prev,adminLinks: adminLinks }));
       })
       .catch(err => console.log(err));
   };
@@ -84,9 +77,10 @@ function QuickSetupModal({
        <div className="col text-center mt-3 flex">
         {canAddTitle ? (
           <Button
-            color="primary"
-            onClick={() => setShowAddTitle(true)}
-            style={darkMode ? boxStyleDark : boxStyle}
+          color="primary"
+          onClick={() => setShowAddTitle(true)}
+          style={darkMode ? boxStyleDark : boxStyle}
+          disabled={editMode==true?true:false}
           >
             Add A New Title
           </Button>
@@ -169,8 +163,8 @@ function QuickSetupModal({
             </Button>
           </ModalFooter>
         </Modal>
-      )}
-    </div>
+      )} 
+    </div> 
   );
 }
 

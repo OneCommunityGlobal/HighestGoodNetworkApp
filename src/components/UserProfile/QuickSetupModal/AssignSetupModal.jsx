@@ -36,6 +36,13 @@ function AssignSetUpModal ({ isOpen, setIsOpen, title, userProfile, setUserProfi
     }
 
     if (validation.volunteerAgree && googleDoc.length !== 0) {
+      const originalTeamId = userProfile.teams.map(team => team._id);
+      const originalProjectId = userProfile.projects.map(project => project._id);
+      // If the title has team assigned, add the team to the user profile. Remove duplicate teams
+      const teamsAssigned = title.teamAssiged ? originalTeamId.includes(title?.teamAssiged._id) ? userProfile.teams : [...userProfile.teams, title.teamAssiged] : userProfile.teams;
+      // If the title has project assigned, add the project to the user profile. Remove duplicate projects
+      const projectAssigned = title.projectAssigned ? originalProjectId.includes(title?.projectAssigned._id) ? userProfile.projects : [...userProfile.projects, title.projectAssigned] : userProfile.projects;
+      
       // Ensure adminLinks is not undefined or null
       const updatedAdminLinks = (userProfile.adminLinks || []).map(obj => {
         if (obj.Name === "Media Folder") obj.Link = mediaFolder || '';
