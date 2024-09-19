@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   fetchAllProjects,
-  postNewProject,
   modifyProject,
   clearError,
 } from '../../actions/projects';
@@ -117,10 +116,6 @@ const Projects = function(props) {
     onCloseModal();
   };
 
-  const postProject = async (name, category) => {
-    await props.postNewProject(name, category);
-  };
-
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
     const projectList = projects.filter(project => {
@@ -212,9 +207,11 @@ const Projects = function(props) {
               role={role}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
+
+            {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
           </div>
 
-          {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
+          
 
           <SearchProjectByPerson onSearch={handleSearchName}/>
 
@@ -253,7 +250,6 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   fetchAllProjects,
-  postNewProject,
   modifyProject,
   clearError,
   getPopupById,
