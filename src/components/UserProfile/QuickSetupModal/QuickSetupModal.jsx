@@ -7,16 +7,23 @@ import { getAllTitle } from '../../../actions/title';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './QuickSetupModal.css';
-import '../../Header/DarkMode.css'
-import { connect, useSelector } from 'react-redux';
+import '../../Header/DarkMode.css';
+import { connect,useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
 import hasPermission from 'utils/permissions';
 
-function QuickSetupModal(props) {
-  const darkMode = useSelector(state => state.theme.darkMode)
-  const canEditTitle=props.hasPermission('editTitle')
-  const canAddTitle=props.hasPermission('addNewTitle')
-  const canAssignTitle=props.hasPermission('assignTitle')
+function QuickSetupModal({
+  canAddTitle,
+  canAssignTitle,
+  teamsData,
+  projectsData,
+  userProfile,
+  setUserProfile,
+  handleSubmit,
+  setSaved,
+}) {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
@@ -25,7 +32,10 @@ function QuickSetupModal(props) {
   const [editMode, setEditMode]=useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
+  const [adminLinks, setAdminLinks] = useState([])
+
   useEffect(() => {
+
     getAllTitle()
       .then(res => {
         setTitles(res.data);
@@ -38,6 +48,8 @@ function QuickSetupModal(props) {
     getAllTitle()
       .then(res => {
         setTitles(res.data);
+        setUserProfile(userProfile)
+        setUserProfile(prev => ({ ...prev,adminLinks: adminLinks }));
       })
       .catch(err => console.log(err));
   };
@@ -71,7 +83,11 @@ function QuickSetupModal(props) {
 
        <div className="col text-center mt-3 flex">
         {canAddTitle ? (
-          <Button color="primary mx-2" onClick={() => setShowAddTitle(true)} style={darkMode ? boxStyleDark : boxStyle} disabled={editMode==true?true:false}>
+          <Button
+            color="primary"
+            onClick={() => setShowAddTitle(true)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             Add A New Title
           </Button>
         ) : (
@@ -133,17 +149,28 @@ function QuickSetupModal(props) {
         ''
       )}
       {showMessage && (
-        <Modal isOpen={showMessage} toggle={() => setShowMessage(false)} className={darkMode ? 'text-light dark-mode' : ''}>
-          <ModalHeader toggle={() => setShowMessage(false)} className={darkMode ? 'bg-space-cadet' : ''}>{warningMessage.title}</ModalHeader>
-          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{warningMessage.content}</ModalBody>
+        <Modal
+          isOpen={showMessage}
+          toggle={() => setShowMessage(false)}
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader
+            toggle={() => setShowMessage(false)}
+            className={darkMode ? 'bg-space-cadet' : ''}
+          >
+            {warningMessage.title}
+          </ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+            {warningMessage.content}
+          </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button color="primary" onClick={() => setShowMessage(false)}>
               Close
             </Button>
           </ModalFooter>
         </Modal>
-      )} 
-    </div> 
+      )}
+    </div>
   );
 }
 
