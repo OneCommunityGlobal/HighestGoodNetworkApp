@@ -1,39 +1,87 @@
 .role-button {
-    border-radius: 50%;
-    padding: 2px;
-    margin: 5px;
-  }
-  
- #qsc-outer-wrapper #wrapper{
-    position: relative;
-  }
-
-  #qsc-outer-wrapper  #wrapper .title {
-    position: absolute;
-    color: #ddd;
-    top:30px;
-    left: 30px;
-    /* height: 2rem;
-    width: 150px; */
-    display: none;
-    white-space: nowrap;
-    z-index: 10;
-    background-color: #555;
-    border-radius: 2px;
-    padding: 0.5rem 1rem;
-  }
-  
-  #qsc-outer-wrapper  #wrapper:hover .title {
-    cursor: pointer;
-    display: block;
-  }
+  border-radius: 50%;
+  padding: 5px;
+  margin: 10px; 
+}
 
 
-.setup-title-name{
-    max-height: 30px;
+#qsc-outer-wrapper .group-titles {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-evenly; 
 
 }
 
-.qsm-modal-required{
+
+.group-titles {
+  display: flex;
+}
+
+.blueSquares {
+  width: 100%;
+  display: grid;
+  grid-gap: 2px;
+  grid-gap: 2px;
+  gap: 10px;
+  padding: 5px;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  align-items: center;
+  justify-items: center;
+}
+
+.team-code-header {
+  margin-top: 20px;
+  font-weight: bold;
+  font-size: 5px;
+}
+
+#qsc-outer-wrapper #wrapper .title {
+  position: absolute; 
+  color: #fff;
+  top: -50px; 
+  left: 50%; 
+  transform: translateX(-50%); 
+  display: none;
+  white-space: nowrap;
+  z-index: 10;
+  background-color: #555;
+  border-radius: 2px;
+  padding: 0.5rem 1rem;
+  font-size: 0.8rem;
+}
+
+#qsc-outer-wrapper #wrapper:hover .title {
+  cursor: pointer;
+  display: block;
+}
+
+#qsc-outer-wrapper #wrapper {
+  position: relative; 
+}
+
+.setup-title-name {
+  max-height: 10px;
+}
+
+.qsm-modal-required {
   color: red;
+}
+
+.group-container {
+  margin-bottom: 20px; 
+}
+
+.buttons-row {
+  display: flex;
+  flex-wrap: wrap; 
+  gap: 10px;
+  margin-top: 5px; 
+}
+
+.team-code-title {
+  font-size: 12px;
+  margin-bottom: 5px; 
+  font-weight: bold;
+  margin-bottom: 5px; 
+
 }
