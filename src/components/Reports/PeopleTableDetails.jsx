@@ -293,7 +293,7 @@ function PeopleTableDetails(props) {
 
   const renderFilteredTask = value => (
     <div>
-      <div key={value._id} className="people-table-row people-table-body-row">
+      <div key={value._id} className={`people-table-row people-table-body-row ${darkMode ? 'people-table-row-dark' : ''}`}>
         <div>{value.taskName}</div>
         <div>{value.priority}</div>
         <div>{value.status}</div>

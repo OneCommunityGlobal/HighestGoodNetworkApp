@@ -31,6 +31,7 @@
   width: 100%;
   margin-bottom: 10px;
   outline: none;
+  z-index: 10;
 }
 
 .teams-span,
