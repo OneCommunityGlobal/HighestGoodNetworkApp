@@ -16,6 +16,9 @@ export default function SearchProjectByPerson({ onSearch }) {
           onSearch(e.target.value);
         }}
       />
+      <div>
+        <button className="archived-button">Archived Projects</button>
+      </div>
     </form>
   );
 }
