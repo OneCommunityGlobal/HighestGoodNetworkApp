@@ -24,6 +24,7 @@ export const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
+  const trackColor = isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue';
 
   const closeDeletedPopup = () => {
     setDeletedPopup(!deletedPopup);
@@ -249,7 +250,10 @@ export const TeamMembersPopup = React.memo(props => {
                   value={isChecked}
                   onChange={handleToggle}
                   className={styles.slider}
-                  title = 'Move Sider for Status change. Left: Inactive , Middle: Active, Right: See All'
+                  title="Move Slider for Status change. Left: Inactive, Middle: Active, Right: See All"
+                  // Dynamic inline style for background color based on status
+                  style={{'--track-color': trackColor, 
+                          '--thumb-color': trackColor,}}
                 />
                 <span>{checkedStatus}</span>
               </div>

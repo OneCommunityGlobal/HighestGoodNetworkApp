@@ -81,42 +81,43 @@
   }
   
   .slider {
-    width: 50px; 
+    width: 100px;
     -webkit-appearance: none;
     appearance: none;
-    height: 5px; 
-    background: #ccc;
+    height: 5px;
     border-radius: 5px;
+    background: var(--track-color); /* Dynamic background color for the slider track */
     outline: none;
     margin-bottom: 10px;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease; /* Smooth transition for background color */
   }
   
+  /* Custom slider thumb */
   .slider::-webkit-slider-thumb {
     -webkit-appearance: none;
     appearance: none;
-    width: 16px;  
-    height: 16px; 
-    background: limegreen;
+    width: 20px;
+    height: 20px;
+    background-color: var(--thumb-color); /* Dynamic thumb color based on state */
     border-radius: 50%;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, border-color 0.3s; /* Smooth transition for thumb color */
   }
   
   .slider::-moz-range-thumb {
-    width: 16px;  
-    height: 16px; 
-    background: limegreen;
+    width: 20px;
+    height: 20px;
+    background-color: var(--thumb-color); /* Dynamic thumb color based on state */
     border-radius: 50%;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.3s, border-color 0.3s; /* Smooth transition for thumb color */
   }
   
   .sliderLabels {
     display: flex;
     justify-content: space-between;
-    width: 100px; 
-    font-size: 12px; 
+    width: 100px;
+    font-size: 12px;
   }
   
   .sliderLabels span {
@@ -130,18 +131,3 @@
     color: black;
   }
   
-  .tooltip {
-    visibility: hidden;
-    background-color: white;
-    //color: white;
-    text-align: center;
-    border-radius: 5px;
-    padding: 5px;
-    position: absolute;
-   // bottom: 40px; 
-    left: 15%;
-    transform: translateX(-50%);
-    z-index: 1;
-    font-size: 12px;
-    width: 250px; 
-  }
