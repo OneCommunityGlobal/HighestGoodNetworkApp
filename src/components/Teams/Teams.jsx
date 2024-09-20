@@ -154,9 +154,7 @@ class Teams extends React.PureComponent {
        */
       return teamSearchData
         .sort((a, b) => {
-          if (a.modifiedDatetime > b.modifiedDatetime) return -1;
-          if (a.modifiedDatetime < b.modifiedDatetime) return 1;
-          return 0;
+          return a.modifiedDatetime === b.modifiedDatetime ? 0 : b.modifiedDatetime - a.modifiedDatetime;
         })
         .map((team, index) => (
           <Team
@@ -289,10 +287,10 @@ class Teams extends React.PureComponent {
   /**
    * call back to show delete team popup
    */
-  onDeleteTeamPopupShow = (deletedname, teamId, status, teamCode) => {
+  onDeleteTeamPopupShow = (deletedName, teamId, status, teamCode) => {
     this.setState({
       deleteTeamPopupOpen: true,
-      selectedTeam: deletedname,
+      selectedTeam: deletedName,
       selectedTeamId: teamId,
       isActive: status,
       selectedTeamCode: teamCode,
@@ -434,10 +432,12 @@ class Teams extends React.PureComponent {
   onConfirmClick = async (teamName, teamId, isActive, teamCode) => {
     const updateTeamResponse = await this.props.updateTeam(teamName, teamId, isActive, teamCode);
     if (updateTeamResponse.status === 200) {
-      toast.success('Status Updated Successfully');
+      toast.success(`Status Updated to ${isActive ? 'active' : 'inactive'} Successfully`);
     } else {
       toast.error(updateTeamResponse);
     }
+    this.props.getAllUserTeams();
+    this.props.getAllUserProfile();
     this.setState({
       teamStatusPopupOpen: false,
       deleteTeamPopupOpen: false,
