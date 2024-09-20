@@ -3,6 +3,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import 'moment-timezone';
+import moment from 'moment';
 
 import hasPermission from 'utils/permissions';
 
@@ -25,6 +26,10 @@ import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
+import DateRangeSelector from './DateRangeSelector';
+
+// This needed delete
+import mockVolunteerData from './mockVolunteerData';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -136,6 +141,35 @@ function TotalOrgSummary(props) {
   const dispatch = useDispatch();
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+
+  // State to hold the selected date range
+  const [selectedDateRange, setSelectedDateRange] = useState({
+    startDate: null,
+    endDate: null,
+  });
+
+  const [filteredData, setFilteredData] = useState([]);
+
+  const handleDateRangeChange = ({ startDate, endDate }) => {
+    setSelectedDateRange({ startDate, endDate });
+  };
+
+  // Filter the mock volunteer data based on the selected date range
+  useEffect(() => {
+    if (selectedDateRange.startDate && selectedDateRange.endDate) {
+      const startDate = moment(selectedDateRange.startDate);
+      const endDate = moment(selectedDateRange.endDate);
+
+      const filtered = mockVolunteerData.filter(volunteer => {
+        const volunteerDate = moment(volunteer.date);
+        return volunteerDate.isBetween(startDate, endDate, null, '[]');
+      });
+
+      setFilteredData(filtered);
+    } else {
+      setFilteredData(mockVolunteerData);
+    }
+  }, [selectedDateRange]);
 
   useEffect(() => {
     dispatch(getAllUserProfile());
@@ -312,6 +346,44 @@ function TotalOrgSummary(props) {
         </Col>
         <Col lg={{ size: 2 }}>
           <h3 className="mt-3 mb-5">PDF Button</h3>
+        </Col>
+      </Row>
+      {/* Date Range Selector Component */}
+      <Row>
+        <Col lg={12}>
+          <DateRangeSelector onDateRangeChange={handleDateRangeChange} />
+        </Col>
+      </Row>
+
+      <hr />
+
+      {/* Display filtered volunteer data */}
+      <Row>
+        <Col lg={12}>
+          {filteredData.length === 0 ? (
+            <Alert color="warning">No data available for the selected date range.</Alert>
+          ) : (
+            <table className="table table-striped">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Hours Worked</th>
+                  <th>Tasks Completed</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredData.map(volunteer => (
+                  <tr key={volunteer.name + volunteer.date}>
+                    <td>{volunteer.name}</td>
+                    <td>{volunteer.hoursWorked}</td>
+                    <td>{volunteer.tasksCompleted}</td>
+                    <td>{volunteer.date}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
         </Col>
       </Row>
       <hr />
