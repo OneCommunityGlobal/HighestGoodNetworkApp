@@ -28,9 +28,9 @@ class TextSuggestion extends React.Component {
 
         />
         <datalist id={this.props.list} >
-          {options.map((item) => {
+          {options.map((item, index) => {
             return (
-              <option value={item}>
+              <option value={item} key={index}>
               </option>
             )
           })}

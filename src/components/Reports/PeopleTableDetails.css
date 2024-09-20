@@ -13,7 +13,7 @@
 
 .people-table-row {
   display: grid;
-  grid-template-columns: 300px repeat(auto-fit, minmax(50px, 1fr));
+  grid-template-columns: 200px repeat(auto-fit, minmax(50px, 1fr));
   /* display: flex; */
   justify-content: space-between;
   align-items: center;
@@ -36,6 +36,7 @@
 
 .people-table-row-dark:hover {
   background-color: #1C2541;
+  color:black;
 }
 
 .people-table-body-row:hover {
@@ -117,7 +118,7 @@
 }
 
 /* Large screens (less than 1020px) */
-@media only screen and (max-width: 1020px) {
+@media only screen and (max-width: 1024px) {
 
   /* CSS rules for large screens */
   .people-table {

@@ -292,7 +292,7 @@ const Timelog = props => {
 
   const showSummary = isAuthUser => {
     if (isAuthUser) {
-      setTimeLogState({ ...timeLogState, summary: !timeLogState.summary });
+      setTimeLogState({ ...timeLogState, summary: true });
       setTimeout(() => {
         const elem = document.getElementById('weeklySum');
         if (elem) {

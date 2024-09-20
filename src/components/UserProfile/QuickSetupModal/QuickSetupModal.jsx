@@ -25,7 +25,10 @@ function QuickSetupModal(props) {
   const [editMode, setEditMode]=useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
+  const [adminLinks, setAdminLinks] = useState([])
+
   useEffect(() => {
+
     getAllTitle()
       .then(res => {
         setTitles(res.data);
@@ -38,6 +41,8 @@ function QuickSetupModal(props) {
     getAllTitle()
       .then(res => {
         setTitles(res.data);
+        props.setUserProfile(props.userProfile)
+        props.setUserProfile(prev => ({ ...prev,adminLinks: adminLinks }));
       })
       .catch(err => console.log(err));
   };
@@ -71,7 +76,12 @@ function QuickSetupModal(props) {
 
        <div className="col text-center mt-3 flex">
         {canAddTitle ? (
-          <Button color="primary mx-2" onClick={() => setShowAddTitle(true)} style={darkMode ? boxStyleDark : boxStyle} disabled={editMode==true?true:false}>
+          <Button
+          color="primary"
+          onClick={() => setShowAddTitle(true)}
+          style={darkMode ? boxStyleDark : boxStyle}
+          disabled={editMode==true?true:false}
+          >
             Add A New Title
           </Button>
         ) : (
@@ -133,9 +143,20 @@ function QuickSetupModal(props) {
         ''
       )}
       {showMessage && (
-        <Modal isOpen={showMessage} toggle={() => setShowMessage(false)} className={darkMode ? 'text-light dark-mode' : ''}>
-          <ModalHeader toggle={() => setShowMessage(false)} className={darkMode ? 'bg-space-cadet' : ''}>{warningMessage.title}</ModalHeader>
-          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{warningMessage.content}</ModalBody>
+        <Modal
+          isOpen={showMessage}
+          toggle={() => setShowMessage(false)}
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader
+            toggle={() => setShowMessage(false)}
+            className={darkMode ? 'bg-space-cadet' : ''}
+          >
+            {warningMessage.title}
+          </ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+            {warningMessage.content}
+          </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button color="primary" onClick={() => setShowMessage(false)}>
               Close
