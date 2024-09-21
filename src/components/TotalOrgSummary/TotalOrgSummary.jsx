@@ -24,6 +24,7 @@ import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
+import RoleDistributionPieChart from './RoleDistributionPieChart';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -99,7 +100,7 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
-  const { darkMode, loading, error, allUserProfiles } = props;
+  const { darkMode, loading, error, allUserProfiles, volunteerOverview } = props;
 
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
@@ -177,6 +178,11 @@ function TotalOrgSummary(props) {
     }
     fetchData();
   }, [fromDate, toDate, fromOverDate, toOverDate]);
+
+  useEffect(() => {
+    props.getTotalOrgSummary(fromDate, toDate);
+    props.hasPermission('');
+  }, [fromDate, toDate]);
 
   if (error) {
     return (
@@ -318,7 +324,12 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className="role-distribution-title">
+                <p>Role Distribution</p>
+              </div>
+              <RoleDistributionPieChart
+                roleDistributionStats={volunteerOverview?.roleDistributionStats}
+              />
             </div>
           </Col>
         </Row>
@@ -330,7 +341,8 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  totalOrgSummary: state.totalOrgSummary,
+  // totalOrgSummary: state.totalOrgSummary,
+  volunteerOverview: state.totalOrgSummary.volunteerOverview,
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
@@ -338,7 +350,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
+  getTotalOrgSummary: (startDate, endDate) => dispatch(getTotalOrgSummary(startDate, endDate)),
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
