@@ -11,16 +11,16 @@ function getStartOfWeek(date) {
 }
 
 // Get the start and end of last week (Sunday to Saturday)
-function getLastWeekRange() {
-  const startOfCurrentWeek = getStartOfWeek(new Date());
-  const startOfLastWeek = moment(startOfCurrentWeek)
-    .subtract(7, 'days')
-    .toDate();
-  const endOfLastWeek = moment(startOfLastWeek)
-    .add(6, 'days')
-    .toDate();
-  return { startDate: startOfLastWeek, endDate: endOfLastWeek };
-}
+// function getLastWeekRange() {
+//   const startOfCurrentWeek = getStartOfWeek(new Date());
+//   const startOfLastWeek = moment(startOfCurrentWeek)
+//     .subtract(7, 'days')
+//     .toDate();
+//   const endOfLastWeek = moment(startOfLastWeek)
+//     .add(6, 'days')
+//     .toDate();
+//   return { startDate: startOfLastWeek, endDate: endOfLastWeek };
+// }
 // filteredData
 function DateRangeSelector({ onDateRangeChange }) {
   const [selectedOption, setSelectedOption] = useState('Current Week');
@@ -31,7 +31,6 @@ function DateRangeSelector({ onDateRangeChange }) {
       .toDate(),
   );
 
-  // Update dates and notify parent component
   const updateDates = (start, end) => {
     setStartDate(start);
     setEndDate(end);
@@ -40,18 +39,44 @@ function DateRangeSelector({ onDateRangeChange }) {
 
   // Handle option change (Current Week, Last Week, Custom)
   const handleOptionChange = ({ target: { value } }) => {
-    // const value = event.target.value;
     setSelectedOption(value);
+
+    // if (value === 'Current Week') {
+    //   // start date: last sunday
+    //   // end date: last sunday + 6days
+    //   updateDates(
+    //     getStartOfWeek(new Date()),
+    //     moment()
+    //       .endOf('day')
+    //       .toDate(),
+    //   );
+    // } else if (value === 'Last Week') {
+    //   // start date: last to last sunday
+    //   // end date: last to last sunday + 6days
+    //   const { startLastWeek, endLastWeek } = getLastWeekRange();
+    //   updateDates(startLastWeek, endLastWeek);
+    // } else {
+    //   updateDates(null, null);
+    // }
 
     if (value === 'Current Week') {
       updateDates(
-        getStartOfWeek(new Date()),
         moment()
-          .endOf('day')
-          .toDate(),
+          .startOf('week')
+          .format('YYYY-MM-DD'),
+        moment()
+          .endOf('week')
+          .format('YYYY-MM-DD'),
       );
     } else if (value === 'Last Week') {
-      const { startLastWeek, endLastWeek } = getLastWeekRange();
+      const startLastWeek = moment()
+        .subtract(1, 'week')
+        .startOf('week')
+        .format('YYYY-MM-DD');
+      const endLastWeek = moment()
+        .subtract(1, 'week')
+        .endOf('week')
+        .format('YYYY-MM-DD');
       updateDates(startLastWeek, endLastWeek);
     } else {
       updateDates(null, null);

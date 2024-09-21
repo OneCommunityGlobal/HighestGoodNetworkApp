@@ -14,7 +14,7 @@ import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
 import { getTaskAndProjectStats } from 'actions/totalOrgSummary';
 
-// import Select from 'react-select';
+import Select from 'react-select';
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -29,7 +29,7 @@ import Loading from '../common/Loading';
 import DateRangeSelector from './DateRangeSelector';
 
 // This needed delete
-import mockVolunteerData from './mockVolunteerData';
+// import mockVolunteerData from './mockVolunteerData';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -71,24 +71,27 @@ const fromDate = calculateFromDate();
 const toDate = calculateToDate();
 const fromOverDate = calculateFromOverDate();
 const toOverDate = calculateToOverDate();
-// const comparisionOptions = [
-//   {
-//     label: 'last week',
-//     value: 'lastweek',
-//   },
-//   {
-//     label: 'Same week last month',
-//     value: 'lastmonth',
-//   },
-//   {
-//     label: 'Same week last year',
-//     value: 'lastyear',
-//   },
-//   {
-//     label: 'Do not show comparision data',
-//     value: 'nocomparision',
-//   },
-// ];
+const comparisionOptions = [
+  {
+    label: 'Week over week',
+    value: 'lastweek',
+  },
+  {
+    label: 'Same week last month',
+    value: 'lastmonth',
+  },
+  {
+    label: 'Same week last year',
+    value: 'lastyear',
+  },
+  {
+    label: 'Do not show comparision data',
+    value: 'nocomparision',
+  },
+];
+// const selectedComparisionOption = comparisionOptions.find(
+//   option => option.value === 'nocomparision',
+// );
 const aggregateTimeEntries = userTimeEntries => {
   const aggregatedEntries = {};
 
@@ -122,7 +125,7 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
-  // const { darkMode, loading, error, allUserProfiles, volunteerstats } = props;
+  // volunteerstats
   const { darkMode, loading, error, allUserProfiles } = props;
 
   const [usersId, setUsersId] = useState([]);
@@ -135,7 +138,7 @@ function TotalOrgSummary(props) {
   //   key: 'selection',
   //   // endDate: new Date().toISOString().split('T')[0],
   // });
-  // const [comparisionWeek, setComparisionWeek] = useState({ startDate: '', endDate: '' });
+  const [comparisionWeek, setComparisionWeek] = useState({ startDate: null, endDate: null });
   // console.log(volunteerstats);
 
   const dispatch = useDispatch();
@@ -144,32 +147,39 @@ function TotalOrgSummary(props) {
 
   // State to hold the selected date range
   const [selectedDateRange, setSelectedDateRange] = useState({
-    startDate: null,
-    endDate: null,
+    startDate: moment()
+      .startOf('week')
+      .format('YYYY-MM-DD'),
+    endDate: moment()
+      .endOf('week')
+      .format('YYYY-MM-DD'),
   });
 
-  const [filteredData, setFilteredData] = useState([]);
+  // const [filteredData, setFilteredData] = useState([]);
 
   const handleDateRangeChange = ({ startDate, endDate }) => {
-    setSelectedDateRange({ startDate, endDate });
+    setSelectedDateRange({
+      startDate: moment(startDate).format('YYYY-MM-DD'),
+      endDate: moment(endDate).format('YYYY-MM-DD'),
+    });
   };
 
   // Filter the mock volunteer data based on the selected date range
-  useEffect(() => {
-    if (selectedDateRange.startDate && selectedDateRange.endDate) {
-      const startDate = moment(selectedDateRange.startDate);
-      const endDate = moment(selectedDateRange.endDate);
+  // useEffect(() => {
+  //   if (selectedDateRange.startDate && selectedDateRange.endDate) {
+  //     const startDate = moment(selectedDateRange.startDate);
+  //     const endDate = moment(selectedDateRange.endDate);
 
-      const filtered = mockVolunteerData.filter(volunteer => {
-        const volunteerDate = moment(volunteer.date);
-        return volunteerDate.isBetween(startDate, endDate, null, '[]');
-      });
+  //     const filtered = mockVolunteerData.filter(volunteer => {
+  //       const volunteerDate = moment(volunteer.date);
+  //       return volunteerDate.isBetween(startDate, endDate, null, '[]');
+  //     });
 
-      setFilteredData(filtered);
-    } else {
-      setFilteredData(mockVolunteerData);
-    }
-  }, [selectedDateRange]);
+  //     setFilteredData(filtered);
+  //   } else {
+  //     setFilteredData(mockVolunteerData);
+  //   }
+  // }, [selectedDateRange]);
 
   useEffect(() => {
     dispatch(getAllUserProfile());
@@ -239,16 +249,26 @@ function TotalOrgSummary(props) {
     fetchData();
   }, [fromDate, toDate, fromOverDate, toOverDate]);
 
-  // useEffect(() => {
-  //   props.getTotalOrgSummary(selectedWeek.startDate, selectedWeek.endDate);
-  //   props.hasPermission('');
-  // }, [selectedWeek]);
+  useEffect(() => {
+    props.getTotalOrgSummary(
+      selectedDateRange.startDate,
+      selectedDateRange.endDate,
+      comparisionWeek.startDate,
+      comparisionWeek.endDate,
+    );
+    props.hasPermission('');
+  }, [selectedDateRange]);
 
-  // useEffect(() => {
-  //   if (comparisionWeek.startDate !== '') {
-  //     props.getTotalOrgSummary(comparisionWeek.startDate, comparisionWeek.endDate);
-  //   }
-  // }, [comparisionWeek]);
+  useEffect(() => {
+    if (comparisionWeek.startDate !== null) {
+      props.getTotalOrgSummary(
+        selectedDateRange.startDate,
+        selectedDateRange.endDate,
+        comparisionWeek.startDate,
+        comparisionWeek.endDate,
+      );
+    }
+  }, [comparisionWeek]);
 
   // this is called on date change and it sets the date range in State
   // const handleChange = ranges => {
@@ -256,37 +276,56 @@ function TotalOrgSummary(props) {
   // };
 
   // sets comparision date based on comparision option and time period selection
-  // const handleComparisionPeriodChange = option => {
-  //   const { startDate, endDate } = selectedWeek;
-  //   const commonStartDate = new Date(startDate);
-  //   const commonEndDate = new Date(endDate);
-  //   switch (option.value) {
-  //     case 'lastweek':
-  //       // Calculate last week's start and end dates
-  //       commonStartDate.setDate(commonStartDate.getDate() - 7 * 2); // Move back 2 weeks
-  //       commonEndDate.setDate(commonEndDate.getDate() - 7 * 2); // Move back 2 weeks
-  //       break;
+  const handleComparisionPeriodChange = option => {
+    const { startDate, endDate } = selectedDateRange;
+    // console.log(selectedDateRange);
+    let commonStartDate = new Date(startDate);
+    let commonEndDate = new Date(endDate);
 
-  //     case 'lastmonth':
-  //       // Set dates to last month
-  //       commonStartDate.setMonth(commonStartDate.getMonth() - 1);
-  //       commonEndDate.setMonth(commonEndDate.getMonth() - 1);
-  //       break;
+    switch (option.value) {
+      case 'lastweek ':
+        // Calculate last week's start and end dates
+        commonStartDate = moment(startDate)
+          .subtract(1, 'week')
+          .startOf('week'); // Last week's start
+        commonEndDate = moment(endDate)
+          .subtract(1, 'week')
+          .endOf('week'); // Last week's end
+        break;
 
-  //     case 'lastyear':
-  //       // Set dates to last year
-  //       commonStartDate.setFullYear(commonStartDate.getFullYear() - 1);
-  //       commonEndDate.setFullYear(commonEndDate.getFullYear() - 1);
-  //       break;
+      case 'lastmonth':
+        // Calculate the entire last month's start and end dates
+        commonStartDate = moment(startDate).subtract(1, 'month');
+        commonEndDate = moment(endDate).subtract(1, 'month');
+        break;
 
-  //     default:
-  //       throw new Error('Invalid option selected');
-  //   }
-  //   setComparisionWeek({
-  //     startDate: commonStartDate.toISOString().split('T')[0],
-  //     endDate: commonEndDate.toISOString().split('T')[0],
-  //   });
-  // };
+      case 'lastyear':
+        // Calculate last year's same date range
+        commonStartDate = moment(startDate).subtract(1, 'year');
+        commonEndDate = moment(endDate).subtract(1, 'year');
+        break;
+
+      case 'nocomparision':
+      default:
+        // If no comparison, set comparison dates to null
+        setComparisionWeek({ startDate: null, endDate: null });
+        return;
+    }
+
+    // Set the calculated comparison week with the correct format
+    setComparisionWeek({
+      startDate: commonStartDate.format('YYYY-MM-DD'),
+      endDate: commonEndDate.format('YYYY-MM-DD'),
+    });
+
+    // console.log(commonStartDate.format('YYYY-MM-DD'));
+    // console.log(commonEndDate.format('YYYY-MM-DD'));
+
+    // setComparisionWeek({
+    //   startDate: moment(commonStartDate).format('YYYY-MM-DD'),
+    //   endDate: moment(commonEndDate).format('YYYY-MM-DD'),
+    // });
+  };
 
   if (error) {
     return (
@@ -323,42 +362,37 @@ function TotalOrgSummary(props) {
       }`}
     >
       <Row>
-        <Col lg={{ size: 6 }}>
+        <Col sm={4} md={4} lg={4}>
           <h3 className="mt-3 mb-5">Total Org Summary</h3>
         </Col>
-        <Col lg={{ size: 2 }}>
+        <Col sm={4} md={4} lg={4}>
           <h3 className="mt-3 mb-5">
-            {/* <DateRangePicker
-              className="dateRange"
-              ranges={[selectedWeek]}
-              onChangse={handleChange}
-            /> */}
-            {/* DATE SELECTOR COMPONENT GOES HERE */}
-            {/* use selectedWeek to store dates and handleChange to update dates */}
+            <DateRangeSelector onDateRangeChange={handleDateRangeChange} />
           </h3>
         </Col>
-        <Col lg={{ size: 2 }} style={{ paddingTop: '20px' }}>
-          {/* <Select
+        <Col sm={2} md={2} lg={2} style={{ paddingTop: '20px' }}>
+          <Select
             options={comparisionOptions}
             onChange={option => handleComparisionPeriodChange(option)}
             default
-          /> */}
+          />
         </Col>
-        <Col lg={{ size: 2 }}>
+        <Col sm={2} md={2} lg={2}>
           <h3 className="mt-3 mb-5">PDF Button</h3>
         </Col>
       </Row>
+
       {/* Date Range Selector Component */}
-      <Row>
+      {/* <Row>
         <Col lg={12}>
           <DateRangeSelector onDateRangeChange={handleDateRangeChange} />
         </Col>
-      </Row>
+      </Row> */}
 
       <hr />
 
       {/* Display filtered volunteer data */}
-      <Row>
+      {/* <Row>
         <Col lg={12}>
           {filteredData.length === 0 ? (
             <Alert color="warning">No data available for the selected date range.</Alert>
@@ -385,7 +419,7 @@ function TotalOrgSummary(props) {
             </table>
           )}
         </Col>
-      </Row>
+      </Row> */}
       <hr />
       <AccordianWrapper title="Volunteer Status">
         <Row>
@@ -511,7 +545,8 @@ const mapDispatchToProps = dispatch => ({
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
-  getTotalOrgSummary: (startDate, endDate) => dispatch(getTotalOrgSummary(startDate, endDate)),
+  getTotalOrgSummary: (startDate, endDate, comparisionStartDate, comparisionEndDate) =>
+    dispatch(getTotalOrgSummary(startDate, endDate, comparisionStartDate, comparisionEndDate)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);
