@@ -275,6 +275,13 @@ const TeamMemberTasks = React.memo(props => {
         setTeamList([...usersWithTasks]);
       }
     } else {
+      // prettier-ignore
+      if (selectedTeamNames.length > 0 || selectedCodes.length > 0 || selectedColors.length > 0) {
+        setSelectedTeamNames([]);
+        setSelectedCodes([]);
+        setSelectedColors([]);
+      }
+
       const usersTask = usersWithTasks.filter(item => filteredUserTeamIds.includes(item.personId));
       setTeamList(usersTask);
     }
@@ -386,14 +393,16 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const handleSelectTeamNames = event => {
+    filteredUserTeamIds.length > 0 && setTeamList(usersWithTasks);
     setSelectedTeamNames(event);
   };
 
   const handleSelectCodeChange = event => {
+    filteredUserTeamIds.length > 0 && setTeamList(usersWithTasks);
     setSelectedCodes(event);
   };
-
   const handleSelectColorChange = event => {
+    filteredUserTeamIds.length > 0 && setTeamList(usersWithTasks);
     setSelectedColors(event);
   };
 
@@ -483,7 +492,8 @@ const TeamMemberTasks = React.memo(props => {
                   key={idx}
                   type="button"
                   className={
-                    `m-1 responsive-btn-size circle-border ${days} days ` + (darkMode ? 'box-shadow-dark' : '')
+                    `m-1 responsive-btn-size circle-border ${days} days ` +
+                    (darkMode ? 'box-shadow-dark' : '')
                   }
                   title={`Timelogs submitted in the past ${days} days`}
                   style={{
@@ -494,12 +504,14 @@ const TeamMemberTasks = React.memo(props => {
                   }}
                   onClick={() => selectPeriod(days)}
                 >
-                  {days} {days === "1" ? "day" : "days"}
+                  {days} {days === '1' ? 'day' : 'days'}
                 </button>
               ))}
               <select
-                className={`m-1 mobile-view-select circle-border ${darkMode ? 'box-shadow-dark' : ''}`}
-                onChange={(e) => selectPeriod(e.target.value)}
+                className={`m-1 mobile-view-select circle-border ${
+                  darkMode ? 'box-shadow-dark' : ''
+                }`}
+                onChange={e => selectPeriod(e.target.value)}
                 value={selectedPeriod}
                 title={`Timelogs submitted in the past ${selectedPeriod} days`}
                 style={{
@@ -517,24 +529,22 @@ const TeamMemberTasks = React.memo(props => {
                     style={{
                       color: color,
                       backgroundColor:
-                        selectedPeriod === days && isTimeFilterActive
-                          ? color
-                          : 'white',
+                        selectedPeriod === days && isTimeFilterActive ? color : 'white',
                       border: `1px solid ${color}`,
                     }}
                   >
-                    {days} {days === "1" ? "day" : "days"}
+                    {days} {days === '1' ? 'day' : 'days'}
                   </option>
                 ))}
               </select>
               <EditableInfoModal
-              areaName="TeamMemberTasksTimeFilterInfoPoint"
-              areaTitle="Team Member Task Time Filter"
-              fontSize={22}
-              isPermissionPage={true}
-              role={authUser.role}
-              darkMode={darkMode}
-            />
+                areaName="TeamMemberTasksTimeFilterInfoPoint"
+                areaTitle="Team Member Task Time Filter"
+                fontSize={22}
+                isPermissionPage={true}
+                role={authUser.role}
+                darkMode={darkMode}
+              />
             </div>
           </section>
         ) : (

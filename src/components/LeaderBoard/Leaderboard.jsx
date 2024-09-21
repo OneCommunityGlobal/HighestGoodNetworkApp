@@ -110,7 +110,7 @@ function LeaderBoard({
   const refInput = useRef('');
 
   const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(loggedInUser.role);
-  
+
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
 
