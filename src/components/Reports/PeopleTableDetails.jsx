@@ -234,9 +234,12 @@ function PeopleTableDetails(props) {
       <div className={`task-card ${darkMode ? 'text-dark' : ''}`}>
         <div key={value._id} >
           <div className='task-header'>
-            <div className='task-title'>
-              {value.taskName}
+            <div>
+              <div className='task-title people-report-task-name'>
+                {value.taskName}
+              </div>  
             </div>
+            
             <div className='task-status'>
               {value.status}
             </div>
@@ -294,7 +297,7 @@ function PeopleTableDetails(props) {
   const renderFilteredTask = value => (
     <div>
       <div key={value._id} className={`people-table-row people-table-body-row ${darkMode ? 'people-table-row-dark' : ''}`}>
-        <div>{value.taskName}</div>
+        <div className='people-report-task-name'>{value.taskName}</div>
         <div>{value.priority}</div>
         <div>{value.status}</div>
         <div>
