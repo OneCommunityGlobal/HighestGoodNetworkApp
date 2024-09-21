@@ -251,7 +251,7 @@ const UserTableData = React.memo(props => {
                 props.onDeleteClick(props.user, 'archive');
               }}
               style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
-              disabled={props.auth?.user.userid === props.user._i || !canDeleteUsers}
+              disabled={props.auth?.user.userid === props.user._id || !canDeleteUsers}
             >
               {DELETE}
             </button>
