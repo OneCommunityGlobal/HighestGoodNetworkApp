@@ -53,19 +53,16 @@ class Teams extends React.PureComponent {
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();
   }
-
+  
   componentDidUpdate(prevProps, prevState) {
-    if (!lo.isEqual(this.props.state.teamsTeamMembers.teamMembers, prevProps.state.teamsTeamMembers.teamMembers)) {
-      this.props.getAllUserTeams();
-      this.props.getAllUserProfile();
-    }
     if (
       !lo.isEqual(prevProps.state.allTeamsData.allTeams, this.props.state.allTeamsData.allTeams) || 
       prevState.teamNameSearchText !== this.state.teamNameSearchText || 
       prevState.wildCardSearchText !== this.state.wildCardSearchText
     ) {
-     this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
-    }
+      this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
+    } 
+    
     if (
       prevState.teams !== this.state.teams || 
       prevState.sortTeamNameState !== this.state.sortTeamNameState || 
@@ -73,6 +70,7 @@ class Teams extends React.PureComponent {
     ) {
       this.sortTeams();
     }
+
     if (
       (prevProps.state.allTeamsData.allTeams && prevProps.state.allTeamsData.allTeams.length) !== (this.props.state.allTeamsData.allTeams && this.props.state.allTeamsData.allTeams.length)
     ) {
@@ -93,6 +91,11 @@ class Teams extends React.PureComponent {
 
       if (teamsChanged) {
         // Teams have changed, update or re-fetch them
+        this.props.getAllUserTeams();
+        this.props.getAllUserProfile();
+      }
+      if (!lo.isEqual(this.props.state.teamsTeamMembers.teamMembers, prevProps.state.teamsTeamMembers.teamMembers)) {
+        // Members have changed, update or re-fetch them
         this.props.getAllUserTeams();
         this.props.getAllUserProfile();
       }
@@ -206,6 +209,7 @@ class Teams extends React.PureComponent {
    */
 
   teampopupElements = (allTeams) => {
+    //WHERE ARE THE MEMBERS COMING
     const members = this.props.state ? this.props.state.teamsTeamMembers : [];
     const selectedTeamData= allTeams? allTeams.filter(team => team.teamName === this.state.selectedTeam) : [];
     return (
@@ -255,15 +259,18 @@ class Teams extends React.PureComponent {
     );
   };
 
-  onAddUser = user => {
-    this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
+  // CNOTE: ADD USER HERE
+  onAddUser = async user => {
+    await this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
+    // this.props.getTeamMembers(this.state.selectedTeamId);
   };
 
    /** NEW CODE
    * Update Team member visibility by making a Redux action call
    */
-   onUpdateTeamMemberVisibility = (userid, visibility) => {
-    this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userid, visibility);
+  onUpdateTeamMemberVisibility = async (userid, visibility) => {
+    await this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userid, visibility);
+    // this.props.getTeamMembers(this.state.selectedTeamId);
   };
 
   /**
