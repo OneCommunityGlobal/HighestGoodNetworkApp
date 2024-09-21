@@ -1,11 +1,14 @@
+import "./TaskEditSuggestions.css"
 import Loading from 'components/common/Loading';
 import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { Container, Table } from 'reactstrap';
+import { FaUndoAlt } from 'react-icons/fa';
 import { TaskEditSuggestionRow } from './Components/TaskEditSuggestionRow';
 import { TaskEditSuggestionsModal } from './Components/TaskEditSuggestionsModal';
 import { getTaskEditSuggestionsData } from './selectors';
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from './actions';
+import { fetchTaskEditSuggestions } from './thunks';
 
 export const TaskEditSuggestions = () => {
   const [isTaskEditSuggestionModalOpen, setIsTaskEditSuggestionModalOpen] = useState(false);
@@ -19,7 +22,6 @@ export const TaskEditSuggestions = () => {
     userRole,
     darkMode
   } = useSelector(getTaskEditSuggestionsData);
-  
 
   const dispatch = useDispatch();
 
@@ -27,6 +29,10 @@ export const TaskEditSuggestions = () => {
     setCurrentTaskEditSuggestion(currentTaskEditSuggestion);
     setIsTaskEditSuggestionModalOpen(!isTaskEditSuggestionModalOpen);
   };
+
+  const handleLoadTaskEditSuggestions = () => {
+    dispatch(fetchTaskEditSuggestions());
+  }
 
   const SortArrow = ({ sortDirection }) => {
     if (sortDirection === 'asc') {
@@ -38,10 +44,19 @@ export const TaskEditSuggestions = () => {
     }
   };
 
+  useEffect(() => {
+    handleLoadTaskEditSuggestions();
+  }, [])
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
       <Container>
-        <h1 className="pt-3">Task Edit Suggestions</h1>
+        <div className='task-edit-suggestions-title'>
+          <h1>Task Edit Suggestions</h1>
+          <button type='button' title='Refresh' onClick={handleLoadTaskEditSuggestions}>
+            <FaUndoAlt size={20} className={darkMode ? 'text-light' : ''}/>
+          </button>
+        </div>
         {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
         {isLoading && <Loading />}
         {!isLoading && taskEditSuggestions && (

@@ -16,7 +16,7 @@ describe('TasksTable component', () => {
 
   const renderComponent = () => render(
     <Provider store={store}>
-      <TasksTable WbsTasksID={['someId']} />
+      <TasksTable tasks={[]} />
     </Provider>
   );
 
