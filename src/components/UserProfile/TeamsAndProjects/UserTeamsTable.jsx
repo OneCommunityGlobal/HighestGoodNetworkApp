@@ -368,25 +368,34 @@ const UserTeamsTable = props => {
               </Col>
             </div>
             {props.edit && props.role && (
-              <Col 
-                md="12"
-                style={{ padding: '0' }}
-              >
+              <Col md="12" style={{ padding: '0' }}>
                 {canAssignTeamToUsers ? (
                   props.disabled ? (
                     <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
                       Assign Team
                     </Button>
                   ) : (
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      onClick={() => {
-                        props.onButtonClick();
-                      }}
-                    >
-                      Assign Team
-                    </Button>
+                    <>
+                      <Button
+                        id="teamCodeAssign"
+                        className="btn-addteam"
+                        color="primary"
+                        onClick={() => {
+                          props.onButtonClick();
+                        }}
+                      >
+                        Assign Team
+                      </Button>
+                      <Tooltip
+                        placement="top" // Adjust the placement as needed
+                        isOpen={teamCodeExplainTooltip}
+                        target="teamCodeAssign"
+                        toggle={toggleTeamCodeExplainTooltip}
+                      >
+                        This team code should only used by admin/owner, and has nothing to do with
+                        the team data model.
+                      </Tooltip>
+                    </>
                   )
                 ) : (
                   <></>
