@@ -55,6 +55,10 @@ class Teams extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps, prevState) {
+    if (!lo.isEqual(this.props.state.teamsTeamMembers.teamMembers, prevProps.state.teamsTeamMembers.teamMembers)) {
+      this.props.getAllUserTeams();
+      this.props.getAllUserProfile();
+    }
     if (
       !lo.isEqual(prevProps.state.allTeamsData.allTeams, this.props.state.allTeamsData.allTeams) || 
       prevState.teamNameSearchText !== this.state.teamNameSearchText || 
