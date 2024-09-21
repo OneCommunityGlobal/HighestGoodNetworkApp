@@ -50,7 +50,7 @@ const AddLostTime = props => {
 
   const [entryType, setEntryType] = useState('');
   const [isSubmitting, setSubmitting] = useState(false);
-  const [inputs, setInputs] = useState(initialForm);
+  const [inputs, setInputs] = useState(initialForm); //-----------------------------------------
   
   const [selectedTeam, setSelectTeam] = useState(undefined);
   const [selectedProject, setSelectProject] = useState(undefined);
@@ -110,6 +110,7 @@ const AddLostTime = props => {
   };
 
   const handleFormContent = () => {
+    console.log("inputs", inputs);
     if (entryType == 'project') {
       return (
         <FormGroup>
@@ -148,11 +149,12 @@ const AddLostTime = props => {
     } else if (entryType == 'team') {
       return (
         <FormGroup>
-          <Label className={fontColor}>Team Name</Label>
+          <Label className={fontColor}>Team Name</Label> 
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
             setNewTeamName={setNewTeamName} 
+            setInputs={setInputs}
             newTeamName={newTeamName}
             selectedTeam={selectedTeam}
             searchText={searchTeamText}
@@ -244,6 +246,7 @@ const AddLostTime = props => {
       result.personId = 'Person is required';
     }
     if (entryType == 'team' && inputs.teamId == undefined) {
+      console.log("inputs", inputs);
       result.teamId = 'Team is required';
     }
 

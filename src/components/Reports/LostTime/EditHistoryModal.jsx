@@ -177,6 +177,7 @@ const EditHistoryModal = props => {
       result.personId = 'Person is required';
     }
     if (props.entryType == 'team' && inputs.teamId == undefined) {
+      console.log("EditHistory");
       result.teamId = 'Team is required';
     }
 
