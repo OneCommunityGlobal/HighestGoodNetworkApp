@@ -138,8 +138,9 @@ export const MemberAutoComplete = props => {
                   }
                 })
                 .slice(0, 10)
-                .map(item => (
+                .map((item, idx) => (
                   <div
+                    key={idx}
                     className="user-auto-cpmplete"
                     onClick={() => {
                       props.setSearchText(`${item.firstName} ${item.lastName}`);
