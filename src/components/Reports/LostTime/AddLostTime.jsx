@@ -50,7 +50,7 @@ const AddLostTime = props => {
 
   const [entryType, setEntryType] = useState('');
   const [isSubmitting, setSubmitting] = useState(false);
-  const [inputs, setInputs] = useState(initialForm); //-----------------------------------------
+  const [inputs, setInputs] = useState(initialForm);
   
   const [selectedTeam, setSelectTeam] = useState(undefined);
   const [selectedProject, setSelectProject] = useState(undefined);
@@ -110,7 +110,6 @@ const AddLostTime = props => {
   };
 
   const handleFormContent = () => {
-    console.log("inputs", inputs);
     if (entryType == 'project') {
       return (
         <FormGroup>
@@ -246,7 +245,6 @@ const AddLostTime = props => {
       result.personId = 'Person is required';
     }
     if (entryType == 'team' && inputs.teamId == undefined) {
-      console.log("inputs", inputs);
       result.teamId = 'Team is required';
     }
 
