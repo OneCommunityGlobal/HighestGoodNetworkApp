@@ -3,7 +3,6 @@ import { connect } from 'react-redux';
 import {
   fetchAllProjects,
   postNewProject,
-  modifyProject,
   clearError,
 } from '../../actions/projects';
 import {getProjectsByUsersName} from '../../actions/userProfile';
@@ -12,14 +11,12 @@ import Overview from './Overview';
 import AddProject from './AddProject';
 import ProjectTableHeader from './ProjectTableHeader';
 import Project from './Project';
-import ModalTemplate from './../common/Modal';
-import { CONFIRM_ARCHIVE } from './../../languages/en/messages';
 import './projects.css';
 import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
-import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
+import ModalTemplate from './../common/Modal';
 
 const Projects = function(props) {
   const role = props.state.userProfile.role;
@@ -27,24 +24,15 @@ const Projects = function(props) {
   const numberOfProjects = props.state.allProjects.projects.length;
   const numberOfActive = props.state.allProjects.projects.filter(project => project.isActive).length;
   const { fetching, fetched, status, error } = props.state.allProjects;
-  const initialModalData = {
+    const initialModalData = {
     showModal: false,
     modalMessage: "",
-    modalTitle: "",
-    hasConfirmBtn: false,
-    hasInactiveBtn: false,
+    modalTitle: "ERROR",
   };
-
   const [modalData, setModalData] = useState(initialModalData);
   const [categorySelectedForSort, setCategorySelectedForSort] = useState("");
   const [showStatus, setShowStatus] = useState("");
   const [sortedByName, setSortedByName] = useState("");
-  const [projectTarget, setProjectTarget] = useState({
-    projectName: '',
-    projectId: -1,
-    active: false,
-    category: '',
-  });
   const [projectList, setProjectList] = useState(null);
   const [searchName, setSearchName] = useState("");
   const [allProjects, setAllProjects] = useState(null);
@@ -69,21 +57,6 @@ const Projects = function(props) {
 
   const canPostProject = props.hasPermission('postProject');
 
-  const onClickArchiveBtn = (projectData) => {
-    setProjectTarget(projectData);
-    setModalData({
-      showModal: true,
-      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
-      modalTitle: CONFIRM_ARCHIVE,
-      hasConfirmBtn: true,
-      hasInactiveBtn: true,
-    });
-  };
-
-  const onCloseModal = () => {
-    setModalData(initialModalData);
-    props.clearError();
-  };
 
   const onChangeCategory = (value) => {
     setCategorySelectedForSort(value);
@@ -98,32 +71,23 @@ const Projects = function(props) {
     setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
   }
 
-  const onUpdateProject = async (updatedProject) => {
-    await props.modifyProject(updatedProject);  
-    /* refresh the page after updating the project */
-    await props.fetchAllProjects();
-  };
-
-  const confirmArchive = async () => {
-    const updatedProject = { ...projectTarget, isArchived: true };
-    await onUpdateProject(updatedProject);
-    await props.fetchAllProjects();
-    onCloseModal();
-  };
-
-  const setInactiveProject = async () => {
-    const updatedProject = { ...projectTarget, isActive: !isActive };
-    await onUpdateProject(updatedProject);
-    onCloseModal();
-  };
-
   const postProject = async (name, category) => {
     await props.postNewProject(name, category);
   };
 
+  const onCloseModal = () => {
+    setModalData(initialModalData);
+    props.clearError();
+  };
+
+  const handleProjectArchived = () => {
+    props.fetchAllProjects();
+  };
+
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
-    const projectList = projects.filter(project => {
+    const filteredProjects = projects.filter(project => !project.isArchived)
+      .filter(project => {
       if (categorySelectedForSort && showStatus){
         return project.category === categorySelectedForSort && project.isActive === showStatus;
       } else if (categorySelectedForSort) {
@@ -148,13 +112,12 @@ const Projects = function(props) {
           key={project._id}
           index={index}
           projectData={project}
-          onUpdateProject={onUpdateProject}
-          onClickArchiveBtn={onClickArchiveBtn}
           darkMode={darkMode}
+          onProjectArchived={handleProjectArchived}
         />
     ));
-    setProjectList(projectList);
-    setAllProjects(projectList);
+    setProjectList(filteredProjects);
+    setAllProjects(filteredProjects);
   }
 
   useEffect(() => {
@@ -168,8 +131,6 @@ const Projects = function(props) {
           showModal: true,
           modalMessage: error,
           modalTitle: 'ERROR',
-          hasConfirmBtn: false,
-          hasInactiveBtn: false,
         });
       }
   }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
@@ -234,15 +195,13 @@ const Projects = function(props) {
           </table>
         </div>
 
+      </div>
         <ModalTemplate
           isOpen={modalData.showModal}
           closeModal={onCloseModal}
-          confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
-          setInactiveModal={modalData.hasInactiveBtn ? setInactiveProject : null}
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
         />
-      </div>
     </>
   );
 }
@@ -254,7 +213,6 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, {
   fetchAllProjects,
   postNewProject,
-  modifyProject,
   clearError,
   getPopupById,
   hasPermission,
