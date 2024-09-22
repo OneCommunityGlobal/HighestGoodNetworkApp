@@ -29,7 +29,7 @@ export function Dashboard(props) {
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const toggle = () => {
+  const toggle = (forceOpen = null) => {
     if (isNotAllowedToEdit) {
       const warningMessage =
         viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
@@ -38,7 +38,10 @@ export function Dashboard(props) {
       alert(warningMessage);
       return;
     }
-    setPopup(!popup);
+  
+    const shouldOpen = forceOpen !== null ? forceOpen : !popup;
+    setPopup(shouldOpen);
+  
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -46,6 +49,7 @@ export function Dashboard(props) {
       }
     }, 150);
   };
+  
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
