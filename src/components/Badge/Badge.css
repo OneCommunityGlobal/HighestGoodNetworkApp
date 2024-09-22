@@ -114,6 +114,45 @@
   margin-top: 15px;
 }
 
+.assign-badge-inputs-container {
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start; /* Ensures everything aligns to the top */
+  gap: 0px; /* Space between first and last name inputs */
+  width: 100%; /* Full width container */
+  flex-wrap: nowrap; /* Prevent wrapping */
+  position: relative;
+}
+
+.input-wrapper {
+  /*flex: 1;*/
+ /* min-width: 250px; /* Minimum width for the input fields */
+  /*position: relative; /* Relative positioning for dropdown alignment */
+  /*width: 300px; /* Set a fixed width */
+  /*min-width: unset; /* Remove min-width */
+  width: 250px; /* Fixed width for input fields */
+  min-width: 250px; /* Ensure a minimum width */
+  max-width: 250px; /* Prevent the input field from expanding too much */
+  position: relative;
+}
+
+.autosuggest-dropdown {
+  position: absolute !important; /* Ensure dropdown floats without affecting other elements */
+  z-index: 1000;
+  top: 100%; /* Places dropdown right below the input */
+  left: 0;
+  width: 100%; /* Matches the width of the input field */
+  max-width: 250px; /* Matches the input field width */
+  max-height: 200px; /* Prevents dropdown from becoming too large */
+  overflow-y: auto; /* Adds scrollbar if suggestions overflow */
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Adds shadow for visibility */
+  margin-top: 5px; /* Space between input and dropdown */
+}
+
+
+
 .badge-message-background-success {
   background-color: #d4edda;
 }

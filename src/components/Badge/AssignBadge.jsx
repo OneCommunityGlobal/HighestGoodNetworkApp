@@ -139,17 +139,18 @@ function AssignBadge(props) {
     <Form
       className={darkMode ? 'bg-yinmn-blue text-light' : ''}
       style={{
-        padding: 20,
+        padding: 20
       }}
     >
-      <div className="assign-badge-margin-top" style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="assign-badge-margin-top" style={{ display: 'flex',  gap: '20px' }}>
         <Label
           className={darkMode ? 'text-light' : ''}
           style={{
             fontWeight: 'bold',
             marginLeft: '15px',
-            marginRight: '2px',
+            marginRight: '10px',
             paddingRight: '2px',
+            whiteSpace: 'nowrap'  /* Prevents wrapping of the label text */
           }}
         >
           Search by Name
@@ -160,7 +161,8 @@ function AssignBadge(props) {
           data-testid="NameInfo"
           style={{ marginRight: '5px' }}
         />
-        <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '5px' }}>
+     {/*   <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '5px' }}> */}
+        <div className="assign-badge-inputs-container">
           <UncontrolledTooltip
             placement="right"
             target="NameInfo"
@@ -184,7 +186,8 @@ function AssignBadge(props) {
               many times as you want them to earn it.
             </p>
           </UncontrolledTooltip>
-          <div style={{ marginRight: '5px' }}>
+         {/* <div style={{ marginRight: '5px' }}> */}
+          <div className="input-wrapper" style={{ position: 'relative' }}>
             <Autosuggest
               suggestions={firstSuggestions}
               onSuggestionsFetchRequested={onFirstSuggestionsFetchRequested}
@@ -193,10 +196,12 @@ function AssignBadge(props) {
               getSuggestionValue={getSuggestionFirst}
               renderSuggestion={renderSuggestion}
               inputProps={FirstInputProps}
-              style={{ marginLeft: '5px', marginRight: '5px' }}
+              className="autosuggest-dropdown"
+          
             />
           </div>
-          <div style={{ marginLeft: '5px' }}>
+        {/*  <div style={{ marginLeft: '5px' }}> */}
+          <div className="input-wrapper" style={{ position: 'relative' }}>
             <Autosuggest
               suggestions={lastSuggestions}
               onSuggestionsFetchRequested={onLastSuggestionsFetchRequested}
@@ -205,7 +210,7 @@ function AssignBadge(props) {
               getSuggestionValue={getSuggestionLast}
               renderSuggestion={renderSuggestion}
               inputProps={LastInputProps}
-              style={{ marginLeft: '5px' }}
+              
             />
           </div>
         </div>
