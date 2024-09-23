@@ -12,7 +12,7 @@ import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
-import { getAllUserProfile } from '../../actions/userManagement';
+import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
 import ReportTableSearchPanel from './ReportTableSearchPanel';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -111,7 +111,7 @@ class ReportsPage extends Component {
   async componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
-    this.props.getAllUserProfile();
+    this.props.getUserProfileBasicInfo();
   }
 
   setFilterStatus(status) {
@@ -791,6 +791,6 @@ const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
   fetchAllProjects,
   getAllUserTeams,
-  getAllUserProfile,
+  getUserProfileBasicInfo,
   fetchAllTasks,
 })(ReportsPage);
