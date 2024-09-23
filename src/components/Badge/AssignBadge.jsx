@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -10,11 +10,10 @@ import {
   ModalBody,
   Alert,
   UncontrolledTooltip,
+  Table,
 } from 'reactstrap';
-import { connect } from 'react-redux';
-import Autosuggest from 'react-autosuggest';
+import { connect, useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from 'styles';
-import { searchWithAccent } from 'utils/search';
 import AssignBadgePopup from './AssignBadgePopup';
 import {
   getFirstName,
@@ -30,10 +29,12 @@ import { getAllUserProfile } from '../../actions/userManagement';
 import '../Header/DarkMode.css';
 
 function AssignBadge(props) {
-  const { darkMode } = props;
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [isOpen, setOpen] = useState(false);
-  const [firstSuggestions, setFirstSuggestions] = useState([]);
-  const [lastSuggestions, setLastSuggestions] = useState([]);
+  const [fullName, setFullName] = useState('');
+  const [filteredUsers, setFilteredUsers] = useState([]);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     props.getAllUserProfile();
@@ -41,70 +42,55 @@ function AssignBadge(props) {
     props.closeAlert();
   }, []);
 
-  const activeUsers = props.allUserProfiles.filter(profile => profile.isActive === true);
+  useEffect(() => {
+    try {
+      if (typeof fullName !== 'string') {
+        throw new Error('Full name must be a string');
+      }
 
-  // const escapeRegexCharacters = str => str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const trimmedName = fullName.trim();
+      if (trimmedName) {
+        const filtered = props.allUserProfiles.filter(user => {
+          const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
+          return userFullName.includes(trimmedName.toLowerCase());
+        });
+        setFilteredUsers(filtered);
+      } else {
+        setFilteredUsers([]);
+        // Clear selectedUserId when input is empty
+        setSelectedUserId(null);
+        props.clearNameAndSelected();
+      }
+      setError(null);
+    } catch (err) {
+      console.error('Error filtering users:', err);
+      setError(err.message);
+      setFilteredUsers([]);
+      // Also clear selection on error
+      setSelectedUserId(null);
+      props.clearNameAndSelected();
+    }
+  }, [fullName, props.allUserProfiles]);
 
-  const getSuggestions = value => {
-    // const escapedValue = escapeRegexCharacters(value.trim());
-    // const regex = new RegExp('^' + escapedValue, 'i');
-    return activeUsers.filter(
-      user =>
-        searchWithAccent(user.firstName, value.trim()) ||
-        searchWithAccent(user.lastName, value.trim()),
-    );
+  const handleFullNameChange = event => {
+    setFullName(event.target.value);
   };
 
-  const getSuggestionFirst = suggestion => suggestion.firstName;
-
-  const getSuggestionLast = suggestion => suggestion.lastName;
-
-  const renderSuggestion = suggestion => {
-    return (
-      <div>
-        {suggestion.firstName} {suggestion.lastName}
-      </div>
-    );
-  };
-
-  const onFirstChange = (event, { newValue }) => {
-    props.getFirstName(newValue);
-  };
-
-  const onLastChange = (event, { newValue }) => {
-    props.getLastName(newValue);
-  };
-
-  const onFirstSuggestionsFetchRequested = ({ value }) => {
-    setFirstSuggestions(getSuggestions(value));
-  };
-
-  const onFirstSuggestionsClearRequested = () => {
-    setFirstSuggestions([]);
-  };
-
-  const onFirstSuggestionSelected = (event, { suggestion }) => {
-    props.getLastName(suggestion.lastName);
-    props.getUserId(suggestion._id);
-  };
-
-  const onLastSuggestionsFetchRequested = ({ value }) => {
-    setLastSuggestions(getSuggestions(value));
-  };
-
-  const onLastSuggestionsClearRequested = () => {
-    setLastSuggestions([]);
-  };
-
-  const onLastSuggestionSelected = (event, { suggestion }) => {
-    props.getFirstName(suggestion.firstName);
-    props.getUserId(suggestion._id);
+  const handleUserSelect = user => {
+    if (selectedUserId === user._id) {
+      setSelectedUserId(null);
+      props.clearNameAndSelected();
+    } else {
+      setSelectedUserId(user._id);
+      props.getFirstName(user.firstName);
+      props.getLastName(user.lastName);
+      props.getUserId(user._id);
+    }
   };
 
   const toggle = (didSubmit = false) => {
     const { selectedBadges, firstName, lastName, userId } = props;
     if (isOpen && didSubmit === true) {
-      // If user is selected from dropdown suggestions
       if (userId) {
         props.assignBadgesByUserID(userId, selectedBadges);
       } else {
@@ -112,6 +98,7 @@ function AssignBadge(props) {
       }
       setOpen(prevIsOpen => !prevIsOpen);
       props.clearNameAndSelected();
+      setSelectedUserId(null);
     } else if (firstName && lastName) {
       setOpen(prevIsOpen => !prevIsOpen);
     } else {
@@ -123,98 +110,106 @@ function AssignBadge(props) {
     toggle(true);
   };
 
-  const FirstInputProps = {
-    placeholder: ' first name',
-    value: props.firstName,
-    onChange: onFirstChange,
-    autoFocus: true,
-  };
-  const LastInputProps = {
-    placeholder: ' last name',
-    value: props.lastName,
-    onChange: onLastChange,
-  };
-
   return (
     <Form
-      className={darkMode ? 'bg-yinmn-blue text-light' : ''}
-      style={{
-        padding: 20,
-      }}
+      className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
+      style={{ padding: 20 }}
     >
-      <div className="assign-badge-margin-top" style={{ display: 'flex', alignItems: 'center' }}>
+      <div className="row align-items-center mb-3">
         <Label
-          className={darkMode ? 'text-light' : ''}
-          style={{
-            fontWeight: 'bold',
-            marginLeft: '15px',
-            marginRight: '2px',
-            paddingRight: '2px',
-          }}
+          className={`col-12 col-md-2 ${darkMode ? 'text-light' : ''}`}
+          style={{ fontWeight: 'bold', marginBottom: 10 }}
         >
-          Search by Name
-        </Label>
-        <i
-          className="fa fa-info-circle"
-          id="NameInfo"
-          data-testid="NameInfo"
-          style={{ marginRight: '5px' }}
-        />
-        <div style={{ display: 'flex', alignItems: 'center', paddingLeft: '5px' }}>
+          Search by Full Name
+          <i
+            className="fa fa-info-circle ml-2"
+            id="NameInfo"
+            data-testid="NameInfo"
+            style={{ cursor: 'pointer' }}
+          />
           <UncontrolledTooltip
             placement="right"
             target="NameInfo"
             style={{
               backgroundColor: '#666',
               color: '#fff',
-              paddingLeft: '2px',
-              marginLeft: '2px',
             }}
           >
             <p className="badge_info_icon_text">
-              Really, you&apos;re not sure what &quot;name&quot; means? Start typing a first or last
-              name and a list of the active members (matching what you type) will be auto generated.
-              Then you........ CHOOSE ONE!
+              Start typing a name and a list of the active members (matching what you type) will be
+              auto-generated. Then you........ CHOOSE ONE!
             </p>
             <p className="badge_info_icon_text">
-              Yep, that&apos;s it. Next you click &quot;Assign Badge&quot; and.... choose one or
-              multiple badges! Click &quot;confirm&quot; then &quot;submit&quot; and those badges
-              will show up as part of that person&apos;s earned badges. You can even assign a person
-              multiple of the same badge(s) by repeating this process and choosing the same badge as
-              many times as you want them to earn it.
+              After selecting a person, click &quot;Assign Badge&quot; and choose one or multiple
+              badges. Click &quot;confirm&quot; then &quot;submit&quot; and those badges will be
+              assigned.
             </p>
           </UncontrolledTooltip>
-          <div style={{ marginRight: '5px' }}>
-            <Autosuggest
-              suggestions={firstSuggestions}
-              onSuggestionsFetchRequested={onFirstSuggestionsFetchRequested}
-              onSuggestionsClearRequested={onFirstSuggestionsClearRequested}
-              onSuggestionSelected={onFirstSuggestionSelected}
-              getSuggestionValue={getSuggestionFirst}
-              renderSuggestion={renderSuggestion}
-              inputProps={FirstInputProps}
-              style={{ marginLeft: '5px', marginRight: '5px' }}
-            />
-          </div>
-          <div style={{ marginLeft: '5px' }}>
-            <Autosuggest
-              suggestions={lastSuggestions}
-              onSuggestionsFetchRequested={onLastSuggestionsFetchRequested}
-              onSuggestionsClearRequested={onLastSuggestionsClearRequested}
-              onSuggestionSelected={onLastSuggestionSelected}
-              getSuggestionValue={getSuggestionLast}
-              renderSuggestion={renderSuggestion}
-              inputProps={LastInputProps}
-              style={{ marginLeft: '5px' }}
-            />
-          </div>
+        </Label>
+        <div className="col-12 col-md-8 mb-2">
+          <input
+            type="text"
+            placeholder="Full Name"
+            value={fullName}
+            onChange={handleFullNameChange}
+            className="form-control"
+          />
         </div>
       </div>
-      <FormGroup className="assign-badge-margin-top">
+
+      {error && (
+        <Alert color="danger" className="mt-3">
+          {error}
+        </Alert>
+      )}
+
+      {filteredUsers.length > 0 && (
+        <div className="table-responsive mb-3">
+          <Table
+            className={`table table-bordered ${
+              darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''
+            }`}
+          >
+            <thead>
+              <tr className={darkMode ? 'bg-space-cadet text-light' : 'table-primary'}>
+                <th>Select</th>
+                <th>First Name</th>
+                <th>Last Name</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredUsers.map(user => (
+                <tr
+                  key={user._id}
+                  onClick={() => handleUserSelect(user)}
+                  style={{
+                    cursor: 'pointer',
+                    backgroundColor: selectedUserId === user._id ? '#e9ecef' : '',
+                  }}
+                  className={darkMode && selectedUserId === user._id ? 'bg-dark text-light' : ''}
+                >
+                  <td>
+                    <input
+                      type="radio"
+                      name="user"
+                      checked={selectedUserId === user._id}
+                      readOnly
+                    />
+                  </td>
+                  <td>{user.firstName}</td>
+                  <td>{user.lastName}</td>
+                </tr>
+              ))}
+            </tbody>
+          </Table>
+        </div>
+      )}
+      <FormGroup className="mb-3">
         <Button
           className="btn--dark-sea-green"
           onClick={toggle}
           style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
+          disabled={!selectedUserId}
         >
           Assign Badge
         </Button>
@@ -238,12 +233,11 @@ function AssignBadge(props) {
         <FormText color={darkMode ? 'white' : 'muted'}>
           Please select a badge from the badge list.
         </FormText>
-        <Alert color="dark" className="assign-badge-margin-top">
+        <Alert color="dark" className="mt-3">
           {' '}
           {props.selectedBadges ? props.selectedBadges.length : '0'} badges selected
         </Alert>
       </FormGroup>
-      {/* <Button size="lg" color="info" className="assign-badge-margin-top" onClick={clickSubmit}>Submit</Button> */}
     </Form>
   );
 }

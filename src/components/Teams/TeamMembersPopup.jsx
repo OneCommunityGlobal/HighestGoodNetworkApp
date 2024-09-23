@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
+import '../Header/DarkMode.css';
 import moment from 'moment';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSort, faSortUp, faSortDown } from '@fortawesome/free-solid-svg-icons';
@@ -22,19 +22,21 @@ export const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
-    
+
   const closeDeletedPopup = () => {
     setDeletedPopup(!deletedPopup);
-  }
+  };
 
-  const handleDelete = (id) => {
-    props.onDeleteClick(`${id}`)
+  const handleDelete = id => {
+    props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
-  }
+  };
 
   const [infoModal, setInfoModal] = useState(false);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
+
+  const validation = props.members.teamMembers || props.members;
 
   const closePopup = () => {
     setMemberList([]);
@@ -43,7 +45,7 @@ export const TeamMembersPopup = React.memo(props => {
   };
   const onAddUser = () => {
     if (selectedUser) {
-      const isDuplicate = props.members.teamMembers.some(x => x._id === selectedUser._id);
+      const isDuplicate = validation.some(x => x._id === selectedUser._id);
       if (!isDuplicate) {
         props.onAddUser(selectedUser);
         setSearchText('');
@@ -95,7 +97,7 @@ export const TeamMembersPopup = React.memo(props => {
 
     if (sort === 0) {
       const groupByPermissionList =
-        props.members?.teamMembers?.reduce((pre, cur) => {
+        validation.reduce((pre, cur) => {
           const { role } = cur;
           pre[role] ? pre[role].push(cur) : (pre[role] = [cur]);
           return pre;
@@ -106,7 +108,7 @@ export const TeamMembersPopup = React.memo(props => {
         .map(list => list.toSorted(sortByAlpha))
         .flat();
     } else {
-      const sortByDateList = props.members.teamMembers.toSorted((a, b) => {
+      const sortByDateList = validation.toSorted((a, b) => {
         return moment(a.addDateTime).diff(moment(b.addDateTime)) * -sort;
       });
 
@@ -155,13 +157,13 @@ export const TeamMembersPopup = React.memo(props => {
       });
     }
     return memberVisibility;
-  }
+  };
 
   useEffect(() => {
     sortList(sortOrder);
     const newMemberVisibility = getMemberVisibility();
     setMemberVisibility(newMemberVisibility);
-  }, [props.members.teamMembers, sortOrder, props.teamData]);
+  }, [validation, sortOrder, props.teamData]);
 
   useEffect(() => {
     setIsValidUser(true);
@@ -181,19 +183,32 @@ export const TeamMembersPopup = React.memo(props => {
     <Container fluid>
       <InfoModal isOpen={infoModal} toggle={toggleInfoModal} />
 
-      <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} size="lg" className={darkMode ? 'dark-mode text-light' : ''}>
-        <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>{`Members of ${props.selectedTeamName}`}</ModalHeader>
+      <Modal
+        isOpen={props.open}
+        toggle={closePopup}
+        autoFocus={false}
+        size="lg"
+        className={darkMode ? 'dark-mode text-light' : ''}
+      >
+        <ModalHeader
+          className={darkMode ? 'bg-space-cadet' : ''}
+          toggle={closePopup}
+        >{`Members of ${props.selectedTeamName}`}</ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
           {canAssignTeamToUsers && (
             <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
-                existingMembers={props.members.teamMembers}
+                existingMembers={validation}
                 onAddUser={selectUser}
                 searchText={searchText}
                 setSearchText={setSearchText}
               />
-              <Button color="primary" onClick={onAddUser} style={darkMode ? boxStyleDark : boxStyle}>
+              <Button
+                color="primary"
+                onClick={onAddUser}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
                 Add
               </Button>
             </div>
@@ -207,7 +222,11 @@ export const TeamMembersPopup = React.memo(props => {
             <></>
           )}
 
-          <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode text-light' : ''}`}>
+          <table
+            className={`table table-bordered table-responsive-sm ${
+              darkMode ? 'dark-mode text-light' : ''
+            }`}
+          >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <th>Active</th>
@@ -232,9 +251,13 @@ export const TeamMembersPopup = React.memo(props => {
               </tr>
             </thead>
             <tbody>
-              {props.members.teamMembers.length > 0 && props.members.fetching === false && props.members.fetched && 
+              {((Array.isArray(props.members.teamMembers) &&
+                props.members.teamMembers.length > 0) ||
+                (typeof props.members.fetching === 'boolean' &&
+                  !props.members.fetching &&
+                  props.members.teamMembers) ||
+                (Array.isArray(props.members) && props.members.length > 0)) &&
                 memberList.toSorted().map((user, index) => {
-
                   return (
                     <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
                       <td>
@@ -288,10 +311,23 @@ export const TeamMembersPopup = React.memo(props => {
           </Button>
         </ModalFooter>
       </Modal>
-      <Modal isOpen={deletedPopup} toggle={closeDeletedPopup} className={darkMode ? 'dark-mode text-light' : ''}>
-        <ModalHeader toggle={closeDeletedPopup} className={`${darkMode ? 'bg-space-cadet' : ''} text-danger font-weight-bold`}>Member Deleted!</ModalHeader>
+      <Modal
+        isOpen={deletedPopup}
+        toggle={closeDeletedPopup}
+        className={darkMode ? 'dark-mode text-light' : ''}
+      >
+        <ModalHeader
+          toggle={closeDeletedPopup}
+          className={`${darkMode ? 'bg-space-cadet' : ''} text-danger font-weight-bold`}
+        >
+          Member Deleted!
+        </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <p>Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are one drop, together we are an ocean.” Through the action you just took, this ocean is now one drop smaller.</p>
+          <p>
+            Team member successfully deleted! Ryunosuke Satoro famously said, “Individually we are
+            one drop, together we are an ocean.” Through the action you just took, this ocean is now
+            one drop smaller.
+          </p>
         </ModalBody>
       </Modal>
     </Container>
