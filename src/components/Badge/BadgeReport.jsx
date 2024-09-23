@@ -347,7 +347,10 @@ function BadgeReport(props) {
       <div className="desktop">
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
-            <thead style={{ zIndex: '10' }}>
+            <thead
+              style={{ zIndex: '10', pointerEvents: 'none' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
+            >
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
