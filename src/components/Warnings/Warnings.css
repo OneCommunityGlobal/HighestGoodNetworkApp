@@ -41,10 +41,22 @@
 }
 
 .warning-modal-footer {
-  display: grid !important;
+  /* display: grid !important; */
+  display: flex !important;
   justify-content: center !important;
-  grid-template-columns: 1fr 1fr !important;
-  grid-gap: 1em !important;
+  align-items: center !important;
+  /* justify-content: center !important; */
+  /* grid-template-columns: 1fr 1fr !important; */
+  /* grid-gap: 1em !important; */
+}
+.warning__body--bold {
+  font-weight: bold;
+}
+.warning__body--margin {
+  margin: 0;
+}
+.warning__modal__footer__btn {
+  width: 40%;
 }
 
 .button__container {

@@ -14,16 +14,10 @@ function WarningItem({
   handleDeleteWarning,
   submitWarning,
 }) {
-  useEffect(() => {
-    const containsBlueSquare = warnings.some(warning => warning.color === 'red');
-    setContainsRedWarning(containsBlueSquare);
-  }, [warnings]);
-
   const [toggleModal, setToggleModal] = useState(false);
   const [warning, setWarning] = useState(null);
   const [deleteWarning, setDeleteWarning] = useState(false);
   const [warningId, setWarningId] = useState(null);
-  const [containsRedWarning, setContainsRedWarning] = useState(false);
 
   const handleIssueWarning = warningDetails => {
     submitWarning({ ...warningDetails });
@@ -49,7 +43,6 @@ function WarningItem({
           warning={warning}
           numberOfWarnings={warnings.length}
           handleIssueWarning={handleIssueWarning}
-          containsRedWarning={containsRedWarning}
         />
       )}
 

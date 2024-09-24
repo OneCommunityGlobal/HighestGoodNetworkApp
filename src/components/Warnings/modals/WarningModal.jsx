@@ -9,7 +9,6 @@ function WarningModal({
   deleteWarningTriggered,
   deleteWarning,
   numberOfWarnings,
-  containsRedWarning,
 }) {
   const { colorAssigned, warningText, username } = warning || {};
 
@@ -48,9 +47,24 @@ function WarningModal({
           <h3>Are you sure you want to issue a warning to: {username}?</h3>
           <p>
             The warning will be because they didn&apos;t meet the criteria for the following area:{' '}
-            {warningText}
+            <span className="warning__body--bold">{warningText}</span>
           </p>
-          <p>The color will be {colorAssigned}</p>
+          {numberOfWarnings >= 3 && (
+            <>
+              <p className="warning__body--bold warning__body--margin"> Plase Note:</p>
+              <p>
+                {username} has received 3 warnings, so by default they will get a blue square. If it
+                has been a while since their last warning, you may issue a warning instead.
+              </p>
+            </>
+          )}
+          <p>
+            Issuing a warning the color will be: <span className="warning__body--bold">Yellow</span>
+          </p>
+          <p>
+            Issuing a blue square the color will be:
+            <span className="warning__body--bold">Red</span>
+          </p>
         </ModalBody>
 
         <ModalFooter className="warning-modal-footer">
@@ -63,18 +77,18 @@ function WarningModal({
           >
             Log Warning Only
           </Button> */}
-          {!containsRedWarning && (
-            <Button
-              onClick={() => {
-                // email will be sent and logged
-                handleIssueWarning({ ...warning, colorAssigned: 'yellow' });
-                setToggleModal(false);
-              }}
-              color="warning"
-            >
-              Issue Warning
-            </Button>
-          )}
+
+          <Button
+            onClick={() => {
+              // email will be sent and logged
+              handleIssueWarning({ ...warning, colorAssigned: 'yellow' });
+              setToggleModal(false);
+            }}
+            color="warning"
+            className="warning__modal__footer__btn"
+          >
+            Issue Warning
+          </Button>
 
           <Button
             onClick={() => {
@@ -83,10 +97,15 @@ function WarningModal({
               setToggleModal(false);
             }}
             color="primary"
+            className="warning__modal__footer__btn"
           >
             Issue Blue Square
           </Button>
-          <Button onClick={() => setToggleModal(false)} color="danger">
+          <Button
+            onClick={() => setToggleModal(false)}
+            color="danger"
+            className="warning__modal__footer__btn cancel__btn "
+          >
             Cancel
           </Button>
         </ModalFooter>
