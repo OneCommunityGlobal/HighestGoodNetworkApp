@@ -1,36 +1,32 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
-import { connect } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 function AssignTableRow(props) {
   const [isOpen, setOpen] = useState(false);
   const [isSelect, setSelect] = useState(false);
+  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (props.selectedBadges && props.selectedBadges.includes(`assign-badge-${props.badge._id}`)) {
-      setSelect(true);
-    } else {
-      setSelect(false);
-    }
+    setSelect(props.selectedBadges.includes(`assign-badge-${props.badge._id}`));
   }, [props.selectedBadges, props.badge._id]);
 
   const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
 
   const handleCheckBoxChange = e => {
-    if (e.target.checked) {
-      props.addSelectBadge(e.target.id);
-      setSelect(true);
+    const isChecked = e.target.checked;
+    setSelect(isChecked);
+    if (isChecked) {
+      dispatch(addSelectBadge(`assign-badge-${props.badge._id}`));
     } else {
-      props.removeSelectBadge(e.target.id);
-      setSelect(false);
+      dispatch(removeSelectBadge(`assign-badge-${props.badge._id}`));
     }
   };
 
   return (
     <tr>
       <td className="badge_image_mini">
-        {' '}
         <img src={props.badge.imageUrl} id={`popover_${props.index.toString()}`} alt="" />
         <Popover
           trigger="hover"
@@ -59,9 +55,4 @@ function AssignTableRow(props) {
   );
 }
 
-const mapDispatchToProps = dispatch => ({
-  addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
-  removeSelectBadge: badgeId => dispatch(removeSelectBadge(badgeId)),
-});
-
-export default connect(null, mapDispatchToProps)(AssignTableRow);
+export default AssignTableRow;
