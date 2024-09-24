@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import React, { useState, useReducer, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -16,6 +16,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css'
 import hasPermission from 'utils/permissions';
 import { connect, useSelector } from 'react-redux';
+import { useRef } from 'react';
 
 const UserProfileModal = props => {
   const {
@@ -32,8 +33,8 @@ const UserProfileModal = props => {
   let blueSquare = [
     {
       date: 'ERROR',
-      description:
-        'This is auto generated text. You must save the document first before viewing newly created blue squares.',
+      description: ''
+        // 'This is auto generated text. You must save the document first before viewing newly created blue squares.',
     },
   ];
 
@@ -116,6 +117,14 @@ const UserProfileModal = props => {
     },
     userProfile.adminLinks,
   );
+
+  const textAreaRef = useRef(null);
+
+  useEffect(() => {
+    if (!summaryFieldView && textAreaRef.current) {
+      textAreaRef.current.focus();
+    }
+  }, [summaryFieldView]);
 
   const handleChange = event => {
     event.preventDefault();
@@ -330,6 +339,7 @@ const UserProfileModal = props => {
                 value={summary} 
                 style={{ minHeight: '200px', overflow: 'hidden'}} 
                 onInput={e => adjustTextareaHeight(e.target)} 
+                innerRef = {textAreaRef}
               />
             </FormGroup>
           </>
@@ -344,10 +354,19 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
-                Created Date:
-                <span>{blueSquare[0]?.createdDate}</span>
+                Created Date: {blueSquare[0]?.createdDate ? new Date(blueSquare[0]?.createdDate).toLocaleDateString('en-US') : ''}
               </Label>
             </FormGroup>
+            {blueSquare[0]?.manuallyAssigned && blueSquare[0]?.manuallyAssignedBy && (
+              <FormGroup>
+                <Label className={fontColor} for="manuallyAssignedBy">
+                  Manual Assignment
+                </Label>
+                  <div style={{ fontSize: '1rem', color: 'grey', marginLeft: '0.2rem', marginBottom: '0.4rem', display: 'block', fontWeight: 'bold' }}>
+                    {blueSquare[0]?.manuallyAssignedBy}
+                  </div>
+              </FormGroup>
+            )}
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
               {canEditInfringements ? <Input 
@@ -360,6 +379,17 @@ const UserProfileModal = props => {
               />
               :<p>{blueSquare[0]?.description}</p>}
             </FormGroup>
+            {blueSquare[0]?.editedBy && (
+              <FormGroup>
+                <Label
+                className={fontColor}
+                for="editedBy"
+                style={{ fontSize: '0.8rem', color: 'grey', textAlign: 'right', display: 'block' }}>
+                  Edited By {blueSquare[0]?.editedBy}
+                </Label>
+              </FormGroup>
+            )}
+
           </>
         )}
 
@@ -373,8 +403,7 @@ const UserProfileModal = props => {
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="createdDate">
-                Created Date:
-                <span>{blueSquare[0]?.createdDate}</span>
+                Created Date: {blueSquare[0]?.createdDate}
               </Label>
             </FormGroup>
             <FormGroup>
