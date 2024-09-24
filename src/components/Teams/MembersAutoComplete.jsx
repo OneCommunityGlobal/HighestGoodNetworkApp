@@ -20,8 +20,7 @@ export const MemberAutoComplete = props => {
       .replace(/\s+/g, '');
   };
 
-  const filteredUsers = validation
-    .filter(user => {
+  const filteredUsers = validation?.filter(user => {
       const fullName = user.firstName + user.lastName;
       if (
         user.isActive &&
