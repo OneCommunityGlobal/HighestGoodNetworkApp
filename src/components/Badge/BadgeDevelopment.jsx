@@ -24,7 +24,6 @@ function BadgeDevelopment(props) {
       <Modal
         isOpen={isCreateNewBadgePopupOpen}
         toggle={toggle}
-        backdrop="static"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
