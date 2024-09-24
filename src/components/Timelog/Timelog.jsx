@@ -348,8 +348,13 @@ const Timelog = props => {
   };
 
   const handleSearch = e => {
-    e.preventDefault();
-    props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
+    //check if the toDate is before the fromDate
+    if (moment(timeLogState.fromDate).isAfter(moment(timeLogState.toDate))) {
+      alert('Invalid Date Range: the From Date must be before the To Date');
+    }else{
+      e.preventDefault();
+      props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
+    }
   };
 
   const calculateTotalTime = (data, isTangible) => {
