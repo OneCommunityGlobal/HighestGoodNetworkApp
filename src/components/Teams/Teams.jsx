@@ -209,9 +209,8 @@ class Teams extends React.PureComponent {
    */
 
   teampopupElements = (allTeams) => {
-    //WHERE ARE THE MEMBERS COMING
-    const members = this.props.state ? this.props.state.teamsTeamMembers : [];
-    const selectedTeamData= allTeams? allTeams.filter(team => team.teamName === this.state.selectedTeam) : [];
+    const { teamMembers: members, fetching } = this.props.state.teamsTeamMembers;
+    const selectedTeamData = allTeams ? allTeams.filter(team => team.teamName === this.state.selectedTeam) : [];
     return (
       <>
         <TeamMembersPopup
@@ -221,9 +220,10 @@ class Teams extends React.PureComponent {
           onDeleteClick={this.onDeleteTeamMember}
           usersdata={this.props.state ? this.props.state.allUserProfiles : []}
           onAddUser={this.onAddUser}
-          teamData= {selectedTeamData}
+          teamData={selectedTeamData}
           onUpdateTeamMemberVisibility={this.onUpdateTeamMemberVisibility}
           selectedTeamName={this.state.selectedTeam}
+          fetching={fetching}
         />
         <CreateNewTeamPopup
           open={this.state.createNewTeamPopupOpen}
@@ -259,18 +259,15 @@ class Teams extends React.PureComponent {
     );
   };
 
-  // CNOTE: ADD USER HERE
-  onAddUser = async user => {
-    await this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
-    // this.props.getTeamMembers(this.state.selectedTeamId);
+  onAddUser = user => {
+    this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
   };
 
-   /** NEW CODE
-   * Update Team member visibility by making a Redux action call
-   */
-  onUpdateTeamMemberVisibility = async (userid, visibility) => {
-    await this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userid, visibility);
-    // this.props.getTeamMembers(this.state.selectedTeamId);
+  /** NEW CODE
+  * Update Team member visibility by making a Redux action call
+  */
+  onUpdateTeamMemberVisibility = (userid, visibility) => {
+    this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userid, visibility);
   };
 
   /**
