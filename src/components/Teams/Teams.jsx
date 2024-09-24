@@ -129,7 +129,7 @@ class Teams extends React.PureComponent {
                         darkMode={darkMode}
                       />
                     </thead>
-                    <tbody className={`fixed-scrollbar ${darkMode ? 'dark-mode' : ''}`}>
+                    <tbody className={darkMode ? 'dark-mode' : ''}> 
                       {this.state.sortedTeams}
                     </tbody>
                   </table>
