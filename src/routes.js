@@ -39,6 +39,11 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
+
+// Bidding Dashboard
+import BiddingDashboard from './components/BiddingDashboard';
+import BiddingLogin from './components/BiddingDashboard/Login';
+
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 
@@ -109,10 +114,14 @@ export default (
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render ={(props) => {
-           const {userId} = props.match.params;
-            return <Timelog userId ={userId}/>
-        }} />
+        <ProtectedRoute
+          path="/timelog/:userId"
+          exact
+          render={props => {
+            const { userId } = props.match.params;
+            return <Timelog userId={userId} />;
+          }}
+        />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
@@ -336,6 +345,15 @@ export default (
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
         {/* ----- END BM Dashboard Routing ----- */}
+
+        {/* ----- BEGIN Bidding Dashboard Routing ----- */}
+
+        <ProtectedRoute path="/biddingdashboard" exact component={BiddingDashboard} />
+        <Route path="/biddingdashboard/login" component={BiddingLogin} />
+        {/* Temporary route to redirect all subdirectories to login */}
+        <ProtectedRoute path="/biddingdashboard/:path" exact component={BiddingDashboard} />
+
+        {/* ----- END Bidding Dashboard Routing ----- */}
 
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
