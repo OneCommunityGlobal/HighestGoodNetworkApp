@@ -20,6 +20,19 @@ export const MemberAutoComplete = props => {
       .replace(/\s+/g, '');
   };
 
+  const filteredUsers = validation
+    .filter(user => {
+      const fullName = user.firstName + user.lastName;
+      if (
+        user.isActive &&
+        // prettier-ignore
+        filterInputAutoComplete(fullName).indexOf(filterInputAutoComplete(props.searchText)) > -1
+      ) {
+        return user;
+      }
+    })
+    .slice(0, 10);
+
   return (
     <Dropdown
       isOpen={isOpen}
@@ -126,19 +139,10 @@ export const MemberAutoComplete = props => {
               className={`dropdown-menu${isOpen ? ' show' : ''}`}
               style={{ marginTop: '0px', width: '100%' }}
             >
-              {validation
-                .filter(user => {
-                  const fullName = user.firstName + user.lastName;
-                  if (
-                    user.isActive &&
-                    // prettier-ignore
-                    filterInputAutoComplete(fullName).indexOf(filterInputAutoComplete(props.searchText)) > -1
-                  ) {
-                    return user;
-                  }
-                })
-                .slice(0, 10)
-                .map((item, idx) => (
+
+              {!filteredUsers.length ?
+                <div className='empty-data-message'>No matching users are found</div> :
+                filteredUsers.map((item, idx) => (
                   <div
                     key={idx}
                     className="user-auto-cpmplete"
@@ -150,7 +154,8 @@ export const MemberAutoComplete = props => {
                   >
                     {`${item.firstName} ${item.lastName}`}
                   </div>
-                ))}
+                ))
+              }
             </div>
           ) : (
             <></>
