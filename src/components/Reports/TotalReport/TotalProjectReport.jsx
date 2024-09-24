@@ -244,7 +244,7 @@ function TotalProjectReport(props) {
   return (
     <div>
       {!totalProjectReportDataReady ? (
-        <Loading align="center" darkMode={darkMode}/>
+        ""
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>
