@@ -20,8 +20,7 @@ import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
-import { getUserProfile } from 'actions/userProfile';
-
+import { getUserProfile, getUserTimeZone } from 'actions/userProfile';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
@@ -29,7 +28,8 @@ import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../../Header/DarkMode.css'
+import '../../Header/DarkMode.css';
+import { DateTime } from 'luxon';
 
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
@@ -71,6 +71,7 @@ const TINY_MCE_INIT_OPTIONS = {
  * @param {boolean} props.isOpen Whether or not this modal is visible
  * @param {boolean} props.dataIsTangible
  * @param {*} props.userProfile
+ * @param {function} props.getUserTimeZone - Function to fetch the user's timezone based on their user ID.
  * @returns
  */
 
@@ -288,7 +289,24 @@ const TimeEntryForm = props => {
     if (closed === true && isOpen) toggle();
   };
 
-  const handleSubmit = async event => {
+  const getCurrentTimeInTimeZone = async (userId) => {
+    try {
+      // Fetch the time zone from your application's state or props
+      const timeZoneResponse = await props.getUserTimeZone(userId);
+      const timeZone = timeZoneResponse.timeZone;
+  
+      // Fetch the current time in the specified time zone
+      const response = await axios.get(`http://worldtimeapi.org/api/timezone/${timeZone}`);
+      console.log(response)
+      return response.data.datetime; // Returns date and time in ISO 8601 format
+    } catch (error) {
+      console.error('Error fetching time from API:', error);
+      throw new Error('Failed to fetch time from the API');
+    }
+  };
+  
+
+  const handleSubmit = async event => { //owie
     event.preventDefault();
     setSubmitting(true);
 
@@ -299,7 +317,6 @@ const TimeEntryForm = props => {
     }
 
     const { hours: formHours, minutes: formMinutes } = formValues;
-
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
     if (!validateForm(isTimeModified)) {
@@ -314,6 +331,11 @@ const TimeEntryForm = props => {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
+        const currentTimeInTimeZone = await getCurrentTimeInTimeZone(timeEntryUserId);
+        const dateOfWork = DateTime.fromISO(currentTimeInTimeZone).toISODate();
+        console.log("DOW BEFORE " + timeEntry.dateOfWork);
+        timeEntry.dateOfWork = dateOfWork;
+        console.log("DOW AFTER " + timeEntry.dateOfWork);
         await props.postTimeEntry(timeEntry);
       }
   
@@ -680,6 +702,7 @@ const mapStateToProps = state => ({
 export default connect(mapStateToProps, {
   hasPermission,
   getUserProfile,
+  getUserTimeZone,
   editTimeEntry,
   postTimeEntry,
   getTimeEntriesForWeek,

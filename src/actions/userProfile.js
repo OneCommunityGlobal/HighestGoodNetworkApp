@@ -28,6 +28,40 @@ export const getUserProfile = userId => {
   };
 };
 
+export const getUserTimeZone = userId => {
+  const url = ENDPOINTS.USER_PROFILE(userId);
+    return async dispatch => {
+      let loggedOut = false;
+      try {
+        const res = await axios.get(url);
+        if (res.status === 200) {
+          const profileData = res.data;
+
+          // Dispatch the action to store user profile in the state
+          const resp = dispatch(getUserProfileActionCreator(profileData));
+
+          // Return the user's timezone along with other profile data
+          return {
+            timeZone: profileData.timeZone,
+          };
+        }
+      } catch (error) {
+        if (error.response && error.response.status === 401) {
+          loggedOut = true;
+          // Handle the case where the user is logged out
+          toast.error('You have been logged out.');
+        } else {
+          // Handle other errors
+          toast.error('Failed to fetch user profile.');
+        }
+      }
+
+      if (loggedOut) {
+        return null;
+      }
+    };
+  };
+  
 export const getUserTasks = userId => {
   const url = ENDPOINTS.TASKS_BY_USERID(userId);
   return async dispatch => {

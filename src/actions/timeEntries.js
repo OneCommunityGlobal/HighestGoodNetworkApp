@@ -107,6 +107,15 @@ export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //F
   };
 };
 export const postTimeEntry = timeEntry => {
+  
+  console.log("timeEntry start")
+  for (let key in timeEntry) {
+    if (timeEntry.hasOwnProperty(key)) {
+      console.log(`${key}: ${timeEntry[key]}`);
+    }
+  }
+  
+  console.log("timeEntry end")
   const url = ENDPOINTS.TIME_ENTRY();
   return async dispatch => {
     try {
