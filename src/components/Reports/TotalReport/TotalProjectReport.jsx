@@ -29,7 +29,7 @@ function TotalProjectReport(props) {
 
   const loadTimeEntriesForPeriod = useCallback(async () => {
     try {
-      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT;
       const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
         projectId: entry.projectId,
         projectName: entry.projectName,
