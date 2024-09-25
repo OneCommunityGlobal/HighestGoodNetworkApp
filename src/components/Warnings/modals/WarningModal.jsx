@@ -53,16 +53,18 @@ function WarningModal({
             <>
               <p className="warning__body--bold warning__body--margin"> Plase Note:</p>
               <p>
-                {username} has received 3 warnings, so by default they will get a blue square. If it
-                has been a while since their last warning, you may issue a warning instead.
+                <span className="warning__body--bold">{username}</span> has received 3 warnings, so
+                by default they will get a blue square. If it has been a while since their last
+                warning, you may issue a warning instead.
               </p>
             </>
           )}
           <p>
-            Issuing a warning the color will be: <span className="warning__body--bold">Yellow</span>
+            Issue a warning and and the dot color will be:{' '}
+            <span className="warning__body--bold">Yellow</span>
           </p>
           <p>
-            Issuing a blue square the color will be:
+            Issue a blue square and and the dot color will be:{' '}
             <span className="warning__body--bold">Red</span>
           </p>
         </ModalBody>
