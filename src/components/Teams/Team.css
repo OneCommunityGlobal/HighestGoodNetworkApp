@@ -19,7 +19,6 @@ thead {
   vertical-align: middle;
 }
 
-
 #teams__members {
   width: 15px;
 }
@@ -156,4 +155,8 @@ table .ToggleSwitch_switchSection__3twC9 {
   color: grey;
   margin: auto;
   text-align: center;
+}
+
+.overflow-container table {
+  min-width: 600px; 
 }
