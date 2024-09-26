@@ -326,17 +326,18 @@ function TotalOrgSummary(props) {
         darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
       }`}
     >
-      <Row
-        className="d-flex align-items-center justify-content-between"
-        style={{ padding: '0', margin: '0' }}
-      >
-        <Col sm={4} md={4} lg={4} className="d-flex align-items-center">
-          <h3 className={darkMode ? 'text-light' : ''} style={{ margin: '0', padding: '0' }}>
-            Weekly Volunteer Summary
-          </h3>
+      <Row className="d-flex align-items-center justify-content-between">
+        <Col xs={12} sm={12} md={4} lg={4} className="d-flex align-items-center mb-sm-3 mb-md-0">
+          <h3 className={darkMode ? 'text-light' : ''}>Weekly Volunteer Summary</h3>
         </Col>
 
-        <Col sm={8} md={8} lg={8} className="d-flex justify-content-end align-items-center mb-0">
+        <Col
+          xs={12}
+          sm={12}
+          md={8}
+          lg={8}
+          className="d-flex justify-content-end align-items-center mb-0"
+        >
           <div
             className={darkMode ? 'date-selector-dark' : ''}
             style={{ marginRight: '15px', width: '214px' }}
