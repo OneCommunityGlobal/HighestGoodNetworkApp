@@ -5,8 +5,8 @@ import { Provider } from 'react-redux';
 import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
 import configureStore from 'redux-mock-store';
-import WBS from './WBS';
-import { setWBSStart, setWBS } from 'actions/wbs';
+import WBS from './wbs';
+import { setWBSStart, setWBS } from '../../../actions/wbs';
 
 
 
