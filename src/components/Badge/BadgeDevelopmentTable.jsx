@@ -273,7 +273,9 @@ function BadgeDevelopmentTable(props) {
         <ModalBody
           className={`badge-message-background-${props.color} ${darkMode ? 'bg-yinmn-blue' : ''}`}
         >
-          <p className={`badge-message-text-${props.color}`}>{props.message}</p>
+          <p className={darkMode ? 'text-light' : `badge-message-text-${props.color}`}>
+            {props.message}
+          </p>
         </ModalBody>
         <ModalFooter
           className={`badge-message-background-${props.color} ${darkMode ? 'bg-space-cadet' : ''}`}
