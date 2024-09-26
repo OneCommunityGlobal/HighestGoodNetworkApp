@@ -1,4 +1,12 @@
 const mockVolunteerData = [
+  { name: 'John Doe', hoursWorked: 15, tasksCompleted: 3, date: '2024-09-24' },
+
+  { name: 'John Doe', hoursWorked: 15, tasksCompleted: 3, date: '2024-09-23' },
+
+  { name: 'John Doe', hoursWorked: 15, tasksCompleted: 3, date: '2024-09-22' },
+
+  { name: 'John Doe', hoursWorked: 15, tasksCompleted: 3, date: '2024-09-21' },
+
   { name: 'John Doe', hoursWorked: 15, tasksCompleted: 3, date: '2024-09-20' },
 
   { name: 'John Doe', hoursWorked: 15, tasksCompleted: 3, date: '2024-09-19' },

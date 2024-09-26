@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import DatePicker from 'react-datepicker';
-import moment from 'moment'; // For date manipulation
+import moment from 'moment';
 import 'react-datepicker/dist/react-datepicker.css';
+import Select from 'react-select';
 
 // Get the start of the current week (Sunday)
 function getStartOfWeek(date) {
@@ -10,20 +11,13 @@ function getStartOfWeek(date) {
     .toDate();
 }
 
-// Get the start and end of last week (Sunday to Saturday)
-// function getLastWeekRange() {
-//   const startOfCurrentWeek = getStartOfWeek(new Date());
-//   const startOfLastWeek = moment(startOfCurrentWeek)
-//     .subtract(7, 'days')
-//     .toDate();
-//   const endOfLastWeek = moment(startOfLastWeek)
-//     .add(6, 'days')
-//     .toDate();
-//   return { startDate: startOfLastWeek, endDate: endOfLastWeek };
-// }
-// filteredData
 function DateRangeSelector({ onDateRangeChange }) {
-  const [selectedOption, setSelectedOption] = useState('Current Week');
+  const options = [
+    { value: 'current', label: 'Current Week (default)' },
+    { value: 'lastweek', label: 'Last Week' },
+    { value: 'custom', label: 'Select Date Range' },
+  ];
+  const [selectedOption, setSelectedOption] = useState(options[0]);
   const [startDate, setStartDate] = useState(getStartOfWeek(new Date()));
   const [endDate, setEndDate] = useState(
     moment()
@@ -37,29 +31,20 @@ function DateRangeSelector({ onDateRangeChange }) {
     onDateRangeChange({ startDate: start, endDate: end });
   };
 
-  // Handle option change (Current Week, Last Week, Custom)
-  const handleOptionChange = ({ target: { value } }) => {
-    setSelectedOption(value);
+  // Handle option change
+  // const handleOptionChange = (selected) => {
+  //   setSelectedOption(selected);
+  // };
 
-    // if (value === 'Current Week') {
-    //   // start date: last sunday
-    //   // end date: last sunday + 6days
-    //   updateDates(
-    //     getStartOfWeek(new Date()),
-    //     moment()
-    //       .endOf('day')
-    //       .toDate(),
-    //   );
-    // } else if (value === 'Last Week') {
-    //   // start date: last to last sunday
-    //   // end date: last to last sunday + 6days
-    //   const { startLastWeek, endLastWeek } = getLastWeekRange();
-    //   updateDates(startLastWeek, endLastWeek);
-    // } else {
-    //   updateDates(null, null);
-    // }
+  const handleOptionChange = selected => {
+    if (!selected) {
+      console.error('No option selected');
+      return;
+    }
 
-    if (value === 'Current Week') {
+    setSelectedOption(selected);
+
+    if (selected.value === 'current') {
       updateDates(
         moment()
           .startOf('week')
@@ -68,7 +53,7 @@ function DateRangeSelector({ onDateRangeChange }) {
           .endOf('week')
           .format('YYYY-MM-DD'),
       );
-    } else if (value === 'Last Week') {
+    } else if (selected.value === 'lastweek') {
       const startLastWeek = moment()
         .subtract(1, 'week')
         .startOf('week')
@@ -93,15 +78,16 @@ function DateRangeSelector({ onDateRangeChange }) {
 
   return (
     <div>
-      <select id="dateRange" value={selectedOption} onChange={handleOptionChange}>
-        <option value="Current Week">Current Week (default)</option>
-        <option value="Last Week">Last Week</option>
-        <option value="Select Date Range">Select Date Range</option>
-      </select>
+      <Select
+        id="dateRange"
+        value={selectedOption}
+        onChange={handleOptionChange}
+        options={options}
+        placeholder="Select..."
+      />
 
-      {selectedOption === 'Select Date Range' && (
-        <div style={{ marginTop: '10px' }}>
-          <label>Date Range: </label>
+      {selectedOption.value === 'custom' && (
+        <div style={{ marginTop: '5px', position: 'absolute' }}>
           <DatePicker
             selected={startDate}
             onChange={handleDateChange}
