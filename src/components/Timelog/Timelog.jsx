@@ -49,6 +49,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import axios from 'axios';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
@@ -56,18 +57,14 @@ import {
 } from 'utils/constants';
 import PropTypes from 'prop-types';
 import Badge from '../Badge';
+import { ENDPOINTS } from '../../utils/URL';
 
-const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
-  if (!Array.isArray(tasks)) return false;
-
-  for (let task of tasks) {
-    for (let resource of task.resources) {
-      if (resource.userID == userId && resource.completedTask == false) {
-        return true;
-      }
-    }
-  }
-  return false;
+const doesUserHaveTaskWithWBS = userHaveTask => {
+  return userHaveTask.reduce((acc, item) => {
+    const hasIncompleteTask = item.resources.some(val => val.completedTask === false);
+    if (hasIncompleteTask) acc.push(item);
+    return acc;
+  }, []);
 };
 
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
@@ -162,11 +159,11 @@ const Timelog = props => {
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
-  const defaultTab = () => {
+  const defaultTab = (data) => {
+    const userHaveTask = doesUserHaveTaskWithWBS(data);
     //change default to time log tab(1) in the following cases:
     const role = authUser.role;
     let tab = 0;
-    const userHaveTask = doesUserHaveTaskWithWBS(disPlayUserTasks, authUser.userid);
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
     Accounts assigned with tasks with no wbs return and empty array.
@@ -175,10 +172,11 @@ const Timelog = props => {
     That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
     //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if (role === 'Volunteer' && !userHaveTask) {
-      tab = 1;
-    }
-
+    role === 'Volunteer' && userHaveTask.length > 0
+      ? (tab = 0)
+      : role === 'Volunteer' && userHaveTask.length === 0
+      ? (tab = 1)
+      : null;
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
     if (!props.isDashboard) {
       tab = 1;
@@ -270,8 +268,13 @@ const Timelog = props => {
         props.getUserProjects(userId),
         props.getUserTasks(userId),
       ]);
+
+      const url = ENDPOINTS.TASKS_BY_USERID(userId);
+      const res = await axios.get(url);
+
+      const data = res.data.length > 0 ? res.data : [];
+      const defaultTabValue = defaultTab(data);
       setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
-      const defaultTabValue = defaultTab();
       setInitialTab(defaultTabValue);
     } catch (e) {
       console.log(e);
@@ -344,8 +347,13 @@ const Timelog = props => {
   };
 
   const handleSearch = e => {
-    e.preventDefault();
-    props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
+    //check if the toDate is before the fromDate
+    if (moment(timeLogState.fromDate).isAfter(moment(timeLogState.toDate))) {
+      alert('Invalid Date Range: the From Date must be before the To Date');
+    }else{
+      e.preventDefault();
+      props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
+    }
   };
 
   const calculateTotalTime = (data, isTangible) => {
@@ -388,7 +396,7 @@ const Timelog = props => {
   const buildOptions = () => {
     const projectsObject = {};
     const options = [
-      <option className="responsive-font-size" value="all" key="TimeLogDefaultProjectOrTask">
+      <option className='responsive-font-size' value="all" key="TimeLogDefaultProjectOrTask" >
         Select Project/Task (all)
       </option>,
     ];
