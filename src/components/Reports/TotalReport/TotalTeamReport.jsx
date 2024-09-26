@@ -231,7 +231,8 @@ function TotalTeamReport(props) {
         sumData[0].months = 12 - startMonth;
         sumData[sumData.length - 1].months = endMonth + 1;
       }
-      return sumData;
+      const filteredData = sumData.filter(data => data.value > 0);
+      return filteredData;
     }
     const sumData = groupedDate.map(range => {
       return {

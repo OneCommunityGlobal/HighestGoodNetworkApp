@@ -131,7 +131,8 @@ function TotalPeopleReport(props) {
         sumData[0].months = 12 - startMonth;
         sumData[sumData.length - 1].months = endMonth + 1;
       }
-      return sumData;
+      const filteredData = sumData.filter(data => data.value > 0);
+      return filteredData;
     }
     return groupedDate.map(range => ({
       label: range.timeRange,
