@@ -2,7 +2,7 @@ import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
-import { MultiSelect } from 'react-multi-select-component';
+// import { MultiSelect } from 'react-multi-select-component';
 
 import 'moment-timezone';
 import moment from 'moment';
@@ -343,7 +343,7 @@ function TotalOrgSummary(props) {
           >
             <DateRangeSelector
               onDateRangeChange={handleDateRangeChange}
-              withPortal={true}
+              withPortal
               className="form-control"
             />
           </div>
@@ -367,6 +367,7 @@ function TotalOrgSummary(props) {
 
           <button
             className={darkMode ? 'btn btn-outline-light' : 'btn btn-dark'}
+            type="button"
             style={{
               borderRadius: '8px',
               height: '40px',

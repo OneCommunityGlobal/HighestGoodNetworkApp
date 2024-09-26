@@ -38,7 +38,7 @@ function DateRangeSelector({ onDateRangeChange }) {
 
   const handleOptionChange = selected => {
     if (!selected) {
-      console.error('No option selected');
+      // console.error('No option selected');
       return;
     }
 
