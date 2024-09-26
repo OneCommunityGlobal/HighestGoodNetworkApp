@@ -43,21 +43,16 @@ function TotalTeamReport(props) {
   const matchTeamUser = async teamList => {
     // get the members of each team in the team list
     // console.log('Load team-members list');
-    const allTeamMembersPromises = teamList.map(team => dispatch(getTeamMembers(team._id)));
-    const allTeamMembers = await Promise.all(allTeamMembersPromises);
-    const teamUserList = allTeamMembers.map((team, i) => {
-      const users = team.map(user => {
-        return user._id;
-      });
-      if (users) {
-        return {
-          teamId: teamList[i]._id,
-          teamName: teamList[i].teamName,
-          createdDatetime: teamList[i].createdDatetime,
-          members: users,
-        };
-      }
-      return null;
+    const teamUserList = teamList.map((team) => {
+      // Check if the team has members data
+      const users = team.members ? team.members.map((member) => member.userId) : [];
+  
+      return {
+        teamId: team._id,
+        teamName: team.teamName,
+        createdDatetime: team.createdDatetime,
+        members: users, // Use existing members data
+      };
     });
     setAllTeamsMembers(teamUserList);
   };
@@ -113,7 +108,7 @@ function TotalTeamReport(props) {
   const loadTimeEntriesForPeriod = async () => {
     // get the time entries of every user in the selected time range.
     // console.log('Load time entries within the time range');
-    let url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+    let url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
@@ -269,16 +264,21 @@ function TotalTeamReport(props) {
     } else {
       matchTeamUser(allTeamsData);
     }
-    loadTimeEntriesForPeriod().then(() => {
-      setTotalTeamReportDataLoading(false);
-      setTotalTeamReportDataReady(true);
-    });
+    setTotalTeamReportDataReady(false);
+    const controller = new AbortController();
+    loadTimeEntriesForPeriod(controller).then(() => {
+    setTotalTeamReportDataLoading(false);
+    setTotalTeamReportDataReady(true);
+  });
     const nameList = {};
     userProfiles.forEach(user => {
       nameList[user._id] = `${user.firstName} ${user.lastName}`;
     });
     setUserNameList(nameList);
-  }, []);
+    return () => {
+          controller.abort();
+    }
+  }, [startDate, endDate]);
 
 
   useEffect(() => {
@@ -299,16 +299,16 @@ function TotalTeamReport(props) {
     }
   }, [totalTeamReportDataLoading, totalTeamReportDataReady, allTeamsMembers, allTimeEntries, teamTimeEntries]);
 
-  useEffect(() => {
-    setTotalTeamReportDataReady(false);
-    const controller = new AbortController();
-    loadTimeEntriesForPeriod(controller).then(() => {
-      setTotalTeamReportDataReady(true);
-    });
-    return () => {
-      controller.abort();
-    }
-  }, [startDate, endDate]);
+  // useEffect(() => {
+  //   setTotalTeamReportDataReady(false);
+  //   const controller = new AbortController();
+  //   loadTimeEntriesForPeriod(controller).then(() => {
+  //     setTotalTeamReportDataReady(true);
+  //   });
+  //   return () => {
+  //     controller.abort();
+  //   }
+  // }, [startDate, endDate]);
 
   const onClickTotalTeamDetail = () => {
     const showDetail = showTotalTeamTable;
