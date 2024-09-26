@@ -41,6 +41,7 @@ export const ENDPOINTS = {
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
   TIME_ENTRIES_REPORTS: `${APIEndpoint}/TimeEntry/reports`,
   TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT: `${APIEndpoint}/TimeEntry/reports/projects`,
+  TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT: `${APIEndpoint}/TimeEntry/reports/people`,
   TIME_ENTRIES_LOST_USER_LIST: `${APIEndpoint}/TimeEntry/lostUsers`,
   TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,

@@ -27,7 +27,7 @@ function TotalPeopleReport(props) {
 
   const loadTimeEntriesForPeriod = useCallback(async (controller) => {
     try {
-      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT;
       const res = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal });
       const timeEntries = res.data.map(entry => ({
         userId: entry.personId,
