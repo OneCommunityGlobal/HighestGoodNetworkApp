@@ -344,32 +344,32 @@ const TeamMemberTask = React.memo(
               ) : (
                 <div className="taking-time-off-content-div">
                   <button
-                    className="compress-time-off-detail-button"
-                    onClick={() => {
-                      setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                      className="compress-time-off-detail-button"
+                      onClick={() => {
+                        setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
                   </button>
-
-                  <span className="taking-time-off-content-text">
-                    {onTimeOff
-                      ? `${user.name} Is Not Available this Week`
-                      : `${user.name} Is Not Available Next Week`}
-                  </span>
-                  <button
-                    type="button"
-                    className="taking-time-off-content-btn"
-                    onClick={() => {
-                      const request = onTimeOff
-                        ? { ...onTimeOff, onVacation: true, name: user.name }
-                        : { ...goingOnTimeOff, onVacation: false, name: user.name };
-
-                      openDetailModal(request);
-                    }}
-                  >
-                    Details ?
-                  </button>
+                  <div className="taking-time-off-content-alignment">
+                    <span className="taking-time-off-content-text">
+                      {onTimeOff
+                        ? `${user.name} Is Not Available this Week`
+                        : `${user.name} Is Not Available Next Week`}
+                    </span>
+                    <button
+                      type="button"
+                      className="taking-time-off-content-btn"
+                      onClick={() => {
+                        const request = onTimeOff
+                          ? { ...onTimeOff, onVacation: true, name: user.name }
+                          : { ...goingOnTimeOff, onVacation: false, name: user.name };
+                        openDetailModal(request);
+                      }}
+                    >
+                      Details ?
+                    </button>
+                  </div>
                 </div>
               ))}
           </td>
