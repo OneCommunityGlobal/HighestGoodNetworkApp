@@ -243,7 +243,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       );
       setTimeout(() => {
         dispatch(closeAlert());
-      }, 600000);
+      }, 6000);
     } catch (e) {
       dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {

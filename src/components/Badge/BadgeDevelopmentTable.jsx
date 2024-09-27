@@ -271,14 +271,28 @@ function BadgeDevelopmentTable(props) {
         className={darkMode ? 'text-light' : ''}
       >
         <ModalBody
-          className={`badge-message-background-${props.color} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+          className={`${darkMode ? 'bg-yinmn-blue' : `badge-message-background-${props.color}`} ${
+            props.color === 'success' ? 'border-success' : 'border-danger'
+          } border`}
         >
-          <p className={darkMode ? 'text-light' : `badge-message-text-${props.color}`}>
+          <p
+            className={`${
+              props.color === 'success'
+                ? darkMode
+                  ? 'text-success'
+                  : 'text-success'
+                : darkMode
+                ? 'text-danger'
+                : 'text-danger'
+            } font-weight-bold mb-0`}
+          >
             {props.message}
           </p>
         </ModalBody>
         <ModalFooter
-          className={`badge-message-background-${props.color} ${darkMode ? 'bg-space-cadet' : ''}`}
+          className={`${darkMode ? 'bg-space-cadet' : `badge-message-background-${props.color}`} ${
+            props.color === 'success' ? 'border-success' : 'border-danger'
+          } border-top-0`}
         >
           <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK
