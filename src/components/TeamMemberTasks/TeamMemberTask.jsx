@@ -123,7 +123,7 @@ const TeamMemberTask = React.memo(
       <>
         <tr ref={ref} className={`table-row ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
-          <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
+          <td colSpan={1}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div className="committed-hours-circle">
                 <FontAwesomeIcon
