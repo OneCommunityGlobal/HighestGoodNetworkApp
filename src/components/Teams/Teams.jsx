@@ -403,12 +403,18 @@ class Teams extends React.PureComponent {
         toast.error(postResponse);
       }
     }
-    this.setState({
+
+    this.setState(prevState => ({
+      teams: prevState.teams.map(team => 
+        team.props.teamId === this.state.selectedTeamId
+        ? { ...team, props: { ...team.props, name: name, active: this.state.isActive, teamCode: this.state.selectedTeamCode } }
+        : team
+      ),
       selectedTeamId: undefined,
       selectedTeam: '',
       isEdit: false,
       createNewTeamPopupOpen: false,
-    });
+    }));
   };
   /**
    * callback for deleting a team
