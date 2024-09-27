@@ -1,10 +1,10 @@
 import React from 'react';
-import { rolesMock, themeMock } from '../../__tests__/mockStates';
-import PermissionsManagement from './PermissionsManagement';
+import { rolesMock, themeMock } from '../../../__tests__/mockStates';
+import PermissionsManagement from '../PermissionsManagement';
 import thunk from 'redux-thunk';
 import { Route } from 'react-router-dom';
 import { screen } from '@testing-library/react';
-import { renderWithRouterMatch } from '../../__tests__/utils';
+import { renderWithRouterMatch } from '../../../__tests__/utils';
 import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
 
