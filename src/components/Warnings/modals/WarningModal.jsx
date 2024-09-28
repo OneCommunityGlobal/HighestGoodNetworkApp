@@ -44,27 +44,31 @@ function WarningModal({
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
         <ModalHeader>Issue Warning</ModalHeader>
         <ModalBody>
-          <h3>Are you sure you want to issue a warning to: {username}?</h3>
+          <h3>
+            Are you sure you want to issue a {numberOfWarnings >= 3 ? 'blue square' : 'warning'} to:{' '}
+            {username}?
+          </h3>
           <p>
-            The warning will be because they didn&apos;t meet the criteria for the following area:{' '}
+            The {numberOfWarnings >= 3 ? 'blue square' : 'warning'} will be because they didn&apos;t
+            meet the criteria for the following area:{' '}
             <span className="warning__body--bold">{warningText}</span>
           </p>
           {numberOfWarnings >= 3 && (
             <>
               <p className="warning__body--bold warning__body--margin"> Plase Note:</p>
               <p>
-                <span className="warning__body--bold">{username}</span> has received 3 warnings, so
-                by default they will get a blue square. If it has been a while since their last
-                warning, you may issue a warning instead.
+                <span className="warning__body--bold">{username}</span> has received{' '}
+                {numberOfWarnings} warnings, so by default they should get a blue square. If it has
+                been a while since their last warning, you may issue another warning instead.
               </p>
             </>
           )}
           <p>
-            Issue a warning and and the dot color will be:{' '}
+            Issue a warning and the dot color will be:{' '}
             <span className="warning__body--bold">Yellow</span>
           </p>
           <p>
-            Issue a blue square and and the dot color will be:{' '}
+            Issue a blue square and the dot color will be:{' '}
             <span className="warning__body--bold">Red</span>
           </p>
         </ModalBody>
