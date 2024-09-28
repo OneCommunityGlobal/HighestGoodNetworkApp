@@ -236,7 +236,7 @@ function TotalOrgSummary(props) {
   // }, [selectedDateRange]);
 
   useEffect(() => {
-    props.hasPermission('');
+    // props.hasPermission('');
   }, [selectedDateRange]);
 
   useEffect(() => {
@@ -323,12 +323,12 @@ function TotalOrgSummary(props) {
     <Container
       fluid
       className={`container-total-org-wrapper py-3 mb-5 ${
-        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
+        darkMode ? 'bg-oxford-blue' : 'cbg--white-smoke'
       }`}
     >
       <Row className="d-flex align-items-center justify-content-between">
         <Col xs={12} sm={12} md={4} lg={4} className="d-flex align-items-center mb-sm-3 mb-md-0">
-          <h3 className={darkMode ? 'text-light' : ''}>Weekly Volunteer Summary</h3>
+          <h3>Weekly Volunteer Summary</h3>
         </Col>
 
         <Col
@@ -338,46 +338,22 @@ function TotalOrgSummary(props) {
           lg={8}
           className="d-flex justify-content-end align-items-center mb-0"
         >
-          <div
-            className={darkMode ? 'date-selector-dark' : ''}
-            style={{ marginRight: '15px', width: '214px' }}
-          >
-            <DateRangeSelector
-              onDateRangeChange={handleDateRangeChange}
-              withPortal
-              className="form-control"
-            />
+          <div style={{ marginRight: '15px', width: '250px' }}>
+            <DateRangeSelector onDateRangeChange={handleDateRangeChange} />
           </div>
 
-          <div
-            className={darkMode ? 'select-dark' : ''}
-            style={{ marginRight: '15px', width: '225px' }}
-          >
+          <div style={{ marginRight: '15px', width: '250px' }}>
             <Select
               options={comparisonOptions}
               onChange={handleComparisonPeriodChange}
-              styles={{
-                control: base => ({
-                  ...base,
-                  width: '225px',
-                  height: '40px',
-                }),
-              }}
+              defaultValue={comparisonOptions.find(option => option.value === 'nocomparsion')}
             />
           </div>
 
           <button
             className={darkMode ? 'btn btn-outline-light' : 'btn btn-dark'}
             type="button"
-            style={{
-              borderRadius: '8px',
-              height: '40px',
-              padding: '0 16px',
-              display: 'inline-flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              whiteSpace: 'nowrap',
-            }}
+            style={{ whiteSpace: 'nowrap' }}
           >
             Share PDF
           </button>
