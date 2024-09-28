@@ -24,10 +24,17 @@
 
 .volunteer-status-center .volunteer-status-heading {
   color: #828282;
+  font-size: 1.2rem;
 }
 
 .volunteer-status-center .volunteer-count {
   color: #6c6c6c;
+  font-size: 2rem;
+  font-weight: bolder;
+}
+
+.volunteer-status-center > p {
+  font-weight: bold;
 }
 
 .volunteer-status-center div {

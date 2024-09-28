@@ -46,17 +46,20 @@ function VolunteerStatusPieChart(props) {
   const percentageChangeColor = percentageChange >= 0 ? 'green' : 'red';
 
   return (
-    <div className="volunteer-status-container">
-      <div className="volunteer-status-chart">
+    <section className="volunteer-status-container" aria-label="Volunteer Status Overview">
+      <div className="volunteer-status-chart" role="img" aria-label="Volunteer Status Pie Chart">
         <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
         <div className="volunteer-status-center">
-          <h5 className="volunteer-status-heading">TOTAL VOLUNTEERS</h5>
-          <h4 className="volunteer-count">{totalVolunteers}</h4>
-          <h6 style={{ color: percentageChangeColor }}>
+          <h2 className="volunteer-status-heading">TOTAL VOLUNTEERS</h2>
+          <p className="volunteer-count">{totalVolunteers}</p>
+          <p
+            style={{ color: percentageChangeColor }}
+            aria-label={`Percentage change: ${percentageChange}% week over week`}
+          >
             {percentageChange >= 0
               ? `+${percentageChange}% WEEK OVER WEEK`
               : `${percentageChange}% WEEK OVER WEEK`}
-          </h6>
+          </p>
         </div>
       </div>
       <div className="volunteer-status-labels">
@@ -65,12 +68,13 @@ function VolunteerStatusPieChart(props) {
             <span
               className="volunteer-status-color"
               style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
+              aria-hidden="true"
             />
-            {item.label}
+            <span>{item.label}</span>
           </div>
         ))}
       </div>
-    </div>
+    </section>
   );
 }
 

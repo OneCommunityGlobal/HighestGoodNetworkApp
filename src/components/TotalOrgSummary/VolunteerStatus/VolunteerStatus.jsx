@@ -3,10 +3,10 @@ import VolunteerStatusPieChart from './VolunteerStatusPieChart';
 
 function VolunteerStatus() {
   return (
-    <div>
+    <section>
       <h1 style={{ textAlign: 'center' }}>Volunteer Status</h1>
       <VolunteerStatusPieChart data={VOLUNTEER_STATUS} />
-    </div>
+    </section>
   );
 }
 
