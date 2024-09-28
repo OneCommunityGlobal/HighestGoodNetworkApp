@@ -4,11 +4,24 @@
  * This component is used to add more project into the database
  ********************************************************************************/
 import React, { useState } from 'react';
+import Select from 'react-select';
 
 const AddProject = props => {
   const [showAddButton, setShowAddButton] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newCategory, setNewCategory] = useState('Unspecified');
+  const [newCategory, setNewCategory] = useState({ value: 'Unspecified', label: 'Select Category' });
+
+  const options = [
+    { value: 'Unspecified', label: 'Select Category' },
+    { value: 'Food', label: 'Food' },
+    { value: 'Energy', label: 'Energy' },
+    { value: 'Housing', label: 'Housing' },
+    { value: 'Education', label: 'Education' },
+    { value: 'Society', label: 'Society' },
+    { value: 'Economics', label: 'Economics' },
+    { value: 'Stewardship', label: 'Stewardship' },
+    { value: 'Other', label: 'Other' }
+  ];
 
   const changeNewName = newName => {
     if (newName.length !== 0) {
@@ -32,19 +45,11 @@ const AddProject = props => {
         onChange={e => changeNewName(e.target.value)}
       />
       <div className="input-group-append">
-        <select onChange={e => setNewCategory(e.target.value)}>
-          <option default value="Unspecified">
-            Select Category
-          </option>
-          <option value="Food">Food</option>
-          <option value="Energy">Energy</option>
-          <option value="Housing">Housing</option>
-          <option value="Education">Education</option>
-          <option value="Society">Society</option>
-          <option value="Economics">Economics</option>
-          <option value="Stewardship">Stewardship</option>
-          <option value="Other">Other</option>
-        </select>
+        <Select
+          value={newCategory}
+          onChange={setNewCategory}
+          options={options}
+        />
       </div>
       <div className="input-group-append">
         {showAddButton ? (
