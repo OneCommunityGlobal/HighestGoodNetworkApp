@@ -1,3 +1,10 @@
+// @version 1.0.0
+// Initial implementation of the UpdatePassword test suite.
+// Semantic versioning follows major.minor.patch format.
+// - Major: Breaking changes, incompatible API changes.
+// - Minor: New features, but backward-compatible.
+// - Patch: Bug fixes, performance improvements, or minor updates.
+
 import React from 'react';
 import { Route } from 'react-router-dom';
 import configureMockStore from 'redux-mock-store';
@@ -12,21 +19,24 @@ import { renderWithRouterMatch } from '../../../__tests__/utils';
 import * as actions from '../../../actions/updatePassword';
 import { ENDPOINTS } from '../../../utils/URL';
 
+// API Endpoint for updating password
 const url = ENDPOINTS.UPDATE_PASSWORD('5f31dcb9a1a909eadee0eecb');
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
-// jest.mock('react-toastify');
 
+// Mock the updatePassword action for testing
 jest.mock('../../../actions/updatePassword.js');
+
+// Setup mock server using MSW (Mock Service Worker)
 const server = setupServer(
-  // request for a forced password update.
+  // Request handler for PATCH request for password update
   rest.patch(url, (req, res, ctx) => {
     if (req.body.newpassword === 'newPassword8') {
       return res(ctx.status(200));
     }
     return res(ctx.status(400));
   }),
-  // Any other requests error out
+  // Default handler for all other requests
   rest.get('*', (req, res, ctx) => {
     console.error(
       `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
@@ -34,13 +44,17 @@ const server = setupServer(
     return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
   }),
 );
+
+// Before all tests, start the server
 beforeAll(() => server.listen());
+// After all tests, close the server
 afterAll(() => server.close());
+// Reset handlers after each test to avoid test leakage
 afterEach(() => {
-  // jest.clearAllMocks();
   server.resetHandlers();
 });
 
+// Error messages used for validation and assertions
 const errorMessages = {
   curentpasswordEmpty: '"Current Password" is not allowed to be empty',
   newpasswordEmpty: '"New Password" is not allowed to be empty',
@@ -51,13 +65,16 @@ const errorMessages = {
   errorNon400Response: 'Something went wrong. Please contact your administrator.',
 };
 
+// Test suite for Update Password page
 describe('Update Password Page', () => {
   let store;
   const userID = '5f31dcb9a1a909eadee0eecb';
+
+  // Before each test, initialize the mock store and render the component
   beforeEach(() => {
     store = mockStore({
       errors: '',
-      theme: {darkMode: true}
+      theme: { darkMode: true },
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
@@ -69,12 +86,13 @@ describe('Update Password Page', () => {
     );
   });
 
+  // Test structure and layout of the page
   describe('Structure', () => {
     it('should have 3 input fields', () => {
       const inputs = screen.getAllByLabelText(/.*password/i);
       expect(inputs).toHaveLength(3);
     });
-    it('should have 1 button fields', () => {
+    it('should have 1 button field', () => {
       const button = screen.getAllByRole('button');
       expect(button).toHaveLength(1);
     });
@@ -84,6 +102,7 @@ describe('Update Password Page', () => {
     });
   });
 
+  // Test incorrect user inputs and validation errors
   describe('For incorrect user inputs', () => {
     it('should show error if current password is left blank', () => {
       const currentPassword = screen.getByLabelText(/current password:/i);
@@ -169,7 +188,7 @@ describe('Update Password Page', () => {
       expect(screen.getByRole('button')).toBeDisabled();
     });
 
-    it('should show error if old,new, and confirm passwords are same', async () => {
+    it('should show error if old, new, and confirm passwords are same', async () => {
       await userEvent.type(screen.getByLabelText(/current password:/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
@@ -184,6 +203,7 @@ describe('Update Password Page', () => {
     });
   });
 
+  // Test correct behavior on form submission
   describe('Behavior', () => {
     it('should call updatePassword on submit', async () => {
       const newpassword = 'ABCdef@123';
