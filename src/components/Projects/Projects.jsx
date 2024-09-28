@@ -6,7 +6,7 @@ import {
   modifyProject,
   clearError,
 } from '../../actions/projects';
-import {getProjectsByUsersName} from '../../actions/userProfile';
+import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
@@ -158,21 +158,25 @@ const Projects = function(props) {
     setAllProjects(projectList);
   }
 
+  const refreshProjects = async () => {
+    await props.fetchAllProjects();
+  };
+
   useEffect(() => {
     props.fetchAllProjects();
   }, []);
 
   useEffect(() => {
-      generateProjectList(categorySelectedForSort, showStatus, sortedByName);
-      if (status !== 200) {
-        setModalData({
-          showModal: true,
-          modalMessage: error,
-          modalTitle: 'ERROR',
-          hasConfirmBtn: false,
-          hasInactiveBtn: false,
-        });
-      }
+    generateProjectList(categorySelectedForSort, showStatus, sortedByName);
+    if (status !== 200) {
+      setModalData({
+        showModal: true,
+        modalMessage: error,
+        modalTitle: 'ERROR',
+        hasConfirmBtn: false,
+        hasInactiveBtn: false,
+      });
+    }
   }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
 
   useEffect(() => {
@@ -184,7 +188,7 @@ const Projects = function(props) {
             projects.some(p => p === project.key)
           );
           setProjectList(newProjectList);
-        }else{
+        } else {
           setProjectList(allProjects);
         }
       } else {
@@ -215,23 +219,25 @@ const Projects = function(props) {
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
           </div>
 
-          {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
+          {canPostProject ? <AddProject onAddNewProject={postProject} refreshProjects={refreshProjects} /> : null}
 
-          <SearchProjectByPerson onSearch={handleSearchName}/>
+          <SearchProjectByPerson onSearch={handleSearchName} />
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-            <ProjectTableHeader 
-              onChange={onChangeCategory} 
-              selectedValue={categorySelectedForSort} 
-              showStatus={showStatus} 
-              selectStatus={onSelectStatus}
-              sorted={sortedByName}
-              handleSort = {handleSort}
-              darkMode={darkMode}
-            />
+              <ProjectTableHeader 
+                onChange={onChangeCategory} 
+                selectedValue={categorySelectedForSort} 
+                showStatus={showStatus} 
+                selectStatus={onSelectStatus}
+                sorted={sortedByName}
+                handleSort={handleSort}
+                darkMode={darkMode}
+              />
             </thead>
-            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
+            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
+              {projectList}
+            </tbody>
           </table>
         </div>
 

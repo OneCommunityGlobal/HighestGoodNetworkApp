@@ -131,3 +131,7 @@ tr:hover {
     overflow-y: auto;
   }
 }
+
+.overflow-container table {
+  min-width: 600px; 
+}
