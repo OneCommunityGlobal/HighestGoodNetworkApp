@@ -68,6 +68,9 @@ class UserManagement extends React.PureComponent {
       shouldRefreshInvitationHistory: false,
       logTimeOffPopUpOpen: false,
       userForTimeOff: '',
+      isMobile: window.innerWidth <= 750,
+      mobileFontSize: 10,
+      mobileWidth: '100px',
     };
   }
 
@@ -75,14 +78,23 @@ class UserManagement extends React.PureComponent {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
+    window.addEventListener('resize', this.handleResize);
   }
+  
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
+  }
+
+  handleResize = () => {
+    this.setState({ isMobile: window.innerWidth <= 750 });
+  };
 
   render() {
     const darkMode = this.props.state.theme.darkMode;
     let { userProfiles, fetching } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
     const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode);
+    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.isMobile, this.state.mobileFontSize);
     let roles = [...new Set(userProfiles.map(item => item.role))];
     return (
       <Container fluid className={darkMode ? ' bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
@@ -107,6 +119,9 @@ class UserManagement extends React.PureComponent {
                     authRole={this.props.state.auth.user.role}
                     roleSearchText={this.state.roleSearchText}
                     darkMode={darkMode}
+                    isMobile={this.state.isMobile}
+                    mobileFontSize={this.state.mobileFontSize}
+                    mobileWidth={this.state.mobileWidth}
                   />
                   <UserTableSearchHeader
                     onFirstNameSearch={this.onFirstNameSearch}
@@ -118,6 +133,9 @@ class UserManagement extends React.PureComponent {
                     authRole={this.props.state.auth.user.role}
                     roleSearchText={this.state.roleSearchText}
                     darkMode={darkMode}
+                    isMobile={this.state.isMobile}
+                    mobileFontSize={this.state.mobileFontSize}
+                    mobileWidth={this.state.mobileWidth}
                   />
                 </thead>
                 <tbody className={darkMode ? 'dark-mode' : ''}>{userTable}</tbody>
@@ -206,7 +224,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements =(userProfiles, rolesPermissions, timeOffRequests, darkMode) => {
+  userTableElements =(userProfiles, rolesPermissions, timeOffRequests, darkMode, isMobile, mobileFontSize) => {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -250,6 +268,8 @@ class UserManagement extends React.PureComponent {
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
               darkMode={darkMode}
+              isMobile={isMobile}
+              mobileFontSize={mobileFontSize}
             />
           );
         });

@@ -16,6 +16,8 @@ import { cantUpdateDevAdminDetails } from 'utils/permissions';
  */
 const UserTableData = React.memo(props => {
   const darkMode = props.darkMode;
+  const isMobile = props.isMobile;
+  const mobileFontSize = props.mobileFontSize;
 
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
@@ -45,7 +47,7 @@ const UserTableData = React.memo(props => {
   const isCurrentUser = props.user.email === props.authEmail;
 
   return (
-    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_user_${props.index}`}>
+    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_user_${props.index}`} style={{fontSize: isMobile ? mobileFontSize : 'initial'}}>
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
