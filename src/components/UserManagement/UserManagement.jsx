@@ -210,6 +210,7 @@ class UserManagement extends React.PureComponent {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
+      const canChangeUserStatus = this.props.hasPermission('changeUserStatus');
       let that = this;
       /* Builiding the table body for users based on the page size and selected page number and returns
        * the rows for currently selected page .
@@ -249,6 +250,7 @@ class UserManagement extends React.PureComponent {
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
+              canChangeUserStatus={canChangeUserStatus}
               darkMode={darkMode}
             />
           );
@@ -424,7 +426,7 @@ class UserManagement extends React.PureComponent {
    */
   onActiveInactiveClick = user => {
     const authRole = this?.props?.state?.auth?.user.role || user.role;
-    const canChangeUserStatus = hasPermission('changeUserStatus');
+    // const canChangeUserStatus = hasPermission('changeUserStatus');
     if (cantDeactivateOwner(user, authRole)) {
       //Owner user cannot be deactivated by another user that is not an Owner.
       alert('You are not authorized to deactivate an owner.');
