@@ -27,7 +27,6 @@ const UserTableData = React.memo(props => {
   const [formData, updateFormData] = useState({ firstName: props.user.firstName, lastName: props.user.lastName, id: props.user._id, role: props.user.role, email: props.user.email, weeklycommittedHours: props.user.weeklycommittedHours, startDate: formatDate(props.user.startDate), endDate: formatDate(props.user.endDate) })
   const dispatch = useDispatch();
   const { roles } = useSelector(state => state.role)
-  
   const joinTimeStamp=(date)=>{
     const now = new Date();
       var formattedTimestamp = now.toISOString();
@@ -76,7 +75,6 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
       </td>
-      <input value={props.user.role} type='text'/>
       <td className="email_cell">
         {editUser?.first ? (<div>
           <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{formData.firstName} </a>
