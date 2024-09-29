@@ -12,7 +12,7 @@ import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
-import { getAllUserProfile } from '../../actions/userManagement';
+import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
 import ReportTableSearchPanel from './ReportTableSearchPanel';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -111,7 +111,7 @@ class ReportsPage extends Component {
   async componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
-    this.props.getAllUserProfile();
+    this.props.getUserProfileBasicInfo();
   }
 
   setFilterStatus(status) {
@@ -382,21 +382,21 @@ class ReportsPage extends Component {
     const myRole = this.props.state.auth.user.role;
     const { projects } = this.props.state.allProjects;
     const { allTeams } = this.props.state.allTeamsData;
-    const { userProfiles } = this.props.state.allUserProfiles;
+    const { userProfilesBasicInfo } = this.props.state.allUserProfilesBasicInfo;
     this.state.teamSearchData = this.filteredTeamList(allTeams);
-    this.state.peopleSearchData = this.filteredPeopleList(userProfiles);
+    this.state.peopleSearchData = this.filteredPeopleList(userProfilesBasicInfo);
     this.state.projectSearchData = this.filteredProjectList(projects);
     if (this.state.checkActive === 'true') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === true);
       this.state.projectSearchData = projects.filter(project => project.isActive === true);
-      this.state.peopleSearchData = userProfiles.filter(user => user.isActive === true);
+      this.state.peopleSearchData = userProfilesBasicInfo.filter(user => user.isActive === true);
       this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
     } else if (this.state.checkActive === 'false') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === false);
       this.state.projectSearchData = projects.filter(project => project.isActive === false);
-      this.state.peopleSearchData = userProfiles.filter(user => user.isActive === false);
+      this.state.peopleSearchData = userProfilesBasicInfo.filter(user => user.isActive === false);
       this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
@@ -716,7 +716,7 @@ class ReportsPage extends Component {
               <TotalProjectReport
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
-                userProfiles={userProfiles}
+                userProfiles={userProfilesBasicInfo}
                 projects={projects}
                 darkMode={darkMode}
               />
@@ -725,7 +725,7 @@ class ReportsPage extends Component {
               <TotalPeopleReport
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
-                userProfiles={userProfiles}
+                userProfiles={userProfilesBasicInfo}
                 darkMode={darkMode}
               />
             )}
@@ -733,7 +733,7 @@ class ReportsPage extends Component {
               <TotalTeamReport
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
-                userProfiles={userProfiles}
+                userProfiles={userProfilesBasicInfo}
                 allTeamsData={allTeams}
                 passTeamMemberList={this.setTeamMemberList}
                 savedTeamMemberList={this.state.teamMemberList}
@@ -746,7 +746,7 @@ class ReportsPage extends Component {
                 toggle={this.setAddTime}
                 projects={projects}
                 teams={allTeams}
-                users={userProfiles}
+                users={userProfilesBasicInfo}
               />
             )}
             {this.state.showAddPersonHistory && (
@@ -755,7 +755,7 @@ class ReportsPage extends Component {
                 isOpen={this.state.showAddPersonHistory}
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
-                allData={userProfiles}
+                allData={userProfilesBasicInfo}
                 darkMode={darkMode}
               />
             )}
@@ -791,6 +791,6 @@ const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
   fetchAllProjects,
   getAllUserTeams,
-  getAllUserProfile,
+  getUserProfileBasicInfo,
   fetchAllTasks,
 })(ReportsPage);

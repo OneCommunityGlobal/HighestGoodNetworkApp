@@ -4,6 +4,7 @@ import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reduc
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
 import { allUserProfilesReducer } from './allUserProfilesReducer';
+import { allUserProfilesBasicInfoReducer } from  './allUserProfilesBasicInfoReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
@@ -80,6 +81,7 @@ const localReducers = {
   blueSquareEmailAssignment : BlueSquareEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
+  allUserProfilesBasicInfo : allUserProfilesBasicInfoReducer,
 
   // bmdashboard
   materials: materialsReducer,
