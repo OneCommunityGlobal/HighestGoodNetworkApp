@@ -19,7 +19,6 @@ thead {
   vertical-align: middle;
 }
 
-
 #teams__members {
   width: 15px;
 }
@@ -83,12 +82,12 @@ thead {
 
 .isActive i {
   color: lawngreen;
-  margin-top: 10px;
+  margin-top: 0px;
 }
 
 .isNotActive i {
   color: #dee2e6;
-  margin-top: 10px;
+  margin-top: 0px;
 
 }
 
@@ -130,6 +129,32 @@ tr:hover {
     max-height: 80vh;
     overflow-y: auto;
   }
+}
+
+body.modal-open {
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+  padding-right: 15px !important;
+}
+
+.modal-content {
+  max-height: 95vh;
+  overflow: auto;
+}
+
+.table td {
+  vertical-align: middle !important;
+}
+
+table .ToggleSwitch_switchSection__3twC9 {
+  justify-content: center;
+}
+
+.empty-data-message {
+  color: grey;
+  margin: auto;
+  text-align: center;
 }
 
 .overflow-container table {
