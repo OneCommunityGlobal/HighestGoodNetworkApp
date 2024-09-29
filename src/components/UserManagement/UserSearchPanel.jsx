@@ -17,8 +17,7 @@ const setupHistoryTooltip = (
  * The search panel stateless component for user management grid
  */
 
-const UserSearchPanel = ({hasPermission,handleNewUserSetupPopup, handleSetupHistoryPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
-  // console.log('UserSearchPanel props', props);
+const UserSearchPanel = ({ hasPermission, handleNewUserSetupPopup, handleSetupHistoryPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode }) => {
   const canCreateUsers = hasPermission('postUserProfile');
   return (
     <div className="input-group mt-3" id="new_usermanagement">

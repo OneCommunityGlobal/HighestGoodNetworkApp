@@ -3,6 +3,9 @@ import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userTableDataPermissions from '../../../utils/userTableDataPermissions';
 import UserTableHeader from '../UserTableHeader';
+import { rootReducers } from 'store';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 import {
   ACTIVE,
   FIRST_NAME,
@@ -17,6 +20,8 @@ import {
   USER_END_DATE,
 } from '../../../languages/en/ui';
 
+const store = createStore(rootReducers);
+
 // Mock userTableDataPermissions function
 jest.mock('utils/userTableDataPermissions', () => jest.fn());
 
@@ -26,11 +31,14 @@ describe('UserTableHeader', () => {
 
   it('renders table headers correctly', () => {
     const { getByText, container } = render(
+      <Provider store={store}> 
       <table>
         <thead>
           <UserTableHeader authRole={authRole} roleSearchText={roleSearchText} />
         </thead>
-      </table>,
+      </table>
+      </Provider>,
+
     );
 
     // Check if all headers are in the document
@@ -54,11 +62,13 @@ describe('UserTableHeader', () => {
   it('renders delete column when permitted', () => {
     userTableDataPermissions.mockImplementation(() => true);
     const { container } = render(
+      <Provider store={store}>
       <table>
         <thead>
           <UserTableHeader authRole={authRole} roleSearchText={roleSearchText} />
         </thead>
       </table>,
+      </Provider>
     );
 
     // Check if the delete column is present when permissions are met
@@ -72,11 +82,13 @@ describe('UserTableHeader', () => {
 
     const notPermittedAuthRole = 'guest';
     const { queryByTestId } = render(
+      <Provider store={store}>
       <table>
         <thead>
           <UserTableHeader authRole={notPermittedAuthRole} roleSearchText={''} />
         </thead>
       </table>,
+      </Provider>
     );
 
     // Since you are querying by test id, make sure your component has 'data-testid' set on elements
