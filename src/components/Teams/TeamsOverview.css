@@ -44,27 +44,27 @@
 @media (max-width: 768px) {
   .teams__overview--top {
     margin-left: auto;
-    margin-right: auto; /* Center the table */
+    margin-right: auto;
   }
 }
 
 @media (max-width: 575px) {
   .teams__overview--top {
-    font-size: 9px; /* Reduce font size to prevent overflow */
+    font-size: 9px; 
   }
 }
 
 @media (max-width: 479px) {
   .members-modal-table {
-    overflow-x: auto; /* Fix side-scrolling in modal */
+    overflow-x: auto;
   }
 }
 
 @media (max-width: 768px) {
   .card#card_team, .card#card_active {
-    width: auto; /* Decrease the width of the cards */
-    height: 30px; /* Decrease the height of the cards */
-    font-size: 8px; /* Adjust font size */
+    width: auto;
+    height: 30px;
+    font-size: 8px;
   }
 }
 
