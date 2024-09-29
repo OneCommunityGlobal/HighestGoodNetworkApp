@@ -11,10 +11,12 @@ import MembersAutoComplete from './MembersAutoComplete';
 
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
+import styles from './ToggleSwitch/ToggleSwitch.module.scss';
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
-
+  const [isChecked, setIsChecked] = useState(1); // 0 = false, 1 = true, 2 = all
+  const [checkedStatus, setCheckedStatus] = useState('Active'); // 0 = false, 1 = true, 2 = all
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
@@ -22,6 +24,7 @@ export const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
+  const trackColor = isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue';
 
   const closeDeletedPopup = () => {
     setDeletedPopup(!deletedPopup);
@@ -30,6 +33,11 @@ export const TeamMembersPopup = React.memo(props => {
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
+  };
+
+  const handleToggle = () => {
+    setIsChecked(parseInt(event.target.value));
+    setCheckedStatus(parseInt(event.target.value) == 0 ? 'Inactive' : (parseInt(event.target.value)  == 1 ? 'Active' : 'See All'))
   };
 
   const [infoModal, setInfoModal] = useState(false);
@@ -42,6 +50,8 @@ export const TeamMembersPopup = React.memo(props => {
     setMemberList([]);
     props.onClose();
     setSortOrder(0);
+    setIsChecked(true);
+    setCheckedStatus('Active');
   };
   const onAddUser = () => {
     if (selectedUser) {
@@ -229,7 +239,26 @@ export const TeamMembersPopup = React.memo(props => {
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                <th>Active</th>
+              <th>
+              <div className={styles.divContainer}>
+              <div className={styles.sliderContainer}>
+                <input
+                  type="range"
+                  min="0"
+                  max="2"
+                  step="1"
+                  value={isChecked}
+                  onChange={handleToggle}
+                  className={styles.slider}
+                  title="Move Slider for Status change. Left: Inactive, Middle: Active, Right: See All"
+                  // Dynamic inline style for background color based on status
+                  style={{'--track-color': trackColor, 
+                          '--thumb-color': trackColor,}}
+                />
+                <span>{checkedStatus}</span>
+              </div>
+            </div>
+                </th>
                 <th>#</th>
                 <th>User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
@@ -256,8 +285,8 @@ export const TeamMembersPopup = React.memo(props => {
                 (typeof props.members.fetching === 'boolean' &&
                   !props.members.fetching &&
                   props.members.teamMembers) ||
-                (Array.isArray(props.members) && props.members.length > 0)) &&
-                memberList.toSorted().map((user, index) => {
+                (Array.isArray(props.members) && props.members.length > 0)) && 
+                memberList.toSorted().filter(e=>{if(isChecked != 2) { return e.isActive == isChecked} else return true}).map((user, index) => {
                   return (
                     <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
                       <td>
@@ -301,7 +330,8 @@ export const TeamMembersPopup = React.memo(props => {
                       )}
                     </tr>
                   );
-                })}
+                })
+                }
             </tbody>
           </table>
         </ModalBody>
