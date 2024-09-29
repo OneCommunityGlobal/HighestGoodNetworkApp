@@ -14,10 +14,7 @@ import { formatDateLocal } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { useDispatch } from 'react-redux';
 import { getAllRoles } from 'actions/role';
-import {getAllUserProfile, updateUserInfomation } from 'actions/userManagement';
-import { useRef } from 'react';
-import { ENDPOINTS } from 'utils/URL';
-import axios from 'axios';
+import {updateUserInfomation } from 'actions/userManagement';
 
 /**
  * The body row of the user table
@@ -79,6 +76,7 @@ const UserTableData = React.memo(props => {
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
       </td>
+      <input value={props.user.role} type='text'/>
       <td className="email_cell">
         {editUser?.first ? (<div>
           <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{formData.firstName} </a>
@@ -104,12 +102,13 @@ const UserTableData = React.memo(props => {
           /></div> : <input type='text' className='edituser_input text-center' value={formData.lastName} onChange={(e) => { updateFormData({ ...formData, lastName: e.target.value }); addUserInformation('lastName', e.target.value, props.user._id) }}></input>}
 
       </td>
-
-      {editUser?.role && roles !== undefined ? (<td>{formData.role}</td>) :
-       ( <td><select name="role-select-tag" id="" value={formData.role} onChange={(e) => { updateFormData({ ...formData, role: e.target.value }); addUserInformation('role', e.target.value, props.user._id) }}>
+      <td>
+      {(editUser?.role) && (roles !== undefined) ? formData.role:
+       ( <select id="" value={formData.role}  
+        onChange={(e) => { updateFormData({ ...formData, role: e.target.value }); addUserInformation('role', e.target.value, props.user._id) }}>
           {roles?.map((e, index) => <option key={index} value={e.roleName} >{e.roleName}</option>)}
-        </select></td>)}
-
+        </select>)}
+        </td>
 
       <td className="email_cell">
         {editUser?.email ? <div>
