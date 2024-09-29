@@ -1,5 +1,5 @@
 import React,{useState} from 'react';
-// import { useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
   ACTIVE,
   FIRST_NAME,
@@ -15,24 +15,50 @@ import {
   REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
 import userTableDataPermissions from 'utils/userTableDataPermissions';
-// import { disableEditUserInfo, enableEditUserInfo } from 'actions/userManagement';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {faEdit, faSave } from '@fortawesome/free-solid-svg-icons';
+import { useSelector } from 'react-redux';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { getAllUserProfile } from 'actions/userManagement';
+import { ENDPOINTS } from 'utils/URL';
+
 
 /**
  * The header row of the user table.
 */
 const UserTableHeader = React.memo(({ authRole, roleSearchText, darkMode, editUser,enableEditUserInfo,disableEditUserInfo }) => {
-  // const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [editFlag, setEditFlag] = useState(editUser)
+  const updatedUserData=useSelector(state=>state.userProfileEdit.newUserData)
+  const saveUserInformation = async (updatedData) => {
+    try {
+      var response=await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE,updatedData);
+      if(response.status==200){
+        const toastId=toast.success(" Saving Data...", {autoClose: false});
+        await dispatch(getAllUserProfile())
+        toast.update(toastId, {
+          render: "Data Updated successfully !",
+          // type: toast.TYPE.SUCCESS,
+          autoClose: 3000, 
+        });
+
+      }else{
+        toast.error("Error Updating Data!")
+      }
+    } catch (error) {
+      toast.error("Error Updating Data ! ")
+    }
+  }
+
   const enableEdit = (value) => {
     setEditFlag(value)
     enableEditUserInfo(value)
   }
   const disableEdit = (value) => {
-    // const dispatch = useDispatch();
     setEditFlag(value)
     disableEditUserInfo(value)
+    saveUserInformation(updatedUserData)
   }
 
   return (

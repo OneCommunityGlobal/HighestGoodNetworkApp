@@ -228,6 +228,10 @@ export const changePagination=(value)=>(dispatch,getState)=>{
   dispatch({type:CHANGE_USER_PROFILE_PAGE,payload:value});
 }
 
+export const updateUserInfomation=(value)=>(dispatch,getState)=>{
+  dispatch({type:START_USER_INFO_UPDATE,payload:value})
+}
+
 // export const updateUserInformation=(value)=>async(dispatch,getState)=>{
 //   try {
 //     dispatch({type:START_USER_INFO_UPDATE})

@@ -89,22 +89,9 @@ class UserManagement extends React.PureComponent {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    let editable = this.props.state.userProfileEdit.editable
-    let edit_prev = this.state.editable;
     let search_state = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || (prevState.lastNameSearchText !== this.state.lastNameSearchText) || (prevState.roleSearchText !== this.state.roleSearchText) || (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || (prevState.emailSearchText !== this.state.emailSearchText);
     let page_size_value=(prevState.pageSize!==this.state.pageSize);
-    if (editable.first !== edit_prev.first || editable.last !== edit_prev.last || editable.role !== edit_prev.role || editable.email !== edit_prev.email || editable.weeklycommittedHours !== edit_prev.weeklycommittedHours || editable.startDate !== edit_prev.startDate || editable.endDate !== edit_prev.endDate) {
-      this.setState({
-        editable: editable
-      }, () => {
-        let darkMode = this.props.state.theme.darkMode;
-        let { userProfiles, fetching } = this.props.state.allUserProfiles;
-        let { roles: rolesPermissions } = this.props.state.role;
-        let { requests: timeOffRequests } = this.props.state.timeOffRequests;
-        this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable)
-      })
-    }
-     else if ((prevState.selectedPage !== this.state.selectedPage) || (prevState.wildCardSearchText !== this.state.wildCardSearchText) || search_state || page_size_value) {
+     if ((prevState.selectedPage !== this.state.selectedPage) || (prevState.wildCardSearchText !== this.state.wildCardSearchText) || search_state || page_size_value) {
       let darkMode = this.props.state.theme.darkMode;
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
       let { roles: rolesPermissions } = this.props.state.role;
@@ -142,7 +129,7 @@ class UserManagement extends React.PureComponent {
                     authRole={this.props.state.auth.user.role}
                     roleSearchText={this.state.roleSearchText}
                     darkMode={darkMode}
-                    editUser={this.state.editable}
+                    editUser={this.props.state.userProfileEdit.editable}
                     enableEditUserInfo={this.props.enableEditUserInfo}
                     disableEditUserInfo={this.props.disableEditUserInfo}
                   />
@@ -288,7 +275,7 @@ class UserManagement extends React.PureComponent {
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
               darkMode={darkMode}
-              editUser={editUser}
+              // editUser={editUser}
             />
           );
         });

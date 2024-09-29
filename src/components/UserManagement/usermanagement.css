@@ -339,3 +339,13 @@ tr:hover {
 td{
   text-align: center;
 }
+
+/* custom-toast.css */
+.custom-toast {
+  background-color: #a69712;
+  color: white;
+}
+
+.custom-toast-progress {
+  background-color: white;
+}
