@@ -87,11 +87,22 @@
 .wbsTask {
   line-height: 14px;
 }
+/* Ensured task-action-buttons has a flex display to properly align the buttons */
+.task-action-buttons {
+  display: flex;
+  justify-content: flex-start;
+}
+/* Added controlBtn class to ensure uniform margin between buttons */
+.controlBtn {
+  margin-right: 8px; /* Adds margin between buttons */
+}
+
 
 .controlBtn {
   float: left;
   margin-left: 10px;
 }
+
 
 .controlTd {
   background-color: #effff2;
