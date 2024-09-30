@@ -235,7 +235,7 @@ function PeopleTableDetails(props) {
         <div key={value._id} >
           <div className='task-header'>
             <div>
-              <div className='task-title people-report-task-name'>
+              <div className='task-title people-report-task-name task-name-word-break'>
                 {value.taskName}
               </div>  
             </div>

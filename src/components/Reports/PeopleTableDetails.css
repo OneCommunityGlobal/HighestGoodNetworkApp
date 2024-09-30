@@ -246,5 +246,8 @@
 
 .people-report-task-name {
   word-wrap: break-word;
+}
+
+.task-name-word-break {
   word-break: break-all;
 }
