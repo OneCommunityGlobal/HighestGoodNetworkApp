@@ -85,7 +85,7 @@
 }
 
 .wbsTask {
-  line-height: 14px;
+  line-height: 28px;
 }
 /* Ensured task-action-buttons has a flex display to properly align the buttons */
 .task-action-buttons {
@@ -126,6 +126,7 @@
 
 .taskName {
   width: 300px;
+  height: 80px;
 }
 
 .taskDrop {
