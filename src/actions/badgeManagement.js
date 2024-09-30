@@ -118,7 +118,7 @@ export const validateBadges = (firstName, lastName) => {
     if (!firstName || !lastName) {
       dispatch(
         getMessage(
-          'The Name Find function does not work without entering first and last name. Nice try though.',
+          'The Name Find function does not work without entering a name. Nice try though.',
           'danger',
         ),
       );
@@ -243,7 +243,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       );
       setTimeout(() => {
         dispatch(closeAlert());
-      }, 6000);
+      }, 600000);
     } catch (e) {
       dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {

@@ -85,13 +85,24 @@
 }
 
 .wbsTask {
-  line-height: 14px;
+  line-height: 28px;
 }
+/* Ensured task-action-buttons has a flex display to properly align the buttons */
+.task-action-buttons {
+  display: flex;
+  justify-content: flex-start;
+}
+/* Added controlBtn class to ensure uniform margin between buttons */
+.controlBtn {
+  margin-right: 8px; /* Adds margin between buttons */
+}
+
 
 .controlBtn {
   float: left;
   margin-left: 10px;
 }
+
 
 .controlTd {
   background-color: #effff2;
@@ -115,6 +126,7 @@
 
 .taskName {
   width: 300px;
+  height: 80px;
 }
 
 .taskDrop {
@@ -213,4 +225,12 @@
   margin: .25em;
   border-left: 1px solid #bbb;
   padding-left: .25em;
+}
+.tasks-detail-task-name { /* task column height and width changes*/
+  width: 40%; 
+  height: auto; 
+}
+
+.tasks-detail-actions {  /* action column width reduced */
+  width: 6%; 
 }

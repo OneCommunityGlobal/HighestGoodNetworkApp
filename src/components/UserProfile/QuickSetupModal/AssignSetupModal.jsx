@@ -42,7 +42,7 @@ function AssignSetUpModal ({ isOpen, setIsOpen, title, userProfile, setUserProfi
       const teamsAssigned = title.teamAssiged ? originalTeamId.includes(title?.teamAssiged._id) ? userProfile.teams : [...userProfile.teams, title.teamAssiged] : userProfile.teams;
       // If the title has project assigned, add the project to the user profile. Remove duplicate projects
       const projectAssigned = title.projectAssigned ? originalProjectId.includes(title?.projectAssigned._id) ? userProfile.projects : [...userProfile.projects, title.projectAssigned] : userProfile.projects;
-      
+
       // Ensure adminLinks is not undefined or null
       const updatedAdminLinks = (userProfile.adminLinks || []).map(obj => {
         if (obj.Name === "Media Folder") obj.Link = mediaFolder || '';
@@ -59,7 +59,7 @@ function AssignSetUpModal ({ isOpen, setIsOpen, title, userProfile, setUserProfi
 
       const data = {
         teams: teamsAssigned,
-        jobTitle: title.titleName,
+        jobTitle: userProfile.jobTitle,
         projects: projectAssigned,
         teamCode: title.teamCode,
         adminLinks: updatedAdminLinks,
@@ -113,7 +113,8 @@ function AssignSetUpModal ({ isOpen, setIsOpen, title, userProfile, setUserProfi
       } else if (userProfile.mediaUrl) {
         setMediaFolder(userProfile.mediaUrl);
       } else {
-        setMediaFolder("No media folder available");
+        // setMediaFolder("No media folder available");
+        setMediaFolder(null);
       }
     };
 
@@ -135,7 +136,7 @@ function AssignSetUpModal ({ isOpen, setIsOpen, title, userProfile, setUserProfi
         <h6>Team Code: {title?.teamCode}</h6>
         <h6>Project Assignment: {title?.projectAssigned?.projectName}</h6>
         <h6>Media Folder:</h6>
-        <h6>{mediaFolder}</h6>
+        <h6>{mediaFolder?mediaFolder:null}</h6>
         {title?.teamAssiged?.teamName ? <h6>Team Assignment: {title?.teamAssiged?.teamName}</h6> : '' }
         <div className="container ml-1">
           <Input
