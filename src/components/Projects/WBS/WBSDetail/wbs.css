@@ -225,3 +225,11 @@
   border-left: 1px solid #bbb;
   padding-left: .25em;
 }
+.tasks-detail-task-name { /* task column height and width changes*/
+  width: 40%; 
+  height: auto; 
+}
+
+.tasks-detail-actions {  /* action column width reduced */
+  width: 6%; 
+}
