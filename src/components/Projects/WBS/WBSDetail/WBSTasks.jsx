@@ -63,7 +63,7 @@ function WBSTasks(props) {
       case 'assigned': return tasks.filter(task => task.isAssigned === true)
       case 'unassigned': return tasks.filter(task => task.isAssigned === false)
       case 'active': return tasks.filter(task => ['Active', 'Started'].includes(task.status))
-      case 'inactive': return tasks.filter(task => task.status === 'Not Started')
+      case 'inactive': return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status))
       case 'complete': return tasks.filter(task => task.status === 'Complete')
     }
   }
