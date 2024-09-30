@@ -114,7 +114,7 @@ function AssignSetUpModal ({ isOpen, setIsOpen, title, userProfile, setUserProfi
         setMediaFolder(userProfile.mediaUrl);
       } else if(title && title.mediaFolder) {
         setMediaFolder(title.mediaFolder);
-      }else {
+      } else {
         // setMediaFolder("No media folder available");
         setMediaFolder(null);
       }
