@@ -29,6 +29,7 @@ import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
 import DateRangeSelector from './DateRangeSelector';
+import VolunteerTrendsByTimeLineChart from './VolunteerTrendsByTimeLineChart/VolunteerTrendsByTimeLineChart';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -442,7 +443,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <VolunteerTrendsByTimeLineChart />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
