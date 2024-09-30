@@ -107,12 +107,14 @@ function AssignSetUpModal ({ isOpen, setIsOpen, title, userProfile, setUserProfi
     // Gets the media Folder url from the mediaUrl
     const getMediaFolder = (userProfile) => {
       const currMediaFile = userProfile.adminLinks?.find(obj => obj.Name === "Media Folder");
-
+      
       if (currMediaFile && currMediaFile.Link) {
         setMediaFolder(currMediaFile.Link);
       } else if (userProfile.mediaUrl) {
         setMediaFolder(userProfile.mediaUrl);
-      } else {
+      } else if(title && title.mediaFolder) {
+        setMediaFolder(title.mediaFolder);
+      }else {
         // setMediaFolder("No media folder available");
         setMediaFolder(null);
       }
