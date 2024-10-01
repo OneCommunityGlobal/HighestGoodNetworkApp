@@ -1,4 +1,5 @@
 import { useParams } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Container, Row, Col } from 'reactstrap';
 import LogBar from './LogBar';
 import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
@@ -8,7 +9,9 @@ import './ProjectDetails.css';
 
 function ProjectDetails() {
   const { projectId } = useParams();
-
+  const projects = useSelector(state => state.bmProjects);
+  const currProject = projects.filter(project => {console.log("project",project._id,"projectId",projectId);project._id ==+ projectId})
+  console.log("projects",projects,"currProject",currProject)
   return (
     <Container className="project-details" fluid>
       <Row className="mx-auto">
