@@ -124,21 +124,6 @@ function LostTimeHistory(props) {
               </div>
             )}
           </td>
-          {canEditTimeEntry &&
-            <td>
-              <EditHistoryModal
-                _id={entry._id}
-                dataId={entry.dataId}
-                dateOfWork={entry.date}
-                hours={entry.hours}
-                minutes={entry.minutes}
-                isTangible={entry.isTangible}
-                entryType={entry.entryType}
-                allData={props.allData}
-                reload={reload}
-              />
-            </td>
-          }
           <td>
             <EditHistoryModal
               _id={entry._id}
