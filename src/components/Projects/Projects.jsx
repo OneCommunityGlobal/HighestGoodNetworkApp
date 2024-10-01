@@ -220,8 +220,6 @@ const Projects = function(props) {
             {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
           </div>
 
-          
-
           <SearchProjectByPerson onSearch={handleSearchName} />
 
           <table className="table table-bordered table-responsive-sm">

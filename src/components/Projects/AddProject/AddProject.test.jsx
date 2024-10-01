@@ -38,6 +38,7 @@ const typeIntoInput = ({ input }) => {
 
   if (input) {
     userEvent.type(inputField, input);
+    userEvent.type(inputField, input);
   }
 
   return {
