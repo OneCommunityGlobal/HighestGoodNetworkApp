@@ -9,13 +9,15 @@ import './ProjectDetails.css';
 
 function ProjectDetails() {
   const { projectId } = useParams();
+  // Get all projects
   const projects = useSelector(state => state.bmProjects);
-  const currProject = projects.filter(project => {console.log("project",project._id,"projectId",projectId);project._id ==+ projectId})
-  console.log("projects",projects,"currProject",currProject)
+  // Filter the current project based off of the id from the url param
+  const currProject = projects.filter(project => String(project._id)  === projectId);
+
   return (
     <Container className="project-details" fluid>
       <Row className="mx-auto">
-        <h1>Project {projectId} Dashboard</h1>
+        <h1>Project {currProject[0].name} Dashboard</h1>
       </Row>
       <Row className="mx-auto">
         <LogBar projectId={projectId} />
