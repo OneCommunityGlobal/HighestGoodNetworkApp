@@ -37,13 +37,13 @@ const typeIntoInput = ({ input }) => {
   const inputField = screen.getByRole('textbox');
 
   if (input) {
-    userEvent.type(inputField, input)
+    userEvent.type(inputField, input);
   }
 
   return {
-    inputField
-  }
-}
+    inputField,
+  };
+};
 
  
   test("it renders correctly", () => {    
