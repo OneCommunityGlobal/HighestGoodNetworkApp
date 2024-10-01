@@ -10,7 +10,7 @@ import {
   GET_MESSAGE,
   CLOSE_ALERT,
   GET_BADGE_COUNT,
-  RESET_BADGE_COUNT
+  RESET_BADGE_COUNT,
 } from '../constants/badge';
 
 const badgeInitial = {
@@ -30,13 +30,15 @@ export const badgeReducer = (state = badgeInitial, action) => {
     case GET_ALL_BADGE_DATA:
       return { ...state, allBadgeData: action.allBadges };
     case ADD_SELECT_BADGE:
-      const toAdd = state.selectedBadges;
-      toAdd.push(action.badgeId);
-      return { ...state, selectedBadges: toAdd };
+      return {
+        ...state,
+        selectedBadges: [...state.selectedBadges, action.badgeId],
+      };
     case REMOVE_SELECT_BADGE:
-      const toRemove = state.selectedBadges;
-      toRemove.splice(toRemove.indexOf(action.badgeId), 1);
-      return { ...state, selectedBadges: toRemove };
+      return {
+        ...state,
+        selectedBadges: state.selectedBadges.filter(id => id !== action.badgeId),
+      };
     case GET_BADGE_COUNT:
       return {
         ...state,
