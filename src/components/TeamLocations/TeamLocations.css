@@ -163,3 +163,29 @@
 .dark-mode .leaflet-control-attribution {
   filter: invert(100%) hue-rotate(180deg) brightness(85%) contrast(85%);
 }
+
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background-color: #fff;
+}
+
+.dark-mode .leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background-color: #3A506B;
+  color: #fff;
+}
+
+/* Dark mode styles */
+.team-locations-container.dark-mode {
+  background-color: #0d1b2a !important;
+  color: #fff !important;
+}
+
+.team-locations-container .dark-mode-input {
+  background-color: #1a2b3c !important;
+  color: #fff !important;
+  border: 1px solid #4a4a4a !important;
+}
+
+.team-locations-container .dark-mode-dropdown {
+  background-color: #1a2b3c !important;
+  color: #fff !important;
+}

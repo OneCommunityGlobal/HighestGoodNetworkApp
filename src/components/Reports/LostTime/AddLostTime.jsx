@@ -4,6 +4,7 @@ import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
 import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
 import AddTeamsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
 import './../reportsPage.css';
+import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { Button, Col, Form, FormGroup, Input, Label, Modal, ModalBody, ModalFooter, ModalHeader, Row } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -14,6 +15,23 @@ import { getUserProfile } from 'actions/userProfile';
 import { postTimeEntry } from 'actions/timeEntries';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+
+const TINY_MCE_INIT_OPTIONS = {
+  license_key: 'gpl',
+  menubar: false,
+  placeholder: '',
+  plugins:
+    'advlist autolink autoresize lists link charmap table paste help wordcount',
+  toolbar:
+    'bold italic underline link removeformat | bullist numlist outdent indent |\
+                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                    subscript superscript charmap  | help',
+  branding: false,
+  min_height: 180,
+  max_height: 300,
+  autoresize_bottom_margin: 1,
+  content_style: 'body { cursor: text !important; }',
+};
 
 const AddLostTime = props => {
 
@@ -30,6 +48,7 @@ const AddLostTime = props => {
       .format('YYYY-MM-DD'),
     hours: 0,
     minutes: 0,
+    notes: '',
     isTangible: true,
   };
 
@@ -46,6 +65,12 @@ const AddLostTime = props => {
   const [newTeamName, setNewTeamName] = useState('');
 
   const [errors, setErrors] = useState({});
+
+  // const { darkMode } = props
+
+  // const fontColor = darkMode ? 'text-light' : '';
+  // const headerBg = darkMode ? 'bg-space-cadet' : '';
+  // const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
   useEffect(() => {
     if (inputs.personId && props.userProfile._id !== inputs.personId) {
@@ -237,7 +262,7 @@ const AddLostTime = props => {
     const { isTangible, personId } = timeEntry;
     const volunteerTime = parseFloat(hours) + parseFloat(minutes) / 60;
 
-    if (isTangible !== 'true') {
+    if (!isTangible) {
       userProfile.totalIntangibleHrs += volunteerTime;
     } else {
       hoursByCategory['unassigned'] += volunteerTime;
@@ -260,17 +285,14 @@ const AddLostTime = props => {
     const timeEntry = {
       personId: inputs.personId,
       dateOfWork: inputs.dateOfWork,
+      hours: parseInt(inputs.hours),
+      minutes: parseInt(inputs.minutes),
+      notes: inputs.notes,
       projectId: inputs.projectId,
       teamId: inputs.teamId,
-      isTangible: inputs.isTangible.toString(),
+      isTangible: inputs.isTangible,
       entryType: entryType,
     };
-
-    timeEntry.timeSpent = `${inputs.hours}:${inputs.minutes}:00`;
-
-    if(inputs.personId) {
-      updateHours(props.userProfile, timeEntry, inputs.hours, inputs.minutes);
-    }
 
     setSubmitting(true);
     let timeEntryStatus;
@@ -288,6 +310,10 @@ const AddLostTime = props => {
     setInputs(initialForm);
     setErrors({});
     if (props.isOpen) props.toggle();
+  };
+
+  const handleEditorChange = (content, editor) => {
+    setInputs(formValues => ({ ...formValues, [editor.id]: content }));
   };
 
   return (
@@ -384,6 +410,26 @@ const AddLostTime = props => {
                 </div>
               )}
             </FormGroup>
+            {entryType == 'person' && (
+              <FormGroup>
+                <Label for="notes" className={fontColor}>Notes</Label>
+                <Editor
+                  tinymceScriptSrc="/tinymce/tinymce.min.js"
+                  init={TINY_MCE_INIT_OPTIONS}
+                  id="notes"
+                  name="notes"
+                  className="form-control"
+                  value={inputs.notes}
+                  onEditorChange={handleEditorChange}
+                />
+
+                {'notes' in errors && (
+                  <div className="text-danger">
+                    <small>{errors.notes}</small>
+                  </div>
+                )}
+              </FormGroup>
+            )}
             <FormGroup check>
               <Label check className={fontColor}>
                 <Input
@@ -420,6 +466,7 @@ const AddLostTime = props => {
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
   auth: state.auth,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {getUserProfile})(AddLostTime);

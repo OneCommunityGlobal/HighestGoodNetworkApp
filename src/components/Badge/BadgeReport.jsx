@@ -28,12 +28,13 @@ import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import hasPermission from '../../utils/permissions';
 import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
+import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function BadgeReport(props) {
@@ -46,13 +47,21 @@ function BadgeReport(props) {
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
 
+  const darkMode = props.darkMode;
+
   async function imageToUri(url, callback) {
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     const baseImage = new Image();
     baseImage.crossOrigin = 'anonymous';
+
+    // Fallback image URL or blank image data URL
+    const fallbackImage =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/4H6YwAAAABJRU5ErkJggg=='; // 1x1 transparent PNG
+
     baseImage.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
     baseImage.src = baseImage.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+
     baseImage.onload = function handleImageLoad() {
       canvas.width = baseImage.width;
       canvas.height = baseImage.height;
@@ -63,37 +72,50 @@ function BadgeReport(props) {
 
       canvas.remove();
     };
+
+    baseImage.onerror = function handleImageError() {
+      // Use fallback image on error
+      canvas.width = 1;
+      canvas.height = 1;
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, 1, 1);
+      const uri = canvas.toDataURL('image/png');
+      callback(uri);
+
+      canvas.remove();
+    };
   }
 
   const FormatReportForPdf = (badges, callback) => {
     const bgReport = [];
     bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+  <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
       props.lastName
     }</h4></div>
-    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+  <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+
     for (let i = 0; i < badges.length; i += 1) {
       imageToUri(badges[i].badge.imageUrl, function(uri) {
         bgReport[i + 1] = `
-        <table>
-          <thead>
-            <tr>
-              <th>Badge Image</th>
-              <th>Badge Name, Count Awarded & Badge Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="width:160px">
-                <div><img height="150" width="150" src=${uri}/></div>
-              </td>
-              <td style="width:500px">
-                <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
-                <div><b>Count:</b> ${badges[i].count}</div>
-                <div><b>Description:</b> ${badges[i].badge.description}</div>
-              </td>
-            </tr>
-          </tbody>
+      <table>
+        <thead>
+          <tr>
+            <th>Badge Image</th>
+            <th>Badge Name, Count Awarded & Badge Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="width:160px">
+              <div><img height="150" width="150" src=${uri}/></div>
+            </td>
+            <td style="width:500px">
+              <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
+              <div><b>Count:</b> ${badges[i].count}</div>
+              <div><b>Description:</b> ${badges[i].badge.description}</div>
+            </td>
+          </tr>
+        </tbody>
       </table>
       ${
         (i + 1) % 4 === 0 && i + 1 !== badges.length
@@ -323,8 +345,8 @@ function BadgeReport(props) {
   return (
     <div>
       <div className="desktop">
-        <div style={{ overflowY: 'scroll', height: '75vh' }}>
-          <Table>
+        <div style={{ overflowY: 'auto', height: '75vh' }}>
+          <Table className={darkMode ? 'text-light' : ''}>
             <thead style={{ zIndex: '10' }}>
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
@@ -375,7 +397,11 @@ function BadgeReport(props) {
                       <>
                         {' '}
                         <UncontrolledDropdown className="me-2" direction="down">
-                          <DropdownToggle caret color="primary" style={boxStyle}>
+                          <DropdownToggle
+                            caret
+                            color="primary"
+                            style={darkMode ? boxStyleDark : boxStyle}
+                          >
                             Dates
                           </DropdownToggle>
                           <DropdownMenu className="badge_dropdown">
@@ -424,7 +450,7 @@ function BadgeReport(props) {
                           type="button"
                           className="btn btn-outline-danger"
                           onClick={e => handleDeleteBadge(sortBadges[index])}
-                          style={boxStyle}
+                          style={darkMode ? boxStyleDark : boxStyle}
                         >
                           Delete
                         </button>
@@ -461,7 +487,7 @@ function BadgeReport(props) {
         </div>
         <Button
           className="btn--dark-sea-green float-right"
-          style={{ ...boxStyle, margin: 5 }}
+          style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           disabled={savingChanges}
           onClick={e => {
             saveChanges();
@@ -471,20 +497,21 @@ function BadgeReport(props) {
         </Button>
         <Button
           className="btn--dark-sea-green float-right"
-          style={{ ...boxStyle, margin: 5 }}
+          style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           onClick={pdfDocGenerator}
         >
           Export All Badges to PDF
         </Button>
         <Button
+          disabled={numFeatured === 0}
           className="btn--dark-sea-green float-right"
-          style={{ ...boxStyle, margin: 5 }}
+          style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           onClick={pdfFeaturedDocGenerator}
         >
           Export Selected/Featured Badges to PDF
         </Button>
-        <Modal isOpen={showModal}>
-          <ModalBody>
+        <Modal isOpen={showModal} className={darkMode ? 'text-light' : ''}>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
             <br />
             <p>
@@ -492,11 +519,15 @@ function BadgeReport(props) {
               until you click the &quot;Save Changes&quot; button below.
             </p>
           </ModalBody>
-          <ModalFooter>
-            <Button onClick={() => handleCancel()} style={boxStyle}>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <Button onClick={() => handleCancel()} style={darkMode ? boxStyleDark : boxStyle}>
               Cancel
             </Button>
-            <Button color="danger" onClick={() => deleteBadge()} style={boxStyle}>
+            <Button
+              color="danger"
+              onClick={() => deleteBadge()}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
               Yes, Delete
             </Button>
           </ModalFooter>
@@ -504,7 +535,7 @@ function BadgeReport(props) {
       </div>
       <div className="tablet">
         <div style={{ overflow: 'auto', height: '68vh' }}>
-          <Table>
+          <Table className={darkMode ? 'text-light' : ''}>
             <thead style={{ zIndex: '10' }}>
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '93px' }}>Badge</th>
@@ -658,9 +689,7 @@ function BadgeReport(props) {
             style={{ margin: 5 }}
             onClick={e => {
               if (props.isRecordBelongsToJaeAndUneditable) {
-                alert(
-                  'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
-                );
+                alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
               }
               saveChanges();
             }}
@@ -675,6 +704,7 @@ function BadgeReport(props) {
             <span>Export All Badges to PDF</span>
           </Button>
           <Button
+            disabled={numFeatured === 0}
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
             onClick={pdfFeaturedDocGenerator}
@@ -682,8 +712,8 @@ function BadgeReport(props) {
             <span>Export Selected/Featured Badges to PDF</span>
           </Button>
         </div>
-        <Modal isOpen={showModal}>
-          <ModalBody>
+        <Modal isOpen={showModal} className={darkMode ? 'text-light dark-mode' : ''}>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
             <br />
             <p>
@@ -691,11 +721,15 @@ function BadgeReport(props) {
               until you click the &quot;Save Changes&quot; button below.
             </p>
           </ModalBody>
-          <ModalFooter>
-            <Button onClick={() => handleCancel()} style={boxStyle}>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <Button onClick={() => handleCancel()} style={darkMode ? boxStyleDark : boxStyle}>
               Cancel
             </Button>
-            <Button color="danger" onClick={() => deleteBadge()} style={boxStyle}>
+            <Button
+              color="danger"
+              onClick={() => deleteBadge()}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
               Yes, Delete
             </Button>
           </ModalFooter>
