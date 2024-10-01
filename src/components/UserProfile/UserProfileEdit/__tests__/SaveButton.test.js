@@ -16,7 +16,7 @@ describe('<SaveButton />', () => {
       }
     render(<SaveButton {...props} />);
     const button = screen.getByRole('button', { name: /save changes/i });
-    expect(button).toBeInTheDocument(); 
+    expect(button).toBeInTheDocument();
   });
 
   describe('Behavior', () => {
@@ -28,11 +28,11 @@ describe('<SaveButton />', () => {
         userProfile: userProfileMock,
         setSaved:jest.fn(),
         darkMode: true,
-        } 
+        }
       render(<SaveButton {...props} />);
       const button = screen.getByRole('button', { name: /save changes/i });
-      expect(button).toBeInTheDocument(); 
-      expect(button).toBeDisabled(); 
+      expect(button).toBeInTheDocument();
+      expect(button).toBeDisabled();
     });
 
     // Test Case 2: It should render the modal after clicking save changes button
@@ -43,10 +43,10 @@ describe('<SaveButton />', () => {
         userProfile: userProfileMock,
         setSaved:jest.fn(),
         darkMode: true,
-        } 
+        }
       render(<SaveButton {...props} />);
       const button = screen.getByRole('button', { name: /save changes/i });
-      expect(button).not.toBeDisabled(); 
+      expect(button).not.toBeDisabled();
       userEvent.click(button);
       expect(screen.getByRole('dialog')).toBeInTheDocument();
     });
