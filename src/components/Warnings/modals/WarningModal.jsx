@@ -74,16 +74,6 @@ function WarningModal({
         </ModalBody>
 
         <ModalFooter className="warning-modal-footer">
-          {/* <Button
-            onClick={() => {
-              handleIssueWarning(warning);
-              // subtmit wanring here to backend
-              setToggleModal(false);
-            }}
-          >
-            Log Warning Only
-          </Button> */}
-
           <Button
             onClick={() => {
               // email will be sent and logged
@@ -98,7 +88,7 @@ function WarningModal({
 
           <Button
             onClick={() => {
-              alert('BLUE SQUARE ISSUED!!');
+              // alert('BLUE SQUARE ISSUED!!');
               handleIssueWarning({ ...warning, colorAssigned: 'red' });
               setToggleModal(false);
             }}

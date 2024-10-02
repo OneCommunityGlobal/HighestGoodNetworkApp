@@ -20,7 +20,6 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   const dispatch = useDispatch();
   const [usersWarnings, setUsersWarnings] = useState([]);
 
-  const [toggleWarningModal, setToggleWarningModal] = useState(false);
   const [toggleWarningTrackerModal, setToggleWarningTrackerModal] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
@@ -120,14 +119,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
             </Button>
           )}
         </div>
-        {/* {toggleWarningModal && (
-          <WarningsModal
-            toggleWarningModal={toggleWarningModal}
-            personId={personId}
-            setToggleWarningModal={setToggleWarningModal}
-            getUsersWarnings={fetchUsersWarningsById}
-          />
-        )} */}
+
         {toggleWarningTrackerModal && (
           <WarningTrackerModal
             toggleWarningTrackerModal={toggleWarningTrackerModal}
