@@ -306,7 +306,7 @@ const LogTimeOffPopUp = React.memo(props => {
     setRequestDataErrors(initialRequestDataErrors);
 
     if (!validateDateOfLeave(requestData)) return;
-    // if (!validateDateIsNotBeforeStartOfCurrentWeek(requestData)) return;
+    if (!validateDateIsNotBeforeStartOfCurrentWeek(requestData)) return;
     if (!checkIfRequestOverlapsWithOtherRequests(requestData)) return;
     if (!validateNumberOfWeeks(requestData, false)) return;
     if (!validateReasonForLeave(requestData, false)) return;
