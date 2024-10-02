@@ -26,4 +26,5 @@ jobs:
           node-version: ${{ matrix.node-version }}
       - run: npm ci
       - run: npm run lint
+        # The code below is used to execute the unit test.
       - run: npm test
