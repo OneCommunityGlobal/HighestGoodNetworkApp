@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faBell } from '@fortawesome/free-solid-svg-icons';
@@ -6,6 +6,7 @@ import { Tooltip, OverlayTrigger } from 'react-bootstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
+import { Tooltip as ReactstrapTooltip } from 'reactstrap';
 
 const setupHistoryTooltip = (
   <Tooltip id="tooltip">
@@ -20,6 +21,9 @@ const setupHistoryTooltip = (
 const UserSearchPanel = ({hasPermission,handleNewUserSetupPopup, handleSetupHistoryPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
   // console.log('UserSearchPanel props', props);
   const canCreateUsers = hasPermission('postUserProfile');
+  const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
+  const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
+  
   return (
     <div className="input-group mt-3" id="new_usermanagement">
       <button type="button" disabled={!canCreateUsers} className="btn btn-info mr-2" onClick={handleNewUserSetupPopup} style={darkMode ? boxStyleDark : boxStyle}>
@@ -35,18 +39,33 @@ const UserSearchPanel = ({hasPermission,handleNewUserSetupPopup, handleSetupHist
       </OverlayTrigger>
 
 
-
-      <button
-        type="button"
-        disabled={!canCreateUsers}
-        className="btn btn-info mr-2"
-        onClick={e => {
-          onNewUserClick();
-        }}
-        style={darkMode ? boxStyleDark : boxStyle}
-      >
-        {CREATE_NEW_USER}
-      </button>
+      <>
+        {
+          !canCreateUsers ? 
+          <ReactstrapTooltip
+            placement="bottom"
+            isOpen={tooltipCreateNewUserOpen}
+            target={"btn-create-new-user"}
+            toggle={toggleCreateNewUserTooltip}
+          >
+            You don't have permission to create a new user
+          </ReactstrapTooltip>
+          : ""
+        }
+        
+        <button
+          type="button"
+          disabled={!canCreateUsers}
+          className="btn btn-info mr-2"
+          onClick={e => {
+            onNewUserClick();
+          }}
+          style={darkMode ? boxStyleDark : boxStyle}
+          id={"btn-create-new-user"}
+        >
+          {CREATE_NEW_USER}
+        </button>
+      </>
       <div className="input-group-prepend">
         <span className="input-group-text">{SEARCH}</span>
       </div>

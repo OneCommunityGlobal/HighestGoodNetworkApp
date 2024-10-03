@@ -202,6 +202,7 @@
   background-color: #ffc107;
   color: #fff;
   width: fit-content;
+  margin-left: 5px;
 }
 
 .task-info {
@@ -241,4 +242,12 @@
   height: 30px;
   cursor: pointer;
   margin-left: auto;
+}
+
+.people-report-task-name {
+  word-wrap: break-word;
+}
+
+.task-name-word-break {
+  word-break: break-all;
 }
