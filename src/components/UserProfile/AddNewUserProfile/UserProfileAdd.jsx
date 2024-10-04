@@ -52,6 +52,9 @@ class UserProfileAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      items: [],
+      isLoaded: true,
+      httpStatusCode: null,
       userProfiles: this.props.userProfiles,
       popupOpen: false,
       weeklyCommittedHours: 10,
@@ -83,6 +86,7 @@ class UserProfileAdd extends Component {
         actualPassword: '',
         startDate: new Date(),
         actualConfirmedPassword: '',
+        teamCode: '',
       },
       formValid: {},
       formErrors: {
@@ -120,6 +124,18 @@ class UserProfileAdd extends Component {
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
+    try {
+      const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+      axios.get(url).then(response => {
+        const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
+        const stringNoRepeat = stringWithValue
+          .map(item => item)
+          .filter((item, index, array) => array.indexOf(item) === index);
+        this.setState({ items: stringNoRepeat, isLoaded: false, httpStatusCode: response.status });
+      });
+    } catch (error) {
+      this.setState({ items: [], isLoaded: false, httpStatusCode: response.status });
+    }
   }
 
   render() {
@@ -166,11 +182,13 @@ class UserProfileAdd extends Component {
                         name="firstName"
                         id="firstName"
                         value={firstName}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="First Name"
                         invalid={!!this.state.formErrors.firstName}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.firstName}</FormFeedback>
+                      <FormFeedback className={fontWeight}>
+                        {this.state.formErrors.firstName}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -180,11 +198,13 @@ class UserProfileAdd extends Component {
                         name="lastName"
                         id="lastName"
                         value={lastName}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Last Name"
                         invalid={!!this.state.formErrors.lastName}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.lastName}</FormFeedback>
+                      <FormFeedback className={fontWeight}>
+                        {this.state.formErrors.lastName}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -199,11 +219,13 @@ class UserProfileAdd extends Component {
                         name="jobTitle"
                         id="jobTitle"
                         value={jobTitle}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Job Title"
                         invalid={!!this.state.formErrors.jobTitle}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.jobTitle}</FormFeedback>
+                      <FormFeedback className={fontWeight}>
+                        {this.state.formErrors.jobTitle}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -218,11 +240,13 @@ class UserProfileAdd extends Component {
                         name="email"
                         id="email"
                         value={email}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Email"
                         invalid={!!this.state.formErrors.email}
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.email}</FormFeedback>
+                      <FormFeedback className={fontWeight}>
+                        {this.state.formErrors.email}
+                      </FormFeedback>
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -270,13 +294,13 @@ class UserProfileAdd extends Component {
                         max={168}
                         id="weeklyCommittedHours"
                         value={this.state.userProfile.weeklyCommittedHours}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         onKeyDown={event => {
                           if (event.key === 'Backspace' || event.key === 'Delete') {
                             this.setState({
                               userProfile: {
                                 ...this.state.userProfile,
-                                [event.target.id]: "",
+                                [event.target.id]: '',
                               },
                               formValid: {
                                 ...this.state.formValid,
@@ -296,7 +320,9 @@ class UserProfileAdd extends Component {
                             : !this.state.formValid.weeklyCommittedHours
                         }
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback className={fontWeight}>
+                        {this.state.formErrors.weeklyCommittedHours}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -311,7 +337,7 @@ class UserProfileAdd extends Component {
                         name="role"
                         id="role"
                         defaultValue="Volunteer"
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                       >
                         {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
@@ -339,11 +365,13 @@ class UserProfileAdd extends Component {
                             name="actualEmail"
                             id="actualEmail"
                             value={actualEmail}
-                            onChange={(e) => this.handleUserProfile(e)}
+                            onChange={e => this.handleUserProfile(e)}
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
                           />
-                          <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
+                          <FormFeedback className={fontWeight}>
+                            {this.state.formErrors.actualEmail}
+                          </FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
@@ -358,9 +386,13 @@ class UserProfileAdd extends Component {
                             name="actualPassword"
                             id="actualPassword"
                             value={actualPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
+                            onChange={e => this.handleUserProfile(e)}
                             placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
+                            invalid={
+                              !!this.state.formErrors.actualPassword
+                                ? this.state.formErrors.actualPassword
+                                : ''
+                            }
                             className="d-flex justify-start items-start"
                           />
                         </FormGroup>
@@ -377,9 +409,13 @@ class UserProfileAdd extends Component {
                             name="actualConfirmedPassword"
                             id="actualConfirmedPassword"
                             value={actualConfirmedPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
+                            onChange={e => this.handleUserProfile(e)}
                             placeholder="Confirm Actual Password"
-                            invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
+                            invalid={
+                              actualPassword !== actualConfirmedPassword
+                                ? 'Passwords do not match'
+                                : ''
+                            }
                             className="d-flex justify-start items-start"
                           />
                         </FormGroup>
@@ -389,7 +425,9 @@ class UserProfileAdd extends Component {
                 )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
+                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>
+                      Weekly Summary Options
+                    </Label>
                   </Col>
                   <Col md="6">
                     <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
@@ -406,7 +444,7 @@ class UserProfileAdd extends Component {
                         name="collaborationPreference"
                         id="collaborationPreference"
                         value={this.state.userProfile.collaborationPreference}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
                       />
                     </FormGroup>
@@ -423,7 +461,7 @@ class UserProfileAdd extends Component {
                         name="googleDoc"
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Google Doc"
                       />
                     </FormGroup>
@@ -440,7 +478,7 @@ class UserProfileAdd extends Component {
                         name="dropboxDoc"
                         id="dropboxDoc"
                         value={this.state.userProfile.dropboxDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
                       />
                     </FormGroup>
@@ -479,7 +517,7 @@ class UserProfileAdd extends Component {
                     <FormGroup>
                       <TimeZoneDropDown
                         filter={this.state.timeZoneFilter}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         selected={'America/Los_Angeles'}
                         id="timeZone"
                       />
@@ -544,6 +582,13 @@ class UserProfileAdd extends Component {
                     edit
                     userProfile={this.state.userProfile}
                     darkMode={darkMode}
+                    inputAutoComplete={this.state.items}
+                    inputAutoStatus={this.state.httpStatusCode}
+                    isLoading={this.state.isLoaded}
+                    setUserProfile={newUserProfile =>
+                      this.setState({ userProfile: newUserProfile })
+                    }
+                    validation={true}
                   />
                 </TabPane>
               </TabContent>
@@ -621,7 +666,7 @@ class UserProfileAdd extends Component {
     this.setState({ projects: initialUserProject });
   };
 
-  // Function to call TimeZoneService with location 
+  // Function to call TimeZoneService with location
   onClickGetTimeZone = () => {
     const location = this.state.userProfile.location.userProvided;
 
@@ -630,22 +675,25 @@ class UserProfileAdd extends Component {
       return;
     }
 
-    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if(res.status === 200) {
-        const { timezone, currentLocation } = res.data;
-        this.setState({
-          ...this.state,
-          timeZoneFilter: timezone,
-          userProfile: {
-            ...this.state.userProfile,
-            location: currentLocation,
-            timeZone: timezone,
-          },
-        });
-      }
-    }).catch(err => {
-      toast.error(`An error occurred : ${err.response.data}`);
-    });
+    axios
+      .get(ENDPOINTS.TIMEZONE_LOCATION(location))
+      .then(res => {
+        if (res.status === 200) {
+          const { timezone, currentLocation } = res.data;
+          this.setState({
+            ...this.state,
+            timeZoneFilter: timezone,
+            userProfile: {
+              ...this.state.userProfile,
+              location: currentLocation,
+              timeZone: timezone,
+            },
+          });
+        }
+      })
+      .catch(err => {
+        toast.error(`An error occurred : ${err.response.data}`);
+      });
   };
 
   fieldsAreValid = () => {
@@ -698,7 +746,7 @@ class UserProfileAdd extends Component {
       actualEmail,
       actualPassword,
       startDate,
-      actualConfirmedPassword
+      actualConfirmedPassword,
     } = that.state.userProfile;
 
     const userData = {
@@ -1048,10 +1096,10 @@ class UserProfileAdd extends Component {
       case 'weeklyCommittedHours':
         let val = Number(event.target.value);
         if (val > 168) {
-          val = 168
+          val = 168;
         } else if (val < 0) {
-          val = 0
-        } 
+          val = 0;
+        }
         this.setState({
           userProfile: {
             ...userProfile,
@@ -1173,7 +1221,8 @@ class UserProfileAdd extends Component {
           },
           formErrors: {
             ...formErrors,
-            actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
+            actualConfirmedPassword:
+              event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
           },
         });
         break;
@@ -1193,7 +1242,6 @@ const mapStateToProps = state => ({
   role: state.role,
   state,
 });
-
 
 export default connect(mapStateToProps, {
   getUserProfile,
