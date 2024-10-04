@@ -2,6 +2,9 @@ import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
+import {jsPDF} from 'jspdf';
+import html2canvas from 'html2canvas';
+
 import 'moment-timezone';
 
 import hasPermission from 'utils/permissions';
@@ -65,6 +68,8 @@ const fromDate = calculateFromDate();
 const toDate = calculateToDate();
 const fromOverDate = calculateFromOverDate();
 const toOverDate = calculateToOverDate();
+
+
 
 const aggregateTimeEntries = userTimeEntries => {
   const aggregatedEntries = {};
@@ -205,6 +210,50 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
+  const handleGeneratePDF = async () => {
+    const element = document.getElementById('pdfContent'); // Get the content to capture
+    if (!element) {
+      console.error('Element not found');
+      return;
+    }
+  
+    try {
+      // Capture the content of the page
+      const canvas = await html2canvas(element, {
+        scale: 2, // Increase scale for better resolution
+        scrollX: 0,
+        scrollY: 0,
+        useCORS: true // Handle cross-origin issues
+      });
+  
+      const imageData = canvas.toDataURL('image/png');
+      const pdf = new jsPDF('p', 'mm', 'a4');
+  
+      // Page dimensions
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      const canvasWidth = canvas.width;
+      const canvasHeight = canvas.height;
+  
+      // Calculate the number of pages needed based on content height
+      const contentHeight = canvasHeight * (pageWidth / canvasWidth);
+      const totalPages = Math.ceil(contentHeight / pageHeight);
+  
+      // Add the first image (first page) at the top
+      pdf.addImage(imageData, 'PNG', 0, 0, pageWidth, contentHeight);
+  
+      // Loop through the number of total pages (for multi-page content)
+      for (let i = 1; i < totalPages; i++) {
+        pdf.addPage();
+        pdf.addImage(imageData, 'PNG', 0, -i * pageHeight, pageWidth, contentHeight);
+      }
+  
+      // Save the generated PDF
+      pdf.save('TotalOrgSummary.pdf');
+    } catch (error) {
+      console.error('Error generating PDF', error);
+    }
+  };
   return (
     <Container
       fluid
@@ -212,12 +261,19 @@ function TotalOrgSummary(props) {
         darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
       }`}
     >
-      <Row>
-        <Col lg={{ size: 12 }}>
-          <h3 className="mt-3 mb-5">Total Org Summary</h3>
-        </Col>
-      </Row>
-      <hr />
+      <Row className="d-flex justify-content-between align-items-center">
+      <Col lg={9}>
+        <h3 className="mt-3 mb-0">Total Org Summary</h3>
+      </Col>
+      <Col lg={3} className="d-flex justify-content-end">
+        {/* Share PDF button */}
+        <button onClick={handleGeneratePDF} className="btn btn-primary">
+          Share PDF
+        </button>
+      </Col>
+    </Row>
+    <hr />
+    <div id="pdfContent">
       <AccordianWrapper title="Volunteer Status">
         <Row>
           <Col lg={{ size: 12 }}>
@@ -323,6 +379,7 @@ function TotalOrgSummary(props) {
           </Col>
         </Row>
       </AccordianWrapper>
+      </div>
     </Container>
   );
 }
