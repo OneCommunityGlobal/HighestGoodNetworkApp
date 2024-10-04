@@ -74,8 +74,7 @@ describe('BadgeManagement validateBadges action unit test', () => {
     const actions = store.getActions();
     expect(actions[0]).toEqual({
       type: GET_MESSAGE,
-      message:
-        'The Name Find function does not work without entering first and last name. Nice try though.',
+      message: 'The Name Find function does not work without entering a name. Nice try though.',
       color: 'danger',
     });
 
