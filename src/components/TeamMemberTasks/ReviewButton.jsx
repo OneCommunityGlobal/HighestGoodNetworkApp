@@ -17,7 +17,7 @@ const ReviewButton = ({
   userPermission, 
 }) => {
   const darkMode = useSelector(state => state.theme.darkMode)
-
+  const [linkError, setLinkError] = useState(null);
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
@@ -28,6 +28,9 @@ const ReviewButton = ({
 
   const toggleModal = () => {
     setModal(!modal);
+    if (!modal) {
+      setLinkError(null);
+    }
   };
 
   const modalCancelButtonHandler = () => {
@@ -40,11 +43,22 @@ const ReviewButton = ({
   }
 
   const handleLink = (e) => {
-    setLink(e.target.value);
+    const url = e.target.value;
+    setLink(url);
+    if (!url) { 
+      setLinkError("A valid URL is required for review"); 
+    } else if (!validURL(url)) { 
+      setLinkError("Please enter a valid URL starting with 'https://'.");
+    } else {
+      setLinkError(null);
+    }
   };
 
   const validURL = (url) => {
     try {
+      if(url === "")
+        return false;
+      
       const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
       return pattern.test(url);
     } catch (err) {
@@ -104,19 +118,19 @@ const ReviewButton = ({
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
               Ready for Review
             </DropdownToggle>
-            <DropdownMenu>
+            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
             {task.relatedWorkLinks && task.relatedWorkLinks.map((link, index) => (
-              <DropdownItem key={index} href={link} target="_blank">
+              <DropdownItem key={index} href={link} target="_blank" className={darkMode ? 'text-light dark-mode-btn' : ''}>
                 View Link
               </DropdownItem>
             ))}
-            <DropdownItem onClick={() => { setSelectedAction('Complete and Remove'); toggleVerify(); }}>
+            <DropdownItem onClick={() => { setSelectedAction('Complete and Remove'); toggleVerify(); }} className={darkMode ? 'text-light dark-mode-btn' : ''}>
               <FontAwesomeIcon
                 className="team-member-tasks-done"
                 icon={faCheck}
               /> as complete and remove task
             </DropdownItem>
-            <DropdownItem onClick={() => { setSelectedAction('More Work Needed'); toggleVerify()}}>
+            <DropdownItem onClick={() => { setSelectedAction('More Work Needed'); toggleVerify()}} className={darkMode ? 'text-light dark-mode-btn' : ''}>
               More work needed, reset this button
             </DropdownItem>
             </DropdownMenu>
@@ -146,6 +160,18 @@ const ReviewButton = ({
     httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
+  const submitReviewRequest = (event) => {
+    // If link is valid, update the review status to submitted and send review request to email
+    if(validURL(link)) {
+      updReviewStat("Submitted");
+      sendReviewReq(event);
+    }
+    else {
+      alert('Invalid URL. Please enter a valid URL of at least 20 characters');
+      setIsSubmitting(false);
+    }
+  }
+
   return (
     <>
     {/* Verification Modal */}
@@ -160,9 +186,9 @@ const ReviewButton = ({
               toggleVerify();
               if (selectedAction === 'More Work Needed') {
                 updReviewStat("Unsubmitted");
+                setIsSubmitting(false);
               } else if (reviewStatus === "Unsubmitted") {
-                updReviewStat("Submitted");
-                sendReviewReq(e);
+                submitReviewRequest(e);
               } else {
                 updReviewStat("Reviewed");
               }
@@ -198,17 +224,26 @@ const ReviewButton = ({
           Please add link to related work:
           <Input 
           type='text' 
+          required
           value={link}
           onChange={handleLink}
           />
+          {linkError && <div className="text-danger">{linkError}</div>}
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             onClick={(e) => {
-              reviewStatus === "Unsubmitted"
-              ? (updReviewStat("Submitted"),
-                sendReviewReq(e))
-              : updReviewStat("Reviewed");
+              e.preventDefault();
+              if (!link || !validURL(link)) {
+                setLinkError("Please enter a valid URL starting with 'https://'.");
+                return;
+              }
+              if(reviewStatus === "Unsubmitted") {
+                submitReviewRequest(e);
+              }
+              else {
+                updReviewStat("Reviewed");
+              }
             }}
             color="primary"
             className="float-left"

@@ -15,7 +15,7 @@ const initialState = {
   auth: {
     user: {
       permissions: {
-        frontPermissions: ['infringementAuthorizer', 'putUserProfileImportantInfo'],
+        frontPermissions: ['addInfringements', 'editInfringements', 'deleteInfringements',  'infringementAuthorizer', 'putUserProfileImportantInfo'],
         backPermissions: [],
       },
       role: 'Volunteer',
@@ -81,7 +81,7 @@ describe('BlueSquare component', () => {
     expect(screen.queryByText('some reason')).toBeInTheDocument();
     expect(screen.queryByText('test reason')).toBeInTheDocument();
   });
-  it('check if + sign is visible when infringementAuthorizer permission is not added', () => {
+  it('check if + sign is visible when addInfringements permission is not added', () => {
     const mockInitialState = JSON.parse(JSON.stringify(initialState));
     mockInitialState.auth.user.permissions.frontPermissions = [];
     const testStore = mockStore(mockInitialState);
@@ -96,7 +96,7 @@ describe('BlueSquare component', () => {
     );
     expect(screen.queryByText('+')).not.toBeInTheDocument();
   });
-  it('check if + sign is visible when infringementAuthorizer permission is added', () => {
+  it('check if + sign is visible when addInfringements permission is added', () => {
     render(
       <Provider store={store}>
         <BlueSquare
