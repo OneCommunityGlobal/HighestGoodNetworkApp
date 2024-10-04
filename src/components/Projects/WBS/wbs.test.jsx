@@ -5,6 +5,7 @@ import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import mockAdminState from '__tests__/mockAdminState';
 import WBSItem from './WBSItem';
+import { themeMock } from '__tests__/mockStates';
 
 jest.mock('react-router-dom', () => ({
   Link: ({ 
@@ -31,6 +32,7 @@ beforeEach(() => {
       },
     },
     role: mockAdminState.role,
+    theme: themeMock,
   });
 });
 

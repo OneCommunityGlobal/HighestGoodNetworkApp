@@ -4,7 +4,7 @@
  * Display member of the members list
  ********************************************************************************/
 import React, { useState } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import ModalDelete from './../../../common/Modal';
 import { deleteWbs } from './../../../../actions/wbs';
 import { getPopupById } from './../../../../actions/popupEditorAction';
@@ -16,6 +16,7 @@ import { NavItem } from 'reactstrap';
 
 
 const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, deleteWbs, hasPermission, popupEditor }) => {
+
   const [showModalDelete, setShowModalDelete] = useState(false);
 
   const canDeleteWBS = hasPermission('deleteWbs');

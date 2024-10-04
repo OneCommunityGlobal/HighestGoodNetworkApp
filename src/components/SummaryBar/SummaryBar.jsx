@@ -411,6 +411,7 @@ const SummaryBar = props => {
               ? (darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'bg--bar text--black box-shadow-light')
               : (darkMode ? 'bg-space-cadet disabled-bar text-light box-shadow-dark' : 'bg--bar disabled-bar text--black box-shadow-light'))
           }
+          style={{width: '97%'}}
         >
           <Row className="no-gutters row-eq-height">
             <Col
