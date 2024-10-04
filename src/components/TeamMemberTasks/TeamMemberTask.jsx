@@ -26,7 +26,7 @@ import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 import GoogleDocIcon from '../common/GoogleDocIcon';
 import FollowupCheckButton from './FollowupCheckButton';
 import FollowUpInfoModal from './FollowUpInfoModal';
-import * as messages from '../../constants/followUpConstants'
+import * as messages from '../../constants/followUpConstants';
 
 const NUM_TASKS_SHOW_TRUNCATE = 6;
 
@@ -78,7 +78,8 @@ const TeamMemberTask = React.memo(
     // these need to be changed to actual permissions...
     const rolesAllowedToResolveTasks = ['Administrator', 'Owner'];
     const rolesAllowedToSeeDeadlineCount = ['Manager', 'Mentor', 'Administrator', 'Owner'];
-    const isAllowedToResolveTasks = rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
+    const isAllowedToResolveTasks =
+      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
     // ^^^
 
@@ -111,13 +112,13 @@ const TeamMemberTask = React.memo(
     const followUpMouseoverText = task => {
       const progressPersantage = ((task.hoursLogged / task.estimatedHours) * 100).toFixed(2) || 0;
       if (progressPersantage < 50) {
-        return messages.MOUSE_OVER_TEXT_UNDER_50
+        return messages.MOUSE_OVER_TEXT_UNDER_50;
       } else if (progressPersantage >= 50 && progressPersantage < 75) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75
+        return messages.MOUSE_OVER_TEXT_BETWEEN_50_75;
       } else if (progressPersantage >= 75 && progressPersantage < 90) {
-        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90
+        return messages.MOUSE_OVER_TEXT_BETWEEN_75_90;
       } else if (progressPersantage >= 90) {
-        return messages.MOUSE_OVER_TEXT_OVER_90
+        return messages.MOUSE_OVER_TEXT_OVER_90;
       }
     };
 
@@ -125,7 +126,7 @@ const TeamMemberTask = React.memo(
       <>
         <tr ref={ref} className={`table-row ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
-          <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
+          <td colSpan={1}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div className="committed-hours-circle">
                 <FontAwesomeIcon
@@ -141,7 +142,11 @@ const TeamMemberTask = React.memo(
                 <i
                   className="fa fa-clock-o"
                   aria-hidden="true"
-                  style={{ fontSize: 24, cursor: 'pointer', color: darkMode ? 'lightgray' : 'black' }}
+                  style={{
+                    fontSize: 24,
+                    cursor: 'pointer',
+                    color: darkMode ? 'lightgray' : 'black',
+                  }}
                   title="Click to see user's timelog"
                 />
               </Link>
@@ -162,7 +167,7 @@ const TeamMemberTask = React.memo(
                           ) &&
                           currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                             ? 'rgba(128, 128, 128, 0.5)'
-                            : darkMode ? "#007BFF" : undefined,
+                            : darkMode ? "#339CFF" : undefined,
                         fontSize: '20px'
                       }}
                     >{`${user.name}`}</Link>
@@ -178,7 +183,7 @@ const TeamMemberTask = React.memo(
                     />
                   </td>
                   <td data-label="Time" className={`team-clocks ${darkMode ? "text-light" : ""}`}>
-                    <u className={darkMode ? "text-azure" : ""}>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
+                    <u className={darkMode ? "dashboard-team-clocks" : ""}>{user.weeklycommittedHours ? user.weeklycommittedHours : 0}</u> /
                     <font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
                     <font color="red"> {totalHoursRemaining.toFixed(1)}</font>
                   </td>
@@ -199,7 +204,7 @@ const TeamMemberTask = React.memo(
                               className='team-member-tasks-content-link'
                               to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                               data-testid={`${task.taskName}`}
-                              style={{color: darkMode ? "#007BFF" : undefined}} 
+                              style={{ color: darkMode ? '#339CFF' : undefined }}
                             >
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
@@ -292,7 +297,11 @@ const TeamMemberTask = React.memo(
                               </span>
                               {canSeeFollowUpCheckButton && (
                                 <>
-                                  <FollowupCheckButton moseoverText={followUpMouseoverText(task)} user={user} task={task}/>
+                                  <FollowupCheckButton
+                                    moseoverText={followUpMouseoverText(task)}
+                                    user={user}
+                                    task={task}
+                                  />
                                   <FollowUpInfoModal />
                                 </>
                               )}
@@ -310,7 +319,8 @@ const TeamMemberTask = React.memo(
                         )}
                       </tr>
                     );
-                  })}
+                  })
+                }
                 {canTruncate && (
                   <tr key="truncate-button-row" className="task-break">
                     <td className={`task-align`}>
@@ -337,32 +347,32 @@ const TeamMemberTask = React.memo(
               ) : (
                 <div className="taking-time-off-content-div">
                   <button
-                    className="compress-time-off-detail-button"
-                    onClick={() => {
-                      setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
-                    }}
-                  >
-                    <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                      className="compress-time-off-detail-button"
+                      onClick={() => {
+                        setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
+                      }}
+                    >
+                      <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
                   </button>
-
-                  <span className="taking-time-off-content-text">
-                    {onTimeOff
-                      ? `${user.name} Is Not Available this Week`
-                      : `${user.name} Is Not Available Next Week`}
-                  </span>
-                  <button
-                    type="button"
-                    className="taking-time-off-content-btn"
-                    onClick={() => {
-                      const request = onTimeOff
-                        ? { ...onTimeOff, onVacation: true, name: user.name }
-                        : { ...goingOnTimeOff, onVacation: false, name: user.name };
-
-                      openDetailModal(request);
-                    }}
-                  >
-                    Details ?
-                  </button>
+                  <div className="taking-time-off-content-alignment">
+                    <span className="taking-time-off-content-text">
+                      {onTimeOff
+                        ? `${user.name} Is Not Available this Week`
+                        : `${user.name} Is Not Available Next Week`}
+                    </span>
+                    <button
+                      type="button"
+                      className="taking-time-off-content-btn"
+                      onClick={() => {
+                        const request = onTimeOff
+                          ? { ...onTimeOff, onVacation: true, name: user.name }
+                          : { ...goingOnTimeOff, onVacation: false, name: user.name };
+                        openDetailModal(request);
+                      }}
+                    >
+                      Details ?
+                    </button>
+                  </div>
                 </div>
               ))}
           </td>

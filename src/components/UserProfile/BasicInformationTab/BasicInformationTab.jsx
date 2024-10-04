@@ -55,12 +55,12 @@ const Name = props => {
               // className={styleProfile.profileText}
               onChange={e => {
                 setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
-                setFormValid({ ...formValid, lastName: !!e.target.value });
+                setFormValid({ ...formValid, lastName: !!e.target.value && e.target.value.trim().length >=2 });
               }}
               placeholder="Last Name"
               invalid={!formValid.lastName}
             />
-            <FormFeedback>Last Name Can&apos;t be empty</FormFeedback>
+            <FormFeedback>Last Name Can&apos;t have less than 2 characters</FormFeedback>
           </FormGroup>
         </Col>
       </>
@@ -365,7 +365,7 @@ const BasicInformationTab = props => {
   const nameComponent = (
     <>
       <Col>
-        <Label className={darkMode ? 'text-light' : ''}>Name</Label>
+        <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>Name</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -394,7 +394,7 @@ const BasicInformationTab = props => {
   const titleComponent = (
     <>
       <Col>
-        <Label className={darkMode ? 'text-light' : ''}>Title</Label>
+        <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>Title</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -422,7 +422,7 @@ const BasicInformationTab = props => {
   const emailComponent = (
     <>
       <Col>
-        <Label className={darkMode ? 'text-light' : ''}>Email</Label>
+        <Label className={darkMode ? 'text-light label-with-icon' : ' label-with-icon'}>Email</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -451,7 +451,7 @@ const BasicInformationTab = props => {
   const phoneComponent = (
     <>
       <Col>
-        <Label className={darkMode ? 'text-light' : ''}>Phone</Label>
+        <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>Phone</Label>
         <i
           data-toggle="tooltip"
           data-placement="right"
@@ -677,7 +677,7 @@ const BasicInformationTab = props => {
             <Label className={darkMode ? 'text-light' : ''}>Status</Label>
           </Col>
           <Col>
-            <Label className={darkMode ? 'text-light' : ''}>
+            <Label className={darkMode ? 'text-light label-with-icon' : 'label-with-icon'}>
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate

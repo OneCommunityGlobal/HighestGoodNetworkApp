@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
+import { toast } from 'react-toastify';
 
 function Announcements() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -120,12 +121,33 @@ function Announcements() {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
       }
+      setHeaderContent(''); // Clear the input field after inserting the header
   };
+
+  const validateEmail = (email) => {
+    /* Add a regex pattern for email validation */
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return emailPattern.test(email);
+  };
+
   const handleSendEmails = () => {
     const htmlContent = emailContent;
-    // Send the HTML content using your sendEmail function
+    
+    if (emailList.length === 0 || emailList.every(email => !email.trim())) {
+      toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
+      return;
+    }
+  
+    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
+    
+    if (invalidEmails.length > 0) {
+      toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
+      return;
+    }
+  
     dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
   };
+  
 
   const handleBroadcastEmails = () => {
     const htmlContent = `
@@ -165,7 +187,7 @@ function Announcements() {
             <hr />
             <p>Insert header or image link</p>
             <div style={{ overflow: 'hidden' }}>
-              <input type="text" onChange={handleHeaderContentChange} className='input-text-for-announcement'/>
+              <input type="text" onChange={handleHeaderContentChange} value={headerContent} className='input-text-for-announcement'/>
             </div>
             <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
               Insert
