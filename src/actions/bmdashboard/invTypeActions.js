@@ -71,7 +71,7 @@ export const fetchInvTypeByType = (type) => {
   return async dispatch => {
     axios.get(url)
       .then(res => {
-        dispatch(setInvTypesByType({ type: type, data: res.data }))
+        dispatch(setInvTypesByType({ type, data: res.data }))
       })
       .catch(err => {
         dispatch(setErrors(err))

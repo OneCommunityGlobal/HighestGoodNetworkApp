@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 
-import * as types from './../constants/mouseoverTextConstants';
+import * as types from "../constants/mouseoverTextConstants";
 
 export const getMouseoverTextAction = payload => {
   return {

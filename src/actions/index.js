@@ -1,5 +1,5 @@
-import httpService from '../services/httpService';
 import axios from 'axios';
+import httpService from '../services/httpService';
 import { ApiEndpoint } from '../utils/URL';
 import { ENDPOINTS } from '../utils/URL';
 

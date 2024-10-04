@@ -1,4 +1,6 @@
 import axios from 'axios';
+import moment from 'moment';
+import { formatDate } from 'utils/formatDate';
 import {
   GET_ALL_BADGE_DATA,
   ADD_SELECT_BADGE,
@@ -14,8 +16,6 @@ import {
   RESET_BADGE_COUNT,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
-import moment from 'moment';
-import { formatDate } from 'utils/formatDate';
 
 const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
@@ -255,10 +255,10 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 
 // Return updated badgeCollection
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
-  let newBadgeCollection = Array.from(badgeCollection);
+  const newBadgeCollection = Array.from(badgeCollection);
 
   // object to track updated or newly added badges to prevent duplicates
-  let updatedOrAddedBadges = {};
+  const updatedOrAddedBadges = {};
 
   selectedBadgesId.forEach(originalBadgeId => {
     let badgeId = originalBadgeId;
@@ -267,8 +267,8 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
 
     if (!updatedOrAddedBadges[badgeId]) {
       let included = false;
-      let currentTs = Date.now();
-      let currentDate = formatDate();
+      const currentTs = Date.now();
+      const currentDate = formatDate();
 
       newBadgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
@@ -326,7 +326,7 @@ export const sendUpdatedBadgeCollectionReq = async (
       dispatch(closeAlert());
     }, 6000);
   }
-  return;
+  
 };
 
 export const changeBadgesByUserID = (userId, badgeCollection) => {

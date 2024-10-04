@@ -12,7 +12,7 @@ import { ENDPOINTS } from '../utils/URL';
 export const fetchAllProjects = () => {
   return async dispatch => {
     const url = ENDPOINTS.PROJECTS;
-    let status, error;
+    let status; let error;
     dispatch(setProjectsStart());
     try {
       const res = await axios.get(url);
@@ -35,11 +35,11 @@ export const fetchAllProjects = () => {
 export const postNewProject = (projectName, projectCategory) => {
   return async dispatch => {
     const url = ENDPOINTS.PROJECTS;
-    let status, error;
+    let status; let error;
     dispatch(setProjectsStart());
     try {
       const res = await axios.post(url, { projectName, projectCategory });
-      const _id = res.data._id;
+      const {_id} = res.data;
       status = res.status;
       const newProject = {
         _id,
@@ -59,7 +59,7 @@ export const postNewProject = (projectName, projectCategory) => {
 export const modifyProject = (updatedProject) => {
   return async dispatch => {
     const url = ENDPOINTS.PROJECT + updatedProject._id;
-    let status, error;
+    let status; let error;
     try {
       const res = await axios.put(url, updatedProject);
       status = res.status;
@@ -79,7 +79,7 @@ export const modifyProject = (updatedProject) => {
 export const deleteProject = projectId => {
   return async dispatch => {
     const url = ENDPOINTS.PROJECT + projectId;
-    let status, error;
+    let status; let error;
     try {
       const res = await axios.delete(url);
       status = res.status;

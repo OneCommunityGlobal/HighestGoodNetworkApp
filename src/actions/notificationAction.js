@@ -1,7 +1,7 @@
+import axios from 'axios';
 import httpService from '../services/httpService';
 import { ApiEndpoint } from '../utils/URL';
 import * as actionTypes from '../constants/notification';
-import axios from 'axios';
 
 const APIEndpoint = ApiEndpoint;
 
@@ -27,7 +27,7 @@ const constructErrorPayload = error => {
 
   return {
     status: response.status,
-    message: message,
+    message,
   };
 };
 

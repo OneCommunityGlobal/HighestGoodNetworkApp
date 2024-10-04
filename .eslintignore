@@ -2,7 +2,6 @@
 *.svg
 *.test.js
 *.test.jsx
-src/actions/**
 src/App.css
 src/config.json
 

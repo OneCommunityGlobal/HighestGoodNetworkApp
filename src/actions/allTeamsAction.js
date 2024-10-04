@@ -149,11 +149,11 @@ export const postNewTeam = (name, status, source) => {
       .catch(error => {
         if (error.response) {
           return error.response; // return the server response
-        } else if (error.request) {
+        } if (error.request) {
           return { status: 500, message: 'No response received from the server' };
-        } else {
+        } 
           return { status: 500, message: error.message };
-        }
+        
       });
   };
 };

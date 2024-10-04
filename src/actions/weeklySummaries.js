@@ -3,7 +3,7 @@ import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
 import {
   getUserProfileActionCreator,
-} from '../actions/userProfile';
+} from "./userProfile";
 
 /**
  * Action to set the 'loading' flag to true.
@@ -41,16 +41,15 @@ export const getWeeklySummaries = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
   return async dispatch => {
     dispatch(fetchWeeklySummariesBegin());
+    dispatch(fetchWeeklySummariesBegin());
     try {
       const response = await axios.get(url);
-      // Only pick the fields related to weekly summaries from the userProfile.
       const { weeklySummariesCount, weeklySummaries, mediaUrl, adminLinks } = response.data;
       let summaryDocLink;
-      for (const link in adminLinks) {
-        if (adminLinks[link].Name === 'Media Folder') {
-          summaryDocLink = adminLinks[link].Link;
-          break; 
-        }
+
+      const mediaFolderLink = adminLinks.find(link => link.Name === 'Media Folder');
+      if (mediaFolderLink) {
+        summaryDocLink = mediaFolderLink.Link;
       }
       dispatch(fetchWeeklySummariesSuccess({ weeklySummariesCount, weeklySummaries, mediaUrl:summaryDocLink || mediaUrl}));
       dispatch(getUserProfileActionCreator(response.data));
@@ -73,7 +72,7 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
   return async (dispatch) => {
     try {
       // Get the user's profile from the server.
-      let response = await axios.get(url);
+      const response = await axios.get(url);
       const userProfile = await response.data;
       const adminLinks = userProfile.adminLinks || [];
 
@@ -81,19 +80,13 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
       const {mediaUrl, weeklySummaries, weeklySummariesCount } = weeklySummariesData;
       
       // update the changes on weekly summaries link into admin links
-      let doesMediaFolderExist = false;
-      for (const link of adminLinks) {
-        if (link.Name === 'Media Folder') {
-          link.Link = mediaUrl;
-          doesMediaFolderExist = true;
-          break; 
-        }
+      const mediaFolderLink = adminLinks.find(link => link.Name === 'Media Folder');
+      if (mediaFolderLink) {
+        mediaFolderLink.Link = mediaUrl;
+      } else if (mediaUrl) {
+        adminLinks.push({ Name: 'Media Folder', Link: mediaUrl });
       }
-      if(!doesMediaFolderExist && mediaUrl){
-        adminLinks.push(
-          {Name:'Media Folder',Link:mediaUrl}
-        )
-      }
+
       const userProfileUpdated = {
         ...userProfile,
         adminLinks,
@@ -102,15 +95,14 @@ export const updateWeeklySummaries = (userId, weeklySummariesData) => {
         weeklySummariesCount,
       };
 
-
       // Update the user's profile on the server.
-      response = await axios.put(url, userProfileUpdated);
-      if (response.status === 200) {
-        await dispatch(getUserProfileActionCreator(userProfileUpdated));
+      const updateResponse = await axios.put(url, userProfileUpdated);
+      if (updateResponse.status === 200) {
+        dispatch(getUserProfileActionCreator(userProfileUpdated));
       }
-      return response.status;
+      return updateResponse.status;
     } catch (error) {
-      return error.response.status;
+      return error.response ? error.response.status : 500;
     }
   };
 };

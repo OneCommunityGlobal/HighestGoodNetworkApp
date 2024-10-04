@@ -1,10 +1,10 @@
-import { ENDPOINTS } from '../utils/URL';
 import axios from 'axios';
+import { ENDPOINTS } from '../utils/URL';
 import {
-  getAIPrompt as getAIPrompt,
-  updateAIPrompt as updateAIPrompt,
-  updateCopiedPrompt as updateCopiedPrompt,
-  getCopiedPromptDate as getCopiedPromptDate,
+  getAIPrompt,
+  updateAIPrompt,
+  updateCopiedPrompt,
+  getCopiedPromptDate,
 } from '../constants/weeklySummariesAIPrompt';
 
 export const getDashboardDataAI = () => {

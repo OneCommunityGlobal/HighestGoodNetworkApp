@@ -1,6 +1,6 @@
+import axios from 'axios';
 import * as actions from '../constants/weeklySummariesReport';
 import { ENDPOINTS } from '../utils/URL';
-import axios from 'axios';
 
 export const authorizeWeeklySummaries = (message) => ({
   type: actions.AUTHORIZE_WEEKLY_SUMMARY_REPORTS,
@@ -35,9 +35,9 @@ export const addSummaryRecipient = (userid) => {
       // dispatch(saveWeeklySummary(response.data.message));
       return response.status;
     } catch (error) {
-      console.log("response for Error:", error)
       dispatch(authorizeWeeklySummariesReportError(error));
       // return error.response.status;
+      return error.response ? error.response.status : 500;
     }
   };
 }
@@ -55,9 +55,9 @@ export const deleteSummaryRecipient = (userid) => {
       dispatch(deleteRecipient(userid));
       return response.status;
     } catch (error) {
-      console.log("response for Error:", error)
       dispatch(authorizeWeeklySummariesReportError(error));
       // return error.response.status;
+      return error.response ? error.response.status : 500;
     }
   };
 }
@@ -70,9 +70,9 @@ export const getSummaryRecipients = () => {
       dispatch(getRecepients(response.data));
       return response.data;
     } catch (error) {
-      console.log("response for Error:", error)
       dispatch(getRecepientsError(error));
       // return error.response.status;
+      return error.response ? error.response.status : 500;
     }
   };
 }

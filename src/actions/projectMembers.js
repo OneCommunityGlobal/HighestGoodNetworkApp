@@ -3,8 +3,8 @@
  * Author: Henry Ng - 02/03/20
  ******************************************************************************* */
 import axios from 'axios';
-import * as types from '../constants/projectMembership';
 import { searchWithAccent } from 'utils/search';
+import * as types from '../constants/projectMembership';
 import { ENDPOINTS } from '../utils/URL';
 /** *****************************************
  * ACTION CREATORS
@@ -72,7 +72,7 @@ export const getAllUserProfiles = () => {
 //   };
 // };
 
-//Done By Mohammad
+// Done By Mohammad
 
 export const findUserProfiles = keyword => {
   // Creates an array containing the first and last name and filters out whitespace

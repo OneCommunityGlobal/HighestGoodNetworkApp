@@ -14,10 +14,10 @@ import {
   deleteTaskNotificationBegin,
 } from 'components/TeamMemberTasks/actions';
 import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
 const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
 const selectUserId = state => state.auth.user.userid;
@@ -86,7 +86,7 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
     // dispatch(deleteTaskNotificationBegin());
     const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION_BY_USER_ID(taskId, userId));
 
-    //const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
+    // const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
     dispatch(deleteTaskNotificationSuccess({ userId, taskId, taskNotificationId }));
     // window.location.reload(false);
   } catch (error) {
@@ -96,7 +96,7 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
 
 export const deleteChildrenTasks = taskId => {
   return async (dispatch, getState) => {
-  let status = 200;
+  const status = 200;
   try {
     await axios.post(ENDPOINTS.DELETE_CHILDREN(taskId));
   } catch (error) {

@@ -1,7 +1,7 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../utils/URL';
 import * as types from '../constants/followUpConstants';
-import { toast } from 'react-toastify';
 
 const getAllFollowUps = allFollowUps => ({
   type: types.FETCH_ALL_FOLLOWUPS,

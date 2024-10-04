@@ -127,7 +127,7 @@ export const confirmNonHgnUserEmailSubscription = async (token = '') => {
     //   autoClose: 3000,
     // });
 
-    return { success: false, error: error };
+    return { success: false, error };
   }
 };
 
@@ -154,6 +154,6 @@ export const removeNonHgnUserEmailSubscription = async (email = '') => {
     //   autoClose: 3000,
     // });
 
-    return { success: false, error: error };
+    return { success: false, error };
   }
 };

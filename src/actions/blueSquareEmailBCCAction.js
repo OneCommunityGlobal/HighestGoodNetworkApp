@@ -1,7 +1,7 @@
-import * as types from '../constants/BluequareEmailBccConstants';
 import axios from 'axios';
-import { ENDPOINTS } from '../utils/URL';
 import { toast } from 'react-toastify';
+import * as types from '../constants/BluequareEmailBccConstants';
+import { ENDPOINTS } from '../utils/URL';
 
 const getAllBlueSquareEmailBccs = allAssignements => ({
   type: types.GET_BLUE_SQUARE_EMAIL_ASSIGNMENTS,
