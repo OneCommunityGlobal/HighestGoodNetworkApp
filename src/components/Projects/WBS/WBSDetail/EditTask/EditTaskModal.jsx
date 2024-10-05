@@ -57,6 +57,10 @@ function EditTaskModal(props) {
   const [dateWarning, setDateWarning] = useState(false);
   const [currentMode, setCurrentMode] = useState("");
 
+  const hoursGridStyle = { display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', alignItems: 'center',};
+  const inputStyle = { width: '80px', margin: '0 5px', padding: '2px',};
+  const labelStyle = { margin: '0', padding: '0 5px 0 0',};
+
   const res = [...(resourceItems || [])];
   const categoryOptions = [
     { value: 'Unspecified', label: 'Unspecified' },
@@ -455,96 +459,86 @@ function EditTaskModal(props) {
                   Hours
                 </td>
                 <td scope="col" className="w-100">
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
-                      Best-case
-                    </label>
-                    {ReadOnlySectionWrapper(
-                      <input
-                        type="number"
-                        min="0"
-                        max="500"
-                        value={hoursBest}
-                        onChange={e => setHoursBest(e.target.value)}
-                        onBlur={() => calHoursEstimate()}
-                        id="bestCase"
-                        className="m-auto"
-                      />,
-                      editable,
-                      hoursBest,
-                      {componentOnly:true}
-                    )}
-                  </div>
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'The number of hours must be less than other cases'
-                      : ''}
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
-                      Worst-case
-                    </label>
-                    {ReadOnlySectionWrapper(
-                      <input
-                        type="number"
-                        min={hoursBest}
-                        max="500"
-                        value={hoursWorst}
-                        onChange={e => setHoursWorst(e.target.value)}
-                        onBlur={() => calHoursEstimate('hoursWorst')}
-                        className="m-auto"
-                      />,
-                      editable,
-                      hoursWorst,
-                      {componentOnly:true}
-                    )}
-                  </div>
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'The number of hours must be higher than other cases'
-                      : ''}
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
-                      Most-case
-                    </label>
-                    {ReadOnlySectionWrapper(
-                      <input
-                        type="number"
-                        min="0"
-                        max="500"
-                        value={hoursMost}
-                        onChange={e => setHoursMost(e.target.value)}
-                        onBlur={() => calHoursEstimate('hoursMost')}
-                        className="m-auto"
-                      />,
-                      editable,
-                      hoursMost,
-                      {componentOnly:true}
-                    )}
-                  </div>
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'The number of hours must range between best and worst cases'
-                      : ''}
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
-                      Estimated
-                    </label>
-                    {ReadOnlySectionWrapper(
-                      <input
-                        type="number"
-                        min="0"
-                        max="500"
-                        value={hoursEstimate}
-                        onChange={e => setHoursEstimate(e.target.value)}
-                        className="m-auto"
-                      />,
-                      editable,
-                      hoursEstimate,
-                      {componentOnly:true}
-                    )}
+                  <div style={hoursGridStyle}>
+                    <div>
+                      <label htmlFor="bestCase" style={labelStyle} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
+                        Best-case
+                      </label>
+                      {ReadOnlySectionWrapper(
+                        <input
+                          type="number"
+                          min="0"
+                          max="500"
+                          value={hoursBest}
+                          onChange={e => setHoursBest(e.target.value)}
+                          onBlur={() => calHoursEstimate()}
+                          id="bestCase"
+                          style={inputStyle}
+                        />,
+                        editable,
+                        hoursBest,
+                        { componentOnly: true }
+                      )}
+                      {hoursWarning && <div className="warning">Must be less than others</div>}
+                    </div>
+                    <div>
+                      <label htmlFor="worstCase" style={labelStyle} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
+                        Worst-case
+                      </label>
+                      {ReadOnlySectionWrapper(
+                        <input
+                          type="number"
+                          min={hoursBest}
+                          max="500"
+                          value={hoursWorst}
+                          onChange={e => setHoursWorst(e.target.value)}
+                          onBlur={() => calHoursEstimate('hoursWorst')}
+                          style={inputStyle}
+                        />,
+                        editable,
+                        hoursWorst,
+                        { componentOnly: true }
+                      )}
+                      {hoursWarning && <div className="warning">Must be higher than others</div>}
+                    </div>
+                    <div>
+                      <label htmlFor="mostCase" style={labelStyle} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
+                        Most-case
+                      </label>
+                      {ReadOnlySectionWrapper(
+                        <input
+                          type="number"
+                          min="0"
+                          max="500"
+                          value={hoursMost}
+                          onChange={e => setHoursMost(e.target.value)}
+                          onBlur={() => calHoursEstimate('hoursMost')}
+                          style={inputStyle}
+                        />,
+                        editable,
+                        hoursMost,
+                        { componentOnly: true }
+                      )}
+                      {hoursWarning && <div className="warning">Must be between best and worst</div>}
+                    </div>
+                    <div>
+                      <label htmlFor="Estimated" style={labelStyle} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
+                        Estimated
+                      </label>
+                      {ReadOnlySectionWrapper(
+                        <input
+                          type="number"
+                          min="0"
+                          max="500"
+                          value={hoursEstimate}
+                          onChange={e => setHoursEstimate(e.target.value)}
+                          style={inputStyle}
+                        />,
+                        editable,
+                        hoursEstimate,
+                        { componentOnly: true }
+                      )}
+                    </div>
                   </div>
                 </td>
               </tr>
