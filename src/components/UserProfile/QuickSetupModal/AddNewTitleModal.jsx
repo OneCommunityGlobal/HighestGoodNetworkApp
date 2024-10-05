@@ -29,6 +29,8 @@ function AddNewTitleModal({
   title,
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const teamCodes = useSelector(state => state.teamCodes.teamCodes || []);
+
   const [titleData, setTitleData] = useState(() => {
     if (editMode && Object.keys(title).length !== 0) {
       return {
@@ -48,6 +50,9 @@ function AddNewTitleModal({
       teamAssiged: {},
     };
   });
+
+  const [isValidTeamCode, setIsValidTeamCode] = useState(true);
+
   useEffect(() => {
     if (editMode && Object.keys(title).length !== 0) {
       setTitleData({
@@ -68,7 +73,12 @@ function AddNewTitleModal({
       });
   }, [title]);
 
-  let existTeamCodes = new Set();
+  useEffect(() => {
+    setIsValidTeamCode(
+      titleData.teamCode === '' || teamCodes.some(code => code.value === titleData.teamCode),
+    );
+  }, [titleData.teamCode, teamCodes]);
+
   let existTeamName = new Set();
 
   if (teamsData?.allTeams) {
@@ -77,14 +87,6 @@ function AddNewTitleModal({
     // It is all distinct team codes from the UserProfile teamCode field.
     // existTeamCodes = new Set(teamsData?.allTeamCode?.distinctTeamCodes);
     existTeamName = new Set(names);
-  }
-
-  if (teamsData?.allTeamCode) {
-    existTeamCodes = new Set(
-      teamsData.allTeamCode.distinctTeamCodes.filter(code =>
-        teamsData.activeTeamCodes.includes(code),
-      ),
-    );
   }
 
   const [selectedTeam, onSelectTeam] = useState(undefined);
@@ -267,13 +269,14 @@ function AddNewTitleModal({
             /> */}
 
             <AssignTeamCodeField
-              teamCodeData={existTeamCodes}
+              teamCodeData={teamCodes}
               onDropDownSelect={selectTeamCode}
               selectedTeamCode={selectedTeamCode}
               cleanTeamCodeAssign={cleanTeamCodeAssign}
               onSelectTeamCode={onSelectTeamCode}
               editMode={editMode}
               value={titleData.teamCode}
+              isError={!isValidTeamCode}
             />
 
             <Label className={fontColor}>
