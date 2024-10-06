@@ -25,6 +25,7 @@ const UserTableData = React.memo(props => {
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const canDeleteUsers = props.hasPermission('deleteUserProfile');
   const resetPasswordStatus = props.hasPermission('resetPassword');
+  const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
@@ -258,7 +259,7 @@ const UserTableData = React.memo(props => {
             </>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton canResetPassword={resetPasswordStatus}/>
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton canResetPassword={resetPasswordStatus || updatePasswordStatus}/>
           </span>
         </td>
       )}
