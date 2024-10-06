@@ -5,6 +5,10 @@
   overflow: hidden; /* Hide any overflowing content */
 }
 
+.dark-mode-btn:hover{
+  background-color: #2f4157 !important;
+}
+
 
 @media screen and (max-width: 1307px) and (min-width: 1152px) {
   .reviewBtn {

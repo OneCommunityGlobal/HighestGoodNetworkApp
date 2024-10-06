@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -34,6 +34,7 @@ function AssignBadge(props) {
   const [fullName, setFullName] = useState('');
   const [filteredUsers, setFilteredUsers] = useState([]);
   const [selectedUserId, setSelectedUserId] = useState(null);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     props.getAllUserProfile();
@@ -42,15 +43,32 @@ function AssignBadge(props) {
   }, []);
 
   useEffect(() => {
-    if (fullName) {
-      setFilteredUsers(
-        props.allUserProfiles.filter(user => {
+    try {
+      if (typeof fullName !== 'string') {
+        throw new Error('Full name must be a string');
+      }
+
+      const trimmedName = fullName.trim();
+      if (trimmedName) {
+        const filtered = props.allUserProfiles.filter(user => {
           const userFullName = `${user.firstName} ${user.lastName}`.toLowerCase();
-          return userFullName.includes(fullName.toLowerCase());
-        }),
-      );
-    } else {
+          return userFullName.includes(trimmedName.toLowerCase());
+        });
+        setFilteredUsers(filtered);
+      } else {
+        setFilteredUsers([]);
+        // Clear selectedUserId when input is empty
+        setSelectedUserId(null);
+        props.clearNameAndSelected();
+      }
+      setError(null);
+    } catch (err) {
+      console.error('Error filtering users:', err);
+      setError(err.message);
       setFilteredUsers([]);
+      // Also clear selection on error
+      setSelectedUserId(null);
+      props.clearNameAndSelected();
     }
   }, [fullName, props.allUserProfiles]);
 
@@ -80,6 +98,7 @@ function AssignBadge(props) {
       }
       setOpen(prevIsOpen => !prevIsOpen);
       props.clearNameAndSelected();
+      setSelectedUserId(null);
     } else if (firstName && lastName) {
       setOpen(prevIsOpen => !prevIsOpen);
     } else {
@@ -137,6 +156,13 @@ function AssignBadge(props) {
           />
         </div>
       </div>
+
+      {error && (
+        <Alert color="danger" className="mt-3">
+          {error}
+        </Alert>
+      )}
+
       {filteredUsers.length > 0 && (
         <div className="table-responsive mb-3">
           <Table
@@ -183,7 +209,7 @@ function AssignBadge(props) {
           className="btn--dark-sea-green"
           onClick={toggle}
           style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
-          disabled={!fullName}
+          disabled={!selectedUserId}
         >
           Assign Badge
         </Button>

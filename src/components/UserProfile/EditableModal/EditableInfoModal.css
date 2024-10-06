@@ -1,3 +1,10 @@
 .custom-ul{
   padding-left: 2rem;
 }
+.justify-content-center {
+  display: flex;
+  justify-content: center;
+}
+.d-flex {
+  display: flex;
+}
