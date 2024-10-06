@@ -27,3 +27,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+.role-distribution-title p{
+  font-size: 1.5em !important;
+  font-weight: bold;
+  text-align: center;
+  margin: 10px;
+}
