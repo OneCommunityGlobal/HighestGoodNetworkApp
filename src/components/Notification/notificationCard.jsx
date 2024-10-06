@@ -1,7 +1,8 @@
 import React from 'react';
 import { Card, CardTitle, CardText, Button, CardBody, Container } from 'reactstrap';
-import parse from 'html-react-parser';
 import { useDispatch } from 'react-redux';
+import { useSelector } from 'react-redux';
+import parse from 'html-react-parser';
 import { markNotificationAsRead } from '../../actions/notificationAction';
 import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
 
@@ -54,6 +55,7 @@ function NotificationCard({ notification }) {
 
   // Fade animation state
   const [fade, setFade] = React.useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   // Replace the anchor tag with a styled anchor tag to acoomodate the card's background color.
   // We may use this to apply style to the text before parsing.
@@ -68,7 +70,7 @@ function NotificationCard({ notification }) {
   };
 
   return (
-    <Container fluid>
+    <Container fluid className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'}`}>
       <Card
         color="primary"
         className={fade ? 'fade' : ''}
