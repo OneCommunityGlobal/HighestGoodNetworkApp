@@ -1272,6 +1272,7 @@ function UserProfile(props) {
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
+                  canResetPassword={true}
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1401,6 +1402,7 @@ function UserProfile(props) {
                           className="mr-1 btn-bottom"
                           user={userProfile}
                           authEmail={authEmail}
+                          canResetPassword={true}
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
