@@ -1,20 +1,25 @@
 import React from 'react';
-// import Leaderboard from '../components/Leaderboard';
+import LeaderBoard from '../Leaderboard.jsx'; // Ensure correct import path
 import { renderWithProvider, renderWithRouterMatch } from '../../../__tests__/utils.js';
 import '@testing-library/jest-dom/extend-expect';
 import mockState from '../../../__tests__/mockAdminState.js';
-import { createMemoryHistory } from 'history';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { ENDPOINTS , ApiEndpoint } from '../../../utils/URL.js';
 import { render, fireEvent, waitFor, screen } from '@testing-library/react';
-import routes from '../../../routes.js';
+import { ENDPOINTS } from '../../../utils/URL.js';
+import routes from '../../../routes.js'; // Ensure you import routes
+
+// Dynamically build URLs based on mockState data
 const url = ENDPOINTS.LEADER_BOARD(mockState.auth.user.userid);
 const userProjectsUrl = ENDPOINTS.USER_PROJECTS(mockState.auth.user.userid);
+
 let requestedLeaderBoard = false;
 let refreshed = false;
 
+// Mock window.scrollTo to prevent test errors
+window.scrollTo = jest.fn();
 
+// Mock Server Setup
 const server = setupServer(
   rest.get(url, (req, res, ctx) => {
     requestedLeaderBoard = true;
@@ -39,7 +44,7 @@ const server = setupServer(
             tangiblebarcolor: 'orange',
             totaltime: 15,
           },
-        ]),
+        ])
       );
     } else {
       return res(
@@ -62,104 +67,87 @@ const server = setupServer(
             tangiblebarcolor: 'orange',
             totaltime: 15,
           },
-        ]),
+        ])
       );
     }
-  }),
-  rest.get(ApiEndpoint + '/userprofile/*', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
-  }),
-  rest.get('http://*/hash.txt', (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json({}));
   }),
   rest.get(userProjectsUrl, (req, res, ctx) => {
     return res(ctx.status(200), ctx.json([]));
   }),
   rest.get('*', (req, res, ctx) => {
-    console.error(
-      `Please add request handler for ${req.url.toString()} in your MSW server requests.`,
+    return res(
+      ctx.status(500),
+      ctx.json({ error: 'You must add request handler.' })
     );
-    return res(ctx.status(500), ctx.json({ error: 'You must add request handler.' }));
-  }),
+  })
 );
 
+// Server lifecycle hooks
 beforeAll(() => server.listen());
 afterAll(() => server.close());
 afterEach(() => server.resetHandlers());
 
-function sleep(ms) {
-  return new Promise(resolve => setTimeout(resolve, ms));
-}
-
 describe('Leaderboard structure', () => {
-  //TESTS ARE FAILING
-  // let mountedLeaderboard, rt, hist;
-  // beforeEach(()=> {
-  //     //used dashboard as it has the Leaderboard as a subcomponent
-  //     rt = '/dashboard'
-  //     hist = createMemoryHistory({ initialEntries: [rt] });
-  //     mountedLeaderboard = renderWithRouterMatch(routes , {initialState: mockState, route: rt, history: hist});
-  // });
+  
+  // Test to directly render the LeaderBoard component
+  it('should render LeaderBoard directly and check table headers', async () => {
+    renderWithProvider(<LeaderBoard />, {
+      initialState: mockState,
+    });
 
-  // ERRORS OUT says managingTeams underfined check the leaderboard and see what that is
-  // mockstate may need to be updated on line 97
-
-  // it('should be rendered with the correct table headers', async () => {
-
-  //   await waitFor(()=>{
-  //     expect(screen.getByText('Status')).toBeTruthy();
-  //     expect(screen.getByText('Name')).toBeTruthy();
-  //     expect(screen.getByText('Tangible Time')).toBeTruthy();
-  //     expect(screen.getByText('Progress')).toBeTruthy();
-  //     expect(screen.getByText('Total Time')).toBeTruthy();
-  //   });
-
-  //   await sleep(20);
-
-  // });
-
-  it('should have requested user data from server and have loaded that data into the leaderboard', async () => {
-    //TEST FAILING NEED TO FIX
-    // await waitFor(()=>{
-    //   expect(requestedLeaderBoard).toBe(true);
-    // });
-    // await sleep(20);
-    // //Check for name, intangible and total time created by our MSW Server to have been loaded onto the page
-    // await waitFor(()=>{
-    //   let nameLink = screen.getByText('Fake Admin');
-    //   expect(nameLink).toBeTruthy();
-    //   expect(nameLink.getAttribute('href')).toBe('/userprofile/abdefghijklmnop');
-    //   expect(screen.getAllByText('6')[1]).toBeTruthy();
-    //   expect(screen.getByText('105')).toBeTruthy();
-    // });
-    // await sleep(20);
+    await waitFor(() => {
+      expect(screen.getByText('Status')).toBeInTheDocument();
+      expect(screen.getByText('Name')).toBeInTheDocument();
+      expect(screen.getByText('Tangible Time')).toBeInTheDocument();
+      expect(screen.getByText('Progress')).toBeInTheDocument();
+      expect(screen.getByText('Total Time')).toBeInTheDocument();
+    });
   });
 
-  it('should have refreshed user data from server and have loaded that data into the leaderboard', async () => {
-    //TEST FAILING NEED TO FIX
-    // await waitFor(()=>{
-    //   expect(requestedLeaderBoard).toBe(true);
-    // });
-    // await sleep(20);
-    // //Check for name, intangible and total time created by our MSW Server to have been loaded onto the page
-    // await waitFor(()=>{
-    //   let nameLink = screen.getByText('Fake Admin');
-    //   expect(nameLink).toBeTruthy();
-    //   expect(nameLink.getAttribute('href')).toBe('/userprofile/abdefghijklmnop');
-    //   expect(screen.getAllByText('6')[1]).toBeTruthy();
-    //   expect(screen.getByText('105')).toBeTruthy();
-    // });
-    // let refresh = screen.getByTitle('Click to refresh the leaderboard');
-    // refreshed = true;
-    // fireEvent.click(refresh);
-    // //Check for name, intangible and total time created by our MSW Server to have been loaded onto the page
-    // await waitFor(()=>{
-    //   let nameLink = screen.getByText('Fake Admin');
-    //   expect(nameLink).toBeTruthy();
-    //   expect(nameLink.getAttribute('href')).toBe('/userprofile/abdefghijklmnop');
-    //   expect(screen.getAllByText('60')[1]).toBeTruthy();
-    //   expect(screen.getByText('125')).toBeTruthy();
-    // });
-    // await sleep(20);
+  it('should request user data from the server and load that data into the leaderboard', async () => {
+    renderWithRouterMatch(routes, {
+      initialState: mockState,
+      route: '/dashboard',
+    });
+
+    // Wait for leaderboard data to be requested
+    await waitFor(() => {
+      expect(requestedLeaderBoard).toBe(true);
+    });
+
+    // Check if data is rendered correctly
+    await waitFor(() => {
+      let nameLink = screen.getByText('Fake Admin');
+      expect(nameLink).toBeInTheDocument();
+      expect(nameLink.getAttribute('href')).toBe('/userprofile/abdefghijklmnop');
+      expect(screen.getAllByText('6')[1]).toBeInTheDocument();
+      expect(screen.getByText('105')).toBeInTheDocument();
+    });
+  });
+
+  it('should refresh user data from the server and reload that data into the leaderboard', async () => {
+    renderWithRouterMatch(routes, {
+      initialState: mockState,
+      route: '/dashboard',
+    });
+
+    // Wait for initial data load
+    await waitFor(() => {
+      expect(requestedLeaderBoard).toBe(true);
+    });
+
+    // Simulate a refresh event
+    const refresh = screen.getByTitle('Click to refresh the leaderboard') || screen.getByRole('button', { name: /refresh/i });
+    refreshed = true;
+    fireEvent.click(refresh);
+
+    // Check if refreshed data is rendered correctly
+    await waitFor(() => {
+      let nameLink = screen.getByText('Fake Admin');
+      expect(nameLink).toBeInTheDocument();
+      expect(nameLink.getAttribute('href')).toBe('/userprofile/abdefghijklmnop');
+      expect(screen.getAllByText('60')[1]).toBeInTheDocument();
+      expect(screen.getByText('125')).toBeInTheDocument();
+    });
   });
 });
