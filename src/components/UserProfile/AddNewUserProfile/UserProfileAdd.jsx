@@ -683,9 +683,12 @@ class UserProfileAdd extends Component {
     const firstLength = this.state.userProfile.firstName !== '';
     const lastLength = this.state.userProfile.lastName !== '';
     const phone = this.state.userProfile.phoneNumber;
-
+    
     if (phone === null) {
       toast.error('Phone Number is required');
+      return false;
+    } else if (!this.state.codeValid) {
+      toast.error('Team Code is invalid');
       return false;
     } else if (firstLength && lastLength && phone.length >= 9) {
       return true;
