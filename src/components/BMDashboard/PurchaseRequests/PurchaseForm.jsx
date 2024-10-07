@@ -84,6 +84,7 @@ function PurchaseForm({
       setUnit('');
       setPriority('Low');
       setBrand('');
+      history.push('/bmdashboard/materials');
     } else {
       toast.error(`Error: ${response?.statusText || 'Unknown error'}`);
     }
@@ -209,7 +210,7 @@ function PurchaseForm({
             style={boxStyle}
             disabled={!primaryId || !secondaryId || !quantity || !priority || !!validationError}
           >
-            Submit
+            Purchase Request
           </Button>
         </div>
       </Form>
