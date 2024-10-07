@@ -139,7 +139,6 @@ function WarningTrackerModal({
 
   const handleEditWarningDescription = (e, warningId) => {
     setWarningEdited(true);
-    console.log('warning was ediited');
 
     const updatedWarningDescriptions = warningDescriptions.map(warning => {
       if (warning._id === warningId) {
@@ -175,16 +174,7 @@ function WarningTrackerModal({
       setWarningWasEdited(true);
     });
   };
-  const handlePermanentWarningClicked = isPermanent => {
-    console.log('warnign', isPermanent);
-    if (isPermanent) {
-      console.log(
-        'This warning is permanent and cannot be edited or deleted, it can only be deactivated',
-      );
 
-      return;
-    }
-  };
   // eslint-disable-next-line no-shadow
   const handleAddNewWarning = (e, newWarning) => {
     e.preventDefault();
@@ -320,9 +310,6 @@ function WarningTrackerModal({
               onChange={e => handleEditWarningDescription(e, warning._id)}
               value={warning.warningTitle}
               disabled={warning?.disabled || warning.isPermanent}
-              onFocus={e => {
-                handlePermanentWarningClicked(warning.isPermanent);
-              }}
               placeholder="warning title"
               className={`warnings__descriptions__title ${
                 warning.activeWarning ? '' : 'warnings__descriptions__title--gray'

@@ -1,5 +1,5 @@
 /* eslint-disable no-shadow */
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 
 import './Warnings.css';
 import WarningIcons from './WarningIcons';

@@ -10,7 +10,7 @@ function WarningModal({
   deleteWarning,
   numberOfWarnings,
 }) {
-  const { colorAssigned, warningText, username } = warning || {};
+  const { warningText, username } = warning || {};
 
   if (deleteWarning) {
     return (
