@@ -12,7 +12,7 @@ function ProjectDetails() {
   // Get all projects
   const projects = useSelector(state => state.bmProjects);
   // Filter the current project based off of the id from the url param
-  const currProject = projects.filter(project => String(project._id)  === projectId);
+  const currProject = projects.filter(project => String(project._id) === projectId);
 
   return (
     <Container className="project-details" fluid>
