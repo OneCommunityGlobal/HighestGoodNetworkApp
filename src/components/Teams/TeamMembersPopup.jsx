@@ -190,7 +190,7 @@ export const TeamMembersPopup = React.memo(props => {
         toggle={closePopup}
         autoFocus={false}
         size="lg"
-        className={darkMode ? 'dark-mode text-light' : ''}
+        className={`${darkMode ? 'dark-mode text-light' : ''} ${props.open ? ' open-team-members-popup-modal' : ''}`}
       >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet' : ''}
