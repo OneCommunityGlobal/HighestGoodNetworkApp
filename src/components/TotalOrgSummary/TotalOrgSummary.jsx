@@ -443,7 +443,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <VolunteerTrendsByTimeLineChart />
+              <VolunteerTrendsByTimeLineChart darkMode={darkMode} />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
