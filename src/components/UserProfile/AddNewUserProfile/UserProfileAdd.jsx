@@ -12,6 +12,7 @@ import {
   Button,
   TabPane,
   TabContent,
+  Alert,
 } from 'reactstrap';
 import CommonInput from 'components/common/Input';
 import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
@@ -52,6 +53,7 @@ class UserProfileAdd extends Component {
   constructor(props) {
     super(props);
     this.state = {
+      isTeamCodeValid: true,
       items: [],
       isLoaded: true,
       httpStatusCode: null,
@@ -102,7 +104,6 @@ class UserProfileAdd extends Component {
       timeZoneFilter: '',
       formSubmitted: false,
       teamCode: '',
-      codeValid: false,
     };
 
     const { user } = this.props.auth;
@@ -117,7 +118,7 @@ class UserProfileAdd extends Component {
 
   setCodeValid = isValid => {
     this.setState({
-      codeValid: isValid,
+      isTeamCodeValid: isValid,
     });
   };
 
@@ -567,6 +568,11 @@ class UserProfileAdd extends Component {
                   />
                 </TabPane>
                 <TabPane>
+                  {!this.state.isTeamCodeValid && (
+                    <Alert color="danger">
+                      NOT SAVED! The code must be between 5 and 7 characters long
+                    </Alert>
+                  )}
                   <TeamsTab
                     userTeams={this.state.teams}
                     teamsData={this.props ? this.props.allTeams.allTeamsData : []}
@@ -588,7 +594,6 @@ class UserProfileAdd extends Component {
                     setUserProfile={newUserProfile =>
                       this.setState({ userProfile: newUserProfile })
                     }
-                    validation={true}
                   />
                 </TabPane>
               </TabContent>
@@ -605,6 +610,7 @@ class UserProfileAdd extends Component {
                   data-testid="create-userProfile"
                   onClick={() => this.createUserProfile(false)}
                   style={darkMode ? boxStyleDark : boxStyle}
+                  disabled={!this.state.isTeamCodeValid}
                 >
                   Create
                 </Button>
@@ -747,6 +753,7 @@ class UserProfileAdd extends Component {
       actualPassword,
       startDate,
       actualConfirmedPassword,
+      teamCode,
     } = that.state.userProfile;
 
     const userData = {
@@ -770,7 +777,7 @@ class UserProfileAdd extends Component {
       location: location,
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
-      teamCode: this.state.teamCode,
+      teamCode: teamCode,
       actualEmail: actualEmail,
       actualPassword: actualPassword,
       startDate: startDate,
