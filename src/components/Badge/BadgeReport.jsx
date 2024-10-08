@@ -204,7 +204,7 @@ function BadgeReport(props) {
     setNumFeatured(0);
     newBadges.forEach((badge, index) => {
       if (badge.featured) {
-        setNumFeatured(++numFeatured);
+        setNumFeatured(prevNumFeatured => prevNumFeatured + 1);
       }
 
       if (typeof newBadges[index] === 'string') {
@@ -314,7 +314,7 @@ function BadgeReport(props) {
   const deleteBadge = () => {
     let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
     if (badgeToDelete.featured) {
-      setNumFeatured(--numFeatured);
+      setNumFeatured(prevNumFeatured => prevNumFeatured - 1);
     }
     setSortBadges(newBadges);
     setShowModal(false);
@@ -347,7 +347,10 @@ function BadgeReport(props) {
       <div className="desktop">
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
-            <thead style={{ zIndex: '10' }}>
+            <thead
+              style={{ zIndex: '10', pointerEvents: 'none' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
+            >
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
