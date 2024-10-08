@@ -7,7 +7,7 @@ function InfoModal ({ isOpen, toggle }) {
         <ModalHeader toggle={toggle}>Restrict the team member visiblity</ModalHeader>
         <ModalBody>
           <p>
-            By default a user can see all the members on their team. Disable it if you want to restrict the user's visibility and make it so that they cannot see other members on the same team.
+            By default a user can see all the members on their team. Disable it if you want to restrict the user’s visibility and make it so that they cannot see other members on the same team. This toggle does NOT reduce visibility for Owner, Admin or Core Team roles.
           </p>
         </ModalBody>
         <ModalFooter>
