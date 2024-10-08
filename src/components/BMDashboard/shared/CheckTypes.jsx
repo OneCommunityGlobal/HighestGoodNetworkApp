@@ -8,6 +8,8 @@ function CheckTypes({ type }) {
   const dispatch = useDispatch();
   const [InvType, setInvType] = useState(type);
   const [buildingInvTypes, setbuildingInvTypes] = useState([]);
+  const [isAscending, setIsAscending] = useState(true);
+  const [searchQuery, setSearchQuery] = useState('');
 
   useEffect(() => {
     if (buildingInventoryTypes.invTypeList[InvType] != null)
@@ -22,11 +24,42 @@ function CheckTypes({ type }) {
     }
   }, [InvType]);
 
+  // Handle sorting by name
+  const handleSortByName = () => {
+    setIsAscending(!isAscending);
+  };
+
+  // Filter the data based on the search query
+  const filteredBuildingInvTypes = buildingInvTypes.filter(item =>
+    item.name.toLowerCase().includes(searchQuery.toLowerCase()),
+  );
+
+  // Sorting function for name column
+  const sortedBuildingInvTypes = [...filteredBuildingInvTypes].sort((a, b) => {
+    if (isAscending) {
+      return a.name.localeCompare(b.name);
+    }
+    return b.name.localeCompare(a.name);
+  });
+
   return (
     <div>
       <Card>
         <CardBody>
           <FormGroup row>
+            <Label for="search" lg={2} sm={4}>
+              Search by Name
+            </Label>
+            <Col lg={4} sm={8}>
+              <Input
+                id="search"
+                name="search"
+                type="text"
+                placeholder="Search for a type..."
+                value={searchQuery}
+                onChange={e => setSearchQuery(e.target.value)} // Update search query
+              />
+            </Col>
             <Label for="selectType" lg={2} sm={4}>
               Select Type
             </Label>
@@ -51,13 +84,15 @@ function CheckTypes({ type }) {
             <thead>
               <tr>
                 <th>#</th>
-                <th>Name</th>
+                <th style={{ cursor: 'pointer' }} onClick={handleSortByName}>
+                  Name {isAscending ? '▲' : '▼'}
+                </th>
                 <th>Category</th>
                 <th>Description</th>
               </tr>
             </thead>
             <tbody>
-              {buildingInvTypes?.map((elemType, idx) => (
+              {sortedBuildingInvTypes?.map((elemType, idx) => (
                 <tr key={elemType._id}>
                   <th>{idx + 1}</th>
                   <td>{elemType.name}</td>
