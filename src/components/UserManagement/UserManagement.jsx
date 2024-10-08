@@ -678,3 +678,5 @@ export default connect(mapStateToProps, {
   hasPermission,
   getAllTimeOffRequests,
 })(UserManagement);
+// exporting without connect
+export { UserManagement as UnconnectedUserManagement };
