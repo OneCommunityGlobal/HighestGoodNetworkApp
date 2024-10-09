@@ -33,7 +33,8 @@ import notificationReducer from './notificationReducer';
 import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer";
 import { followUpReducer } from "./followUpReducer";
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
-import {userProjectsByUserNameReducer} from './userProjectsByUserNameReducer';
+import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
+import teamCodesReducer from './teamCodesReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -73,13 +74,14 @@ const localReducers = {
   ownerMessage: ownerMessageReducer,
   infoCollections: infoCollectionsReducer,
   mouseoverText: mouseoverTextReducer,
-  weeklySummaryRecipients:weeklySummaryRecipientsReducer,
+  weeklySummaryRecipients: weeklySummaryRecipientsReducer,
   notification: notificationReducer,
-  userFollowUp : followUpReducer,
+  userFollowUp: followUpReducer,
   userProjectsByUserNameReducer: userProjectsByUserNameReducer,
-  blueSquareEmailAssignment : BlueSquareEmailAssignment,
+  blueSquareEmailAssignment: BlueSquareEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
+  teamCodes: teamCodesReducer,
 
   // bmdashboard
   materials: materialsReducer,
