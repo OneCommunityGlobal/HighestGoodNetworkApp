@@ -65,6 +65,7 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
+
 import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
 
 function UserProfile(props) {
@@ -327,6 +328,7 @@ function UserProfile(props) {
         await loadSummaryIntroDetails(teamId, response.data);
       }
 
+      const startDate = newUserProfile?.startDate.split('T')[0];
       // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
       newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
       newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
@@ -339,20 +341,21 @@ function UserProfile(props) {
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        startDate: newUserProfile?.startDate.split('T')[0],
+        createdDate: startDate,
       });
       setOriginalUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        startDate: newUserProfile?.startDate.split('T')[0],
+        createdDate: startDate,
       });
-      setUserStartDate(newUserProfile?.startDate.split('T')[0]);
+      setUserStartDate(startDate);
       checkIsProjectsEqual();
       // isTeamSaved(true);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
+      console.log(err);
     }
   };
 
