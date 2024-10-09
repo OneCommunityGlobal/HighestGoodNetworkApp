@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Label, Input, Col, Button, FormGroup } from 'reactstrap';
+import { Row, Label, Input, Col, Button, FormGroup, FormFeedback } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
 import { ENDPOINTS } from 'utils/URL';
@@ -7,7 +7,7 @@ import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY  } from 'utils/formatDate';
+import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA  } from 'utils/formatDate';
 
 
 const MINIMUM_WEEK_HOURS = 0;
@@ -21,34 +21,38 @@ const startEndDateValidation = props => {
 
 
 const StartDate = props => {
-  const {darkMode} = props;
+  const {darkMode, startDateAlert} = props;
 
   if (!props.canEdit) {
     return <p className={darkMode ? 'text-azure' : ''}>{formatDateYYYYMMDD(props.userProfile.startDate)}</p>;
   }
   
-  
   return (
-    <Input
-      type="date"
-      name="StartDate"
-      id="startDate"
-      className={startEndDateValidation(props) ? 'border-error-validation' : null}
-      value={props.userProfile.startDate}
-      min={formatDateYYYYMMDD(props.userProfile.createdDate)}
-      onChange={e => {
-        props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
-        props.onStartDateComponent(e.target.value);
-      }}
-      placeholder="Start Date"
-      invalid={!props.canEdit}
-      max={props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : ''}
-    />
+    <FormGroup>
+      <Input
+        type="date"
+        name="StartDate"
+        id="startDate"
+        className={startEndDateValidation(props) ? 'border-error-validation' : null}
+        value={props.userProfile.startDate}
+        min={props.userProfile.createdDate < CREATED_DATE_CRITERIA ? '' : props.userProfile.createdDate}
+        onChange={e => {
+          props.setUserProfile({ ...props.userProfile, startDate: e.target.value });
+          props.onStartDateComponent(e.target.value);
+        }}
+        placeholder="Start Date"
+        invalid={!props.canEdit}
+        max={props.userProfile.endDate ? formatDateYYYYMMDD(props.userProfile.endDate) : '9999-12-31'}
+      />
+      {startDateAlert && (
+        <FormFeedback style={{ display: 'block' }}>{startDateAlert}</FormFeedback>
+      )}
+    </FormGroup>
   );
 };
 
 const EndDate = props => {
-  const {darkMode} = props;
+  const {darkMode, endDateAlert} = props;
 
   if (!props.canEdit) {
     return (
@@ -61,26 +65,32 @@ const EndDate = props => {
   }
 
   return (
-    <Input
-      className={startEndDateValidation(props) ? 'border-error-validation' : null}
-      type="date"
-      name="EndDate"
-      id="endDate"
-      value={
-        props.userProfile.endDate ? props.userProfile.endDate.toLocaleString().split('T')[0] : ''
-      }
-      onChange={e => {
-        props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
-        props.onEndDateComponent(e.target.value);
-      }}
-      placeholder="End Date"
-      invalid={!props.canEdit}
-      min={
-        props.userProfile.startDate
-          ? formatDateYYYYMMDD(props.userProfile.startDate)
-          : ''
-      }
-    />
+    <FormGroup>
+      <Input
+        className={startEndDateValidation(props) ? 'border-error-validation' : null}
+        type="date"
+        name="EndDate"
+        id="endDate"
+        value={
+          props.userProfile.endDate ? props.userProfile.endDate : ''
+        }
+        onChange={e => {
+          props.setUserProfile({ ...props.userProfile, endDate: e.target.value });
+          props.onEndDateComponent(e.target.value);
+        }}
+        placeholder="End Date"
+        invalid={!props.canEdit}
+        min={
+          props.userProfile.startDate
+            ? props.userProfile.startDate
+            : ''
+        }
+        max={'9999-12-31'}
+      />
+      {endDateAlert && (
+        <FormFeedback style={{ display: 'block' }}>{endDateAlert}</FormFeedback>
+      )}
+    </FormGroup>
   );
 };
 
@@ -248,12 +258,13 @@ const ViewTab = props => {
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
   const { hoursByCategory, totalIntangibleHrs } = userProfile;
   const [historyModal, setHistoryModal] = useState(false);
+  const [startDateAlert, setStartDateAlert] = useState('');
+  const [endDateAlert, setEndDateAlert] = useState('');
 
   const handleStartDates = async startDate => {
-
-    if(!userProfile.isFirstTimelog) {
-      alert('This user has already logged time in the system. Are you sure you want to change the start date?');
-    }
+    // if(!userProfile.isFirstTimelog) {
+    //   alert('This user has already logged time in the system. Are you sure you want to change the start date?');
+    // }
     props.onStartDate(startDate);
   };
 
@@ -344,6 +355,24 @@ const ViewTab = props => {
     });
   };
 
+  useEffect(() => {
+    if (userProfile.startDate === ''){
+      setStartDateAlert("Invalid date");
+    } else if (userProfile.createdDate >= CREATED_DATE_CRITERIA && userProfile.startDate < userProfile.createdDate){
+      setStartDateAlert("The start date is before the account created date");
+    } else{
+      setStartDateAlert('')
+    }
+  }, [userProfile.startDate, userProfile.createdDate]);
+
+  useEffect(() => {
+    if (userProfile.endDate !== '' && userProfile.endDate < userProfile.startDate){
+      setEndDateAlert("The end date is before the start date");
+    } else {
+      setEndDateAlert('');
+    }
+  }, [userProfile.startDate, userProfile.endDate]);
+
   return (
     <div data-testid="volunteering-time-tab">
       <Row className="volunteering-time-row">
@@ -366,6 +395,7 @@ const ViewTab = props => {
             canEdit={canEdit}
             onStartDateComponent={handleStartDates}
             darkMode={darkMode}
+            startDateAlert={startDateAlert}
           />
         </Col>
       </Row>
@@ -382,6 +412,7 @@ const ViewTab = props => {
             canEdit={canEdit}
             onEndDateComponent={handleEndDates}
             darkMode={darkMode}
+            endDateAlert={endDateAlert}
           />
         </Col>
       </Row>
