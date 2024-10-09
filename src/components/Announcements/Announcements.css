@@ -13,6 +13,14 @@ label {
   color: #333;
 }
 
+.text-light {
+  color: #fff; /* White text for dark mode */
+}
+
+.text-dark {
+  color: #333; /* Default dark text for light mode */
+}
+
 .input-text-for-announcement,
 textarea {
   margin-top: 5px;   /* Space above input fields */

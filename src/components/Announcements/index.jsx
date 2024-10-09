@@ -177,7 +177,9 @@ function Announcements() {
           </button>
         </div>
         <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}  style={darkMode ? boxStyleDark : boxStyle}>
-          <label htmlFor="email-list-input" style={{ color: darkMode ? '#fff' : '#333' }}>Email List (comma-separated):</label>
+          <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+            Email List (comma-separated):
+          </label>
           <input
             type="text"
             id="email-list-input"
@@ -189,7 +191,9 @@ function Announcements() {
           </button>
           
             <hr />
-            <label htmlFor="header-content-input" style={{ color: darkMode ? '#fff' : '#333' }}>Insert header or image link:</label>
+            <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Insert header or image link:
+            </label>
             <input
               type="text"
               id="header-content-input"  
@@ -202,7 +206,9 @@ function Announcements() {
               Insert
             </button>
             <hr />
-            <label htmlFor="upload-header-input" style={{ color: darkMode ? '#fff' : '#333' }}>Upload Header (or footer):</label>
+            <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Upload Header (or footer):
+            </label>
             <input
               type="file"
               id="upload-header-input"  
