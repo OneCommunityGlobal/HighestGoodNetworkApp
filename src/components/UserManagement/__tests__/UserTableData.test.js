@@ -15,6 +15,10 @@ const jaeAccountMock = {
     expiryTimestamp: '2023-08-22T22:51:06.544Z',
     iat: 1597272666,
     userid: '1',
+    permissions: {
+      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      backPermissions: []
+    },
     role: 'Administrator',
     email: 'devadmin@hgn.net'
   },
@@ -31,6 +35,10 @@ const nonJaeAccountMock = {
     expiryTimestamp: '2023-08-22T22:51:06.544Z',
     iat: 1597272666,
     userid: '2',
+    permissions: {
+      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      backPermissions: []
+    },
     role: 'Administrator',
     email: 'non_jae@hgn.net'
   },
@@ -48,6 +56,10 @@ const ownerAccountMock = {
     expiryTimestamp: '2023-08-22T22:51:06.544Z',
     iat: 1597272666,
     userid: '3',
+    permissions: {
+      frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
+      backPermissions: []
+    },
     role: 'Owner',
     email: 'devadmin@hgn.net'
   },
@@ -67,7 +79,14 @@ describe('User Table Data: Non-Jae related Account', () => {
     store = mockStore({
       auth: ownerAccountMock,
       userProfile: nonJaeAccountMock,
-      role: nonJaeAccountMock.role,
+      role: {
+        roles: [
+          { 
+            roleName: nonJaeAccountMock.role, 
+            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus']
+          },
+        ],
+      },
       theme: themeMock,
     });
     onPauseResumeClick = jest.fn();
@@ -160,7 +179,14 @@ describe('User Table Data: Jae protected account record and login as Jae related
     store = mockStore({
       auth: authMock,
       userProfile: jaeAccountMock,
-      role: jaeAccountMock.role
+      role: {
+        roles: [
+          { 
+            roleName: jaeAccountMock.role, 
+            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'] 
+          },
+        ],
+      },
     });
     onPauseResumeClick = jest.fn();
     onDeleteClick = jest.fn();

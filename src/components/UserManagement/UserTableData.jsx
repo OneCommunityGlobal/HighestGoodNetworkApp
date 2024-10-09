@@ -11,14 +11,24 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
 import { formatDateLocal } from 'utils/formatDate';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import { Tooltip } from 'reactstrap';
 /**
  * The body row of the user table
  */
 const UserTableData = React.memo(props => {
   const darkMode = props.darkMode;
+  const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
+  const [tooltipPauseOpen, setTooltipPause] = useState(false);
+  const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
 
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
+  const canDeleteUsers = props.hasPermission('deleteUserProfile');
+  const resetPasswordStatus = props.hasPermission('resetPassword');
+  const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
+  const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
+  const toggleFinalDayTooltip = () => setTooltipFinalDay(!tooltipFinalDayOpen);
 
   /**
    * reset the changing state upon rerender with new isActive status
@@ -49,7 +59,7 @@ const UserTableData = React.memo(props => {
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
-          canChange={true}
+          canChange={canChangeUserStatus}
           key={`active_cell${props.index}`}
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
@@ -91,6 +101,20 @@ const UserTableData = React.memo(props => {
       </td>
       <td>{props.user.weeklycommittedHours}</td>
       <td>
+        <>
+        {
+          !canChangeUserStatus ?
+          <Tooltip
+            placement="bottom"
+            isOpen={tooltipPauseOpen}
+            target={"btn-pause-profile-"+props.user._id}
+            toggle={togglePauseTooltip}
+          >
+            You don't have permission to change user status
+          </Tooltip>
+          :
+          ""
+        } 
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
@@ -106,9 +130,12 @@ const UserTableData = React.memo(props => {
             );
           }}
           style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
+          disabled={!canChangeUserStatus}
+          id={"btn-pause-profile-"+props.user._id}
         >
           {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
         </button>
+        </>
       </td>
       <td className="centered-td">
         <button
@@ -144,6 +171,20 @@ const UserTableData = React.memo(props => {
       </td>
       <td>
         {!isCurrentUser && (
+          <>
+          {
+            !canChangeUserStatus ? 
+              <Tooltip
+                placement="bottom"
+                isOpen={tooltipFinalDayOpen}
+                target={"btn-final-day-"+props.user._id}
+                toggle={toggleFinalDayTooltip}
+              >
+                You don't have permission to change user status
+              </Tooltip>
+            :
+            ""
+          }
           <button
             type="button"
             className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
@@ -159,9 +200,12 @@ const UserTableData = React.memo(props => {
               );
             }}
             style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
+            id={"btn-final-day-"+props.user._id}
+            disabled={!canChangeUserStatus}
           >
             {props.user.endDate ? CANCEL : SET_FINAL_DAY}
           </button>
+          </>
         )}
       </td>
       <td>
@@ -185,20 +229,36 @@ const UserTableData = React.memo(props => {
       {checkPermissionsOnOwner() ? null : (
         <td>
           <span className="usermanagement-actions-cell">
+            <>
+            {
+              !canDeleteUsers ?
+              <Tooltip
+                placement="bottom"
+                isOpen={tooltipDeleteOpen}
+                target={"btn-delete-"+props.user._id}
+                toggle={toggleDeleteTooltip}
+              >
+                You don't have permission to delete the user
+              </Tooltip>
+              :
+              ""
+            } 
             <button
               type="button"
+              id={"btn-delete-"+props.user._id}
               className="btn btn-outline-danger btn-sm"
               onClick={e => {
                 props.onDeleteClick(props.user, 'archive');
               }}
               style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
-              disabled={props.auth?.user.userid === props.user._id}
+              disabled={props.auth?.user.userid === props.user._id || !canDeleteUsers}
             >
               {DELETE}
             </button>
+            </>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton />
+            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton canResetPassword={resetPasswordStatus}/>
           </span>
         </td>
       )}
