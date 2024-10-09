@@ -48,6 +48,10 @@ function PurchaseForm({
     setUnit(selectedType ? selectedType.unit : '');
   }, [secondaryId, secondaryData]);
 
+  useEffect(() => {
+    if (validationError) setValidationError('');
+  }, [primaryId, secondaryId, quantity, priority, brand]);
+
   // Form validation logic
   const validateForm = () =>
     Joi.object({
