@@ -348,7 +348,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTotalOrgSummary: (fromDate, toDate) => dispatch(getTotalOrgSummary(fromDate, toDate)),
+  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
