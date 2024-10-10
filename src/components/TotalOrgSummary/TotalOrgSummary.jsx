@@ -99,7 +99,6 @@ const aggregateTimeEntries = userTimeEntries => {
 
 function TotalOrgSummary(props) {
   // eslint-disable-next-line no-console
-  console.log({ props });
 
   const { darkMode, loading, error, allUserProfiles } = props;
 
@@ -111,23 +110,9 @@ function TotalOrgSummary(props) {
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
 
-  // const anniversaryStatsOnSetDate = useSelector(
-  //   state => state.totalOrgSummary.volunteerstats.anniversaryStats,
-  // );
-  // // eslint-disable-next-line no-console
-  // console.log({ anniversaryStatsOnSetDate });
-
   useEffect(() => {
     dispatch(getAllUserProfile());
   }, []);
-
-  // useEffect(() => {
-  //   props.getTotalOrgSummary(fromDate, toDate);
-  // }, []);
-
-  // useEffect(() => {
-  //   props.getTotalOrgSummary(fromOverDate, toOverDate);
-  // }, []);
 
   useEffect(() => {
     if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {
@@ -295,13 +280,8 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <AnniversaryCelebrated
-                fromDate={fromDate}
-                toDate={toDate}
-                fromOverDate={fromOverDate}
-                toOverDate={toOverDate}
-                darkMode={darkMode}
-              />
+              <h4 className="text-center">Volunteer Trends by time</h4>
+              <span className="text-center"> Work in progres...</span>
             </div>
           </Col>
           <Col lg={{ size: 5 }}>

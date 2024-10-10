@@ -29,7 +29,6 @@ export const fetchTotalOrgSummaryReportError = error => ({
 });
 
 export const getTotalOrgSummary = (startDate, endDate) => {
-  console.log( {startDate}, {endDate});
   const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate);
   return async dispatch => {
     await dispatch(fetchTotalOrgSummaryReportBegin());
