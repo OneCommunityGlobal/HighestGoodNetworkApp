@@ -333,11 +333,30 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className='responsive-spacing'>
-                  <NavLink tag={Link} to="/dashboard">
+                <NavItem className="responsive-spacing">
+                  <NavLink
+                    tag={Link}
+                    to="/dashboard" // Navigate to the logged-in user's dashboard
+                    onClick={() => {
+                      history.push('/dashboard');
+                      const viewingUser = window.sessionStorage.getItem('viewingUserWithoutHeader');
+                      // Check if the current user is viewing another user's dashboard
+                      if (viewingUser) {
+                        // Remove the viewingUser from session storage
+                        window.sessionStorage.removeItem('viewingUserWithoutHeader');
+                        
+                        // Refresh the page
+                        window.location.reload();
+                      } else {
+                        // Just navigate to the dashboard without refreshing
+                        window.dispatchEvent(new Event('storage'));
+                      }
+                    }}
+                  >
                     <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
+
                 <NavItem className='responsive-spacing'>
                   <NavLink tag={Link} to={`/timelog`}>
                     <span className="dashboard-text-link">{TIMELOG}</span>
