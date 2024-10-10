@@ -604,7 +604,7 @@ const TeamMemberTasks = React.memo(props => {
               <select
                 className={`m-1 mobile-view-select circle-border ${darkMode ? 'box-shadow-dark' : ''}`}
                 onChange={(e) => selectPeriod(e.target.value)}
-                value={selectedPeriod}
+                value={selectedPeriod || ""}
                 title={`Timelogs submitted in the past ${selectedPeriod} days`}
                 style={{
                   color: isTimeFilterActive ? 'white' : hrsFilterBtnColorMap[selectedPeriod],
