@@ -31,7 +31,7 @@ export const fetchTotalOrgSummaryReportError = error => ({
 export const getTotalOrgSummary = (startDate, endDate) => {
   const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate);
   return async dispatch => {
-    dispatch(fetchTotalOrgSummaryReportBegin());
+    await dispatch(fetchTotalOrgSummaryReportBegin());
     try {
       const response = await axios.get(url);
       dispatch(fetchTotalOrgSummaryReportSuccess(response.data));

@@ -27,6 +27,7 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+import  { EmailSender } from './components/common/EmailSender/EmailSender';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -241,6 +242,13 @@ export default (
           exact
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
+        />
+        <ProtectedRoute
+          path="/sendemail"
+          exact
+          component={EmailSender}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
         />
 
         <ProtectedRoute
