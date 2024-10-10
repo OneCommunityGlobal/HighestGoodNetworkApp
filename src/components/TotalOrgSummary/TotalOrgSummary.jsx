@@ -266,11 +266,12 @@ function TotalOrgSummary(props) {
         <h3 className="mt-3 mb-0">Total Org Summary</h3>
       </Col>
       <Col lg={3} className="d-flex justify-content-end">
-        {/* Share PDF button */}
-        <button onClick={handleGeneratePDF} className="btn btn-primary">
-          Share PDF
-        </button>
-      </Col>
+  {/* Share PDF button */}
+  <button onClick={handleGeneratePDF} className="btn btn-primary" style={{ backgroundColor: 'black', color: 'white' }}>
+    Share PDF
+  </button>
+</Col>
+
     </Row>
     <hr />
     <div id="pdfContent">
