@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { Spinner, Input, ListGroup, ListGroupItem } from 'reactstrap';
+import { Spinner, Input, ListGroup, ListGroupItem, Alert } from 'reactstrap';
 import { IoReload } from 'react-icons/io5';
 import './autoComplete.css';
 
@@ -16,6 +16,7 @@ export const AutoCompleteTeamCode = props => {
     fetchTeamCodeAllUsers,
     darkMode,
     isMobile,
+    canEditTeamCode,
   } = props;
 
   useEffect(() => {
@@ -73,11 +74,19 @@ export const AutoCompleteTeamCode = props => {
     color: '#fff',
     border: '2px solid #1c5b87',
   };
+
+  const styleDefault = {
+    cursor: !canEditTeamCode ? 'not-allowed' : 'pointer',
+    opacity: !canEditTeamCode ? 0.6 : 0.9,
+  };
+
   const colordark = {
     backgroundColor: '#1c2541',
     color: '#fff',
     outline: 'none',
     border: 'none',
+    cursor: !canEditTeamCode ? 'not-allowed' : 'pointer',
+    opacity: !canEditTeamCode ? 0.6 : 0.9,
   };
 
   let autoComplete = false;
@@ -88,9 +97,10 @@ export const AutoCompleteTeamCode = props => {
         id="teamCode"
         value={teamCode}
         onChange={handleCodeChange}
-        style={darkMode ? colordark : null}
+        style={darkMode ? colordark : styleDefault}
         placeholder="X-XXX"
         onFocus={() => !showDropdown && setShowDropdown(true)}
+        disabled={!canEditTeamCode}
       />
       <section>
         {showDropdown && (
