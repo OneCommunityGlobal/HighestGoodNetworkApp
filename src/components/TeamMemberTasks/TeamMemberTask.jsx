@@ -18,7 +18,7 @@ import './style.css';
 import Warning from 'components/Warnings/Warnings';
 import { useDispatch, useSelector } from 'react-redux';
 import moment from 'moment-timezone';
-
+import { getUserProfile } from 'actions/userProfile';
 import ReviewButton from './ReviewButton';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import TeamMemberTaskIconsInfo from './TeamMemberTaskIconsInfo';
@@ -119,6 +119,23 @@ const TeamMemberTask = React.memo(
       }
     };
 
+  const setViewingUser = viewingUserId => {
+    dispatch(getUserProfile(viewingUserId)).then(user => {
+      const { _id, role, firstName, lastName, profilePic, email } = user;
+      const viewingUser = {
+        userId: _id,
+        role,
+        firstName,
+        lastName,
+        email,
+        profilePic: profilePic || '/pfp-default-header.png',
+      };
+
+      sessionStorage.setItem('viewingUserWithoutHeader', JSON.stringify(viewingUser));
+      window.dispatchEvent(new Event('storage'));
+    });
+  };
+
     return (
       <>
         <tr ref={ref} className={`table-row ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
@@ -157,6 +174,9 @@ const TeamMemberTask = React.memo(
                     <Link
                       className='team-member-tasks-user-name-link'
                       to={`/userprofile/${user.personId}`}
+                      onClick={() => {
+                        setViewingUser(user.personId);
+                      }}
                       style={{
                         color:
                           currentDate.isSameOrAfter(

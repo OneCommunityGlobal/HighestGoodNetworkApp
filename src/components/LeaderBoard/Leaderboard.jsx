@@ -202,6 +202,23 @@ function LeaderBoard({
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
   const dashboardClose = () => setIsDashboardOpen(false);
 
+  const setViewingUser = viewingUserId => {
+    dispatch(getUserProfile(viewingUserId)).then(user => {
+      const { _id, role, firstName, lastName, profilePic, email } = user;
+      const viewingUser = {
+        userId: _id,
+        role,
+        firstName,
+        lastName,
+        email,
+        profilePic: profilePic || '/pfp-default-header.png',
+      };
+
+      sessionStorage.setItem('viewingUserWithoutHeader', JSON.stringify(viewingUser));
+      window.dispatchEvent(new Event('storage'));
+    });
+  };
+
   const showDashboard = item => {
     getWeeklySummaries(item.personId);
     dispatch(getUserProfile(item.personId)).then(user => {
@@ -600,6 +617,9 @@ function LeaderBoard({
                   <th scope="row" className="align-middle">
                     <Link
                       to={`/userprofile/${item.personId}`}
+                      onClick={() => {
+                        setViewingUser(item.personId);
+                      }}
                       title="View Profile"
                       style={{
                         color: isCurrentlyOff
