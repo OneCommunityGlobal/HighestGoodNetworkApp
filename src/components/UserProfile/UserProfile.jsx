@@ -23,6 +23,7 @@ import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
 import axios from 'axios';
+import { boxStyle, boxStyleDark } from 'styles';
 import hasPermission, {
   cantDeactivateOwner,
   cantUpdateDevAdminDetails,
@@ -49,7 +50,6 @@ import { updateUserStatus, updateRehireableStatus } from '../../actions/userMana
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
-import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useDispatch, useSelector } from 'react-redux';
 import { convertDateFormatToMMMDDYY, formatDateLocal } from 'utils/formatDate';
 import EditableInfoModal from './EditableModal/EditableInfoModal';
@@ -164,7 +164,7 @@ function UserProfile(props) {
     } catch (error) {
       console.log(error);
       setIsLoading(false);
-      toast.error(`It was not possible to retrieve the team codes. 
+      toast.error(`It was not possible to retrieve the team codes.
       Please try again by clicking the icon inside the input auto complete.`);
     }
   };
@@ -519,7 +519,8 @@ function UserProfile(props) {
           console.log('WARNING: Empty Date');
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
-      } else {
+      }
+      else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
@@ -554,15 +555,12 @@ function UserProfile(props) {
       if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
-
-      await axios
-        .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
-          dateStamp,
-          summary,
-        })
-        .catch(error => {
-          toast.error('Failed to update Blue Square!');
-        });
+      await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+        dateStamp,
+        summary,
+      }).catch(error => {
+        toast.error('Failed to update Blue Square!');
+      });
       toast.success('Blue Square Updated!');
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
@@ -570,8 +568,8 @@ function UserProfile(props) {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
+        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id))
+        .catch(error => {
           toast.error('Failed to delete Blue Square!');
         });
         toast.success('Blue Square Deleted!');
@@ -873,7 +871,7 @@ function UserProfile(props) {
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
-                //this line below should fix the image formatting issue
+                // this line below should fix the image formatting issue
                 style={profilePic ? {} : { width: '240px', height: '240px' }}
               />
               {canEdit ? (
@@ -902,7 +900,7 @@ function UserProfile(props) {
                 teamsData={props?.allTeams?.allTeamsData || []}
                 projectsData={props?.allProjects?.projects || []}
               />
-             
+
           </Col>
           <Col md="8">
             {!isProfileEqual ||
@@ -927,7 +925,7 @@ function UserProfile(props) {
                   areaName="UserProfileInfoModal"
                   areaTitle="User Profile"
                   fontSize={24}
-                  isPermissionPage={true}
+                  isPermissionPage
                   role={requestorRole} // Pass the 'role' prop to EditableInfoModal
                   darkMode={darkMode}
                 />
@@ -939,7 +937,7 @@ function UserProfile(props) {
                   canChange={canChangeUserStatus}
                   onClick={() => {
                     if (cantDeactivateOwner(userProfile, requestorRole)) {
-                      //Owner user cannot be deactivated by another user that is not an Owner.
+                      // Owner user cannot be deactivated by another user that is not an Owner.
                       alert('You are not authorized to deactivate an owner.');
                       return;
                     }
@@ -961,6 +959,7 @@ function UserProfile(props) {
                       } else {
                         e.preventDefault();
                         props.history.push(`/timelog/${targetUserId}`);
+                        setActiveInactivePopupOpen(true);
                       }
                     }}
                   />
@@ -1041,7 +1040,7 @@ function UserProfile(props) {
               summarySelected.map((data, i) => {
                 return (
                   <TeamWeeklySummaries
-                    key={data['_id']}
+                    key={data._id}
                     i={i}
                     name={summaryName}
                     data={data}
@@ -1188,20 +1187,18 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="2">
-                {
-                  <VolunteeringTimeTab
-                    userProfile={userProfile}
-                    setUserProfile={setUserProfile}
-                    isUserSelf={isUserSelf}
-                    role={requestorRole}
-                    onEndDate={handleEndDate}
-                    loadUserProfile={loadUserProfile}
-                    canEdit={canEditUserProfile}
-                    canUpdateSummaryRequirements={canUpdateSummaryRequirements}
-                    onStartDate={handleStartDate}
-                    darkMode={darkMode}
-                  />
-                }
+                <VolunteeringTimeTab
+                  userProfile={userProfile}
+                  setUserProfile={setUserProfile}
+                  isUserSelf={isUserSelf}
+                  role={requestorRole}
+                  onEndDate={handleEndDate}
+                  loadUserProfile={loadUserProfile}
+                  canEdit={canEditUserProfile}
+                  canUpdateSummaryRequirements={canUpdateSummaryRequirements}
+                  onStartDate={handleStartDate}
+                  darkMode={darkMode}
+                />
               </TabPane>
               <TabPane tabId="3">
                 <TeamsTab
@@ -1273,6 +1270,7 @@ function UserProfile(props) {
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
+                  canResetPassword={true}
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1404,6 +1402,7 @@ function UserProfile(props) {
                           className="mr-1 btn-bottom"
                           user={userProfile}
                           authEmail={authEmail}
+                          canResetPassword={true}
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
@@ -1471,7 +1470,7 @@ function UserProfile(props) {
                         <i
                           className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`}
                           aria-hidden="true"
-                        ></i>
+                        />
                       </Button>
                     </div>
                   </Row>
@@ -1548,7 +1547,7 @@ function UserProfile(props) {
                         <i
                           className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`}
                           aria-hidden="true"
-                        ></i>
+                        />
                       </Button>
                     </div>
                   </Row>
@@ -1642,7 +1641,7 @@ function UserProfile(props) {
                         <i
                           className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`}
                           aria-hidden="true"
-                        ></i>
+                        />
                       </Button>
                     </div>
                   </Row>
@@ -1727,7 +1726,7 @@ function UserProfile(props) {
                         <i
                           className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`}
                           aria-hidden="true"
-                        ></i>
+                        />
                       </Button>
                     </div>
                   </Row>
@@ -1754,7 +1753,7 @@ function UserProfile(props) {
                     userProfile={userProfile}
                     setUserProfile={setUserProfile}
                     darkMode={darkMode}
-                    tabletView={true}
+                    tabletView
                   />
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -1799,7 +1798,7 @@ function UserProfile(props) {
                         <i
                           className={`fa fa-refresh ${darkMode ? 'text-light' : ''}`}
                           aria-hidden="true"
-                        ></i>
+                        />
                       </Button>
                     </div>
                   </Row>
@@ -1809,7 +1808,7 @@ function UserProfile(props) {
           </Col>
         </Row>
         <Row>
-          <Col md="4"></Col>
+          <Col md="4" />
           {/* <Col md="8" className="desktop-panel">
           </Col> */}
         </Row>
