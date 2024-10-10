@@ -130,6 +130,7 @@ function Announcements({title, email}) {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
       }
+      setHeaderContent(''); // Clear the input field after inserting the header
   };
 
   const validateEmail = (email) => {
@@ -219,7 +220,7 @@ function Announcements({title, email}) {
             <hr />
             <p>Insert header or image link</p>
             <div style={{ overflow: 'hidden' }}>
-              <input type="text" onChange={handleHeaderContentChange} className='input-text-for-announcement'/>
+              <input type="text" onChange={handleHeaderContentChange} value={headerContent} className='input-text-for-announcement'/>
             </div>
             <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
               Insert

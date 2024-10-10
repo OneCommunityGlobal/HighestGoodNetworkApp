@@ -241,8 +241,7 @@ export default (
           path="/announcements"
           exact
           component={Announcements}
-          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-          routePermissions={RoutePermissions.projects}
+          routePermissions={RoutePermissions.announcements}
         />
         <ProtectedRoute
           path="/sendemail"

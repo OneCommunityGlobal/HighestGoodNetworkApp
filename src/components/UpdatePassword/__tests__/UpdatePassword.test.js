@@ -106,7 +106,7 @@ describe('Update Password Page', () => {
       const newPassword = screen.getByLabelText(/new password:/i);
       await userEvent.type(newPassword, 'abc', { allAtOnce: false });
       userEvent.clear(newPassword);
-      expect(screen.getByText(errorMessages.curentpasswordEmpty)).toBeInTheDocument();
+      expect(screen.getByText(errorMessages.newpasswordEmpty)).toBeInTheDocument();
       expect(screen.getByRole('button')).toBeDisabled();
     });
 
@@ -170,13 +170,13 @@ describe('Update Password Page', () => {
     });
 
     it('should show error if old,new, and confirm passwords are same', async () => {
-      await userEvent.type(screen.getByLabelText(/current password:/i), 'ABCDabc123', {
+      await userEvent.type(screen.getByLabelText(/current password:/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123', {
+      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc123', {
+      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
       expect(screen.getByText(errorMessages.oldnewPasswordsSame)).toBeInTheDocument();

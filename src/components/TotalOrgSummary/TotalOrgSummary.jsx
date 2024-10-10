@@ -1,8 +1,8 @@
-/* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
+import 'moment-timezone';
 
 import hasPermission from 'utils/permissions';
 
@@ -11,6 +11,7 @@ import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 import { getAllUserProfile } from 'actions/userManagement';
 import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
+import { getTaskAndProjectStats } from 'actions/totalOrgSummary';
 
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
@@ -19,6 +20,7 @@ import './TotalOrgSummary.css';
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
@@ -105,6 +107,7 @@ function TotalOrgSummary(props) {
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
+  const [taskProjectHours, setTaskProjectHours] = useState([]);
 
   const dispatch = useDispatch();
 
@@ -158,6 +161,25 @@ function TotalOrgSummary(props) {
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
+  useEffect(() => {
+    async function fetchData() {
+      const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
+      const {
+        taskHours: lastTaskHours,
+        projectHours: lastProjectHours,
+      } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
+
+      if (taskHours && projectHours) {
+        setTaskProjectHours({
+          taskHours,
+          projectHours,
+          lastTaskHours,
+          lastProjectHours,
+        });
+      }
+    }
+    fetchData();
+  }, [fromDate, toDate, fromOverDate, toOverDate]);
 
   if (error) {
     return (
@@ -271,7 +293,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <span className="fw-bold">Hours Completed </span>
+              <HoursCompletedBarChart data={taskProjectHours} darkMode={darkMode} />
             </div>
           </Col>
         </Row>
@@ -311,20 +333,6 @@ function TotalOrgSummary(props) {
           </Col>
         </Row>
       </AccordianWrapper>
-      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
-        <Row>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <VolunteerHoursDistribution />
-            </div>
-          </Col>
-          <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">
-              <VolunteerHoursDistribution />
-            </div>
-          </Col>
-        </Row>
-      </AccordianWrapper>
     </Container>
   );
 }
@@ -340,8 +348,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  // eslint-disable-next-line no-shadow
   getTotalOrgSummary: (fromDate, toDate) => dispatch(getTotalOrgSummary(fromDate, toDate)),
+  getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
 });
