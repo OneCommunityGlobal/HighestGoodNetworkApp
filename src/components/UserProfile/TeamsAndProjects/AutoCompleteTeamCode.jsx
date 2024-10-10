@@ -16,6 +16,8 @@ export const AutoCompleteTeamCode = props => {
     fetchTeamCodeAllUsers,
     darkMode,
     isMobile,
+    refInput,
+    autoCompleteUpdateMessage,
   } = props;
 
   useEffect(() => {
@@ -34,11 +36,14 @@ export const AutoCompleteTeamCode = props => {
   const getWidth = () => {
     if (isLoading || arrayInputAutoComplete.length <= 3) {
       return 'auto';
-    } else if (window.innerWidth > 1200) { // Desktop
+    } else if (window.innerWidth > 1200) {
+      // Desktop
       return '34rem';
-    } else if (window.innerWidth > 1024) { // Tablet
+    } else if (window.innerWidth > 1024) {
+      // Tablet
       return '28rem';
-    } else { // Mobile
+    } else {
+      // Mobile
       return '22rem';
     }
   };
@@ -46,9 +51,11 @@ export const AutoCompleteTeamCode = props => {
   const getRightPosition = () => {
     if (isMobile) {
       return '22rem';
-    } else if (window.innerWidth > 1200) { // Desktop
+    } else if (window.innerWidth > 1200) {
+      // Desktop
       return '34.3rem';
-    } else if (window.innerWidth > 1024) { // Tablet
+    } else if (window.innerWidth > 1024) {
+      // Tablet
       return '28.3rem';
     }
   };
@@ -57,8 +64,11 @@ export const AutoCompleteTeamCode = props => {
     border: '1px solid #ccc',
     backgroundColor: '#fff',
     width:
-      arrayInputAutoComplete && arrayInputAutoComplete.length <= 3 ? '100%' :
-      arrayInputAutoComplete && arrayInputAutoComplete.length <= 30 ? '102px' : '100px',
+      arrayInputAutoComplete && arrayInputAutoComplete.length <= 3
+        ? '100%'
+        : arrayInputAutoComplete && arrayInputAutoComplete.length <= 30
+        ? '102px'
+        : '100px',
   };
 
   const borderBottomRadius = {
@@ -89,6 +99,7 @@ export const AutoCompleteTeamCode = props => {
         value={teamCode}
         onChange={handleCodeChange}
         style={darkMode ? colordark : null}
+        ref={refInput}
         placeholder="X-XXX"
         onFocus={() => !showDropdown && setShowDropdown(true)}
       />
@@ -114,7 +125,7 @@ export const AutoCompleteTeamCode = props => {
                       : { ...styleP, width: 'auto' }
                   }
                 >
-                  No options
+                  {autoCompleteUpdateMessage ? 'Updating' : 'No options'}
                 </p>
               ) : inputAutoStatus !== 200 ? (
                 <ListGroup>
@@ -127,13 +138,14 @@ export const AutoCompleteTeamCode = props => {
                   </ListGroupItem>
                 </ListGroup>
               ) : (
-                <div className={`${arrayInputAutoComplete.length > 3 && 'row row-cols-lg-5 row-cols-sm-4'}`}>
+                <div
+                  className={`${arrayInputAutoComplete.length > 3 &&
+                    'row row-cols-lg-5 row-cols-sm-4'}`}
+                >
                   {arrayInputAutoComplete.map(item => (
                     <div
                       key={item}
-                      className={`${
-                        arrayInputAutoComplete.length <= 3 ? '' : 'col col-cols-3'
-                      }`}
+                      className={`${arrayInputAutoComplete.length <= 3 ? '' : 'col col-cols-3'}`}
                     >
                       <p
                         className={classNameStyleP}
