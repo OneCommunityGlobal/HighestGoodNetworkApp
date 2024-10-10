@@ -1,4 +1,6 @@
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
+import './VolunteerTrendsByTimeLineChart.css';
+import { useEffect, useState } from 'react';
 
 const testData = [
   { xLabel: 'Jan', totalVolunteers: 100 },
@@ -10,6 +12,30 @@ const testData = [
 export default function VolunteerTrendsByTimeLineChart(props) {
   const { darkMode } = props;
   const latestNumberOfVolunteers = testData[testData.length - 1].totalVolunteers;
+  const [chartSize, setChartSize] = useState({ width: null, height: null });
+
+  useEffect(() => {
+    // Add event listener to set chart width on window resize
+    const updateChartSize = () => {
+      // Default sizes
+      let width = 600;
+      let height = 350;
+      if (window.innerWidth < 650) {
+        // Mobile
+        width = 400;
+        height = 250;
+      } else if (window.innerWidth < 1100) {
+        // Tablet
+        width = 500;
+      }
+      setChartSize({ width, height });
+    };
+    updateChartSize();
+    window.addEventListener('resize', updateChartSize);
+    return () => {
+      window.removeEventListener('resize', updateChartSize);
+    };
+  }, []);
 
   const formatNumber = number => {
     // Add comma every third digit (e.g. makes 1000 a 1,000)
@@ -61,16 +87,14 @@ export default function VolunteerTrendsByTimeLineChart(props) {
   };
 
   return (
-    <div
-      style={{
-        display: 'grid',
-        justifyContent: 'center',
-        textAlign: 'center',
-        padding: '10px',
-      }}
-    >
+    <div className="chart-container">
       <h5>Volunteer Trends by Time</h5>
-      <LineChart width={600} height={350} data={testData} margin={{ right: 50, top: 50, left: 20 }}>
+      <LineChart
+        width={chartSize.width}
+        height={chartSize.height}
+        data={testData}
+        margin={{ right: 50, top: 50, left: 20 }}
+      >
         <CartesianGrid stroke="#ccc" vertical={false} />
         <XAxis
           dataKey="xLabel"
