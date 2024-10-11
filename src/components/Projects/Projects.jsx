@@ -4,6 +4,7 @@ import {
   fetchAllProjects,
   postNewProject,
   clearError,
+  fetchAllArchivedProjects
 } from '../../actions/projects';
 import {getProjectsByUsersName} from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
@@ -36,6 +37,8 @@ const Projects = function(props) {
   const [projectList, setProjectList] = useState(null);
   const [searchName, setSearchName] = useState("");
   const [allProjects, setAllProjects] = useState(null);
+  const [showArchived, setShowArchived] = useState(false);
+
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
@@ -81,13 +84,28 @@ const Projects = function(props) {
   };
 
   const handleProjectArchived = () => {
-    props.fetchAllProjects();
+    if(showArchived){
+        props.fetchAllArchivedProjects();
+    } else{
+      props.fetchAllProjects();
+    }
+  };
+
+  const handleFetchArchivedProjects = () => {
+     setShowArchived(prev=>!prev); 
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
-    const { projects } = props.state.allProjects;
-    const filteredProjects = projects.filter(project => !project.isArchived)
-      .filter(project => {
+    try {
+      const { projects } = props.state.allProjects;
+      let filteredProjects = [];
+      if(showArchived){
+          filteredProjects = projects.filter(project => project?.isArchived);
+      }else{
+          filteredProjects = projects.filter(project=>!project.isArchived);
+      }
+   
+       filteredProjects = filteredProjects.filter(project => {
       if (categorySelectedForSort && showStatus){
         return project.category === categorySelectedForSort && project.isActive === showStatus;
       } else if (categorySelectedForSort) {
@@ -118,11 +136,23 @@ const Projects = function(props) {
     ));
     setProjectList(filteredProjects);
     setAllProjects(filteredProjects);
+    } catch (error) {
+        console.log(error);
+    }
+   
   }
 
   useEffect(() => {
     props.fetchAllProjects();
   }, []);
+
+  useEffect(()=>{
+     if(showArchived){
+         props.fetchAllArchivedProjects();
+     }else{
+         props.fetchAllProjects();
+     }
+  },[showArchived])
 
   useEffect(() => {
       generateProjectList(categorySelectedForSort, showStatus, sortedByName);
@@ -177,7 +207,7 @@ const Projects = function(props) {
 
           {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
 
-          <SearchProjectByPerson onSearch={handleSearchName}/>
+          <SearchProjectByPerson onSearch={handleSearchName} handleFetchArchivedProjects={handleFetchArchivedProjects} showArchived ={showArchived}/>
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
@@ -216,5 +246,6 @@ export default connect(mapStateToProps, {
   clearError,
   getPopupById,
   hasPermission,
-  getProjectsByUsersName
+  getProjectsByUsersName,
+  fetchAllArchivedProjects
 })(Projects);

@@ -9,13 +9,13 @@ import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';  
 import { modifyProject, clearError } from '../../../actions/projects';
 import ModalTemplate from './../../common/Modal';
-import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
+import { CONFIRM_ARCHIVE, CONFIRM_UNARCHIVE } from './../../../languages/en/messages';
 
 const Project = props => {
   const { darkMode, index } = props;
   const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName, category, isActive,isArchived, _id: projectId } = projectData;
+  const { projectName, category, isActive,isArchived = false, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
   const initialModalData = {
     showModal: false,
@@ -67,13 +67,23 @@ const Project = props => {
   }
 
   const onArchiveProject = () => {
-    setModalData({
-      showModal: true,
-      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
-      modalTitle: CONFIRM_ARCHIVE,
-      hasConfirmBtn: true,
-      hasInactiveBtn: isActive,
-    });
+    if(isArchived){
+      setModalData({
+        showModal: true,
+        modalMessage: `<p>Do you want to unarchive this ${projectData.projectName}?</p>`,
+        modalTitle: CONFIRM_UNARCHIVE,
+        hasConfirmBtn: true,
+        hasInactiveBtn: isActive,
+      });
+    } else {
+      setModalData({
+        showModal: true,
+        modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
+        modalTitle: CONFIRM_ARCHIVE,
+        hasConfirmBtn: true,
+        hasInactiveBtn: isActive,
+      });
+    }
   }
   
   const setProjectInactive = () => {
@@ -201,9 +211,8 @@ const Project = props => {
             className="btn btn-outline-danger"
             onClick={onArchiveProject}
             style={darkMode ? {} : boxStyle}
-            disabled = {isArchived}
           >
-            {ARCHIVE}
+            {isArchived ? "UNARCHIVE":"Archive"}
           </button>
         </td>
       ) : null}

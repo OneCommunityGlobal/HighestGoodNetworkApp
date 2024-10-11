@@ -27,6 +27,24 @@ export const fetchAllProjects = () => {
   };
 };
 
+
+export const fetchAllArchivedProjects = () => {
+  return async dispatch => {
+    const url = ENDPOINTS.ARCHIVEDPROJECTS;
+    let status, error;
+    dispatch(setProjectsStart());
+    try {
+      const res = await axios.get(url);
+      status = res.status;
+      const projects = res.data;
+      dispatch(setProjectsSuccess({ projects, status }));
+    } catch (err) {
+      status = err.response.status;
+      error = err.response.data;
+      dispatch(setProjectsError({ status, error }));
+    }
+  };
+};
 /**
  * Post new project to DB
  * @param {projectName}: name of new project

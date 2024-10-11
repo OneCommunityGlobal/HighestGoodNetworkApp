@@ -1,4 +1,8 @@
-export default function SearchProjectByPerson({ onSearch }) {
+export default function SearchProjectByPerson({
+  onSearch,
+  handleFetchArchivedProjects,
+  showArchived,
+}) {
   const handleSubmit = e => {
     e.preventDefault();
   };
@@ -17,7 +21,9 @@ export default function SearchProjectByPerson({ onSearch }) {
         }}
       />
       <div>
-        <button className="archived-button">Archived Projects</button>
+        <button type="submit" className="archived-button" onClick={handleFetchArchivedProjects}>
+          {showArchived ? 'Hide Archived' : 'Show Archived'}
+        </button>
       </div>
     </form>
   );
