@@ -197,7 +197,7 @@ const UserTeamsTable = props => {
                         target="teamCodeAssign"
                         toggle={toggleTeamCodeExplainTooltip}
                       >
-                        This team code should only be used by Admins/Owners, and has nothing to do with the team data model.
+                        This team code should only be used by admins/owners, and has nothing to do with the team data model.
                       </Tooltip>
                     </>
                   )}
