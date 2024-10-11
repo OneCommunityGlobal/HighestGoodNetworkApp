@@ -17,7 +17,7 @@ const ReviewButton = ({
   userPermission, 
 }) => {
   const darkMode = useSelector(state => state.theme.darkMode)
-
+  const [linkError, setLinkError] = useState(null);
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
@@ -28,6 +28,9 @@ const ReviewButton = ({
 
   const toggleModal = () => {
     setModal(!modal);
+    if (!modal) {
+      setLinkError(null);
+    }
   };
 
   const modalCancelButtonHandler = () => {
@@ -40,7 +43,15 @@ const ReviewButton = ({
   }
 
   const handleLink = (e) => {
-    setLink(e.target.value);
+    const url = e.target.value;
+    setLink(url);
+    if (!url) { 
+      setLinkError("A valid URL is required for review"); 
+    } else if (!validURL(url)) { 
+      setLinkError("Please enter a valid URL starting with 'https://'.");
+    } else {
+      setLinkError(null);
+    }
   };
 
   const validURL = (url) => {
@@ -213,13 +224,20 @@ const ReviewButton = ({
           Please add link to related work:
           <Input 
           type='text' 
+          required
           value={link}
           onChange={handleLink}
           />
+          {linkError && <div className="text-danger">{linkError}</div>}
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             onClick={(e) => {
+              e.preventDefault();
+              if (!link || !validURL(link)) {
+                setLinkError("Please enter a valid URL starting with 'https://'.");
+                return;
+              }
               if(reviewStatus === "Unsubmitted") {
                 submitReviewRequest(e);
               }
