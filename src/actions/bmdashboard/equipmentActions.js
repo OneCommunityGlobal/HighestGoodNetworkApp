@@ -1,7 +1,29 @@
 import axios from "axios";
 import { ENDPOINTS } from "utils/URL";
-import GET_EQUIPMENT_BY_ID, {SET_EQUIPMENTS} from 'constants/bmdashboard/equipmentConstants';
+import {SET_EQUIPMENTS} from 'constants/bmdashboard/equipmentConstants';
 import { GET_ERRORS } from 'constants/errors';
+
+
+export const setEquipment = payload => {
+  return {
+    type: SET_EQUIPMENTS,
+    payload
+  }
+}
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload
+  }
+}
+
+export const setEquipments = payload => {
+  return {
+    type: SET_EQUIPMENTS,
+    payload
+  }
+}
 
 export const fetchEquipmentById = (equipmentId) => {
   const url = ENDPOINTS.BM_EQUIPMENT_BY_ID(equipmentId);
@@ -28,12 +50,7 @@ export const fetchAllEquipments = () => {
   }
 }
 
-export const setEquipments = payload => {
-  return {
-    type: SET_EQUIPMENTS,
-    payload
-  }
-}
+
 
 export const addEquipmentType = async (body) => {
   return axios.post(`${ENDPOINTS.BM_INVTYPE_ROOT}/equipment`, body)
@@ -45,19 +62,7 @@ export const addEquipmentType = async (body) => {
     })
 }
 
-export const setEquipment = payload => {
-  return {
-    type: SET_EQUIPMENTS,
-    payload
-  }
-}
 
-export const setErrors = payload => {
-  return {
-    type: GET_ERRORS,
-    payload
-  }
-}
 
 export const purchaseEquipment = async (body) => {
   return axios.post(ENDPOINTS.BM_EQUIPMENT_PURCHASE, body)

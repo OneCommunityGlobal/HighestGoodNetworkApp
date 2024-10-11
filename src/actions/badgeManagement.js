@@ -1,5 +1,4 @@
 import axios from 'axios';
-import moment from 'moment';
 import { formatDate } from 'utils/formatDate';
 import {
   GET_ALL_BADGE_DATA,
@@ -22,6 +21,11 @@ const getAllBadges = allBadges => ({
   allBadges,
 });
 
+const getBadgeCountSuccess = badgeCount => ({
+  type: GET_BADGE_COUNT,
+  payload: badgeCount,
+});
+
 export const fetchAllBadges = () => {
   const url = ENDPOINTS.BADGE();
   return async dispatch => {
@@ -35,36 +39,7 @@ export const fetchAllBadges = () => {
   };
 };
 
-const getBadgeCountSuccess = badgeCount => ({
-  type: GET_BADGE_COUNT,
-  payload: badgeCount,
-});
-
-export const getBadgeCount = userId => {
-  return async dispatch => {
-    try {
-      const response = await axios.get(ENDPOINTS.BADGE_COUNT(userId));
-      dispatch(getBadgeCountSuccess(response.data.count));
-    } catch (err) {
-      return err.response.status;
-    }
-  };
-};
-
-export const resetBadgeCount = userId => async dispatch => {
-  try {
-    const updatedBadgeCountResponse = await axios.put(ENDPOINTS.BADGE_COUNT_RESET(userId));
-    const updatedBadgeCount = updatedBadgeCountResponse.data.count;
-    if (updatedBadgeCountResponse.status === 201) {
-      dispatch({
-        type: RESET_BADGE_COUNT,
-        payload: updatedBadgeCount,
-      });
-    }
-  } catch (error) {
-    console.error("Failed to reset badge count", error);
-  }
-};
+export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
 
 export const closeAlert = () => {
   return dispatch => {
@@ -111,7 +86,34 @@ export const getMessage = (message, color) => ({
   color,
 });
 
-export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
+
+
+export const getBadgeCount = userId => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(ENDPOINTS.BADGE_COUNT(userId));
+      dispatch(getBadgeCountSuccess(response.data.count));
+    } catch (err) {
+      return err.response.status;
+    }
+  };
+};
+
+export const resetBadgeCount = userId => async dispatch => {
+  try {
+    const updatedBadgeCountResponse = await axios.put(ENDPOINTS.BADGE_COUNT_RESET(userId));
+    const updatedBadgeCount = updatedBadgeCountResponse.data.count;
+    if (updatedBadgeCountResponse.status === 201) {
+      dispatch({
+        type: RESET_BADGE_COUNT,
+        payload: updatedBadgeCount,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to reset badge count", error);
+  }
+};
+
 
 export const validateBadges = (firstName, lastName) => {
   return async dispatch => {

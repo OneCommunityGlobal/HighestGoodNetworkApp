@@ -1,13 +1,32 @@
 import axios from 'axios';
 import moment from 'moment';
-import { GET_TIME_ENTRIES_WEEK, GET_TIME_ENTRIES_PERIOD } from '../constants/timeEntries';
+import { toast } from 'react-toastify';
+import {
+  GET_TIME_ENTRIES_WEEK,
+  GET_TIME_ENTRIES_PERIOD,
+} from '../constants/timeEntries';
 import { ENDPOINTS } from '../utils/URL';
+
 
 /**
  * number === 0 current week
  * number === 1 last week
  * number === 2 week before last
  */
+
+export const setTimeEntriesForWeek = (data, offset) => ({
+  type: GET_TIME_ENTRIES_WEEK,
+  payload: data,
+  offset,
+});
+
+export const setTimeEntriesForPeriod = data => ({
+  type: GET_TIME_ENTRIES_PERIOD,
+  payload: data,
+});
+
+
+
 export const getTimeEntriesForWeek = (userId, offset) => {
   // TODO: Environment variable for server timezone
 
@@ -39,6 +58,23 @@ export const getTimeEntriesForWeek = (userId, offset) => {
       });
       await dispatch(setTimeEntriesForWeek(filteredEntries, offset));
       // await dispatch(setTimeEntriesForWeek(res.data, offset));
+    }
+  };
+};
+
+const updateTimeEntries = (timeEntry, oldDateOfWork) => {
+  const startOfWeek = moment().startOf('week');
+
+  return async dispatch => {
+    if (oldDateOfWork) {
+      const oldOffset = Math.ceil(startOfWeek.diff(oldDateOfWork, 'week', true));
+      dispatch(getTimeEntriesForWeek(timeEntry.personId, oldOffset));
+    }
+
+    const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
+
+    if (offset <= 2 && offset >= 0) {
+      dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
     }
   };
 };
@@ -81,7 +117,7 @@ export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { // 
     try{
       const res = await axios.get(url);
       if (!res || !res.data){
-        console.log("Request failed or no data");
+        toast.error(`Request failed or no data`);
         return "N/A";
       }
       const filteredEntries = res.data.filter(entry => {
@@ -98,7 +134,7 @@ export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { // 
       const formattedLastEntryDate = moment(lastEntry.dateOfWork).format('YYYY-MM-DD');
       return formattedLastEntryDate;
     } catch (error) {
-      console.error("Error fetching time entries:", error);
+      toast.error(`Error fetching time entries`);
       if (error.response && error.response.status === 401) {
         loggedOut = true;
       }
@@ -111,7 +147,7 @@ export const postTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      if(timeEntry.entryType == 'default'){
+      if(timeEntry.entryType === 'default'){
         dispatch(updateTimeEntries(timeEntry));
       }
       return res.status;
@@ -126,7 +162,7 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   return async dispatch => {
     try {
       const res = await axios.put(url, timeEntry);
-      if (timeEntry.entryType == 'default') {
+      if (timeEntry.entryType === 'default') {
         dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
       }
       return res.status;
@@ -151,30 +187,6 @@ export const deleteTimeEntry = timeEntry => {
   };
 };
 
-const updateTimeEntries = (timeEntry, oldDateOfWork) => {
-  const startOfWeek = moment().startOf('week');
 
-  return async dispatch => {
-    if (oldDateOfWork) {
-      const oldOffset = Math.ceil(startOfWeek.diff(oldDateOfWork, 'week', true));
-      dispatch(getTimeEntriesForWeek(timeEntry.personId, oldOffset));
-    }
 
-    const offset = Math.ceil(startOfWeek.diff(timeEntry.dateOfWork, 'week', true));
 
-    if (offset <= 2 && offset >= 0) {
-      dispatch(getTimeEntriesForWeek(timeEntry.personId, offset));
-    }
-  };
-};
-
-export const setTimeEntriesForWeek = (data, offset) => ({
-  type: GET_TIME_ENTRIES_WEEK,
-  payload: data,
-  offset,
-});
-
-export const setTimeEntriesForPeriod = data => ({
-  type: GET_TIME_ENTRIES_PERIOD,
-  payload: data,
-});

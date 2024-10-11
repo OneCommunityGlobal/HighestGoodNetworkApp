@@ -74,25 +74,16 @@ const isTimeOffRequestIncludeCurrentWeek = request => {
   const currentWeekEnd = moment().endOf('week').subtract(1, 'day').subtract(1, 'second');
 
   // Check if the current week falls within the date range of the request
-  if (
+  return (
     currentWeekStart.isSameOrAfter(requestStartingDate) &&
     currentWeekEnd.isSameOrBefore(requestEndingDate)
-  ) {
-    return true;
-  }
-
-  return false;
+  );
 };
 
 const isUserOnVacation = requests => {
   moment.tz.setDefault('America/Los_Angeles');
 
-  for (const request of requests) {
-    if(isTimeOffRequestIncludeCurrentWeek(request)) {
-      return request;
-    }
-  }
-  return null;
+  return requests.find(request => isTimeOffRequestIncludeCurrentWeek(request)) || null;
 };
 
 const isUserGoingOnVacation = requests => {
@@ -102,13 +93,11 @@ const isUserGoingOnVacation = requests => {
     .add(1, 'week')
     .startOf('week');
 
-  // Find the first request that starts on Sunday next week
-  const userGoingOnVacation = requests.find(request => {
+  // Find the first request that starts on the first day of next week
+  return requests.find(request => {
     const startingDate = moment(request.startingDate);
     return startingDate.isSame(nextWeekStart, 'day');
-  });
-
-  return userGoingOnVacation || null;
+  }) || null;
 };
 
 
@@ -118,19 +107,24 @@ export const getAllTimeOffRequests = () => async dispatch => {
     const response = await httpService.get(ENDPOINTS.GET_TIME_OFF_REQUESTS());
     const requests = response.data;
     dispatch(fetchTimeOffRequestsSuccess(requests));
+
     const keys = Object.keys(requests);
     let onVacation = {};
     let goingOnVacation = {};
-    keys.forEach( key => {
+
+    keys.forEach(key => {
       const arrayOfRequests = requests[key];
       const isUserOff = isUserOnVacation(arrayOfRequests);
       const isUserGoingOff = isUserGoingOnVacation(arrayOfRequests);
+      
       if (isUserOff) {
         onVacation = { ...onVacation, [key]: { ...isUserOff } };
-      } else if (isUserGoingOff) {
+      }
+      if (isUserGoingOff) {
         goingOnVacation = { ...goingOnVacation, [key]: { ...isUserGoingOff } };
       }
-    })
+    });
+
     dispatch(addIsOnTimeOffRequests(onVacation));
     dispatch(addGoingOnTimeOffRequests(goingOnVacation));
   } catch (error) {
@@ -141,21 +135,21 @@ export const getAllTimeOffRequests = () => async dispatch => {
 export const addTimeOffRequestThunk = request => async dispatch => {
   try {
     const response = await httpService.post(ENDPOINTS.ADD_TIME_OFF_REQUEST(), request);
-    const AddedRequest = response.data;
-    dispatch(addTimeOffRequest(AddedRequest));
+    const addedRequest = response.data;
+    dispatch(addTimeOffRequest(addedRequest));
   } catch (error) {
-    console.log(error);
+    dispatch(fetchTimeOffRequestsFailure(error.message));
   }
 };
 
 export const updateTimeOffRequestThunk = (id, data) => async dispatch => {
-  // data Should include duration, startingDate and reason
+  // data should include duration, startingDate, and reason
   try {
     const response = await httpService.post(ENDPOINTS.UPDATE_TIME_OFF_REQUEST(id), data);
     const updatedRequest = response.data;
     dispatch(updateTimeOffRequest(updatedRequest));
   } catch (error) {
-    console.log(error);
+    dispatch(fetchTimeOffRequestsFailure(error.message));
   }
 };
 
@@ -165,6 +159,6 @@ export const deleteTimeOffRequestThunk = id => async dispatch => {
     const deletedRequest = response.data;
     dispatch(deleteTimeOffRequest(deletedRequest));
   } catch (error) {
-    console.log(error);
+    dispatch(fetchTimeOffRequestsFailure(error.message));
   }
 };

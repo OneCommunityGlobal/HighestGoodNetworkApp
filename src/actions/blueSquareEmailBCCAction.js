@@ -1,5 +1,4 @@
 import axios from 'axios';
-import { toast } from 'react-toastify';
 import * as types from '../constants/BluequareEmailBccConstants';
 import { ENDPOINTS } from '../utils/URL';
 
@@ -61,7 +60,6 @@ export const deleteBlueSquareEmailAssignement = id => {
       try {
         const response = await axios.delete(url);
         if (response.status === 200) {
-            console.log(response.data)
           dispatch(deleteBlueSquareEmailBcc(response.data.id));
         } else {
           dispatch(blueSquareEmailBccError(response.data));

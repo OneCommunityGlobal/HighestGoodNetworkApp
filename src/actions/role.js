@@ -2,6 +2,13 @@ import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 import * as types from '../constants/role';
 
+export const setRoleError = payload => {
+  return {
+    type: types.FETCH_ROLES_ERROR,
+    payload,
+  };
+};
+
 export const fetchAllRoles = roles => {
   return {
     type: types.RECEIVE_ROLES,
@@ -44,15 +51,13 @@ export const addNewRole = newRole => {
 export const updateRole = (roleId, updatedRole) => {
   return async dispatch => {
     try {
-      const res = await axios.patch(ENDPOINTS.ROLES_BY_ID(roleId), updatedRole);
+      await axios.patch(ENDPOINTS.ROLES_BY_ID(roleId), updatedRole);
       dispatch(modifyRole(updatedRole));
       return 0;
     } catch (err) {
       dispatch(setRoleError());
-      console.log(err);
       return 1;
     }
-    dispatch(modifyRole(updatedRole));
   };
 };
 
@@ -62,9 +67,3 @@ export const setRoleStart = () => {
   };
 };
 
-export const setRoleError = payload => {
-  return {
-    type: types.FETCH_ROLES_ERROR,
-    payload,
-  };
-};

@@ -104,21 +104,21 @@ export const updateUserStatus = (user, status, reactivationDate) => {
           patchData.endDate = moment(user.createdDate).format('YYYY-MM-DDTHH:mm:ss');
           userProfile.endDate = moment(user.createdDate).format('YYYY-MM-DDTHH:mm:ss');
         }
-        const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
-        const res = await updateProfilePromise;
+        await axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
         dispatch(userProfileUpdateAction(userProfile));
+        return 200;
       } catch (error) {
-        
+        return error.response ? error.response.status : 500;
       }
     } else { // user is active
       patchData.endDate = undefined;
       userProfile.endDate = undefined;
       try {
-        const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
-        const res = await updateProfilePromise;
+        await axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
         dispatch(userProfileUpdateAction(userProfile));
+        return 200;
       } catch (error) {
-
+        return error.response ? error.response.status : 500;
       }
     }
   };

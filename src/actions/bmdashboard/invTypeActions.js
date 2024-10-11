@@ -14,6 +14,113 @@ import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE,
 import { POST_TOOLS_LOG, POST_ERROR_TOOLS_LOG, RESET_POST_TOOLS_LOG } from 'constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from "constants/errors";
 
+export const setToolsLogResult = payload => {
+  return {
+    type: POST_TOOLS_LOG,
+    payload,
+  };
+};
+
+export const setPostErrorToolsLog = payload => {
+  return {
+    type: POST_ERROR_TOOLS_LOG,
+    payload,
+  };
+};
+
+export const setPostBuildingInventoryTypeResult = (payload) => {
+  return {
+    type: POST_BUILDING_MATERIAL_INVENTORY_TYPE,
+    payload
+  }
+}
+
+
+export const setPostBuildingConsumableTypeResult = payload => {
+  return {
+    type: POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const setPostBuildingToolTypeResult = payload => {
+  return {
+    type: POST_BUILDING_TOOL_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+
+export const setPostErrorBuildingInventoryTypeResult = (payload) => {
+  return {
+    type: POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
+    payload
+  }
+}
+
+export const setConsumableTypes = payload => {
+  return {
+    type: GET_CONSUMABLE_TYPES,
+    payload,
+  };
+}
+
+export const setPostErrorBuildingConsumableTypeResult = payload => {
+  return {
+    type: POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const setPostErrorBuildingToolTypeResult = payload => {
+  return {
+    type: POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE,
+    payload,
+  };
+};
+
+export const setMaterialTypes = payload => {
+  return {
+    type: GET_MATERIAL_TYPES,
+    payload
+  }
+}
+
+export const setEquipmentTypes = payload => {
+  return {
+    type: GET_EQUIPMENT_TYPES,
+    payload
+  }
+}
+
+export const setReusableTypes = payload => {
+  return {
+    type: GET_REUSABLE_TYPES,
+    payload
+  }
+}
+
+export const setToolTypes = payload => {
+  return {
+    type: GET_TOOL_TYPES,
+    payload,
+  };
+};
+export const setInvTypesByType = payload => {
+
+  return {
+    type: GET_INV_BY_TYPE,
+    payload
+  }
+}
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload
+  }
+};
+
 export const fetchMaterialTypes = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_MATERIAL_TYPES)
@@ -39,7 +146,6 @@ export const fetchEquipmentTypes = () => {
 }
 
 export const fetchReusableTypes = () => {
-  console.log("fetchReusableTypes");
   return async dispatch => {
     axios.get(ENDPOINTS.BM_REUSABLE_TYPES)
       .then(res => {
@@ -125,35 +231,7 @@ export const postBuildingInventoryType = (payload) => {
   }
 }
 
-export const setPostBuildingInventoryTypeResult = (payload) => {
-  return {
-    type: POST_BUILDING_MATERIAL_INVENTORY_TYPE,
-    payload
-  }
-}
 
-
-export const setPostBuildingConsumableTypeResult = payload => {
-  return {
-    type: POST_BUILDING_CONSUMABLE_INVENTORY_TYPE,
-    payload,
-  };
-};
-
-export const setPostBuildingToolTypeResult = payload => {
-  return {
-    type: POST_BUILDING_TOOL_INVENTORY_TYPE,
-    payload,
-  };
-};
-
-
-export const setPostErrorBuildingInventoryTypeResult = (payload) => {
-  return {
-    type: POST_ERROR_BUILDING_MATERIAL_INVENTORY_TYPE,
-    payload
-  }
-}
 
 export const fetchConsumableTypes = () => {
   return async dispatch => {
@@ -168,26 +246,7 @@ export const fetchConsumableTypes = () => {
   };
 }
 
-export const setConsumableTypes = payload => {
-  return {
-    type: GET_CONSUMABLE_TYPES,
-    payload,
-  };
-}
 
-export const setPostErrorBuildingConsumableTypeResult = payload => {
-  return {
-    type: POST_ERROR_BUILDING_CONSUMABLE_INVENTORY_TYPE,
-    payload,
-  };
-};
-
-export const setPostErrorBuildingToolTypeResult = payload => {
-  return {
-    type: POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE,
-    payload,
-  };
-};
 
 export const resetPostBuildingInventoryTypeResult = () => {
   return {
@@ -207,48 +266,6 @@ export const resetPostBuildingToolTypeResult = () => {
   };
 };
 
-
-export const setMaterialTypes = payload => {
-  return {
-    type: GET_MATERIAL_TYPES,
-    payload
-  }
-}
-
-export const setEquipmentTypes = payload => {
-  return {
-    type: GET_EQUIPMENT_TYPES,
-    payload
-  }
-}
-
-export const setReusableTypes = payload => {
-  return {
-    type: GET_REUSABLE_TYPES,
-    payload
-  }
-}
-
-export const setToolTypes = payload => {
-  return {
-    type: GET_TOOL_TYPES,
-    payload,
-  };
-};
-export const setInvTypesByType = payload => {
-
-  return {
-    type: GET_INV_BY_TYPE,
-    payload
-  }
-}
-
-export const setErrors = payload => {
-  return {
-    type: GET_ERRORS,
-    payload
-  }
-};
 // 
 export const postToolsLog = payload => {
   return async dispatch => {
@@ -269,19 +286,7 @@ export const postToolsLog = payload => {
   };
 };
 
-export const setToolsLogResult = payload => {
-  return {
-    type: POST_TOOLS_LOG,
-    payload,
-  };
-};
 
-export const setPostErrorToolsLog = payload => {
-  return {
-    type: POST_ERROR_TOOLS_LOG,
-    payload,
-  };
-};
 
 export const resetPostToolsLog = () => {
   return {

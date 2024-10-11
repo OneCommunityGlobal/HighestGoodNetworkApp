@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../utils/URL';
 
 import {
@@ -227,7 +228,7 @@ export const deleteTeamMember = (teamId, userId) => {
 /**
  * Adding an existing user to team
  */
-export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime) => {
+export const addTeamMember = (teamId, userId) => {
   const requestData = { userId, operation: 'Assign' };
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
@@ -243,19 +244,19 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
 
   return async dispatch => {
     updateVisibilityPromise
-      .then(res => {
+      .then(() => {
         dispatch(updateVisibilityAction(visibility, userId, teamId));
       })
       .catch(error => {
         if (error.response) {
           // The request was made and the server responded with a status code
-          console.error('Error updating visibility:', error.response.data);
+          toast.error(`Error updating visibility: ${error.response.data}`);
         } else if (error.request) {
           // The request was made but no response was received
-          console.error('Error updating visibility: No response received');
+          toast.error('Error updating visibility: No response received from the server.');
         } else {
           // Something happened in setting up the request that triggered an error
-          console.error('Error updating visibility:', error.message);
+          toast.error(`Error updating visibility: ${error.message}`);
         }
       });
   };
@@ -285,7 +286,7 @@ export const getAllTeamCode = () => {
           .then((res) => {
               dispatch(fetchAllTeamCodeSucess(res.data));
           })
-          .catch((err) => {
+          .catch(() => {
             dispatch({
                 type: FETCH_ALL_TEAM_CODE_FAILURE, 
             });

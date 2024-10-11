@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import { ENDPOINTS } from '../utils/URL';
 import * as types from "../constants/rolePermissionPresets";
 
@@ -45,7 +46,7 @@ export const createNewPreset = newPreset => {
       }
       return 0;
     } catch (error) {
-      console.log(error)
+      toast.error(`Error creating new preset: ${  error.message}`);
       return 1;
     }
   };
@@ -58,8 +59,9 @@ export const updatePresetById = (updatedPreset) => {
       if (res.status === 200){
         dispatch(updatePreset(updatedPreset));
       }
-    } catch (err) {
-      console.log(err);
+    } catch (error) {
+      toast.error(`Error updating preset: ${  error.message}`);
+      return 1;
     }
   };
 };
@@ -73,7 +75,7 @@ export const deletePresetById = (presetId) => {
         return 0;
       }
     } catch (error) {
-      console.log(error);
+      toast.error(`Error deleting preset: ${  error.message}`);
       return 1;
     }
   };

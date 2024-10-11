@@ -1,9 +1,36 @@
 import axios from "axios";
+import { toast } from "react-toastify";
 import { ENDPOINTS } from "utils/URL";
 import { GET_BM_LESSONS, UPDATE_LESSON, DELETE_LESSON, SET_LESSON } from "constants/bmdashboard/lessonConstants";
 import { getUserProfile } from "actions/userProfile";
 import { fetchProjectById } from "actions/bmdashboard/projectByIdAction";
 
+export const deleteLesson = (lessonId) => {
+  return {
+    type: DELETE_LESSON,
+    lessonId
+  };
+};
+
+export const setLessons = payload => {
+  return {
+    type: GET_BM_LESSONS,
+    payload
+  }
+}
+
+export const setLesson = (updatedLesson) => ({
+  type: SET_LESSON,
+  payload: updatedLesson,
+});
+
+export const updateLesson = (lessonId, content) => {
+  return {
+    type: UPDATE_LESSON,
+    lessonId,
+    content,
+  };
+};
 
 export const fetchBMLessons = () => {
   return async dispatch => {
@@ -39,18 +66,13 @@ export const fetchBMLessons = () => {
       // Dispatch an action to update the lessons with the new author and project info
       dispatch(setLessons(updatedLessons));
     } catch (error) {
-      console.error('Error fetching lessons:', error);
+      toast.error(`Error fetching lessons: ${error.message}`);
       dispatch(setErrors(error));
     }
   };
 };
 
-export const setLessons = payload => {
-  return {
-    type: GET_BM_LESSONS,
-    payload
-  }
-}
+
 export const fetchSingleBMLesson = (lessonId) => {
   const url = ENDPOINTS.BM_LESSON + lessonId;
   return async (dispatch) => {
@@ -82,16 +104,13 @@ export const fetchSingleBMLesson = (lessonId) => {
       };
       dispatch(setLesson(updatedLesson));
     } catch (error) {
-      console.error('Error fetching lesson:', error);
+      toast.error(`Error fetching lesson: ${error.message}`);
       dispatch(setErrors(error));
     }
   };
 };
 
-export const setLesson = (updatedLesson) => ({
-  type: SET_LESSON,
-  payload: updatedLesson,
-});
+
 
 export const updateBMLesson = (lessonId, content) => {
   return async dispatch => {
@@ -99,19 +118,13 @@ export const updateBMLesson = (lessonId, content) => {
     try {
       await axios.put(url, { content });
     } catch (err) {
-     console.log('err')
+      toast.error("Error updating lesson.");
     }
     dispatch(updateLesson());
   };
 }
 
-export const updateLesson = (lessonId, content) => {
-  return {
-    type: UPDATE_LESSON,
-    lessonId,
-    content,
-  };
-};
+
   
 
 
@@ -121,7 +134,7 @@ export const updateLesson = (lessonId, content) => {
       try {
         await axios.delete(url);
       } catch (err) {
-       console.log('err')
+        toast.error("Error deleting lesson.");
       }
       dispatch(deleteLesson(lessonId));
       dispatch(fetchBMLessons())
@@ -130,9 +143,3 @@ export const updateLesson = (lessonId, content) => {
     
   }
   
-  export const deleteLesson = (lessonId) => {
-    return {
-      type: DELETE_LESSON,
-      lessonId
-    };
-  };

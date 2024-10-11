@@ -1,5 +1,4 @@
 import axios from 'axios';
-import httpService from '../services/httpService';
 import { ApiEndpoint } from '../utils/URL';
 import * as actionTypes from '../constants/notification';
 
@@ -91,7 +90,7 @@ export function markNotificationAsRead(notificationId) {
   return async dispatch => {
     dispatch({ type: actionTypes.MARK_NOTIFICATION_AS_READ_REQUEST });
     try {
-      const response = await axios.post(`${APIEndpoint}/notification/markRead/${notificationId}`);
+      await axios.post(`${APIEndpoint}/notification/markRead/${notificationId}`);
 
       await dispatch({
         type: actionTypes.MARK_NOTIFICATION_AS_READ_SUCCESS,

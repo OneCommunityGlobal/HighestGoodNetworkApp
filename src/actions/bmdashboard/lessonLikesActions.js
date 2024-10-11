@@ -1,5 +1,6 @@
 import axios from "axios";
 import { ENDPOINTS } from "utils/URL";
+import { toast } from 'react-toastify';
 import { fetchBMLessons} from "./lessonsAction";
 import {BM_LESSON_LIKES} from '../../constants/bmdashboard/lessonConstants'
 
@@ -16,10 +17,10 @@ export const likeLessonAction = (lessonIndex, userId) => {
         dispatch(fetchBMLessons())
 
       } else {
-        console.error('Unexpected response status:', response.status);
+        toast.error(`Unexpected response status: ${response.status}`);
       }
     } catch (error) {
-      console.error('Error liking lesson:', error);
+      toast.error(`Error liking lesson: ${error.message}`);
     }
   };
 };

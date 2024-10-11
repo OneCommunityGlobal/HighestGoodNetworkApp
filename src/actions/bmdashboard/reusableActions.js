@@ -21,6 +21,54 @@ export const setErrors = payload => {
   }
 }
 
+export const reusableUpdateStart = () => {
+  return {
+    type: POST_UPDATE_REUSABLE_START
+  }
+}
+
+export const reusableUpdateEnd = payload => {
+  return {
+    type: POST_UPDATE_REUSABLE_END,
+    payload
+  }
+}
+
+export const reusableUpdateError = payload => {
+  return {
+    type: POST_UPDATE_REUSABLE_ERROR,
+    payload
+  }
+}
+
+export const resetReusableUpdate = () => {
+  return { type: RESET_UPDATE_REUSABLE }
+}
+
+export const reusableUpdateStartBulk = () => {
+  return {
+    type: POST_UPDATE_REUSABLE_START_BULK
+  }
+}
+
+export const reusableUpdateEndBulk = payload => {
+  return {
+    type: POST_UPDATE_REUSABLE_END_BULK,
+    payload
+  }
+}
+
+export const reusableUpdateErrorBulk = payload => {
+  return {
+    type: POST_UPDATE_REUSABLE_ERROR_BULK,
+    payload
+  }
+}
+
+export const resetReusableUpdateBulk = () => {
+  return { type: RESET_UPDATE_REUSABLE_BULK }
+}
+
 export const fetchAllReusables = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_REUSABLES)
@@ -82,50 +130,3 @@ export const postReusableUpdateBulk = (payload) => {
   }
 }
 
-export const reusableUpdateStart = () => {
-  return {
-    type: POST_UPDATE_REUSABLE_START
-  }
-}
-
-export const reusableUpdateEnd = payload => {
-  return {
-    type: POST_UPDATE_REUSABLE_END,
-    payload
-  }
-}
-
-export const reusableUpdateError = payload => {
-  return {
-    type: POST_UPDATE_REUSABLE_ERROR,
-    payload
-  }
-}
-
-export const resetReusableUpdate = () => {
-  return { type: RESET_UPDATE_REUSABLE }
-}
-
-export const reusableUpdateStartBulk = () => {
-  return {
-    type: POST_UPDATE_REUSABLE_START_BULK
-  }
-}
-
-export const reusableUpdateEndBulk = payload => {
-  return {
-    type: POST_UPDATE_REUSABLE_END_BULK,
-    payload
-  }
-}
-
-export const reusableUpdateErrorBulk = payload => {
-  return {
-    type: POST_UPDATE_REUSABLE_ERROR_BULK,
-    payload
-  }
-}
-
-export const resetReusableUpdateBulk = () => {
-  return { type: RESET_UPDATE_REUSABLE_BULK }
-}
