@@ -57,7 +57,6 @@ function TotalTeamReport(props) {
       axios.post(ENDPOINTS.TIME_ENTRIES_REPORTS, { users: userList, fromDate, toDate }),
       axios.post(ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST, { teams: teamList, fromDate, toDate }),
     ]);
-    console.log("Data gathereed from backend, next step filter")
     const startDateObj = new Date(startDate);
     const endDateObj = new Date(endDate);
     // Ensure that only data from within the date range is included
@@ -183,8 +182,6 @@ const groupByTimeRange = (objectArray, timeRange) => {
       acc[key] = [];
     }
     acc[key].push(obj);
-
-    console.log("Data has been grouped")
     return acc;
   }, {});
 };
@@ -225,10 +222,8 @@ const groupedDate = useMemo(() => {
   };
   
   const generateBarData = (groupedDate, isYear = false) => {
-    console.log("I have entered bardata")
-    const filteredData = groupedDate.filter(range => range.teamsOfTime.length > 0);
-    return filteredData.map(range => ({
-      label: isYear ? range.timeRange : `${range.timeRange}`,
+    return groupedDate.map(range => ({
+      label:  `${range.timeRange}`,
       value: range.teamsOfTime.length,
     }));
   };
@@ -290,13 +285,11 @@ const groupedDate = useMemo(() => {
       setTeamInYear(generateBarData(filteredYearlyData, true));
       setShowYearly(filteredYearlyData.length > 0);
     }
-    console.log("Date is finalized")
   };
   
   useEffect(() => {
     // Only process if data is ready and not loading
     if (!totalTeamReportDataLoading && totalTeamReportDataReady) {
-      console.log("This useeffect was called")
       // Clear previous data (reset graph)
       setTeamInMonth([]);  // Clear monthly data
       setTeamInYear([]);   // Clear yearly data
@@ -343,21 +336,6 @@ const groupedDate = useMemo(() => {
     setUserNameList(nameList);
   }, [allTeamsData, userProfiles, startDate, endDate]);  // Ensure startDate and endDate changes trigger this
   
-  // useEffect(() => {
-  //   if (!totalTeamReportDataLoading && totalTeamReportDataReady) {
-  //     setTeamInMonth([]);  // Clear monthly data
-  //     setTeamInYear([]);   // Clear yearly data
-  //     setShowMonthly(false);
-  //     setShowYearly(false);
-  //     const validTeams = filterTeamByEndDate(allTeamsMembers, endDate);
-  //     const groupedUsers = Object.values(sumByUser(allTimeEntries, 'userId'));
-  //     const groupedTeams = Object.values(groupByTeam(groupedUsers, validTeams));
-  //     const contributedTeams = filterTenHourTeam(groupedTeams);
-  //     setAllTeams(contributedTeams);
-  //     checkPeriodForSummary();
-  //   }
-  // }, [totalTeamReportDataLoading, totalTeamReportDataReady, allTeamsMembers, allTimeEntries, teamTimeEntries]);
-
   const totalTeamInfo = totalTeam => {
     const totalTangibleTime = totalTeam.reduce((acc, obj) => acc + Number(obj.tangibleTime), 0);
     return (
