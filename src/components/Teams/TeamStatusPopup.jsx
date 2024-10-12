@@ -14,7 +14,7 @@ export const TeamStatusPopup = React.memo(props => {
     <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'dark-mode text-light' : ''}>
       <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Status Popup</ModalHeader>
       <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <span>{`Are you sure you want to change the status of this team ${props.selectedTeamName}`}</span>
+        <span>{`Are you sure you want to change the status of this team ${props.selectedTeamName} to ${props.selectedStatus ? 'inactive' : 'active'}?`}</span>
         <br />
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>

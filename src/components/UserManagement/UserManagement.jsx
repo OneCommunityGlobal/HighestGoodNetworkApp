@@ -227,7 +227,6 @@ class UserManagement extends React.PureComponent {
     );
   };
 
-
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
@@ -291,6 +290,20 @@ class UserManagement extends React.PureComponent {
   filteredUserList = userProfiles => {
     return userProfiles.filter(user => {
       // Applying the search filters before creating each table data element
+      const search = result => {
+        if (typeof result === 'string') {
+          return result
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '');
+        }
+        const numberToString = String(result)
+          .trim()
+          .replace(/\s+/g, '');
+        const stringToNumber = Number(numberToString);
+        return stringToNumber;
+      };
+
       return (
         // Check if the user matches the search criteria
         (
@@ -319,7 +332,6 @@ class UserManagement extends React.PureComponent {
       );
     });
   };
-
 
   /**
    * reload user list and close user creation popup
@@ -371,7 +383,6 @@ class UserManagement extends React.PureComponent {
     } else {
       toast.warn(`You do not have permission to manage time-off requests.`)
     }
-
   };
 
   /**
@@ -611,7 +622,6 @@ class UserManagement extends React.PureComponent {
     let active = undefined;
     let paused = false;
     let allSelected = false;
-
 
     switch (value) {
       case 'active':
