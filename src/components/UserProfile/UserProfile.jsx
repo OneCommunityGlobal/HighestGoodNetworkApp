@@ -160,7 +160,7 @@ function UserProfile(props) {
     } catch (error) {
       console.log(error);
       setIsLoading(false);
-      toast.error(`It was not possible to retrieve the team codes. 
+      toast.error(`It was not possible to retrieve the team codes.
       Please try again by clicking the icon inside the input auto complete.`);
     }
   };
@@ -517,7 +517,7 @@ function UserProfile(props) {
           console.log('WARNING: Empty Date');
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
-      } 
+      }
       else {
         const newBlueSquare = {
           date: dateStamp,
@@ -542,7 +542,7 @@ function UserProfile(props) {
           ...userProfile,
           infringements: userProfile.infringements?.concat(newBlueSquare),
         });
-        
+
       }
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
@@ -552,7 +552,7 @@ function UserProfile(props) {
       if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
-      
+
       await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
         dateStamp,
         summary,
@@ -567,7 +567,7 @@ function UserProfile(props) {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        
+
         await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id))
         .catch(error => {
           toast.error('Failed to delete Blue Square!');
@@ -576,10 +576,10 @@ function UserProfile(props) {
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
 
-      }  
+      }
     }
-    
-    
+
+
   };
 
   const handleSubmit = async () => {
@@ -898,7 +898,7 @@ function UserProfile(props) {
                 teamsData={props?.allTeams?.allTeamsData || []}
                 projectsData={props?.allProjects?.projects || []}
               />
-             
+
           </Col>
           <Col md="8">
             {!isProfileEqual ||
@@ -906,7 +906,7 @@ function UserProfile(props) {
             (!isTeamsEqual && !isTeamSaved) ||
             !isProjectsEqual ? (
               <Alert color="warning">
-                Please click on &quot;Save changes&quot; to save the changes you have made.{' '} 
+                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
             ) : null}
             {!codeValid ? (
@@ -1272,6 +1272,7 @@ function UserProfile(props) {
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
+                  canResetPassword={true}
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1401,6 +1402,7 @@ function UserProfile(props) {
                           className="mr-1 btn-bottom"
                           user={userProfile}
                           authEmail={authEmail}
+                          canResetPassword={true}
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (

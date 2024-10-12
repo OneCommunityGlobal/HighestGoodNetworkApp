@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   fetchAllProjects,
-  postNewProject,
   modifyProject,
   clearError,
 } from '../../actions/projects';
@@ -216,9 +215,9 @@ const Projects = function(props) {
               role={role}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          </div>
 
-          {canPostProject ? <AddProject onAddNewProject={postProject} refreshProjects={refreshProjects} /> : null}
+            {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
+          </div>
 
           <SearchProjectByPerson onSearch={handleSearchName} />
 
@@ -259,7 +258,6 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   fetchAllProjects,
-  postNewProject,
   modifyProject,
   clearError,
   getPopupById,
