@@ -119,6 +119,8 @@ const Projects = function(props) {
 
   const postProject = async (name, category) => {
     await props.postNewProject(name, category);
+    //change:
+    await props.fetchAllProjects();
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {

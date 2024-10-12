@@ -10,13 +10,22 @@ const AddProject = props => {
   const [newName, setNewName] = useState('');
   const [newCategory, setNewCategory] = useState('Unspecified');
 
+  const [loading, setLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState('');
+
   const changeNewName = newName => {
-    if (newName.length !== 0) {
-      setShowAddButton(true);
-    } else {
-      setShowAddButton(false);
-    }
+    setShowAddButton(newName.length !== 0);
     setNewName(newName);
+  };
+
+  const addProjectHandler = async () => {
+    setLoading(true);
+    await props.onAddNewProject(newName, newCategory);
+    setLoading(false);
+    setSuccessMessage('Project added successfully!');
+    setNewName(''); 
+    setShowAddButton(false);
+    setTimeout(() => setSuccessMessage(''), 1000); 
   };
 
   return (
@@ -28,12 +37,12 @@ const AddProject = props => {
         type="text"
         className="form-control"
         aria-label="New Project"
-        placeholder="Project Name (required) type to add."
+        placeholder="Project Name (required)"
         onChange={e => changeNewName(e.target.value)}
       />
       <div className="input-group-append">
         <select onChange={e => setNewCategory(e.target.value)}>
-          <option default value="Unspecified">
+          <option value="Unspecified" default>
             Select Category
           </option>
           <option value="Food">Food</option>
@@ -47,16 +56,36 @@ const AddProject = props => {
         </select>
       </div>
       <div className="input-group-append">
-        {showAddButton ? (
+        {showAddButton ? (          
           <button
-            className="btn btn-outline-primary"
+            className="btn btn-outline-primary" 
             type="button"
-            onClick={() => props.onAddNewProject(newName, newCategory)}
+            onClick={addProjectHandler}
+            style={{ animation: 'none' }} 
           >
             <i className="fa fa-plus" aria-hidden="true"></i>
           </button>
         ) : null}
       </div>
+      {successMessage && (
+        <div
+        style={{
+          position: 'fixed',
+          top: '20px', 
+          left: '50%',
+          transform: 'translateX(-50%)',
+          zIndex: 1000,
+          padding: '10px',
+          backgroundColor: '#4caf50',
+          color: 'white',
+          borderRadius: '5px',
+          textAlign: 'center',
+          width: '300px',
+        }}
+        >
+          {successMessage}
+        </div>
+      )}
     </div>
   );
 };
