@@ -112,8 +112,8 @@ const Projects = function(props) {
 
   const setInactiveProject = async () => {
     const updatedProject = { ...projectTarget, isActive: false };
+		await onUpdateProject(updatedProject);
     await props.fetchAllProjects();
-    await onUpdateProject(updatedProject);
     onCloseModal();
   };
 
