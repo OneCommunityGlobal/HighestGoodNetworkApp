@@ -11,7 +11,6 @@ import { set } from 'lodash';
 
 function TotalProjectReport(props) {
   const { startDate, endDate, userProfiles, projects, darkMode } = props;
-  console.log("I am inside")
   const [totalProjectReportDataLoading, setTotalProjectReportDataLoading] = useState(true);
   const [totalProjectReportDataReady, setTotalProjectReportDataReady] = useState(false);
   const [showTotalProjectTable, setShowTotalProjectTable] = useState(false);
@@ -192,7 +191,6 @@ function TotalProjectReport(props) {
   );
 
   const totalProjectInfo = totalProject => {
-    console.log("TotalProjectinfo started");
     const totalTangibleTime = totalProject.reduce((acc, obj) => {
       return acc + Number(obj.tangibleTime);
     }, 0);
@@ -249,7 +247,7 @@ function TotalProjectReport(props) {
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>
-          {/* <div>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div> */}
+          <div>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
         </div>
       )}
     </div>

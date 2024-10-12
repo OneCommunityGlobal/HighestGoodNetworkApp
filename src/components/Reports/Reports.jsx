@@ -309,7 +309,6 @@ class ReportsPage extends Component {
   }
 
   showTotalProject() {
-    console.log("I am I being called?")
     if (this.state.showTotalProject) {
       this.setState({
         showTotalProject: false,
