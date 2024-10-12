@@ -28,6 +28,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { debounce } from 'lodash';
 import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
@@ -43,6 +44,7 @@ import SelectTeamPieChart from './SelectTeamPieChart';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
+
 export class WeeklySummariesReport extends Component {
   weekDates = Array.from({ length: 4 }).map((_, index) => ({
     fromDate: moment()
@@ -87,7 +89,8 @@ export class WeeklySummariesReport extends Component {
       replaceCode: '',
       replaceCodeError: null,
       replaceCodeLoading: false,
-      // weeklyRecipientAuthPass: '',
+      memoizedFilteredSummaries: [],
+      debouncedFilterWeeklySummaries: debounce(this.filterWeeklySummaries, 300),
     };
   }
 
@@ -129,6 +132,9 @@ export class WeeklySummariesReport extends Component {
       );
       return { ...summary, promisedHoursByWeek };
     });
+
+    // 4. Memoize filtered summaries
+    this.memoizeFilteredSummaries(summariesCopy);
 
     /*
      * refactor logic of commentted codes above
@@ -244,6 +250,18 @@ export class WeeklySummariesReport extends Component {
 
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
+  }
+
+  memoizeFilteredSummaries = (summaries) => {
+    const memoizedFilteredSummaries = summaries.map(summary => ({
+      ...summary,
+      isMeetCriteria:
+        summary.totalTangibleHrs >= 80 &&
+        summary.daysInTeam >= 56 &&
+        summary.bioPosted !== 'posted' &&
+        (summary.summariesSubmitted || 0) >= 8,
+    }));
+    this.setState({ memoizedFilteredSummaries });
   }
 
   onSummaryRecepientsPopupClose = () => {
@@ -380,13 +398,15 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
+
   filterWeeklySummaries = () => {
     const {
       selectedCodes,
       selectedColors,
-      summaries,
+      memoizedFilteredSummaries,
       selectedOverTime,
       selectedBioStatus,
+      activeTab,
       tableData,
       COLORS,
     } = this.state;
@@ -397,17 +417,10 @@ export class WeeklySummariesReport extends Component {
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
 
-    const temp = summaries.filter(summary => {
-      const { activeTab } = this.state;
+    const temp = memoizedFilteredSummaries.filter(summary => {
       const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
 
-      const isMeetCriteria =
-        summary.totalTangibleHrs >= 80 &&
-        summary.daysInTeam >= 56 &&
-        summary.bioPosted !== 'posted' &&
-        summary.summariesSubmitted >= 8;
-
-      const isBio = !selectedBioStatus || isMeetCriteria;
+      const isBio = !selectedBioStatus || summary.isMeetCriteria;
 
       const isOverHours =
         !selectedOverTime ||
@@ -500,11 +513,11 @@ export class WeeklySummariesReport extends Component {
   };
 
   handleSelectCodeChange = event => {
-    this.setState({ selectedCodes: event }, () => this.filterWeeklySummaries());
+    this.setState({ selectedCodes: event }, () => this.state.debouncedFilterWeeklySummaries());
   };
 
   handleSelectColorChange = event => {
-    this.setState({ selectedColors: event }, () => this.filterWeeklySummaries());
+    this.setState({ selectedColors: event }, () => this.state.debouncedFilterWeeklySummaries());
   };
 
   handleOverHoursToggleChange = () => {
@@ -513,7 +526,7 @@ export class WeeklySummariesReport extends Component {
         selectedOverTime: !prevState.selectedOverTime,
       }),
       () => {
-        this.filterWeeklySummaries();
+        this.state.debouncedFilterWeeklySummaries();
       },
     );
   };
@@ -530,7 +543,7 @@ export class WeeklySummariesReport extends Component {
         selectedBioStatus: !prevState.selectedBioStatus,
       }),
       () => {
-        this.filterWeeklySummaries();
+        this.state.debouncedFilterWeeklySummaries();
       },
     );
   };
@@ -565,7 +578,6 @@ export class WeeklySummariesReport extends Component {
           }
           return acc;
         }, {});
-        // console.log(Object.entries(teamCodeCounts), 'teamCodecounts');
         // Update teamCodes by filtering out those with zero count
         teamCodes = Object.entries(teamCodeCounts)
           .filter(([code, count]) => code.length > 0 && count > 0)
@@ -639,7 +651,7 @@ export class WeeklySummariesReport extends Component {
           if (data?.data?.isUpdated) {
             this.handleTeamCodeChange('', replaceCode, userObjs);
             this.setState({ replaceCode: '', replaceCodeError: null });
-            this.filterWeeklySummaries();
+            this.state.debouncedFilterWeeklySummaries();
           } else {
             this.setState({
               replaceCode: '',
@@ -1009,7 +1021,7 @@ const mapStateToProps = state => ({
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
-  authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
+  authEmailWeeklySummaryRecipient: state.auth.user.email,
 });
 
 const mapDispatchToProps = dispatch => ({
