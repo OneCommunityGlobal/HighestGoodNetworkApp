@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import Select from 'react-select';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { connect } from 'react-redux';
 import '../../Header/DarkMode.css';
@@ -10,7 +9,7 @@ import { findUserProfiles, assignProject } from './../../../actions/projectMembe
 const AddProject = (props) => {
   const [modal, setModal] = useState(false);
   const [newName, setNewName] = useState('');
-  const [newCategory, setNewCategory] = useState({ value: 'Unspecified', label: 'Select Category' });
+  const [newCategory, setNewCategory] = useState('Unspecified');
   const [showAddButton, setShowAddButton] = useState(false);
   const [wbsName, setWbsName] = useState('');
   const [wbsList, setWbsList] = useState([]);
@@ -23,17 +22,6 @@ const AddProject = (props) => {
   const [lastTimeoutId, setLastTimeoutId] = useState(null); 
   // toggle modal open/close
   const toggleModal = () => setModal(!modal);
-
-  const options = [
-    { value: 'Food', label: 'Food' },
-    { value: 'Energy', label: 'Energy' },
-    { value: 'Housing', label: 'Housing' },
-    { value: 'Education', label: 'Education' },
-    { value: 'Society', label: 'Society' },
-    { value: 'Economics', label: 'Economics' },
-    { value: 'Stewardship', label: 'Stewardship' },
-    { value: 'Other', label: 'Other' }
-  ];
 
   //  project name change and show/hide add button
   const changeNewName = (name) => {
@@ -155,11 +143,22 @@ const AddProject = (props) => {
 
           <div className="form-group">
             <label htmlFor="category" className={darkMode ? "text-light":" "}>Select Category</label>
-            <Select
-            value={newCategory}
-            onChange={setNewCategory}
-            options={options}
-          />
+            <select
+              className="form-control"
+              id="category"
+              value={newCategory}
+              onChange={(e) => setNewCategory(e.target.value)}
+            >
+              <option value="Unspecified">Unspecified</option>
+              <option value="Food">Food</option>
+              <option value="Energy">Energy</option>
+              <option value="Housing">Housing</option>
+              <option value="Education">Education</option>
+              <option value="Society">Society</option>
+              <option value="Economics">Economics</option>
+              <option value="Stewardship">Stewardship</option>
+              <option value="Other">Other</option>
+            </select>
           </div>
 
           {canPostWBS ?
