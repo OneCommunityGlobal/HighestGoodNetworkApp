@@ -601,6 +601,16 @@ class ReportsPage extends Component {
                     <Button color="info" onClick={this.showTotalTeam}>
                       {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
                     </Button>
+                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                      <EditableInfoModal
+                        areaName="totalTeamReportInfoPoint"
+                       areaTitle="Total Team Report"
+                        role={userRole}
+                        fontSize={15}
+                       isPermissionPage
+                        darkMode={darkMode}
+                     />
+                   </div>
               </div>
               </div>
                 </div>
