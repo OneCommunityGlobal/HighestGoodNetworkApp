@@ -487,7 +487,7 @@ const groupedDate = useMemo(() => {
       ) : (
         <div>
           <div>{totalTeamInfo(allTeams)}</div>
-          {/* <div>{showTotalTeamTable ? totalTeamTable(allTeams, userNameList) : null}</div> */}
+          <div>{showTotalTeamTable ? totalTeamTable(allTeams, userNameList) : null}</div>
         </div>
       )}
     </div>
