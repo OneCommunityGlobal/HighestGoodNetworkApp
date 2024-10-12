@@ -13,7 +13,14 @@ export default function QuestionMaker({ data, updateQuestion }) {
     <>
       <div>
         <div>
-          <label>{data.label}</label>
+          <label>
+            <input
+              type="text"
+              value={data.label}
+              onChange={e => updateQuestion(data.id, { label: e.target.value })}
+            />
+          </label>
+
           <select value={data.type} onChange={handleTypeChange}>
             <option value="select">Select</option>
             <option value="short_answer">Short Answer</option>
@@ -22,6 +29,7 @@ export default function QuestionMaker({ data, updateQuestion }) {
             <option value="radio">Radio</option>
           </select>
         </div>
+
         <div>
           {data.type === QuestionType.Paragraph && <textarea id={data.id} disabled />}
           {data.type === QuestionType.ShortAnswer && <input type="text" id={data.id} disabled />}
