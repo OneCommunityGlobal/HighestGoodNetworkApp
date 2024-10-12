@@ -1,7 +1,6 @@
 import React from 'react';
 import { render, fireEvent, waitFor } from '@testing-library/react';
-import Paging from './Paging';
-
+import Paging from '../Paging';
 
 // Dummy child component for tests
 const DummyChild = () => <div>Dummy Child</div>;
@@ -12,7 +11,7 @@ describe('Paging Component', () => {
     const { getByText } = render(
       <Paging totalElementsCount={30}>
         <DummyChild />
-      </Paging>
+      </Paging>,
     );
     expect(getByText('1')).toBeInTheDocument(); // Checks if first page button is rendered
     expect(getByText('5')).toBeInTheDocument(); // Checks if fifth page button is rendered
@@ -23,7 +22,7 @@ describe('Paging Component', () => {
     const { getByText } = render(
       <Paging totalElementsCount={30}>
         <DummyChild />
-      </Paging>
+      </Paging>,
     );
     fireEvent.click(getByText('2')); // Click on page number 2
     expect(getByText('2')).toHaveClass('active-button'); // Checks if page 2 is now active
@@ -33,7 +32,7 @@ describe('Paging Component', () => {
     const { getByText, container } = render(
       <Paging totalElementsCount={30}>
         <DummyChild />
-      </Paging>
+      </Paging>,
     );
     fireEvent.click(getByText('3')); // Move to page 3 first
     const paginationButtons = container.querySelectorAll('.page-index-button');
@@ -46,7 +45,7 @@ describe('Paging Component', () => {
     const { getByText, container } = render(
       <Paging totalElementsCount={30}>
         <DummyChild />
-      </Paging>
+      </Paging>,
     );
     fireEvent.click(getByText('1')); // Start from page 1
     const paginationButtons = container.querySelectorAll('.page-index-button');
@@ -60,7 +59,7 @@ describe('Paging Component', () => {
     const { container } = render(
       <Paging totalElementsCount={12} maxElemPerPage={2}>
         <DummyChild />
-      </Paging>
+      </Paging>,
     );
 
     const buttons = container.querySelectorAll('.page-index-button');
@@ -74,7 +73,7 @@ describe('Paging Component', () => {
     const { getByText } = render(
       <Paging totalElementsCount={totalElementsCount}>
         <DummyChild />
-      </Paging>
+      </Paging>,
     );
     // Expect first 5 pages to be rendered
     for (let i = 1; i <= 5; i++) {
@@ -87,7 +86,7 @@ describe('Paging Component', () => {
     const { getByText } = render(
       <Paging totalElementsCount={50}>
         <DummyChild />
-      </Paging>
+      </Paging>,
     );
     fireEvent.click(getByText('4')); // Navigate to a middle page
     await waitFor(() => {
@@ -102,7 +101,7 @@ describe('Paging Component', () => {
     const { getByText } = render(
       <Paging totalElementsCount={totalElementsCount}>
         <DummyChild />
-      </Paging>
+      </Paging>,
     );
     fireEvent.click(getByText('50'));
     await waitFor(() => {
