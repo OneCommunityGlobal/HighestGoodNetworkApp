@@ -60,6 +60,7 @@ import { GiConsoleController } from 'react-icons/gi';
 import { setCurrentUser } from '../../actions/authActions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import QuickSetupModal from './QuickSetupModal/QuickSetupModal';
+import { getUserProfile } from '../../actions/userProfile';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
@@ -168,6 +169,12 @@ function UserProfile(props) {
   useEffect(() => {
     userProfileRef.current = userProfile;
   });
+
+  useEffect(() => {
+    if (userProfile?._id) {
+      dispatch(getUserProfile(userProfile._id));
+    }
+  }, [userProfile]);
 
   useEffect(() => {
     checkIsTeamsEqual();

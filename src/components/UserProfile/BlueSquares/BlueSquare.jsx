@@ -2,13 +2,19 @@ import './BlueSquare.css';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
+import { useEffect, useState } from 'react';
 
 const BlueSquare = props => {
-  const canAddInfringements = props.hasPermission('addInfringements');
-  const canEditInfringements = props.hasPermission('editInfringements');
-  const canDeleteInfringements = props.hasPermission('deleteInfringements');
+  const [canAddInfringements, setCanAddInfringements] = useState(props.hasPermission('addInfringements'));
+  const [canEditInfringements, setCanEditInfringements] = useState(props.hasPermission('editInfringements'));
+  const [canDeleteInfringements, setDeleteInfringements] = useState(props.hasPermission('deleteInfringements'));
   const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements
   const { blueSquares, handleBlueSquare } = props;
+  useEffect(() => {
+  setCanAddInfringements(props.hasPermission('addInfringements', true));
+  setCanEditInfringements(props.hasPermission('editInfringements', true));
+  setDeleteInfringements(props.hasPermission('deleteInfringements', true));
+  }, [props]);
 
   return (
     <div className="blueSquareContainer">

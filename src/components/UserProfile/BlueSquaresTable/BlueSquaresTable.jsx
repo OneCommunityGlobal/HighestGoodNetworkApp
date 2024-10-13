@@ -31,11 +31,11 @@ const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile 
         )}
       </div>
       {canEdit ? (
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode}/>
+        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode} userProfile={userProfile}/>
       ) : !isPrivate ? (
         <div className="pl-1">Blue Square Info is Private</div>
       ) : (
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode}/>
+        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode} userProfile={userProfile}/>
       )}
     </div>
   );
