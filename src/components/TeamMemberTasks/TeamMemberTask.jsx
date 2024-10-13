@@ -123,7 +123,7 @@ const TeamMemberTask = React.memo(
       <>
         <tr ref={ref} className={`table-row ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
           {/* green if member has met committed hours for the week, red if not */}
-          <td colSpan={1}>
+          <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div className="committed-hours-circle">
                 <FontAwesomeIcon
@@ -344,32 +344,32 @@ const TeamMemberTask = React.memo(
               ) : (
                 <div className="taking-time-off-content-div">
                   <button
-                      className="compress-time-off-detail-button"
-                      onClick={() => {
-                        setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
-                      }}
-                    >
-                      <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                    className="compress-time-off-detail-button"
+                    onClick={() => {
+                      setExpandTimeOffIndicator(prev => ({ ...prev, [user.personId]: true }));
+                    }}
+                  >
+                    <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
                   </button>
-                  <div className="taking-time-off-content-alignment">
-                    <span className="taking-time-off-content-text">
-                      {onTimeOff
-                        ? `${user.name} Is Not Available this Week`
-                        : `${user.name} Is Not Available Next Week`}
-                    </span>
-                    <button
-                      type="button"
-                      className="taking-time-off-content-btn"
-                      onClick={() => {
-                        const request = onTimeOff
-                          ? { ...onTimeOff, onVacation: true, name: user.name }
-                          : { ...goingOnTimeOff, onVacation: false, name: user.name };
-                        openDetailModal(request);
-                      }}
-                    >
-                      Details ?
-                    </button>
-                  </div>
+
+                  <span className="taking-time-off-content-text">
+                    {onTimeOff
+                      ? `${user.name} Is Not Available this Week`
+                      : `${user.name} Is Not Available Next Week`}
+                  </span>
+                  <button
+                    type="button"
+                    className="taking-time-off-content-btn"
+                    onClick={() => {
+                      const request = onTimeOff
+                        ? { ...onTimeOff, onVacation: true, name: user.name }
+                        : { ...goingOnTimeOff, onVacation: false, name: user.name };
+
+                      openDetailModal(request);
+                    }}
+                  >
+                    Details ?
+                  </button>
                 </div>
               ))}
           </td>
