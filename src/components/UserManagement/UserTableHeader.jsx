@@ -18,9 +18,9 @@ import userTableDataPermissions from 'utils/userTableDataPermissions';
 /**
  * The header row of the user table.
  */
-const UserTableHeader = React.memo(({authRole, roleSearchText, darkMode}) => {
+const UserTableHeader = React.memo(({authRole, roleSearchText, darkMode, isMobile, mobileFontSize}) => {
   return (
-    <tr className={darkMode ? 'bg-space-cadet' : ''}>
+    <tr className={darkMode ? 'bg-space-cadet' : ''} style={{fontSize: isMobile ? mobileFontSize : 'initial'}}>
       <th scope="col" id="usermanagement_active">
         {ACTIVE}
       </th>
