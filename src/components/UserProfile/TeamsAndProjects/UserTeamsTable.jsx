@@ -51,7 +51,7 @@ const UserTeamsTable = props => {
     if (props.userProfile?.teamCode) {
       setTeamCode(props.userProfile.teamCode);
     }
-  }, [props.userProfile.teamCode]);
+  }, [props.userProfile?.teamCode]);
 
   const handleCodeChange = (e, autoComplete) => {
     setAutoComplete(autoComplete);
