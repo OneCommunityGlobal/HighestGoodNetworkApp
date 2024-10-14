@@ -204,27 +204,22 @@ const UserTeamsTable = props => {
                 </Col>
               )}
               <Col md="2" style={{ padding: '0' }}>
-                {props.canEditTeamCode ? (
-                  <>
-                    <AutoCompleteTeamCode
-                      refDropdown={refDropdown}
-                      teamCode={teamCode}
-                      showDropdown={showDropdown}
-                      handleCodeChange={handleCodeChange}
-                      setShowDropdown={setShowDropdown}
-                      arrayInputAutoComplete={arrayInputAutoComplete}
-                      inputAutoStatus={props.inputAutoStatus}
-                      isLoading={props.isLoading}
-                      fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
-                      darkMode={darkMode}
-                      isMobile={false}
-                    />
-                  </>
-                ) : (
-                  <div id="teamCodeAssignText" style={{ fontSize: '12px', textAlign: 'center' }}>
-                    {teamCode == '' ? 'No assigned team code' : teamCode}
-                  </div>
-                )}
+                <>
+                  <AutoCompleteTeamCode
+                    refDropdown={refDropdown}
+                    teamCode={teamCode}
+                    showDropdown={showDropdown}
+                    handleCodeChange={handleCodeChange}
+                    setShowDropdown={setShowDropdown}
+                    arrayInputAutoComplete={arrayInputAutoComplete}
+                    inputAutoStatus={props.inputAutoStatus}
+                    isLoading={props.isLoading}
+                    fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                    darkMode={darkMode}
+                    isMobile={false}
+                    canEditTeamCode={props.canEditTeamCode}
+                  />
+                </>
               </Col>
             </div>
           </div>
@@ -345,32 +340,24 @@ const UserTeamsTable = props => {
                 <span className="teams-span">Teams</span>
               </Col>
               <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
-                {props.canEditTeamCode ? (
-                  <AutoCompleteTeamCode
-                    refDropdown={refDropdown}
-                    teamCode={teamCode}
-                    showDropdown={showDropdown}
-                    handleCodeChange={handleCodeChange}
-                    setShowDropdown={setShowDropdown}
-                    arrayInputAutoComplete={arrayInputAutoComplete}
-                    inputAutoStatus={props.inputAutoStatus}
-                    isLoading={props.isLoading}
-                    fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
-                    darkMode={darkMode}
-                    isMobile={true}
-                  />
-                ) : (
-                  <div style={{ paddingTop: '6px', textAlign: 'center' }}>
-                    {teamCode == '' ? 'No assigned team code' : teamCode}
-                  </div>
-                )}
+                <AutoCompleteTeamCode
+                  refDropdown={refDropdown}
+                  teamCode={teamCode}
+                  showDropdown={showDropdown}
+                  handleCodeChange={handleCodeChange}
+                  setShowDropdown={setShowDropdown}
+                  arrayInputAutoComplete={arrayInputAutoComplete}
+                  inputAutoStatus={props.inputAutoStatus}
+                  isLoading={props.isLoading}
+                  fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                  darkMode={darkMode}
+                  isMobile={true}
+                  canEditTeamCode={props.canEditTeamCode}
+                />
               </Col>
             </div>
             {props.edit && props.role && (
-              <Col 
-                md="12"
-                style={{ padding: '0' }}
-              >
+              <Col md="12" style={{ padding: '0' }}>
                 {canAssignTeamToUsers ? (
                   props.disabled ? (
                     <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
