@@ -66,6 +66,7 @@ import {
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
 import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
+import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -341,13 +342,19 @@ function UserProfile(props) {
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        startDate: newUserProfile?.startDate.split('T')[0],
+        // startDate: newUserProfile?.startDate.split('T')[0],
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
+        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
       });
       setOriginalUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
-        startDate: newUserProfile?.startDate.split('T')[0],
+        // startDate: newUserProfile?.startDate.split('T')[0],
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
+        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
       });
       setUserStartDate(newUserProfile?.startDate.split('T')[0]);
       checkIsProjectsEqual();
@@ -828,6 +835,20 @@ function UserProfile(props) {
   const handleEndDate = async endDate => {
     setUserEndDate(endDate);
   };
+
+  const startDateValidation = (createdDate, startDate) => {
+    // console.log("userProfile:createdDate, startDate", createdDate, startDate === '' ? "EMPTY" : startDate);
+    return startDate === '' ? false : (createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate);
+  };
+  
+  const endDateValidation = (startDate, endDate) => {
+    // console.log("userProfile:startDate, endDate", startDate === '' ? "EMPTY" : startDate, endDate === '' ? "EMPTY" : endDate );
+    return endDate ? (startDate <= endDate) : true;
+  }
+
+  const isStartDateValid = startDateValidation(userProfile.createdDate, userProfile.startDate);
+  const isEndDateValid = endDateValidation(userProfile.startDate, userProfile.endDate);
+
   return (
     <div className={darkMode ? 'bg-oxford-blue' : ''} style={{ minHeight: '100%' }}>
       <ActiveInactiveConfirmationPopup
@@ -1307,8 +1328,8 @@ function UserProfile(props) {
                       !formValid.lastName ||
                       !formValid.email ||
                       !codeValid ||
-                      (userStartDate > userEndDate && userEndDate !== '') ||
                       (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
+                      !(isStartDateValid && isEndDateValid) ||
                       isTeamSaved
                     }
                     userProfile={userProfile}
@@ -1518,7 +1539,8 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
+                              !(isStartDateValid && isEndDateValid)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
