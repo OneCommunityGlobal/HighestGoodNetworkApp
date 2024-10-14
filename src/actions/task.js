@@ -17,6 +17,7 @@ import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/ser
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
 const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
 const selectUserId = state => state.auth.user.userid;
@@ -68,15 +69,11 @@ export const fetchTeamMembersTimeEntries = () => async (dispatch, getState) => {
 export const editTeamMemberTimeEntry = (newDate) => async (dispatch) => {
   const { userProfile, ...timeEntry } = newDate;
   const timeEntryURL = ENDPOINTS.TIME_ENTRY_CHANGE(timeEntry._id);
-  const userProfileURL = ENDPOINTS.USER_PROFILE(userProfile._id);
   try {
-    const updateTimeEntryPromise = axios.put(timeEntryURL, timeEntry);
-    const updateUserProfilePromise = axios.put(userProfileURL, userProfile);
-    const res = await Promise.all([updateTimeEntryPromise, updateUserProfilePromise]);
-    const { data: newTimeEntry } = res[0];
-    dispatch(updateTeamMembersTimeEntrySuccess({ ...newTimeEntry, userProfile }));
+    const { data: newTimeEntry } = await axios.put(timeEntryURL, timeEntry);
+    dispatch(updateTeamMembersTimeEntrySuccess({ ...newTimeEntry }));
   } catch (e) {
-    console.log(e)
+    throw new Error(e);
   }
 };
 
@@ -147,7 +144,9 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
       const userIds = updatedTask.resources.map(resource => resource.userID);
       await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);   
     } else {
-      await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
+      await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask).then(() => {
+        dispatch(fetchTaskEditSuggestions())   
+      });
     }
   } catch (error) {
     // dispatch(fetchTeamMembersTaskError());

@@ -13,17 +13,18 @@ import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
+import '../../../../Header/DarkMode.css'
 
 function EditTaskModal(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { allMembers, error } = props;
+  const { allMembers, error, darkMode } = props;
 
   // permissions
   const canUpdateTask = props.hasPermission('updateTask');
@@ -54,6 +55,7 @@ function EditTaskModal(props) {
   const [startedDate, setStartedDate] = useState();
   const [dueDate, setDueDate] = useState();
   const [dateWarning, setDateWarning] = useState(false);
+  const [currentMode, setCurrentMode] = useState("");
 
   const res = [...(resourceItems || [])];
   const categoryOptions = [
@@ -70,6 +72,7 @@ function EditTaskModal(props) {
   const FORMAT = 'MM/dd/yy';
   
   const EditorInit = {
+      license_key: 'gpl',
       menubar: false,
       plugins: 'advlist autolink autoresize lists link charmap table paste help',
       toolbar:
@@ -85,6 +88,12 @@ function EditTaskModal(props) {
   * -------------------------------- functions --------------------------------
   */
   const toggle = () => setModal(!modal);
+  
+  // set different mode while show modal through different button
+  const handleModalShow = (mode) => {
+    setCurrentMode(mode);
+    toggle();
+  }
 
   const removeResource = userID => {
     const newResource = resourceItems.filter(item => item.userID !== userID);
@@ -193,11 +202,15 @@ function EditTaskModal(props) {
       endstateInfo,
       category,
     };
+
+    const updateTaskDirectly = (currentMode === "Edit");
+    console.log({canSuggestTask, canUpdateTask, updateTaskDirectly});
+
     props.setIsLoading?.(true);
     await props.updateTask(
       props.taskId,
       updatedTask,
-      canUpdateTask,
+      updateTaskDirectly,
       oldTask,
     );
     props.setTask?.(updatedTask);
@@ -262,16 +275,17 @@ function EditTaskModal(props) {
   }, [links]);
 
   return (
-    <div className="controlBtn">
-      <Modal isOpen={modal} toggle={toggle}>
+    <div className="text-center">
+      <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'dark-mode text-light' : ''}>
         <ReactTooltip delayShow={300}/>
-        <ModalHeader toggle={toggle}>
-          {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
+        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+          {currentMode}
         </ModalHeader>
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <table
             className={`table table-bordered responsive
-            ${canUpdateTask || canSuggestTask ? null : 'disable-div'}`}
+            ${canUpdateTask || canSuggestTask ? null : 'disable-div'} 
+            ${darkMode ? 'text-light' : ''}`}
           >
             <tbody>
               <tr>
@@ -282,34 +296,38 @@ function EditTaskModal(props) {
               </tr>
               <tr>
                 <td scope="col">Task Name</td>
-                {ReadOnlySectionWrapper(
-                  <textarea
-                    rows="2"
-                    type="text"
-                    className="task-name border border-dark rounded"
-                    onChange={e => setTaskName(e.target.value)}
-                    onKeyPress={e => setTaskName(e.target.value)}
-                    value={taskName}
-                  />, 
-                  editable,
-                  taskName
-                )}
+                <td>
+                  {ReadOnlySectionWrapper(
+                    <textarea
+                      rows="2"
+                      type="text"
+                      className="task-name border border-dark rounded"
+                      onChange={e => setTaskName(e.target.value)}
+                      onKeyPress={e => setTaskName(e.target.value)}
+                      value={taskName}
+                    />, 
+                    editable,
+                    taskName
+                  )}
+                </td>
               </tr>
               <tr>
                 <td scope="col">Priority</td>
-                {ReadOnlySectionWrapper(
-                  <select
-                    id="priority"
-                    onChange={e => setPriority(e.target.value)}
-                    value={priority}
-                  >
-                    <option value="Primary">Primary</option>
-                    <option value="Secondary">Secondary</option>
-                    <option value="Tertiary">Tertiary</option>
-                  </select>,
-                  editable,
-                  priority
-                )}
+                <td>
+                  {ReadOnlySectionWrapper(
+                    <select
+                      id="priority"
+                      onChange={e => setPriority(e.target.value)}
+                      value={priority}
+                    >
+                      <option value="Primary">Primary</option>
+                      <option value="Secondary">Secondary</option>
+                      <option value="Tertiary">Tertiary</option>
+                    </select>,
+                    editable,
+                    priority
+                  )}
+                </td>
               </tr>
               <tr>
                 <td scope="col">Resources</td>
@@ -328,113 +346,117 @@ function EditTaskModal(props) {
               </tr>
               <tr>
                 <td scope="col">Assigned</td>
-                {ReadOnlySectionWrapper(
-                  <div className="flex-row d-inline align-items-center">
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="true"
-                        name="Assigned"
-                        value="true"
-                        onChange={e => setAssigned(true)}
-                        checked={assigned}
-                      />
-                      <label className="form-check-label" htmlFor="true">
-                        Yes
-                      </label>
-                    </div>
-                    <div className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="false"
-                        name="Assigned"
-                        value="false"
-                        onChange={e => setAssigned(false)}
-                        checked={!assigned}
-                      />
-                      <label className="form-check-label" htmlFor="false">
-                        No
-                      </label>
-                    </div>
-                  </div>,
-                  editable,
-                  assigned? 'Yes' : 'No'
-                )}
+                  <td>
+                    {ReadOnlySectionWrapper(
+                      <div className="flex-row d-inline align-items-center">
+                        <div className="form-check form-check-inline">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            id="true"
+                            name="Assigned"
+                            value="true"
+                            onChange={e => setAssigned(true)}
+                            checked={assigned}
+                          />
+                          <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="true">
+                            Yes
+                          </label>
+                        </div>
+                        <div className="form-check form-check-inline">
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            id="false"
+                            name="Assigned"
+                            value="false"
+                            onChange={e => setAssigned(false)}
+                            checked={!assigned}
+                          />
+                          <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="false">
+                            No
+                          </label>
+                        </div>
+                      </div>,
+                      editable,
+                      assigned? 'Yes' : 'No'
+                    )}
+                  </td>
               </tr>
               <tr>
                 <td scope="col">Status</td>
-                {ReadOnlySectionWrapper(
-                  <div className="flex-row  d-inline align-items-center">
-                    <div className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          id="active"
-                          name="status"
-                          value="Active"
-                          checked={status === 'Active' || status === 'Started'}
-                          onChange={(e) => setStatus(e.target.value)}
-                        />
-                        <label className="form-check-label" htmlFor="active">
-                          Active
-                        </label>
-                      </div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          id="notStarted"
-                          name="status"
-                          value="Not Started"
-                          checked={status === 'Not Started'}
-                          onChange={(e) => setStatus(e.target.value)}
-                        />
-                        <label className="form-check-label" htmlFor="notStarted">
-                          Not Started
-                        </label>
-                      </div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          id="paused"
-                          name="status"
-                          value="Paused"
-                          checked={status === 'Paused'}
-                          onChange={(e) => setStatus(e.target.value)}
-                        />
-                        <label className="form-check-label" htmlFor="paused">
-                          Paused
-                        </label>
-                      </div>
-                      <div className="form-check form-check-inline">
-                        <input
-                          className="form-check-input"
-                          type="radio"
-                          id="complete"
-                          name="status"
-                          value="Complete"
-                          checked={status === 'Complete'}
-                          onChange={(e) => setStatus(e.target.value)}
-                        />
-                        <label className="form-check-label" htmlFor="complete">
-                          Complete
-                        </label>
-                      </div>
-                  </div>,
-                  editable,
-                  status
-                )}
+                  <td>
+                    {ReadOnlySectionWrapper(
+                      <div className="flex-row  d-inline align-items-center">
+                        <div className="form-check form-check-inline">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              id="active"
+                              name="status"
+                              value="Active"
+                              checked={status === 'Active' || status === 'Started'}
+                              onChange={(e) => setStatus(e.target.value)}
+                            />
+                            <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="active">
+                              Active
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              id="notStarted"
+                              name="status"
+                              value="Not Started"
+                              checked={status === 'Not Started'}
+                              onChange={(e) => setStatus(e.target.value)}
+                            />
+                            <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="notStarted">
+                              Not Started
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              id="paused"
+                              name="status"
+                              value="Paused"
+                              checked={status === 'Paused'}
+                              onChange={(e) => setStatus(e.target.value)}
+                            />
+                            <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="paused">
+                              Paused
+                            </label>
+                          </div>
+                          <div className="form-check form-check-inline">
+                            <input
+                              className="form-check-input"
+                              type="radio"
+                              id="complete"
+                              name="status"
+                              value="Complete"
+                              checked={status === 'Complete'}
+                              onChange={(e) => setStatus(e.target.value)}
+                            />
+                            <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="complete">
+                              Complete
+                            </label>
+                          </div>
+                      </div>,
+                      editable,
+                      status
+                    )}
+                  </td>
               </tr>
               <tr>
-                <td scope="col" data-tip="Hours - Best-case">
+                <td scope="col">
                   Hours
                 </td>
-                <td scope="col" data-tip="Hours - Best-case" className="w-100">
+                <td scope="col" className="w-100">
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className="text-nowrap mr-2 w-25 mr-4">
+                    <label htmlFor="bestCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Best-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -446,20 +468,20 @@ function EditTaskModal(props) {
                         onChange={e => setHoursBest(e.target.value)}
                         onBlur={() => calHoursEstimate()}
                         id="bestCase"
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursBest,
                       {componentOnly:true}
                     )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
+                  </div>
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'The number of hours must be less than other cases'
+                      : ''}
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className="text-nowrap mr-2  w-25 mr-4">
+                    <label htmlFor="worstCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Worst-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -470,20 +492,20 @@ function EditTaskModal(props) {
                         value={hoursWorst}
                         onChange={e => setHoursWorst(e.target.value)}
                         onBlur={() => calHoursEstimate('hoursWorst')}
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursWorst,
                       {componentOnly:true}
                     )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
+                  </div>
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'The number of hours must be higher than other cases'
+                      : ''}
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className="text-nowrap mr-2 w-25 mr-4">
+                    <label htmlFor="mostCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Most-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -494,20 +516,20 @@ function EditTaskModal(props) {
                         value={hoursMost}
                         onChange={e => setHoursMost(e.target.value)}
                         onBlur={() => calHoursEstimate('hoursMost')}
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursMost,
                       {componentOnly:true}
                     )}
-                    <div className="warning">
-                      {hoursWarning
-                        ? 'Hours - Best-case < Hours - Most-case < Hours - Most-case'
-                        : ''}
-                    </div>
+                  </div>
+                  <div className="warning">
+                    {hoursWarning
+                      ? 'The number of hours must range between best and worst cases'
+                      : ''}
                   </div>
                   <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className="text-nowrap mr-2  w-25 mr-4">
+                    <label htmlFor="Estimated" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
                       Estimated
                     </label>
                     {ReadOnlySectionWrapper(
@@ -517,7 +539,7 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursEstimate}
                         onChange={e => setHoursEstimate(e.target.value)}
-                        className="w-25"
+                        className="m-auto"
                       />,
                       editable,
                       hoursEstimate,
@@ -547,7 +569,7 @@ function EditTaskModal(props) {
                         data-tip="Add Link"
                         onClick={addLink}
                       >
-                        <i className="fa fa-plus" aria-hidden="true" />
+                        <i className={`fa fa-plus ${darkMode ? 'text-light' : ''}`} aria-hidden="true" />
                       </button>
                     </div>,
                     editable,
@@ -556,7 +578,7 @@ function EditTaskModal(props) {
                   )}
                   <div>
                     {links?.map((link, i) =>
-                      link.length > 1 ? (
+                      link.length >= 1 ? (
                         <div key={i}>
                           {editable && <i className="fa fa-trash-o remove-link" aria-hidden="true" data-tip='delete' onClick={editable? () => removeLink(i) : () => {}}  /> }
                           <a href={link} className="task-link" target="_blank" data-tip={link} rel="noreferrer">
@@ -570,24 +592,28 @@ function EditTaskModal(props) {
               </tr>
               <tr>
                 <td scope="col">Category</td>
-                {ReadOnlySectionWrapper(
-                  <select value={category} onChange={e => setCategory(e.target.value)}>
-                    {categoryOptions.map(cla => (
-                      <option value={cla.value} key={cla.value}>
-                        {cla.label}
-                      </option>
-                    ))}
-                  </select>,
-                  editable,
-                  category
-                )}
+                  <td>
+                  {ReadOnlySectionWrapper(
+                    <select value={category} onChange={e => setCategory(e.target.value)}>
+                      {categoryOptions.map(cla => (
+                        <option value={cla.value} key={cla.value}>
+                          {cla.label}
+                        </option>
+                      ))}
+                    </select>,
+                    editable,
+                    category
+                  )}
+                </td>
               </tr>
 
               <tr>
                 <td scope="col" colSpan="2">
                   <div>Why this Task is Important:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="why-info"
@@ -605,7 +631,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Design Intent:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="intent-info"
@@ -623,7 +651,9 @@ function EditTaskModal(props) {
                 <td scope="col" colSpan="2">
                   <div>Endstate:</div>
                   {ReadOnlySectionWrapper (
-                  <Editor
+                    <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    licenseKey="gpl"
                     disabled={!editable}
                     init={EditorInit}
                     name="endstate-info"
@@ -639,8 +669,9 @@ function EditTaskModal(props) {
               </tr>
               <tr>
                 <td scope="col">Start Date</td>
+                <td>
                 {ReadOnlySectionWrapper(
-                  <div>
+                  <div className='text-dark'>
                     <DayPickerInput
                       format={FORMAT}
                       formatDate={formatDate}
@@ -648,51 +679,71 @@ function EditTaskModal(props) {
                       onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
                       value={startedDate}
                     />
-                    <div className="warning">
+                    <div className='warning text-danger'>
                       {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
                     </div>
                   </div>,
                   editable,
                   convertDate(startedDate)
                 )}
+                </td>
               </tr>
               <tr>
                 <td scope="col">End Date</td>
-                  {ReadOnlySectionWrapper(
-                    <div>
-                    <DayPickerInput
-                      format={FORMAT}
-                      formatDate={formatDate}
-                      placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
-                      onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                    />
-                    <div className="warning">
-                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
-                    </div>
-                    </div>,
-                    editable,
-                    convertDate(dueDate)
-                  )}
+                  <td>
+                    {ReadOnlySectionWrapper(
+                      <div className='text-dark'>
+                        <DayPickerInput
+                          format={FORMAT}
+                          formatDate={formatDate}
+                          placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
+                          onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
+                          
+                        />
+                        <div className='warning text-danger'>
+                          {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                        </div>
+                      </div>,
+                      editable,
+                      convertDate(dueDate)
+                    )}
+                </td>               
               </tr>
             </tbody>
           </table>
         </ModalBody>
         {canUpdateTask || canSuggestTask ? (
-          <ModalFooter>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask} style={boxStyle}>
+              <Button color="primary" onClick={updateTask} style={darkMode ? boxStyleDark : boxStyle}>
                 Update
               </Button>
             ) : null}
-            <Button color="secondary" onClick={toggle} style={boxStyle}>
+            <Button color="secondary" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
               Cancel
             </Button>
           </ModalFooter>
         ) : null}
       </Modal>
-      <Button color="primary" size="sm" onClick={toggle} style={boxStyle}>
-        {canUpdateTask ? 'Edit' : canSuggestTask ? 'Suggest' : 'View'}
-      </Button>
+      <div className="task-action-buttons d-flex"></div>
+      {
+        canUpdateTask &&
+        <Button className="mr-2 controlBtn" color="primary" size="sm" onClick={e => handleModalShow("Edit")} style={darkMode ? boxStyleDark : boxStyle}>
+        Edit
+        </Button>
+      }
+      {
+        canSuggestTask &&
+        <Button className="mr-2 controlBtn" color="primary" size="sm" onClick={e => handleModalShow("Suggest")} style={darkMode ? boxStyleDark : boxStyle}>
+        Suggest
+        </Button>
+      }
+      {
+        !canUpdateTask && !canSuggestTask &&
+        <Button className="mr-2 controlBtn" color="primary" size="sm" onClick={e => handleModalShow("View")} style={darkMode ? boxStyleDark : boxStyle}>
+        View
+        </Button>
+      }
     </div>
   );
 };
@@ -700,5 +751,6 @@ function EditTaskModal(props) {
 const mapStateToProps = state => ({
   allMembers: state.projectMembers.members,
   error: state.tasks.error,
+  darkMode: state.theme.darkMode,
 });
 export default connect(mapStateToProps, { updateTask, hasPermission, })(EditTaskModal);

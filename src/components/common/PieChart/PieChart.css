@@ -50,6 +50,21 @@
 
 @media (max-width: 670px) {
   .pie-chart-wrapper {
-     flex-direction: column;
+    flex-direction: column;
   }
+}
+
+div.tooltip-donut {
+  position: absolute;
+  text-align: center;
+  padding: 0.5rem;
+  background: #ffffff;
+  color: #313639;
+  border-radius: 8px;
+  pointer-events: none;
+  font-size: 1rem;
+}
+
+div.pie-chart-legend-container {
+  min-width: 150px;
 }

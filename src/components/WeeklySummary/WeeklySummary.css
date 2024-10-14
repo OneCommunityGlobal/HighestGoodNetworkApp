@@ -113,6 +113,7 @@
 .summary-instructions-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   margin-right: 0;
 }
 
@@ -130,6 +131,14 @@
   background-color: #0056b3; /* Darker blue color on hover */
 }
 
+.copy-prompt-btn {
+  font-size: 14px;
+}
+
+.current-prompt-btn {
+  width: 100%;
+}
+
 @media screen and (min-width: 992px) {
   .left-col-dashboard {
     margin-top: -200px;
@@ -145,7 +154,16 @@
 /* Small devices (landscape phones, 544px and up) */
 @media (max-width: 544px) {
   .weeklysummarypane {
-    max-height: 350px;
     overflow: auto;
+  }
+
+  .summary-dropdown {
+    margin-left: auto;
+  }
+}
+
+@media only screen and (max-width: 544px) {
+  .responsive-font-size {
+    font-size: 0.75rem !important;
   }
 }

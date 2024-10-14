@@ -1,0 +1,39 @@
+.role-button {
+    border-radius: 50%;
+    padding: 2px;
+    margin: 5px;
+  }
+  
+ #qsc-outer-wrapper #wrapper{
+    position: relative;
+  }
+
+  #qsc-outer-wrapper  #wrapper .title {
+    position: absolute;
+    color: #ddd;
+    top:30px;
+    left: 30px;
+    /* height: 2rem;
+    width: 150px; */
+    display: none;
+    white-space: nowrap;
+    z-index: 10;
+    background-color: #555;
+    border-radius: 2px;
+    padding: 0.5rem 1rem;
+  }
+  
+  #qsc-outer-wrapper  #wrapper:hover .title {
+    cursor: pointer;
+    display: block;
+  }
+
+
+.setup-title-name{
+    max-height: 30px;
+
+}
+
+.qsm-modal-required{
+  color: red;
+}

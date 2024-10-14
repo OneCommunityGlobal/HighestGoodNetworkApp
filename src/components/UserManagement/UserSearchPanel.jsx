@@ -1,25 +1,71 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { SEARCH, SHOW, CREATE_NEW_USER, SEND_SETUP_LINK } from '../../languages/en/ui';
-import { boxStyle } from 'styles';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faBell } from '@fortawesome/free-solid-svg-icons';
+import { Tooltip, OverlayTrigger } from 'react-bootstrap';
+import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
+import { Tooltip as ReactstrapTooltip } from 'reactstrap';
+
+const setupHistoryTooltip = (
+  <Tooltip id="tooltip">
+    Setup History Modal
+  </Tooltip>
+)
+
 /**
  * The search panel stateless component for user management grid
  */
-const UserSearchPanel = props => {
+
+const UserSearchPanel = ({hasPermission,handleNewUserSetupPopup, handleSetupHistoryPopup, onNewUserClick, searchText, onSearch, onActiveFiter, darkMode}) => {
+  // console.log('UserSearchPanel props', props);
+  const canCreateUsers = hasPermission('postUserProfile');
+  const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
+  const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);
+  
   return (
     <div className="input-group mt-3" id="new_usermanagement">
-      <button type="button" className="btn btn-info mr-2" onClick={props.handleNewUserSetupPopup}>
+      <button type="button" disabled={!canCreateUsers} className="btn btn-info mr-2" onClick={handleNewUserSetupPopup} style={darkMode ? boxStyleDark : boxStyle}>
         {SEND_SETUP_LINK}
       </button>
-      <button
-        type="button"
-        className="btn btn-info mr-2"
-        onClick={e => {
-          props.onNewUserClick();
-        }}
-        style={boxStyle}
-      >
-        {CREATE_NEW_USER}
-      </button>
+      <OverlayTrigger placement="bottom" overlay={setupHistoryTooltip}>
+        <button type="button" className="btn btn-info mr-2" onClick={handleSetupHistoryPopup} style={darkMode ? boxStyleDark : boxStyle}>
+          <FontAwesomeIcon
+            className="bell_icon"
+            icon={faBell}
+          />
+        </button>
+      </OverlayTrigger>
+
+
+      <>
+        {
+          !canCreateUsers ? 
+          <ReactstrapTooltip
+            placement="bottom"
+            isOpen={tooltipCreateNewUserOpen}
+            target={"btn-create-new-user"}
+            toggle={toggleCreateNewUserTooltip}
+          >
+            You don't have permission to create a new user
+          </ReactstrapTooltip>
+          : ""
+        }
+        
+        <button
+          type="button"
+          disabled={!canCreateUsers}
+          className="btn btn-info mr-2"
+          onClick={e => {
+            onNewUserClick();
+          }}
+          style={darkMode ? boxStyleDark : boxStyle}
+          id={"btn-create-new-user"}
+        >
+          {CREATE_NEW_USER}
+        </button>
+      </>
       <div className="input-group-prepend">
         <span className="input-group-text">{SEARCH}</span>
       </div>
@@ -30,9 +76,9 @@ const UserSearchPanel = props => {
         aria-label="Search"
         placeholder="Search Text"
         id="user-profiles-wild-card-search"
-        value={props.searchText}
+        value={searchText}
         onChange={e => {
-          props.onSearch(e.target.value);
+          onSearch(e.target.value);
         }}
       />
       <div className="input-group-prepend ml-2">
@@ -40,7 +86,7 @@ const UserSearchPanel = props => {
         <select
           id="active-filter-dropdown"
           onChange={e => {
-            props.onActiveFiter(e.target.value);
+            onActiveFiter(e.target.value);
           }}
         >
           <option value="all">All</option>
@@ -55,4 +101,4 @@ const UserSearchPanel = props => {
   );
 };
 
-export default UserSearchPanel;
+export default connect(null, { hasPermission })(UserSearchPanel);

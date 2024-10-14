@@ -1,6 +1,7 @@
 .ToolDetailPage{
 font-size: clamp(0.9em, 2.5vw, 1em);
 margin-top: 1em;
+margin-bottom: 3em;
 }
 
 .ToolDetailPage__header h1{

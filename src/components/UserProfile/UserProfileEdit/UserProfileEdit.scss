@@ -100,6 +100,38 @@ form-control {
   margin: 5px;
 }
 
+.Schedule-explanation-modal-list-marker::marker {
+  font-weight: bold;
+}
+.infringements-explanation-modal-row,
+.scheduled-time-off-explanation-modal-row {
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: inset 0 0 5px rgba(0, 0, 0, 0.3);
+  padding-top: 10px;
+  border-radius: 5px;
+}
+
+.infringements-explanation-modal-row::-webkit-scrollbar,
+.scheduled-time-off-explanation-modal-row::-webkit-scrollbar {
+  width: 12px;
+}
+
+.infringements-explanation-modal-row::-webkit-scrollbar-track,
+.scheduled-time-off-explanation-modal-row::-webkit-scrollbar-track {
+  border-radius: 4px;
+  background-color: #e7e7e7;
+  border: 1px solid #cacaca;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+}
+
+.infringements-explanation-modal-row::-webkit-scrollbar-thumb,
+.scheduled-time-off-explanation-modal-row::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #007bff;
+  box-shadow: inset 0 0 3px #e7e7e7;
+}
+
 .tab-pane {
   .row {
     padding: 15 px;
