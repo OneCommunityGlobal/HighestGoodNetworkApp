@@ -129,7 +129,7 @@ describe("Projects component",()=>{
     });
 
     render(<Provider store={store}><Projects /></Provider>)
-    expect(screen.queryByText('Add new project')).not.toBeInTheDocument()
+    expect(screen.queryByText('Add New Project')).not.toBeInTheDocument()
   })
   it('check if AddProject gets displayed when postProject permission is added',()=>{
     axios.get.mockResolvedValue({
@@ -158,7 +158,8 @@ describe("Projects component",()=>{
     })
 
     render(<Provider store={testStore}><Projects /></Provider>)
-    expect(screen.queryByText('Add new project')).toBeInTheDocument()
+    // expect(screen.queryByText('Add new project')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
   })
   it('check if modal title is set to error when the modal is not open',()=>{
     axios.get.mockResolvedValue({
