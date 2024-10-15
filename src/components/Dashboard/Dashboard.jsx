@@ -20,7 +20,7 @@ export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
-
+  
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
   const [displayUserId, setDisplayUserId] = useState(
@@ -38,7 +38,7 @@ export function Dashboard(props) {
       alert(warningMessage);
       return;
     }
-  
+    
     const shouldOpen = forceOpen !== null ? forceOpen : !popup;
     setPopup(shouldOpen);
   
@@ -64,71 +64,75 @@ export function Dashboard(props) {
     };
   }, []);
 
-  return (
-    <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
-      <SummaryBar
-        displayUserId={displayUserId}
-        toggleSubmitForm={toggle}
-        role={authUser.role}
-        summaryBarData={summaryBarData}
-        isNotAllowedToEdit={isNotAllowedToEdit}
-      />
-
-      <Row className="w-100 ml-1">
-        <Col lg={7}></Col>
-        <Col lg={5}>
-          <div className="row justify-content-center">
-            <div
-              role="button"
-              className="mt-3 mb-5 text-center"
-              onClick={toggle}
-              onKeyDown={toggle}
-              tabIndex="0"
-            >
-              <WeeklySummary
-                isDashboard
-                isPopup={popup}
-                userRole={authUser.role}
-                displayUserId={displayUserId}
-                displayUserEmail={viewingUser?.email}
-                isNotAllowedToEdit={isNotAllowedToEdit}
-                darkMode={darkMode}
-              />
-            </div>
-          </div>
-        </Col>
-      </Row>
-      <Row className="w-100 ml-1">
-        <Col lg={5} className="order-lg-2 order-2">
-          <Leaderboard
-            displayUserId={displayUserId}
-            isNotAllowedToEdit={isNotAllowedToEdit}
-            darkMode={darkMode}
-          />
-        </Col>
-        <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
-          {popup && (
-            <div className="my-2" id="weeklySum">
-              <WeeklySummary
-                displayUserId={displayUserId}
-                setPopup={setPopup}
-                userRole={authUser.role}
-                isNotAllowedToEdit={isNotAllowedToEdit}
-                darkMode={darkMode}
-              />
-            </div>
-          )}
-          <div className="my-2" id="wsummary">
-            <Timelog
-              isDashboard
-              passSummaryBarData={setSummaryBarData}
+  return(
+    viewingUser && isNotAllowedToEdit ? (
+      toast.error("You are not allowed to view/edit this page.")
+      ):(
+          <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
+            <SummaryBar
+              displayUserId={displayUserId}
+              toggleSubmitForm={toggle}
+              role={authUser.role}
+              summaryBarData={summaryBarData}
               isNotAllowedToEdit={isNotAllowedToEdit}
             />
-          </div>
-        </Col>
-      </Row>
-      <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />
-    </Container>
+
+            <Row className="w-100 ml-1">
+              <Col lg={7}></Col>
+              <Col lg={5}>
+                <div className="row justify-content-center">
+                  <div
+                    role="button"
+                    className="mt-3 mb-5 text-center"
+                    onClick={toggle}
+                    onKeyDown={toggle}
+                    tabIndex="0"
+                  >
+                    <WeeklySummary
+                      isDashboard
+                      isPopup={popup}
+                      userRole={authUser.role}
+                      displayUserId={displayUserId}
+                      displayUserEmail={viewingUser?.email}
+                      isNotAllowedToEdit={isNotAllowedToEdit}
+                      darkMode={darkMode}
+                    />
+                  </div>
+                </div>
+              </Col>
+            </Row>
+            <Row className="w-100 ml-1">
+              <Col lg={5} className="order-lg-2 order-2">
+                <Leaderboard
+                  displayUserId={displayUserId}
+                  isNotAllowedToEdit={isNotAllowedToEdit}
+                  darkMode={darkMode}
+                />
+              </Col>
+              <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
+                {popup && (
+                  <div className="my-2" id="weeklySum">
+                    <WeeklySummary
+                      displayUserId={displayUserId}
+                      setPopup={setPopup}
+                      userRole={authUser.role}
+                      isNotAllowedToEdit={isNotAllowedToEdit}
+                      darkMode={darkMode}
+                    />
+                  </div>
+                )}
+                <div className="my-2" id="wsummary">
+                  <Timelog
+                    isDashboard
+                    passSummaryBarData={setSummaryBarData}
+                    isNotAllowedToEdit={isNotAllowedToEdit}
+                  />
+                </div>
+              </Col>
+            </Row>
+            <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />
+          </Container>
+        )
   );
 }
 
