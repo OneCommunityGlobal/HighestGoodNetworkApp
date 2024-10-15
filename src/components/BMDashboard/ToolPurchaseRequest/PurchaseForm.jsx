@@ -42,7 +42,7 @@ export default function PurchaseForm() {
 
   const handleSubmit = async e => {
     e.preventDefault();
-    const validate = schema.validate({
+    const { error } = schema.validate({
       projectId,
       toolId,
       quantity,
@@ -51,11 +51,14 @@ export default function PurchaseForm() {
       desc,
       makeModel,
     });
-    // TODO: provide specific validation info to the user
-    if (validate.error) {
-      setValidationError('Invalid form data. Please try again.');
+    if (error) {
+      // Display the first validation error message
+      setValidationError(
+        error.details[0]?.message || 'Invalid form data. Please review your inputs.',
+      );
       return;
     }
+    setValidationError('');
     const body = {
       projectId,
       toolId,
@@ -76,6 +79,7 @@ export default function PurchaseForm() {
 
     if (response.status === 201) {
       toast.success('Success: your purchase request has been logged.');
+      history.push('/bmdashboard/tools');
     } else if (response.status >= 400) {
       toast.error(`Error: ${response.status} ${response.statusText}.`);
     } else toast.warning(`Warning: unexpected status ${response.status}.`);
