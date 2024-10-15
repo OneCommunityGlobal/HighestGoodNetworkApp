@@ -47,26 +47,45 @@ function CheckTypes({ type }) {
               </Input>
             </Col>
           </FormGroup>
-          <Table size="sm" responsive>
-            <thead>
-              <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Category</th>
-                <th>Description</th>
-              </tr>
-            </thead>
-            <tbody>
-              {buildingInvTypes?.map((elemType, idx) => (
-                <tr key={elemType._id}>
-                  <th>{idx + 1}</th>
-                  <td>{elemType.name}</td>
-                  <td>{elemType.category}</td>
-                  <td>{elemType.description}</td>
+          <div
+            style={{
+              maxHeight: '800px',
+              overflowY: 'auto',
+              padding: '10px',
+              borderRadius: '15px',
+              border: '1px solid #dcdcdc',
+              boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
+            }}
+          >
+            <Table size="sm" responsive hover striped> 
+              <thead style={{
+                backgroundColor: '#f5f5f5',
+                fontWeight: 'bold',
+                position: 'sticky',
+                top: 0,
+                zIndex: 1
+                }}>
+                <tr>
+                  <th>#</th>
+                  <th>Name</th>
+                  <th>Category</th>
+                  <th>Description</th>
                 </tr>
-              ))}
-            </tbody>
-          </Table>
+              </thead>
+              <tbody>
+                {buildingInvTypes?.map((elemType, idx) => (
+                  <tr key={elemType._id} 
+                    style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9f9f9', cursor: 'pointer' }}
+                    >
+                    <th>{idx + 1}</th>
+                    <td>{elemType.name}</td>
+                    <td>{elemType.category}</td>
+                    <td>{elemType.description}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </Table>
+          </div>
         </CardBody>
       </Card>
     </div>
