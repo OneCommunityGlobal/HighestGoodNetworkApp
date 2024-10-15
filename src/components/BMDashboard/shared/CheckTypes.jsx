@@ -54,17 +54,19 @@ function CheckTypes({ type }) {
               padding: '10px',
               borderRadius: '15px',
               border: '1px solid #dcdcdc',
-              boxShadow: '0px 2px 10px rgba(0, 0, 0, 0.05)'
+              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
             }}
           >
-            <Table size="sm" responsive hover striped> 
-              <thead style={{
-                backgroundColor: '#f5f5f5',
-                fontWeight: 'bold',
-                position: 'sticky',
-                top: 0,
-                zIndex: 1
-                }}>
+            <Table size="sm" responsive hover striped>
+              <thead
+                style={{
+                  backgroundColor: '#f5f5f5',
+                  fontWeight: 'bold',
+                  position: 'sticky',
+                  top: 0,
+                  zIndex: 1,
+                }}
+              >
                 <tr>
                   <th>#</th>
                   <th>Name</th>
@@ -74,9 +76,13 @@ function CheckTypes({ type }) {
               </thead>
               <tbody>
                 {buildingInvTypes?.map((elemType, idx) => (
-                  <tr key={elemType._id} 
-                    style={{ backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9f9f9', cursor: 'pointer' }}
-                    >
+                  <tr
+                    key={elemType._id}
+                    style={{
+                      backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9f9f9',
+                      cursor: 'pointer',
+                    }}
+                  >
                     <th>{idx + 1}</th>
                     <td>{elemType.name}</td>
                     <td>{elemType.category}</td>
