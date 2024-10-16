@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Form, FormGroup, FormFeedback, Label, Input, Button } from 'reactstrap';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
@@ -30,6 +30,13 @@ export default function AddTypeForm() {
   const [fuel, setFuel] = useState(FuelTypes.dies);
   const [errInput, setErrInput] = useState('');
   const [errType, setErrType] = useState('');
+  const [isRedirected, setIsRedirected] = useState(false);
+
+  useEffect(() => {
+    if (isRedirected) {
+      history.push('/bmdashboard/equipment');
+    }
+  }, [isRedirected, history]);
 
   const handleChange = event => {
     setErrInput('');
@@ -55,6 +62,7 @@ export default function AddTypeForm() {
     const response = await addEquipmentType({ name, desc, fuel });
     if (response.status === 201) {
       toast.success('Success: new equipment type added.');
+      setIsRedirected(true);
     } else if (response.status === 409) {
       toast.error(`Error: that type already exists.`);
     } else if (response.status >= 400) {
