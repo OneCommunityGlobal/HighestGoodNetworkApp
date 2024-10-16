@@ -525,6 +525,10 @@
   .team-member-tasks h1 {
     font-size: 28px;
   }
+
+  .remove-child-borders > td {
+    border-top-width: 0 !important;
+  }
 }
 
 @media only screen and (min-width: 768px) {
