@@ -13,10 +13,11 @@
   position: relative;
 }
 
-.task_table-container table {
+.task_table-container table{
   table-layout: fixed;
   width: 100%;
 }
+
 
 .team-member-tasks-bell {
   margin-right: 10px;
@@ -61,7 +62,7 @@
 
 .team-task-progress {
   position: relative;
-  width: 120px;
+  width:120px;
   min-width: 120px;
   max-width: 120px;
 }
@@ -155,20 +156,32 @@
 .right-padding-temp-fix {
   padding-right: 0px !important;
 }
+
 .table-row {
-  position: relative;
+  /* These rules serve as a replacement to `position: relative` which 
+  does not work as expected on table elements in Safari */
+  transform: translate(0);
+  clip-path: inset(0);
 }
 
 .taking-time-off-content-div {
   background-color: rgba(0, 0, 25, 0.7);
   position: absolute;
   width: 100%;
-  height: calc(100% - 2px);
+  height: 100%;
   top: 1px;
   left: 0;
   display: flex;
   justify-content: center;
+}
+
+.taking-time-off-content-alignment {
+  display: flex;
   align-items: center;
+  height: min-content;
+  margin-top: 40px;
+  margin-right: 20px;
+  margin-left: 20px;
 }
 
 .taking-time-off-table-div:hover {
@@ -219,6 +232,7 @@
   position: relative;
   top: -16px;
   left: 7px;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   border-radius: 50%;
@@ -244,6 +258,7 @@
   border: 1px solid white;
   padding: 7px;
   border-radius: 6px;
+  text-wrap: nowrap;
 }
 
 .taking-time-off-content-btn:hover {
@@ -267,44 +282,44 @@
   border-radius: 4px;
   background-color: #e7e7e7;
   border: 1px solid #cacaca;
-  box-shadow: inset 0 0 6px rgba(0, 0, 0, 0.3);
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
 }
 
 .time-off-detail-modal::-webkit-scrollbar-thumb {
   border-radius: 8px;
-  background-color: #007bff;
+  background-color: #007BFF ;
   box-shadow: inset 0 0 3px #e7e7e7;
 }
+
 
 .time-off-detail-modal-section {
   margin-bottom: 10px;
 }
 
-.compress-time-off-detail-button {
+.compress-time-off-detail-button{
   color: white;
   position: absolute;
   right: 1px;
-  bottom: 1px;
+  top: 1px;
   border: none;
   background-color: transparent;
   border-radius: 5px;
 }
 
-.compress-time-off-detail-button:hover,
-.expand-time-off-detail-button:hover {
+.compress-time-off-detail-button:hover,.expand-time-off-detail-button:hover{
   background-color: rgba(0, 0, 25, 0.6);
 }
 
-.expand-time-off-detail-button {
+.expand-time-off-detail-button{
   color: white;
   position: absolute;
   right: 1px;
-  bottom: 1px;
+  top: 1px;
   background-color: rgba(0, 0, 25, 0.7);
   border-radius: 5px;
 }
 
-.time-off-detail-modal-card-container {
+.time-off-detail-modal-card-container{
   border: 1px solid #ccc;
   margin-bottom: 10px;
   border-radius: 5px;
@@ -353,7 +368,7 @@
   margin-top: 5px;
 }
 
-.task_table-container {
+.task_table-container{
   width: 100%;
   overflow-y: hidden;
 }
@@ -407,7 +422,7 @@
     min-width: auto;
     max-width: none;
   }
-  .task-table {
+  .task-table{
     max-height: 900px;
   }
 }
@@ -465,7 +480,7 @@
     font-size: 0.75rem !important;
   }
 
-  .table-row td {
+  .table-row td{
     padding: 2px !important;
   }
 
@@ -514,7 +529,7 @@
 }
 
 @media only screen and (max-width: 530px) {
-  .hours-btn-container {
+  .hours-btn-container{
     min-width: none;
     padding: 0;
   }
@@ -525,7 +540,7 @@
 }
 
 @media only screen and (max-width: 440px) {
-  .hours-btn-container {
+  .hours-btn-container{
     column-gap: 0.2em;
   }
   .team-member-tasks h1 {
@@ -537,41 +552,41 @@
 }
 
 @media only screen and (max-width: 544px) {
-  .responsive-font-size {
+  .responsive-font-size{
     font-size: 0.75rem !important;
   }
-  .multi-select-filter {
+  .multi-select-filter{
     width: 50%;
   }
 }
 
 @media screen and (max-width: 1075px) and (min-width: 992px) {
-  .header-box h1 {
+  .header-box h1{
     font-size: 1.25rem !important;
     margin-right: 10px;
   }
-  .team-member-task-remove {
+  .team-member-task-remove{
     margin: 0;
   }
 }
 
 @media screen and (max-width: 1200px) and (min-width: 992px) {
-  .team-member-tasks-user-name-link {
+  .team-member-tasks-user-name-link{
     font-size: 14px !important;
   }
-  .hours-completed-column {
+  .hours-completed-column{
     width: 50px;
   }
-  .team-clocks {
+  .team-clocks{
     font-size: 0.75rem !important;
   }
-  .team-member-tasks-content-link {
+  .team-member-tasks-content-link{
     font-size: 0.75rem !important;
   }
-  .team-task-progress-time {
+  .team-task-progress-time{
     font-size: 0.75rem !important;
   }
-  .team-task-progress-time-volunteers {
+  .team-task-progress-time-volunteers{
     font-size: 0.75rem !important;
   }
 }
