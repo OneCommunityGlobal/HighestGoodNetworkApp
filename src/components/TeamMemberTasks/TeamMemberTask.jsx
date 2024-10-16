@@ -369,7 +369,7 @@ const TeamMemberTask = React.memo(
                     { showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) &&
                       <button
                         type="button"
-                        className="expand-time-off-detail-button"
+                        className={`expand-time-off-detail-button ${isTimeOffContentOpen ? 'hidden' : ''}`}
                         onClick={() => setIsTimeOffContentOpen(true)}
                       >
                         <FontAwesomeIcon icon={faExpandArrowsAlt} data-testid="icon" />

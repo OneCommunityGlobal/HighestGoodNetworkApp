@@ -161,6 +161,10 @@
   position: relative;
 }
 
+.hidden {
+  visibility: hidden;
+}
+
 .taking-time-off-content-div {
   background-color: rgba(0, 0, 25, 0.7);
   height: 100%;
