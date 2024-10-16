@@ -7,6 +7,7 @@ function NotFoundPage() {
 
   return (
     <section
+      // eslint-disable-next-line react/jsx-curly-brace-presence
       className={`h-100 d-flex   align-items-center  flex-column justify-content-center`}
       style={{ backgroundColor: darkMode ? '#121212' : 'white' }}
     >
