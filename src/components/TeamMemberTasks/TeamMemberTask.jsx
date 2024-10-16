@@ -128,7 +128,7 @@ const TeamMemberTask = React.memo(
           key={user.personId}
         >
           {/* green if member has met committed hours for the week, red if not */}
-          <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
+          <td colSpan={1}>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div className="committed-hours-circle">
                 <FontAwesomeIcon
@@ -170,7 +170,7 @@ const TeamMemberTask = React.memo(
                           currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                             ? 'rgba(128, 128, 128, 0.5)'
                             : darkMode
-                            ? '#007BFF'
+                            ? '#339CFF'
                             : undefined,
                         fontSize: '20px',
                       }}
@@ -188,7 +188,7 @@ const TeamMemberTask = React.memo(
                     />
                   </td>
                   <td data-label="Time" className={`team-clocks ${darkMode ? 'text-light' : ''}`}>
-                    <u className={darkMode ? 'text-azure' : ''}>
+                    <u className={darkMode ? 'dashboard-team-clocks' : ''}>
                       {user.weeklycommittedHours ? user.weeklycommittedHours : 0}
                     </u>{' '}
                     /<font color="green"> {thisWeekHours ? thisWeekHours.toFixed(1) : 0}</font> /
@@ -214,7 +214,7 @@ const TeamMemberTask = React.memo(
                               className="team-member-tasks-content-link"
                               to={task.projectId ? `/wbs/tasks/${task._id}` : '/'}
                               data-testid={`${task.taskName}`}
-                              style={{ color: darkMode ? '#007BFF' : undefined }}
+                              style={{ color: darkMode ? '#339CFF' : undefined }}
                             >
                               <span>{`${task.num} ${task.taskName}`} </span>
                             </Link>
@@ -376,25 +376,25 @@ const TeamMemberTask = React.memo(
                   >
                     <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
                   </button>
-
-                  <span className="taking-time-off-content-text">
-                    {onTimeOff
-                      ? `${user.name} Is Not Available this Week`
-                      : `${user.name} Is Not Available Next Week`}
-                  </span>
-                  <button
-                    type="button"
-                    className="taking-time-off-content-btn"
-                    onClick={() => {
-                      const request = onTimeOff
-                        ? { ...onTimeOff, onVacation: true, name: user.name }
-                        : { ...goingOnTimeOff, onVacation: false, name: user.name };
-
-                      openDetailModal(request);
-                    }}
-                  >
-                    Details ?
-                  </button>
+                  <div className="taking-time-off-content-alignment">
+                    <span className="taking-time-off-content-text">
+                      {onTimeOff
+                        ? `${user.name} Is Not Available this Week`
+                        : `${user.name} Is Not Available Next Week`}
+                    </span>
+                    <button
+                      type="button"
+                      className="taking-time-off-content-btn"
+                      onClick={() => {
+                        const request = onTimeOff
+                          ? { ...onTimeOff, onVacation: true, name: user.name }
+                          : { ...goingOnTimeOff, onVacation: false, name: user.name };
+                        openDetailModal(request);
+                      }}
+                    >
+                      Details ?
+                    </button>
+                  </div>
                 </div>
               ))}
           </td>
