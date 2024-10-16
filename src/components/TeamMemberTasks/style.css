@@ -429,6 +429,9 @@
     margin-bottom: 3px;
   }
 
+  .team-member-tasks-bell {
+    margin-right: 0;
+  }
 }
 
 @media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
