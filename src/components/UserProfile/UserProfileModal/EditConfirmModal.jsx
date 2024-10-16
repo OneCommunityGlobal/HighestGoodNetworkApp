@@ -14,10 +14,20 @@ const EditConfirmModal = props => {
   return (
     <React.Fragment>
       <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
-        <ModalHeader toggle={disabled ? () => false : closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
+        <ModalHeader
+          toggle={disabled ? () => false : closeModal}
+          className={darkMode ? 'bg-space-cadet' : ''}
+        >
+          {modalTitle}
+        </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalMessage}</ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button color="primary" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle} disabled={disabled}>
+          <Button
+            color="primary"
+            onClick={toggle}
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={disabled}
+          >
             Close
           </Button>
         </ModalFooter>
