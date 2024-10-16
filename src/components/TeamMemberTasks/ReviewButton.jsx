@@ -187,11 +187,10 @@ const ReviewButton = ({
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           You are about to submit the following link for review:
-          <div className="mt-2">
-            {/* Hyperlink for the pasted link */}
+          <div className="mt-2" style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
             <a href={link} target="_blank" rel="noopener noreferrer">
-              {link}
-            </a>
+                {link}
+              </a>
           </div>
           Please confirm if this is the correct link.
         </ModalBody>
@@ -199,14 +198,12 @@ const ReviewButton = ({
           <Button color="primary" onClick={handleFinalSubmit} style={darkMode ? boxStyleDark : boxStyle}>
             Confirm and Submit
           </Button>
-          <Button
-            onClick={toggleConfirmSubmitModal}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
+          <Button onClick={toggleConfirmSubmitModal} style={darkMode ? boxStyleDark : boxStyle}>
             Cancel
           </Button>
-      </ModalFooter>
-    </Modal>
+        </ModalFooter>
+      </Modal>
+
 
             {/* Submission Modal */}
       <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
