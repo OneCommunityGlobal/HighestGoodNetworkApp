@@ -126,7 +126,7 @@ const TeamMemberTask = React.memo(
         <td className='remove-padding' colSpan={6}>
           <div className="row-content">
             { isTimeOffContentOpen &&
-                <div className="taking-time-off-content-div grid-container">
+                <div className="taking-time-off-content-div">
                   <div>
                     <span className="taking-time-off-content-text">
                       {onTimeOff
