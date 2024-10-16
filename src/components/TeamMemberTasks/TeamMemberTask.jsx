@@ -185,7 +185,7 @@ const TeamMemberTask = React.memo(
                     </Link>
                   </div>
                 </td>
-                <td colSpan={2}>
+                <td colSpan={2} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
                   <Table borderless className="team-member-tasks-subtable">
                     <tbody>
                       <tr>
@@ -224,14 +224,14 @@ const TeamMemberTask = React.memo(
                     </tbody>
                   </Table>
                 </td>
-                <td colSpan={3} >
+                <td colSpan={3} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
                   <div className="grid-container">
                     <Table borderless className="team-member-tasks-subtable">
                       <tbody>
                         {user.tasks &&
                           activeTasks.slice(0, numTasksToShow).map((task, index) => {
                             return (
-                              <tr key={`${task._id}${index}`} className="task-break">
+                              <tr key={`${task._id}${index}`} className={`task-break ${darkMode ? "bg-yinmn-blue" : ""}`}>
                                 <td data-label="Task(s)" className={`task-align  ${darkMode ? "bg-yinmn-blue text-light" : ""}`}>
                                   <div className="team-member-tasks-content">
                                     <Link
