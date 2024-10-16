@@ -10,6 +10,8 @@ import {
   GET_MESSAGE,
   CLOSE_ALERT,
   GET_USER_ID,
+  GET_BADGE_COUNT,
+  RESET_BADGE_COUNT,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 import moment from 'moment';
@@ -31,6 +33,37 @@ export const fetchAllBadges = () => {
       return err.response.status;
     }
   };
+};
+
+const getBadgeCountSuccess = badgeCount => ({
+  type: GET_BADGE_COUNT,
+  payload: badgeCount,
+});
+
+export const getBadgeCount = userId => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(ENDPOINTS.BADGE_COUNT(userId));
+      dispatch(getBadgeCountSuccess(response.data.count));
+    } catch (err) {
+      return err.response.status;
+    }
+  };
+};
+
+export const resetBadgeCount = userId => async dispatch => {
+  try {
+    const updatedBadgeCountResponse = await axios.put(ENDPOINTS.BADGE_COUNT_RESET(userId));
+    const updatedBadgeCount = updatedBadgeCountResponse.data.count;
+    if (updatedBadgeCountResponse.status === 201) {
+      dispatch({
+        type: RESET_BADGE_COUNT,
+        payload: updatedBadgeCount,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to reset badge count", error);
+  }
 };
 
 export const closeAlert = () => {
@@ -85,7 +118,7 @@ export const validateBadges = (firstName, lastName) => {
     if (!firstName || !lastName) {
       dispatch(
         getMessage(
-          'The Name Find function does not work without entering first and last name. Nice try though.',
+          'The Name Find function does not work without entering a name. Nice try though.',
           'danger',
         ),
       );
@@ -210,7 +243,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       );
       setTimeout(() => {
         dispatch(closeAlert());
-      }, 6000);
+      }, 600000);
     } catch (e) {
       dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
@@ -239,7 +272,7 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
 
       newBadgeCollection.forEach(badgeObj => {
         if (badgeId === badgeObj.badge) {
-          if (!included) { 
+          if (!included) {
             // Only update the first instance
             // Increment count only for the first instance found
             badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1;

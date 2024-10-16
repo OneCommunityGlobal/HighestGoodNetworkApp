@@ -335,7 +335,7 @@ const TeamMemberTasks = React.memo(props => {
 
     if (usersWithTasks.length > 0) {
       usersWithTasks.forEach(user => {
-        const teamNames = user.teams?.map(team => team.teamName) ?? [];
+        const teamNames = user.teams!==undefined?user.teams.map(team => team.teamName):[];
         const code = user.teamCode || 'noCodeLabel';
         const color = user.weeklySummaryOption || 'noColorLabel';
 
@@ -517,8 +517,8 @@ const TeamMemberTasks = React.memo(props => {
               </span>
             </>
           ) : !isLoading && (userRole === 'Administrator' || userRole === 'Owner') ? (
-            <section className="d-flex flex-row mr-xl-2">
-              <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="mb-3">
+            <section className="team-selector-container">
+              <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className='mb-1 mr-1'>
                 <DropdownToggle caret>{selectedTeamName}</DropdownToggle>
                 <DropdownMenu>
                   {teams.length === 0 ? (
@@ -536,7 +536,6 @@ const TeamMemberTasks = React.memo(props => {
                   )}
                 </DropdownMenu>
               </Dropdown>
-              &nbsp; &nbsp;
               {teams.length === 0 ? (
                 <Link to="/teams">
                   <Button color="success" className="fw-bold" boxstyle={boxStyle}>
@@ -560,11 +559,11 @@ const TeamMemberTasks = React.memo(props => {
         </section>
         {finishLoading ? (
           <section className=" hours-btn-container flex-wrap ml-2">
-            <div className="mb-2 ">
+            <div className="hours-btn-div">
               <button
                 type="button"
                 className={
-                  ` mr-1 show-time-off-btn ${
+                  `m-1 show-time-off-btn ${
                     showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
                   }` + (darkMode ? ' box-shadow-dark' : '')
                 }
@@ -602,7 +601,7 @@ const TeamMemberTasks = React.memo(props => {
                   key={idx}
                   type="button"
                   className={
-                    `m-1 circle-border ${days} days ` + (darkMode ? 'box-shadow-dark' : '')
+                    `m-1 responsive-btn-size circle-border ${days} days ` + (darkMode ? 'box-shadow-dark' : '')
                   }
                   title={`Timelogs submitted in the past ${days} days`}
                   style={{
@@ -613,11 +612,40 @@ const TeamMemberTasks = React.memo(props => {
                   }}
                   onClick={() => selectPeriod(days)}
                 >
-                  {days} days
+                  {days} {days === "1" ? "day" : "days"}
                 </button>
               ))}
-            </div>
-            <EditableInfoModal
+              <select
+                className={`m-1 mobile-view-select circle-border ${darkMode ? 'box-shadow-dark' : ''}`}
+                onChange={(e) => selectPeriod(e.target.value)}
+                value={selectedPeriod}
+                title={`Timelogs submitted in the past ${selectedPeriod} days`}
+                style={{
+                  color: isTimeFilterActive ? 'white' : hrsFilterBtnColorMap[selectedPeriod],
+                  backgroundColor: isTimeFilterActive
+                    ? hrsFilterBtnColorMap[selectedPeriod]
+                    : '#007BFF',
+                  border: `1px solid ${hrsFilterBtnColorMap[selectedPeriod]}`,
+                }}
+              >
+                {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
+                  <option
+                    key={idx}
+                    value={days}
+                    style={{
+                      color: color,
+                      backgroundColor:
+                        selectedPeriod === days && isTimeFilterActive
+                          ? color
+                          : 'white',
+                      border: `1px solid ${color}`,
+                    }}
+                  >
+                    {days} {days === "1" ? "day" : "days"}
+                  </option>
+                ))}
+              </select>
+              <EditableInfoModal
               areaName="TeamMemberTasksTimeFilterInfoPoint"
               areaTitle="Team Member Task Time Filter"
               fontSize={22}
@@ -625,6 +653,7 @@ const TeamMemberTasks = React.memo(props => {
               role={authUser.role}
               darkMode={darkMode}
             />
+            </div>
           </section>
         ) : (
           <SkeletonLoading template="TimelogFilter" />

@@ -100,34 +100,9 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   return (
     (userRole === 'Administrator' || userRole === 'Owner') && (
       <div className="warnings-container">
-        <div className="button__container">
-          <Button
-            className="btn btn-warning warning-btn tracking__btn"
-            size="sm"
-            onClick={handleToggle}
-          >
-            {toggle ? 'Hide' : 'Tracking'}
-          </Button>
-
-          {userRole === 'Owner' && (
-            <Button
-              className="btn"
-              size="sm"
-              onClick={() => setToggleWarningTrackerModal(prev => !prev)}
-            >
-              +/-
-            </Button>
-          )}
-        </div>
-
-        {toggleWarningTrackerModal && (
-          <WarningTrackerModal
-            toggleWarningTrackerModal={toggleWarningTrackerModal}
-            personId={personId}
-            setToggleWarningTrackerModal={setToggleWarningTrackerModal}
-            getUsersWarnings={fetchUsersWarningsById}
-          />
-        )}
+        <Button className="btn btn-warning warning-btn ml-auto" size="sm" onClick={handleToggle}>
+          {toggle ? 'Hide' : 'Tracking'}
+        </Button>
 
         <div className="warning-wrapper"> {warnings}</div>
         <div className="error-container">

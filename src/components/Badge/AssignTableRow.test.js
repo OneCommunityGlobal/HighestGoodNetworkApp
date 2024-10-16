@@ -1,26 +1,28 @@
-import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import AssignTableRow from 'components/Badge/AssignTableRow';
-import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 
-const addSelectBadge = jest.fn();
-const removeSelectBadge = jest.fn();
+// Mock the redux hooks
+jest.mock('react-redux', () => ({
+  ...jest.requireActual('react-redux'),
+  useDispatch: jest.fn(),
+  useSelector: jest.fn(),
+}));
 
-const mockStore = configureStore();
-const store = mockStore({});
+const mockStore = configureStore([thunk]);
 
-const renderComponent = mockData => {
+const renderComponent = (props, initialState = {}) => {
+  const store = mockStore(initialState);
   return render(
     <Provider store={store}>
-      <AssignTableRow
-        badge={mockData.badge}
-        selectedBadges={mockData.selectedBadges}
-        index={mockData.index}
-        addSelectBadge={addSelectBadge}
-        removeSelectBadge={removeSelectBadge}
-      />
+      <table>
+        <tbody>
+          <AssignTableRow {...props} />
+        </tbody>
+      </table>
     </Provider>,
   );
 };
@@ -33,117 +35,81 @@ describe('AssignTableRow component', () => {
       badgeName: 'Badge Name',
       description: 'Badge Description',
     },
-    selectedBadges: ['assign-badge-1'],
     index: 0,
   };
 
-  it('renders AssignTableRow component', async () => {
+  beforeEach(() => {
+    jest.clearAllMocks();
+    require('react-redux').useSelector.mockReturnValue([]);
+  });
+
+  it('renders AssignTableRow component', () => {
     renderComponent(mockData);
-
-    // Use getByRole with the role "checkbox"
-    const checkbox = screen.getByRole('checkbox');
-
-    // Add your assertions based on your component's rendering
     expect(screen.getByText('Badge Name')).toBeInTheDocument();
-    expect(checkbox).toBeInTheDocument();
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
   });
 
-  it('handles checkbox change correctly when initially checked', async () => {
+  it('handles checkbox change correctly when initially unchecked', () => {
+    const mockDispatch = jest.fn();
+    require('react-redux').useDispatch.mockReturnValue(mockDispatch);
+
     renderComponent(mockData);
-
-    // Use getByRole with the role "checkbox"
     const checkbox = screen.getByRole('checkbox');
-
-    // Ensure checkbox is initially checked
-    expect(checkbox).toHaveProperty('checked', true);
-
+    expect(checkbox).not.toBeChecked();
     fireEvent.click(checkbox);
-
-    // Wait for the state to update
-    await waitFor(() => {
-      expect(checkbox).toHaveProperty('checked', false);
-    });
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'ADD_SELECT_BADGE',
+        badgeId: 'assign-badge-1',
+      }),
+    );
   });
 
-  it('handles checkbox change correctly when initially unchecked', async () => {
-    const uncheckedMockData = {
-      ...mockData,
-      selectedBadges: [],
-    };
+  it('handles checkbox change correctly when initially checked', () => {
+    const mockDispatch = jest.fn();
+    require('react-redux').useDispatch.mockReturnValue(mockDispatch);
+    require('react-redux').useSelector.mockReturnValue(['assign-badge-1']);
 
-    renderComponent(uncheckedMockData);
-
+    renderComponent(mockData);
     const checkbox = screen.getByRole('checkbox');
-
-    // Ensure checkbox is initially unchecked
-    expect(checkbox).toHaveProperty('checked', false);
-
+    expect(checkbox).toBeChecked();
     fireEvent.click(checkbox);
-
-    // Wait for the state to update
-    await waitFor(() => {
-      expect(checkbox).toHaveProperty('checked', true);
-    });
+    expect(mockDispatch).toHaveBeenCalledWith(
+      expect.objectContaining({
+        type: 'REMOVE_SELECT_BADGE',
+        badgeId: 'assign-badge-1',
+      }),
+    );
   });
 
   it('renders without crashing when invalid badge ID is in selected badges', () => {
-    const mockDataInvalidSelectedBadge = { ...mockData, selectedBadges: ['invalid-badge-id'] };
-    renderComponent(mockDataInvalidSelectedBadge);
-
-    // Check that the checkbox is rendered
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).toBeInTheDocument();
-
-    // Check that Badge Name is present despite the invalid badge ID
+    require('react-redux').useSelector.mockReturnValue(['invalid-badge-id']);
+    renderComponent(mockData);
     expect(screen.getByText('Badge Name')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
   });
 
   it('renders without crashing when selectedBadges prop is missing', () => {
-    const mockDataWithoutSelectedBadges = { ...mockData, selectedBadges: undefined };
-    renderComponent(mockDataWithoutSelectedBadges);
-
-    // Check that the checkbox is rendered
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).toBeInTheDocument();
-
-    // Check that Badge Name is present despite the invalid badge ID
+    require('react-redux').useSelector.mockReturnValue(undefined);
+    renderComponent({ badge: mockData.badge, index: mockData.index });
     expect(screen.getByText('Badge Name')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
   });
 
   it('renders without crashing with incomplete or invalid badge data', () => {
-    const mockDataInvalidBadge = { ...mockData, badge: {} };
-    renderComponent(mockDataInvalidBadge);
-
-    // Check that the checkbox is rendered
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).toBeInTheDocument();
-
-    // Check that Badge Name is not present due to incomplete/invalid badge data
-    expect(screen.queryByText('Badge Name')).toBeNull();
+    renderComponent({ badge: {}, index: 0 });
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
   });
 
   it('renders without crashing with an invalid index', () => {
-    const mockDataInvalidIndex = { ...mockData, index: 'invalid-index' };
-    renderComponent(mockDataInvalidIndex);
-
-    // Check that the checkbox is rendered
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).toBeInTheDocument();
-
-    // Check that Badge Name is present (assuming it should be unaffected by the invalid index)
+    renderComponent({ ...mockData, index: 'invalid-index' });
     expect(screen.getByText('Badge Name')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
   });
 
   it('renders without crashing with missing or invalid badge image URL', () => {
-    const mockDataWithoutImage = { ...mockData, badge: { ...mockData.badge, imageUrl: undefined } };
-
-    renderComponent(mockDataWithoutImage);
-
-    // Check that the checkbox is rendered
-    const checkbox = screen.getByRole('checkbox');
-    expect(checkbox).toBeInTheDocument();
-
-    // Check that Badge Name is present despite the missing image URL (assuming it should be unaffected)
+    renderComponent({ badge: { ...mockData.badge, imageUrl: undefined }, index: 0 });
     expect(screen.getByText('Badge Name')).toBeInTheDocument();
+    expect(screen.getByRole('checkbox')).toBeInTheDocument();
   });
 });
