@@ -12,7 +12,7 @@ import {
   Form,
   FormGroup,
   Label,
-  Input
+  Input,
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { HashLink as Link } from 'react-router-hash-link';
@@ -29,8 +29,14 @@ import axios from 'axios';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
+import { useLocation } from 'react-router-dom';
 
 const SummaryBar = props => {
+  const location = useLocation();
+
+  // prettier-ignore
+  useEffect(() => {location.search === '?openModalReport' && openSuggestionModal() }, []);
+
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
@@ -162,6 +168,7 @@ const SummaryBar = props => {
   const [report, setBugReport] = useState(initialInfo);
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
+  
   const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(displayUserProfile?.weeklySummaryOption === "Not Required");
 
   // Similar to UserProfile component function
@@ -361,7 +368,6 @@ const SummaryBar = props => {
     window.location.hash = '#badgesearned';
   };
 
-
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
     return latestSummary && new Date() < new Date(latestSummary.dueDate)
@@ -374,7 +380,7 @@ const SummaryBar = props => {
     canPutUserProfileImportantInfo;
 
   useEffect(() => {
-   setUserProfile(userProfile);
+    setUserProfile(userProfile);
   }, [userProfile]);
 
   useEffect(() => {
@@ -394,7 +400,7 @@ const SummaryBar = props => {
       setBadges(getBadges());
       setTotalEffort(summaryBarData.tangibletime);
       setWeeklySummary(getWeeklySummary(displayUserProfile));
-      setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === "Not Required");
+      setweeklySummaryNotReq(displayUserProfile?.weeklySummaryOption === 'Not Required');
     }
   }, [displayUserProfile, summaryBarData]);
 
@@ -930,6 +936,6 @@ const mapStateToProps = state => ({
   displayUserProfile: state.userProfile,
   displayUserTask: state.userTask,
   darkMode: state.theme.darkMode,
-})
+});
 
 export default connect(mapStateToProps, { hasPermission })(SummaryBar);
