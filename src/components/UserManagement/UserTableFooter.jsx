@@ -2,6 +2,7 @@ import React from 'react';
 const NUMBER_OF_PAGE_LINK = 5;
 
 const UserTableFooter = React.memo(props => {
+  const darkMode = props.darkMode;
   const onSelectPageSize = pageSize => {
     props.onSelectPageSize(parseInt(pageSize));
   };
@@ -23,12 +24,13 @@ const UserTableFooter = React.memo(props => {
           <div role="group" className="btn-group">
             <button
               type="button"
-              className="btn btn-default"
+              className={`btn btn-default ${darkMode ? 'text-light' : ''}`}
               onClick={e => {
                 if (props.selectedPage > 1) {
                   props.onPageSelect(props.selectedPage - 1);
                 }
               }}
+
             >
               Previous
             </button>
@@ -40,7 +42,7 @@ const UserTableFooter = React.memo(props => {
             />
             <button
               type="button"
-              className="btn btn-default"
+              className={`btn btn-default ${darkMode ? 'text-light' : ''}`}
               onClick={e => {
                 if (props.selectedPage <= parseInt(props.datacount / props.pageSize)) {
                   props.onPageSelect(props.selectedPage + 1);
@@ -113,6 +115,7 @@ const PageSummaryLabel = React.memo(props => {
 const PageLinks = React.memo(props => {
   const onPageSelect = pageNo => {
     props.onPageSelect(pageNo);
+    // change page on props
   };
 
   let pageLinks = [];
@@ -124,8 +127,8 @@ const PageLinks = React.memo(props => {
     totalPages <= NUMBER_OF_PAGE_LINK
       ? 1
       : totalPages - props.selectedPage < NUMBER_OF_PAGE_LINK
-      ? totalPages - (NUMBER_OF_PAGE_LINK - 1)
-      : props.selectedPage;
+        ? totalPages - (NUMBER_OF_PAGE_LINK - 1)
+        : props.selectedPage;
 
   let pageCounter = startPage;
 

@@ -1,6 +1,7 @@
 import Joi from 'joi';
 import { connect } from 'react-redux';
 import { Link, withRouter } from 'react-router-dom';
+import NetlifyPoweredLink from 'components/Footer/NetlifyPoweredLink';
 import Form from '../common/Form/Form';
 import { loginUser } from '../../actions/authActions';
 import { clearErrors } from '../../actions/errorsActions';
@@ -36,7 +37,6 @@ export class Login extends Form {
         this.props.history.push('/dashboard');
       }
     }
-
     if (prevProps.errors.email !== this.props.errors.email) {
       this.setState({ errors: this.props.errors });
     }
@@ -47,30 +47,37 @@ export class Login extends Form {
   }
 
   doSubmit = async () => {
-    const email = this.state.data.email.replace(/[A-Z]/g, char => char.toLowerCase());
-    const { password } = this.state.data;
-    this.props.loginUser({ email, password });
-    this.setState({ errors: this.props.errors });
+    const { email, password } = this.state.data;
+    const formattedEmail = email.replace(/[A-Z]/g, char => char.toLowerCase());
+    await this.props.loginUser({ email: formattedEmail, password });
+    if (this.props.errors) {
+      this.setState({ errors: this.props.errors });
+    }
   };
 
   render() {
+    const { darkMode } = this.props;
     return (
-      <div className="container mt-5">
+      <div
+        className={`pt-5 h-100 container-fluid d-flex flex-column align-items-center ${
+          darkMode ? 'bg-oxford-blue' : ''
+        }`}
+      >
         <h2>Please Sign in</h2>
-
-        <form className="col-md-6 xs-12" onSubmit={e => this.handleSubmit(e)}>
-          {this.renderInput({ name: 'email', label: 'Email:' })}
+        <form className="col-md-4 xs-12" onSubmit={e => this.handleSubmit(e)}>
+          {this.renderInput({ name: 'email', label: 'Email:', darkMode })}
           {this.renderInput({
             name: 'password',
             label: 'Password:',
             type: 'password',
+            darkMode,
           })}
           <div>
-            {this.renderButton('Submit')}
+            {this.renderButton({ label: 'Submit', darkMode })}
             <Link to="forgotpassword">
               <span
                 style={{
-                  color: 'blue',
+                  color: darkMode ? 'red' : 'blue',
                   textDecorationLine: 'underline',
                   lineHeight: '50px',
                   float: 'right',
@@ -82,6 +89,9 @@ export class Login extends Form {
             </Link>
           </div>
         </form>
+        <footer>
+          <NetlifyPoweredLink />
+        </footer>
       </div>
     );
   }
@@ -90,6 +100,7 @@ export class Login extends Form {
 const mapStateToProps = state => ({
   auth: state.auth,
   errors: state.errors,
+  darkMode: state.theme.darkMode,
 });
 
 export default withRouter(

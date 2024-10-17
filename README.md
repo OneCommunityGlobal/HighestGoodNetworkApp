@@ -50,6 +50,7 @@
     </li>
     <li><a href="#usage">Usage</a></li>
     <li><a href="#roadmap">Roadmap</a></li>
+    <li><a href="#codeofconduct">Code of Conduct</a></li>
     <li><a href="#contributing">Contributing</a></li>
     <li><a href="#license">License</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -97,7 +98,11 @@ For setting up your project locally, please get a local copy up and running foll
    ```sh
    npm install
    ```
-3. Get your `.env` file ready and start the app
+3. Run the `postinstall` script to copy TinyMCE to the public directory
+   ```sh
+   npm run postinstall
+   ```
+4. Get your `.env` file ready and start the app
    ```sh
    npm run start:local
    ```
@@ -113,6 +118,39 @@ Use this space to show useful examples of how a project can be used. Additional 
 _For more examples, please refer to the [Documentation](https://example.com)_
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+## One Community Global Code of Conduct
+
+
+This Code of Conduct applies to all participants in One Community Global’s online spaces, including our forums, chat rooms, social media platforms, and other digital gathering places.
+
+#### Our Commitment to Inclusion
+We are committed to providing a welcoming environment for all members of our community. We value diversity in all its forms, including but not limited to differences in background, beliefs, identity, abilities, and experiences. Our goal is to create a space where everyone feels respected and can participate fully.
+
+#### Prohibited Behaviors
+We do not tolerate harassment or discrimination in any form. This includes, but is not limited to:
+
+1. Offensive comments related to personal characteristics
+2. Sharing inappropriate or explicit content
+3. Intimidation or stalking
+4. Disruptive behavior during community events or discussions
+5. Hate speech, racism, sexism, or any form of discrimination
+6. Spamming or trolling
+
+#### Communication Guidelines
+We expect all community members to communicate respectfully. Please be mindful of your language and avoid jokes or comments that could be offensive to others. Constructive criticism is encouraged, but it must be delivered politely and focus on the content or ideas rather than attacking individuals. If you’re unsure whether something is appropriate, it’s best to err on the side of caution.
+
+#### Respect for Privacy and Confidentiality
+Respect others’ privacy by not sharing personal information without consent and by keeping private conversations confidential. Avoid discussing private details in public forums.
+
+#### Intellectual Property
+One Community is an open source organization operating under a Creative Commons Attribution 3.0 Unported License. We also respect intellectual property and do not allow plagiarizing or using others’ work without permission. Always give credit to original authors or creators when sharing their content.
+
+#### Reporting Concerns
+If you experience or witness behavior that violates this Code of Conduct, or if you have any related concerns, please promptly report it through our website Contact Us page, software Suggestions/Development link, or directly to any manager, administrator, or community leader.
+
+#### Our Shared Responsibility
+Creating a positive community environment is a shared responsibility. We appreciate your cooperation in upholding these standards and making OneCommunity Global a welcoming space for all
 
 <!-- CONTRIBUTING -->
 
@@ -130,6 +168,18 @@ Don't forget to give the project a star! Thanks again!
 5. Open a Pull Request
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
+<!-- Licence -->
+
+## Software License Agreement
+
+In this project, we are using TinyMCE (licensed under GPLv2 or later) as our rich text editor. This means that if you distribute this project (including TinyMCE), you must also comply with the terms of the GPLv2 license. [Read more](https://github.com/tinymce/tinymce/blob/main/LICENSE.md)
+
+**We encourage you to review the license terms.**
+
+ [![License: GPL v2](https://img.shields.io/badge/License-GPL_v2-blue.svg)](https://www.gnu.org/licenses/old-licenses/gpl-2.0.en.html)
+
+
 
 <!-- CONTACT -->
 

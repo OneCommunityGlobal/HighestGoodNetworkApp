@@ -10,6 +10,8 @@ import {
   GET_MESSAGE,
   CLOSE_ALERT,
   GET_USER_ID,
+  GET_BADGE_COUNT,
+  RESET_BADGE_COUNT,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 import moment from 'moment';
@@ -31,6 +33,37 @@ export const fetchAllBadges = () => {
       return err.response.status;
     }
   };
+};
+
+const getBadgeCountSuccess = badgeCount => ({
+  type: GET_BADGE_COUNT,
+  payload: badgeCount,
+});
+
+export const getBadgeCount = userId => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(ENDPOINTS.BADGE_COUNT(userId));
+      dispatch(getBadgeCountSuccess(response.data.count));
+    } catch (err) {
+      return err.response.status;
+    }
+  };
+};
+
+export const resetBadgeCount = userId => async dispatch => {
+  try {
+    const updatedBadgeCountResponse = await axios.put(ENDPOINTS.BADGE_COUNT_RESET(userId));
+    const updatedBadgeCount = updatedBadgeCountResponse.data.count;
+    if (updatedBadgeCountResponse.status === 201) {
+      dispatch({
+        type: RESET_BADGE_COUNT,
+        payload: updatedBadgeCount,
+      });
+    }
+  } catch (error) {
+    console.error("Failed to reset badge count", error);
+  }
 };
 
 export const closeAlert = () => {
@@ -85,7 +118,7 @@ export const validateBadges = (firstName, lastName) => {
     if (!firstName || !lastName) {
       dispatch(
         getMessage(
-          'The Name Find function does not work without entering first and last name. Nice try though.',
+          'The Name Find function does not work without entering a name. Nice try though.',
           'danger',
         ),
       );
@@ -114,6 +147,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     const userAssigned = `${firstName} ${lastName}`;
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE_BY_NAME(userAssigned));
+
     if (res.data.length === 0) {
       dispatch(
         getMessage(
@@ -172,7 +206,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
     }
 
     const res = await axios.get(ENDPOINTS.USER_PROFILE(userId));
-    console.log(res.data);
+
     if (res.data.length === 0) {
       dispatch(
         getMessage(
@@ -209,7 +243,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       );
       setTimeout(() => {
         dispatch(closeAlert());
-      }, 6000);
+      }, 600000);
     } catch (e) {
       dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
@@ -223,33 +257,48 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
   let newBadgeCollection = Array.from(badgeCollection);
 
-  selectedBadgesId.forEach(badgeId => {
-    let included = false;
+  // object to track updated or newly added badges to prevent duplicates
+  let updatedOrAddedBadges = {};
+
+  selectedBadgesId.forEach(originalBadgeId => {
+    let badgeId = originalBadgeId;
     // Remove "assign-badge-" from badgeId
     if (badgeId.includes('assign-badge-')) badgeId = badgeId.replace('assign-badge-', '');
-    // Change format of date to MMM-DD-YYYY
-    let currentTs = Date.now();
-    let currentDate = formatDate();
-    // Update record in badgeCollection if exist
-    newBadgeCollection.forEach(badgeObj => {
-      if (badgeId === badgeObj.badge) {
-        badgeObj.count++;
-        badgeObj.lastModified = currentTs;
-        badgeObj.earnedDate.push(currentDate);
-        included = true;
-        return; // find match and break
-      }
-    });
-    // Add the new badge record to badgeCollection
-    if (!included) {
-      newBadgeCollection.push({
-        badge: badgeId,
-        count: 1,
-        lastModified: currentTs,
-        earnedDate: new Array(currentDate),
+
+    if (!updatedOrAddedBadges[badgeId]) {
+      let included = false;
+      let currentTs = Date.now();
+      let currentDate = formatDate();
+
+      newBadgeCollection.forEach(badgeObj => {
+        if (badgeId === badgeObj.badge) {
+          if (!included) {
+            // Only update the first instance
+            // Increment count only for the first instance found
+            badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1;
+            badgeObj.lastModified = currentTs;
+            badgeObj.earnedDate.push(currentDate);
+            included = true;
+          }
+          // Note this badge ID as updated so it's not added again
+          updatedOrAddedBadges[badgeId] = true;
+        }
       });
+
+      // Add the new badge record to badgeCollection if not included already
+      if (!included) {
+        newBadgeCollection.push({
+          badge: badgeId,
+          count: 1,
+          lastModified: currentTs,
+          earnedDate: [currentDate],
+        });
+        // Note this badge ID as added
+        updatedOrAddedBadges[badgeId] = true;
+      }
     }
   });
+
   return newBadgeCollection;
 };
 
@@ -334,12 +383,6 @@ export const createNewBadge = newBadge => async dispatch => {
 export const updateBadge = (badgeId, badgeData) => async dispatch => {
   try {
     await axios.put(ENDPOINTS.BADGE_BY_ID(badgeId), badgeData);
-    dispatch(
-      getMessage('Awesomesauce! You have successfully updated the badge to the system!', 'success'),
-    );
-    setTimeout(() => {
-      dispatch(closeAlert());
-    }, 6000);
     dispatch(fetchAllBadges());
   } catch (e) {
     if (e.response.status === 403 || 400) {

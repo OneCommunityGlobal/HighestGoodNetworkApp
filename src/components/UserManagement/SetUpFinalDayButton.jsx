@@ -3,10 +3,10 @@ import { useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
-import { updateUserFinalDayStatus } from 'actions/userManagement';
+import { updateUserFinalDayStatusIsSet } from 'actions/userManagement';
 import { toast } from 'react-toastify';
-import { boxStyle } from 'styles';
-
+import { boxStyle, boxStyleDark } from 'styles';
+import { FinalDay } from '../../utils/enums';
 /**
  * @param {*} props
  * @param {Boolean} props.isBigBtn
@@ -14,6 +14,7 @@ import { boxStyle } from 'styles';
  * @returns
  */
 const SetUpFinalDayButton = props => {
+  const {darkMode} = props;
   const [isSet, setIsSet] = useState(false);
   const [finalDayDateOpen, setFinalDayDateOpen] = useState(false);
   const dispatch = useDispatch();
@@ -23,11 +24,13 @@ const SetUpFinalDayButton = props => {
   }, []);
 
   const onFinalDayClick = async (user, status) => {
+    const activeStatus = props.userProfile.isActive? 'Active':'Inactive';
     if (isSet) {
-      await updateUserFinalDayStatus(props.userProfile, 'Active', undefined)(dispatch);
+      // updateUserFinalDayStatus(props.userProfile, activeStatus, undefined)(dispatch);
       setIsSet(!isSet);
       setTimeout(async () => {
         await props.loadUserProfile();
+        await updateUserFinalDayStatusIsSet(props.userProfile, activeStatus, undefined, FinalDay.NotSetFinalDay)(dispatch)
         toast.success("This user's final day has been deleted.");
       }, 1000);
     } else {
@@ -40,11 +43,12 @@ const SetUpFinalDayButton = props => {
   };
 
   const deactiveUser = async finalDayDate => {
-    await updateUserFinalDayStatus(props.userProfile, 'Active', finalDayDate)(dispatch);
+    // await updateUserFinalDayStatus(props.userProfile, 'Active', finalDayDate)(dispatch);
     setIsSet(true);
     setFinalDayDateOpen(false);
     setTimeout(async () => {
       await props.loadUserProfile();
+      await updateUserFinalDayStatusIsSet(props.userProfile, 'Active', finalDayDate, FinalDay.FinalDay)(dispatch)
       toast.success("This user's final day has been set.");
     }, 1000);
   };
@@ -57,15 +61,15 @@ const SetUpFinalDayButton = props => {
         onSave={deactiveUser}
       />
       <Button
-        outline
-        color="primary"
-        className={`btn btn-outline-${isSet ? 'warning' : 'success'} ${
+        {...(darkMode ? { outline: false } : {outline: true})}
+        color={isSet ? 'warning' : 'success'}
+        className={`btn ${darkMode ? '' : `btn-outline-${isSet ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
         onClick={e => {
           onFinalDayClick(props.userProfile, isSet);
         }}
-        style={boxStyle}
+        style={darkMode ? boxStyleDark : boxStyle}
       >
         {isSet ? CANCEL : SET_FINAL_DAY}
       </Button>
