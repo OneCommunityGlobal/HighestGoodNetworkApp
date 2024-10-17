@@ -39,7 +39,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
     case types.UPDATE_PROJECT:
       if (status !== 200) return updateState({ status, error });
       const { updatedProject } = action;
-      index = allProjects.projects.findIndex(project => project._id === action.projectId);
+      index = allProjects.projects.findIndex(project => project._id === updatedProject._id);
       projects = Object.assign([
         ...allProjects.projects.slice(0, index),
         updatedProject,
