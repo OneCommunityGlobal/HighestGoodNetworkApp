@@ -34,6 +34,9 @@ jobs:
           command: cp build/index.html build/200.html 
       - run:
           name: Deploy app
+          command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_PROD --project ./build
+      - run:
+          name: Deploy app
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_PROD1 --project ./build
       - save_cache:
           key: v1-prod-dependencies-{{ checksum "package-lock.json" }}
@@ -77,6 +80,9 @@ jobs:
       - run:
           name: Create 200.html for (required for client-side routing support on Surge)
           command: cp build/index.html build/200.html
+        run:
+          name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
+          command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV --project ./build
       - run:
           name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV1 --project ./build
@@ -120,7 +126,7 @@ jobs:
           command: cp build/index.html build/200.html
       - run:
           name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_BETA
-          command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_BETA --project ./build
+          command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_BETA --project ./build 
       - save_cache:
           key: v1-beta-dependencies-{{ checksum "package-lock.json" }}
           paths:
