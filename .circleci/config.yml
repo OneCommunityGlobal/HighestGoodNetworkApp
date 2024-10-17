@@ -80,7 +80,7 @@ jobs:
       - run:
           name: Create 200.html for (required for client-side routing support on Surge)
           command: cp build/index.html build/200.html
-        run:
+      - run:
           name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV --project ./build
       - run:
