@@ -1,5 +1,5 @@
 import React from 'react';
-import AddProject from './AddProject';
+import AddProject from '../AddProject';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import thunk from 'redux-thunk';

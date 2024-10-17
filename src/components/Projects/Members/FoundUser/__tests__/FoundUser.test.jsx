@@ -3,7 +3,7 @@ import { render, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux'; 
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import FoundUser from './FoundUser';
+import FoundUser from '../FoundUser';
 
 const mockStore = configureMockStore([thunk]);
 
