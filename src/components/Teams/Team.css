@@ -131,7 +131,7 @@ tr:hover {
   }
 }
 
-body.modal-open {
+body.open-team-members-popup-modal {
   overflow: hidden;
   position: fixed;
   width: 100%;
