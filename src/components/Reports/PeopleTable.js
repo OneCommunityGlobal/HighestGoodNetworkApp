@@ -45,9 +45,11 @@ function PeopleTable({ userProfiles, darkMode }) {
             </div>
           </td>
           <td className={`${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
+            {/* Format the start date in Coordinated Universal Time (UTC) to 'MM-DD-YY' format */}
             {moment.utc(person.startDate).format('MM-DD-YY')}
           </td>
           <td className={`${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
+            {/* If endDate exists, format it in UTC; otherwise, display 'N/A' */}
           {person.endDate ? moment.utc(person.endDate).format('MM-DD-YY') : 'N/A'}
           </td>
         </tr>
