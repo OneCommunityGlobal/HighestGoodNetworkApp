@@ -31,6 +31,7 @@ export function Dashboard(props) {
 
   const toggle = (forceOpen = null) => {
     if (isNotAllowedToEdit) {
+      const warningMessage =
         viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
           ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
           : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
@@ -66,7 +67,6 @@ export function Dashboard(props) {
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
       <SummaryBar
-        //displayUserId={displayUserId}
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
         role={authUser.role}
