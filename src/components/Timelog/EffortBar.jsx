@@ -14,7 +14,8 @@ const EffortBar = ({ activeTab, projectsSelected }) => {
     );
 
     const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
-    return filteredData.reduce(reducer, 0);
+    const total = filteredData.reduce(reducer, 0);
+    return Number(total.toFixed(2));
   };
 
   const tangibleTime = calculateTotalTime(data, true);

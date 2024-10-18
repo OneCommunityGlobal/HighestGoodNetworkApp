@@ -13,3 +13,9 @@
 .block {
   width: 120px;
 }
+
+.team-code-form-field {
+  width: fit-content;
+  min-width: 8em;
+  max-width: 13em;
+}

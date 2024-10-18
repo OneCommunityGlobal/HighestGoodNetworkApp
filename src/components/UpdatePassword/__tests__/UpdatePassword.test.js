@@ -45,7 +45,7 @@ const errorMessages = {
   curentpasswordEmpty: '"Current Password" is not allowed to be empty',
   newpasswordEmpty: '"New Password" is not allowed to be empty',
   newpasswordInvalid:
-    '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, and one number or special character',
+    '"New Password" should be at least 8 characters long and must include at least one uppercase letter, one lowercase letter, one number and one special character',
   oldnewPasswordsSame: '"New Password" should not be same as old password',
   confirmpasswordMismatch: '"Confirm Password" must match new password',
   errorNon400Response: 'Something went wrong. Please contact your administrator.',
@@ -57,6 +57,7 @@ describe('Update Password Page', () => {
   beforeEach(() => {
     store = mockStore({
       errors: '',
+      theme: {darkMode: true}
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(
@@ -105,7 +106,7 @@ describe('Update Password Page', () => {
       const newPassword = screen.getByLabelText(/new password:/i);
       await userEvent.type(newPassword, 'abc', { allAtOnce: false });
       userEvent.clear(newPassword);
-      expect(screen.getByText(errorMessages.curentpasswordEmpty)).toBeInTheDocument();
+      expect(screen.getByText(errorMessages.newpasswordEmpty)).toBeInTheDocument();
       expect(screen.getByRole('button')).toBeDisabled();
     });
 
@@ -169,13 +170,13 @@ describe('Update Password Page', () => {
     });
 
     it('should show error if old,new, and confirm passwords are same', async () => {
-      await userEvent.type(screen.getByLabelText(/current password:/i), 'ABCDabc123', {
+      await userEvent.type(screen.getByLabelText(/current password:/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123', {
+      await userEvent.type(screen.getByLabelText(/new password:/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
-      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc123', {
+      await userEvent.type(screen.getByLabelText(/confirm password:/i), 'ABCDabc123!', {
         allAtOnce: false,
       });
       expect(screen.getByText(errorMessages.oldnewPasswordsSame)).toBeInTheDocument();

@@ -1,5 +1,6 @@
 .team-member-tasks {
   background-color: white;
+  overflow: hidden;
 }
 
 .team-member-tasks h1 {
@@ -7,9 +8,16 @@
   font-size: 20px;
 }
 
-.table-container {
-  overflow-x: auto;
+.task_table-container {
+  overflow: hidden;
+  position: relative;
 }
+
+.task_table-container table{
+  table-layout: fixed;
+  width: 100%;
+}
+
 
 .team-member-tasks-bell {
   margin-right: 10px;
@@ -58,13 +66,6 @@
   min-width: 120px;
   max-width: 120px;
 }
-@media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
-  .team-task-progress {
-    width: 100%; /* or any other value that fits your design */
-    min-width: auto;
-    max-width: none;
-  }
-}
 
 .task-break {
   border-bottom: 1px solid lightgray;
@@ -96,12 +97,16 @@
   font-size: 15px;
   width: 25px;
   top: 3px;
-  right: -10px;
+  right: -11px;
 }
 
 .team-clocks {
   display: flex;
   justify-content: space-around;
+}
+
+.dashboard-team-clocks{
+  color: #339CFF !important;
 }
 
 .team-clocks-header {
@@ -111,9 +116,7 @@
 
 .hours-btn-container {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  column-gap: 1rem;
 }
 
 .circle-border {
@@ -129,9 +132,13 @@
 
 .header-box {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   padding: 10px;
   justify-content: space-between;
+}
+
+#taskboard-card-header-title{
+  font-size: 1.5rem;
 }
 
 .complete-task-button {
@@ -149,30 +156,36 @@
 .right-padding-temp-fix {
   padding-right: 0px !important;
 }
-.table-row {
-  position: relative;
-}
 
-.taking-time-off-table-column {
-  z-index: 2;
-  position: absolute;
-  top: 1px;
-  left: 0;
-  height: calc(100% - 2px);
-  width: 100%;
-  background-color: rgba(0, 0, 25, 0.7);
-  display: grid;
-  align-items: center;
-  justify-items: center;
-}
-.taking-time-off-table-column:hover {
-  background-color: rgba(0, 0, 25, 0.6);
+.table-row {
+  /* These rules serve as a replacement to `position: relative` which 
+  does not work as expected on table elements in Safari */
+  transform: translate(0);
+  clip-path: inset(0);
 }
 
 .taking-time-off-content-div {
+  background-color: rgba(0, 0, 25, 0.7);
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 1px;
+  left: 0;
   display: flex;
-  flex-direction: row;
+  justify-content: center;
+}
+
+.taking-time-off-content-alignment {
+  display: flex;
   align-items: center;
+  height: min-content;
+  margin-top: 40px;
+  margin-right: 20px;
+  margin-left: 20px;
+}
+
+.taking-time-off-table-div:hover {
+  background-color: rgba(0, 0, 25, 0.6);
 }
 
 .taking-time-off-content-text {
@@ -181,11 +194,8 @@
     sans-serif;
   color: white;
   margin: 0;
-  flex: 1;
   box-sizing: border-box;
   padding-right: 10px;
-  display: flex;
-  align-items: center;
 }
 
 .show-time-off-btn {
@@ -199,7 +209,6 @@
   color: white;
   box-shadow: 2px 2px 4px 1px lightgray;
   box-sizing: border-box;
-  
 }
 
 .show-time-off-btn-selected {
@@ -230,7 +239,6 @@
   background-color: white;
 }
 
-
 .show-time-off-icon-selected {
   background-color: #17a2b8;
 }
@@ -250,7 +258,9 @@
   border: 1px solid white;
   padding: 7px;
   border-radius: 6px;
+  text-wrap: nowrap;
 }
+
 .taking-time-off-content-btn:hover {
   background-color: rgba(0, 0, 25, 0.8);
 }
@@ -260,26 +270,161 @@
   border: 1px solid #ccc;
   border-radius: 10px;
   margin: 10px;
+  max-height: 500px;
+  overflow-y: auto;
 }
 
-.time-off-detail-modal-title {
-  font-size: 1.1rem;
-  margin-bottom: 10px;
-  font-weight: bold;
+.time-off-detail-modal::-webkit-scrollbar {
+  width: 12px;
 }
 
-.time-off-detail-modal-sub-heading {
-  font-size: 1rem;
-  font-weight: bold;
+.time-off-detail-modal::-webkit-scrollbar-track {
+  border-radius: 4px;
+  background-color: #e7e7e7;
+  border: 1px solid #cacaca;
+  box-shadow: inset 0 0 6px rgba(0, 0, 0, .3);
 }
 
-.time-off-detail-modal-sub-section {
-  font-size: 1rem;
-  margin-bottom: 10px;
+.time-off-detail-modal::-webkit-scrollbar-thumb {
+  border-radius: 8px;
+  background-color: #007BFF ;
+  box-shadow: inset 0 0 3px #e7e7e7;
 }
+
 
 .time-off-detail-modal-section {
   margin-bottom: 10px;
+}
+
+.compress-time-off-detail-button{
+  color: white;
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  border: none;
+  background-color: transparent;
+  border-radius: 5px;
+}
+
+.compress-time-off-detail-button:hover,.expand-time-off-detail-button:hover{
+  background-color: rgba(0, 0, 25, 0.6);
+}
+
+.expand-time-off-detail-button{
+  color: white;
+  position: absolute;
+  right: 1px;
+  top: 1px;
+  background-color: rgba(0, 0, 25, 0.7);
+  border-radius: 5px;
+}
+
+.time-off-detail-modal-card-container{
+  border: 1px solid #ccc;
+  margin-bottom: 10px;
+  border-radius: 5px;
+}
+
+.team-member-tasks-icons {
+  display: inline-flex;
+  align-items: flex-start;
+  gap: 8px; /* Adjust the gap as needed */
+}
+
+.team-member-tasks-content {
+  align-items: center; /* Vertically center-align children */
+  gap: 8px; /* Space between children */
+}
+
+.team-task-progress-container {
+  display: grid;
+  grid-template-columns: 1fr repeat(2, auto);
+  grid-template-rows: repeat(2, auto);
+  column-gap: 3px;
+}
+
+.team-task-progress-time {
+  grid-column: 1 / span 1;
+  grid-row: 1 / span 1;
+  align-self: center;
+  
+}
+
+.team-task-progress-time-volunteers {
+  grid-column: 1 / span 3;
+  grid-row: 1 / span 1;
+  justify-self: center;
+}
+
+.followup-tooltip-container {
+  grid-column: 3 / span 1;
+  grid-row: 1 / span 1;
+  align-self: center;
+}
+
+.team-task-progress-bar {
+  grid-column: 1 / span 3;
+  grid-row: 2 / span 1;
+  margin-top: 5px;
+}
+
+.task_table-container{
+  width: 100%;
+  overflow-y: hidden;
+}
+
+.hours-btn-div{
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+}
+
+.team-selector-container{
+  display: flex;
+  flex-direction: row;
+}
+
+@media (max-width: 1240px) and (min-width: 992px) {
+  .header-box {
+    flex-direction: column;
+  }
+  .hours-btn-container {
+    margin-top: 10px;
+    justify-content:flex-start;
+    align-items: center;
+  }
+  .team-task-progress-container {
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(3, auto);
+  }
+  .team-task-progress-time,.team-task-progress-time-volunteers {
+    grid-column: 1 / span 2;
+    grid-row: 1 / span 1;
+  }
+  
+  .followup-tooltip-container {
+    grid-column: 2 / span 1;
+    grid-row: 3 / span 1;
+    justify-self: start;
+  }
+  
+  .team-task-progress-bar {
+    grid-column: 1 / span 3;
+    grid-row: 2 / span 1;
+    margin-bottom: 3px;
+  }
+
+}
+
+@media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
+  .team-task-progress {
+    width: 100%; /* or any other value that fits your design */
+    min-width: auto;
+    max-width: none;
+  }
+  .task-table{
+    max-height: 900px;
+  }
 }
 
 @media only screen and (max-width: 768px) {
@@ -298,8 +443,10 @@
     justify-content: space-between;
     align-items: center;
     min-width: 165px;
-    padding: 0 15%;
+    padding: 0 5%;
   }
+
+ 
 
   .card-body {
     padding-left: 0 !important;
@@ -330,10 +477,19 @@
   .table-row {
     border: solid #e9ecef 2px;
     background: #faf7fc;
+    font-size: 0.75rem !important;
+  }
+
+  .table-row td{
+    padding: 2px !important;
   }
 
   .spacer {
     height: 20px;
+  }
+
+  .deadlineCount {
+    right: 2px;
   }
 }
 
@@ -342,24 +498,95 @@
     font-size: 24px;
   }
 
-  .header-box {
+  /* .header-box {
     flex-direction: unset;
-  }
-}
+  } */
 
-@media only screen and (min-width: 768px) {
   .team-member-tasks h1 {
     font-size: 28px;
   }
 }
 
-.team-member-tasks-icons {
-  display: inline-flex;
-  align-items: flex-start;
-  gap: 8px; /* Adjust the gap as needed */
+@media only screen and (min-width: 768px) {
+ .mobile-view-select{
+    display: none;
+  } 
 }
 
-.team-member-tasks-content {
-  align-items: center; /* Vertically center-align children */
-  gap: 8px; /* Space between children */
+@media only screen and (max-width: 767px) {
+  .hours-btn-container{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .mobile-view-select{
+    width: 63px;
+    color: white;
+  } 
+  .responsive-btn-size{
+    display: none;
+  }
+}
+
+@media only screen and (max-width: 530px) {
+  .hours-btn-container{
+    min-width: none;
+    padding: 0;
+  }
+  .team-selector-container{
+    display: flex;
+    flex-direction: column;
+  }
+}
+
+@media only screen and (max-width: 440px) {
+  .hours-btn-container{
+    column-gap: 0.2em;
+  }
+  .team-member-tasks h1 {
+    color: black;
+    font-size: 14px;
+    text-align: center;
+  }
+  
+}
+
+@media only screen and (max-width: 544px) {
+  .responsive-font-size{
+    font-size: 0.75rem !important;
+  }
+  .multi-select-filter{
+    width: 50%;
+  }
+}
+
+@media screen and (max-width: 1075px) and (min-width: 992px) {
+  .header-box h1{
+    font-size: 1.25rem !important;
+    margin-right: 10px;
+  }
+  .team-member-task-remove{
+    margin: 0;
+  }
+}
+
+@media screen and (max-width: 1200px) and (min-width: 992px) {
+  .team-member-tasks-user-name-link{
+    font-size: 14px !important;
+  }
+  .hours-completed-column{
+    width: 50px;
+  }
+  .team-clocks{
+    font-size: 0.75rem !important;
+  }
+  .team-member-tasks-content-link{
+    font-size: 0.75rem !important;
+  }
+  .team-task-progress-time{
+    font-size: 0.75rem !important;
+  }
+  .team-task-progress-time-volunteers{
+    font-size: 0.75rem !important;
+  }
 }

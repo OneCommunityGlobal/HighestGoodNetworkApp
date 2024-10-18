@@ -14,8 +14,8 @@
 }
 
 .badge_image_md > img {
-  height: 115px;
-  width: 115px;
+  height: 100px;
+  width: 100px;
   margin: 2px;
 }
 
@@ -149,7 +149,9 @@
 
 /*To match width of iphone 12 Pro*/
 #badgeCard {
-  min-width: 390px;
+  min-width: 320px;
+  background-color: #f6f6f3;
+  margin: 20px 0;
 }
 
 @media screen and (max-width: 1199px) {

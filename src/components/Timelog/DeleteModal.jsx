@@ -4,43 +4,26 @@ import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { deleteTimeEntry } from '../../actions/timeEntries';
-import { updateUserProfile } from '../../actions/userProfile';
+import {toast} from 'react-toastify';
 
-const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassification }) => {
+const DeleteModal = ({ timeEntry }) => {
   const [isOpen, setOpen] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();
 
   const toggle = () => setOpen(isOpen => !isOpen);
 
-  const deleteEntry = async event => {
-    if (event) {
-      event.preventDefault();
+  const deleteEntry = async () => {
+    setIsProcessing(true);
+    try {
+      await dispatch(deleteTimeEntry(timeEntry));
+    } catch (error) {
+      toast.error(`An error occurred while dispatching delete time entry action: ${error.message}`)
     }
-
-    dispatch(deleteTimeEntry(timeEntry));
-    //update hours
-    const formattedHours = parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
-    if (!timeEntry.isTangible) {
-      userProfile.totalIntangibleHrs -= formattedHours;
-    } else {
-      const category = projectCategory ? projectCategory : taskClassification;
-      const { hoursByCategory } = userProfile;
-      hoursByCategory[category] -= formattedHours;
-    }
-
-    const newHour = (
-      userProfile.totalcommittedHours -
-      timeEntry.hours -
-      timeEntry.minutes / 60
-    ).toFixed(2);
-
-    const updatedUserProfile = {
-      ...userProfile,
-      totalcommittedHours: parseInt(newHour, 10),
-    };
-
-    dispatch(updateUserProfile(updatedUserProfile));
+    setIsProcessing(false);
+    toggle();
   };
+
   return (
     <span>
       <FontAwesomeIcon icon={faTrashAlt} size="lg" className="mr-3 text-primary" onClick={toggle} />
@@ -48,12 +31,10 @@ const DeleteModal = ({ timeEntry, userProfile, projectCategory, taskClassificati
         <ModalBody>Are you sure you want to delete this entry?</ModalBody>
         <ModalFooter>
           <Button onClick={toggle} color="secondary" className="float-left">
-            {' '}
-            Cancel{' '}
+            Cancel
           </Button>
-          <Button onClick={deleteEntry} color="danger">
-            {' '}
-            Delete{' '}
+          <Button onClick={deleteEntry} color="danger" disabled={isProcessing}>
+            {isProcessing ? 'Processing...' : 'Delete'}
           </Button>
         </ModalFooter>
       </Modal>

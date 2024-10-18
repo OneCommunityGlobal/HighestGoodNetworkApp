@@ -1,15 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
-import { Popup ,CircleMarker } from 'react-leaflet';
 import 'leaflet/dist/leaflet.css';
-import './TeamLocations.css';
+import { useEffect, useRef } from 'react';
+import { CircleMarker, Popup } from 'react-leaflet';
 import { Button } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import './TeamLocations.css';
 
-const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocation, isOpen ,randomLocationOffset}) => {
+const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocation, isOpen, randomLocationOffset, darkMode}) => {
   const popupRef = useRef();
 
   useEffect(() => {
-  
     if ( popupRef.current !== undefined) {
         if(isOpen){
             popupRef.current.openPopup();
@@ -34,7 +33,6 @@ const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocat
 
       // }}
       ref={popupRef}
-    
     >
       <Popup autoClose={false}>
         <div>
@@ -48,20 +46,18 @@ const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocat
                 color="Primary"
                 className="btn btn-outline-success mr-1 btn-sm"
                 onClick={() => editHandler(profile)}
-                style={boxStyle}
+                style={darkMode ? boxStyleDark : boxStyle}
               >
                 Edit
               </Button>
-              {profile.type === 'm_user' && profile._id ? (
-                <Button
-                  color="danger"
-                  className="btn btn-outline-error mr-1 btn-sm"
-                  onClick={() => removeLocation(profile._id)}
-                  style={boxStyle}
-                >
-                  Remove
-                </Button>
-              ) : null}
+              <Button
+                color="danger"
+                className="btn btn-outline-error mr-1 btn-sm"
+                onClick={() => removeLocation(profile._id)}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Remove
+              </Button>
             </div>
           ) : null}
         </div>
