@@ -1,22 +1,22 @@
 import React, { useState, useEffect } from 'react';
+import { Tooltip } from 'reactstrap';
+import { connect } from 'react-redux';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { toast } from 'react-toastify';
 import ResetPasswordButton from './ResetPasswordButton';
 import { DELETE, PAUSE, RESUME, SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { UserStatus, FinalDay } from '../../utils/enums';
 import ActiveCell from './ActiveCell';
-import hasPermission from 'utils/permissions';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCopy, faCalendarDay, faCheck, faClock } from '@fortawesome/free-solid-svg-icons';
-import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
-import { connect } from 'react-redux';
-import { formatDateLocal } from 'utils/formatDate';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import { Tooltip } from 'reactstrap';
+import hasPermission from '../../utils/permissions';
+import { boxStyle } from '../../styles';
+import { formatDateLocal } from '../../utils/formatDate';
+import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 /**
  * The body row of the user table
  */
 const UserTableData = React.memo(props => {
-  const darkMode = props.darkMode;
+  const { darkMode } = props;
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
   const [tooltipPauseOpen, setTooltipPause] = useState(false);
   const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
@@ -38,10 +38,9 @@ const UserTableData = React.memo(props => {
     onReset(false);
   }, [props.isActive, props.resetLoading]);
 
-
   /**
    * Checks whether users should be able to change the record of other users.
-   * @returns {boolean} true if the target user record has a owner role, the logged in 
+   * @returns {boolean} true if the target user record has a owner role, the logged in
    * user does not have the addDeleteEditOwners permission, or the target user is only
    * editable by Jae's account.
    */
@@ -49,14 +48,29 @@ const UserTableData = React.memo(props => {
     const recordEmail = props.user.email;
     const loginUserEmail = props.authEmail;
 
-    return (props.user.role === 'Owner' && !canAddDeleteEditOwners)
-      || cantUpdateDevAdminDetails(recordEmail, loginUserEmail);
+    return (
+      (props.user.role === 'Owner' && !canAddDeleteEditOwners) ||
+      cantUpdateDevAdminDetails(recordEmail, loginUserEmail)
+    );
   };
 
   const isCurrentUser = props.user.email === props.authEmail;
 
+  const getButtonText = () => {
+    if (isChanging) {
+      return '...';
+    }
+    if (props.isActive) {
+      return PAUSE;
+    }
+    return RESUME;
+  };
+
   return (
-    <tr className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`} id={`tr_user_${props.index}`}>
+    <tr
+      className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}
+      id={`tr_user_${props.index}`}
+    >
       <td className="usermanagement__active--input">
         <ActiveCell
           isActive={props.isActive}
@@ -67,7 +81,9 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td className="email_cell">
-        <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.firstName} </a>
+        <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>
+          {props.user.firstName}{' '}
+        </a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -78,7 +94,9 @@ const UserTableData = React.memo(props => {
         />
       </td>
       <td className="email_cell">
-        <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>{props.user.lastName}</a>
+        <a href={`/userprofile/${props.user._id}`} className={darkMode ? 'text-azure' : ''}>
+          {props.user.lastName}
+        </a>
         <FontAwesomeIcon
           className="copy_icon"
           icon={faCopy}
@@ -102,26 +120,26 @@ const UserTableData = React.memo(props => {
       </td>
       <td>{props.user.weeklycommittedHours}</td>
       <td>
-        <>
-        {
-          !canChangeUserStatus ?
+        {!canChangeUserStatus ? (
           <Tooltip
             placement="bottom"
             isOpen={tooltipPauseOpen}
-            target={"btn-pause-profile-"+props.user._id}
+            target={`btn-pause-profile-${props.user._id}`}
             toggle={togglePauseTooltip}
           >
-            You don't have permission to change user status
+            You don&apos;t have permission to change user status
           </Tooltip>
-          :
-          ""
-        } 
+        ) : (
+          ''
+        )}
         <button
           type="button"
           className={`btn btn-outline-${props.isActive ? 'warning' : 'success'} btn-sm`}
-          onClick={e => {
+          onClick={() => {
             if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
-              alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+              alert(
+                'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
+              );
               return;
             }
             onReset(true);
@@ -130,21 +148,23 @@ const UserTableData = React.memo(props => {
               props.isActive ? UserStatus.InActive : UserStatus.Active,
             );
           }}
-          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
+          style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
           disabled={!canChangeUserStatus}
-          id={"btn-pause-profile-"+props.user._id}
+          id={`btn-pause-profile-${props.user._id}`}
         >
-          {isChanging ? '...' : props.isActive ? PAUSE : RESUME}
+          {/* {isChanging ? '...' : props.isActive ? PAUSE : RESUME} */}
+          {getButtonText()}
         </button>
-        </>
       </td>
       <td className="centered-td">
         <button
-          className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
-            }`}
-          onClick={e => props.onLogTimeOffClick(props.user)}
+          type="button"
+          className={`btn btn-outline-primary btn-sm${
+            props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
+          }`}
+          onClick={() => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
-          style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
+          style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -173,39 +193,40 @@ const UserTableData = React.memo(props => {
       <td>
         {!isCurrentUser && (
           <>
-          {
-            !canChangeUserStatus ? 
+            {!canChangeUserStatus ? (
               <Tooltip
                 placement="bottom"
                 isOpen={tooltipFinalDayOpen}
-                target={"btn-final-day-"+props.user._id}
+                target={`btn-final-day-${props.user._id}`}
                 toggle={toggleFinalDayTooltip}
               >
-                You don't have permission to change user status
+                You don&apos;t have permission to change user status
               </Tooltip>
-            :
-            ""
-          }
-          <button
-            type="button"
-            className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
-            onClick={e => {
-              if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
-                alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
-                return;
-              }
+            ) : (
+              ''
+            )}
+            <button
+              type="button"
+              className={`btn btn-outline-${props.user.endDate ? 'warning' : 'success'} btn-sm`}
+              onClick={() => {
+                if (cantUpdateDevAdminDetails(props.user.email, props.authEmail)) {
+                  alert(
+                    'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.',
+                  );
+                  return;
+                }
 
-              props.onFinalDayClick(
-                props.user,
-                props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
-              );
-            }}
-            style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
-            id={"btn-final-day-"+props.user._id}
-            disabled={!canChangeUserStatus}
-          >
-            {props.user.endDate ? CANCEL : SET_FINAL_DAY}
-          </button>
+                props.onFinalDayClick(
+                  props.user,
+                  props.user.endDate ? FinalDay.NotSetFinalDay : FinalDay.FinalDay,
+                );
+              }}
+              style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
+              id={`btn-final-day-${props.user._id}`}
+              disabled={!canChangeUserStatus}
+            >
+              {props.user.endDate ? CANCEL : SET_FINAL_DAY}
+            </button>
           </>
         )}
       </td>
@@ -214,7 +235,6 @@ const UserTableData = React.memo(props => {
           ? formatDateLocal(props.user.reactivationDate)
           : ''}
       </td>
-      
       <td>{props.user.startDate ? formatDateLocal(props.user.startDate) : 'N/A'}</td>
       <td className="email_cell">
         {props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A'}
@@ -222,7 +242,9 @@ const UserTableData = React.memo(props => {
           className="copy_icon"
           icon={faCopy}
           onClick={() => {
-            navigator.clipboard.writeText(props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A');
+            navigator.clipboard.writeText(
+              props.user.endDate ? formatDateLocal(props.user.endDate) : 'N/A',
+            );
             toast.success('End Date Copied!');
           }}
         />
@@ -230,36 +252,39 @@ const UserTableData = React.memo(props => {
       {checkPermissionsOnOwner() ? null : (
         <td>
           <span className="usermanagement-actions-cell">
-            <>
-            {
-              !canDeleteUsers ?
+            {!canDeleteUsers ? (
               <Tooltip
                 placement="bottom"
                 isOpen={tooltipDeleteOpen}
-                target={"btn-delete-"+props.user._id}
+                target={`btn-delete-${props.user._id}`}
                 toggle={toggleDeleteTooltip}
               >
-                You don't have permission to delete the user
+                You don&apos;t have permission to delete the user
               </Tooltip>
-              :
-              ""
-            } 
+            ) : (
+              ''
+            )}
             <button
               type="button"
-              id={"btn-delete-"+props.user._id}
+              id={`btn-delete-${props.user._id}`}
               className="btn btn-outline-danger btn-sm"
-              onClick={e => {
+              onClick={() => {
                 props.onDeleteClick(props.user, 'archive');
               }}
-              style={darkMode ? { boxShadow: "0 0 0 0", fontWeight: "bold" } : boxStyle}
+              style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
               disabled={props.auth?.user.userid === props.user._id || !canDeleteUsers}
             >
               {DELETE}
             </button>
-            </>
           </span>
           <span className="usermanagement-actions-cell">
-            <ResetPasswordButton authEmail={props.authEmail} user={props.user} darkMode={darkMode} isSmallButton canResetPassword={resetPasswordStatus || updatePasswordStatus}/>
+            <ResetPasswordButton
+              authEmail={props.authEmail}
+              user={props.user}
+              darkMode={darkMode}
+              isSmallButton
+              canResetPassword={resetPasswordStatus || updatePasswordStatus}
+            />
           </span>
         </td>
       )}

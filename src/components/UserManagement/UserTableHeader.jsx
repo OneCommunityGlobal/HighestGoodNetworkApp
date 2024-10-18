@@ -1,4 +1,5 @@
 import React from 'react';
+import userTableDataPermissions from '../../utils/userTableDataPermissions';
 import {
   ACTIVE,
   FIRST_NAME,
@@ -13,12 +14,11 @@ import {
   USER_END_DATE,
   REQUESTED_TIME_OFF,
 } from '../../languages/en/ui';
-import userTableDataPermissions from 'utils/userTableDataPermissions';
 
 /**
  * The header row of the user table.
  */
-const UserTableHeader = React.memo(({authRole, roleSearchText, darkMode}) => {
+const UserTableHeader = React.memo(({ authRole, roleSearchText, darkMode }) => {
   return (
     <tr className={darkMode ? 'bg-space-cadet' : ''}>
       <th scope="col" id="usermanagement_active">
@@ -58,7 +58,7 @@ const UserTableHeader = React.memo(({authRole, roleSearchText, darkMode}) => {
         {USER_END_DATE}
       </th>
       {userTableDataPermissions(authRole, roleSearchText) && (
-        <th scope="col" id="usermanagement_delete"></th>
+        <th scope="col" id="usermanagement_delete" aria-label="Delete User" />
       )}
     </tr>
   );
