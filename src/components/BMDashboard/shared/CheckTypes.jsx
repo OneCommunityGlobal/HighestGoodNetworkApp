@@ -76,13 +76,7 @@ function CheckTypes({ type }) {
               </thead>
               <tbody>
                 {buildingInvTypes?.map((elemType, idx) => (
-                  <tr
-                    key={elemType._id}
-                    style={{
-                      backgroundColor: idx % 2 === 0 ? '#ffffff' : '#f9f9f9',
-                      cursor: 'pointer',
-                    }}
-                  >
+                  <tr key={elemType._id}>
                     <th>{idx + 1}</th>
                     <td>{elemType.name}</td>
                     <td>{elemType.category}</td>
@@ -94,6 +88,17 @@ function CheckTypes({ type }) {
           </div>
         </CardBody>
       </Card>
+      <style jsx>{`
+        tbody tr:nth-child(even) {
+          background-color: #f9f9f9;
+        }
+        tbody tr:nth-child(odd) {
+          background-color: #ffffff;
+        }
+        tr:hover {
+          background-color: #e9ecef;
+        }
+      `}</style>
     </div>
   );
 }
