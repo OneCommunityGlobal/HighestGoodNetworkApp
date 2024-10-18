@@ -3,7 +3,11 @@
 }
 .phone-input-style.phone-input-style {
   width: 100%; 
-  max-width: 300px; 
+  max-width: 350px; 
+}
+
+.label-with-icon {
+  display: inline-block;
 }
 
 @media (max-width: 1024px) {
@@ -25,3 +29,5 @@
   }
 
 }
+
+

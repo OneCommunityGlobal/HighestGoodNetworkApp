@@ -5,6 +5,7 @@ import Leaderboard from './Leaderboard';
 import { getcolor, getprogress, getProgressValue } from '../../utils/effortColors';
 import { getMouseoverText } from '../../actions/mouseoverTextAction';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
+import { getWeeklySummaries } from '../../actions/weeklySummaries';
 
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
@@ -36,7 +37,6 @@ const mapStateToProps = state => {
       element.barcolor = getcolor(element.totaltangibletime_hrs);
       element.barprogress = getProgressValue(element.totaltangibletime_hrs, 40);
       element.totaltime = round(element.totaltime_hrs, 2);
-      element.isVisible = element.role === 'Volunteer' || element.isVisible;
 
       return element;
     });
@@ -66,8 +66,7 @@ const mapStateToProps = state => {
     roles: get(state, 'role', {}).roles,
     totalTimeMouseoverText: state?.mouseoverText?.[0]?.mouseoverText,
     totalTimeMouseoverTextId: state?.mouseoverText?.[0]?._id,
-    userOnTimeOff: state.timeOffRequests?.onTimeOff,
-    userGoingOnTimeOff: state.timeOffRequests?.goingOnTimeOff,
+    allRequests: state.timeOffRequests?.requests,
   };
 };
 export default connect(mapStateToProps, {
@@ -75,4 +74,5 @@ export default connect(mapStateToProps, {
   getOrgData,
   getMouseoverText,
   showTimeOffRequestModal,
+  getWeeklySummaries,
 })(Leaderboard);

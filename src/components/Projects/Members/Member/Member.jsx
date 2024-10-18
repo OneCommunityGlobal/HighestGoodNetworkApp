@@ -11,18 +11,19 @@ import { boxStyle } from 'styles';
 import PropTypes from 'prop-types'; 
 
 const Member = props => {
-  const canGetUserProfiles = props.hasPermission('getUserProfiles');
-  //const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers') || props.hasPermission('seeProjectManagement') || props.hasPermission('seeProjectManagementTab');
-  const canUnassignUserInProject = props.hasPermission('unassignUserInProject') || props.hasPermission('seeProjectManagement');
+  const {darkMode} = props;
+  const canGetProjectMembers = props.hasPermission('getProjectMembers');
+  const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
+ 
   return (
     <React.Fragment>
-      <tr className="members__tr">
+      <tr className={`members__tr`}>
         <th scope="row">
           <div>{typeof props.index === 'number' ? props.index + 1 : null}</div>
         </th>
         <td className="members__name">
-          {canGetUserProfiles ? (
-            <a href={`/userprofile/${props.uid}`}>{props.fullName}</a>
+          {canGetProjectMembers ? (
+            <a href={`/userprofile/${props.uid}`} className={darkMode ? 'text-azure' : ''}>{props.fullName}</a>
           ) : (
             props.fullName
           )}
@@ -41,7 +42,7 @@ const Member = props => {
                   props.lastName,
                 )
               }
-              style={boxStyle}
+              style={darkMode ? {} : boxStyle}
             >
               <i className="fa fa-minus" aria-hidden="true"></i>
             </button>

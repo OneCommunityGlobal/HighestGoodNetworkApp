@@ -19,14 +19,14 @@ import Task from './Task';
 import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 
 function WBSTasks(props) {
   /*
   * -------------------------------- variable declarations --------------------------------
   */
   // props from store
-  const { tasks, fetched } = props;
+  const { tasks, fetched, darkMode } = props;
 
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
@@ -44,15 +44,17 @@ function WBSTasks(props) {
   const myRef = useRef(null);
 
   // permissions
-  const canPostTask = props.hasPermission('postTask') || props.hasPermission('seeProjectManagement');
+  const canPostTask = props.hasPermission('postTask');
 
   /*
   * -------------------------------- functions --------------------------------
   */
   const load = async () => {
+    setIsLoading(true);
     const levelList = [0, 1, 2, 3, 4];
     await Promise.all(levelList.map(level => props.fetchAllTasks(wbsId, level)));
     setPageLoadTime(Date.now());
+    setIsLoading(false);
   };
 
   const filterTasks = (tasks, filterState) => {
@@ -61,12 +63,12 @@ function WBSTasks(props) {
       case 'assigned': return tasks.filter(task => task.isAssigned === true)
       case 'unassigned': return tasks.filter(task => task.isAssigned === false)
       case 'active': return tasks.filter(task => ['Active', 'Started'].includes(task.status))
-      case 'inactive': return tasks.filter(task => task.status === 'Not Started')
+      case 'inactive': return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status))
       case 'complete': return tasks.filter(task => task.status === 'Complete')
     }
   }
 
-  
+
   const refresh = async () => {
     setIsLoading(true);
     props.emptyTaskItems();
@@ -74,7 +76,7 @@ function WBSTasks(props) {
     setOpenAll(false)
     setIsLoading(false)
   };
-  
+
   const deleteWBSTask = (taskId, mother) => {
     props.deleteTask(taskId, mother);
     setIsDeleted(true);
@@ -91,17 +93,17 @@ function WBSTasks(props) {
   //   drag = taskIdFrom;
   //   dragParent = parentId;
   // };
-  
+
   // const dropTask = (taskIdTo, parentId) => {
   //   const tasksClass = document.getElementsByClassName('taskDrop');
   //   for (let i = 0; i < tasks.length; i++) {
   //     tasksClass[i].style.display = 'none';
   //   }
-    
+
   //   const list = [];
   //   const target = tasks.find(task => task._id === taskIdTo);
   //   const siblings = tasks.filter(task => task.parentId === dragParent);
-    
+
   //   let modifiedList = false;
   //   if (dragParent === target._id) {
   //     list.push({
@@ -145,21 +147,24 @@ function WBSTasks(props) {
       props.emptyTaskItems();
     };
   }, []);
-  
+
   useEffect(() => {
-    load();
-    props.fetchAllMembers(projectId);
-    setShowImport(tasks.length === 0);
-    setIsLoading(false);
+    const initialLoad = async () => {
+      await load();
+      props.fetchAllMembers(projectId);
+      setShowImport(tasks.length === 0);
+      setIsLoading(false);
+    };
+    initialLoad();
   }, [wbsId, projectId]);
-  
+
   useEffect(() => {
     const newLevelOneTasks = tasks.filter(task => task.level === 1);
     const filteredTasks = filterTasks(newLevelOneTasks, filterState);
     setShowImport(tasks.length === 0);
     setLevelOneTasks(filteredTasks);
   }, [tasks, filterState])
-  
+
   useEffect(() => {
     if (isDeleted) {
       refresh();
@@ -168,20 +173,26 @@ function WBSTasks(props) {
   }, [isDeleted]);
 
   return (
-    <>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
       <ReactTooltip delayShow={300} />
-      <div className="container-tasks">
+      <div className={`container-tasks m-0 p-2`}>
         <nav aria-label="breadcrumb">
-          <ol className="breadcrumb">
+          <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
             <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
-              <button type="button" className="btn btn-secondary" style={boxStyle}>
+              <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
             </NavItem>
             <div id="member_project__name">{wbsName}</div>
           </ol>
         </nav>
-        <div className='mb-2'>
+        <div
+          className='mb-2'
+          style={{
+            // display: 'flex',
+            // justifyContent: 'space-between'
+          }}>
+          {/* <span> */}
           {canPostTask ? (
             <AddTaskModal
               key="task_modal_null"
@@ -191,6 +202,7 @@ function WBSTasks(props) {
               projectId={projectId}
               load={load}
               pageLoadTime={pageLoadTime}
+              darkMode={darkMode}
             />
           ) : null}
 
@@ -200,6 +212,7 @@ function WBSTasks(props) {
               projectId={projectId}
               load={load}
               setIsLoading={setIsLoading}
+              darkMode={darkMode}
             />
           ) : null}
           <Button
@@ -207,94 +220,95 @@ function WBSTasks(props) {
             className="ml-2"
             size="sm"
             onClick={refresh}
-            style={boxStyle}
+            style={darkMode ? boxStyleDark : boxStyle}
           >
             Refresh{' '}
           </Button>
           {isLoading ? (
-            <Button color="warning" size="sm" className="ml-3" style={boxStyle}>
+            <Button color="warning" size="sm" className="ml-3" style={darkMode ? boxStyleDark : boxStyle}>
               {' '}
               Task Loading......{' '}
             </Button>
           ) : null}
+          {/* </span> */}
 
-          <div className="toggle-all">
-            <Button
-              color="light"
-              size="sm"
-              className="ml-2 mr-4"
-              onClick={() => setOpenAll(!openAll)}
-              style={boxStyle}
-            >
-              {openAll ? 'fold All' : 'Unfold All'}
-            </Button>
-            <Button
-              color="primary"
-              size="sm"
-              className="ml-3"
-              onClick={() => setFilterState('all')}
-              style={boxStyle}
-            >
-              All
-            </Button>
-            <Button
-              color="secondary"
-              size="sm"
-              onClick={() => setFilterState('assigned')}
-              className="ml-2"
-              style={boxStyle}
-            >
-              Assigned
-            </Button>
-            <Button
-              color="success"
-              size="sm"
-              onClick={() => setFilterState('unassigned')}
-              className="ml-2"
-              style={boxStyle}
-            >
-              Unassigned
-            </Button>
-            <Button
-              color="info"
-              size="sm"
-              onClick={() => setFilterState('active')}
-              className="ml-2"
-              style={boxStyle}
-            >
-              Active
-            </Button>
-            <Button
-              color="warning"
-              size="sm"
-              onClick={() => setFilterState('inactive')}
-              className="ml-2"
-              style={boxStyle}
-            >
-              Inactive
-            </Button>
-            <Button
-              color="danger"
-              size="sm"
-              onClick={() => setFilterState('complete')}
-              className="ml-2"
-              style={boxStyle}
-            >
-              Complete
-            </Button>
-          </div>
+          {/* <span className="toggle-all"> */}
+          <Button
+            color="light"
+            size="sm"
+            className="ml-2"
+            onClick={() => setOpenAll(!openAll)}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            {openAll ? 'fold All' : 'Unfold All'}
+          </Button>
+          <Button
+            color="primary"
+            size="sm"
+            className="ml-2"
+            onClick={() => setFilterState('all')}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            All
+          </Button>
+          <Button
+            color="secondary"
+            size="sm"
+            onClick={() => setFilterState('assigned')}
+            className="ml-2"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Assigned
+          </Button>
+          <Button
+            color="success"
+            size="sm"
+            onClick={() => setFilterState('unassigned')}
+            className="ml-2"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Unassigned
+          </Button>
+          <Button
+            color="info"
+            size="sm"
+            onClick={() => setFilterState('active')}
+            className="ml-2"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Active
+          </Button>
+          <Button
+            color="warning"
+            size="sm"
+            onClick={() => setFilterState('inactive')}
+            className="ml-2"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Inactive
+          </Button>
+          <Button
+            color="danger"
+            size="sm"
+            onClick={() => setFilterState('complete')}
+            className="ml-2"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Complete
+          </Button>
+          {/* </span> */}
         </div>
 
-        <table className="table table-bordered tasks-table" ref={myRef}>
+        <table className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`} ref={myRef}>
           <thead>
-            <tr>
-              <th scope="col" data-tip="Action" colSpan="2">
+            <tr className={darkMode ? 'bg-space-cadet' : ''}>
+              <th scope="col" className="tasks-detail-actions" data-tip="Action" colSpan="2">
                 Action
               </th>
               <th scope="col" data-tip="WBS ID" colSpan="1">
                 #
               </th>
-              <th scope="col" data-tip="Task Name" className="task-name">
+              <th scope="col" data-tip="Task Name" className="tasks-detail-task-name task-name">
                 Task
               </th>
               <th scope="col" data-tip="Priority">
@@ -378,18 +392,20 @@ function WBSTasks(props) {
                 load={load}
                 pageLoadTime={pageLoadTime}
                 setIsLoading={setIsLoading}
+                darkMode={darkMode}
               />
             ))}
           </tbody>
         </table>
       </div>
-    </>
+    </div >
   );
 }
 
 const mapStateToProps = state => ({
   tasks: state.tasks.taskItems,
   fetched: state.tasks.fetched,
+  darkMode: state.theme.darkMode,
 });
 
 export default connect(mapStateToProps, {
