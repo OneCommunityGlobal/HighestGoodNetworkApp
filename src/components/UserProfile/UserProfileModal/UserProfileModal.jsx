@@ -46,8 +46,8 @@ const UserProfileModal = props => {
   const darkMode = useSelector(state=>state.theme.darkMode);
 
   const canPutUserProfile = props.hasPermission('putUserProfile');
-  const canEditInfringements = props.hasPermission('editInfringements');
-  const canDeleteInfringements = props.hasPermission('deleteInfringements');
+  const canEditInfringements = props.hasPermission('editInfringements', true);
+  const canDeleteInfringements = props.hasPermission('deleteInfringements', true);
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
