@@ -1,7 +1,7 @@
 // import whatever file I need to pull the information of a given role's permissions
 // import whatever file I need to pull the information of a specific user's permissions
 
-function PermissionChangeModal() {
+function PermissionChangeModal({ userProfile }) {
   // Creating a modal that pops up when someone changes a user's role
   // and the user has custom permissions that differ from the permissions
   // of their old role. It should show the difference between the current permissions of the user
@@ -9,6 +9,7 @@ function PermissionChangeModal() {
   // to keep.
 
   // create variable for user
+  const user = userProfile;
   // create variable for old role
   // create variable for new role
   // const currentUserPermissions = user.permissions; // import user permissions from wherever
@@ -23,6 +24,10 @@ function PermissionChangeModal() {
   // const newRolePermissionsToAdd = newRolePermissions.filter(permission => customRemovedPermissions.includes(permission));
   // permissions that were added to user but are not in new role (newRolePermissions + customAddedPermissions)
   // const newRolePermissionsToRemove = customAddedPermissions.filter(permission => !newRolePermissions.includes(permission));
+
+  function testUser() {
+    console.log(user);
+  }
 
   return (
     <div className="modal-content">
@@ -53,7 +58,11 @@ function PermissionChangeModal() {
           ))}
         </ul> */}
         <div className="modal-footer">
-          <button className="cancel-button" /* onClick={closeModal} */ type="button">
+          <button className="cancel-button" 
+          /* onClick={closeModal} */ 
+          onClick={testUser} 
+          type="button"
+          >
             Cancel
           </button>
           <button className="confirm-button" /* onClick={confirmModal} */ type="submit">

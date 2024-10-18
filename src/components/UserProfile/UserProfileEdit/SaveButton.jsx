@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
+import PermissionChangeModal from '../UserProfileModal/PermissionChangeModal';
 import { boxStyle, boxStyleDark } from 'styles';
 
 /**
@@ -87,6 +88,7 @@ const SaveButton = props => {
 
   return (
     <React.Fragment>
+      <PermissionChangeModal userProfile={userProfile} />
       <EditConfirmModal
         isOpen={modal}
         closeModal={closeModal}
