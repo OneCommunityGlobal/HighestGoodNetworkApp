@@ -56,6 +56,6 @@
     max-width: 400px;
     left: 50%;
     overflow-y: auto;
-    max-height: 32vh;
+    max-height: 20vh;
   }
 }
