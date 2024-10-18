@@ -1,1 +1,3 @@
-export { TeamReport } from './TeamReport';
+import { TeamReport } from './TeamReport';
+
+export default TeamReport;

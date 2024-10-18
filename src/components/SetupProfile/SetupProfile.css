@@ -46,29 +46,4 @@
 .invalid-token-card-company-name {
   font-weight: 500;
 }
-.profile-setup-user-entry-container {
-  display: grid;
-  grid-template-rows: 10vh 1fr;
-}
-.profile-setup-user-entry-header {
-  height: 100%;
-  width: 100%;
-  background-color: #343a40;
-  display: grid;
-  align-items: center;
-  justify-items: center;
-}
-.profile-setup-user-entry-logo {
-  height: 7vh;
-  width: auto;
-}
-.profile-setup-user-entry-form-container {
-  margin-top: 5vh;
-  width: 100vh;
-  padding: 0px;
-}
 
-#setup-profile-phone-input {
-  width: 100%;
-  background-color: red;
-}

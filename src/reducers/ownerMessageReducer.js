@@ -1,21 +1,14 @@
 import * as types from "../constants/ownerMessageConstants";
 
-const initialState = null;
+const initialState = {
+  message: '',
+  standardMessage: '',
+};
 
-export const ownerMessageReducer = (state= initialState, action) => {
+export const ownerMessageReducer = (state = initialState, action) => {
   switch(action.type) {
-    case types.GET_OWNER_MESSAGE:
-      const data = action.payload;
-      return data;
-    
-    case types.CREATE_OWNER_MESSAGE:
-      return state;
-
     case types.UPDATE_OWNER_MESSAGE:
-      return state;
-
-    case types.DELETE_OWNER_MESSAGE:
-      return state;
+      return action.payload;
       
     default: 
       return state;

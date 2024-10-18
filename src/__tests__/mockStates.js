@@ -1,3 +1,5 @@
+import { getAllPermissionKeys } from '../components/PermissionsManagement/PermissionsConst.js';
+
 export const allTeamsMock = {
   fetching: false,
   fetched: true,
@@ -440,6 +442,7 @@ export const authMock = {
 export const timerMock = {
   seconds: 0,
 };
+
 export const userProfileMock = {
   hoursByCategory: {
     housing: 0,
@@ -488,6 +491,7 @@ export const userProfileMock = {
   _id: '5edf141c78f1380017b829a6',
   emailPubliclyAccessible: true,
   phoneNumberPubliclyAccessible: true,
+  personalBestMaxHrs: 50,
   badgeCollection: [],
   infringements: [
     {
@@ -589,6 +593,9 @@ export const userProfileMock = {
   },
   mediaUrl: 'http://dropbox.com',
   weeklySummariesCount: 0,
+  savedTangibleHrs:[
+    0,0,0,0,0,0,0,0
+  ],
 };
 
 export const timeEntryMock = {
@@ -601,6 +608,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5a849055592ca46b43db2729',
+        wbsId: null,
+        taskId: null,
         projectName: 'Mock Project 4',
         dateOfWork: '2020-08-12',
         hours: '1',
@@ -614,6 +623,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5e606e4f37477100173680ac',
+        wbsId: '5a849055592ca46b43db2731',
+        taskId: '6477b9d6173fbc0818ac5062',
         projectName: 'Mock Project 2',
         dateOfWork: '2020-08-07',
         hours: '3',
@@ -626,6 +637,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5e606e4f37477100173680ac',
+        wbsId: '5a849055592ca46b43db2732',
+        taskId: '6477b9d6173fbc0818ac5062',
         projectName: 'Mock Project 2',
         dateOfWork: '2020-08-07',
         hours: '1',
@@ -640,6 +653,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5a849055592ca46b43db2729',
+        wbsId: null,
+        taskId: null,
         projectName: 'Mock Project 4',
         dateOfWork: '2020-08-01',
         hours: '1',
@@ -652,6 +667,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5f2f7353dc35a608720d5ca4',
+        wbsId: '5a849055592ca46b43db2732',
+        taskId: '6477b9d6173fbc0818ac5063',
         projectName: 'Mock Project 3',
         dateOfWork: '2020-08-01',
         hours: '2',
@@ -664,6 +681,8 @@ export const timeEntryMock = {
         isTangible: true,
         personId: '5edf141c78f1380017b829a6',
         projectId: '5a849055592ca46b43db2729',
+        wbsId: null,
+        taskId: null,
         projectName: 'Mock Project 4',
         dateOfWork: '2020-08-01',
         hours: '1',
@@ -693,7 +712,46 @@ export const userProjectMock = {
       projectName: 'Mock Project 4',
     },
   ],
+  wbs: [
+    {
+      _id: '5a849055592ca46b43db2730',
+      wbsName: 'Mock WBS 1',
+      projectId: "5f2f7490dc35a608720d5ca6",
+    },
+    {
+      _id: '5a849055592ca46b43db2731',
+      wbsName: 'Mock WBS 2',
+      projectId: '5e606e4f37477100173680ac'
+    },
+    {
+      _id: '5a849055592ca46b43db2732',
+      wbsName: 'Mock WBS 3',
+      projectId: '5f2f7353dc35a608720d5ca4'
+    },
+  ],
 };
+
+export const userTaskMock = [
+  {
+    _id: "6477b9d6173fbc0818ac5061",
+    wbsId: "5a849055592ca46b43db2730",
+    projectId: '5f2f7490dc35a608720d5ca6',
+    taskName: "Mock Task 1",
+  },
+  {
+    _id: "6477b9d6173fbc0818ac5062",
+    wbsId: "5a849055592ca46b43db2731",
+    projectId: '5e606e4f37477100173680ac',
+    taskName: "Mock Task 2",
+  },
+  {
+    _id: "6477b9d6173fbc0818ac5063",
+    wbsId: "5a849055592ca46b43db2732",
+    projectId: '5f2f7353dc35a608720d5ca4',
+    taskName: "Mock Task 3",
+  },
+];
+
 export const allUserProfilesMock = {
   fetching: false,
   fetched: true,
@@ -1004,6 +1062,10 @@ export const timeZoneAPIMock = {
   userAPIKey: '4ef937173ce546ad8ad6133c3d93321d',
 };
 
+export const themeMock = {
+  darkMode: true,
+}
+
 export const rolesMock = {
   fetching: false,
   fetched: true,
@@ -1038,6 +1100,7 @@ export const rolesMock = {
           'deleteTeam',
           'putTeam',
           'assignTeamToUsers',
+          'editTeamCode',
           // Time Entries
           'editTimeEntry',
           'deleteTimeEntry',
@@ -1046,10 +1109,14 @@ export const rolesMock = {
           'postUserProfile',
           'putUserProfile',
           'putUserProfileImportantInfo',
+          'manageAdminLinks',
+          'updateSummaryRequirements',
           'changeUserStatus',
           'updatePassword',
           'deleteUserProfile',
-          'infringementAuthorizer',
+          'addInfringements',
+          'editInfringements',
+          'deleteInfringements',
           // WBS
           'postWbs',
           'deleteWbs',
@@ -1109,7 +1176,9 @@ export const rolesMock = {
           'getUserProfiles',
           'getProjectMembers',
           'putUserProfile',
-          'infringementAuthorizer',
+          'addInfringements',
+          'editInfringements',
+          'deleteInfringements',
           'getReporteesLimitRoles',
           'suggestTask',
           'getAllInvInProjectWBS',
@@ -1137,7 +1206,9 @@ export const rolesMock = {
           'getUserProfiles',
           'getProjectMembers',
           'putUserProfile',
-          'infringementAuthorizer',
+          'addInfringements',
+          'editInfringements',
+          'deleteInfringements',
           'getReporteesLimitRoles',
           'getAllInvInProjectWBS',
           'postInvInProjectWBS',
@@ -1189,14 +1260,19 @@ export const rolesMock = {
           'assignTeamToUsers',
           'editTimeEntry',
           'deleteTimeEntry',
+          'sendEmails',
           'updatePassword',
           'getUserProfiles',
           'getProjectMembers',
           'postUserProfile',
           'putUserProfile',
           'putUserProfileImportantInfo',
+          'updateSummaryRequirements',
           'deleteUserProfile',
-          'infringementAuthorizer',
+          'addInfringements',
+          'editInfringements',
+          'deleteInfringements',
+          'manageAdminLinks',
           'postWbs',
           'deleteWbs',
           'getAllInvInProjectWBS',
@@ -1218,10 +1294,40 @@ export const rolesMock = {
           'editTeamCode',
         ],
       },
+      {
+        roleName: 'Fake Test Role',
+        permissions: [],
+      },
     ]
   }
 }
 
 describe('Stop Error', () => {
-  it('should not error out due to no tests (mockStates.js)', () => {});
+  it('should not error out due to no tests (mockStates.js)', () => { });
 });
+
+// takes a list of permissions and returns a list of all other permissions
+const allPermissionsExcept = (permissions) => {
+  return getAllPermissionKeys().filter(perm => !permissions.includes(perm))
+}
+
+// takes a list of relevant permissions and returns two auth objects, one with the permissions and the other with all permissions not listed
+export const createAuthMocks = (permissions) => {
+  var authTemplate = {
+    // isAdmin: true,
+    user: {
+      userid: '5edf141c78f1380017b829a6',
+      role: 'Fake Test Role',
+      expiryTimestamp: '2020-08-22T22:51:06.544Z',
+      iat: 1597272666,
+    },
+    permissions: {
+      frontPermissions: []
+    },
+    firstName: 'Dev',
+    profilePic:''
+  };
+  const onlyPermissions = {...authTemplate, permissions: {frontPermissions: permissions}};
+  const allOtherPermissions = {...authTemplate, permissions: {frontPermissions: allPermissionsExcept(permissions)}};
+  return [onlyPermissions, allOtherPermissions];
+};

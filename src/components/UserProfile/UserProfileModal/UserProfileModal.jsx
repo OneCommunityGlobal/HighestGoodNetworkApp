@@ -12,9 +12,10 @@ import {
   Card,
   Col,
 } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../../Header/DarkMode.css'
 import hasPermission from 'utils/permissions';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 
 const UserProfileModal = props => {
   const {
@@ -36,13 +37,17 @@ const UserProfileModal = props => {
     },
   ];
 
-  if (type === 'modBlueSquare' || type === 'viewBlueSquare') {
+  if (type !== 'message' && type !== 'addBlueSquare') {
     if (id.length > 0) {
       blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
     }
   }
 
+  const darkMode = useSelector(state=>state.theme.darkMode);
+
   const canPutUserProfile = props.hasPermission('putUserProfile');
+  const canEditInfringements = props.hasPermission('editInfringements');
+  const canDeleteInfringements = props.hasPermission('deleteInfringements');
 
   const [linkName, setLinkName] = useState('');
   const [linkURL, setLinkURL] = useState('');
@@ -122,6 +127,7 @@ const UserProfileModal = props => {
     } else if (event.target.id === 'summary') {
       setSummary(event.target.value);
       checkFields(dateStamp, summary);
+      adjustTextareaHeight(event.target);
     } else if (event.target.id === 'date') {
       setDateStamp(event.target.value);
       setSummaryFieldView(false);
@@ -130,7 +136,7 @@ const UserProfileModal = props => {
   };
 
   function checkFields(field1, field2) {
-    console.log('f1:', field1, ' f2:', field2);
+    // console.log('f1:', field1, ' f2:', field2);
 
     if (field1 != null && field2 != null) {
       setAddButton(false);
@@ -139,16 +145,24 @@ const UserProfileModal = props => {
     }
   }
 
+  const adjustTextareaHeight = (textarea) => {
+    textarea.style.height = 'auto';
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
+
+  const boxStyling = darkMode ? boxStyleDark : boxStyle;
+  const fontColor = darkMode ? 'text-light' : '';
+
   return (
-    <Modal isOpen={isOpen} toggle={closeModal}>
-      <ModalHeader toggle={closeModal}>{modalTitle}</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         {type === 'updateLink' && (
           <div>
             {canPutUserProfile && (
               <CardBody>
                 <Card>
-                  <Label style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
+                  <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>Admin Links:</Label>
                   <Col>
                     <div style={{ display: 'flex', margin: '5px' }}>
                       <div className="customTitle">Name</div>
@@ -223,7 +237,7 @@ const UserProfileModal = props => {
             )}
             <CardBody>
               <Card>
-                <Label style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
+                <Label className={fontColor} style={{ display: 'flex', margin: '5px' }}>Personal Links:</Label>
                 <Col>
                   <div style={{ display: 'flex', margin: '5px' }}>
                     <div className="customTitle">Name</div>
@@ -303,13 +317,20 @@ const UserProfileModal = props => {
         {type === 'addBlueSquare' && (
           <>
             <FormGroup>
-              <Label for="date">Date</Label>
+              <Label className={fontColor} for="date">Date</Label>
               <Input type="date" name="date" id="date" onChange={handleChange} />
             </FormGroup>
 
             <FormGroup hidden={summaryFieldView}>
-              <Label for="report">Summary</Label>
-              <Input type="textarea" id="summary" onChange={handleChange} />
+              <Label className={fontColor} for="report">Summary</Label>
+              <Input 
+                type="textarea" 
+                id="summary" 
+                onChange={handleChange} 
+                value={summary} 
+                style={{ minHeight: '200px', overflow: 'hidden'}} 
+                onInput={e => adjustTextareaHeight(e.target)} 
+              />
             </FormGroup>
           </>
         )}
@@ -317,28 +338,48 @@ const UserProfileModal = props => {
         {type === 'modBlueSquare' && (
           <>
             <FormGroup>
-              <Label for="date">Date</Label>
-              <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              <Label className={fontColor} for="date">Date:</Label>
+              {canEditInfringements ? <Input type="date" onChange={e => setDateStamp(e.target.value)} value={dateStamp} />
+              : <span> {blueSquare[0]?.date}</span>}
             </FormGroup>
-
             <FormGroup>
-              <Label for="report">Summary</Label>
-              <Input type="textarea" onChange={e => setSummary(e.target.value)} value={summary} />
+              <Label className={fontColor} for="createdDate">
+                Created Date:
+                <span>{blueSquare[0]?.createdDate}</span>
+              </Label>
+            </FormGroup>
+            <FormGroup>
+              <Label className={fontColor} for="report">Summary</Label>
+              {canEditInfringements ? <Input 
+                type="textarea" 
+                id="summary" 
+                onChange={handleChange} 
+                value={summary} 
+                style={{ minHeight: '200px', overflow: 'hidden'}} // 4x taller than usual
+                onInput={e => adjustTextareaHeight(e.target)} // auto-adjust height
+              />
+              :<p>{blueSquare[0]?.description}</p>}
             </FormGroup>
           </>
         )}
 
-        {type === 'viewBlueSquare' && (
+        {type === 'viewBlueSquare'  && (
           <>
             <FormGroup>
-              <Label for="date">
-                Date:
-                {blueSquare[0]?.date}
+              <Label className={fontColor} for="date">
+                Date: 
+                <span>{blueSquare[0]?.date}</span>
               </Label>
             </FormGroup>
             <FormGroup>
-              <Label for="description">Summary</Label>
-              <Label>{blueSquare[0]?.description}</Label>
+              <Label className={fontColor} for="createdDate">
+                Created Date:
+                <span>{blueSquare[0]?.createdDate}</span>
+              </Label>
+            </FormGroup>
+            <FormGroup>
+              <Label className={fontColor} for="description">Summary</Label>
+              <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
           </>
         )}
@@ -350,7 +391,7 @@ const UserProfileModal = props => {
         {type === 'image' && modalMessage}
       </ModalBody>
 
-      <ModalFooter>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         {type === 'addBlueSquare' && (
           <Button
             color="danger"
@@ -359,32 +400,36 @@ const UserProfileModal = props => {
             onClick={() => {
               modifyBlueSquares('', dateStamp, summary, 'add');
             }}
-            style={boxStyle}
+            style={boxStyling}
           >
             Submit
           </Button>
         )}
 
         {type === 'modBlueSquare' && (
-          <>
-            <Button
-              color="info"
-              onClick={() => {
-                modifyBlueSquares(id, dateStamp, summary, 'update');
-              }}
-              style={boxStyle}
-            >
-              Update
-            </Button>
-            <Button
-              color="danger"
-              onClick={() => {
-                modifyBlueSquares(id, dateStamp, summary, 'delete');
-              }}
-              style={boxStyle}
-            >
-              Delete
-            </Button>
+            <>
+            {canEditInfringements && 
+              <Button
+                color="info"
+                onClick={() => {
+                  modifyBlueSquares(id, dateStamp, summary, 'update');
+                }}
+                style={boxStyling}
+              >
+                Update
+              </Button>
+              }
+            {canDeleteInfringements &&
+              <Button
+                color="danger"
+                onClick={() => {
+                  modifyBlueSquares(id, dateStamp, summary, 'delete');
+                }}
+                style={boxStyling}
+              >
+                Delete
+              </Button>
+            }
           </>
         )}
 
@@ -401,7 +446,7 @@ const UserProfileModal = props => {
 
         {type === 'image' && (
           <>
-            <Button color="primary" onClick={closeModal} style={boxStyle}>
+            <Button color="primary" onClick={closeModal} style={boxStyling}>
               {' '}
               Close{' '}
             </Button>
@@ -410,7 +455,7 @@ const UserProfileModal = props => {
               onClick={() => {
                 window.open('https://picresize.com/');
               }}
-              style={boxStyle}
+              style={boxStyling}
             >
               {' '}
               Resize{' '}
@@ -419,11 +464,11 @@ const UserProfileModal = props => {
         )}
 
         {type === 'save' ? (
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
+          <Button color="primary" onClick={closeModal} style={boxStyling}>
             Close
           </Button>
         ) : (
-          <Button color="primary" onClick={closeModal} style={boxStyle}>
+          <Button color="primary" onClick={closeModal} style={boxStyling}>
             Cancel
           </Button>
         )}

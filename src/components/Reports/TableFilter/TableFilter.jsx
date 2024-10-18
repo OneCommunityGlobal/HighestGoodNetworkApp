@@ -1,13 +1,14 @@
-import { useState } from 'react';
+import { useState, forwardRef } from 'react';
 import DatePicker from 'react-datepicker';
 import { FiCalendar } from 'react-icons/fi';
 import 'react-datepicker/dist/react-datepicker.css';
 import './TableFilter.css';
 import { Checkbox } from 'components/common/Checkbox';
-import TextSearchBox from '../../UserManagement/TextSearchBox';
+import TextSuggestion from '../../UserManagement/TextSuggestion';
 import DropDownSearchBox from '../../UserManagement/DropDownSearchBox';
+import { divide } from 'lodash';
 
-function InputWithCalendarIcon({ value, onClick }) {
+const InputWithCalendarIcon = forwardRef(({ value, onClick }, ref) => {
   return (
     <>
       <input
@@ -15,11 +16,13 @@ function InputWithCalendarIcon({ value, onClick }) {
         className="table-filter-datePicker table-filter-item table-filter-input"
         value={value}
         onClick={onClick}
+        ref={ref}
+        readOnly
       />
       <FiCalendar className="date-picker-icon" onClick={onClick} />
     </>
   );
-}
+});
 
 function TableFilter({
   onTaskNameSearch,
@@ -30,6 +33,7 @@ function TableFilter({
   searchAssign,
   searchEstimatedHours,
   name,
+  taskNameList = [],
   estimatedHours,
   resources,
   status,
@@ -41,27 +45,40 @@ function TableFilter({
   const [taskAssign, setTaskAssign] = useState(true);
   const [startDate, setStartDate] = useState(new Date('01/01/2010'));
   const [endDate, setEndDate] = useState(new Date());
+  const taskName = taskNameList.map((item) => item.taskName)
+  const taskHour = taskNameList.map((item) => item.estimatedHours)
+  const taskResource = taskNameList.map(function (item) { return [item.resources.map((e) => e[0].name)].join() })
+  const uniquetaskHour = [...new Set(taskHour)];
+  const uniquetaskResource = [...new Set(taskResource)];
+
+
 
   return (
     <div className="table-filter-wrapper">
-      <TextSearchBox
+
+      <TextSuggestion
         id="name_search"
+        list={taskName}
         searchCallback={onTaskNameSearch}
+        className="table-filter-input table-filter-item"
         value={name}
-        className="table-filter-item table-filter-input"
         placeholder="Task name"
       />
-      <TextSearchBox
+      <TextSuggestion
+        list={uniquetaskHour}
+        id="hour_search"
         searchCallback={searchEstimatedHours}
         value={estimatedHours}
         placeholder="Estimated Hours"
         className="table-filter-item table-filter-input"
       />
-      <TextSearchBox
+      <TextSuggestion
+        list={uniquetaskResource}
         searchCallback={searchResources}
         value={resources}
         placeholder="Resources"
         className="table-filter-item table-filter-input"
+
       />
       <DropDownSearchBox
         items={taskStatus}

@@ -71,12 +71,49 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
   };
 };
 
+export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //Find last week of work in date
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DD');
+  const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate,toDate);
+  return async dispatch => {
+    let loggedOut = false;
+    try{
+      const res = await axios.get(url);
+      if (!res || !res.data){
+        console.log("Request failed or no data");
+        return "N/A";
+      }
+      const filteredEntries = res.data.filter(entry => {
+        const entryDate = moment(entry.dateOfWork);
+        return entryDate.isBetween(fromDate, toDate, 'day', '[]');
+      });
+      filteredEntries.sort((a,b) => {
+        return moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf();
+      });
+      const lastEntry = filteredEntries[0];
+      if(!lastEntry){
+        return "N/A";
+      }
+      const formattedLastEntryDate = moment(lastEntry.dateOfWork).format('YYYY-MM-DD');
+      return formattedLastEntryDate;
+    } catch (error) {
+      console.error("Error fetching time entries:", error);
+      if (error.response && error.response.status === 401) {
+        loggedOut = true;
+      }
+      return "N/A"; // Return "N/A" in case of error
+    }
+  };
+};
 export const postTimeEntry = timeEntry => {
   const url = ENDPOINTS.TIME_ENTRY();
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry));
+      if(timeEntry.entryType == 'default'){
+        dispatch(updateTimeEntries(timeEntry));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -89,7 +126,9 @@ export const editTimeEntry = (timeEntryId, timeEntry, oldDateOfWork) => {
   return async dispatch => {
     try {
       const res = await axios.put(url, timeEntry);
-      dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      if (timeEntry.entryType == 'default') {
+        dispatch(updateTimeEntries(timeEntry, oldDateOfWork));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;
@@ -102,7 +141,9 @@ export const deleteTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.delete(url);
-      dispatch(updateTimeEntries(timeEntry));
+      if (timeEntry.entryType === 'default') {
+        dispatch(updateTimeEntries(timeEntry));
+      }
       return res.status;
     } catch (e) {
       return e.response.status;

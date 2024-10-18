@@ -1,4 +1,4 @@
-import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
 
 /**
  * Modal displaying information about how time entry works
@@ -11,18 +11,19 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
  * @param {Func} cancelChange
  */
 const ReminderModal = props => {
+  const { edit, visible, data, inputs, reminder, cancelChange, setVisible, darkMode } = props;
   return (
-    <Modal isOpen={props.visible}>
-      <ModalHeader>Reminder</ModalHeader>
-      <ModalBody>{props.reminder.remind}</ModalBody>
-      <ModalFooter>
-        <Button onClick={() => props.setVisible(false)} color="danger">
+    <Modal isOpen={visible} className={darkMode ? 'text-light' : ''}>
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Reminder</ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{reminder.remind}</ModalBody>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button onClick={() => setVisible(false)} color="danger">
           Continue
         </Button>
-        {props.edit &&
-          (props.data.hours !== props.inputs.hours ||
-            props.data.minutes !== props.inputs.minutes) && (
-            <Button onClick={props.cancelChange} color="primary">
+        {edit &&
+          (data.hours !== inputs.hours ||
+            data.minutes !== inputs.minutes) && (
+            <Button onClick={cancelChange} color="primary">
               Cancel
             </Button>
           )}

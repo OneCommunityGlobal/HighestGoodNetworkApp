@@ -14,8 +14,8 @@
 }
 
 .badge_image_md > img {
-  height: 115px;
-  width: 115px;
+  height: 100px;
+  width: 100px;
   margin: 2px;
 }
 
@@ -56,13 +56,14 @@
   text-align: center;
   font: 11px Arial, sans-serif;
   position: absolute;
-  right: 34px;
-  bottom: 26px;
+  transform: translate(-50%, 75%);
+  top: 50%;
+  left: 50%;
   z-index: 0;
 }
 
 .badge_featured_count_3_digit {
-  padding-top: 3px;
+  padding-top: 6px;
   border-radius: 50%;
   width: 40px;
   height: 30px;
@@ -148,7 +149,9 @@
 
 /*To match width of iphone 12 Pro*/
 #badgeCard {
-  min-width: 390px;
+  min-width: 320px;
+  background-color: #f6f6f3;
+  margin: 20px 0;
 }
 
 @media screen and (max-width: 1199px) {

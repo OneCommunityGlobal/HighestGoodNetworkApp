@@ -1,12 +1,15 @@
 import axios from 'axios';
 import {
-  getUserProfile as getUserProfileActionCreator,
-  getUserTask as getUserTaskActionCreator,
-  editFirstName as editFirstNameActionCreator,
-  putUserProfile as putUserProfileActionCreator,
+  GET_USER_PROFILE,
+  GET_USER_TASKS,
+  EDIT_FIRST_NAME,
+  EDIT_USER_PROFILE,
   CLEAR_USER_PROFILE,
+  GET_PROJECT_BY_USER_NAME,
+  USER_NOT_FOUND_ERROR
 } from '../constants/userProfile';
 import { ENDPOINTS } from '../utils/URL';
+import { toast } from 'react-toastify';
 
 export const getUserProfile = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);
@@ -19,20 +22,25 @@ export const getUserProfile = userId => {
       }
     });
     if (!loggedOut) {
-      const resp = await dispatch(getUserProfileActionCreator(res.data));
+      const resp = dispatch(getUserProfileActionCreator(res.data));
       return resp.payload;
     }
   };
 };
 
-export const getUserTask = userId => {
+export const getUserTasks = userId => {
   const url = ENDPOINTS.TASKS_BY_USERID(userId);
   return async dispatch => {
-    const res = await axios.get(url).catch(error => {
-      if (error.status === 401) {
+    try {
+      const res = await axios.get(url);
+      if (res.status === 200) {
+        dispatch(getUserTaskActionCreator(res.data));
+      } else {
+        console.log(`Get user task request status is not 200, status message: ${res.statusText}`)
       }
-    });
-    await dispatch(getUserTaskActionCreator(res.data));
+    } catch (error) {
+      console.log(error);
+    }
   };
 };
 
@@ -46,8 +54,8 @@ export const putUserProfile = data => dispatch => {
 
 export const clearUserProfile = () => ({ type: CLEAR_USER_PROFILE });
 
-export const updateUserProfile = (userId, userProfile) => {
-  const url = ENDPOINTS.USER_PROFILE(userId);
+export const updateUserProfile = (userProfile) => {
+  const url = ENDPOINTS.USER_PROFILE(userProfile._id);
   return async dispatch => {
     const res = await axios.put(url, userProfile);
     if (res.status === 200) {
@@ -67,3 +75,48 @@ export const updateUserProfileProperty = (userProfile, key, value) => {
     return res.status;
   };
 };
+
+export const getProjectsByUsersName = searchName => {
+  const url = ENDPOINTS.GET_PROJECT_BY_PERSON(searchName);
+  return async dispatch => {
+    try {
+      const res = await axios.get(url);
+      dispatch(getProjectsByPersonActionCreator(res.data));
+      return res.data.allProjects;
+    } catch (error) {
+      dispatch(userNotFoundError(error.message));
+      dispatch(getProjectsByPersonActionCreator([]));
+      toast.error("Could not find user or project, please try again");
+    }
+  };
+};
+
+export const getProjectsByPersonActionCreator = data => ({
+  type: GET_PROJECT_BY_USER_NAME,
+  payload: data
+});
+
+const userNotFoundError = (error) =>({
+  type: USER_NOT_FOUND_ERROR,
+  payload: error,
+});
+
+export const getUserProfileActionCreator = data => ({
+  type: GET_USER_PROFILE,
+  payload: data,
+});
+
+export const getUserTaskActionCreator = data => ({
+  type: GET_USER_TASKS,
+  payload: data,
+});
+
+export const editFirstNameActionCreator = data => ({
+  type: EDIT_FIRST_NAME,
+  payload: data,
+});
+
+export const putUserProfileActionCreator = data => ({
+  type: EDIT_USER_PROFILE,
+  payload: data,
+});
