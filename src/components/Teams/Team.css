@@ -127,8 +127,8 @@ tr:hover {
 @media (max-width: 768px) {
   .overflow-container {
     overflow-x: auto;
-    max-height: 80vh;
     overflow-y: auto;
+    height: 60vh;
   }
 }
 
