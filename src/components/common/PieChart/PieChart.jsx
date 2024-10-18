@@ -16,7 +16,8 @@ export const PieChart = ({
 }) => {
   const [totalHours, setTotalHours] = useState(0);
   const [colors] = useState(generateArrayOfUniqColors(Object.keys(data).length));
-  // create the pie chart
+
+  // Create the pie chart
   const getCreateSvgPie = totalValue => {
     const svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
@@ -26,6 +27,7 @@ export const PieChart = ({
       .attr('height', CHART_SIZE)
       .append('g')
       .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
+
     svg
       .append('text')
       .attr('text-anchor', 'middle')
@@ -34,8 +36,10 @@ export const PieChart = ({
 
     return svg;
   };
+
   let color = d3.scaleOrdinal().range(colors);
   const pie = d3.pie().value(d => d[1]);
+
   useEffect(() => {
     color = d3.scaleOrdinal().range(colors);
 
@@ -48,6 +52,7 @@ export const PieChart = ({
         return a + c;
       }, 0);
     setTotalHours(totalValue);
+
     let div = d3.select('.tooltip-donut');
     if (div.empty()) {
       div = d3
@@ -58,6 +63,7 @@ export const PieChart = ({
         .style('position', 'absolute') // Ensure the tooltip uses absolute positioning
         .style('pointer-events', 'none'); // Prevents the tooltip from interfering with mouse events
     }
+
     getCreateSvgPie(totalValue)
       .selectAll('whatever')
       .data(data_ready)
@@ -70,21 +76,23 @@ export const PieChart = ({
           .outerRadius(CHART_RADIUS),
       )
       .attr('fill', d => color(d.data[0]))
-      .on('mouseover', function(d, i) {
+      .on('mouseover', function handleMouseOver(d, i) {
         d3.select(this)
           .transition()
-          .duration('50')
-          .attr('opacity', '.5');
+          .duration(50)
+          .attr('opacity', '0.5');
         div
           .transition()
           .duration(50)
           .style('opacity', 1)
           .style('visibility', 'visible');
+
         const taskName = Object.keys(chartLegend).map(key => {
           return chartLegend[key][0];
         });
         const index = Object.keys(chartLegend)
-          .map(function(e) {
+          .map(function mapFunction(e) {
+            // Named the function as mapFunction
             return e;
           })
           .indexOf(i.data[0]);
@@ -94,16 +102,18 @@ export const PieChart = ({
           .style('left', `${event.pageX + 10}px`)
           .style('top', `${event.pageY - 15}px`);
       })
-      .on('mouseout', function() {
+      .on('mouseout', function handleMouseOut() {
+        // Named the function as handleMouseOut
         d3.select(this)
           .transition()
-          .duration('50')
-          .attr('opacity', '.85');
+          .duration(50)
+          .attr('opacity', '0.85');
         div
           .transition()
-          .duration('50')
+          .duration(50)
           .style('opacity', 0)
-          .on('end', function() {
+          .on('end', function handleEnd() {
+            // Named the function as handleEnd
             d3.select(this).style('visibility', 'hidden'); // Hide after transition
           });
       });
@@ -111,7 +121,7 @@ export const PieChart = ({
     return () => {
       d3.select(`#pie-chart-${pieChartId}`).remove();
     };
-  }, [data]);
+  }, [data, colors, chartLegend, darkMode, pieChartId]);
 
   return (
     <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
@@ -125,10 +135,10 @@ export const PieChart = ({
           <div key={key} className="pie-chart-legend-item">
             <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
             <div className="data-legend-info">
-              {dataLegend[key].map((legendPart, index) => (
+              {dataLegend[key].map(legendPart => (
                 <div
                   className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`}
-                  key={index}
+                  key={legendPart}
                 >
                   {legendPart}
                 </div>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   Container,
   Modal,
@@ -12,11 +12,11 @@ import {
   FormFeedback,
   Button,
 } from 'reactstrap';
-import RequirementModal from './requirementModal';
 import httpService from 'services/httpService';
 import { ENDPOINTS } from 'utils/URL';
+import RequirementModal from './requirementModal';
 
-const HomeCountryModal = ({ isOpen, toggle, setLocation,token}) => {
+function HomeCountryModal({ isOpen, toggle, setLocation,token}) {
   const [inputError, setInputError] = useState('');
   const locationInitialState = {
     userProvided: '',
@@ -183,6 +183,6 @@ const HomeCountryModal = ({ isOpen, toggle, setLocation,token}) => {
       )}
     </Modal>
   );
-};
+}
 
 export default HomeCountryModal;

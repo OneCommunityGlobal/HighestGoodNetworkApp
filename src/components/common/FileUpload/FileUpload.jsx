@@ -1,21 +1,15 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 // eslint-disable-next-line react/function-component-definition
-const FileUpload = ({
-  name,
-  accept,
-  label,
-  className,
-  maxSizeinKB,
-  error,
-  onUpload,
-  readAsType,
-}) => {
+import { toast } from 'react-toastify';
+
+function FileUpload({ name, accept, label, className, maxSizeinKB, error, onUpload, readAsType }) {
   const onChange = async e => {
     let errorMessage = '';
     const file = e.target.files[0];
     let isValid = true;
     if (!file) {
-      return alert('Choose a valid file');
+      toast.error('Choose a valid file');
+      return;
     }
     if (accept) {
       const validfileTypes = accept.split(',');
@@ -35,7 +29,11 @@ const FileUpload = ({
       }
     }
 
-    return isValid ? onUpload(e, readAsType) : alert(errorMessage);
+    if (isValid) {
+      onUpload(e, readAsType);
+    } else {
+      toast.error(errorMessage);
+    }
   };
   return (
     <>
@@ -58,6 +56,6 @@ const FileUpload = ({
       {error && <div className="alert alert-danger mt-1">{error}</div>}
     </>
   );
-};
+}
 
 export default FileUpload;

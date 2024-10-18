@@ -1,9 +1,8 @@
-import React from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faWindowClose } from '@fortawesome/free-regular-svg-icons';
 import { useSelector } from 'react-redux';
 
-const CustomModalHeader = ({ title, toggle, children }) => {
+function CustomModalHeader({ title, toggle, children }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
@@ -18,13 +17,13 @@ const CustomModalHeader = ({ title, toggle, children }) => {
           {children}
         </div>
         {toggle ? (
-          <button className={darkMode ? 'text-light' : ''} onClick={() => toggle()}>
+          <button type="button" className={darkMode ? 'text-light' : ''} onClick={() => toggle()}>
             <FontAwesomeIcon size="lg" icon={faWindowClose} />
           </button>
         ) : null}
       </div>
     </div>
   );
-};
+}
 
 export default CustomModalHeader;

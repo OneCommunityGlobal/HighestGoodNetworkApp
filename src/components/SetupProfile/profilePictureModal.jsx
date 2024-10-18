@@ -1,7 +1,6 @@
-import React from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
-const ProfilePictureModal = ({ isOpen, toggle, error }) => {
+function ProfilePictureModal({ isOpen, toggle, error }) {
   return (
     <Modal isOpen={isOpen} toggle={toggle}>
       <ModalHeader toggle={toggle}>Profile Picture Error</ModalHeader>
@@ -23,6 +22,6 @@ const ProfilePictureModal = ({ isOpen, toggle, error }) => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default ProfilePictureModal;
