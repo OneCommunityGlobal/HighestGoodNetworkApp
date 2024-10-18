@@ -278,6 +278,7 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
             badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1;
             badgeObj.lastModified = currentTs;
             badgeObj.earnedDate.push(currentDate);
+            badgeObj.viewed= false
             included = true;
           }
           // Note this badge ID as updated so it's not added again
@@ -292,6 +293,7 @@ export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId)
           count: 1,
           lastModified: currentTs,
           earnedDate: [currentDate],
+          viewed:false,
         });
         // Note this badge ID as added
         updatedOrAddedBadges[badgeId] = true;
