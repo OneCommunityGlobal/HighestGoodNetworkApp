@@ -1,4 +1,6 @@
 import axios from 'axios';
+import moment from 'moment';
+import { formatDate } from 'utils/formatDate';
 import {
   GET_ALL_BADGE_DATA,
   ADD_SELECT_BADGE,
@@ -12,10 +14,9 @@ import {
   GET_USER_ID,
   GET_BADGE_COUNT,
   RESET_BADGE_COUNT,
+  SET_ACTIVE_TAB,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
-import moment from 'moment';
-import { formatDate } from 'utils/formatDate';
 
 const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
@@ -62,7 +63,7 @@ export const resetBadgeCount = userId => async dispatch => {
       });
     }
   } catch (error) {
-    console.error("Failed to reset badge count", error);
+    console.error('Failed to reset badge count', error);
   }
 };
 
@@ -110,6 +111,10 @@ export const getMessage = (message, color) => ({
   message,
   color,
 });
+export const setActiveTab = tab => ({
+  type: SET_ACTIVE_TAB,
+  payload: tab,
+});
 
 export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
 
@@ -118,7 +123,7 @@ export const validateBadges = (firstName, lastName) => {
     if (!firstName || !lastName) {
       dispatch(
         getMessage(
-          'The Name Find function does not work without entering first and last name. Nice try though.',
+          'The Name Find function does not work without entering a name. Nice try though.',
           'danger',
         ),
       );
@@ -243,7 +248,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       );
       setTimeout(() => {
         dispatch(closeAlert());
-      }, 6000);
+      }, 600000);
     } catch (e) {
       dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
@@ -308,7 +313,6 @@ export const sendUpdatedBadgeCollectionReq = async (
       dispatch(closeAlert());
     }, 6000);
   }
-  return;
 };
 
 export const changeBadgesByUserID = (userId, badgeCollection) => {
