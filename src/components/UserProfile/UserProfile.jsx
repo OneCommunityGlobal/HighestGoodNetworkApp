@@ -217,7 +217,6 @@ function UserProfile(props) {
     const compare =
       originalProjectsBeingDisplayed?.length === originalProjects?.length &&
       originalProjectsBeingDisplayed?.length === projectsProperties?.length;
-      console.log(compare)
     setIsProjectsEqual(compare);
   };
 
