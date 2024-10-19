@@ -75,6 +75,7 @@ function BadgeReport(props) {
       if (typeof newBadges[index] === 'string') {
         newBadges[index].lastModified = new Date(newBadges[index].lastModified);
       }
+      
       if (badge.featured) {
         setNumFeatured(prevNumFeatured => prevNumFeatured + 1);
       }
