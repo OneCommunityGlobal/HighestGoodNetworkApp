@@ -52,39 +52,33 @@ function BadgeReport(props) {
   const darkMode = props.darkMode;
 
   useEffect(() => {
-    let isMounted = true; // flag to track if component is mounted
-    const initializeBadges = () => {
-      const badges = JSON.parse(JSON.stringify(props.badges)) || [];
-      let newBadges = badges.slice();
+    let newBadges = JSON.parse(JSON.stringify(props.badges)) || [];
 
-      if (isMounted) {
-        newBadges.sort((a, b) => {
-          if (a.badge.ranking === 0) return 1;
-          if (b.badge.ranking === 0) return -1;
-          if (a.badge.ranking > b.badge.ranking) return 1;
-          if (a.badge.ranking < b.badge.ranking) return -1;
-          if (a.badge.badgeName > b.badge.badgeName) return 1;
-          if (a.badge.badgeName < b.badge.badgeName) return -1;
-          return 0;
-        });
+    newBadges.forEach((badge, index) => {
+        if (typeof badge === 'string') {
+            badge.lastModified = new Date(badge.lastModified);
+        }
+    });
 
-        setNumFeatured(0);
-        newBadges.forEach((badge, index) => {
-          if (badge.featured) {
-            setNumFeatured(prev => prev + 1);
-          }
+    newBadges.sort((a, b) => {
+        if (a.badge.ranking === 0) return 1;
+        if (b.badge.ranking === 0) return -1;
+        if (a.badge.ranking > b.badge.ranking) return 1;
+        if (a.badge.ranking < b.badge.ranking) return -1;
+        if (a.badge.badgeName > b.badge.badgeName) return 1;
+        if (a.badge.badgeName < b.badge.badgeName) return -1;
+        return 0;
+    });
 
-          if (typeof newBadges[index] === 'string') {
-            newBadges[index].lastModified = new Date(newBadges[index].lastModified);
-          }
-        });
-        setSortBadges(newBadges);
-      }
-    };
-    initializeBadges();
+    setNumFeatured(0);
+    newBadges.forEach((badge) => {
+        if (badge.featured) {
+            setNumFeatured(prevNumFeatured => prevNumFeatured + 1);
+        }
+    });
 
-    return () => { isMounted = false }; // cleanup function
-  }, [props.badges]);
+    setSortBadges(newBadges);
+}, [props.badges]);
 
 
   const countChange = (badge, index, newValue) => {
@@ -172,7 +166,7 @@ function BadgeReport(props) {
   const deleteBadge = () => {
     let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
     if (badgeToDelete.featured) {
-      setNumFeatured(prevNumFeatured => prevNumFeatured - 1);  // Consistent variable name
+      setNumFeatured(prevNumFeatured => prevNumFeatured - 1);  
     }
     setSortBadges(newBadges);
     setShowModal(false);
