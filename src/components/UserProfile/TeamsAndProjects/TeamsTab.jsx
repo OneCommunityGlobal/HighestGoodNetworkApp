@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import AddTeamPopup from './AddTeamPopup';
 import UserTeamsTable from './UserTeamsTable';
 import { addTeamMember, deleteTeamMember } from 'actions/allTeamsAction';
-
+import { toast } from 'react-toastify';
 const TeamsTab = props => {
   const {
     teamsData,
@@ -23,7 +23,6 @@ const TeamsTab = props => {
     codeValid,
     setCodeValid,
     saved,
-    isTeamSaved,
     inputAutoComplete,
     inputAutoStatus,
     isLoading,
@@ -49,21 +48,22 @@ const TeamsTab = props => {
 
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
-    if (isTeamSaved) isTeamSaved(true);
   };
   const onSelectDeleteTeam = teamId => {
-    setRemovedTeams([...removedTeams, teamId]);
+    if (userProfile._id) {
+      deleteTeamMember(teamId, userProfile._id);
+    }
+    toast.success('Team Deleted successfully ');
     onDeleteTeam(teamId);
-    if (isTeamSaved) isTeamSaved(false);
   };
 
   const onSelectAssignTeam = team => {
     if (userProfile?._id) {
       addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-      if (isTeamSaved) isTeamSaved(false);
     }
     onAssignTeam(team);
-    setRenderedOn(Date.now());
+    toast.success('Team assigned successfully '); 
+  
   };
 
   return (
