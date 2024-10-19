@@ -172,7 +172,7 @@ function BadgeReport(props) {
   const deleteBadge = () => {
     let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
     if (badgeToDelete.featured) {
-      setNumFeatured(prevCount => prevCount - 1);
+      setNumFeatured(prevNumFeatured => prevNumFeatured - 1);  // Consistent variable name
     }
     setSortBadges(newBadges);
     setShowModal(false);
