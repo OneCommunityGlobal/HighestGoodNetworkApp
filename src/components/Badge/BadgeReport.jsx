@@ -72,6 +72,9 @@ function BadgeReport(props) {
 
     setNumFeatured(0);
     newBadges.forEach((badge, index) => {
+      if (typeof newBadges[index] === 'string') {
+        newBadges[index].lastModified = new Date(newBadges[index].lastModified);
+      }
       if (badge.featured) {
         setNumFeatured(prevNumFeatured => prevNumFeatured + 1);
       }
@@ -168,7 +171,7 @@ function BadgeReport(props) {
     let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
     if (badgeToDelete.featured) {
       setNumFeatured(prevNumFeatured => prevNumFeatured - 1);
-  }
+    }
     setSortBadges(newBadges);
     setShowModal(false);
     setBadgeToDelete([]);
