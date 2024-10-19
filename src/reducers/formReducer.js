@@ -1,5 +1,5 @@
 import { v4 as uuid4 } from 'uuid';
-import { GET_FORM_STATE,ADD_QUESTION,UPDATE_QUESTION, ADD_OPTION, UPDATE_OPTION } from 'constants/form';
+import { GET_FORM_STATE,ADD_QUESTION,UPDATE_QUESTION, ADD_OPTION, UPDATE_OPTION, DELETE_QUESTION, RESET_FORM_STATE} from 'constants/form';
 
 const initialState = {
     id: uuid4(),
@@ -16,6 +16,10 @@ const initialState = {
 export default function formReducer(state = initialState, action) {
     switch (action.type) {
         case GET_FORM_STATE:
+            return { ...state };
+        case RESET_FORM_STATE:
+            state = initialState;
+            console.log("In reducer", state);
             return { ...state };
         case ADD_QUESTION:
             return {
@@ -38,6 +42,16 @@ export default function formReducer(state = initialState, action) {
                     return question;
                 })
             };
+        case DELETE_QUESTION:
+            return {
+                ...state,
+                questions: state.questions.map(question => {
+                    if (question.id === action.payload.id) {
+                        return;
+                    }
+                    return question;
+                })
+            }
         case ADD_OPTION:
             return {
                 ...state,

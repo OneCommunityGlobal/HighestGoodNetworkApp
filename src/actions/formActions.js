@@ -1,4 +1,16 @@
-import {ADD_QUESTION, UPDATE_QUESTION, GET_FORM_STATE, ADD_OPTION, UPDATE_OPTION} from 'constants/form';
+import {ADD_QUESTION, UPDATE_QUESTION, GET_FORM_STATE, ADD_OPTION, UPDATE_OPTION, DELETE_QUESTION, RESET_FORM_STATE} from 'constants/form';
+
+export const getFormState = () => {
+    return {
+        type: GET_FORM_STATE,
+    };
+}
+
+export const resetFormState = () => {
+    return {
+        type: RESET_FORM_STATE,
+    };
+}
 
 export const addQuestion = () => {
     return {
@@ -13,11 +25,13 @@ export const updateQuestion = (id, data) => {
     };
 }
 
-export const getFormState = () => {
+export const deleteQuestion = (id) => {
     return {
-        type: GET_FORM_STATE,
+        type: DELETE_QUESTION,
+        payload: { id },
     };
 }
+
 
 export const addOption = (id) => {
     return {
