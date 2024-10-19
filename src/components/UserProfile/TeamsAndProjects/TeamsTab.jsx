@@ -49,21 +49,32 @@ const TeamsTab = props => {
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
   };
-  const onSelectDeleteTeam = teamId => {
-    if (userProfile._id) {
-      deleteTeamMember(teamId, userProfile._id);
-    }
-    toast.success('Team Deleted successfully ');
-    onDeleteTeam(teamId);
-  };
-
-  const onSelectAssignTeam = team => {
-    if (userProfile?._id) {
-      addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
-    }
-    onAssignTeam(team);
-    toast.success('Team assigned successfully '); 
   
+  const onSelectDeleteTeam =  teamId => {
+    try {
+      if (userProfile._id) {
+        deleteTeamMember(teamId, userProfile._id);
+      }
+      toast.success('Team Deleted successfully');
+      onDeleteTeam(teamId);
+    } catch (error) {
+      console.error('Error deleting team:', error);
+      toast.error('Failed to delete team');
+    }
+  };
+  
+
+  const onSelectAssignTeam =  team => {
+    try {
+      if (userProfile?._id) {
+        addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
+      }
+      onAssignTeam(team);
+      toast.success('Team assigned successfully');
+    } catch (error) {
+      console.error('Error assigning team:', error);
+      toast.error('Failed to assign team');
+    }
   };
 
   return (
