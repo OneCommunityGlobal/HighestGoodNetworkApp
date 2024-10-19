@@ -40,26 +40,27 @@
 .load {
   position: relative;
 }
-
 .dot {
   height: 24px;
   width: 24px;
   background-color: #bbb;
   border-radius: 50%;
-  display: inline-block;
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;
   font-size: 10px;
   font-weight: 700;
-  text-align: center;
   text-transform: uppercase;
-  padding: 4px 0;
-  margin-top: 3px;
+  
 }
 
 .img-circle {
   border-radius: 50%;
-  border-radius: 50%;
   height: 24px;
   width: 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .task-hour {
@@ -85,13 +86,24 @@
 }
 
 .wbsTask {
-  line-height: 28px;
+  line-height: 22px;
 }
+/* Ensured task-action-buttons has a flex display to properly align the buttons */
+.task-action-buttons {
+  display: flex;
+  justify-content: flex-start;
+}
+/* Added controlBtn class to ensure uniform margin between buttons */
+.controlBtn {
+  margin-right: 8px; /* Adds margin between buttons */
+}
+
 
 .controlBtn {
   float: left;
   margin-left: 10px;
 }
+
 
 .controlTd {
   background-color: #effff2;
@@ -106,7 +118,9 @@
 }
 
 .table td {
-  padding: 0.45rem;
+  padding: 4px 8px;
+  line-height: 1.2;
+  height: 40px
 }
 
 .taskNum {
@@ -114,8 +128,7 @@
 }
 
 .taskName {
-  width: 300px;
-  height: 80px;
+  height: auto;
 }
 
 .taskDrop {
@@ -129,13 +142,16 @@
 }
 
 .resourceMoreToggle {
-  cursor: pointer;
-  color: white;
-  font-size: 14px;
+  display: flex;
+  justify-content: center; /* Centers horizontally */
+  align-items: center; /* Centers vertically */
+  height: 100%; /* Ensures it takes up the full height of the cell */
 }
 
 .resourceMore {
   display: none;
+  justify-content: center; /* Centers the element horizontally */
+  align-items: center;
 }
 
 .warning {
@@ -179,7 +195,9 @@
   }
 
   .table td {
-    padding: 5px !important;
+    padding: 5px;
+    line-height: 1.2;
+    height: 40px
   }
 }
 
@@ -222,4 +240,12 @@
 
 .bg-yinmn-blue-light:hover{
   background-color:#2f4157;
+}
+
+.tasks-detail-task-name { /* task column height and width changes*/
+  height: auto; 
+}
+
+.tasks-detail-actions {  /* action column width reduced */
+  width: 6%; 
 }
