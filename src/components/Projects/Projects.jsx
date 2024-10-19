@@ -216,7 +216,7 @@ const Projects = function(props) {
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
-            {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
+            {canPostProject ? <AddProject hasPermission={hasPermission} onProjectAdded={refreshProjects}/> : null}
           </div>
 
           <SearchProjectByPerson onSearch={handleSearchName} />
