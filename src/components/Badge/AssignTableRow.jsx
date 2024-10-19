@@ -5,16 +5,15 @@ import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
-function AssignTableRow({ badge, index }) {
+function AssignTableRow({ badge, index, existBadges }) {
   const [isOpen, setOpen] = useState(false);
   const [isSelect, setSelect] = useState(false);
   const dispatch = useDispatch();
-  const selectedBadges = useSelector(state => state.badge?.selectedBadges) || [];
 
   useEffect(() => {
-    if (props.existBadges?.includes(`assign-badge-${props.badge._id}`)) {
+    if (existBadges?.includes(`assign-badge-${badge._id}`)) {
       setSelect(true);
-      props.addSelectBadge(`assign-badge-${props.badge._id}`);
+      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
     } else {
       setSelect(false);
     }
