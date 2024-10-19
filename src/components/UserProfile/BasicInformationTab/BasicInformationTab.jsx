@@ -17,7 +17,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
-
+import PermissionChangeModal from '../UserProfileModal/PermissionChangeModal';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
@@ -309,6 +309,7 @@ const BasicInformationTab = props => {
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const [oldUserProfile, setOldUserProfile] = useState(null);
 
   let topMargin = '6px';
   if (isUserSelf) {
@@ -361,6 +362,11 @@ const BasicInformationTab = props => {
       window.removeEventListener('resize', handleResize);
     };
   }, []);
+
+  useEffect(() => {
+    setOldUserProfile(userProfile);
+    console.log('oldUserProfile: ', userProfile);
+  }, [userProfile]);
 
   const nameComponent = (
     <>
@@ -504,6 +510,7 @@ const BasicInformationTab = props => {
 
   const roleComponent = (
     <>
+      <PermissionChangeModal userProfile={userProfile} oldUserProfile={oldUserProfile} />
       <Col>
         <Label className={darkMode ? 'text-light' : ''}>Role</Label>
       </Col>
