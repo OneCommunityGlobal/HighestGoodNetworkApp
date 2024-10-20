@@ -154,11 +154,12 @@ const AddLostTime = props => {
     } else if (entryType == 'team') {
       return (
         <FormGroup>
-          <Label className={fontColor}>Team Name</Label>
+          <Label className={fontColor}>Team Name</Label> 
           <AddTeamsAutoComplete
             teamsData={{allTeams: props.teams}}
             onDropDownSelect={selectTeam}
             setNewTeamName={setNewTeamName} 
+            setInputs={setInputs}
             newTeamName={newTeamName}
             selectedTeam={selectedTeam}
             searchText={searchTeamText}
