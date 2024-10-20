@@ -29,7 +29,21 @@ import axios from 'axios';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
-
+import moment from 'moment';
+const startOfWeek = offset => {
+  return moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(offset, 'weeks')
+    .format('YYYY-MM-DD');
+};
+const endOfWeek = offset => {
+  return moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(offset, 'weeks')
+    .format('YYYY-MM-DD');
+};
 const SummaryBar = props => {
   // from parent
   const { displayUserId, summaryBarData } = props;
@@ -198,23 +212,48 @@ const SummaryBar = props => {
   };
 
   //Get badges count from userProfile
+  const viewedBadges=async()=>{
+    let newBadgeCollection = Array.from(displayUserProfile.badgeCollection);
+    newBadgeCollection.forEach(badge=>{
+      badge.viewed=true
+    })
+
+    const url = ENDPOINTS.BADGE_VIEWED(displayUserId)
+    try{
+      await axios.put(url,{
+      badgeCollection:newBadgeCollection
+      })
+    }catch(e){
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
+    }
+
+  }
   const getBadges = () => {
     if (!displayUserProfile || !displayUserProfile.badgeCollection) {
       return 0;
     }
+    console.log(displayUserProfile.badgeCollection)
+    const startDate= new Date(startOfWeek(0));
+    const lastDate= new Date(endOfWeek(0))
     let totalBadges = 0;
+    console.log( displayUserProfile.badgeCollection)
     displayUserProfile.badgeCollection.forEach(badge => {
-      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-        totalBadges += 1;
-      } else {
-        const badgeCount = badge?.count ? Number(badge.count) : 0;
-        totalBadges += Math.round(badgeCount);
+      for(let date of badge.earnedDate){
+          let dateElement= new Date(date)
+          if(  dateElement >= startDate && dateElement <= lastDate){
+            if(badge.viewed==false){
+              totalBadges++
+            }
+          }
       }
-    });
 
+    });
     return totalBadges;
   };
-
+  
   //refactored for rading form values
   const readFormData = formid => {
     let form = document.getElementById(formid);
@@ -357,8 +396,15 @@ const SummaryBar = props => {
     window.location.hash = '#tasks';
   };
 
-  const onBadgeClick = () => {
+  const onBadgeClick = async() => {
+    try{
+      viewedBadges();
+    setBadges(0);
     window.location.hash = '#badgesearned';
+    }catch(e){
+
+    }
+    
   };
 
 
@@ -562,9 +608,11 @@ const SummaryBar = props => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              <div className="redBackgroup">
+              {badges>0?(
+                <div className="redBackgroup">
                 <span>{badges}</span>
               </div>
+              ): <span></span>}
               {isAuthUser || canEditData() ? (
                 <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick}/>
                 ) : (
