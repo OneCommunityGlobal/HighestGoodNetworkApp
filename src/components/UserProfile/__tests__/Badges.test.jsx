@@ -1,12 +1,18 @@
+// Badges.test.jsx
 import React from 'react';
-import Badges from './Badges';
-import { renderWithEnzymeProvider as renderWithProvider } from '../../__tests__/utils';
-import { authMock, userProfileMock, rolesMock } from '../../__tests__/mockStates';
+import Badges from '../Badges';
+import { renderWithEnzymeProvider as renderWithProvider } from '../../../__tests__/utils';
+import { authMock, userProfileMock, rolesMock } from '../../../__tests__/mockStates';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 
-const mockStore = configureStore([thunk]);
+// Mock useLayoutEffect to useEffect to avoid SSR warnings in test environment
+jest.mock('react', () => ({
+  ...jest.requireActual('react'),
+  useLayoutEffect: jest.requireActual('react').useEffect,
+}));
 
+const mockStore = configureStore([thunk]);
 
 describe('Badges Component', () => {
   let store;
@@ -14,9 +20,10 @@ describe('Badges Component', () => {
     store = mockStore({
       auth: authMock,
       userProfile: userProfileMock,
-      role: rolesMock.role
+      role: rolesMock.role,
     });
-  })
+  });
+
   const badgeProps = {
     isUserSelf: false,
     userProfile: {
@@ -32,6 +39,7 @@ describe('Badges Component', () => {
     handleSubmit: jest.fn(),
     userPermissions: [],
   };
+
   describe('Card Footer Text', () => {
     describe('When viewing your own profile', () => {
       it('should display the correct text when you have no badges', () => {
@@ -69,9 +77,8 @@ describe('Badges Component', () => {
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
           store,
         });
-        // This uses a regular expression that matches all postive numbers > 1.
         expect(renderedBadges.find('.card-footer').text()).toMatch(
-          /Bravo! You have earned ([1-9]\d+|[2-9]) badges!/,
+          /Bravo! You have earned ([1-9]\d+|[2-9]) badges!/
         );
       });
     });
@@ -87,13 +94,13 @@ describe('Badges Component', () => {
       it('should display the correct text when they have exactly 1 badge', () => {
         const props = {
           ...badgeProps,
-          userProfile: { ...badgeProps.userProfile, badgeCollection: [ { count: 1 }] },
+          userProfile: { ...badgeProps.userProfile, badgeCollection: [{ count: 1 }] },
         };
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
           store,
         });
         expect(renderedBadges.find('.card-footer').text()).toBe(
-          'Bravo! This person has earned 1 badge!',
+          'Bravo! This person has earned 1 badge!'
         );
       });
 
@@ -105,12 +112,11 @@ describe('Badges Component', () => {
             badgeCollection: [{ count: 1 }, { count: 2 }, { count: 3 }],
           },
         };
-
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
           store,
         });
         expect(renderedBadges.find('.card-footer').text()).toMatch(
-          /Bravo! This person has earned ([1-9]\d+|[2-9]) badges!/,
+          /Bravo! This person has earned ([1-9]\d+|[2-9]) badges!/
         );
       });
     });
