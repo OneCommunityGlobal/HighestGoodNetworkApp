@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect'; // for the "toBeInTheDocument" matcher
-import Dropdown from './Dropdown'; // adjust the path as needed
+import Dropdown from '../Dropdown'; // adjust the path as needed
 
 describe('Dropdown Component', () => {
   test('renders without crashing', () => {

@@ -1,7 +1,7 @@
 import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import SkeletonLoading from './SkeletonLoading';
+import SkeletonLoading from '../SkeletonLoading';
 import { themeMock } from '__tests__/mockStates';
 
 // Create a mock store

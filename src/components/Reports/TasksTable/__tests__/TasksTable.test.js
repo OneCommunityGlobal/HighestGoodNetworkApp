@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { TasksTable } from '../../components/Reports/TasksTable';
+import { TasksTable } from '../TasksTable';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
 
