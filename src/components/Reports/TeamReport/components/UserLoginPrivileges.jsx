@@ -16,7 +16,8 @@ function UserLoginPrivileges({
   selectedTeams,
   selectedTeamsWeeklyEffort,
   allTeamsMembers,
-  darkMode
+  darkMode,
+  teamDataLoading
 }) {
   // team
   let teamWeeklyCommittedHours = 0;
@@ -101,6 +102,7 @@ function UserLoginPrivileges({
         totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours}
         teamTotalBlueSquares={teamTotalBlueSquares}
         darkMode={darkMode}
+        teamDataLoading ={teamDataLoading}
       />
       {/* Two cards with pie charts with data */}
       <div
@@ -125,6 +127,7 @@ function UserLoginPrivileges({
         selectedTeamsTotalValues={selectedTeamsTotalValues}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
         darkMode={darkMode}
+        teamDataLoading ={teamDataLoading}
       />
       {/* Two cards with pie charts with data */}
       <div
