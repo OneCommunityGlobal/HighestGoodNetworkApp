@@ -18,7 +18,6 @@ import Loading from '../common/Loading';
 import hasPermission from '../../utils/permissions';
 import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
-import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
 
 const Projects = function(props) {
   const role = props.state.userProfile.role;
@@ -118,7 +117,7 @@ const Projects = function(props) {
 
   const postProject = async (name, category) => {
     await props.postNewProject(name, category);
-    refreshProjects(); // Refresh project list after adding a project
+    await props.fetchAllProjects();
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
@@ -217,7 +216,7 @@ const Projects = function(props) {
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
-            {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
+            {canPostProject ? <AddProject hasPermission={hasPermission} onProjectAdded={refreshProjects}/> : null}
           </div>
 
           <SearchProjectByPerson onSearch={handleSearchName} />
