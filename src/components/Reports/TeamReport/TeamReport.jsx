@@ -4,6 +4,7 @@ import { debounce } from 'lodash';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 import { FiUsers } from 'react-icons/fi';
 import Dropdown from 'react-bootstrap/Dropdown';
 import axios from 'axios';
@@ -395,7 +396,7 @@ export function TeamReport({ match }) {
                   onChange={event => handleSearchByName(event)}
                 />
               </div>
-              <div className="date-picker-container">
+              <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
                 <div id="task_startDate" className="date-picker-item">
                   <div className="d-flex flex-column">
                     {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
