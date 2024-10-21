@@ -197,7 +197,7 @@ const UserTeamsTable = props => {
                         target="teamCodeAssign"
                         toggle={toggleTeamCodeExplainTooltip}
                       >
-                        This team code should only be used by Admins/Owners, and has nothing to do with the team data model.
+                        This team code should only be used by admins/owners, and has nothing to do with the team data model.
                       </Tooltip>
                     </>
                   )}
@@ -364,15 +364,27 @@ const UserTeamsTable = props => {
                       Assign Team
                     </Button>
                   ) : (
-                    <Button
-                      className="btn-addteam"
-                      color="primary"
-                      onClick={() => {
-                        props.onButtonClick();
-                      }}
-                    >
-                      Assign Team
-                    </Button>
+                    <>
+                      <Button
+                        id="teamCodeAssign"
+                        className="btn-addteam"
+                        color="primary"
+                        onClick={() => {
+                          props.onButtonClick();
+                        }}
+                      >
+                        Assign Team
+                      </Button>
+                      <Tooltip
+                        placement="top" // Adjust the placement as needed
+                        isOpen={teamCodeExplainTooltip}
+                        target="teamCodeAssign"
+                        toggle={toggleTeamCodeExplainTooltip}
+                      >
+                        This team code should only be used by admin/owner, and has nothing to do with
+                        the team data model.
+                      </Tooltip>
+                    </>
                   )
                 ) : (
                   <></>
