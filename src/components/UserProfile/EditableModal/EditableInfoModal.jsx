@@ -207,8 +207,7 @@ export class EditableInfoModal extends Component {
       isPermissionPage,
     } = this.state;
 
-     const darkMode = this.props.darkMode;
-
+    const { darkMode } = this.props;
     return (
       (CanRead) && (
         <div>
@@ -223,8 +222,8 @@ export class EditableInfoModal extends Component {
           />
           {editableModalOpen && (
             <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
-              <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
-              <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+              <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
+              <ModalBody className={`${darkMode ? 'bg-yinmn-blue' : ''} text-center`} style={{ padding: '20px 40px' }}>
                 {this.state.editing
                   ? <RichTextEditor
                     disabled={!this.state.editing}
@@ -257,13 +256,14 @@ export class EditableInfoModal extends Component {
                         <Button
                           className='saveBtn'
                           onClick={this.handleSave}
+                          color='primary'
                           style={darkMode ? boxStyleDark : boxStyle}>Save</Button>
                       </Col>)
                   }
                   <Col
-                    md={3}
+                    md={3} className='d-flex justify-content-center'
                   >
-                    <Button onClick={this.handleClose} style={darkMode ? boxStyleDark : boxStyle}>Close</Button>
+                    <Button onClick={this.handleClose} color='danger' style={darkMode ? boxStyleDark : boxStyle}>Close</Button>
                   </Col>
                 </Row>
               </ModalFooter>

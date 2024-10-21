@@ -5,6 +5,7 @@ import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdRe
 import { authReducer } from './authReducer';
 import { allUserProfilesReducer } from './allUserProfilesReducer';
 import { allUserProfilesBasicInfoReducer } from  './allUserProfilesBasicInfoReducer';
+import { changeUserPageStatusReducer, enableUserInfoEditReducer, updateUserInfoReducer } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
@@ -99,6 +100,8 @@ const localReducers = {
 };
 
 const sessionReducers = {
+  userPagination:changeUserPageStatusReducer,
+  userProfileEdit:enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,
   userTask: userTaskByIdReducer,
   leaderBoardData: leaderboardDataReducer,

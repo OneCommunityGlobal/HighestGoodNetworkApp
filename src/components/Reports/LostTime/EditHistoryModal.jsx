@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Form, Row, Col } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
+import { getFontColor, getBoxStyling } from 'styles';
 import { connect, useDispatch } from 'react-redux';
 import { getUserProfile } from 'actions/userProfile';
 import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
@@ -12,9 +13,12 @@ import { deleteTimeEntry, editTimeEntry } from 'actions/timeEntries';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './EditHistoryModal.css';
+import '../../Header/DarkMode.css'
 
 const EditHistoryModal = props => {
   const darkMode = props.darkMode;
+  const fontColor = getFontColor(darkMode);
+  const boxStyling = getBoxStyling(darkMode);
 
   const initialForm = {
     projectId: props.entryType == 'project'? props.dataId: undefined,
@@ -88,7 +92,7 @@ const EditHistoryModal = props => {
     if (props.entryType == 'project') {
       return (
         <FormGroup>
-          <Label>Project Name</Label>
+          <Label className={fontColor}>Project Name</Label>
           <Input
             defaultValue={selectedData.projectName}
             disabled
@@ -99,7 +103,7 @@ const EditHistoryModal = props => {
       return (
         <>
           <FormGroup>
-            <Label>Name</Label>
+            <Label className={fontColor}>Name</Label>
             <Input
               defaultValue={searchText}
               disabled
@@ -110,7 +114,7 @@ const EditHistoryModal = props => {
     } else if (props.entryType == 'team') {
       return (
         <FormGroup>
-          <Label>Team Name</Label>
+          <Label className={fontColor}>Team Name</Label>
           <Input
             defaultValue={selectedData.teamName}
             disabled
@@ -318,16 +322,16 @@ const EditHistoryModal = props => {
 
   return(
     <>
-    <Modal isOpen={editModal} toggle={toggleEdit}>
-      <ModalHeader toggle={toggleEdit}>
+    <Modal isOpen={editModal} toggle={toggleEdit} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={toggleEdit} className={darkMode ? 'bg-space-cadet text-light' : ''}>
         Edit Lost Time
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <>
             {handleFormContent()}
             <FormGroup>
-              <Label for="dateOfWork">Date</Label>
+              <Label for="dateOfWork" className={fontColor}>Date</Label>
               <Input
                 type="date"
                 name="dateOfWork"
@@ -342,7 +346,7 @@ const EditHistoryModal = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="timeSpent">Time (HH:MM)</Label>
+              <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
               <Row form>
                 <Col>
                   <Input
@@ -376,7 +380,7 @@ const EditHistoryModal = props => {
               )}
             </FormGroup>
             <FormGroup check>
-              <Label check>
+              <Label check className={fontColor}>
                 <Input
                   type="checkbox"
                   name="isTangible"
@@ -395,36 +399,36 @@ const EditHistoryModal = props => {
           </>
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={handleCancel} color="danger" style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button onClick={handleCancel} color="danger" style={boxStyling}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="primary" style={boxStyle}>
+        <Button onClick={handleSubmit} color="primary" style={boxStyling}>
           Update
         </Button>
       </ModalFooter>
     </Modal>
-    <Modal isOpen={deleteModal} toggle={toggleDelete}>
-      <ModalHeader toggle={toggleDelete}>
+    <Modal isOpen={deleteModal} toggle={toggleDelete} className={darkMode ? 'dark-mode text-light' : ''}>
+      <ModalHeader toggle={toggleDelete} className={darkMode ? 'bg-space-cadet text-light' : ''}>
         Delete Lost Time
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         Are you sure you want to delete this?
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={toggleDelete} color="primary" style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+        <Button onClick={toggleDelete} color="primary" style={boxStyling}>
           Close
         </Button>
-        <Button onClick={handleDelete} color="danger" style={boxStyle}>
+        <Button onClick={handleDelete} color="danger" style={boxStyling}>
           Confirm
         </Button>
       </ModalFooter>
     </Modal>
     <div className='history-btn-div'>
-      <Button className='history-btn' color="primary" onClick={toggleEdit} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button className='history-btn' color="primary" onClick={toggleEdit} style={boxStyling}>
         Edit
       </Button>
-      <Button className='history-btn' color="danger" onClick={toggleDelete} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button className='history-btn' color="danger" onClick={toggleDelete} style={boxStyling}>
         Delete
       </Button>
     </div>
@@ -435,6 +439,7 @@ const EditHistoryModal = props => {
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
   auth: state.auth,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

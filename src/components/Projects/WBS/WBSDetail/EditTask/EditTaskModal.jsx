@@ -725,21 +725,22 @@ function EditTaskModal(props) {
           </ModalFooter>
         ) : null}
       </Modal>
+      <div className="task-action-buttons d-flex"></div>
       {
         canUpdateTask &&
-        <Button className='mr-1' color="primary" size="sm" onClick={e => handleModalShow("Edit")} style={darkMode ? boxStyleDark : boxStyle}>
+        <Button className="mr-2 controlBtn" color="primary" size="sm" onClick={e => handleModalShow("Edit")} style={darkMode ? boxStyleDark : boxStyle}>
         Edit
         </Button>
       }
       {
         canSuggestTask &&
-        <Button className='mr-1' color="primary" size="sm" onClick={e => handleModalShow("Suggest")} style={darkMode ? boxStyleDark : boxStyle}>
+        <Button className="mr-2 controlBtn" color="primary" size="sm" onClick={e => handleModalShow("Suggest")} style={darkMode ? boxStyleDark : boxStyle}>
         Suggest
         </Button>
       }
       {
         !canUpdateTask && !canSuggestTask &&
-        <Button className='mr-1' color="primary" size="sm" onClick={e => handleModalShow("View")} style={darkMode ? boxStyleDark : boxStyle}>
+        <Button className="mr-2 controlBtn" color="primary" size="sm" onClick={e => handleModalShow("View")} style={darkMode ? boxStyleDark : boxStyle}>
         View
         </Button>
       }

@@ -9,10 +9,17 @@ import {
   FETCH_USER_PROFILE_BASIC_INFO,
   RECEIVE_USER_PROFILE_BASIC_INFO,
   FETCH_USER_PROFILE_BASIC_INFO_ERROR,
+  ENABLE_USER_PROFILE_EDIT,
+  DISABLE_USER_PROFILE_EDIT,
+  CHANGE_USER_PROFILE_PAGE,
+  START_USER_INFO_UPDATE,
+  FINISH_USER_INFO_UPDATE,
+  ERROR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '../utils/URL';
 import { UserStatus } from '../utils/enums';
 import { getTimeEndDateEntriesByPeriod } from './timeEntries';
+
 
 /**
  * fetching all user profiles
@@ -267,3 +274,32 @@ export const userProfilesBasicInfoFetchErrorAction = payload => {
     payload,
   };
 };
+
+export const enableEditUserInfo=(value)=>(dispatch,getState)=>{
+  dispatch({type:ENABLE_USER_PROFILE_EDIT,payload:value});
+}
+
+export const disableEditUserInfo=(value)=>(dispatch,getState)=>{
+  dispatch({type:DISABLE_USER_PROFILE_EDIT,payload:value});
+}
+
+export const changePagination=(value)=>(dispatch,getState)=>{
+  dispatch({type:CHANGE_USER_PROFILE_PAGE,payload:value});
+}
+
+export const updateUserInfomation=(value)=>(dispatch,getState)=>{
+  dispatch({type:START_USER_INFO_UPDATE,payload:value})
+}
+
+// export const updateUserInformation=(value)=>async(dispatch,getState)=>{
+//   try {
+//     dispatch({type:START_USER_INFO_UPDATE})
+//     var response=await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE,value);
+//     const {data} = await axios.get(ENDPOINTS.USER_PROFILES);
+//     dispatch({type:FINISH_USER_INFO_UPDATE,payload:data})
+//   } catch (error) {
+//     console.log(error)
+//     dispatch({type:ERROR_USER_INFO_UPDATE})
+//   }
+// }
+

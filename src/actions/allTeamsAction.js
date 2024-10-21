@@ -98,7 +98,7 @@ export const teamMemberDeleteAction = member => ({
 });
 
 /*
-delete team member action
+add team member action
 */
 export const teamMemberAddAction = member => ({
   type: TEAM_MEMBER_ADD,

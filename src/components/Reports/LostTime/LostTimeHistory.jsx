@@ -23,12 +23,16 @@ function LostTimeHistory(props) {
   useEffect(() => {
     loadLostTimeEntries(type, idList, fromDate, toDate);
   }, []);
-
+  
   const reload = () => {
     setDataLoading(true);
     loadLostTimeEntries(type, idList, fromDate, toDate);
   }
-
+  
+  useEffect(() => {
+    reload();
+  }, [darkMode])
+  
   const alphabetize = timeEntries => {
     const temp = [...timeEntries];
     return temp.sort((a, b) =>

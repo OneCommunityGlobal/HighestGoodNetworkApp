@@ -13,7 +13,88 @@
   color: #f0f0f0;
   opacity: 1; 
 }
+/* Custom styles for datepicker in darkMode */
+.dark-mode .react-datepicker {
+  background-color: #3A506B;
+  color: #ffffff;
+}
+.dark-mode .react-datepicker__header {
+  background-color: #1C2541;
+  border-bottom: 1px solid #555555;
+}
+.dark-mode .react-datepicker__current-month {
+  color: #ffffff;
+}
+.dark-mode .react-datepicker__navigation--previous::before,
+.dark-mode .react-datepicker__navigation--next::before {
+  border-color: #ffffff;
+}
+.dark-mode .react-datepicker__month-container {
+  background-color: #3A506B;
+}
+.dark-mode .react-datepicker__day,
+.dark-mode .react-datepicker__time-name {
+  color: #ffffff;
+}
+.dark-mode .react-datepicker__day-name {
+  background-color: #1C2541;
+  color: #ffffff;
+}
+.dark-mode .react-datepicker__day--selected,
+.dark-mode .react-datepicker__day--in-selecting-range,
+.dark-mode .react-datepicker__day--in-range,
+.dark-mode .react-datepicker__day:hover {
+  background-color: #1C2541;
+  color: #ffffff;
+}
+.dark-mode .react-datepicker__navigation {
+  background: none;
+}
+.dark-mode .react-datepicker__navigation::before {
+  border-color: #ffffff;
+}
 
+.no-hover tr:hover {
+  background-color: inherit !important;
+  color: inherit !important;
+}
+
+.hover-effect-reports-page-dark-mode:hover {
+  background-color: #1C2541; 
+  color: #ffffff; 
+}
+
+/* Dark mode for DayPicker (AddTaskModal) */
+.dark-mode .DayPicker {
+  background-color: #3A506B;
+  color: #ffffff;
+}
+/* .dark-mode .DayPicker-wrapper {
+  background-color: #1C2541;
+} */
+.dark-mode .DayPicker-Caption {
+  color: #ffffff;
+}
+.dark-mode .DayPicker-NavButton {
+  /* background: none; */
+}
+.dark-mode .DayPicker-Month {
+  background-color: #3A506B;
+}
+.dark-mode .DayPicker-NavButton--prev::before,
+.dark-mode .DayPicker-NavButton--next::before {
+  border-color: #ffffff;
+}
+.dark-mode .DayPicker-Day {
+  color: #ffffff;
+}
+.dark-mode .DayPicker-Weekday {
+  color: #ffffff;
+}
+.dark-mode .DayPicker-Day:hover {
+  background-color: #1C2541 !important; /* Remove background color on hover */
+  color: #ffffff !important; /* Ensure text color remains white */
+}
 .dark-mode tr:hover{
   background-color: #2f4157;
 }

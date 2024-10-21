@@ -10,4 +10,5 @@ export const GET_MESSAGE = 'GET_MESSAGE';
 export const CLOSE_ALERT = 'CLOSE_ALERT';
 export const GET_BADGE_COUNT = 'GET_BADGE_COUNT';
 export const RESET_BADGE_COUNT = 'BADGE_COUNT_RESET';
+export const SET_ACTIVE_TAB = 'SET_ACTIVE_TAB';
 export const WEEK_DIFF = 7 * 24 * 60 * 60 * 1000;

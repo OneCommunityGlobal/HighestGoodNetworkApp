@@ -20,7 +20,7 @@ describe('TeamStatusPopup', () => {
     expect(getByText('Status Popup')).toBeInTheDocument();
 
     expect(
-      getByText('Are you sure you want to change the status of this team Team 1'),
+      getByText('Are you sure you want to change the status of this team Team 1 to inactive?'),
     ).toBeInTheDocument();
 
     expect(getByRole('button', { name: 'Confirm' })).toBeInTheDocument();
@@ -62,7 +62,7 @@ describe('TeamStatusPopup', () => {
     );
 
     expect(
-      getByText('Are you sure you want to change the status of this team Team 2'),
+      getByText('Are you sure you want to change the status of this team Team 2 to active?'),
     ).toBeInTheDocument();
   });
 });
