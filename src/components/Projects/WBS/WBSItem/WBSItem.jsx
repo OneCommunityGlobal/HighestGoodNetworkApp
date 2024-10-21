@@ -32,7 +32,9 @@ const WBSItem = props => {
           <div>{props.index}</div>
         </th>
         <td className="members__name">
-          <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</a>
+        <Link to={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</Link>
+         
+         {/* <a href={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</a>  */}
         </td>
         {canDeleteWBS ? (
           <td className="members__assign">
