@@ -2,7 +2,6 @@ import { useState, useCallback, useEffect } from 'react';
 import { connect } from 'react-redux';
 import {
   fetchAllProjects,
-  postNewProject,
   modifyProject,
   clearError,
 } from '../../actions/projects';
@@ -121,6 +120,7 @@ const Projects = function(props) {
 
   const postProject = async (name, category) => {
     await props.postNewProject(name, category);
+    refreshProjects(); // Refresh project list after adding a project
   };
 
   // Fetch autocomplete suggestions
@@ -216,21 +216,25 @@ const Projects = function(props) {
     setAllProjects(projectList);
   }
 
+  const refreshProjects = async () => {
+    await props.fetchAllProjects();
+  };
+
   useEffect(() => {
     props.fetchAllProjects();
   }, []);
 
   useEffect(() => {
-      generateProjectList(categorySelectedForSort, showStatus, sortedByName);
-      if (status !== 200) {
-        setModalData({
-          showModal: true,
-          modalMessage: error,
-          modalTitle: 'ERROR',
-          hasConfirmBtn: false,
-          hasInactiveBtn: false,
-        });
-      }
+    generateProjectList(categorySelectedForSort, showStatus, sortedByName);
+    if (status !== 200) {
+      setModalData({
+        showModal: true,
+        modalMessage: error,
+        modalTitle: 'ERROR',
+        hasConfirmBtn: false,
+        hasInactiveBtn: false,
+      });
+    }
   }, [categorySelectedForSort, showStatus, sortedByName, props.state.allProjects, props.state.theme.darkMode]);
 
   const handleSearchName = (searchNameInput) => {
@@ -252,9 +256,9 @@ const Projects = function(props) {
               role={role}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
-          </div>
 
-          {canPostProject ? <AddProject onAddNewProject={postProject} /> : null}
+            {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
+          </div>
 
           <SearchProjectByPerson
             onSearch={handleSearchName}
@@ -264,17 +268,19 @@ const Projects = function(props) {
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-            <ProjectTableHeader 
-              onChange={onChangeCategory} 
-              selectedValue={categorySelectedForSort} 
-              showStatus={showStatus} 
-              selectStatus={onSelectStatus}
-              sorted={sortedByName}
-              handleSort = {handleSort}
-              darkMode={darkMode}
-            />
+              <ProjectTableHeader 
+                onChange={onChangeCategory} 
+                selectedValue={categorySelectedForSort} 
+                showStatus={showStatus} 
+                selectStatus={onSelectStatus}
+                sorted={sortedByName}
+                handleSort={handleSort}
+                darkMode={darkMode}
+              />
             </thead>
-            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>{projectList}</tbody>
+            <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
+              {projectList}
+            </tbody>
           </table>
         </div>
 
@@ -297,7 +303,6 @@ const mapStateToProps = state => {
 
 export default connect(mapStateToProps, {
   fetchAllProjects,
-  postNewProject,
   modifyProject,
   clearError,
   getPopupById,

@@ -178,29 +178,48 @@ function Announcements() {
           </button>
         </div>
         <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}  style={darkMode ? boxStyleDark : boxStyle}>
-          Email List (comma-separated):
-          <input type="text" onChange={handleEmailListChange} className='input-text-for-announcement' />
+          <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+            Email List (comma-separated):
+          </label>
+          <input
+            type="text"
+            id="email-list-input"
+            onChange={handleEmailListChange}
+            className="input-text-for-announcement"
+          />
           <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
             Send Email to specific user
           </button>
-          <div>
+          
             <hr />
-            <p>Insert header or image link</p>
-            <div style={{ overflow: 'hidden' }}>
-              <input type="text" onChange={handleHeaderContentChange} value={headerContent} className='input-text-for-announcement'/>
-            </div>
+            <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Insert header or image link:
+            </label>
+            <input
+              type="text"
+              id="header-content-input"  
+              onChange={handleHeaderContentChange}
+              className="input-text-for-announcement"
+            />
+
             <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
               Insert
             </button>
             <hr />
-            <p>Upload Header (or footer)</p>
-            <div style={{ overflow: 'hidden' }}>
-              <input type="file" onChange={addImageToEmailContent} />
+            <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Upload Header (or footer):
+            </label>
+            <input
+              type="file"
+              id="upload-header-input"  
+              onChange={addImageToEmailContent}
+              className="input-file-upload"
+            />
+
             </div>
           </div>
         </div>
-      </div>
-    </div>
+      
   );
 }
 
