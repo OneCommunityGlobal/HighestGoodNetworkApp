@@ -159,6 +159,9 @@ const Timelog = props => {
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
+  useEffect(() => {
+    document.title = `Timelog - ${displayUserProfile.firstName}`;
+  }, [displayUserProfile.firstName]);
 
   const defaultTab = (data) => {
     const userHaveTask = doesUserHaveTaskWithWBS(data);

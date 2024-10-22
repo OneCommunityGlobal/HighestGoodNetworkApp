@@ -92,6 +92,9 @@ export class WeeklySummariesReport extends Component {
   }
 
   async componentDidMount() {
+    // Set the page title to "Weekly Summaries Reports"
+    document.title = 'Weekly Summaries Reports';
+
     const {
       loading,
       allBadgeData,

@@ -35,6 +35,9 @@ const Members = props => {
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
   useEffect(() => {
+    // Set the tab title to "Project Members"
+    document.title = `Project Members`;
+
     const fetchMembers = async () => {
       setIsLoading(true);
       setMembersList([]); 

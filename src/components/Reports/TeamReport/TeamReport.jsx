@@ -65,6 +65,15 @@ export function TeamReport({ match }) {
 
   const [selectedTeams, setSelectedTeams] = useState([]);
 
+  // Dynamic tab title based on team name
+  useEffect(() => {
+    if (team?.teamName) {
+      document.title = `Team Report - ${team.teamName}`;
+    } else {
+      document.title = 'Team Report';
+    }
+  }, [team?.teamName]);
+
   // Create a state variable to store the selected radio input
   // eslint-disable-next-line no-unused-vars
   const [selectedInput, setSelectedInput] = useState('isManager');

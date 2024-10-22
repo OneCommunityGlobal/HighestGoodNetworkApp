@@ -45,6 +45,7 @@ export const TaskEditSuggestions = () => {
   };
 
   useEffect(() => {
+    document.title = 'Task Edit Suggestions';
     handleLoadTaskEditSuggestions();
   }, [])
 

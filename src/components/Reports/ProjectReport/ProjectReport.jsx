@@ -54,6 +54,15 @@ export function ProjectReport({ match }) {
   const fromDate = '2016-01-01';
   const toDate = new Date().toISOString().split('T')[0];
 
+  // Dynamically update tab title based on project name
+  useEffect(() => {
+    if (projectName) {
+      document.title = `Project Report - ${projectName}`;
+    } else {
+      document.title = 'Project Report';
+    }
+  }, [projectName]);
+
   useEffect(() => {
     dispatch(getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate))
     .then(response => {

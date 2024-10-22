@@ -14,6 +14,9 @@ const SetupProfile = ({ match }) => {
   const [inValidMessage, setInValidMessage] = useState('');
 
   useEffect(() => {
+    // Set the tab title to "Profile Setup"
+    document.title = 'Profile Setup';
+
     const { token } = match.params;
     setLinkToken(token);
     httpService
