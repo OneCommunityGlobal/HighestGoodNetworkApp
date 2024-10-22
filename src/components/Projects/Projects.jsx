@@ -93,11 +93,18 @@ const Projects = function(props) {
     setShowStatus(value);
   }
 
+  // const handleSort = (e) => {
+  //   const clickedId = e.target.id;
+  //   setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
+  // }
   const handleSort = (e) => {
     const clickedId = e.target.id;
-    setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
-  }
-
+    if (clickedId === "LastEdited") {
+      setSortedByName(prevState => prevState === "LastEdited" ? "" : "LastEdited");
+    } else {
+      setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
+    }
+  };
   const onUpdateProject = async (updatedProject) => {
     await props.modifyProject(updatedProject);  
   };
@@ -138,6 +145,8 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
       } else if (sortedByName === "SortingByRecentEditedMembers") {
         return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
+      } else if (sortedByName === "LastEdited") {
+        return new Date(b.membersModifiedDatetime) - new Date(a.membersModifiedDatetime);
       } else {
         return 0;
       }
