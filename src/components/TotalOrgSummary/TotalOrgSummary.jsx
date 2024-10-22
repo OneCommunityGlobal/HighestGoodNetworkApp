@@ -24,6 +24,7 @@ import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
+import MapComponent from './GlobalMapComponent/globalMapComponent';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -222,7 +223,7 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <MapComponent />
             </div>
           </Col>
         </Row>
