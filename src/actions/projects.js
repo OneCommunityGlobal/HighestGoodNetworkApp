@@ -59,6 +59,10 @@ export const postNewProject = (projectName, projectCategory) => {
 export const modifyProject = (updatedProject) => {
   return async dispatch => {
     const url = ENDPOINTS.PROJECT + updatedProject._id;
+
+    // new 
+    dispatch(updateProject({ updatedProject, status: 'PENDING' }));
+    
     let status, error;
     try {
       const res = await axios.put(url, updatedProject);

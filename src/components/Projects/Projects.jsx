@@ -107,6 +107,11 @@ const Projects = function(props) {
   };
   const onUpdateProject = async (updatedProject) => {
     await props.modifyProject(updatedProject);  
+     // Optimistically update the state
+  const updatedProjectsList = projectList.map((project) => 
+    project._id === updatedProject._id ? updatedProject : project
+  );
+  setProjectList(updatedProjectsList);
   };
 
   const confirmArchive = async () => {
