@@ -6,6 +6,8 @@ import {
   postWarningByUserId,
   deleteWarningsById,
 } from '../../actions/warnings';
+import WarningsModal from './WarningsModal';
+import WarningTrackerModal from './modals/WarningTrackerModal';
 
 import WarningItem from './WarningItem';
 import './Warnings.css';
@@ -17,14 +19,14 @@ import './Warnings.css';
 
 export default function Warning({ personId, username, userRole }) {
   const dispatch = useDispatch();
-
   const [usersWarnings, setUsersWarnings] = useState([]);
 
+  const [toggleWarningModal, setToggleWarningModal] = useState(false);
+  const [toggleWarningTrackerModal, setToggleWarningTrackerModal] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
 
-  const handleToggle = () => {
-    setToggle(prev => !prev);
+  const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
       if (res.error) {
         setError(res);
@@ -33,6 +35,11 @@ export default function Warning({ personId, username, userRole }) {
       }
       setUsersWarnings(res);
     });
+  };
+
+  const handleToggle = () => {
+    setToggle(prev => !prev);
+    fetchUsersWarningsById();
   };
 
   const handleDeleteWarning = async warningId => {
@@ -86,9 +93,41 @@ export default function Warning({ personId, username, userRole }) {
   return (
     (userRole === 'Administrator' || userRole === 'Owner') && (
       <div className="warnings-container">
-        <Button className="btn btn-warning warning-btn ml-auto" size="sm" onClick={handleToggle}>
-          {toggle ? 'Hide' : 'Tracking'}
-        </Button>
+        <div className="button__container">
+          <Button
+            className="btn btn-warning warning-btn tracking__btn"
+            size="sm"
+            onClick={handleToggle}
+          >
+            {toggle ? 'Hide' : 'Tracking'}
+          </Button>
+
+          {userRole === 'Owner' && (
+            <Button
+              className="btn"
+              size="sm"
+              onClick={() => setToggleWarningTrackerModal(prev => !prev)}
+            >
+              +/-
+            </Button>
+          )}
+        </div>
+        {toggleWarningModal && (
+          <WarningsModal
+            toggleWarningModal={toggleWarningModal}
+            personId={personId}
+            setToggleWarningModal={setToggleWarningModal}
+            getUsersWarnings={fetchUsersWarningsById}
+          />
+        )}
+        {toggleWarningTrackerModal && (
+          <WarningTrackerModal
+            toggleWarningTrackerModal={toggleWarningTrackerModal}
+            personId={personId}
+            setToggleWarningTrackerModal={setToggleWarningTrackerModal}
+            getUsersWarnings={fetchUsersWarningsById}
+          />
+        )}
 
         <div className="warning-wrapper"> {warnings}</div>
         <div className="error-container">
