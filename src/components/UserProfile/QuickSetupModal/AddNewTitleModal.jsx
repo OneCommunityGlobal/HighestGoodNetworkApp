@@ -87,9 +87,12 @@ function AddNewTitleModal({
   if (teamsData?.allTeams) {
     const codes = teamsData.allTeams.map(team => team.teamCode);
     const names = teamsData.allTeams.map(team => team.teamName);
-    existTeamCodes = new Set(codes);
+    // Use allTeamCode rather than allTeams since team code is not related to records in the Team table.
+    // It is all distinct team codes from the UserProfile teamCode field.
+    existTeamCodes = new Set(teamsData?.allTeamCode?.distinctTeamCodes);
     existTeamName = new Set(names);
   }
+  
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
   const [selectedTeamCode, onSelectTeamCode] = useState(undefined);
