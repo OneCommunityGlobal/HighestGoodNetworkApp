@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import 'moment-timezone';
@@ -110,9 +111,14 @@ function TotalOrgSummary(props) {
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
 
+  const location = useLocation();
+
   useEffect(() => {
+    if (location.pathname.includes('/totalorgsummary')) {
+      document.title = `Total Organization Summary`;
+    }
     dispatch(getAllUserProfile());
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     if (Array.isArray(allUserProfiles.userProfiles) && allUserProfiles.userProfiles.length > 0) {

@@ -109,6 +109,8 @@ class ReportsPage extends Component {
   }
 
   async componentDidMount() {
+    // Set the page title to "Weekly Summaries Reports"
+    document.title = 'Reports';
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();

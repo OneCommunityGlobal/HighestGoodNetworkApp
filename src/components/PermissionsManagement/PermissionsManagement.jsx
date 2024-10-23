@@ -7,7 +7,7 @@ import { connect } from 'react-redux';
 import { useDispatch } from 'react-redux';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
 import { FaInfoCircle } from 'react-icons/fa'; // Importing react-icons for the info icon
 import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip functionality
@@ -39,6 +39,8 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
     setIsNewRolePopUpOpen(previousState => !previousState);
   };
 
+  const location = useLocation();
+
   // eslint-disable-next-line
   roles = roles.filter(role => {
     if (role != null) return role;
@@ -47,6 +49,9 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (location.pathname.includes('/permissionsmanagement')) {
+      document.title = `Permissions Management`;
+    }
     getInfoCollections();
     getUserRole(auth?.user.userid);
 

@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
@@ -15,12 +16,16 @@ function Announcements() {
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+  const location = useLocation();
 
   useEffect(() => {
+    if (location.pathname.includes('/announcements')) {
+      document.title = `Announcements`;
+    }
     // Toggle the showEditor state to force re-render when dark mode changes
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
-  }, [darkMode]);
+  }, [darkMode, location.pathname]);
 
   const editorInit = {
     license_key: 'gpl',

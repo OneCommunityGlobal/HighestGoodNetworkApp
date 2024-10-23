@@ -1,6 +1,7 @@
 import axios from 'axios';
 import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { Button, Container, Spinner } from 'reactstrap';
@@ -31,6 +32,7 @@ function TeamLocations() {
   const role = useSelector(state => state.auth.user.role);
   const darkMode = useSelector(state => state.theme.darkMode);
   const [loading, setLoading] = useState(true);  // State variable for loading spinner
+  const location = useLocation();
 
 
   const isAbleToEdit = role === 'Owner';
@@ -38,6 +40,10 @@ function TeamLocations() {
   const [currentUser, setCurrentUser] = useState(null)
 
   useEffect(() => {
+    if (location.pathname.includes('/teamlocations')) {
+      document.title = `Team Locations`;
+    }
+
     async function getUserProfiles() {
       try {
         const locations = (await axios.get(ENDPOINTS.ALL_MAP_LOCATIONS())).data;
@@ -66,7 +72,7 @@ function TeamLocations() {
       }
     }
     getUserProfiles();
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     let coords = currentUser?.location.coords;
