@@ -25,7 +25,6 @@ function UserSearchPanel({
   onActiveFiter,
   darkMode,
 }) {
-  // console.log('UserSearchPanel props', props);
   const canCreateUsers = hasPermission('postUserProfile');
   const [tooltipCreateNewUserOpen, setTooltipCreateNewUserOpen] = useState(false);
   const toggleCreateNewUserTooltip = () => setTooltipCreateNewUserOpen(!tooltipCreateNewUserOpen);

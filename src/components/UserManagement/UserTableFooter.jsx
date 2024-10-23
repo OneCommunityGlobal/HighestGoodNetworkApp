@@ -4,7 +4,6 @@ const NUMBER_OF_PAGE_LINK = 5;
 
 const UserTableFooter = React.memo(props => {
   const { darkMode } = props;
-
   const onSelectPageSize = pageSize => {
     props.onSelectPageSize(parseInt(pageSize, 10));
   };
@@ -121,6 +120,7 @@ const PageSummaryLabel = React.memo(props => {
 const PageLinks = React.memo(props => {
   const onPageSelect = pageNo => {
     props.onPageSelect(pageNo);
+    // change page on props
   };
 
   const pageLinks = [];

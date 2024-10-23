@@ -10,11 +10,19 @@ import { connect } from 'react-redux';
 import { Container } from 'reactstrap';
 import { Table } from 'react-bootstrap';
 import { toast } from 'react-toastify';
+import { getAllRoles } from '../../actions/role';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from '../../utils/constants';
 import {
   getAllUserProfile,
   updateUserStatus,
   updateUserFinalDayStatusIsSet,
   deleteUser,
+  enableEditUserInfo,
+  disableEditUserInfo,
 } from '../../actions/userManagement';
 // import Loading from '../common/Loading';
 // import SkeletonLoading from '../common/SkeletonLoading';
@@ -28,7 +36,6 @@ import NewUserPopup from './NewUserPopup';
 import ActivationDatePopup from './ActivationDatePopup';
 import { UserStatus, UserDeleteType, FinalDay } from '../../utils/enums';
 import hasPermission, { cantDeactivateOwner } from '../../utils/permissions';
-// import hasPermission from '../../utils/permissions';
 import { searchWithAccent } from '../../utils/search';
 import SetupHistoryPopup from './SetupHistoryPopup';
 import DeleteUserPopup from './DeleteUserPopup';
@@ -38,11 +45,6 @@ import LogTimeOffPopUp from './logTimeOffPopUp';
 import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
-import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
-  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
-  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from '../../utils/constants';
 
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
@@ -56,8 +58,8 @@ class UserManagement extends React.PureComponent {
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
-      selectedPage: 1,
-      pageSize: 10,
+      selectedPage: props.state.userPagination.pagestats.selectedPage,
+      pageSize: props.state.userPagination.pagestats.pageSize,
       allSelected: undefined,
       isActive: undefined,
       // isSet: undefined,
@@ -70,6 +72,9 @@ class UserManagement extends React.PureComponent {
       shouldRefreshInvitationHistory: false,
       logTimeOffPopUpOpen: false,
       userForTimeOff: '',
+      userTableItems: [],
+      editable: props.state.userPagination.editable,
+      // updating:props.state.updateUserInfo.updating
     };
     this.onPauseResumeClick = this.onPauseResumeClick.bind(this);
     this.onLogTimeOffClick = this.onLogTimeOffClick.bind(this);
@@ -82,6 +87,45 @@ class UserManagement extends React.PureComponent {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
+    const { darkMode } = this.props.state.theme;
+    const { userProfiles } = this.props.state.allUserProfiles;
+    const { roles: rolesPermissions } = this.props.state.role;
+    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    this.getFilteredData(
+      userProfiles,
+      rolesPermissions,
+      timeOffRequests,
+      darkMode,
+      this.state.editable,
+    );
+  }
+
+  async componentDidUpdate(prevProps, prevState) {
+    const searchState =
+      prevState.firstNameSearchText !== this.state.firstNameSearchText ||
+      prevState.lastNameSearchText !== this.state.lastNameSearchText ||
+      prevState.roleSearchText !== this.state.roleSearchText ||
+      prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText ||
+      prevState.emailSearchText !== this.state.emailSearchText;
+    const pageSizeValue = prevState.pageSize !== this.state.pageSize;
+    if (
+      prevState.selectedPage !== this.state.selectedPage ||
+      prevState.wildCardSearchText !== this.state.wildCardSearchText ||
+      searchState ||
+      pageSizeValue
+    ) {
+      const { darkMode } = this.props.state.theme;
+      const { userProfiles } = this.props.state.allUserProfiles;
+      const { roles: rolesPermissions } = this.props.state.role;
+      const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      this.getFilteredData(
+        userProfiles,
+        rolesPermissions,
+        timeOffRequests,
+        darkMode,
+        this.state.editable,
+      );
+    }
   }
 
   /**
@@ -174,7 +218,8 @@ class UserManagement extends React.PureComponent {
         .map((user, index) => {
           return (
             <UserTableData
-              // key={`user_${index}`}
+              // eslint-disable-next-line react/no-array-index-key
+              key={`user_${index}`}
               index={index}
               isActive={user.isActive}
               isSet={user.isSet}
@@ -196,6 +241,7 @@ class UserManagement extends React.PureComponent {
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
               darkMode={darkMode}
+              // editUser={editUser}
             />
           );
         });
@@ -203,33 +249,45 @@ class UserManagement extends React.PureComponent {
     return null;
   };
 
+  getFilteredData = (userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser) => {
+    this.setState({
+      userTableItems: this.userTableElements(
+        userProfiles,
+        rolesPermissions,
+        timeOffRequests,
+        darkMode,
+        editUser,
+      ),
+    });
+  };
+
   filteredUserList = userProfiles => {
     return userProfiles.filter(user => {
-      // console.log('user', user);
       // Applying the search filters before creating each table data element
-      const search = result => {
-        if (typeof result === 'string') {
-          return result
-            .toLowerCase()
-            .trim()
-            .replace(/\s+/g, '');
-        }
-        const numberToString = String(result)
-          .trim()
-          .replace(/\s+/g, '');
-        const stringToNumber = Number(numberToString);
-        return stringToNumber;
-      };
+      // const search = result => {
+      //   if (typeof result === 'string') {
+      //     return result
+      //       .toLowerCase()
+      //       .trim()
+      //       .replace(/\s+/g, '');
+      //   }
+      //   const numberToString = String(result)
+      //     .trim()
+      //     .replace(/\s+/g, '');
+      //   const stringToNumber = Number(numberToString);
+      //   return stringToNumber;
+      // };
 
       return (
         // Check if the user matches the search criteria
+
         // Regular search criteria
-        search(user.firstName).indexOf(search(this.state.firstNameSearchText)) > -1 &&
-        search(user.lastName).indexOf(search(this.state.lastNameSearchText)) > -1 &&
-        search(user.role).indexOf(search(this.state.roleSearchText)) > -1 &&
-        search(user.email).indexOf(search(this.state.emailSearchText)) > -1 &&
+        user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
+        user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
+        user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
+        user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
         (this.state.weeklyHrsSearchText === '' ||
-          search(user.weeklycommittedHours) === Number(search(this.state.weeklyHrsSearchText))) &&
+          user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
         // Check the isActive state only if 'all' is not selected
         ((this.state.allSelected && true) ||
           this.state.isActive === undefined ||
@@ -238,11 +296,11 @@ class UserManagement extends React.PureComponent {
         ((this.state.allSelected && true) ||
           this.state.isPaused === false ||
           (user.reactivationDate && new Date(user.reactivationDate) > new Date())) &&
-        (searchWithAccent(search(user.firstName), search(this.state.wildCardSearchText)) ||
-          searchWithAccent(search(user.lastName), search(this.state.wildCardSearchText)) ||
-          search(user.role).indexOf(search(this.state.wildCardSearchText)) > -1 ||
-          search(user.email).indexOf(search(this.state.wildCardSearchText)) > -1 ||
-          search(user.weeklycommittedHours) === Number(search(this.state.wildCardSearchText)))
+        (searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
+          searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
+          user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+          user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+          user.weeklycommittedHours === Number(this.state.wildCardSearchText))
       );
     });
   };
@@ -258,6 +316,7 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: text,
     }));
   };
+
 
   /**
    * Call back on Pause or Resume button click to trigger the action to update user status
@@ -286,7 +345,7 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
 
     const hasRolePermission =
       this.props.state.auth.user.role === 'Administrator' ||
@@ -297,7 +356,7 @@ class UserManagement extends React.PureComponent {
         userForTimeOff: user,
       });
     } else {
-      alert(`You do not have permission to manage time-off requests.`);
+      toast.warn(`You do not have permission to manage time-off requests.`);
     }
   };
 
@@ -378,9 +437,9 @@ class UserManagement extends React.PureComponent {
     });
   };
 
-  // /**
-  //  * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
-  //  */
+  /**
+   * Callback to trigger on the status (active/inactive) column click to show the confirmaton change the status
+   */
   onActiveInactiveClick = user => {
     const authRole = this?.props?.state?.auth?.user.role || user.role;
     // const canChangeUserStatus = hasPermission('changeUserStatus');
@@ -419,9 +478,9 @@ class UserManagement extends React.PureComponent {
     });
   };
 
-  // /**
-  //  * Call back on delete button clic and triggering the delete action.
-  //  */
+  /**
+   * Call back on delete button clic and triggering the delete action.
+   */
   onDeleteButtonClick = user => {
     this.setState({
       deletePopupOpen: true,
@@ -624,15 +683,8 @@ class UserManagement extends React.PureComponent {
   render() {
     const { darkMode } = this.props.state.theme;
     const { userProfiles } = this.props.state.allUserProfiles;
-    const { roles: rolesPermissions } = this.props.state.role;
-    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    const userTable = this.userTableElements(
-      userProfiles,
-      rolesPermissions,
-      timeOffRequests,
-      darkMode,
-    );
     const roles = [...new Set(userProfiles.map(item => item.role))];
+    // let userdataInformation = this.state.userTableItems
     return (
       <Container
         fluid
@@ -664,6 +716,9 @@ class UserManagement extends React.PureComponent {
                   authRole={this.props.state.auth.user.role}
                   roleSearchText={this.state.roleSearchText}
                   darkMode={darkMode}
+                  editUser={this.props.state.userProfileEdit.editable}
+                  enableEditUserInfo={this.props.enableEditUserInfo}
+                  disableEditUserInfo={this.props.disableEditUserInfo}
                 />
                 <UserTableSearchHeader
                   onFirstNameSearch={this.onFirstNameSearch}
@@ -677,7 +732,7 @@ class UserManagement extends React.PureComponent {
                   darkMode={darkMode}
                 />
               </thead>
-              <tbody className={darkMode ? 'dark-mode' : ''}>{userTable}</tbody>
+              <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.userTableItems}</tbody>
             </Table>
           </div>
           <UserTableFooter
@@ -698,7 +753,6 @@ class UserManagement extends React.PureComponent {
 const mapStateToProps = state => {
   return { state };
 };
-
 export default connect(mapStateToProps, {
   getAllUserProfile,
   updateUserStatus,
@@ -706,4 +760,7 @@ export default connect(mapStateToProps, {
   deleteUser,
   hasPermission,
   getAllTimeOffRequests,
+  enableEditUserInfo,
+  disableEditUserInfo,
+  getAllRoles,
 })(UserManagement);
