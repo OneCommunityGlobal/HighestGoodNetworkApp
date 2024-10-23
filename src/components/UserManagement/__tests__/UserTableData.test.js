@@ -1,11 +1,11 @@
-import React from 'react';
-import { screen, render, fireEvent } from '@testing-library/react';
+// import React from 'react';
+import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import UserTableData from '../UserTableData';
-import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
-import { renderWithProvider } from '../../../__tests__/utils';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
+import UserTableData from '../UserTableData';
+import { authMock, themeMock } from '../../../__tests__/mockStates';
+import { renderWithProvider } from '../../../__tests__/utils';
 
 const mockStore = configureStore([thunk]);
 const jaeAccountMock = {
@@ -17,17 +17,17 @@ const jaeAccountMock = {
     userid: '1',
     permissions: {
       frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
-      backPermissions: []
+      backPermissions: [],
     },
     role: 'Administrator',
-    email: 'devadmin@hgn.net'
+    email: 'devadmin@hgn.net',
   },
   firstName: 'Is',
   lastName: 'Jae',
   role: 'Administrator',
   email: 'devadmin@hgn.net',
   weeklycommittedHours: 10,
-}
+};
 const nonJaeAccountMock = {
   _id: '2',
   isAdmin: true,
@@ -37,17 +37,17 @@ const nonJaeAccountMock = {
     userid: '2',
     permissions: {
       frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
-      backPermissions: []
+      backPermissions: [],
     },
     role: 'Administrator',
-    email: 'non_jae@hgn.net'
+    email: 'non_jae@hgn.net',
   },
   firstName: 'Non',
   lastName: 'Petterson',
   role: 'Administrator',
   weeklycommittedHours: 10,
-  email: 'non_jae@hgn.net'
-}
+  email: 'non_jae@hgn.net',
+};
 
 const ownerAccountMock = {
   _id: '3',
@@ -58,17 +58,16 @@ const ownerAccountMock = {
     userid: '3',
     permissions: {
       frontPermissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
-      backPermissions: []
+      backPermissions: [],
     },
     role: 'Owner',
-    email: 'devadmin@hgn.net'
+    email: 'devadmin@hgn.net',
   },
   firstName: 'Dev',
   lastName: 'Admin',
   weeklycommittedHours: 10,
-  email: 'devadmin@hgn.net'
-}
-
+  email: 'devadmin@hgn.net',
+};
 
 describe('User Table Data: Non-Jae related Account', () => {
   let onPauseResumeClick;
@@ -81,9 +80,9 @@ describe('User Table Data: Non-Jae related Account', () => {
       userProfile: nonJaeAccountMock,
       role: {
         roles: [
-          { 
-            roleName: nonJaeAccountMock.role, 
-            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus']
+          {
+            roleName: nonJaeAccountMock.role,
+            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
           },
         ],
       },
@@ -105,7 +104,7 @@ describe('User Table Data: Non-Jae related Account', () => {
           />
         </tbody>
       </table>,
-      { store, }
+      { store },
     );
   });
   describe('Structure', () => {
@@ -169,7 +168,6 @@ describe('User Table Data: Non-Jae related Account', () => {
   });
 });
 
-
 describe('User Table Data: Jae protected account record and login as Jae related account', () => {
   let onPauseResumeClick;
   let onDeleteClick;
@@ -181,9 +179,9 @@ describe('User Table Data: Jae protected account record and login as Jae related
       userProfile: jaeAccountMock,
       role: {
         roles: [
-          { 
-            roleName: jaeAccountMock.role, 
-            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'] 
+          {
+            roleName: jaeAccountMock.role,
+            permissions: ['deleteUserProfile', 'resetPassword', 'changeUserStatus'],
           },
         ],
       },
@@ -204,7 +202,7 @@ describe('User Table Data: Jae protected account record and login as Jae related
           />
         </tbody>
       </table>,
-      { store, }
+      { store },
     );
   });
   describe('Structure', () => {
@@ -253,15 +251,14 @@ describe('User Table Data: Jae protected account record and login as Jae related
       );
     });
     it('should fire alert() once the user clicks the pause button', () => {
-        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-        userEvent.click(screen.getByRole('button', { name: /pause/i }))
-        expect(alertMock).toHaveBeenCalledTimes(1)
-     
+      const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+      userEvent.click(screen.getByRole('button', { name: /pause/i }));
+      expect(alertMock).toHaveBeenCalledTimes(1);
     });
     it('should fire alert() once the user clicks the active/inactive button', () => {
-        const alertMock = jest.spyOn(window, 'alert').mockImplementation();
-        userEvent.click(screen.getByRole('button', { name: /Set Final Day/i }))
-        expect(alertMock).toHaveBeenCalledTimes(1)
+      const alertMock = jest.spyOn(window, 'alert').mockImplementation();
+      userEvent.click(screen.getByRole('button', { name: /Set Final Day/i }));
+      expect(alertMock).toHaveBeenCalledTimes(1);
     });
   });
 });
