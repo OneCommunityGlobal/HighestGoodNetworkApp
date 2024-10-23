@@ -1,6 +1,7 @@
 import "./TaskEditSuggestions.css"
 import Loading from 'components/common/Loading';
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import { Container, Table } from 'reactstrap';
 import { FaUndoAlt } from 'react-icons/fa';
@@ -44,8 +45,12 @@ export const TaskEditSuggestions = () => {
     }
   };
 
+  const location = useLocation();
+
   useEffect(() => {
-    document.title = 'Task Edit Suggestions';
+    if (location.pathname.includes('/taskeditsuggestions')) {
+      document.title = 'Task Edit Suggestions';
+    }
     handleLoadTaskEditSuggestions();
   }, [])
 

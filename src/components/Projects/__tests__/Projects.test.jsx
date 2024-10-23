@@ -60,14 +60,14 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<Provider store={store}><MemoryRouter><Projects /></MemoryRouter></Provider>)
   })
   it('check if Projects header displays as expected',()=>{
     axios.get.mockResolvedValue({
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<Provider store={store}><MemoryRouter><Projects /></MemoryRouter></Provider>)
     expect(screen.getAllByText('Projects')[0]).toBeInTheDocument();
   })
   it('check if Project Name header displays as expected',()=>{
@@ -75,7 +75,7 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<Provider store={store}><MemoryRouter><Projects /></MemoryRouter></Provider>)
     expect(screen.getByText('Project Name')).toBeInTheDocument();
   })
   it('check if Category header displays as expected',()=>{
@@ -83,7 +83,7 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<Provider store={store}><MemoryRouter><Projects /></MemoryRouter></Provider>)
     expect(screen.getByText('Category')).toBeInTheDocument();
   })
   it('check if Active header displays as expected',()=>{
@@ -91,7 +91,7 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<Provider store={store}><MemoryRouter><Projects /></MemoryRouter></Provider>)
     expect(screen.getByText('Active')).toBeInTheDocument();
   })
   it('check if Members, WBS header displays as expected',()=>{
@@ -99,7 +99,7 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<Provider store={store}><MemoryRouter><Projects /></MemoryRouter></Provider>)
     expect(screen.getByText('Members')).toBeInTheDocument();
     expect(screen.getByText('WBS')).toBeInTheDocument();
   })
@@ -119,7 +119,7 @@ describe("Projects component",()=>{
       infoCollections:infoCollections,
       role: {roles: rolesMock.role.roles}
     })
-    render(<Provider store={testStore}><Projects /></Provider>)
+    render(<Provider store={testStore}><MemoryRouter><Projects /></MemoryRouter></Provider>)
     expect(screen.getByTestId('loading')).toBeInTheDocument()
   })
   it('check if AddProject does not get displayed when postProject permission is not added',()=>{
@@ -128,7 +128,7 @@ describe("Projects component",()=>{
       data: [],
     });
 
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<Provider store={store}><MemoryRouter><Projects /></MemoryRouter></Provider>)
     expect(screen.queryByText('Add New Project')).not.toBeInTheDocument()
   })
   it('check if AddProject gets displayed when postProject permission is added',()=>{
@@ -157,7 +157,7 @@ describe("Projects component",()=>{
       role: {roles: rolesMock.role.roles}
     })
 
-    render(<Provider store={testStore}><Projects /></Provider>)
+    render(<Provider store={testStore}><MemoryRouter><Projects /></MemoryRouter></Provider>)
     // expect(screen.queryByText('Add new project')).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
   })
@@ -166,7 +166,7 @@ describe("Projects component",()=>{
       status: 200,
       data: [],
     });
-    render(<Provider store={store}><Projects /></Provider>)
+    render(<Provider store={store}><MemoryRouter><Projects /></MemoryRouter></Provider>)
     expect(screen.getByText("ERROR")).toBeInTheDocument()
   })
   it('check if modal title is not set to error when modal is open',()=>{

@@ -4,6 +4,7 @@ import '@testing-library/jest-dom/extend-expect';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import ProjectReport from '..';
 import axios from 'axios';
 import { getProjectDetail } from 'actions/project';
@@ -45,7 +46,9 @@ describe('ProjectReport component', () => {
     });
     render(
       <Provider store={store}>
-        <ProjectReport />
+        <MemoryRouter>
+          <ProjectReport />
+        </MemoryRouter>
       </Provider>,
     );
   });
@@ -56,7 +59,9 @@ describe('ProjectReport component', () => {
 
     render(
       <Provider store={store}>
-        <ProjectReport />
+        <MemoryRouter>
+          <ProjectReport />
+        </MemoryRouter>
       </Provider>
     );
 
@@ -237,7 +242,9 @@ describe('ProjectReport WBS link visibility', () => {
 
     render(
       <Provider store={store}>
-        <ProjectReport />
+        <MemoryRouter>
+          <ProjectReport />
+        </MemoryRouter>
       </Provider>,
     );
 
@@ -271,7 +278,9 @@ describe('ProjectReport WBS link visibility', () => {
 
     render(
       <Provider store={store}>
-        <ProjectReport />
+        <MemoryRouter>
+          <ProjectReport />
+        </MemoryRouter>
       </Provider>,
     );
 

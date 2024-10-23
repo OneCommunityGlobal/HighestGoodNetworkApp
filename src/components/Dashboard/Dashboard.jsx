@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Row, Col, Container } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
@@ -31,10 +32,15 @@ export function Dashboard(props) {
 
   const firstName = displayUserProfile?.firstName || 'User';
 
+  const location = useLocation();
+
   // Function to update the document title
   useEffect(() => {
-    document.title = `Dashboard - ${firstName}`;
-  }, [firstName]);
+    // Only set the title if the user is viewing the Dashboard
+    if (location.pathname.includes('/dashboard')) {
+      document.title = `Dashboard - ${firstName}`;
+    }
+  }, [firstName, location.pathname]);
 
   const toggle = (forceOpen = null) => {
     if (isNotAllowedToEdit) {

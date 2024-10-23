@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
@@ -54,14 +55,14 @@ export function ProjectReport({ match }) {
   const fromDate = '2016-01-01';
   const toDate = new Date().toISOString().split('T')[0];
 
+  const location = useLocation();
+
   // Dynamically update tab title based on project name
   useEffect(() => {
-    if (projectName) {
-      document.title = `Project Report - ${projectName}`;
-    } else {
-      document.title = 'Project Report';
+    if (location.pathname.includes('/projectreport')) {
+      document.title = projectName ? `Project Report - ${projectName}` : 'Project Report';
     }
-  }, [projectName]);
+  }, [projectName, location.pathname]);
 
   useEffect(() => {
     dispatch(getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate))

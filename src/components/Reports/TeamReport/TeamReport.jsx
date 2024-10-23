@@ -1,5 +1,6 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import { useLocation } from 'react-router-dom';
 import { debounce } from 'lodash';
 import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
@@ -65,14 +66,14 @@ export function TeamReport({ match }) {
 
   const [selectedTeams, setSelectedTeams] = useState([]);
 
+  const location = useLocation();
+
   // Dynamic tab title based on team name
   useEffect(() => {
-    if (team?.teamName) {
-      document.title = `Team Report - ${team.teamName}`;
-    } else {
-      document.title = 'Team Report';
+    if (location.pathname.includes('/teamreport')) {
+      document.title = team.teamName ? `Team Report - ${team.teamName}` : 'Team Report';
     }
-  }, [team?.teamName]);
+  }, [team?.teamName, location.pathname]);
 
   // Create a state variable to store the selected radio input
   // eslint-disable-next-line no-unused-vars
