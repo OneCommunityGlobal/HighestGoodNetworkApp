@@ -13,6 +13,7 @@ describe('Login page structure', () => {
       errors: {},
       loginUser: loginUser,
       clearErrors: clearErrors,
+      location: { pathname: '/login' }, // Mock location object
     };
     mountedLogin = shallow(<Login {...props} />);
   });
@@ -43,6 +44,7 @@ describe('When user tries to input data', () => {
       auth: { isAuthenticated: false },
       errors: {},
       loginUser: loginU,
+      location: { pathname: '/login' }, // Mock location object
     };
     mountedLoginPage = shallow(<Login {...props} />);
   });
@@ -108,6 +110,7 @@ describe('Login behavior', () => {
       auth: { isAuthenticated: true },
       errors: {},
       loginUser: loginUser,
+      location: { pathname: '/login' }, // Mock location object
       history: [],
     };
     const wrapper = shallow(<Login {...props} />);

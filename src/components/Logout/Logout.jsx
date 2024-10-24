@@ -1,4 +1,4 @@
-import { Redirect } from 'react-router-dom';
+import { Redirect, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -8,12 +8,17 @@ import { logoutUser } from '../../actions/authActions';
 function Logout({ setLogoutPopup, open }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
+  const location = useLocation();
 
   const closePopup = () => {
     setLogoutPopup(false);
   };
 
   const onLogout = () => {
+    // Set the tab title based on the current path
+    if (location.pathname.includes('/logout')) {
+      document.title = 'Logout';
+    }
     const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
     if (sessionStorageData) {
       sessionStorage.removeItem('viewingUser');

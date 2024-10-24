@@ -80,7 +80,22 @@ class UserProfileEdit extends Component {
         }
       }
     }
+    const { location } = this.props;
+    if (location.pathname.includes('/userprofileedit') && this.state.userProfile.firstName && this.state.userProfile.lastName) {
+      document.title = `Edit Profile - ${this.state.userProfile.firstName} ${this.state.userProfile.lastName}`;
+    }
   }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Update the document title whenever the firstName or lastName changes
+    if (
+      prevState.userProfile.firstName !== this.state.userProfile.firstName ||
+      prevState.userProfile.lastName !== this.state.userProfile.lastName
+    ) {
+      document.title = `Edit Profile - ${this.state.userProfile.firstName} ${this.state.userProfile.lastName}`;
+    }
+  }
+
 
   toggleTab = tab => {
     if (this.state.activeTab !== tab) {
