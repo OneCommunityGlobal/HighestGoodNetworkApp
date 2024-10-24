@@ -1,19 +1,23 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
-function AssignTableRow({ badge, index }) {
+function AssignTableRow({ badge, index, existBadges }) {
   const [isOpen, setOpen] = useState(false);
   const [isSelect, setSelect] = useState(false);
   const dispatch = useDispatch();
-  const selectedBadges = useSelector(state => state.badge?.selectedBadges) || [];
 
   useEffect(() => {
-    if (Array.isArray(selectedBadges)) {
-      setSelect(selectedBadges.includes(`assign-badge-${badge._id}`));
+    if (existBadges?.includes(`assign-badge-${badge._id}`)) {
+      setSelect(true);
+      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
+    } else {
+      setSelect(false);
     }
-  }, [selectedBadges, badge._id]);
+  }, []);
 
   const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
 

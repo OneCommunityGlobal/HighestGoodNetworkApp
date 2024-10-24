@@ -68,7 +68,11 @@ describe('AssignTableRow component', () => {
   it('handles checkbox change correctly when initially checked', () => {
     const mockDispatch = jest.fn();
     require('react-redux').useDispatch.mockReturnValue(mockDispatch);
-    require('react-redux').useSelector.mockReturnValue(['assign-badge-1']);
+
+    const mockData = {
+      badge: { _id: '1', name: 'Badge 1' },
+      existBadges: ['assign-badge-1'], // Initially checked
+    };
 
     renderComponent(mockData);
     const checkbox = screen.getByRole('checkbox');
