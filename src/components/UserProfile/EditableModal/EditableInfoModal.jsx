@@ -12,6 +12,7 @@ import {
 import Select from 'react-select'
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router-dom';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
 import { boxStyle, boxStyleDark } from 'styles';
 import RichTextEditor from './RichTextEditor';
@@ -41,6 +42,13 @@ export class EditableInfoModal extends Component {
 
   
   async componentDidMount() {
+    const { location } = this.props;
+
+    if (location.pathname.includes('/infoCollections')) {
+      document.title = 'Info Collections';
+    }
+
+  
     this._isMounted = true;
     await this.props.getInfoCollections();
     const { infoCollections, role, areaTitle, areaName, fontSize, isPermissionPage } = this.props;
@@ -300,4 +308,4 @@ const mapDispatchToProps = dispatch => {
 };
 
 
-export default connect(mapStateToProps, mapDispatchToProps)(EditableInfoModal);
+export default withRouter(connect(mapStateToProps, mapDispatchToProps)(EditableInfoModal));

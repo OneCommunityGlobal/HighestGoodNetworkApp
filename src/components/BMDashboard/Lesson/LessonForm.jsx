@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './LessonForm.css';
-import { useParams } from 'react-router-dom';
+import { useParams, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import postNewLesson from '../../../actions/bmdashboard/lessonActions';
@@ -30,6 +30,14 @@ function LessonForm() {
   const [LessonTitleText, setLessonTitleText] = useState(null); // track lessontitle text
   const { projectId } = useParams(); // passed project id in parameters
   const [projectname, setProjectName] = useState(null);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/lessonform')) {
+      document.title = 'Lesson Form';
+    }
+  }, [location]);
   // track user input in the tag input feild
   const handleTagInput = e => {
     e.preventDefault();

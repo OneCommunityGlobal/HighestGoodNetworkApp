@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { fetchToolById } from 'actions/bmdashboard/toolActions';
 import { Container, Button } from 'reactstrap';
@@ -59,6 +59,14 @@ function ToolDetailPage() {
   const tool = useSelector(state => state.tool);
 
   const dispatch = useDispatch();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/tools/')) {
+      document.title = 'Tools Details';
+    }
+  }, [location]);
 
   useEffect(() => {
     dispatch(fetchToolById(toolId));

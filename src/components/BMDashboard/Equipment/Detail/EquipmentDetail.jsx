@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { Container, Button } from 'reactstrap';
-import { useHistory, useParams } from 'react-router-dom';
+import { useHistory, useParams, useLocation } from 'react-router-dom';
 import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
 import { v4 as uuidv4 } from 'uuid';
 import EquipmentModal from '../EquipmentModal';
@@ -55,6 +55,7 @@ function DashedLineItem() {
 function EquipmentDetail() {
   const history = useHistory();
   const { equipmentId } = useParams();
+  const location = useLocation();
 
   const equipment = useSelector(state => state.bmEquipments.singleEquipment);
 
@@ -62,6 +63,12 @@ function EquipmentDetail() {
   useEffect(() => {
     dispatch(fetchEquipmentById(equipmentId));
   }, [dispatch, equipmentId]);
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/equipment/')) {
+      document.title = 'Equipment Detail';
+    }
+  }, [location]);
 
   const lastLogRecord = equipment?.logRecord?.[equipment.logRecord.length - 1];
   let currentUsage = 'Unknown';

@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
 import { fetchReusableTypes } from 'actions/bmdashboard/invTypeActions';
 import { purchaseReusable } from 'actions/bmdashboard/reusableActions';
@@ -17,6 +19,13 @@ const formLabels = {
 };
 
 function ReusablePurchaseForm() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/reusables/purchase')) {
+      document.title = 'Reusable Items Purchase Request Form';
+    }
+  }, [location]);
   return (
     <PurchaseForm
       fetchPrimaryDataAction={fetchBMProjects}

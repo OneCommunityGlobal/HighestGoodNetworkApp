@@ -14,6 +14,7 @@ import './AddMaterial.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import Joi from 'joi';
 import { toast } from 'react-toastify';
 import {
@@ -27,6 +28,7 @@ import { similarity } from './SimilarityCheck';
 
 function AddMaterial() {
   const dispatch = useDispatch();
+  const location = useLocation();
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
   const buildingInventoryUnits = useSelector(state => state.bmInvUnits.list);
   const [formattedUnits, setFormattedUnits] = useState([]);
@@ -49,6 +51,12 @@ function AddMaterial() {
     customUnitCheck: '',
     total: true,
   });
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/materials/add')) {
+      document.title = 'Add Material Form';
+    }
+  }, [location]);
 
   useEffect(() => {
     dispatch(fetchMaterialTypes());

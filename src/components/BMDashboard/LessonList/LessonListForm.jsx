@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -13,6 +14,13 @@ function LessonList(props) {
   const [filteredLessons, setFilteredLessons] = useState(lessons);
   const [filterOption, setFilterOption] = useState('1');
   const [sortOption, setSortOption] = useState('1');
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/lessonlist')) {
+      document.title = 'Lesson List';
+    }
+  }, [location]);
 
   useEffect(() => {
     dispatch(fetchBMLessons());

@@ -7,6 +7,7 @@ import { authMock, userProfileMock, rolesMock, themeMock } from '../../__tests__
 import { renderWithProvider } from '../../__tests__/utils';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
+import { MemoryRouter } from 'react-router-dom';
 
 const mockStore = configureStore([thunk]);
 
@@ -69,7 +70,12 @@ describe('WeeklySummariesReport page', () => {
       badges: [],
     };
     beforeEach(() => {
-      renderWithProvider(<WeeklySummariesReport {...props} />, { store });
+      renderWithProvider(
+        <MemoryRouter>
+          <WeeklySummariesReport {...props} />
+        </MemoryRouter>,
+        { store },
+      );
     });
 
     afterEach(() => {

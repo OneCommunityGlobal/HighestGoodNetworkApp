@@ -18,6 +18,12 @@ function BMLogin(props) {
   // If access login page from URL directly, redirect to BM Dashboard
   const prevLocation = location.state?.from || { pathname: '/bmdashboard' };
 
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/login')) {
+      document.title = 'BM Login';
+    }
+  }, [props.location]);
+
   // push to dashboard if user is authenticated
   useEffect(() => {
     if (auth.user.access && auth.user.access.canAccessBMPortal) {

@@ -5,7 +5,7 @@ import BMLogin from '..';
 import { useDispatch, Provider } from 'react-redux';
 import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
-import { BrowserRouter as Router } from 'react-router-dom';
+import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
 
 const mockStore = configureStore([thunk]);
@@ -39,18 +39,21 @@ const history = {
   location: { pathname: '/' },
 };
 
-const renderComponent = testStore => {
+const renderComponent = (testStore, initialEntries = ['/bmdashboard/login']) => {
   function LoginWrapper() {
     const dispatch = useDispatch();
-    const location = {};
+    const location = {
+      pathname: '/bmdashboard/login',
+      state: { from: { pathname: '/bmdashboard' } },
+    };
 
     return <BMLogin dispatch={dispatch} history={history} location={location} />;
   }
   return render(
     <Provider store={testStore}>
-      <Router>
+      <MemoryRouter initialEntries={initialEntries}>
         <LoginWrapper />
-      </Router>
+      </MemoryRouter>
     </Provider>,
   );
 };

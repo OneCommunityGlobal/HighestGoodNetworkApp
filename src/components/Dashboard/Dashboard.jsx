@@ -37,7 +37,7 @@ export function Dashboard(props) {
   // Function to update the document title
   useEffect(() => {
     // Only set the title if the user is viewing the Dashboard
-    if (location.pathname.includes('/dashboard')) {
+    if (location.pathname.includes('/dashboard') || location.pathname === '/') {
       document.title = `Dashboard - ${firstName}`;
     }
   }, [firstName, location.pathname]);
