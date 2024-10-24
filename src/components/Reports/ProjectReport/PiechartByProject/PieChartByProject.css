@@ -1,8 +1,13 @@
 .pie-chart-title {
   text-align: center;
   margin-bottom: 24px;
-  color: white; /* Ensure title text is white in dark mode */
+  color: black; /* Default for light mode */
 }
+
+.dark-mode .pie-chart-title h4 {
+  color: white; /* White for dark mode */
+}
+
 
 .pie-chart-description {
   display: flex;

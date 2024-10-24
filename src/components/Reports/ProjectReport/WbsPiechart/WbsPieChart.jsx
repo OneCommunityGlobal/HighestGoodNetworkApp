@@ -85,15 +85,12 @@ export function WbsPieChart({
     setIsChecked(!isChecked);
   };
   return (
-    <div className={darkMode ? 'text-light' : ''}>
+    <div className={`${darkMode ? 'text-light' : ''} pr-4`}>
       <div><h5> Owners, Managers and Admins in {projectName} </h5></div>
       <div className= "pie-chart-title" >
-        <div>
-          <label style={{
-            paddingRight: '1rem'
-          }}
-          className={darkMode ? 'text-light' : ''}
-          >{isChecked ? 'Weekly Commited Hours By Active Member(Hide Piechart)' : 'Weekly Commited Hours By Member(Show Piechart)'}</label>
+        <div className= { darkMode ? 'text-light' : ''}>
+          <label className={`${darkMode ? 'text-light' : ''} pr-4`} >{isChecked ? 'Weekly Commited Hours By Active Member(Hide Piechart)' : 'Weekly Commited Hours By Member(Show Piechart)'}</label>
+
           <input
             type="checkbox"
             checked={isChecked}
