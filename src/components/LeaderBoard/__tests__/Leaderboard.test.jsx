@@ -8,13 +8,32 @@ jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
 }));
 
+const mockUser = {
+  userid: '123',
+  firstName: 'Test User',
+  profilePic: 'test-pic.jpg',
+};
+
+const mockState = {
+  auth: {
+    user: mockUser,
+    loggedInUser: { role: 'Admin' },
+    firstName: 'Test',
+    profilePic: 'test-pic',
+  },
+  leaderBoardData: mockAdminState.leaderBoardData,
+  orgData: mockAdminState.organizationData,
+};
+
 describe('Leaderboard page structure', () => {
   let mountedLeaderboard, props;
+  
   beforeEach(() => {
     props = mockAdminState;
     props.organizationData = { weeklyCommittedHours: 0, tangibletime: 0, totaltime: 0 };
     props.getLeaderboardData = jest.fn();
-    props.loggedInUser = jest.fn();
+    props.loggedInUser = { role: 'Admin' };
+    props.loading = true;
     mountedLeaderboard = shallow(<Leaderboard {...props} darkMode={true} />);
   });
 
@@ -38,12 +57,10 @@ describe('Leaderboard page structure', () => {
     expect(leaderBoardItems.length).toBe(lBLength + 1);
 
     for (let i = 1; i < lBLength; i++) {
-      //find that a link to each user profile exists and test the text of the Link to be the name
       const linkItem = leaderBoardItems.find({ to: `/userprofile/${lbData[i].personId}` });
       expect(linkItem.length).toBe(1);
       expect(linkItem.text().includes(lbData[i].name)).toBeTruthy();
 
-      //check if the entries for the total time and intangibletime exist
       expect(
         leaderBoardItems.containsMatchingElement(
           <td>
@@ -59,5 +76,47 @@ describe('Leaderboard page structure', () => {
         ),
       ).toBeTruthy();
     }
+  });
+
+  
+    it('should render with dark mode styles when darkMode prop is true', () => {
+      expect(mountedLeaderboard.find('.dark-mode').length).toBeGreaterThan(0);
+    });
+  
+
+  it('should display an alert if the user is invisible', () => {
+    props.isVisible = false;
+    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    expect(mountedLeaderboard.find('Alert').exists()).toBe(true);
+  });
+
+  it('renders a search input', () => {
+    expect(mountedLeaderboard.find('input[type="text"]').exists()).toBe(true);
+  });
+
+  it('renders the progress component for each user', () => {
+    props.leaderBoardData = [{ personId: 1, name: 'John Doe', tangibletime: 10, totaltime: 20 }];
+    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    expect(mountedLeaderboard.find('Progress').length).toBeGreaterThan(0);
+  });
+
+  it('renders the correct number of rows for users, including header/summary rows', () => {
+    props.leaderBoardData = [
+      { personId: 1, name: 'John Doe', tangibletime: 10, totaltime: 20 },
+      { personId: 2, name: 'Jane Smith', tangibletime: 15, totaltime: 25 },
+    ];
+    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    
+    const leaderBoardBody = mountedLeaderboard.find('tbody');
+    const leaderBoardItems = leaderBoardBody.find('tr');
+    
+    const totalRows = props.leaderBoardData.length + 1; // 1 extra row for summary or header
+    expect(leaderBoardItems.length).toBe(totalRows);
+  });
+
+  it('should not render admin features if loggedInUser role is not Admin', () => {
+    props.loggedInUser = { role: 'User' };
+    mountedLeaderboard = shallow(<Leaderboard {...props} />);
+    expect(mountedLeaderboard.find('.admin-features').exists()).toBe(false);
   });
 });
