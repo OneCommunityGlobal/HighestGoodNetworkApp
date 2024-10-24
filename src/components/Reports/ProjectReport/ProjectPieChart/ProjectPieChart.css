@@ -1,0 +1,9 @@
+.button-container {
+  position: absolute;
+
+  top: 53%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 10;
+  pointer-events: auto;
+}

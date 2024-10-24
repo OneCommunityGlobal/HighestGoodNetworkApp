@@ -168,7 +168,6 @@ export function ProjectReport({ match }) {
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock darkMode={darkMode}>
           <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>
-          <div style={{ marginTop: '40px' }}></div>
           <WbsPieChart projectMembers={projectMembers} projectName={projectName} darkMode={darkMode}/>
         </ReportPage.ReportBlock>
       </ReportPage>
