@@ -1,0 +1,29 @@
+.container-total-org-wrapper {
+  min-height: 100%;
+  background-color: #faf7fc;
+  margin: 0;
+  grid-auto-rows: minmax(100px, auto);
+}
+
+.container-total-org-wrapper .row {
+  width: 99% !important;
+  margin: 1px 10px 15px 10px;
+}
+.component-container {
+  margin: 15px 0;
+  padding: 10px;
+}
+
+.component-border {
+  border: 1px solid #e0e0e0;
+  border-radius: 10px;
+  box-shadow: 1px 1px 1px #e0e0e0;
+}
+
+.component-pie-chart-label {
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}

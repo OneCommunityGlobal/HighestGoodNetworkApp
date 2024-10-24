@@ -238,7 +238,7 @@ describe("TeamMemberTasks component",()=>{
       data: '',
     });
     const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
-    const buttonElement=container.querySelector('[class=" mr-1 show-time-off-btn show-time-off-btn-selected "]')
+    const buttonElement=container.querySelector('[class="m-1 show-time-off-btn show-time-off-btn-selected "]')
     expect(container.querySelector('[class="show-time-off-calender-svg "]')).not.toBeInTheDocument()
     expect(container.querySelector('[class="show-time-off-icon "]')).not.toBeInTheDocument()
     expect(container.querySelector('[class="show-time-off-calender-svg show-time-off-calender-svg-selected"]')).toBeInTheDocument()

@@ -63,7 +63,7 @@ function WBSTasks(props) {
       case 'assigned': return tasks.filter(task => task.isAssigned === true)
       case 'unassigned': return tasks.filter(task => task.isAssigned === false)
       case 'active': return tasks.filter(task => ['Active', 'Started'].includes(task.status))
-      case 'inactive': return tasks.filter(task => task.status === 'Not Started')
+      case 'inactive': return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status))
       case 'complete': return tasks.filter(task => task.status === 'Complete')
     }
   }
@@ -302,13 +302,13 @@ function WBSTasks(props) {
         <table className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`} ref={myRef}>
           <thead>
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th scope="col" data-tip="Action" colSpan="2">
+              <th scope="col" className="tasks-detail-actions" data-tip="Action" colSpan="2">
                 Action
               </th>
               <th scope="col" data-tip="WBS ID" colSpan="1">
                 #
               </th>
-              <th scope="col" data-tip="Task Name" className="task-name">
+              <th scope="col" data-tip="Task Name" className="tasks-detail-task-name task-name">
                 Task
               </th>
               <th scope="col" data-tip="Priority">

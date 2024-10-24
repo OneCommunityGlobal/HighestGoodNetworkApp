@@ -31,7 +31,7 @@ const stillSavingMessage = 'Saving, will take just a second...';
  * @returns
  */
 const SaveButton = props => {
-  const { handleSubmit, disabled, userProfile, setSaved, darkMode } = props;
+  const {handleSubmit, disabled, userProfile, setSaved, darkMode} = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
   const [isLoading,setIsLoading] = useState(false);
@@ -97,7 +97,7 @@ const SaveButton = props => {
         darkMode={darkMode}
       />
       <Button
-        outline
+        {...(darkMode ? { outline: false } : {outline: true})}
         color={darkMode ? 'light' : 'primary'}
         // to={`/userprofile/${this.state.userProfile._id}`}
         //the line below caused the mouse over issue, so I commented it out
