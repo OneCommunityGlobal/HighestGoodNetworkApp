@@ -28,7 +28,7 @@ function TotalProjectReport(props) {
 
   const loadTimeEntriesForPeriod = useCallback(async () => {
     try {
-      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT;
       const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
         projectId: entry.projectId,
         projectName: entry.projectName,
@@ -119,7 +119,8 @@ function TotalProjectReport(props) {
         sumData[0].months = 12 - startMonth;
         sumData[sumData.length - 1].months = endMonth + 1;
       }
-      return sumData;
+      const filteredData = sumData.filter(data => data.value > 0);
+      return filteredData;
     }
     return groupedDate.map(range => ({
       label: range.timeRange,
@@ -243,7 +244,22 @@ function TotalProjectReport(props) {
   return (
     <div>
       {!totalProjectReportDataReady ? (
-        ""
+        <div style={{ textAlign: 'center' }}>
+          <Loading align="center" darkMode={darkMode}/>
+          <div
+            style={{
+              width: '50%',
+              height: '2px',
+              backgroundColor: 'gray',
+              margin: '10px auto',
+            }}
+          />
+          <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'gray' }}>
+            🚀 Data is on a secret mission! 📊 Report is being generated. ✨
+            <br />
+            Please hang tight while we work our magic! 🧙‍♂️🔮
+          </div>
+        </div>
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>

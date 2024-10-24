@@ -136,8 +136,7 @@ function TotalTeamReport(props) {
     });
     return accTeam;
   };
-
-  // Filter teams that have contributed more than 10 hours
+  
   const filterTenHourTeam = teamTimeList => {
     const filteredTeams = [];
     teamTimeList.forEach(element => {
@@ -226,8 +225,8 @@ const groupedDate = useMemo(() => {
       label:  `${range.timeRange}`,
       value: range.teamsOfTime.length,
     }));
+
   };
-  
   // Filter teams by end date to remove those created after the selected period
   const filterTeamByEndDate = (teams, endDateTime) => {
     return teams.filter(team => new Date(Date.parse(team.createdDatetime)) < endDateTime)
@@ -481,9 +480,22 @@ const groupedDate = useMemo(() => {
   return (
     <div>
       {!totalTeamReportDataReady ? (
-        <div>
-          <Loading align="center" darkMode={darkMode}/>
+        <div style={{ textAlign: 'center' }}>
+        <Loading align="center" darkMode={darkMode}/>
+        <div
+          style={{
+            width: '50%',
+            height: '2px',
+            backgroundColor: 'gray',
+            margin: '10px auto',
+          }}
+        />
+        <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'gray' }}>
+          🚀 Data is on a secret mission! 📊 Report is being generated. ✨
+          <br />
+          Please hang tight while we work our magic! 🧙‍♂️🔮
         </div>
+      </div>
       ) : (
         <div>
           <div>{totalTeamInfo(allTeams)}</div>
