@@ -88,9 +88,8 @@ function UserProfile(props) {
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
   const [originalTasks, setOriginalTasks] = useState([]);
-  const [isTeamsEqual, setIsTeamsEqual] = useState(true);
+
   const [teams, setTeams] = useState([]);
-  const [originalTeams, setOriginalTeams] = useState([]);
   const [isProjectsEqual, setIsProjectsEqual] = useState(true);
   const [projects, setProjects] = useState([]);
   const [originalProjects, setOriginalProjects] = useState([]);
@@ -111,7 +110,6 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [isTeamSaved, setIsTeamSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
@@ -176,11 +174,10 @@ function UserProfile(props) {
   });
 
   useEffect(() => {
-    checkIsTeamsEqual();
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile, teams, projects });
-    setOriginalUserProfile({ ...originalUserProfile, teams, projects });
-  }, [teams, projects]);
+    setUserProfile({ ...userProfile,  projects });
+    setOriginalUserProfile({ ...originalUserProfile, projects });
+  }, [ projects]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -188,39 +185,8 @@ function UserProfile(props) {
     loadUserTasks();
   }, [props?.match?.params?.userId]);
 
-  const checkIsTeamsEqual = () => {
-    setOriginalTeams(teams);
-    const originalTeamProperties = [];
-    originalTeams?.forEach(team => {
-      if (!team) return;
-      for (const [key, value] of Object.entries(team)) {
-        if (key == 'teamName') {
-          originalTeamProperties.push({ [key]: value });
-        }
-      }
-    });
 
-    const teamsProperties = [];
-    teams?.forEach(team => {
-      if (!team) return;
-      for (const [key, value] of Object.entries(team)) {
-        if (key == 'teamName') {
-          teamsProperties.push({ [key]: value });
-        }
-      }
-    });
 
-    const originalTeamsBeingDisplayed = teamsProperties.filter(
-      item =>
-        JSON.stringify(item) ===
-        JSON.stringify(originalTeamProperties.filter(elem => elem.teamName === item.teamName)[0]),
-    );
-
-    const compare =
-      originalTeamsBeingDisplayed?.length === originalTeams?.length &&
-      originalTeamsBeingDisplayed?.length === teamsProperties?.length;
-    setIsTeamsEqual(compare);
-  };
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -336,7 +302,6 @@ function UserProfile(props) {
       newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
       newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
       setTeams(newUserProfile.teams);
-      setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
       setResetProjects(newUserProfile.projects);
@@ -360,7 +325,6 @@ function UserProfile(props) {
       });
       setUserStartDate(startDate);
       checkIsProjectsEqual();
-      // isTeamSaved(true);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -929,7 +893,6 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual ||
             !isTasksEqual ||
-            (!isTeamsEqual && !isTeamSaved) ||
             !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
@@ -1240,8 +1203,8 @@ function UserProfile(props) {
                     !formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    (!(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
-                      !isTeamSaved)
+                    !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                      
                   }
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
@@ -1253,7 +1216,6 @@ function UserProfile(props) {
                   inputAutoStatus={inputAutoStatus}
                   isLoading={isLoading}
                   fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
-                  isTeamSaved={isSaved => setIsTeamSaved(isSaved)}
                   darkMode={darkMode}
                 />
               </TabPane>
@@ -1273,7 +1235,7 @@ function UserProfile(props) {
                     !formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                    !(isProfileEqual && isTasksEqual && isProjectsEqual)
                   }
                   darkMode={darkMode}
                 />
@@ -1331,9 +1293,8 @@ function UserProfile(props) {
                       !formValid.lastName ||
                       !formValid.email ||
                       !codeValid ||
-                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
-                      !(isStartDateValid && isEndDateValid) ||
-                      isTeamSaved
+                      (userStartDate > userEndDate && userEndDate !== '') ||
+                      (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
                     setSaved={() => setSaved(true)}
@@ -1344,7 +1305,6 @@ function UserProfile(props) {
                       onClick={() => {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
-                        setTeams(originalTeams);
                         setProjects(resetProjects);
                       }}
                       className={`btn mr-1 btn-bottom ${
@@ -1465,7 +1425,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1542,8 +1502,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
-                              !(isStartDateValid && isEndDateValid)
+                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1610,7 +1569,7 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual  && isProjectsEqual)
                     }
                     canEditTeamCode={canEditTeamCode}
                     setUserProfile={setUserProfile}
@@ -1637,7 +1596,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1704,7 +1663,7 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     darkMode={darkMode}
                   />
@@ -1722,7 +1681,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1794,7 +1753,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
