@@ -93,6 +93,8 @@ const AddProject = (props) => {
         //assing project to members in member list
         membersList.map((member =>  props.assignProject(projectId, member._id, 'Assign', member.firstName, member.lastName)));
         
+        props.onProjectAdded()
+        
         toggleModal();
         setNewName('');
         setNewCategory('Unspecified');
