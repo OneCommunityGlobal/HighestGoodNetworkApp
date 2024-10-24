@@ -13,6 +13,7 @@ jest.mock('react-toastify', () => ({
 describe('AddTeamsAutoComplete Component', () => {
   const mockSetSearchText = jest.fn();
   const mockOnCreateNewTeam = jest.fn();
+  const mockSetInputs = jest.fn();
   const teamsData = {
     allTeams: [
       { _id: '1', teamName: 'Engineering' },
@@ -30,6 +31,7 @@ describe('AddTeamsAutoComplete Component', () => {
       <AddTeamsAutoComplete
         searchText=""
         setSearchText={mockSetSearchText}
+        setInputs={mockSetInputs}
         teamsData={teamsData}
         onCreateNewTeam={mockOnCreateNewTeam}
       />
@@ -162,14 +164,23 @@ describe('AddTeamsAutoComplete Component', () => {
       <AddTeamsAutoComplete
         searchText="Eng"
         setSearchText={mockSetSearchText}
+        setInputs={mockSetInputs}
         teamsData={teamsData}
         onCreateNewTeam={mockOnCreateNewTeam}
       />
     );
 
     fireEvent.click(screen.getByText('Engineering'));
-
     expect(mockSetSearchText).toHaveBeenCalledWith('Engineering');
+
+    expect(mockSetInputs).toHaveBeenCalledWith(expect.any(Function));
+    const updateFn = mockSetInputs.mock.calls[0][0];
+    const initialInputs = { testKey: 'testValue' };
+    const updatedInputs = updateFn(initialInputs);
+    expect(updatedInputs).toEqual({
+      testKey: 'testValue',
+      teamId: '1',
+    });
   });
 
   test('creates a new team when no match is found', () => {
