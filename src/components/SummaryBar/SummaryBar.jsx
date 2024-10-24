@@ -162,8 +162,6 @@ const SummaryBar = props => {
   const [report, setBugReport] = useState(initialInfo);
 
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-
-
   const [weeklySummaryNotReq, setweeklySummaryNotReq] = useState(displayUserProfile?.weeklySummaryOption === "Not Required");
 
   // Similar to UserProfile component function
@@ -403,26 +401,17 @@ const SummaryBar = props => {
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
-  const canSubmitWeeklySummariesForOthers = props.hasPermission('submitWeeklySummaryForOthers');
-  console.log(canSubmitWeeklySummariesForOthers);
 
-
-  const handleSummaryClick = () => {
-    if (!canSubmitWeeklySummariesForOthers) {
-      alert("You do not have permission to submit the weekly summary for others.");
-      return;
-    }
-      props.toggleSubmitForm();
-  };
   return (
     displayUserProfile !== undefined && summaryBarData !== undefined
     ? <Container
           fluid
           className={"px-lg-0 rounded " + (
-            isAuthUser || canEditData() && canSubmitWeeklySummariesForOthers
+            isAuthUser || canEditData()
               ? (darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'bg--bar text--black box-shadow-light')
               : (darkMode ? 'bg-space-cadet disabled-bar text-light box-shadow-dark' : 'bg--bar disabled-bar text--black box-shadow-light'))
           }
+          style={{width: '97%'}}
         >
           <Row className="no-gutters row-eq-height">
             <Col
@@ -531,28 +520,30 @@ const SummaryBar = props => {
                   </div>
                 )}
 
-                <div className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
-                      style={{border: "1px solid black"}}>
-                    <div className="m-auto p-2 text-center">
-                      <font className="med_text_summary align-middle summary-toggle" size="3">
-                        {weeklySummary || props.submittedSummary ? (
-                          'You have submitted your weekly summary.'
+                <div
+                  className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'}`}
+                  style={{border: "1px solid black"}}
+                >
+                  <div className="m-auto p-2 text-center">
+                    <font onClick={props.toggleSubmitForm} className="med_text_summary align-middle summary-toggle" size="3">
+                      {weeklySummary || props.submittedSummary ? (
+                        'You have submitted your weekly summary.'
                         ) : isAuthUser ? (
-                          <span className="summary-toggle" onClick={handleSummaryClick}>
-                            {weeklySummaryNotReq
-                              ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
-                              : "You still need to complete the weekly summary. Click here to submit it."}
-                          </span>
-                        ) : (
-                          <span className="summary-toggle">
-                            {weeklySummaryNotReq
-                              ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
-                              : "You still need to complete the weekly summary. Click here to submit it."}
-                          </span>
-                        )}
-                      </font>
-                    </div>
+                          <span className="summary-toggle" onClick={props.toggleSubmitForm}>
+                          {weeklySummaryNotReq
+                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
+                        : "You still need to complete the weekly summary. Click here to submit it."}
+                        </span>
+                      ) : (
+                        <span className="summary-toggle">
+                        {weeklySummaryNotReq
+                        ? "You don’t need to complete a weekly summary, but you still can. Click here to submit it."
+                        : "You still need to complete the weekly summary. Click here to submit it."}
+                        </span>
+                      )}
+                    </font>
                   </div>
+                </div>
               </Row>
             </Col>
 
