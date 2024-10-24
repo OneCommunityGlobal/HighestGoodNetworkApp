@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ProjectPieChart } from '../ProjectPieChart/ProjectPieChart';
+import {ProjectPieChart} from '../ProjectPieChart/ProjectPieChart';
 import './PieChartByProject.css';
 import TriMembersStateToggleSwitch from '../TriMembersStateToggleSwitch/TriMembersStateToggleSwitch'
 import style from '../../../UserProfile/UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
@@ -28,7 +28,7 @@ export function PieChartByProject({
     }, 0) / 3600;
     setTotalHours(totalHoursCalculated);
     const activeUsers = mergedProjectUsersArray.filter(member => member.personId.isActive )
-      setActiveData(activeUsers);
+    setActiveData(activeUsers);
 
     const arrData = mergedProjectUsersArray.map(member => {
       const data = {
@@ -119,8 +119,16 @@ export function PieChartByProject({
     }
   };
 
+  const noDataPlaceholder = [{
+    name: "No Data",
+    value: 1/1000,
+    projectName: projectName,
+    totalHoursCalculated: 0,
+    lastName: ""
+  }];
+
   return (
-    <div className={` ${darkMode ? 'text-light dark-mode' : ''} w-100`}>
+    <div className={`${darkMode ? 'text-light' : ''} w-100`}>
       <div className='pie-chart-title'><h4>Pie Charts</h4></div>
       <div><h5>{projectName}</h5></div>
       <div className="pie-chart-description">
@@ -170,7 +178,7 @@ export function PieChartByProject({
           </div>
         )}
       </div>
-      {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
+        {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
         <ProjectPieChart userData={totalHours > 0 ? userData : noDataPlaceholder} windowSize={windowSize.width} darkMode={darkMode} />
       </div>)}
 
