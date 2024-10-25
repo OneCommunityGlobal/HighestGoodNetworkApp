@@ -783,7 +783,7 @@ class ReportsPage extends Component {
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
                 userProfiles={userProfilesBasicInfo}
-                allTeamsData={allTeams}
+                allTeamsData={this.props.state.allTeamsData.allTeams}
                 passTeamMemberList={this.setTeamMemberList}
                 savedTeamMemberList={this.state.teamMemberList}
                 darkMode={darkMode}

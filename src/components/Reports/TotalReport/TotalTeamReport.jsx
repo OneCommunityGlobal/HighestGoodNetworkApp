@@ -11,7 +11,6 @@ import Loading from '../../common/Loading';
 const LazyTotalReportBarGraph = React.lazy(() => import('./TotalReportBarGraph'));
 
 function TotalTeamReport(props) {
-  const dispatch = useDispatch();
   const [totalTeamReportDataLoading, setTotalTeamReportDataLoading] = useState(true);
   const [totalTeamReportDataReady, setTotalTeamReportDataReady] = useState(false);
   const [showTotalTeamTable, setShowTotalTeamTable] = useState(false);
@@ -38,21 +37,41 @@ function TotalTeamReport(props) {
     if (cachedTeamMembers) {
       setAllTeamsMembers(JSON.parse(cachedTeamMembers));
     } else {
-      const allTeamMembersPromises = teamList.map(team => dispatch(getTeamMembers(team._id)));
-      const allTeamMembers = await Promise.all(allTeamMembersPromises);
-      const teamUserList = allTeamMembers.map((team, i) => ({
-        teamId: teamList[i]._id,
-        teamName: teamList[i].teamName,
-        createdDatetime: teamList[i].createdDatetime,
-        members: team.map(user => user._id),
-      }));
-      setAllTeamsMembers(teamUserList);
-      localStorage.setItem('teamMembers', JSON.stringify(teamUserList));
+      // const allTeamMembersPromises = teamList.map(team => dispatch(getTeamMembers(team._id)));
+      // const allTeamMembers = await Promise.all(allTeamMembersPromises);
+      try {
+        const allTeamsMembers=await axios.post(process.env.REACT_APP_APIENDPOINT+'/team/reports',teamList);
+        const teamUserList = allTeamsMembers.data.map((team) => ({
+          teamId: team._id,
+          teamName: team.teamName,
+          createdDatetime: team.createdDatetime,
+          members: team.members.map(user => user.userId),
+        }));
+        // const teamUserList = allTeamMembers.map((team, i) => ({
+          //   teamId: teamList[i]._id,
+          //   teamName: teamList[i].teamName,
+          //   createdDatetime: teamList[i].createdDatetime,
+          //   members: team.map(user => user._id),
+          // }));
+          setAllTeamsMembers(teamUserList);
+          localStorage.setItem('teamMembers', JSON.stringify(teamUserList));
+        } catch (error) {
+          console.log(error);
+        }
     }
   };
 
   // Filter teams and fetch time entries in parallel
   const loadTimeEntriesForPeriod = async () => {
+    // i think we need to cache timeentries data
+    try{
+    let tientry = localStorage.getItem('TimeEntry')
+    let tmentry = localStorage.getItem("TeamEntry")
+    if(tientry && tmentry && JSON.parse(tientry).length!==0 && JSON.parse(tientry).length!==0){
+      setAllTimeEntries(JSON.parse(tientry))
+      setTeamTimeEntries(JSON.parse(tmentry))
+      return;
+    }
     const [timeEntries, teamEntries] = await Promise.all([
       axios.post(ENDPOINTS.TIME_ENTRIES_REPORTS, { users: userList, fromDate, toDate }),
       axios.post(ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST, { teams: teamList, fromDate, toDate }),
@@ -64,26 +83,32 @@ function TotalTeamReport(props) {
       const entryDate = new Date(entry.dateOfWork); 
       return entryDate >= startDateObj && entryDate <= endDateObj;  // Filter to only include entries within the range
     });
-    setAllTimeEntries(filteredTimeEntries.map(entry => ({
+    var filteredTime=filteredTimeEntries.map(entry => ({
       userId: entry.personId,
       hours: entry.hours,
       minutes: entry.minutes,
       isTangible: entry.isTangible,
       date: entry.dateOfWork,
-    })));
-  
+    }))
+    setAllTimeEntries(filteredTime);
+    localStorage.setItem('TimeEntry',JSON.stringify(filteredTime))
     const filteredTeamEntries = teamEntries.data.filter(entry => {
       const entryDate = new Date(entry.dateOfWork);  
       return entryDate >= startDateObj && entryDate <= endDateObj;  // Filter to only include entries within the range
     });
-    setTeamTimeEntries(filteredTeamEntries.map(entry => ({
+    var filteredTeam=filteredTeamEntries.map(entry => ({
       teamId: entry.teamId,
       hours: entry.hours,
       minutes: entry.minutes,
       isTangible: entry.isTangible,
       date: entry.dateOfWork,
       teamName: entry.teamName,
-    })));
+    }))
+    localStorage.setItem('TeamEntry',JSON.stringify(filteredTeam))
+    setTeamTimeEntries(filteredTeam);
+  }catch(error){
+    console.log(error)
+  }
   };
   
   // Function to sum time entries by user
@@ -112,6 +137,7 @@ function TotalTeamReport(props) {
   // Group time entries by team
   const groupByTeam = (userTimeSum, teamList) => {
     const accTeam = {};
+    
     teamList.forEach(team => {
       const key = team.teamId;
       if (!accTeam[key]) {
@@ -299,7 +325,7 @@ const groupedDate = useMemo(() => {
       const groupedUsers = Object.values(sumByUser(allTimeEntries, 'userId'));
       const groupedTeams = Object.values(groupByTeam(groupedUsers, validTeams));
       const contributedTeams = filterTenHourTeam(groupedTeams);
-  
+      
       // Set all teams
       setAllTeams(contributedTeams);
   
@@ -411,7 +437,9 @@ const groupedDate = useMemo(() => {
     allTeamsMembers
       .filter(team => team.teamId === teamId)[0]
       .members.forEach(member => {
-        nameList.push(`${userNames[member]}, `);
+        if(userNames[member]!==undefined){
+          nameList.push(`${userNames[member]}, `);
+        }
       });
     return nameList;
   };
