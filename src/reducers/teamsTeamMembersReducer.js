@@ -12,7 +12,8 @@ export const updateObject = (oldObject, updatedProperties) => ({
   ...updatedProperties,
 });
 
-export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
+// eslint-disable-next-line default-param-last
+export default function teamUsersReducer(teamMembers = teamUsersInitial, action) {
   switch (action.type) {
     case types.RECEIVE_TEAM_USERS:
       return updateObject(teamMembers, {
@@ -23,15 +24,15 @@ export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
       });
     case types.TEAM_MEMBER_ADD:
       return updateObject(teamMembers, {
-        teamMembers: Object.assign([...teamMembers.teamMembers, action.member]),
+        teamMembers: [...teamMembers.teamMembers, action.member],
         fetching: false,
         fetched: true,
         status: '200',
       });
     case types.TEAM_MEMBER_DELETE:
       return updateObject(teamMembers, {
-        teamMembers: Object.assign(
-          teamMembers.teamMembers.filter(item => item._id !== action.member),
+        teamMembers: teamMembers.teamMembers.filter(
+          (item) => item._id !== action.member
         ),
         fetching: false,
         fetched: true,
@@ -46,4 +47,4 @@ export const teamUsersReducer = (teamMembers = teamUsersInitial, action) => {
     default:
       return teamMembers;
   }
-};
+}

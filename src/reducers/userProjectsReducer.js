@@ -5,7 +5,8 @@ const initialState = {
   wbs: [],
 };
 
-export const userProjectsReducer = (state = initialState, action) => {
+// eslint-disable-next-line default-param-last
+export default function userProjectsReducer(state = initialState, action) {
   switch (action.type) {
     case types.GET_USER_PROJECTS:
       return {
@@ -15,4 +16,4 @@ export const userProjectsReducer = (state = initialState, action) => {
     default:
       return state;
   }
-};
+}

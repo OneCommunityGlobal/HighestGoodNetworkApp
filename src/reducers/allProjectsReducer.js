@@ -1,6 +1,6 @@
 import * as types from "../constants/projects";
 
-const allProjectsInital = {
+const allProjectsInitial = {
   fetching: false,
   fetched: false,
   projects: [],
@@ -8,7 +8,7 @@ const allProjectsInital = {
   error: null,
 };
 
-export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
+const allProjectsReducer = (action, allProjects = allProjectsInitial) => { // Moved default parameter to last
   const updateState = (updatedProperties) => {
     return {
       ...allProjects,
@@ -16,7 +16,8 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
     };
   };
   const { status, error = null } = action;
-  let index, projects;
+  let index;
+  let projects;
   switch (action.type) {
     case types.FETCH_PROJECTS_START:
       return updateState({ fetching: true });
@@ -29,35 +30,44 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
         projects: action.projects,
         status,
       });
-    case types.ADD_NEW_PROJECT:
+    case types.ADD_NEW_PROJECT: {
       if (status !== 201) return updateState({ status, error });
       const { newProject } = action;
       return updateState({
         projects: [...allProjects.projects, newProject],
         status,
       });
-    case types.UPDATE_PROJECT:
+    }
+    case types.UPDATE_PROJECT: {
       if (status !== 200) return updateState({ status, error });
       const { updatedProject } = action;
-      index = allProjects.projects.findIndex(project => project._id === action.projectId);
-      projects = Object.assign([
+      index = allProjects.projects.findIndex(
+        (project) => project._id === action.projectId
+      );
+      projects = [
         ...allProjects.projects.slice(0, index),
         updatedProject,
         ...allProjects.projects.slice(index + 1),
-      ]);
+      ];
       return updateState({ projects, status });
-    case types.DELETE_PROJECT:
+    }
+    case types.DELETE_PROJECT: {
       if (status !== 200) return updateState({ status, error });
       const { projectId } = action;
-      index = allProjects.projects.findIndex(project => project._id === projectId);
-      projects = Object.assign([
+      index = allProjects.projects.findIndex(
+        (project) => project._id === projectId
+      );
+      projects = [
         ...allProjects.projects.slice(0, index),
         ...allProjects.projects.slice(index + 1),
-      ]);
+      ];
       return updateState({ projects, status });
+    }
     case types.CLEAR_ERROR:
       return updateState({ status: 200, error: null });
     default:
       return allProjects;
   }
 };
+
+export default allProjectsReducer; // Changed to default export

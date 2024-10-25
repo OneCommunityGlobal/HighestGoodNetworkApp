@@ -13,7 +13,8 @@ const updateObject = (oldObject, updatedProperties) => ({
   ...updatedProperties,
 });
 
-export const managingTeamsReducer = (managingTeams = managingTeamsInitial, action) => {
+// eslint-disable-next-line default-param-last
+export default function managingTeamsReducer(managingTeams = managingTeamsInitial, action) {
   switch (action.type) {
     case FETCH_PROJECTS_START:
       return { ...managingTeams, fetching: true, status: '200' };
@@ -25,9 +26,10 @@ export const managingTeamsReducer = (managingTeams = managingTeamsInitial, actio
         status: '200',
       });
     case FETCH_TEAMS_ERROR:
+      // eslint-disable-next-line no-console
       console.error('managingTeamsReducer Error: ', action.payload);
       return { ...managingTeams, fetching: false, status: action.payload };
     default:
       return managingTeams;
   }
-};
+}

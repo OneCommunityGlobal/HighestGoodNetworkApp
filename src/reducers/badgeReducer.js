@@ -25,7 +25,8 @@ const badgeInitial = {
   badgeCount: 0,
 };
 
-export const badgeReducer = (state = badgeInitial, action) => {
+// eslint-disable-next-line default-param-last
+export default function badgeReducer(state = badgeInitial, action) {
   switch (action.type) {
     case GET_ALL_BADGE_DATA:
       return { ...state, allBadgeData: action.allBadges };
@@ -37,7 +38,9 @@ export const badgeReducer = (state = badgeInitial, action) => {
     case REMOVE_SELECT_BADGE:
       return {
         ...state,
-        selectedBadges: state.selectedBadges.filter(id => id !== action.badgeId),
+        selectedBadges: state.selectedBadges.filter(
+          (id) => id !== action.badgeId
+        ),
       };
     case GET_BADGE_COUNT:
       return {
@@ -51,7 +54,13 @@ export const badgeReducer = (state = badgeInitial, action) => {
         badgeCount: action.payload,
       };
     case CLEAR_NAME_AND_SELECTED:
-      return { ...state, selectedBadges: [], firstName: '', lastName: '', userId: '' };
+      return {
+        ...state,
+        selectedBadges: [],
+        firstName: '',
+        lastName: '',
+        userId: '',
+      };
     case CLEAR_SELECTED:
       return { ...state, selectedBadges: [] };
     case GET_FIRST_NAME:
@@ -61,10 +70,15 @@ export const badgeReducer = (state = badgeInitial, action) => {
     case GET_USER_ID:
       return { ...state, userId: action.userId };
     case GET_MESSAGE:
-      return { ...state, message: action.message, alertVisible: true, color: action.color };
+      return {
+        ...state,
+        message: action.message,
+        alertVisible: true,
+        color: action.color,
+      };
     case CLOSE_ALERT:
       return { ...state, alertVisible: false };
     default:
       return state;
   }
-};
+}

@@ -1,23 +1,27 @@
-import { GET_EQUIPMENT_BY_ID, SET_EQUIPMENTS } from "constants/bmdashboard/equipmentConstants";
+import {
+  GET_EQUIPMENT_BY_ID,
+  SET_EQUIPMENTS,
+} from 'constants/bmdashboard/equipmentConstants';
 
 const defaultState = {
   equipmentslist: [],
-  singleEquipment: {}
-}
+  singleEquipment: {},
+};
 
-export const equipmentReducer = (state = defaultState, action) => {
+// eslint-disable-next-line default-param-last
+export default function equipmentReducer(state = defaultState, action) {
   switch (action.type) {
     case GET_EQUIPMENT_BY_ID:
       return {
         ...state,
-        singleEquipment: action.payload
+        singleEquipment: action.payload,
       };
     case SET_EQUIPMENTS:
       return {
         ...state,
-        equipmentslist: action.payload
+        equipmentslist: action.payload,
       };
     default:
-      return state; 
+      return state;
   }
-};
+}

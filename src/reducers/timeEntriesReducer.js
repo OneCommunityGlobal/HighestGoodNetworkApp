@@ -13,7 +13,8 @@ const initialState = {
   period: [],
 };
 
-export const timeEntriesReducer = (state = initialState, action) => {
+// eslint-disable-next-line default-param-last
+export default function timeEntriesReducer(state = initialState, action) {
   switch (action.type) {
     case GET_TIME_ENTRIES_WEEK:
       return {
@@ -39,4 +40,4 @@ export const timeEntriesReducer = (state = initialState, action) => {
     default:
       return state;
   }
-};
+}

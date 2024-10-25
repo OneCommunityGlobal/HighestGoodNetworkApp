@@ -1,16 +1,17 @@
-import * as types from "../constants/ownerMessageConstants";
+import * as types from '../constants/ownerMessageConstants';
 
 const initialState = {
   message: '',
   standardMessage: '',
 };
 
-export const ownerMessageReducer = (state = initialState, action) => {
-  switch(action.type) {
+// eslint-disable-next-line default-param-last
+export default function ownerMessageReducer(state = initialState, action) {
+  switch (action.type) {
     case types.UPDATE_OWNER_MESSAGE:
       return action.payload;
-      
-    default: 
+
+    default:
       return state;
   }
 }

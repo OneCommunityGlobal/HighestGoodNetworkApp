@@ -1,4 +1,4 @@
-import * as types from './../constants/timeOffRequestConstants';
+import * as types from '../constants/timeOffRequestConstants';
 
 const initialState = {
   requests: {},
@@ -11,7 +11,8 @@ const initialState = {
   error: null,
 };
 
-export const timeOffRequestsReducer = (state = initialState, action) => {
+// eslint-disable-next-line default-param-last
+export default function timeOffRequestsReducer(state = initialState, action) {
   switch (action.type) {
     case types.FETCH_TIME_OFF_REQUESTS_SUCCESS:
       return {
@@ -25,7 +26,7 @@ export const timeOffRequestsReducer = (state = initialState, action) => {
       };
     case types.FETCH_TIME_OFF_REQUESTS_FAILURE:
       return { ...state, requests: {}, error: action.payload };
-    case types.ADD_TIME_OF_REQUEST:
+    case types.ADD_TIME_OF_REQUEST: {
       const key = action.payload.requestFor;
       const updatedKeyRequests = [...(state.requests[key] || []), action.payload];
       return {
@@ -35,13 +36,14 @@ export const timeOffRequestsReducer = (state = initialState, action) => {
           [key]: updatedKeyRequests,
         },
       };
-    case types.UPDATE_TIME_OF_REQUEST:
+    }
+    case types.UPDATE_TIME_OF_REQUEST: {
       const id = action.payload.requestFor;
       return {
         ...state,
         requests: {
           ...state.requests,
-          [id]: state.requests[id].map(request => {
+          [id]: state.requests[id].map((request) => {
             if (request._id === action.payload._id) {
               return {
                 ...request,
@@ -52,22 +54,24 @@ export const timeOffRequestsReducer = (state = initialState, action) => {
           }),
         },
       };
-    case types.DELETE_TIME_OF_REQUEST:
+    }
+    case types.DELETE_TIME_OF_REQUEST: {
       const { requestFor, _id } = action.payload;
       return {
         ...state,
         requests: {
           ...state.requests,
-          [requestFor]: state.requests[requestFor].filter(request => request._id !== _id),
+          [requestFor]: state.requests[requestFor].filter(
+            (request) => request._id !== _id
+          ),
         },
       };
-    case types.ADD_IS_ON_TIME_OFF_REQUESTS: {
+    }
+    case types.ADD_IS_ON_TIME_OFF_REQUESTS:
       return { ...state, onTimeOff: action.payload, error: null };
-    }
-    case types.ADD_GOING_ON_TIME_OFF_REQUESTS: {
+    case types.ADD_GOING_ON_TIME_OFF_REQUESTS:
       return { ...state, goingOnTimeOff: action.payload, error: null };
-    }
-    case types.TIME_OFF_REQUEST_DETAIL_MODAL_OPEN: {
+    case types.TIME_OFF_REQUEST_DETAIL_MODAL_OPEN:
       return {
         ...state,
         timeOffModal: {
@@ -77,8 +81,7 @@ export const timeOffRequestsReducer = (state = initialState, action) => {
         },
         error: null,
       };
-    }
-    case types.TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE: {
+    case types.TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE:
       return {
         ...state,
         timeOffModal: {
@@ -88,8 +91,7 @@ export const timeOffRequestsReducer = (state = initialState, action) => {
         },
         error: null,
       };
-    }
     default:
       return state;
   }
-};
+}

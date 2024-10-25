@@ -1,4 +1,8 @@
-import { GET_USER_PROFILE, EDIT_USER_PROFILE, GET_USER_TASKS } from '../constants/userProfile';
+import {
+  GET_USER_PROFILE,
+  EDIT_USER_PROFILE,
+  GET_USER_TASKS,
+} from '../constants/userProfile';
 
 const initialUserProfileState = {
   firstName: '',
@@ -14,7 +18,11 @@ export const updateObject = (oldObject, updatedProperties) => {
   };
 };
 
-export const userProfileByIdReducer = (userProfile = initialUserProfileState, action) => {
+// Adjusted parameter order to place the default parameter last
+export const userProfileByIdReducer = (
+  action,
+  userProfile = initialUserProfileState
+) => {
   if (action.type === GET_USER_PROFILE) {
     return action.payload;
   }
@@ -30,7 +38,8 @@ export const userProfileByIdReducer = (userProfile = initialUserProfileState, ac
   return userProfile;
 };
 
-export const userTaskByIdReducer = (userTask = [], action) => {
+// Adjusted parameter order
+export const userTaskByIdReducer = (action, userTask = []) => {
   if (action.type === GET_USER_TASKS) {
     return action.payload;
   }

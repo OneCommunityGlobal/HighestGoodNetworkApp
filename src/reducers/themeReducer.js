@@ -2,7 +2,8 @@ const initialState = {
   darkMode: false,
 };
 
-export const themeReducer = (state = initialState, action) => {
+// eslint-disable-next-line default-param-last
+export default function themeReducer(state = initialState, action) {
   switch (action.type) {
     case 'TOGGLE_THEME':
       return {
@@ -12,4 +13,4 @@ export const themeReducer = (state = initialState, action) => {
     default:
       return state;
   }
-};
+}

@@ -1,4 +1,4 @@
-import * as types from "../constants/popupEditorConstants";
+import * as types from '../constants/popupEditorConstants';
 
 const allPopupEditorInital = {
   fetching: false,
@@ -8,7 +8,8 @@ const allPopupEditorInital = {
   error: '',
 };
 
-export const popupEditorReducer = (allPopup = allPopupEditorInital, action) => {
+// eslint-disable-next-line default-param-last
+export default function popupEditorReducer(allPopup = allPopupEditorInital, action) {
   switch (action.type) {
     case types.RECEIVE_POPUP:
       return {
@@ -26,6 +27,7 @@ export const popupEditorReducer = (allPopup = allPopupEditorInital, action) => {
         fetching: false,
         error: 'none',
       };
+    default:
+      return allPopup;
   }
-  return allPopup;
-};
+}

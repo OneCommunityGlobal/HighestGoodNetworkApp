@@ -2,7 +2,8 @@ import { GET_ERRORS, CLEAR_ERRORS } from '../constants/errors';
 
 const initialState = {};
 
-export const errorsReducer = (state = initialState, action) => {
+// eslint-disable-next-line default-param-last
+export default function errorsReducer(state = initialState, action) {
   switch (action.type) {
     case GET_ERRORS:
       return action.payload;
@@ -11,4 +12,4 @@ export const errorsReducer = (state = initialState, action) => {
     default:
       return state;
   }
-};
+}

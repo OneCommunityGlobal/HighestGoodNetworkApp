@@ -4,7 +4,8 @@ import {
   DELETE_WARNINGS_BY_USER_ID,
 } from '../constants/warning';
 
-export const warningsByUserIdReducer = (state = [], action) => {
+// eslint-disable-next-line default-param-last
+export default function warningsByUserIdReducer(state = [], action) {
   switch (action.type) {
     case GET_WARNINGS_BY_USER_ID:
       return action.payload;
@@ -21,4 +22,4 @@ export const warningsByUserIdReducer = (state = [], action) => {
     default:
       return state;
   }
-};
+}

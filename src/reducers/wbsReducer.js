@@ -1,4 +1,4 @@
-import * as types from "../constants/WBS";
+import * as types from '../constants/WBS';
 
 const allWBSInital = {
   fetching: false,
@@ -7,7 +7,8 @@ const allWBSInital = {
   error: '',
 };
 
-export const wbsReducer = (allWBS = allWBSInital, action) => {
+// eslint-disable-next-line default-param-last
+export default function wbsReducer(allWBS = allWBSInital, action) {
   switch (action.type) {
     case types.FETCH_WBS_START:
       return { ...allWBS, fetched: false, fetching: true, error: 'none' };
@@ -25,13 +26,17 @@ export const wbsReducer = (allWBS = allWBSInital, action) => {
       return { ...allWBS, WBSItems: [action.wbs, ...allWBS.WBSItems] };
     case types.ADD_NEW_WBS_ERROR:
       return { ...allWBS, fetched: true, fetching: false, error: action.err };
-    case types.DELETE_WBS:
-      const index = allWBS.WBSItems.findIndex(wbs => wbs._id == action.wbsId);
+    case types.DELETE_WBS: {
+      const index = allWBS.WBSItems.findIndex((wbs) => wbs._id === action.wbsId);
       return {
         ...allWBS,
-        WBSItems: [...allWBS.WBSItems.slice(0, index), ...allWBS.WBSItems.slice(index + 1)],
+        WBSItems: [
+          ...allWBS.WBSItems.slice(0, index),
+          ...allWBS.WBSItems.slice(index + 1),
+        ],
       };
+    }
     default:
       return allWBS;
   }
-};
+}

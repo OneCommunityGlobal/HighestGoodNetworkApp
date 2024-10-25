@@ -1,4 +1,4 @@
-import * as types from "../constants/projectMembership";
+import * as types from '../constants/projectMembership';
 
 const allMembershipInital = {
   projectName: '',
@@ -9,7 +9,8 @@ const allMembershipInital = {
   error: '',
 };
 
-export const projectMembershipReducer = (allMembership = allMembershipInital, action) => {
+// eslint-disable-next-line default-param-last
+export default function projectMembershipReducer(allMembership = allMembershipInital, action) {
   switch (action.type) {
     case types.FETCH_MEMBERS_START:
       return { ...allMembership, fetched: false, fetching: true, error: 'none' };
@@ -39,8 +40,10 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
       return { ...allMembership, members: [action.member, ...allMembership.members] };
     case types.ADD_NEW_MEMBER_ERROR:
       return { ...allMembership, fetched: true, fetching: false, error: action.err };
-    case types.DELETE_MEMBER:
-      const indexMember = allMembership.members.findIndex(member => member._id === action.userId);
+    case types.DELETE_MEMBER: {
+      const indexMember = allMembership.members.findIndex(
+        (member) => member._id === action.userId
+      );
       return {
         ...allMembership,
         members: [
@@ -48,8 +51,11 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
           ...allMembership.members.slice(indexMember + 1),
         ],
       };
-    case types.REMOVE_FOUND_USER:
-      const indexUser = allMembership.foundUsers.findIndex(user => user._id === action.userId);
+    }
+    case types.REMOVE_FOUND_USER: {
+      const indexUser = allMembership.foundUsers.findIndex(
+        (user) => user._id === action.userId
+      );
       return {
         ...allMembership,
         foundUsers: [
@@ -57,7 +63,8 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
           ...allMembership.foundUsers.slice(indexUser + 1),
         ],
       };
+    }
     default:
       return allMembership;
   }
-};
+}

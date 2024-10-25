@@ -1,12 +1,14 @@
-import * as types from './../constants/mouseoverTextConstants';
+import * as types from '../constants/mouseoverTextConstants';
 
 const initialState = null;
 
-export const mouseoverTextReducer = (state = initialState, action) => {
+// eslint-disable-next-line default-param-last
+export default function mouseoverTextReducer(state = initialState, action) {
   switch (action.type) {
-    case types.GET_MOUSEOVER_TEXT:
+    case types.GET_MOUSEOVER_TEXT: {
       const data = action.payload;
       return data;
+    }
 
     case types.CREATE_MOUSEOVER_TEXT:
       return state;
@@ -17,4 +19,4 @@ export const mouseoverTextReducer = (state = initialState, action) => {
     default:
       return state;
   }
-};
+}

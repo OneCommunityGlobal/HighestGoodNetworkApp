@@ -6,7 +6,8 @@ const initialState = {
   error: null,
 };
 
-export const totalOrgSummaryReducer = (state = initialState, action) => {
+// eslint-disable-next-line default-param-last
+export default function totalOrgSummaryReducer(state = initialState, action) {
   switch (action.type) {
     case actions.FETCH_TOTAL_ORG_SUMMARY_BEGIN:
       return {
@@ -32,4 +33,4 @@ export const totalOrgSummaryReducer = (state = initialState, action) => {
     default:
       return state;
   }
-};
+}

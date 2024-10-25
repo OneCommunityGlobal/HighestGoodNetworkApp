@@ -1,8 +1,9 @@
-import GET_BM_PROJECTS from "constants/bmdashboard/projectConstants"
+import GET_BM_PROJECTS from "constants/bmdashboard/projectConstants";
 
-export const bmProjectReducer = (materials = [], action) => {
-  if(action.type === GET_BM_PROJECTS) {
-    return action.payload
+// eslint-disable-next-line default-param-last
+export default function bmProjectReducer(materials = [], action) {
+  if (action.type === GET_BM_PROJECTS) {
+    return action.payload;
   }
-  return materials
+  return materials;
 }
