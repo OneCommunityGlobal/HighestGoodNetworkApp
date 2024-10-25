@@ -40,6 +40,9 @@ function TotalTeamReport(props) {
       // const allTeamMembersPromises = teamList.map(team => dispatch(getTeamMembers(team._id)));
       // const allTeamMembers = await Promise.all(allTeamMembersPromises);
       try {
+        if(teamList.length==0 || teamList===undefined || teamList ===null){
+          return;
+        }
         const allTeamsMembers=await axios.post(process.env.REACT_APP_APIENDPOINT+'/team/reports',teamList);
         const teamUserList = allTeamsMembers.data.map((team) => ({
           teamId: team._id,
@@ -504,10 +507,11 @@ const groupedDate = useMemo(() => {
     );
   };
 
-
+  var condition= !totalTeamReportDataReady && !allTeams && !teamList && !allTeams.length==0 && !teamList.length==0 && !allTeamsData && !userProfiles && !allTimeEntries.length==0
   return (
     <div>
-      {!totalTeamReportDataReady && allTeams!==null && allTeams!==undefined? (
+      {condition
+      ? (
         <div style={{ textAlign: 'center' }}>
         <Loading align="center" darkMode={darkMode}/>
         <div
