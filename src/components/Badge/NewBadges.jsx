@@ -5,25 +5,22 @@ import './Badge.css';
 
 function NewBadges(props) {
   const filterBadges = allBadges => {
-    try {
-      const filteredList = allBadges.filter(
-        value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
-      );
+    const filteredList = allBadges.filter(
+      value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
+    );
 
-      filteredList &&
-        filteredList.sort((a, b) => {
-          if (a?.badge?.ranking === 0) return 1;
-          if (b?.badge?.ranking === 0) return -1;
-          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
-          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
-          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
-          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
-          return 0;
-        });
-      return filteredList;
-    } catch (error) {
-      console.log(error);
+    if (filteredList) {
+      filteredList.sort((a, b) => {
+        if (a?.badge?.ranking === 0) return 1;
+        if (b?.badge?.ranking === 0) return -1;
+        if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+        if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+        if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+        if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
+        return 0;
+      });
     }
+    return filteredList;
   };
 
   const filteredBadges = filterBadges(props.badges);
@@ -62,7 +59,7 @@ function NewBadges(props) {
                 count={value?.count}
                 badgeData={value?.badge}
                 index={index}
-                key={index}
+                key={value?.badge?.id || index}
               />
             ))}
           </div>
