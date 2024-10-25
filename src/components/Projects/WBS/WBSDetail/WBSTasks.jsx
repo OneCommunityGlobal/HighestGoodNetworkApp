@@ -65,6 +65,8 @@ function WBSTasks(props) {
       case 'active': return tasks.filter(task => ['Active', 'Started'].includes(task.status))
       case 'inactive': return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status))
       case 'complete': return tasks.filter(task => task.status === 'Complete')
+      case 'paused': return tasks.filter(task => task.status === 'Paused');
+
     }
   }
 
@@ -278,6 +280,16 @@ function WBSTasks(props) {
           >
             Active
           </Button>
+        
+          <Button
+         color="info"
+        size="sm"
+        onClick={() => setFilterState('paused')}
+       className="ml-2"
+       style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Paused
+        </Button>
           <Button
             color="warning"
             size="sm"
