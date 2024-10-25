@@ -158,30 +158,40 @@
 }
 
 .table-row {
-  /* These rules serve as a replacement to `position: relative` which 
-  does not work as expected on table elements in Safari */
-  transform: translate(0);
-  clip-path: inset(0);
+  position: relative;
+}
+
+.hidden {
+  visibility: hidden;
 }
 
 .taking-time-off-content-div {
   background-color: rgba(0, 0, 25, 0.7);
-  position: absolute;
-  width: 100%;
   height: 100%;
-  top: 1px;
+  justify-items: center;
+  align-items: center;
+  text-align: center;
+  position: absolute;
+  top: 0;
   left: 0;
+  width: 100%;
+  z-index: 10;
   display: flex;
   justify-content: center;
+  align-items: center;
 }
 
-.taking-time-off-content-alignment {
-  display: flex;
-  align-items: center;
-  height: min-content;
-  margin-top: 40px;
-  margin-right: 20px;
-  margin-left: 20px;
+.row-content {
+  position: relative;
+  height: 100%;
+}
+
+.no-bottom-margin {
+  margin-bottom: 0 !important;
+}
+
+.remove-padding {
+  padding: 0 !important;
 }
 
 .taking-time-off-table-div:hover {
@@ -258,7 +268,6 @@
   border: 1px solid white;
   padding: 7px;
   border-radius: 6px;
-  text-wrap: nowrap;
 }
 
 .taking-time-off-content-btn:hover {
@@ -298,25 +307,31 @@
 
 .compress-time-off-detail-button{
   color: white;
-  position: absolute;
-  right: 1px;
-  top: 1px;
   border: none;
   background-color: transparent;
   border-radius: 5px;
+  justify-self: end;
+  position: absolute;
+  bottom: 1px;
+  right: 1px;
 }
 
 .compress-time-off-detail-button:hover,.expand-time-off-detail-button:hover{
   background-color: rgba(0, 0, 25, 0.6);
 }
 
+.grid-container {
+  display: grid;
+  grid-template-rows: 1fr auto;
+}
+
 .expand-time-off-detail-button{
   color: white;
-  position: absolute;
-  right: 1px;
-  top: 1px;
   background-color: rgba(0, 0, 25, 0.7);
   border-radius: 5px;
+  justify-self: end;
+  margin-right: -12px;
+  margin-bottom: -12px;
 }
 
 .time-off-detail-modal-card-container{
@@ -414,6 +429,9 @@
     margin-bottom: 3px;
   }
 
+  .team-member-tasks-bell {
+    margin-right: 0;
+  }
 }
 
 @media only screen and (max-width: 768px) { /* Adjust 768px to the breakpoint you want */
@@ -491,6 +509,11 @@
   .deadlineCount {
     right: 2px;
   }
+
+  .expand-time-off-detail-button {
+    margin-right: 0;
+    margin-bottom: 0;
+  }
 }
 
 @media only screen and (min-width: 768px) {
@@ -504,6 +527,10 @@
 
   .team-member-tasks h1 {
     font-size: 28px;
+  }
+
+  .remove-child-borders > td {
+    border-top-width: 0 !important;
   }
 }
 

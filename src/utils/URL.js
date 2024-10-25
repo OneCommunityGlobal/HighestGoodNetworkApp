@@ -12,6 +12,7 @@ export const ENDPOINTS = {
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) => `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   USERS_ALLTEAMCODE_CHANGE : `${APIEndpoint}/AllTeamCodeChanges`,
+  USER_PROFILE_BASIC_INFO : `${APIEndpoint}/userProfile/basicInfo`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
@@ -40,6 +41,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
   TIME_ENTRIES_REPORTS: `${APIEndpoint}/TimeEntry/reports`,
+  TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT: `${APIEndpoint}/TimeEntry/reports/projects`,
+  TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT: `${APIEndpoint}/TimeEntry/reports/people`,
   TIME_ENTRIES_LOST_USER_LIST: `${APIEndpoint}/TimeEntry/lostUsers`,
   TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
