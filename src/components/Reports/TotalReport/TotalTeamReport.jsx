@@ -507,7 +507,7 @@ const groupedDate = useMemo(() => {
 
   return (
     <div>
-      {!totalTeamReportDataReady ? (
+      {!totalTeamReportDataReady && allTeams!==null && allTeams!==undefined? (
         <div style={{ textAlign: 'center' }}>
         <Loading align="center" darkMode={darkMode}/>
         <div
