@@ -22,7 +22,6 @@ src/components/common/**
 src/components/Header/**
 src/components/ProfileLinks/**
 src/components/Projects/**
-src/components/Reports/**
 src/components/SetupProfile/**
 src/components/SummaryBar/**
 src/components/SummaryManagement/**

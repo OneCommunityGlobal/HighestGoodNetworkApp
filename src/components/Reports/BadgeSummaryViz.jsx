@@ -19,10 +19,10 @@ import {
   DropdownItem,
   UncontrolledTooltip
 } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';
-import { useSelector } from 'react-redux';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -31,23 +31,18 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
   const [sortedBadges, setSortedBadges] = useState([]);
 
   useEffect(() => {
-    try {
-      if (badges && badges.length) {
-        const sortBadges = [...badges].sort((a, b) => {
-          if (a?.badge?.ranking === 0) return 1;
-          if (b?.badge?.ranking === 0) return -1;
-          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
-          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
-          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
-          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
-          return 0;
-        });
-        setSortedBadges(sortBadges);
-      }
-    } catch (error) {
-       console.log(error);
+    if (badges && badges.length) {
+      const sortBadges = [...badges].sort((a, b) => {
+        if (a?.badge?.ranking === 0) return 1;
+        if (b?.badge?.ranking === 0) return -1;
+        if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+        if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+        if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+        if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
+        return 0;
+      });
+      setSortedBadges(sortBadges);
     }
-   
   }, [badges]);
 
   const toggle = () => setIsOpen(prev => !prev);
@@ -119,8 +114,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                               : value.lastModified.toLocaleString().substring(0, 10)}
                           </td>
                           <td style={{ display: 'flex', alignItems: 'center' }}>
-                            <>
-                              {' '}
+                            {' '}
                               <UncontrolledDropdown className="me-2" direction="down">
                                 <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                                   Dates
@@ -149,8 +143,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                 </UncontrolledTooltip>
                               </>)
                               : null
-                              } 
-                            </>
+                              }
                           </td>
                           <td>{value.count}</td>
                         </tr>
