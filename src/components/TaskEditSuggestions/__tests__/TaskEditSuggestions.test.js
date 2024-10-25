@@ -4,6 +4,7 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import * as reduxHooks from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom'; // Import MemoryRouter
 import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from '../actions';
 import { waitFor } from '@testing-library/react';
 import { themeMock } from '__tests__/mockStates';
@@ -61,7 +62,9 @@ describe('TaskEditSuggestions', () => {
   it('renders correctly with initial state', () => {
     render(
       <Provider store={store}>
-        <TaskEditSuggestions />
+        <MemoryRouter>
+          <TaskEditSuggestions />
+        </MemoryRouter>
       </Provider>
     );
 
@@ -76,7 +79,9 @@ describe('TaskEditSuggestions', () => {
   it('dispatches toggleDateSuggestedSortDirection on date header click', () => {
     render(
       <Provider store={store}>
-        <TaskEditSuggestions />
+        <MemoryRouter>
+          <TaskEditSuggestions />
+        </MemoryRouter>
       </Provider>
     );
     fireEvent.click(screen.getByText(/Date Suggested/i));
@@ -86,7 +91,9 @@ describe('TaskEditSuggestions', () => {
   it('dispatches toggleUserSortDirection on user header click', () => {
     render(
       <Provider store={store}>
-        <TaskEditSuggestions />
+        <MemoryRouter>
+          <TaskEditSuggestions />
+        </MemoryRouter>
       </Provider>
     );
     const userHeader = screen.getByRole('columnheader', { name: /User/i });
@@ -154,7 +161,9 @@ describe('TaskEditSuggestions loading', () => {
     
     render(
       <Provider store={testStore}>
-        <TaskEditSuggestions />
+        <MemoryRouter>
+          <TaskEditSuggestions />
+        </MemoryRouter>
       </Provider>
     );
     

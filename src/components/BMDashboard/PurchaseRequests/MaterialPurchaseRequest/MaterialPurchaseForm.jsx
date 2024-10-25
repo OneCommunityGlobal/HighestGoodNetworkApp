@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
 import { fetchMaterialTypes } from 'actions/bmdashboard/invTypeActions';
 import { purchaseMaterial } from 'actions/bmdashboard/materialsActions';
@@ -17,6 +19,14 @@ const formLabels = {
 };
 
 function MaterialPurchaseForm() {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/materials/purchase')) {
+      document.title = 'Materials Purchase Request Form';
+    }
+  }, [location]);
+
   return (
     <PurchaseForm
       fetchPrimaryDataAction={fetchBMProjects}

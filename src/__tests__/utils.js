@@ -1,6 +1,7 @@
 import React from 'react';
 import { render as rtlRender } from '@testing-library/react';
 import { render as enzymeRender } from 'enzyme';
+import { MemoryRouter } from 'react-router-dom';
 import { createStore, applyMiddleware, compose } from 'redux';
 import { Provider } from 'react-redux';
 import { createMemoryHistory } from 'history';
@@ -24,7 +25,7 @@ export function renderWithEnzymeProvider(
   ui,
   { initialState, store = createStore(reducer), ...renderOptions } = {},
 ) {
-  return enzymeRender(<Provider store={store}>{ui}</Provider>);
+  return enzymeRender( <MemoryRouter><Provider store={store}>{ui}</Provider></MemoryRouter>);
 }
 
 // Helper function

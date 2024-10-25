@@ -23,6 +23,11 @@ export class Login extends Form {
   };
 
   componentDidMount() {
+    const { location } = this.props;
+    // Set the tab title based on the current path
+    if (location.pathname.includes('/login')) {
+      document.title = 'HGN APP Login';
+    }
     if (this.props.auth.isAuthenticated) {
       this.props.history.push('/');
     }

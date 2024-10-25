@@ -12,11 +12,16 @@ import { set } from 'lodash';
 const SubscribePage = () => {
   const dispatch = useDispatch();
   const query = new URLSearchParams(useLocation().search);
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const [confirmationStatus, setConfirmationStatus] = useState(false);
   useEffect(() => {
+    // Set the tab title based on the current path
+    if (location.pathname.includes('/email-unsubscribe')) {
+      document.title = 'Email Unsubscribe';
+    }
     const email = query.get('email');
     if (email) {
       removeNonHgnUserEmailSubscription(email).then(result => {

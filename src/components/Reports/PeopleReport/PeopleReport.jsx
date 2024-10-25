@@ -123,6 +123,9 @@ class PeopleReport extends Component {
           ...timeEntries,
         },
       });
+    // Set the document title dynamically with the person's name
+    const fullName = `${userProfile.firstName} ${userProfile.lastName}`.trim();
+    document.title = fullName ? `People Report - ${fullName}` : 'People Report';
     }
   }
 

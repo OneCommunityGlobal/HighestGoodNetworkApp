@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { fetchBMProjects } from 'actions/bmdashboard/projectActions';
 import { fetchConsumableTypes } from 'actions/bmdashboard/invTypeActions';
 import { BsInfoCircle } from 'react-icons/bs';
@@ -11,6 +12,14 @@ export default function PurchaseConsumable() {
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
   const [isError, setIsError] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/consumables/purchase')) {
+      document.title = 'Purchase Request Consumables';
+    }
+  }, [location]);
 
   useEffect(() => {
     dispatch(fetchBMProjects());

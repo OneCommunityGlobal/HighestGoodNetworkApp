@@ -2,7 +2,7 @@ import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import { Provider } from 'react-redux';
 import { render, screen, waitFor } from '@testing-library/react';
-import { BrowserRouter, Router } from 'react-router-dom';
+import { BrowserRouter, Router, MemoryRouter } from 'react-router-dom';
 import userEvent from '@testing-library/user-event';
 import { createMemoryHistory } from 'history';
 import BMDashboard from '../BMDashboard';
@@ -80,7 +80,9 @@ describe('BMDashboard Tests', () => {
   it('Renders BMDashboard and checks for header', () => {
     render(
       <Provider store={store}>
-        <BMDashboard />
+        <MemoryRouter>
+          <BMDashboard />
+        </MemoryRouter>
       </Provider>,
     );
     expect(screen.getByText('Building and Inventory Management Dashboard')).toBeInTheDocument();
@@ -89,7 +91,9 @@ describe('BMDashboard Tests', () => {
   it('Renders dropdown with project options', async () => {
     render(
       <Provider store={store}>
-        <BMDashboard />
+        <MemoryRouter>
+          <BMDashboard />
+        </MemoryRouter>
       </Provider>,
     );
 

@@ -1,4 +1,5 @@
-import { useParams } from 'react-router-dom';
+import { useEffect } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
 import { Container, Row, Col } from 'reactstrap';
 import LogBar from './LogBar';
 import RentedToolsDisplay from './RentedTools/RentedToolsDisplay';
@@ -8,6 +9,14 @@ import './ProjectDetails.css';
 
 function ProjectDetails() {
   const { projectId } = useParams();
+  const location = useLocation();
+
+  // Set the tab title to "BM Dashboard Project"
+  useEffect(() => {
+    if (location.pathname.includes(`/bmdashboard/projects/${projectId}`)) {
+      document.title = `BM Dashboard Project ${projectId}`;
+    }
+  }, [location, projectId]);
 
   return (
     <Container className="project-details" fluid>

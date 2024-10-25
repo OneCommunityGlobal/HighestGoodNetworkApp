@@ -23,7 +23,12 @@ class UpdatePassword extends Form {
     }));
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    const { location } = this.props;
+    if (location.pathname.includes('/updatepassword')) {
+      document.title = `Update Password`;
+    }
+  }
 
   componentDidUpdate(prevProps) {
     if (prevProps.errors.error !== this.props.errors.error) {

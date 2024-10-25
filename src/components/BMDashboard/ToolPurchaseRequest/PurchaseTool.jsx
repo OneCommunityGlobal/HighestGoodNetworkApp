@@ -1,5 +1,6 @@
 /* eslint-disable import/no-unresolved */
 import { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { BsInfoCircle } from 'react-icons/bs';
 
@@ -13,6 +14,14 @@ export default function PurchaseTool() {
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
   const [isError, setIsError] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/tools/purchase')) {
+      document.title = 'Tools Purchase Request Form';
+    }
+  }, [location]);
 
   useEffect(() => {
     dispatch(fetchBMProjects());

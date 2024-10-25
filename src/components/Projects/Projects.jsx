@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { connect } from 'react-redux';
 import {
   fetchAllProjects,
@@ -161,9 +162,14 @@ const Projects = function(props) {
     await props.fetchAllProjects();
   };
 
+  const location = useLocation();
+  
   useEffect(() => {
+    if (location.pathname.includes('/projects')) {
+      document.title = `Projects`;
+    }
     props.fetchAllProjects();
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     generateProjectList(categorySelectedForSort, showStatus, sortedByName);

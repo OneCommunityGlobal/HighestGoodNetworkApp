@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Row, Col, Container } from 'reactstrap';
 import { connect, useSelector } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
@@ -19,7 +20,7 @@ import {
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { authUser } = props;
+  const { authUser, displayUserProfile } = props;
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
@@ -28,6 +29,18 @@ export function Dashboard(props) {
   );
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
+
+  const firstName = displayUserProfile?.firstName || 'User';
+
+  const location = useLocation();
+
+  // Function to update the document title
+  useEffect(() => {
+    // Only set the title if the user is viewing the Dashboard
+    if (location.pathname.includes('/dashboard') || location.pathname === '/') {
+      document.title = `Dashboard - ${firstName}`;
+    }
+  }, [firstName, location.pathname]);
 
   const toggle = (forceOpen = null) => {
     if (isNotAllowedToEdit) {
@@ -38,10 +51,10 @@ export function Dashboard(props) {
       alert(warningMessage);
       return;
     }
-  
+
     const shouldOpen = forceOpen !== null ? forceOpen : !popup;
     setPopup(shouldOpen);
-  
+
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -49,7 +62,6 @@ export function Dashboard(props) {
       }
     }, 150);
   };
-  
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();

@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import { useDispatch, useSelector, connect } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { Button, Modal, ModalBody, ModalFooter, ModalHeader, Col, Row} from 'reactstrap';
 import { updateInfoCollection } from '../../../actions/information'
 import { boxStyle, boxStyleDark } from 'styles';
@@ -17,6 +18,14 @@ const RoleInfoModal = ({ info, auth}) => {
   const { infoContent, CanRead } = { ...info };
   const [infoContentModal, setInfoContentModal] = useState('');
   const dispatch = useDispatch();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/infoCollections')) {
+      document.title = 'Info Collections';
+    }
+  }, [location]);
 
   useEffect(() => {
     setInfoContentModal(infoContent);

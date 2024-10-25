@@ -12,11 +12,16 @@ import { set } from 'lodash';
 const SubscribePage = () => {
   const dispatch = useDispatch();
   const query = new URLSearchParams(useLocation().search);
+  const location = useLocation();
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [confirmationMessage, setConfirmationMessage] = useState('');
   const [confirmationStatus, setConfirmationStatus] = useState(false);
   useEffect(() => {
+    // Set the tab title based on the current path
+    if (location.pathname.includes('/email-subscribe')) {
+      document.title = 'Email Subscribe';
+    }
     const token = query.get('token');
     if (token) {
       confirmNonHgnUserEmailSubscription(token).then(result => {

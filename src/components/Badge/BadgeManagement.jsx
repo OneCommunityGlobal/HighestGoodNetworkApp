@@ -7,13 +7,18 @@ import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfo
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
+import { useLocation } from 'react-router-dom';
 
 function BadgeManagement(props) {
   const { darkMode, activeTab, setActiveTab, role } = props;
+  const location = useLocation();
 
   useEffect(() => {
-    props.fetchAllBadges(); 
-  }, [props.fetchAllBadges]);
+    if (location.pathname.includes('/badgemanagement')) {
+      document.title = `Badge Management`;
+    }
+    props.fetchAllBadges();
+  }, [props.fetchAllBadges, location.pathname]);
 
   const handleTabChange = tabId => {
     setActiveTab(tabId);

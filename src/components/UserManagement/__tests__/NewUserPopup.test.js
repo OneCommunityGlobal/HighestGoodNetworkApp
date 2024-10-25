@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import configureStore from 'redux-mock-store';
 import { renderWithProvider } from '../../../__tests__/utils';
 import thunk from 'redux-thunk';
+import { MemoryRouter } from 'react-router-dom';
 
 import NewUserPopup from '../NewUserPopup';
 import { themeMock } from '__tests__/mockStates';
@@ -28,7 +29,7 @@ describe('new user popup', () => {
       },
       theme: themeMock,
     });
-    renderWithProvider(<NewUserPopup open onUserPopupClose={onUserPopupClose} />, { store });
+    renderWithProvider(<MemoryRouter><NewUserPopup open onUserPopupClose={onUserPopupClose} /></MemoryRouter>, { store });
   });
   describe('Structure', () => {
     it('should render the modal', () => {

@@ -19,6 +19,7 @@ import * as Message from '../../../../languages/en/messages';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 import { formatDate } from 'utils/formatDate';
+import { useLocation } from 'react-router-dom';
 
 const TINY_MCE_INIT_OPTIONS = 
   {
@@ -40,6 +41,7 @@ function SingleTask(props) {
   const [modalDelete, setModalDelete] = useState(false);
   const toggleModel = () => setModal(!modal);
   const canPostProject = props.hasPermission('postProject');
+  const location = useLocation();
 
   const history = useHistory();
   useEffect(() => {
@@ -54,6 +56,12 @@ function SingleTask(props) {
     };
     fetchTaskData();
   }, [taskId]);
+
+  useEffect(() =>{
+    if (location.pathname.includes('/wbs/tasks')) {
+      document.title = `Task - ${task.taskName}`;
+    }
+  }, [location.pathname, task.taskName]);
 
   const deleteTask = (taskId, taskMother) => {
     props.deleteTask(taskId, taskMother);

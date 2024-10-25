@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { fetchEquipmentById } from 'actions/bmdashboard/equipmentActions';
 import { Button, Form, FormGroup, Label, Container, Row, Col, Input } from 'reactstrap';
 import './UpdateEquipment.css';
@@ -28,6 +29,18 @@ export default function UpdateEquipment() {
   const equipmentDetails = useSelector(state => state.bmEquipments.singleEquipment);
 
   const dispatch = useDispatch();
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (
+      location.pathname.includes('/bmdashboard/tools/') &&
+      location.pathname.includes('/update')
+    ) {
+      document.title = 'Update Tools';
+    }
+  }, [location]);
+
   useEffect(() => {
     if (equipmentId) {
       dispatch(fetchEquipmentById(equipmentId));

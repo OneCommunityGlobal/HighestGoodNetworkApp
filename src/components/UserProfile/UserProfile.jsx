@@ -18,7 +18,7 @@ import {
 } from 'reactstrap';
 import Select from 'react-select';
 import Image from 'react-bootstrap/Image';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import classnames from 'classnames';
 import moment from 'moment';
 import Alert from 'reactstrap/lib/Alert';
@@ -134,6 +134,8 @@ function UserProfile(props) {
 
   const canEditTeamCode = props.hasPermission('editTeamCode');
 
+  const location = useLocation();
+
   /* useEffect functions */
   useEffect(() => {
     loadUserProfile();
@@ -144,6 +146,13 @@ function UserProfile(props) {
     dispatch(getAllTeamCode());
     canEditTeamCode && fetchTeamCodeAllUsers();
   }, []);
+
+  useEffect(() => {
+    // Set the tab title based on the current path and userProfile's first name
+    if (location.pathname.includes('/userprofile') && userProfile && userProfile.firstName) {
+      document.title = `User Profile - ${userProfile.firstName} ${userProfile.lastName}`;
+    }
+  }, [location, userProfile]);
 
   // TO-DO Performance Optimization: Replace fetchTeamCodeAllUsers with getAllTeamCode(), a leener version API to retrieve all team codes (reduce data payload and response time)
   //        Also, replace passing inputAutoComplete, inputAutoStatus, and isLoading to the

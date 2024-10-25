@@ -48,6 +48,11 @@ class Teams extends React.PureComponent {
   }
 
   componentDidMount() {
+    const { location } = this.props; // Access location from props
+
+    if (location.pathname.includes('/teams')) {
+      document.title = `Teams`;
+    }
     // Initiating the teams fetch action.
     this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams)});
     this.props.getAllUserTeams();

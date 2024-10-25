@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 
 import { fetchInvTypeByType } from 'actions/bmdashboard/invTypeActions';
 import { fetchInvUnits } from 'actions/bmdashboard/invUnitActions';
@@ -21,6 +22,14 @@ export function InventoryTypesList(props) {
 
   const [isError, setIsError] = useState(false);
   const [currentTime, setCurrentTime] = useState(new Date());
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/inventorytypes')) {
+      document.title = 'Inventory Types';
+    }
+  }, [location]);
 
   // dispatch inventory type fetch action on load
   useEffect(() => {

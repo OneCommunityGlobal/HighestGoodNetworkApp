@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import { withRouter } from 'react-router';
 import { ENDPOINTS } from 'utils/URL';
 import httpService from 'services/httpService';
@@ -12,8 +13,14 @@ const SetupProfile = ({ match }) => {
   const [linktoken, setLinkToken] = useState('');
   const [email, setEmail] = useState('');
   const [inValidMessage, setInValidMessage] = useState('');
+  const location = useLocation();
 
   useEffect(() => {
+    // Set the tab title to "Profile Setup"
+    if (location.pathname.includes('/ProfileInitialSetup')) {
+      document.title = `Profile Setup`;
+    }
+
     const { token } = match.params;
     setLinkToken(token);
     httpService
@@ -32,7 +39,7 @@ const SetupProfile = ({ match }) => {
         }
         setLoading(false);
       });
-  }, []);
+  }, [location.pathname]);
 
   return (
     <>

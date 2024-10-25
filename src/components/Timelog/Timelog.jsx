@@ -159,6 +159,11 @@ const Timelog = props => {
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
+  useEffect(() => {
+    // Only set the title if the user is viewing the Timelog
+    if (location.pathname.includes('/timelog')) {
+      document.title = `Timelog - ${displayUserProfile.firstName}`;
+}  }, [displayUserProfile.firstName, location.pathname]);
 
   const defaultTab = (data) => {
     const userHaveTask = doesUserHaveTaskWithWBS(data);

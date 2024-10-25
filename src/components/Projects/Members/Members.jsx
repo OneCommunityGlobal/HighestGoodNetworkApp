@@ -4,6 +4,7 @@
  * Display members of the project
  ********************************************************************************/
 import React, { useState, useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
@@ -34,7 +35,14 @@ const Members = props => {
   const canAssignProjectToUsers = props.hasPermission('assignProjectToUsers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
 
+  const location = useLocation();
+
   useEffect(() => {
+    // Only set the title if the user is viewing the Members Page
+    if (location.pathname.includes('/project/members')) {
+        document.title = `Project Members`;
+    }
+  
     const fetchMembers = async () => {
       setIsLoading(true);
       setMembersList([]); 
@@ -42,7 +50,7 @@ const Members = props => {
       setIsLoading(false);
     };
     fetchMembers();
-  }, [projectId]);
+  }, [projectId, location.pathname]);
 
   const assignAll = async () => {
     const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);

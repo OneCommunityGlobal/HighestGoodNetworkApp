@@ -20,6 +20,7 @@ import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
 import { boxStyle, boxStyleDark } from 'styles';
+import { useLocation } from 'react-router-dom';
 
 function WBSTasks(props) {
   /*
@@ -135,7 +136,12 @@ function WBSTasks(props) {
   /*
   * -------------------------------- useEffects -------------------------------- 
   */
+  const location = useLocation();
+
   useEffect(() => {
+    if (location.pathname.includes('/wbs/tasks')) {
+      document.title = `WBS - Details`;
+    }
     const observer = new MutationObserver(ReactTooltip.rebuild);
     const observerOptions = {
       childList: true,
@@ -146,7 +152,7 @@ function WBSTasks(props) {
       observer.disconnect();
       props.emptyTaskItems();
     };
-  }, []);
+  }, [location.pathname]);
 
   useEffect(() => {
     const initialLoad = async () => {

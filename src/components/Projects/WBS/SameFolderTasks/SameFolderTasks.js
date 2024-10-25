@@ -7,6 +7,7 @@ import { Table } from 'reactstrap';
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
 import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
+import { useLocation } from 'react-router-dom';
 
 function SameFolderTasks(props) {
   const { taskId } = props.match.params;
@@ -21,6 +22,7 @@ function SameFolderTasks(props) {
 
   const [projectId, setProjectId] = useState('');
   const [wbsName, setWbsName] = useState('');
+  const location = useLocation();
 
   useEffect(() => {
     const fetchTaskData = async () => {
@@ -54,13 +56,17 @@ function SameFolderTasks(props) {
       }
     };
 
+    if (location.pathname.includes('/wbs/samefoldertasks')) {
+      document.title = `WBS - Sub Folder Tasks`;
+    }
+
     fetchAllTasks();
     fetchWBSData();
 
     return () => {
       isMounted = false;
     };
-  }, [wbsId]);
+  }, [wbsId, location.pathname]);
 
   const fetchAllTasks = async () => {
     try {

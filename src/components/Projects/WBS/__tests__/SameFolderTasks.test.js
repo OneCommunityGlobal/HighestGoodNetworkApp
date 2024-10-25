@@ -3,6 +3,7 @@ import '@testing-library/jest-dom/extend-expect';
 import configureStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 import { Provider } from 'react-redux';
+import { MemoryRouter } from 'react-router-dom';
 import axios from 'axios';
 import SameFolderTasks from '../SameFolderTasks';
 import { ApiEndpoint, ENDPOINTS } from 'utils/URL';
@@ -227,7 +228,9 @@ describe('SameFolderTasks', () => {
   let renderSameFolderTasks = props => {
     render(
       <Provider store={store}>
-        <SameFolderTasks {...props} />
+        <MemoryRouter>
+          <SameFolderTasks {...props} />
+        </MemoryRouter>
       </Provider>,
     );
   };

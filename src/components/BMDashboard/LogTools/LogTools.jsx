@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Input, Button, Table, Form, FormGroup, Label } from 'reactstrap';
 import './LogTools.css';
 import { toast } from 'react-toastify';
@@ -68,6 +68,14 @@ function LogTools() {
       },
     }),
   };
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/tools/log')) {
+      document.title = 'Tools Log';
+    }
+  }, [location]);
 
   useEffect(() => {
     dispatch(fetchToolTypes());

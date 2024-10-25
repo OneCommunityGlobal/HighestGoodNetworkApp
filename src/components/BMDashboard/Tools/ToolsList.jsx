@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { fetchTools } from '../../../actions/bmdashboard/toolActions';
 import ToolItemListView from '../ToolItemList/ToolItemListView';
 import UpdateToolModal from '../UpdateTools/UpdateToolModal';
@@ -9,6 +10,14 @@ function ToolsList() {
   const tools = useSelector(state => state.tools.toolslist);
   const errors = useSelector(state => state.errors);
   const postToolUpdateResult = useSelector(state => state.tools.updateTools);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/tools')) {
+      document.title = 'Tools List';
+    }
+  }, [location]);
 
   useEffect(() => {
     dispatch(fetchTools());

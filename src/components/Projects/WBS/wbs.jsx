@@ -11,14 +11,19 @@ import { NavItem } from 'reactstrap';
 import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
 import { boxStyle, boxStyleDark } from 'styles';
+import { useLocation } from 'react-router-dom';
 
 const WBS = props => {
   const darkMode = props.state.theme.darkMode;
   const projectId = props.match.params.projectId;
+  const location = useLocation();
 
   useEffect(() => {
+    if (location.pathname.includes('/project/wbs')) {
+      document.title = `WBS`;
+    }
     props.fetchAllWBS(projectId);
-  }, [projectId]);
+  }, [projectId, location.pathname]);
 
   return (
     <React.Fragment>

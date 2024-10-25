@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/label-has-associated-control */
 /* eslint-disable no-param-reassign */
-import React, { useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Link, useHistory, useLocation } from 'react-router-dom';
 import { Button, Input } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
@@ -11,6 +11,7 @@ import forgotPassword from '../../services/authorizationService';
 
 const ForgotPassword = React.memo(() => {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const location = useLocation();
 
   const [message, setMessage] = useState({});
   const history = useHistory();
@@ -19,6 +20,13 @@ const ForgotPassword = React.memo(() => {
     lastName: '',
     email: '',
   });
+
+  useEffect(() => {
+    // Set the tab title based on the current path
+    if (location.pathname.includes('/forgotpassword')) {
+      document.title = 'Forgot Password';
+    }
+  }, [location]);
 
   const firstNameSchema = Joi.string()
     .trim()

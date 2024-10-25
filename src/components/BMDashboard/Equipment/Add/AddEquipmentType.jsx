@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useSelector } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { BsInfoCircle } from 'react-icons/bs';
 import BMError from 'components/BMDashboard/shared/BMError';
 import '../../BMDashboard.css';
@@ -11,6 +12,14 @@ export default function AddEquipmentType() {
   const errors = useSelector(state => state.errors);
   const [isError, setIsError] = useState(false);
   const [modal, setModal] = useState(false);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard/equipment/add')) {
+      document.title = 'Add Equipment Type';
+    }
+  }, [location]);
 
   useEffect(() => {
     if (Object.entries(errors).length) {

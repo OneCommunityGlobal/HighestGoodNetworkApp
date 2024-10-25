@@ -78,6 +78,9 @@ class UserManagement extends React.PureComponent {
   }
 
   componentDidMount() {
+    if (this.props.location.pathname.includes('/usermanagement')) {
+      document.title = `User Management`;
+    }
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { Container } from 'reactstrap';
 import { fetchBMProjects } from '../../actions/bmdashboard/projectActions';
 import ProjectsList from './Projects/ProjectsList';
@@ -12,6 +13,15 @@ export function BMDashboard() {
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
+
+  const location = useLocation();
+
+  // Set the tab title to "BM Dashboard"
+  useEffect(() => {
+    if (location.pathname.includes('/bmdashboard')) {
+      document.title = 'BM Dashboard';
+    }
+  }, [location.pathname]);
 
   // fetch projects data on pageload
   useEffect(() => {

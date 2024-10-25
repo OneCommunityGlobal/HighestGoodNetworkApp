@@ -19,7 +19,7 @@ import hasPermission from '../../utils/permissions';
 import { roleOperationLabels } from './PermissionsConst';
 
 function RolePermissions(props) {
-  const { darkMode } = props;
+  const { darkMode, role } = props;
   const [permissions, setPermissions] = useState(props.permissions);
   const [deleteRoleModal, setDeleteRoleModal] = useState(false);
   const [editRoleNameModal, setEditRoleNameModal] = useState(false);
@@ -38,6 +38,11 @@ function RolePermissions(props) {
       : props.auth.user.role !== props.role;
   const canEditRole = isEditableRole && props.hasPermission('putRole');
   const canDeleteRole = isEditableRole && props.hasPermission('deleteRole');
+
+  useEffect(() => {
+    // Set the tab title based on the role name
+    document.title = `Permissions Management - ${role}`;
+  }, [role]);
 
   useEffect(() => {
     setRoleName(props.role);
