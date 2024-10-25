@@ -190,7 +190,7 @@ const TimeEntry = (props) => {
                 <div className="text-muted">Notes:</div>
                 {ReactHtmlParser(notes)}
               </div>
-              <div className="buttons">
+              <div className="d-flex justify-content-end">
                 {((hasATimeEntryEditPermission || isAuthUserAndSameDayEntry) && !cantEditJaeRelatedRecord) && (
                   <button className="mr-3 text-primary">
                     <FontAwesomeIcon icon={faEdit} size="lg" onClick={toggle} />

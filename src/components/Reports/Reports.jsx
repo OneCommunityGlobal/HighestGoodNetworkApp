@@ -4,7 +4,6 @@ import moment from 'moment';
 import { Container, Button } from 'reactstrap';
 import DatePicker from 'react-datepicker';
 import { boxStyle, boxStyleDark } from 'styles';
-import ReactTooltip from 'react-tooltip';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { searchWithAccent } from 'utils/search';
 import { fetchAllProjects } from '../../actions/projects';
@@ -12,7 +11,7 @@ import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamTable from './TeamTable';
 import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
-import { getAllUserProfile } from '../../actions/userManagement';
+import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
 import ReportTableSearchPanel from './ReportTableSearchPanel';
 import 'react-datepicker/dist/react-datepicker.css';
@@ -25,10 +24,11 @@ import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
+import '../Header/DarkMode.css'
+const DATE_PICKER_MIN_DATE = '01/01/2010';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
-
-const DATE_PICKER_MIN_DATE = '01/01/2010';
+import Loading from '../common/Loading';
 
 class ReportsPage extends Component {
   constructor(props) {
@@ -78,7 +78,7 @@ class ReportsPage extends Component {
       activeTab: '1',
       errors: {},
       fetchError: null,
-      loading: true,
+      loading: false,
       teamSearchData: {},
       peopleSearchData: [],
       projectSearchData: {},
@@ -111,7 +111,7 @@ class ReportsPage extends Component {
   async componentDidMount() {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
-    this.props.getAllUserProfile();
+    this.props.getUserProfileBasicInfo();
   }
 
   setFilterStatus(status) {
@@ -165,7 +165,7 @@ class ReportsPage extends Component {
 
   filteredPeopleList = userProfiles => {
     const filteredList = userProfiles.filter(userProfile => {
-      // Applying the search filters before creating each team table data element
+      // Applying the search filters before creating each team table data element 
       if (
         (userProfile.firstName &&
           searchWithAccent(userProfile.firstName, this.state.teamNameSearchText) &&
@@ -308,6 +308,36 @@ class ReportsPage extends Component {
     }));
   }
 
+//   showTotalProject() {
+//     if (this.state.showTotalProject) {
+//       this.setState({
+//         showTotalProject: false,
+//         loading: false,
+//       });
+//       return;
+//     }
+  
+//     this.setState({
+//       loading: true,
+//       showProjects: false,
+//       showPeople: false,
+//       showTeams: false,
+//       showTotalTeam: false,
+//       showTotalPeople: false,
+//       showTotalProject: false,  // Initially hide the report
+//       showAddTimeForm: false,
+//       showAddProjHistory: false,
+//       showAddPersonHistory: false,
+//       showAddTeamHistory: false,
+//     }, () => {
+//       setTimeout(() => {
+//         this.setState({
+//           loading: false,
+//           showTotalProject: true,  // Show the report after loading completes
+//         });
+//       }, 2000);  // Adjust the delay as needed
+//     });
+//   }
   showTotalProject() {
     this.setState(prevState => ({
       showProjects: false,
@@ -322,7 +352,7 @@ class ReportsPage extends Component {
       showAddTeamHistory: false,
     }));
   }
-
+  
   showAddProjHistory() {
     this.setState(prevState => ({
       showProjects: false,
@@ -377,26 +407,27 @@ class ReportsPage extends Component {
   }
 
   render() {
+    const { loading, showTotalProject } = this.state;
     const { darkMode } = this.props.state.theme;
     const userRole = this.props.state.userProfile.role;
     const myRole = this.props.state.auth.user.role;
     const { projects } = this.props.state.allProjects;
     const { allTeams } = this.props.state.allTeamsData;
-    const { userProfiles } = this.props.state.allUserProfiles;
+    const { userProfilesBasicInfo } = this.props.state.allUserProfilesBasicInfo;
     this.state.teamSearchData = this.filteredTeamList(allTeams);
-    this.state.peopleSearchData = this.filteredPeopleList(userProfiles);
+    this.state.peopleSearchData = this.filteredPeopleList(userProfilesBasicInfo);
     this.state.projectSearchData = this.filteredProjectList(projects);
     if (this.state.checkActive === 'true') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === true);
       this.state.projectSearchData = projects.filter(project => project.isActive === true);
-      this.state.peopleSearchData = userProfiles.filter(user => user.isActive === true);
+      this.state.peopleSearchData = userProfilesBasicInfo.filter(user => user.isActive === true);
       this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
     } else if (this.state.checkActive === 'false') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === false);
       this.state.projectSearchData = projects.filter(project => project.isActive === false);
-      this.state.peopleSearchData = userProfiles.filter(user => user.isActive === false);
+      this.state.peopleSearchData = userProfilesBasicInfo.filter(user => user.isActive === false);
       this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
@@ -430,6 +461,12 @@ class ReportsPage extends Component {
         >
           <div className="container-component-category">
             <h2 className="mt-3 mb-5">
+            {/* Loading spinner at the top */}
+            {this.state.loading && (
+            <div className="loading-spinner-top">
+              <Loading align="center" darkMode={darkMode} />
+            </div>
+            )}
               <div className="d-flex align-items-center">
                 <span className="mr-2">Reports Page</span>
                 <EditableInfoModal
@@ -439,6 +476,7 @@ class ReportsPage extends Component {
                   fontSize={26}
                   isPermissionPage
                   className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  darkMode={darkMode}
                 />
               </div>
             </h2>
@@ -522,6 +560,7 @@ class ReportsPage extends Component {
                   maxDate={new Date()}
                   textColor={textColor}
                   onDateChange={this.onDateChange}
+                  darkMode={darkMode}
                 />
                 <div className="total-report-container">
                   <div className="total-report-item">
@@ -537,6 +576,7 @@ class ReportsPage extends Component {
                         role={userRole}
                         fontSize={15}
                         isPermissionPage
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
@@ -553,10 +593,15 @@ class ReportsPage extends Component {
                         role={userRole}
                         fontSize={15}
                         isPermissionPage
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
+                  <div>
                   <div className="total-report-item">
+                    {/* <Button color="info" onClick={this.showTotalProject}>
+                      {this.state.showTotalProject ? 'Hide Total Project Report' : 'Show Total Project Report'}
+                    </Button> */}
                     <Button color="info" onClick={this.showTotalTeam}>
                       {this.state.showTotalTeam
                         ? 'Hide Total Team Report'
@@ -569,9 +614,11 @@ class ReportsPage extends Component {
                         role={userRole}
                         fontSize={15}
                         isPermissionPage
+                        darkMode={darkMode}
                       />
                     </div>
                   </div>
+                </div>
                 </div>
                 {myRole != 'Owner' && (
                   <div className="lost-time-container">
@@ -588,6 +635,7 @@ class ReportsPage extends Component {
                           role={myRole}
                           fontSize={15}
                           isPermissionPage
+                          darkMode={darkMode}
                         />
                       </div>
                     </div>
@@ -604,6 +652,7 @@ class ReportsPage extends Component {
                           role={myRole}
                           fontSize={15}
                           isPermissionPage
+                          darkMode={darkMode}
                         />
                       </div>
                     </div>
@@ -620,6 +669,7 @@ class ReportsPage extends Component {
                           role={myRole}
                           fontSize={15}
                           isPermissionPage
+                          darkMode={darkMode}
                         />
                       </div>
                     </div>
@@ -644,6 +694,7 @@ class ReportsPage extends Component {
                           role={myRole}
                           fontSize={15}
                           isPermissionPage
+                          darkMode={darkMode}
                         />
                       </div>
                     </div>
@@ -662,6 +713,7 @@ class ReportsPage extends Component {
                           role={myRole}
                           fontSize={15}
                           isPermissionPage
+                          darkMode={darkMode}
                         />
                       </div>
                     </div>
@@ -678,6 +730,7 @@ class ReportsPage extends Component {
                           role={myRole}
                           fontSize={15}
                           isPermissionPage
+                          darkMode={darkMode}
                         />
                       </div>
                     </div>
@@ -694,6 +747,7 @@ class ReportsPage extends Component {
                           role={myRole}
                           fontSize={15}
                           isPermissionPage
+                          darkMode={darkMode}
                         />
                       </div>
                     </div>
@@ -716,7 +770,7 @@ class ReportsPage extends Component {
               <TotalProjectReport
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
-                userProfiles={userProfiles}
+                userProfiles={userProfilesBasicInfo}
                 projects={projects}
                 darkMode={darkMode}
               />
@@ -725,15 +779,15 @@ class ReportsPage extends Component {
               <TotalPeopleReport
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
-                userProfiles={userProfiles}
+                userProfiles={userProfilesBasicInfo}
                 darkMode={darkMode}
               />
             )}
-            {this.state.showTotalTeam && (
+             {this.state.showTotalTeam && (
               <TotalTeamReport
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
-                userProfiles={userProfiles}
+                userProfiles={userProfilesBasicInfo}
                 allTeamsData={allTeams}
                 passTeamMemberList={this.setTeamMemberList}
                 savedTeamMemberList={this.state.teamMemberList}
@@ -746,7 +800,7 @@ class ReportsPage extends Component {
                 toggle={this.setAddTime}
                 projects={projects}
                 teams={allTeams}
-                users={userProfiles}
+                users={userProfilesBasicInfo}
               />
             )}
             {this.state.showAddPersonHistory && (
@@ -755,7 +809,7 @@ class ReportsPage extends Component {
                 isOpen={this.state.showAddPersonHistory}
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
-                allData={userProfiles}
+                allData={userProfilesBasicInfo}
                 darkMode={darkMode}
               />
             )}
@@ -791,6 +845,6 @@ const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
   fetchAllProjects,
   getAllUserTeams,
-  getAllUserProfile,
+  getUserProfileBasicInfo,
   fetchAllTasks,
 })(ReportsPage);
