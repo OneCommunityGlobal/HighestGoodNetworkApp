@@ -20,6 +20,14 @@ import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 import { formatDate } from 'utils/formatDate';
 
+const hoursContainerStyle = {
+  display: 'grid',
+  gridTemplateColumns: 'repeat(3, 1fr)', // 3 columns in 1 row
+  gap: '1rem', // Spacing between items
+  justifyContent: 'space-between',
+  alignItems: 'center', // Align items vertically to the center
+};
+
 const TINY_MCE_INIT_OPTIONS = 
   {
     license_key: 'gpl',
@@ -149,6 +157,7 @@ function SingleTask(props) {
           <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <tr>
               <th scope="row">
+                <div className="d-flex">
                 <EditTaskModal
                   key={`editTask_${task._id}`}
                   parentNum={task.num}
@@ -168,7 +177,7 @@ function SingleTask(props) {
                       <Button
                         type="button"
                         size="sm"
-                        className="btn btn-danger mt-1"
+                        className="btn btn-danger"
                         onClick={() => showUpDeleteModal()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -188,6 +197,7 @@ function SingleTask(props) {
                       />
                     </>
                   )}
+                  </div>
               </th>
               <th scope="row">{task.num}</th>
               <td>{task.taskName}</td>
