@@ -55,6 +55,17 @@ function PermissionChangeModal({ userProfile, oldUserProfile }) {
   // permissions that were added to user but are not in new role (newRolePermissions + customAddedPermissions)
   const newRolePermissionsToRemove = customAddedPermissions.filter(permission => !newRolePermissions.includes(permission));
 
+  const formatPermission = permission => {
+    let formattedPermission = '';
+    for (let i = 0; i < permission.length; i++) {
+      if (permission[i] === permission[i].toUpperCase()) {
+        formattedPermission += ' ';
+      }
+      formattedPermission += permission[i];
+    }
+    return formattedPermission.charAt(0).toUpperCase() + formattedPermission.slice(1);
+  };
+  
   async function testUser() {
     console.log('user: ', user);
     console.log('user permissions: ', user.permissions);
@@ -84,13 +95,13 @@ function PermissionChangeModal({ userProfile, oldUserProfile }) {
           {newRolePermissionsToAdd.map(permission => (
             <li key={permission}>
               <input type="checkbox" id={permission} name={permission} value={permission} />
-              <label htmlFor={permission}>{permission}</label>
+              <label htmlFor={permission}>{formatPermission(permission)}</label> (Added)
             </li>
           ))}
           {newRolePermissionsToRemove.map(permission => (
             <li key={permission}>
               <input type="checkbox" id={permission} name={permission} value={permission} />
-              <label htmlFor={permission}>{permission}</label>
+              <label htmlFor={permission}>{formatPermission(permission)}</label> (Removed)
             </li>
           ))}
         </ul>
