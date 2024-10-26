@@ -20,14 +20,6 @@ import { getPopupById } from '../../../../actions/popupEditorAction';
 import { TASK_DELETE_POPUP_ID } from '../../../../constants/popupId';
 import { formatDate } from 'utils/formatDate';
 
-const hoursContainerStyle = {
-  display: 'grid',
-  gridTemplateColumns: 'repeat(3, 1fr)', // 3 columns in 1 row
-  gap: '1rem', // Spacing between items
-  justifyContent: 'space-between',
-  alignItems: 'center', // Align items vertically to the center
-};
-
 const TINY_MCE_INIT_OPTIONS = 
   {
     license_key: 'gpl',
