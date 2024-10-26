@@ -22,7 +22,7 @@ const AddProject = (props) => {
   const [lastTimeoutId, setLastTimeoutId] = useState(null); 
   // toggle modal open/close
   const toggleModal = () => setModal(!modal);
-
+  
   //  project name change and show/hide add button
   const changeNewName = (name) => {
     setNewName(name);
@@ -93,13 +93,13 @@ const AddProject = (props) => {
         //assing project to members in member list
         membersList.map((member =>  props.assignProject(projectId, member._id, 'Assign', member.firstName, member.lastName)));
         
-        props.onProjectAdded()
-        
         toggleModal();
         setNewName('');
         setNewCategory('Unspecified');
         setWbsList([]);
         setMembersList([]);
+
+        props.onProjectAdded()
       } catch (error) {
         console.error("Error adding project:", error);
       }
