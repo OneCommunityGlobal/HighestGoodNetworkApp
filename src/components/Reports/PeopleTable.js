@@ -6,6 +6,10 @@ import { boxStyle, boxStyleDark } from 'styles';
 
 function PeopleTable({ userProfiles, darkMode }) {
   let PeopleList = [];
+  function onStatusClick(person, isActive) {
+    person.isActive = !isActive;
+  }
+  
   if (userProfiles.length > 0) {
     PeopleList = userProfiles
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
@@ -20,19 +24,7 @@ function PeopleTable({ userProfiles, darkMode }) {
               {person.lastName.length > 15 ? `${person.lastName.slice(0, 15)}...` : person.lastName}
             </Link>
           </td>
-          <td className="teams__active--input">
-            <div
-              onClick={() => {
-                person.onStatusClick(person.firstName, person._id, person.isActive);
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  person.onStatusClick(person.firstName, person._id, person.isActive);
-                }
-              }}
-            >
+          <td>
               {person.isActive ? (
                 <div className="isActive">
                   <i className="fa fa-circle" aria-hidden="true" />
@@ -42,7 +34,6 @@ function PeopleTable({ userProfiles, darkMode }) {
                   <i className="fa fa-circle-o" aria-hidden="true" />
                 </div>
               )}
-            </div>
           </td>
           <td className={`${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
             {moment(person.startDate).format('MM-DD-YY')}
