@@ -163,13 +163,23 @@ const Timelog = props => {
 
   const defaultTab = data => {
     const userHaveTask = doesUserHaveTaskWithWBS(data);
+    //change default to time log tab(1) in the following cases:
     const role = authUser.role;
     let tab = 0;
+    /* To set the Task tab as defatult this.userTask is being watched.
+      Accounts with no tasks assigned to it return an empty array.
+      Accounts assigned with tasks with no wbs return and empty array.
+      Accounts assigned with tasks with wbs return an array with that wbs data.
+      The problem: even after unassigning tasks the array keeps the wbs data.
+      That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
+
+    //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
     (role === 'Volunteer' || viewingUser.role === 'Volunteer') && userHaveTask.length > 0
       ? (tab = 0)
       : (role === 'Volunteer' || viewingUser.role === 'Volunteer') && userHaveTask.length === 0
       ? (tab = 1)
       : null;
+    // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
 
     if (!props.isDashboard) {
       tab = 1;
