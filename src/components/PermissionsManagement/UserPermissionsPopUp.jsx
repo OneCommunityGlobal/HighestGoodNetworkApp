@@ -37,6 +37,7 @@ function UserPermissionsPopUp({
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
   const [selectedAccount, setSelectedAccount] = useState('');
+  const [toastShown, setToastShown] = useState(false);
 
   const setToDefault = () => {
     setUserPermissions([]);
@@ -85,10 +86,15 @@ function UserPermissionsPopUp({
     await axios
       .put(url, newUserInfo)
       .then(() => {
-        const SUCCESS_MESSAGE = `Permissions have been updated successfully. Please inform the user to log out and log back in for the new permissions to take effect.`;
+        if(!toastShown){
+        const SUCCESS_MESSAGE = `
+        Permissions have been updated successfully. 
+        Please inform the user to log out and log back in for the new permissions to take effect.`;
         toast.success(SUCCESS_MESSAGE, {
           autoClose: 10000,
         });
+        setToastShown(true);
+      }
         toggle();
       })
       .catch(err => {
@@ -104,6 +110,11 @@ function UserPermissionsPopUp({
   useEffect(() => {
     refInput.current.focus();
   }, []);
+  useEffect(() => {
+    if (!modalStatus) {
+      setToastShown(false);
+    }
+  }, [modalStatus]);
   return (
     <>
       {modalStatus && (

@@ -19,7 +19,7 @@ function ReminderModal({
       </div>
       <div className={`ReminderBody ${darkMode ? 'text-space-cadet' : ''}`}>
         <span>
-        Please log out and log back in to your account, {changedAccount} to apply the changes.
+          Please log out and log back in to your account, {changedAccount} to apply the changes.
         </span>
       </div>
       <div className="ReminderButton">

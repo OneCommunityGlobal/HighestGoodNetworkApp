@@ -64,15 +64,15 @@
   align-items: flex-end;
   padding-bottom: 5px;
   padding-top: 5px;
-  word-wrap: break-word; 
-  overflow-wrap: break-word; 
+  word-wrap: break-word;
+  overflow-wrap: break-word;
   max-width: 100%;
 }
 .permission-label {
   word-break: break-word;
-  white-space: normal; 
-  max-width: calc(100% - 60px); 
-  margin-right: 10px; 
+  white-space: normal;
+  max-width: calc(100% - 60px);
+  margin-right: 10px;
 }
 #info-icon__permissions {
   cursor: pointer;
@@ -151,8 +151,10 @@
 }
 
 .ContainerReminder{
-  width: 300px;
+  width: 90%;
+  max-width: 400px;
   padding: 20px;
+  margin: 0 auto;
   position: fixed;
   top: 30%;
   right: 10%;
@@ -288,5 +290,14 @@
 @media only screen and (min-width: 1900px) {
   .ContainerReminder {
     right: 20%;
+  }
+}
+@media (max-width: 600px) {
+  .ContainerReminder {
+    width: 95%;
+    max-width: none; 
+    padding: 15px; 
+    margin: 20px auto;
+    position: relative;
   }
 }
