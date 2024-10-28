@@ -25,6 +25,7 @@ import {
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
+import { useRef } from 'react';
 
 const parser = (val) => {
   try {
@@ -62,6 +63,7 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
     isActive: false,
     isInactive: false,
   });
+  const hasFetchIds = useRef(new Set());
 
   const [selectedTeams, setSelectedTeams] = useState([]);
 
@@ -77,10 +79,16 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
  
   const getTeamDetails = async (teamId)=>{
      try {
+      
+       if (teamDataLoading ||(team && team._id === match.params.teamId) || hasFetchIds.current.has(teamId)) {
+        return; // Prevent repeated calls if data is already loading or loaded
+       }
         setTeamDataLoading(true);
         const url =  ENDPOINTS.TEAM_BY_ID(teamId);
         const res = await axios.get(url);
-       setTeam(res.data);
+        setTeam(res.data);
+        hasFetchIds.current.add(teamId);
+        setTeamDataLoading(false);
      } catch (error) {
         setTeam(null);
      }
@@ -217,6 +225,9 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
     let isMounted = true; // flag to check component mount status
     const fetchTeamDetails = async (teamId)=>{
        try {
+        if (teamDataLoading || (team && team._id === match.params.teamId)) {
+          return; // Prevent repeated calls if data is already loading or loaded
+         }
           await getTeamDetails(teamId);
        } catch (error) {
          console.log("Error fetching team Details:",error);
