@@ -2,7 +2,10 @@ import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
+// import { MultiSelect } from 'react-multi-select-component';
+
 import 'moment-timezone';
+import moment from 'moment';
 
 import hasPermission from 'utils/permissions';
 
@@ -13,6 +16,7 @@ import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
 import { getTaskAndProjectStats } from 'actions/totalOrgSummary';
 
+import Select from 'react-select';
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -24,6 +28,7 @@ import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
+import DateRangeSelector from './DateRangeSelector';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -65,6 +70,24 @@ const fromDate = calculateFromDate();
 const toDate = calculateToDate();
 const fromOverDate = calculateFromOverDate();
 const toOverDate = calculateToOverDate();
+const comparisonOptions = [
+  {
+    label: 'Week over week',
+    value: 'lastweek',
+  },
+  {
+    label: 'Same week last month',
+    value: 'lastmonth',
+  },
+  {
+    label: 'Same week last year',
+    value: 'lastyear',
+  },
+  {
+    label: 'Do not show comparison data',
+    value: 'nocomparsion',
+  },
+];
 
 const aggregateTimeEntries = userTimeEntries => {
   const aggregatedEntries = {};
@@ -99,6 +122,8 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
+  // const [comparisonOptions,setcomparisonOptions] = useState(option[0]);
+
   const { darkMode, loading, error, allUserProfiles } = props;
 
   const [usersId, setUsersId] = useState([]);
@@ -106,9 +131,30 @@ function TotalOrgSummary(props) {
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
   const [taskProjectHours, setTaskProjectHours] = useState([]);
 
+  const [comparisonWeek, setComparisonWeek] = useState({ startDate: null, endDate: null });
+
   const dispatch = useDispatch();
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+
+  // State to hold the selected date range
+  const [selectedDateRange, setSelectedDateRange] = useState({
+    startDate: moment()
+      .startOf('week')
+      .format('YYYY-MM-DD'),
+    endDate: moment()
+      .endOf('week')
+      .format('YYYY-MM-DD'),
+  });
+
+  const handleDateRangeChange = ({ startDate, endDate }) => {
+    // console.log('Selected Date Range:', startDate, endDate);
+
+    setSelectedDateRange({
+      startDate: moment(startDate).format('YYYY-MM-DD'),
+      endDate: moment(endDate).format('YYYY-MM-DD'),
+    });
+  };
 
   useEffect(() => {
     dispatch(getAllUserProfile());
@@ -158,6 +204,7 @@ function TotalOrgSummary(props) {
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
+
   useEffect(() => {
     async function fetchData() {
       const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
@@ -177,6 +224,73 @@ function TotalOrgSummary(props) {
     }
     fetchData();
   }, [fromDate, toDate, fromOverDate, toOverDate]);
+
+  // useEffect(() => {
+  //   props.getTotalOrgSummary(
+  //     selectedDateRange.startDate,
+  //     selectedDateRange.endDate,
+  //     comparisionWeek.startDate,
+  //     comparisionWeek.endDate,
+  //   );
+  //   props.hasPermission('');
+  // }, [selectedDateRange]);
+
+  useEffect(() => {
+    // props.hasPermission('');
+  }, [selectedDateRange]);
+
+  useEffect(() => {
+    // console.log('API Call Params:', {
+    //   startDate: selectedDateRange.startDate,
+    //   endDate: selectedDateRange.endDate,
+    //   comparisonStartDate: comparisonWeek.startDate,
+    //   comparisonEndDate: comparisonWeek.endDate,
+    // });
+
+    // if (comparisonWeek.startDate && comparisonWeek.endDate) {
+
+    // }
+    props.getTotalOrgSummary(
+      selectedDateRange.startDate,
+      selectedDateRange.endDate,
+      comparisonWeek.startDate,
+      comparisonWeek.endDate,
+    );
+  }, [selectedDateRange, comparisonWeek]);
+
+  const handleComparisonPeriodChange = option => {
+    const { startDate, endDate } = selectedDateRange;
+    let commonStartDate = moment(startDate);
+    let commonEndDate = moment(endDate);
+
+    switch (option.value) {
+      case 'lastweek':
+        commonStartDate = commonStartDate.subtract(1, 'week').startOf('week');
+        commonEndDate = commonEndDate.subtract(1, 'week').endOf('week');
+        break;
+      case 'lastmonth':
+        commonStartDate = commonStartDate.subtract(1, 'month').startOf('month');
+        commonEndDate = commonEndDate.subtract(1, 'month').endOf('month');
+        break;
+      case 'lastyear':
+        commonStartDate = commonStartDate.subtract(1, 'year').startOf('year');
+        commonEndDate = commonEndDate.subtract(1, 'year').endOf('year');
+        break;
+      case 'nocomparison':
+      default:
+        setComparisonWeek({ startDate: null, endDate: null });
+        return;
+    }
+
+    setComparisonWeek({
+      startDate: commonStartDate.format('YYYY-MM-DD'),
+      endDate: commonEndDate.format('YYYY-MM-DD'),
+    });
+    // console.log('Comparison Week Set:', {
+    //   startDate: commonStartDate.format('YYYY-MM-DD'),
+    //   endDate: commonEndDate.format('YYYY-MM-DD'),
+    // });
+  };
 
   if (error) {
     return (
@@ -209,14 +323,43 @@ function TotalOrgSummary(props) {
     <Container
       fluid
       className={`container-total-org-wrapper py-3 mb-5 ${
-        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
+        darkMode ? 'bg-oxford-blue' : 'cbg--white-smoke'
       }`}
     >
-      <Row>
-        <Col lg={{ size: 12 }}>
-          <h3 className="mt-3 mb-5">Total Org Summary</h3>
+      <Row className="d-flex align-items-center justify-content-between">
+        <Col xs={12} sm={12} md={4} lg={4} className="d-flex align-items-center mb-sm-3 mb-md-0">
+          <h3>Weekly Volunteer Summary</h3>
+        </Col>
+
+        <Col
+          xs={12}
+          sm={12}
+          md={8}
+          lg={8}
+          className="d-flex justify-content-end align-items-center mb-0"
+        >
+          <div style={{ marginRight: '15px', width: '250px' }}>
+            <DateRangeSelector onDateRangeChange={handleDateRangeChange} />
+          </div>
+
+          <div style={{ marginRight: '15px', width: '250px' }}>
+            <Select
+              options={comparisonOptions}
+              onChange={handleComparisonPeriodChange}
+              defaultValue={comparisonOptions.find(option => option.value === 'nocomparsion')}
+            />
+          </div>
+
+          <button
+            className={darkMode ? 'btn btn-outline-light' : 'btn btn-dark'}
+            type="button"
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Share PDF
+          </button>
         </Col>
       </Row>
+
       <hr />
       <AccordianWrapper title="Volunteer Status">
         <Row>
@@ -330,7 +473,7 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  totalOrgSummary: state.totalOrgSummary,
+  volunteerstats: state.totalOrgSummary.volunteerstats,
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
@@ -338,10 +481,12 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
+  // getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
+  getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
+    dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);

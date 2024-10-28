@@ -28,14 +28,14 @@ export const fetchTotalOrgSummaryReportError = error => ({
   payload: { error },
 });
 
-export const getTotalOrgSummary = (startDate, endDate) => {
-  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate);
+export const getTotalOrgSummary = (startDate, endDate, comparisionStartDate, comparisionEndDate) => {
+  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate,comparisionStartDate, comparisionEndDate);
   return async dispatch => {
     dispatch(fetchTotalOrgSummaryReportBegin());
     try {
       const response = await axios.get(url);
       dispatch(fetchTotalOrgSummaryReportSuccess(response.data));
-      return {status: response.status, data: response.data};
+      return { status: response.status, data: response.data };
     } catch (error) {
       dispatch(fetchTotalOrgSummaryReportError(error));
       return error.response.status;
