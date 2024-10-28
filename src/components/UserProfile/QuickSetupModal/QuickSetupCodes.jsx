@@ -71,4 +71,3 @@ function QuickSetupCodes({ titles, setShowAssignModal, setTitleOnClick, setShowA
 }
 
 export default QuickSetupCodes;
-
