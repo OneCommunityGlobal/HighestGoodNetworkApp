@@ -49,6 +49,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import axios from 'axios';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
@@ -56,18 +57,14 @@ import {
 } from 'utils/constants';
 import PropTypes from 'prop-types';
 import Badge from '../Badge';
+import { ENDPOINTS } from '../../utils/URL';
 
-const doesUserHaveTaskWithWBS = (tasks = [], userId) => {
-  if (!Array.isArray(tasks)) return false;
-
-  for (let task of tasks) {
-    for (let resource of task.resources) {
-      if (resource.userID == userId && resource.completedTask == false) {
-        return true;
-      }
-    }
-  }
-  return false;
+const doesUserHaveTaskWithWBS = userHaveTask => {
+  return userHaveTask.reduce((acc, item) => {
+    const hasIncompleteTask = item.resources.some(val => val.completedTask === false);
+    if (hasIncompleteTask) acc.push(item);
+    return acc;
+  }, []);
 };
 
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
@@ -125,7 +122,7 @@ const Timelog = props => {
   const intangibletimeEntryFormData = {
     isTangible: false,
     personId: displayUserProfile._id,
-  }
+  };
 
   const [initialTab, setInitialTab] = useState(null);
   const [projectOrTaskOptions, setProjectOrTaskOptions] = useState(null);
@@ -163,11 +160,11 @@ const Timelog = props => {
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
 
-  const defaultTab = () => {
+  const defaultTab = (data) => {
+    const userHaveTask = doesUserHaveTaskWithWBS(data);
     //change default to time log tab(1) in the following cases:
     const role = authUser.role;
     let tab = 0;
-    const userHaveTask = doesUserHaveTaskWithWBS(disPlayUserTasks, authUser.userid);
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
     Accounts assigned with tasks with no wbs return and empty array.
@@ -176,16 +173,41 @@ const Timelog = props => {
     That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
 
     //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    if (role === 'Volunteer' && !userHaveTask) {
-      tab = 1;
-    }
-
+    role === 'Volunteer' && userHaveTask.length > 0
+      ? (tab = 0)
+      : role === 'Volunteer' && userHaveTask.length === 0
+      ? (tab = 1)
+      : null;
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
     if (!props.isDashboard) {
       tab = 1;
     }
+
+    if (location.hash) {
+      const redirectToTab = tabMapping[location.hash];
+      if (redirectToTab !== undefined) {
+        tab = redirectToTab;
+      }
+    }
     return tab;
   };
+
+    const tabMapping = {
+      '#tasks': 0,
+      '#currentWeek': 1,
+      '#lastWeek': 2,
+      '#beforeLastWeek': 3,
+      '#dateRange': 4,
+      '#weeklySummaries': 5,
+      '#badgesearned': 6,
+    };
+
+  useEffect(() => {
+    const tab = tabMapping[location.hash];
+    if (tab !== undefined) {
+      changeTab(tab);
+    }
+  }, [location.hash]);  // This effect will run whenever the hash changes
 
   /*---------------- methods -------------- */
   const updateTimeEntryItems = () => {
@@ -194,7 +216,7 @@ const Timelog = props => {
     setLastWeekEntries(allTimeEntryItems[1]);
     setBeforeLastEntries(allTimeEntryItems[2]);
     setPeriodEntries(allTimeEntryItems[3]);
-  }
+  };
 
   const generateAllTimeEntryItems = () => {
     const currentWeekEntries = generateTimeEntries(timeEntries.weeks[0], 0);
@@ -206,7 +228,11 @@ const Timelog = props => {
 
   const generateTimeEntries = (data, tab) => {
     if (!timeLogState.projectsSelected.includes('all')) {
-      data = data.filter(entry => timeLogState.projectsSelected.includes(entry.projectId) || timeLogState.projectsSelected.includes(entry.taskId));
+      data = data.filter(
+        entry =>
+          timeLogState.projectsSelected.includes(entry.projectId) ||
+          timeLogState.projectsSelected.includes(entry.taskId),
+      );
     }
     return data.map(entry => (
       /**
@@ -217,7 +243,7 @@ const Timelog = props => {
        * when all states in store are updated to the same display user.
        *  */
       <TimeEntry
-        from='WeeklyTab'
+        from="WeeklyTab"
         data={entry}
         displayYear
         key={entry._id}
@@ -243,8 +269,13 @@ const Timelog = props => {
         props.getUserProjects(userId),
         props.getUserTasks(userId),
       ]);
+
+      const url = ENDPOINTS.TASKS_BY_USERID(userId);
+      const res = await axios.get(url);
+
+      const data = res.data.length > 0 ? res.data : [];
+      const defaultTabValue = defaultTab(data);
       setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
-      const defaultTabValue = defaultTab();
       setInitialTab(defaultTabValue);
     } catch (e) {
       console.log(e);
@@ -265,7 +296,7 @@ const Timelog = props => {
 
   const showSummary = isAuthUser => {
     if (isAuthUser) {
-      setTimeLogState({ ...timeLogState, summary: !timeLogState.summary });
+      setTimeLogState({ ...timeLogState, summary: true });
       setTimeout(() => {
         const elem = document.getElementById('weeklySum');
         if (elem) {
@@ -276,9 +307,9 @@ const Timelog = props => {
     }
   };
 
-  const toggleSummary = (summaryState) => {
-    setTimeLogState({ ...timeLogState, summary: summaryState })
-  }
+  const toggleSummary = summaryState => {
+    setTimeLogState({ ...timeLogState, summary: summaryState });
+  };
 
   const openInfo = () => {
     const str = `This is the One Community time log! It is used to show a record of all the time you have volunteered with One Community, what you’ve done for each work session, etc.
@@ -300,6 +331,12 @@ const Timelog = props => {
     if (tab === 6) {
       props.resetBadgeCount(displayUserId);
     }
+
+    // Clear the hash to trigger the useEffect on hash change
+    if (location.hash) {
+      window.location.hash='';
+    }
+
     setTimeLogState({
       ...timeLogState,
       activeTab: tab,
@@ -311,13 +348,18 @@ const Timelog = props => {
   };
 
   const handleSearch = e => {
-    e.preventDefault();
-    props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
+    //check if the toDate is before the fromDate
+    if (moment(timeLogState.fromDate).isAfter(moment(timeLogState.toDate))) {
+      alert('Invalid Date Range: the From Date must be before the To Date');
+    }else{
+      e.preventDefault();
+      props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
+    }
   };
 
   const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
-    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
+    const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   };
 
@@ -354,11 +396,11 @@ const Timelog = props => {
 
   const buildOptions = () => {
     const projectsObject = {};
-    const options = [(
+    const options = [
       <option className='responsive-font-size' value="all" key="TimeLogDefaultProjectOrTask" >
         Select Project/Task (all)
-      </option>
-    )];
+      </option>,
+    ];
     displayUserProjects.forEach(project => {
       const { projectId } = project;
       project.WBSObject = {};
@@ -395,8 +437,8 @@ const Timelog = props => {
       options.push(
         <option className='responsive-font-size' value={projectId} key={`TimeLog_${projectId}`} >
           {projectName}
-        </option>
-      )
+        </option>,
+      );
       for (const [wbsId, WBS] of Object.entries(WBSObject)) {
         const { wbsName, taskObject } = WBS;
         options.push(
@@ -413,16 +455,16 @@ const Timelog = props => {
           )
         }
       }
-    };
-    return options
+    }
+    return options;
   };
 
-  const generateTimeLogItems = (userId) => {
+  const generateTimeLogItems = userId => {
     //build the time log component
     const options = buildOptions();
     setProjectOrTaskOptions(options);
     updateTimeEntryItems();
-    makeBarData(userId)
+    makeBarData(userId);
   };
 
   const handleUpdateTask = useCallback(() => {
@@ -486,8 +528,11 @@ const Timelog = props => {
   }, []);
 
   return (
-    <div className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
-      style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}>
+
+    <div 
+      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`} 
+      style={darkMode ? (!props.isDashboard ? {padding: "0 15px 300px 15px"} : {}) : {}}>
+    
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
@@ -560,23 +605,6 @@ const Timelog = props => {
                               }}
                             />
                           </span>
-
-                          <span className="mr-2" style={{ padding: '1px' }}>
-                            <ActiveCell
-                              isActive={displayUserProfile.isActive}
-                              user={displayUserProfile}
-                              onClick={() => {
-                                props.updateUserProfile({
-                                  ...displayUserProfile,
-                                  isActive: !displayUserProfile.isActive,
-                                  endDate:
-                                    !displayUserProfile.isActive === false
-                                      ? moment(new Date()).format('YYYY-MM-DD')
-                                      : undefined,
-                                });
-                              }}
-                            />
-                          </span>
                           <ProfileNavDot userId={displayUserId} style={{ marginLeft: '2px', padding: '1px' }} />
                         </div>
                       </CardTitle>
@@ -599,7 +627,12 @@ const Timelog = props => {
                                 title=""
                               />
                             </Button>
-                            <ReactTooltip id="timeEntryTip" place="bottom" effect="solid" delayShow={500}>
+                            <ReactTooltip
+                              id="timeEntryTip"
+                              place="bottom"
+                              effect="solid"
+                              delayShow={500}
+                            >
                               Clicking this button only allows for “Intangible Time” to be added to
                               your time log.{' '}
                               <u>
@@ -652,11 +685,21 @@ const Timelog = props => {
                           </div>
                         )
                       )}
-                      <Modal isOpen={timeLogState.infoModal} toggle={openInfo} className={darkMode ? 'text-light' : ''}>
+                      <Modal
+                        isOpen={timeLogState.infoModal}
+                        toggle={openInfo}
+                        className={darkMode ? 'text-light' : ''}
+                      >
                         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
-                        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{timeLogState.information}</ModalBody>
+                        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                          {timeLogState.information}
+                        </ModalBody>
                         <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
-                          <Button onClick={openInfo} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
+                          <Button
+                            onClick={openInfo}
+                            color="primary"
+                            style={darkMode ? boxStyleDark : boxStyle}
+                          >
                             Close
                           </Button>
                           <Button onClick={openInfo} color="secondary">
@@ -666,7 +709,7 @@ const Timelog = props => {
                       </Modal>
                       {/* This TimeEntryForm is for adding intangible time throught the add intangible time enty button */}
                       <TimeEntryForm
-                        from='TimeLog'
+                        from="TimeLog"
                         edit={false}
                         toggle={toggle}
                         isOpen={timeLogState.timeEntryFormModal}
@@ -812,7 +855,10 @@ const Timelog = props => {
                     ) : (
                       <Form className="mb-2 responsive-font-size">
                         <FormGroup>
-                          <Label htmlFor="projectSelected" className={"mr-1 ml-1 mb-1 align-top " + (darkMode ? "text-light" : "")}>
+                          <Label
+                            htmlFor="projectSelected"
+                            className={'mr-1 ml-1 mb-1 align-top ' + (darkMode ? 'text-light' : '')}
+                          >
                             Filter Entries by Project and Task:
                           </Label>
                           <Input
@@ -889,7 +935,6 @@ const mapStateToProps = state => ({
   roles: state.role.roles,
   badgeCount: state.badge.badgeCount,
 });
-
 
 export default connect(mapStateToProps, {
   getTimeEntriesForWeek,

@@ -49,6 +49,7 @@ const TeamsTab = props => {
 
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
+    if (isTeamSaved) isTeamSaved(true);
   };
   const onSelectDeleteTeam = teamId => {
     setRemovedTeams([...removedTeams, teamId]);
@@ -57,7 +58,7 @@ const TeamsTab = props => {
   };
 
   const onSelectAssignTeam = team => {
-    if (userProfile._id) {
+    if (userProfile?._id) {
       addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
       if (isTeamSaved) isTeamSaved(false);
     }
