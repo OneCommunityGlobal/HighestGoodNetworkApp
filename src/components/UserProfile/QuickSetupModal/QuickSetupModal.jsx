@@ -1,11 +1,10 @@
 import { useState, useEffect } from 'react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import AssignSetUpModal from './AssignSetupModal';
 import QuickSetupCodes from './QuickSetupCodes';
 import SaveButton from '../UserProfileEdit/SaveButton';
 import AddNewTitleModal from './AddNewTitleModal';
 import { getAllTitle } from '../../../actions/title';
-
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css';
 import { connect, useSelector } from 'react-redux';
@@ -28,7 +27,6 @@ function QuickSetupModal(props) {
 
   //new 
   const [sortBy, setSortBy] = useState('');
-
 
   useEffect(() => {
     getAllTitle()
@@ -96,7 +94,7 @@ function QuickSetupModal(props) {
             style={darkMode ? boxStyleDark : boxStyle}
             disabled={editMode === true ? true : false}
           >
-            Add A New Title
+            Add New QST
           </Button>
         ) : (
           ''
@@ -120,11 +118,8 @@ function QuickSetupModal(props) {
               style={darkMode ? boxStyleDark : boxStyle}
             >
               Save
-            </Button>
-    
-              
+            </Button>       
             </div>
-            
           )
         ) : (
           ''
@@ -145,7 +140,6 @@ function QuickSetupModal(props) {
           ''
         )}
       </div>
-
       {(showAddTitle || editMode) ? (
         <AddNewTitleModal
           teamsData={props.teamsData}
@@ -206,5 +200,4 @@ function QuickSetupModal(props) {
 }
 
 export default connect(null, { hasPermission })(QuickSetupModal);
-
 

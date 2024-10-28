@@ -60,6 +60,7 @@ function QuickSetupCodes({ titles, setShowAssignModal, setTitleOnClick, setShowA
             <div className="title">
               <span className="setup-title-name">{title?.titleName}</span>
             </div>
+
           </div>
         ))
       )}
