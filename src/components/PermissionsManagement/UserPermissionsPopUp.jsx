@@ -85,10 +85,7 @@ function UserPermissionsPopUp({
     await axios
       .put(url, newUserInfo)
       .then(() => {
-        const SUCCESS_MESSAGE = `
-        Permission has been updated successfully. Be sure to tell them that you are changing these
-        permissions and for that they need to log out and log back in for their new permissions to take
-        place.`;
+        const SUCCESS_MESSAGE = `Permissions have been updated successfully. Please inform the user to log out and log back in for the new permissions to take effect.`;
         toast.success(SUCCESS_MESSAGE, {
           autoClose: 10000,
         });

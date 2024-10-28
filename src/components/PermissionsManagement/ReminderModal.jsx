@@ -15,11 +15,11 @@ function ReminderModal({
   return (
     <div className="ContainerReminder">
       <div className="ReminderTitle">
-        <h2>Remember to save your changes!</h2>
+        <h2>Remember to Save Your Changes!</h2>
       </div>
       <div className={`ReminderBody ${darkMode ? 'text-space-cadet' : ''}`}>
         <span>
-          Please log out and log back into the {changedAccount} account to see the changes.
+        Please log out and log back in to your account, {changedAccount} to apply the changes.
         </span>
       </div>
       <div className="ReminderButton">
