@@ -12,6 +12,9 @@ import {
   FETCH_TEAM_USERS_ERROR,
   TEAM_MEMBER_DELETE,
   TEAM_MEMBER_ADD,
+  UPDATE_TEAM_MEMBER_VISIBILITY,
+  FETCH_ALL_TEAM_CODE_SUCCESS,
+  FETCH_ALL_TEAM_CODE_FAILURE,
 } from '../constants/allTeamsConstants';
 
 /**
@@ -101,6 +104,14 @@ export const teamMemberAddAction = (member) => ({
   type: TEAM_MEMBER_ADD,
   member,
 });
+
+export const updateVisibilityAction = (visibility, userId, teamId) => ({
+  type: UPDATE_TEAM_MEMBER_VISIBILITY,
+  visibility,
+  userId,
+  teamId,
+});
+
 
 /**
  * fetching all user teams
@@ -223,3 +234,60 @@ export const addTeamMember = (teamId, userId, firstName, lastName, role, addDate
     });
   };
 };
+
+export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
+  const updateData = { visibility, userId, teamId };
+  const updateVisibilityPromise = axios.put(ENDPOINTS.TEAM, updateData);
+
+  return async dispatch => {
+    updateVisibilityPromise
+      .then(res => {
+        dispatch(updateVisibilityAction(visibility, userId, teamId));
+      })
+      .catch(error => {
+        if (error.response) {
+          // The request was made and the server responded with a status code
+          console.error('Error updating visibility:', error.response.data);
+        } else if (error.request) {
+          // The request was made but no response was received
+          console.error('Error updating visibility: No response received');
+        } else {
+          // Something happened in setting up the request that triggered an error
+          console.error('Error updating visibility:', error.message);
+        }
+      });
+  };
+};
+
+/**
+ * Set allTeamCode in store
+ */
+
+export const fetchAllTeamCodeSucess = (payload) => ({
+  type: FETCH_ALL_TEAM_CODE_SUCCESS,
+  payload,
+});
+
+/**
+ * 
+ * @param {*} name 
+ * @param {*} status 
+ * @returns 
+ */
+
+export const getAllTeamCode = () => {
+
+  const userTeamsPromise = axios.get(ENDPOINTS.TEAM_ALL_CODE);
+  return async (dispatch) => {
+        return userTeamsPromise
+          .then((res) => {
+              dispatch(fetchAllTeamCodeSucess(res.data));
+          })
+          .catch((err) => {
+            dispatch({
+                type: FETCH_ALL_TEAM_CODE_FAILURE, 
+            });
+          });
+        }
+};
+    
