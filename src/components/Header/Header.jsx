@@ -1,9 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
+import { getWeeklySummaries } from 'actions/weeklySummaries';
 import { Link } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
@@ -74,52 +75,53 @@ export function Header(props) {
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
+
+  const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
+  const canInteractWithViewingUser = useMemo(
+    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role), [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role])
+
   // Reports
-  const canGetReports = props.hasPermission('getReports');
-  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries');
+  const canGetReports = props.hasPermission('getReports', !isAuthUser && canInteractWithViewingUser);
+  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser && canInteractWithViewingUser);
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
   // const canGetWeeklyVolunteerSummary = props.hasPermission('weeklyVolunteerSummary');
   // Users
-  const canAccessUserManagement =
-    props.hasPermission('postUserProfile') ||
-    props.hasPermission('deleteUserProfile') ||
-    props.hasPermission('changeUserStatus') ||
-    props.hasPermission('getUserProfiles');
+  const canAccessUserManagement = props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
 
   // Badges
-  const canAccessBadgeManagement =
-    props.hasPermission('seeBadges') ||
-    props.hasPermission('createBadges') ||
-    props.hasPermission('updateBadges') ||
-    props.hasPermission('deleteBadges');
+  const canAccessBadgeManagement = props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
   // Projects
-  const canAccessProjects =
-    props.hasPermission('postProject') ||
-    props.hasPermission('deleteProject') ||
-    props.hasPermission('putProject') ||
-    props.hasPermission('getProjectMembers') ||
-    props.hasPermission('assignProjectToUsers') ||
-    props.hasPermission('postWbs') ||
-    props.hasPermission('deleteWbs') ||
-    props.hasPermission('postTask') ||
-    props.hasPermission('updateTask') ||
-    props.hasPermission('deleteTask');
+  const canAccessProjects = props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask');
+  const canUpdateTask = props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser);
   // Teams
-  const canAccessTeams =
-    props.hasPermission('postTeam') ||
-    props.hasPermission('putTeam') ||
-    props.hasPermission('deleteTeam') ||
-    props.hasPermission('assignTeamToUsers');
+  const canAccessTeams = props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
   // Popups
-  const canAccessPopups = props.hasPermission('createPopup') || props.hasPermission('updatePopup');
+  const canAccessPopups = props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
   // Permissions
-  const canAccessPermissionsManagement =
-    props.hasPermission('postRole') ||
-    props.hasPermission('putRole') ||
-    props.hasPermission('deleteRole') ||
-    props.hasPermission('putUserProfilePermissions');
+  const canAccessPermissionsManagement = props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser)
+    || props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser)
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -199,8 +201,8 @@ export function Header(props) {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
-  };
-
+    props.getWeeklySummaries(user.userid)
+  }
   const closeModal = () => {
     setModalVisible(false);
     const today = new Date();
@@ -312,7 +314,7 @@ export function Header(props) {
                   </NavLink>
                 </NavItem>
                 <NavItem>
-                  <NavLink tag={Link} to={`/timelog`}>
+                  <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
@@ -456,7 +458,7 @@ export function Header(props) {
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
-                    <DropdownItem>
+                    <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
                     <DropdownItem divider />
@@ -523,4 +525,5 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
+  getWeeklySummaries
 })(Header);
