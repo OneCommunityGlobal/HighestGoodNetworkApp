@@ -189,30 +189,7 @@ function BadgeReport(props) {
     });
   };
 
-  // useEffect(() => {
-  //   setSortBadges(JSON.parse(JSON.stringify(props.badges)) || []);
-  //   let newBadges = sortBadges.slice();
-  //   newBadges.sort((a, b) => {
-  //     if (a.badge.ranking === 0) return 1;
-  //     if (b.badge.ranking === 0) return -1;
-  //     if (a.badge.ranking > b.badge.ranking) return 1;
-  //     if (a.badge.ranking < b.badge.ranking) return -1;
-  //     if (a.badge.badgeName > b.badge.badgeName) return 1;
-  //     if (a.badge.badgeName < b.badge.badgeName) return -1;
-  //     return 0;
-  //   });
-  //   setNumFeatured(0);
-  //   newBadges.forEach((badge, index) => {
-  //     if (badge.featured) {
-  //       setNumFeatured(++numFeatured);
-  //     }
 
-  //     if (typeof newBadges[index] === 'string') {
-  //       newBadges[index].lastModified = new Date(newBadges[index].lastModified);
-  //     }
-  //   });
-  //   setSortBadges(newBadges);
-  // }, [props.badges]);
 
   useEffect(() => {
     let newBadges = JSON.parse(JSON.stringify(props.badges)) || [];
@@ -306,23 +283,6 @@ function BadgeReport(props) {
     }
   };
 
-  // const featuredChange = (badge, index, e) => {
-  //   let newBadges = sortBadges.slice();
-  //   if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
-  //     let count = 0;
-  //     setNumFeatured(count);
-  //     newBadges[index].featured = e.target.checked;
-  //     newBadges.forEach((badge, index) => {
-  //       if (badge.featured) {
-  //         setNumFeatured(++count);
-  //       }
-  //     });
-  //   } else {
-  //     e.target.checked = false;
-  //     toast.error('Unfortunately, you may only select five badges to be featured.');
-  //   }
-  //   setSortBadges(newBadges);
-  // };
 
   const featuredChange = (badge, index, e) => {
     let newBadges = [...sortBadges];
