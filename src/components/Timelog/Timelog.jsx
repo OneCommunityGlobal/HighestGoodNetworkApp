@@ -358,7 +358,7 @@ const Timelog = props => {
 
   const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
-    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
+    const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   };
 

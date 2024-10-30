@@ -43,21 +43,16 @@ function TotalTeamReport(props) {
   const matchTeamUser = async teamList => {
     // get the members of each team in the team list
     // console.log('Load team-members list');
-    const allTeamMembersPromises = teamList.map(team => dispatch(getTeamMembers(team._id)));
-    const allTeamMembers = await Promise.all(allTeamMembersPromises);
-    const teamUserList = allTeamMembers.map((team, i) => {
-      const users = team.map(user => {
-        return user._id;
-      });
-      if (users) {
-        return {
-          teamId: teamList[i]._id,
-          teamName: teamList[i].teamName,
-          createdDatetime: teamList[i].createdDatetime,
-          members: users,
-        };
-      }
-      return null;
+    const teamUserList = teamList.map((team) => {
+      // Check if the team has members data
+      const users = team.members ? team.members.map((member) => member.userId) : [];
+  
+      return {
+        teamId: team._id,
+        teamName: team.teamName,
+        createdDatetime: team.createdDatetime,
+        members: users, // Use existing members data
+      };
     });
     setAllTeamsMembers(teamUserList);
   };
@@ -113,7 +108,7 @@ function TotalTeamReport(props) {
   const loadTimeEntriesForPeriod = async () => {
     // get the time entries of every user in the selected time range.
     // console.log('Load time entries within the time range');
-    let url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+    let url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT;
     const timeEntries = await axios
       .post(url, { users: userList, fromDate, toDate })
       .then(res => {
@@ -236,7 +231,8 @@ function TotalTeamReport(props) {
         sumData[0].months = 12 - startMonth;
         sumData[sumData.length - 1].months = endMonth + 1;
       }
-      return sumData;
+      const filteredData = sumData.filter(data => data.value > 0);
+      return filteredData;
     }
     const sumData = groupedDate.map(range => {
       return {
@@ -269,16 +265,21 @@ function TotalTeamReport(props) {
     } else {
       matchTeamUser(allTeamsData);
     }
-    loadTimeEntriesForPeriod().then(() => {
-      setTotalTeamReportDataLoading(false);
-      setTotalTeamReportDataReady(true);
-    });
+    setTotalTeamReportDataReady(false);
+    const controller = new AbortController();
+    loadTimeEntriesForPeriod(controller).then(() => {
+    setTotalTeamReportDataLoading(false);
+    setTotalTeamReportDataReady(true);
+  });
     const nameList = {};
     userProfiles.forEach(user => {
       nameList[user._id] = `${user.firstName} ${user.lastName}`;
     });
     setUserNameList(nameList);
-  }, []);
+    return () => {
+          controller.abort();
+    }
+  }, [startDate, endDate]);
 
 
   useEffect(() => {
@@ -299,16 +300,16 @@ function TotalTeamReport(props) {
     }
   }, [totalTeamReportDataLoading, totalTeamReportDataReady, allTeamsMembers, allTimeEntries, teamTimeEntries]);
 
-  useEffect(() => {
-    setTotalTeamReportDataReady(false);
-    const controller = new AbortController();
-    loadTimeEntriesForPeriod(controller).then(() => {
-      setTotalTeamReportDataReady(true);
-    });
-    return () => {
-      controller.abort();
-    }
-  }, [startDate, endDate]);
+  // useEffect(() => {
+  //   setTotalTeamReportDataReady(false);
+  //   const controller = new AbortController();
+  //   loadTimeEntriesForPeriod(controller).then(() => {
+  //     setTotalTeamReportDataReady(true);
+  //   });
+  //   return () => {
+  //     controller.abort();
+  //   }
+  // }, [startDate, endDate]);
 
   const onClickTotalTeamDetail = () => {
     const showDetail = showTotalTeamTable;
@@ -342,8 +343,8 @@ function TotalTeamReport(props) {
         .map((team, index) => {
           const nameList = getMemberName(team.teamId, userNameList2);
           return (
-            <tbody key={team.teamId}>
-              <tr id={`tr_${team.teamId}`} key={`${team.teamId}_parent`}>
+            <tbody key={team.teamId} className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+              <tr id={`tr_${team.teamId}`} key={`${team.teamId}_parent`} className={darkMode ? 'hover-effect-reports-page-dark-mode text-light' : ''}>
                 <th scope="row">
                   <div>{index + 1}</div>
                 </th>
@@ -359,6 +360,7 @@ function TotalTeamReport(props) {
                         onClickTeamName(team.teamId);
                       }
                     }}
+                    className={darkMode ? 'text-light' : ''}
                   >
                     {team.teamName}
                   </button>
@@ -367,10 +369,10 @@ function TotalTeamReport(props) {
               </tr>
               <tr
                 id={`tr_${team.teamId}_child`}
-                className="teams_child"
+                className={darkMode ? 'teams_child bg-yinmn-blue text-light' : 'teams_child'}
                 key={`${team.teamId}_child`}
               >
-                <td colSpan={3}>Members include: {nameList}</td>
+                <td className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''} colSpan={3}>Members include: {nameList}</td>
               </tr>
             </tbody>
           );
@@ -379,7 +381,7 @@ function TotalTeamReport(props) {
 
     return (
       <table className="table table-bordered table-responsive-sm team-table">
-        <thead>
+        <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{pointerEvents: 'none' }}>
           <tr>
             <th scope="col" id="projects__order">
               #
@@ -446,9 +448,22 @@ function TotalTeamReport(props) {
   return (
     <div>
       {!totalTeamReportDataReady ? (
-        <div>
-          <Loading align="center" darkMode={darkMode}/>
+        <div style={{ textAlign: 'center' }}>
+        <Loading align="center" darkMode={darkMode}/>
+        <div
+          style={{
+            width: '50%',
+            height: '2px',
+            backgroundColor: 'gray',
+            margin: '10px auto',
+          }}
+        />
+        <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'gray' }}>
+          🚀 Data is on a secret mission! 📊 Report is being generated. ✨
+          <br />
+          Please hang tight while we work our magic! 🧙‍♂️🔮
         </div>
+      </div>
       ) : (
         <div>
           <div>{totalTeamInfo(allTeams)}</div>
