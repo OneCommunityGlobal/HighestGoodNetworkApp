@@ -1,4 +1,3 @@
-import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
 import { useDispatch } from 'react-redux';
@@ -11,7 +10,6 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
       setModal(false);
       setRecord(null);
     };
-    console.log(record);
 
     return (
       <Modal isOpen={modal} size="xl">
@@ -61,7 +59,6 @@ export function Record({ record, recordType, setRecord }) {
         });
       }
     } catch (error) {
-      console.error('Error approving purchase:', error);
       // Optionally, you can handle UI feedback for the error
     }
   };
@@ -85,7 +82,6 @@ export function Record({ record, recordType, setRecord }) {
         });
       }
     } catch (error) {
-      console.error('Error rejecting purchase:', error);
       // Optionally, you can handle UI feedback for the error
     }
   };
@@ -177,7 +173,8 @@ export function Record({ record, recordType, setRecord }) {
                     </td>
                   </tr>
                 );
-              })
+              },
+            )
           ) : (
             <tr>
               <td colSpan={6} style={{ fontWeight: 'bold' }}>
@@ -189,6 +186,5 @@ export function Record({ record, recordType, setRecord }) {
       </>
     );
   }
-
   return null;
 }
