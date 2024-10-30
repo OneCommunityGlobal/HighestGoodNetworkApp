@@ -1,6 +1,6 @@
-.toggle-switch {
+.two-way-toggle-switch {
   position: relative;
-  width: 300px;
+  width: 90px;
   display: inline-block;
   text-align: left;
   top: 50%;
@@ -42,15 +42,15 @@
 }
 
 .toggle-switch-inner:before {
-  content: "Show Values";
+  content: "All";
   padding-left: 2px;
   background-color: #2FCCFF;
   color: #fff;
-  text-align: left;
+  text-align: center;
 }
 
 .toggle-switch-inner:after {
-  content: "Hide Values";
+  content: "Selected";
   padding-right: 5px;
   background-color: #FF3B3F;
   color: #fff;
@@ -60,12 +60,12 @@
 .toggle-switch-switch {
   display: block;
   width: 15px;
-  margin: 1px;
+  top: 4px;
+  bottom: 12px;
+  margin: 0px 5px;
   background: #fff;
   position: absolute;
-  top: 5px;
-  bottom: 0;
-  right: 42px;
+  right: 65px;
   border: 2px solid #ddd;
   border-radius: 20px;
   transition: all 0.3s ease-in 0s;

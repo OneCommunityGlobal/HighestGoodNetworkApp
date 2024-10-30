@@ -3,7 +3,7 @@ import './TwoWayToggleSwitch.css'; // Asegúrate de crear este archivo CSS
 
 const TwoWayToggleSwitch = ({ isOn, handleToggle }) => {
   return (
-    <div className="toggle-switch">
+    <div className="two-way-toggle-switch">
       <input
         checked={isOn}
         onChange={handleToggle}
