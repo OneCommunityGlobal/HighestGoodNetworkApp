@@ -1,0 +1,58 @@
+.list {
+    list-style-type: none;
+}
+
+.custom-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid #ccc;
+    border-radius: 3px;
+    display: inline-block;
+    position: relative;
+    cursor: pointer;
+}
+
+.custom-checkbox:checked::before {
+    content: '\2713';
+    display: block;
+    text-align: center;
+    line-height: 16px;
+    background-color: green;
+    color: white;
+}
+
+.custom-checkbox:not(:checked)::before {
+    content: '✕';
+    display: block;
+    text-align: center;
+    line-height: 16px;
+    background-color: red;
+    margin-left: -1px;
+    color: white;
+}
+
+.permission-text {
+    margin-left: 8px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: space-evenly;
+}
+
+.modal-footer button {
+    padding: 8px 24px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.modal-cancel-button {
+    background-color: red;
+}
+
+.modal-confirm-button {
+    background-color: green;
+}
