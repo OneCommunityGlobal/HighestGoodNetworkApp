@@ -1,7 +1,9 @@
+import { useState, useEffect } from 'react';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button, Table } from 'reactstrap';
 import moment from 'moment';
-
+import { useDispatch } from 'react-redux';
 import './RecordsModal.css';
+import { approvePurchase, rejectPurchase } from '../../../actions/bmdashboard/materialsActions';
 
 export default function RecordsModal({ modal, setModal, record, setRecord, recordType }) {
   if (record) {
@@ -9,6 +11,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
       setModal(false);
       setRecord(null);
     };
+    console.log(record);
 
     return (
       <Modal isOpen={modal} size="xl">
@@ -16,7 +19,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
         <ModalBody>
           <div className="records_modal_table_container">
             <Table>
-              <Record record={record} recordType={recordType} />
+              <Record record={record} recordType={recordType} setRecord={setRecord} />
             </Table>
           </div>
         </ModalBody>
@@ -29,7 +32,64 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
   return null;
 }
 
-export function Record({ record, recordType }) {
+export function Record({ record, recordType, setRecord }) {
+  const dispatch = useDispatch();
+  // const handleApprove = async (purchaseId, quantity) => {
+  //   await dispatch(approvePurchase(purchaseId, quantity));
+  // };
+
+  // const handleReject = async purchaseId => {
+  //   await dispatch(rejectPurchase(purchaseId));
+  // };
+  const handleApprove = async (purchaseId, quantity) => {
+    try {
+      const response = await dispatch(approvePurchase(purchaseId, quantity));
+      // Only update the state if the purchase was successfully approved
+      if (response && response.status === 200) {
+        const updatedPurchases = record.purchaseRecord.map(purchase => {
+          if (purchase._id === purchaseId) {
+            return {
+              ...purchase,
+              status: 'Approved',
+            };
+          }
+          return purchase;
+        });
+        setRecord({
+          ...record,
+          purchaseRecord: updatedPurchases,
+        });
+      }
+    } catch (error) {
+      console.error('Error approving purchase:', error);
+      // Optionally, you can handle UI feedback for the error
+    }
+  };
+  const handleReject = async purchaseId => {
+    try {
+      const response = await dispatch(rejectPurchase(purchaseId));
+      // Only update the state if the purchase was successfully rejected
+      if (response && response.status === 200) {
+        const updatedPurchases = record.purchaseRecord.map(purchase => {
+          if (purchase._id === purchaseId) {
+            return {
+              ...purchase,
+              status: 'Rejected',
+            };
+          }
+          return purchase;
+        });
+        setRecord({
+          ...record,
+          purchaseRecord: updatedPurchases,
+        });
+      }
+    } catch (error) {
+      console.error('Error rejecting purchase:', error);
+      // Optionally, you can handle UI feedback for the error
+    }
+  };
+
   if (recordType === 'Update') {
     return (
       <>
@@ -83,22 +143,41 @@ export function Record({ record, recordType }) {
         </thead>
         <tbody>
           {record?.purchaseRecord && record?.purchaseRecord.length ? (
-            record.map(({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
-              return (
-                <tr key={_id}>
-                  <td>{priority}</td>
-                  <td>{brandPref}</td>
-                  <td>{quantity || '-'}</td>
-                  <td>
-                    <a href={`/userprofile/${requestedBy._id}`}>
-                      {`${requestedBy.firstName} ${requestedBy.lastName}`}
-                    </a>
-                  </td>
-                  <td>{moment(date).format('MM/DD/YY')}</td>
-                  <td>{status}</td>
-                </tr>
-              );
-            })
+            record.purchaseRecord.map(
+              ({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
+                return (
+                  <tr key={_id}>
+                    <td>{priority}</td>
+                    <td>{brandPref}</td>
+                    <td>{quantity || '-'}</td>
+                    <td>
+                      <a href={`/userprofile/${requestedBy._id}`}>
+                        {`${requestedBy.firstName} ${requestedBy.lastName}`}
+                      </a>
+                    </td>
+                    <td>{moment(date).format('MM/DD/YY')}</td>
+                    <td>{status}</td>
+                    <td>
+                      <Button
+                        type="button"
+                        onClick={() => handleApprove(_id, quantity)}
+                        className="approve-button"
+                        disabled={status === 'Approved' || status === 'Rejected'}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        type="button"
+                        onClick={() => handleReject(_id)}
+                        className="reject-button"
+                        disabled={status === 'Approved' || status === 'Rejected'}
+                      >
+                        Reject
+                      </Button>
+                    </td>
+                  </tr>
+                );
+              })
           ) : (
             <tr>
               <td colSpan={6} style={{ fontWeight: 'bold' }}>
