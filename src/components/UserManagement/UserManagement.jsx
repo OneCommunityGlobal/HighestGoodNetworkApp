@@ -4,14 +4,16 @@
  * Created on  : 05/27/2020
  * List the users in the application for administrator.
  *****************************************************************/
-import React from 'react';
+import React, { useState } from 'react';
 import {
   getAllUserProfile,
   updateUserStatus,
   updateUserFinalDayStatusIsSet,
   deleteUser,
+  enableEditUserInfo,
+  disableEditUserInfo,
 } from '../../actions/userManagement';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import Loading from '../common/Loading';
 import SkeletonLoading from '../common/SkeletonLoading';
 import UserTableHeader from './UserTableHeader';
@@ -36,15 +38,16 @@ import SetupNewUserPopup from './setupNewUserPopup';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { toast } from 'react-toastify';
+import { getAllRoles } from 'actions/role';
 import {
   DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
 
+
 class UserManagement extends React.PureComponent {
   filteredUserDataCount = 0;
-
   constructor(props) {
     super(props);
     this.state = {
@@ -54,8 +57,8 @@ class UserManagement extends React.PureComponent {
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
-      selectedPage: 1,
-      pageSize: 10,
+      selectedPage: props.state.userPagination.pagestats.selectedPage,
+      pageSize: props.state.userPagination.pagestats.pageSize,
       allSelected: undefined,
       isActive: undefined,
       isSet: undefined,
@@ -68,6 +71,9 @@ class UserManagement extends React.PureComponent {
       shouldRefreshInvitationHistory: false,
       logTimeOffPopUpOpen: false,
       userForTimeOff: '',
+      userTableItems: [],
+      editable: props.state.userPagination.editable,
+      // updating:props.state.updateUserInfo.updating
     };
   }
 
@@ -75,17 +81,33 @@ class UserManagement extends React.PureComponent {
     // Initiating the user profile fetch action.
     this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
+    let darkMode = this.props.state.theme.darkMode;
+    let { userProfiles, fetching } = this.props.state.allUserProfiles;
+    let { roles: rolesPermissions } = this.props.state.role;
+    let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable)
   }
+
+  async componentDidUpdate(prevProps, prevState) {
+    let search_state = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || (prevState.lastNameSearchText !== this.state.lastNameSearchText) || (prevState.roleSearchText !== this.state.roleSearchText) || (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || (prevState.emailSearchText !== this.state.emailSearchText);
+    let page_size_value=(prevState.pageSize!==this.state.pageSize);
+     if ((prevState.selectedPage !== this.state.selectedPage) || (prevState.wildCardSearchText !== this.state.wildCardSearchText) || search_state || page_size_value) {
+      let darkMode = this.props.state.theme.darkMode;
+      let { userProfiles, fetching } = this.props.state.allUserProfiles;
+      let { roles: rolesPermissions } = this.props.state.role;
+      let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable)
+    }
+  }
+
 
   render() {
     const darkMode = this.props.state.theme.darkMode;
-    let { userProfiles, fetching } = this.props.state.allUserProfiles;
-    const { roles: rolesPermissions } = this.props.state.role;
-    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    let userTable = this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode);
+    var { userProfiles, fetching } = this.props.state.allUserProfiles;
     let roles = [...new Set(userProfiles.map(item => item.role))];
+    let userdataInformation = this.state.userTableItems
     return (
-      <Container fluid className={darkMode ? ' bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+      <Container fluid className={darkMode ? ' bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
         {/* {fetching ? (
           <SkeletonLoading template="UserManagement" />
         ) : ( */}
@@ -107,6 +129,9 @@ class UserManagement extends React.PureComponent {
                     authRole={this.props.state.auth.user.role}
                     roleSearchText={this.state.roleSearchText}
                     darkMode={darkMode}
+                    editUser={this.props.state.userProfileEdit.editable}
+                    enableEditUserInfo={this.props.enableEditUserInfo}
+                    disableEditUserInfo={this.props.disableEditUserInfo}
                   />
                   <UserTableSearchHeader
                     onFirstNameSearch={this.onFirstNameSearch}
@@ -120,7 +145,7 @@ class UserManagement extends React.PureComponent {
                     darkMode={darkMode}
                   />
                 </thead>
-                <tbody className={darkMode ? 'dark-mode' : ''}>{userTable}</tbody>
+                <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.userTableItems}</tbody>
               </Table>
             </div>
             <UserTableFooter
@@ -205,7 +230,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements =(userProfiles, rolesPermissions, timeOffRequests, darkMode) => {
+  userTableElements = (userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser) => {
     if (userProfiles && userProfiles.length > 0) {
       let usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -249,15 +274,21 @@ class UserManagement extends React.PureComponent {
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
               darkMode={darkMode}
+              // editUser={editUser}
             />
           );
         });
     }
   };
 
+  getFilteredData = (userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser) => {
+    this.setState({
+      userTableItems: this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser)
+    })
+  }
+
   filteredUserList = userProfiles => {
     return userProfiles.filter(user => {
-      // console.log('user', user);
       // Applying the search filters before creating each table data element
       const search = result => {
         if (typeof result === 'string') {
@@ -275,26 +306,29 @@ class UserManagement extends React.PureComponent {
 
       return (
         // Check if the user matches the search criteria
-        // Regular search criteria
-        search(user.firstName).indexOf(search(this.state.firstNameSearchText)) > -1 &&
-        search(user.lastName).indexOf(search(this.state.lastNameSearchText)) > -1 &&
-        search(user.role).indexOf(search(this.state.roleSearchText)) > -1 &&
-        search(user.email).indexOf(search(this.state.emailSearchText)) > -1 &&
-        (this.state.weeklyHrsSearchText === '' ||
-          search(user.weeklycommittedHours) === Number(search(this.state.weeklyHrsSearchText))) &&
-        // Check the isActive state only if 'all' is not selected
-        ((this.state.allSelected && true) ||
-          this.state.isActive === undefined ||
-          user.isActive === this.state.isActive) &&
-        // Check the isPaused state only if 'all' is not selected
-        ((this.state.allSelected && true) ||
-          this.state.isPaused === false ||
-          (user.reactivationDate && new Date(user.reactivationDate) > new Date())) &&
-        (searchWithAccent(search(user.firstName), search(this.state.wildCardSearchText)) ||
-          searchWithAccent(search(user.lastName), search(this.state.wildCardSearchText)) ||
-          search(user.role).indexOf(search(this.state.wildCardSearchText)) > -1 ||
-          search(user.email).indexOf(search(this.state.wildCardSearchText)) > -1 ||
-          search(user.weeklycommittedHours) === Number(search(this.state.wildCardSearchText)))
+        (
+          // Regular search criteria
+          user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
+          user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
+          user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
+          user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
+          (this.state.weeklyHrsSearchText === '' || user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
+
+          // Check the isActive state only if 'all' is not selected
+          ((this.state.allSelected && true) || (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
+
+          // Check the isPaused state only if 'all' is not selected
+          ((this.state.allSelected && true) || (this.state.isPaused === false || (user.reactivationDate && new Date(user.reactivationDate) > new Date()))
+          ) &&
+
+          (
+            searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
+            searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
+            user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+            user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
+            user.weeklycommittedHours === Number(this.state.wildCardSearchText)
+          )
+        )
       );
     });
   };
@@ -338,18 +372,16 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
 
-    const hasRolePermission =
-      this.props.state.auth.user.role === 'Administrator' ||
-      this.props.state.auth.user.role === 'Owner';
+    const hasRolePermission = this.props.state.auth.user.role === "Administrator" || this.props.state.auth.user.role === "Owner"
     if (canManageTimeOffRequests || hasRolePermission) {
       this.setState({
         logTimeOffPopUpOpen: true,
         userForTimeOff: user,
       });
     } else {
-      toast.warn(`You do not have permission to manage time-off requests.`);
+      toast.warn(`You do not have permission to manage time-off requests.`)
     }
   };
 
@@ -664,7 +696,7 @@ class UserManagement extends React.PureComponent {
       newUserPopupOpen: false,
     });
   };
-  
+
 }
 
 const mapStateToProps = state => {
@@ -677,4 +709,9 @@ export default connect(mapStateToProps, {
   deleteUser,
   hasPermission,
   getAllTimeOffRequests,
+  enableEditUserInfo,
+  disableEditUserInfo,
+  getAllRoles,
+  disableEditUserInfo,
+  enableEditUserInfo
 })(UserManagement);
