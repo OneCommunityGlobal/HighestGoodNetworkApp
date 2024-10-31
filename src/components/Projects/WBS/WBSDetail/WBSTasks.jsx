@@ -187,7 +187,7 @@ function WBSTasks(props) {
           </ol>
         </nav>
         <div
-          className='mb-2'
+          className='mb-2 button-group' // Grouping the buttons
           style={{
             // display: 'flex',
             // justifyContent: 'space-between'

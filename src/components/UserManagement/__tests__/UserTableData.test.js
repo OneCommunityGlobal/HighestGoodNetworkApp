@@ -8,7 +8,6 @@ import configureStore from 'redux-mock-store';
 import UserTableData from '../UserTableData';
 import { authMock, themeMock } from '../../../__tests__/mockStates';
 import { renderWithProvider } from '../../../__tests__/utils';
-
 // Mock Axios requests
 jest.mock('axios');
 const mockStore = configureStore([thunk]);
@@ -130,12 +129,10 @@ describe('User Table Data: Non-Jae related Account', () => {
       // Find the input elements by their display value
       const firstNameInput = screen.getByDisplayValue('Non');
       const lastNameInput = screen.getByDisplayValue('Petterson');
-
       // Assert that the input fields are in the document
       expect(firstNameInput).toBeInTheDocument();
       expect(lastNameInput).toBeInTheDocument();
     });
-
     // it('should render the role as text when editUser.role exists', () => {
     //   const mockProps = {
     //     user: { ...jaeAccountMock }, // Your mock data
@@ -267,7 +264,6 @@ describe('User Table Data: Jae protected account record and login as Jae related
     it('should render the correct first name and last name', () => {
       const firstNameInput = screen.getByDisplayValue(jaeAccountMock.firstName);
       const lastNameInput = screen.getByDisplayValue(jaeAccountMock.lastName);
-
       expect(firstNameInput).toBeInTheDocument();
       expect(lastNameInput).toBeInTheDocument();
     });
@@ -318,14 +314,12 @@ describe('User Table Data: Jae protected account record and login as Jae related
     it('should render the correct email', () => {
       // Use getByDisplayValue for the email input
       const emailInput = screen.getByDisplayValue(jaeAccountMock.email);
-
       // Assert that the email input is in the document
       expect(emailInput).toBeInTheDocument();
     });
     it('should render the correct weekly committed hrs', () => {
       // Find the input element with the weekly committed hours value
       const hoursInput = screen.getByDisplayValue(`${jaeAccountMock.weeklycommittedHours}`);
-
       // Assert that the input is in the document
       expect(hoursInput).toBeInTheDocument();
     });
@@ -348,7 +342,6 @@ describe('User Table Data: Jae protected account record and login as Jae related
       expect(firstNameInput).toBeInTheDocument();
       expect(firstNameInput).toHaveAttribute('value', jaeAccountMock.firstName);
     });
-
     // Updated test case for last name input
     it('should render the last name input field with the correct value', () => {
       const lastNameInput = screen.getByDisplayValue(jaeAccountMock.lastName);
