@@ -1,6 +1,6 @@
 import React, { Component, useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
-import { Provider } from 'react-redux';
+import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router , useLocation} from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 import routes from '../routes';
@@ -42,16 +42,20 @@ if (localStorage.getItem(tokenKey)) {
 
 function UpdateDocumentTitle() {
   const location = useLocation();
+  const authUser = useSelector(state => state.userProfile);
+  const fullName = authUser?.firstName && authUser?.lastName 
+      ? `${authUser.firstName} ${authUser.lastName}` 
+      : 'User';
 
   // Define the routes array with pattern and title
   const routes = [
     { pattern: /^\/ProfileInitialSetup\/[^/]+$/, title: 'Profile Initial Setup' },
-    { pattern: /^\/dashboard$/, title: 'Dashboard' },
-    { pattern: /^\/dashboard\/[^/]+$/, title: 'User Dashboard' },
+    { pattern: /^\/dashboard$/, title: `Dashboard - ${fullName}` },
+    { pattern: /^\/dashboard\/[^/]+$/, title: `Dashboard - ${fullName}` },
     { pattern: /^\/project\/members\/[^/]+$/, title: 'Project Members' },
-    { pattern: /^\/timelog\/?$/, title: 'Timelog' },
-    { pattern: /^\/timelog\/[^/]+$/, title: 'User Timelog' },
-    { pattern: /^\/peoplereport\/[^/]+$/, title: 'People Report' },
+    { pattern: /^\/timelog\/?$/, title: `Timelog - ${fullName}` },
+    { pattern: /^\/timelog\/[^/]+$/, title: `Timelog - ${fullName}` },
+    { pattern: /^\/peoplereport\/[^/]+$/, title: `People Report- ${fullName}` },
     { pattern: /^\/projectreport\/[^/]+$/, title: 'Project Report' },
     { pattern: /^\/teamreport\/[^/]+$/, title: 'Team Report' },
     { pattern: /^\/taskeditsuggestions$/, title: 'Task Edit Suggestions' },
@@ -105,12 +109,12 @@ function UpdateDocumentTitle() {
     { pattern: /^\/email-subscribe$/, title: 'Email Subscribe' },
     { pattern: /^\/email-unsubscribe$/, title: 'Unsubscribe' },
     { pattern: /^\/infoCollections$/, title: 'Info Collections' },
-    { pattern: /^\/userprofile\/[^/]+$/, title: 'User Profile' },
-    { pattern: /^\/userprofileedit\/[^/]+$/, title: 'Edit User Profile' },
+    { pattern: /^\/userprofile\/[^/]+$/, title: `User Profile- ${fullName}` },
+    { pattern: /^\/userprofileedit\/[^/]+$/, title: `Edit User Profile- ${fullName}` },
     { pattern: /^\/updatepassword\/[^/]+$/, title: 'Update Password' },
     { pattern: /^\/Logout$/, title: 'Logout' },
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
-    { pattern: /^\/$/, title: 'Dashboard' },
+    { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
     { pattern: /.*/, title: 'HGN APP' }, // Default case
   ];
 
@@ -118,7 +122,7 @@ function UpdateDocumentTitle() {
     // Find the first matching route and set the document title
     const match = routes.find(route => route.pattern.test(location.pathname));
     document.title = match.title;
-  }, [location]);
+  }, [location, fullName]);
 
   return null;
 }
