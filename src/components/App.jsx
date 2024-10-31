@@ -43,210 +43,81 @@ if (localStorage.getItem(tokenKey)) {
 function UpdateDocumentTitle() {
   const location = useLocation();
 
+  // Define the routes array with pattern and title
+  const routes = [
+    { pattern: /^\/ProfileInitialSetup\/[^/]+$/, title: 'Profile Initial Setup' },
+    { pattern: /^\/dashboard$/, title: 'Dashboard' },
+    { pattern: /^\/dashboard\/[^/]+$/, title: 'User Dashboard' },
+    { pattern: /^\/project\/members\/[^/]+$/, title: 'Project Members' },
+    { pattern: /^\/timelog\/?$/, title: 'Timelog' },
+    { pattern: /^\/timelog\/[^/]+$/, title: 'User Timelog' },
+    { pattern: /^\/peoplereport\/[^/]+$/, title: 'People Report' },
+    { pattern: /^\/projectreport\/[^/]+$/, title: 'Project Report' },
+    { pattern: /^\/teamreport\/[^/]+$/, title: 'Team Report' },
+    { pattern: /^\/taskeditsuggestions$/, title: 'Task Edit Suggestions' },
+    { pattern: /^\/inventory\/[^/]+$/, title: 'Inventory' },
+    { pattern: /^\/inventory\/[^/]+\/wbs\/[^/]+$/, title: 'Inventory WBS' },
+    { pattern: /^\/weeklysummariesreport$/, title: 'Weekly Summaries Report' },
+    { pattern: /^\/reports$/, title: 'Reports' },
+    { pattern: /^\/teamlocations$/, title: 'Team Locations' },
+    { pattern: /^\/projects$/, title: 'Projects' },
+    { pattern: /^\/wbs\/tasks\/[^/]+\/[^/]+\/[^/]+$/, title: 'WBS Task Detail' },
+    { pattern: /^\/project\/wbs\/[^/]+$/, title: 'Project WBS' },
+    { pattern: /^\/wbs\/tasks\/[^/]+\/[^/]+$/, title: 'WBS Task Detail' },
+    { pattern: /^\/wbs\/tasks\/[^/]+$/, title: 'Single Task' },
+    { pattern: /^\/wbs\/samefoldertasks\/[^/]+$/, title: 'Same Folder Tasks' },
+    { pattern: /^\/usermanagement$/, title: 'User Management' },
+    { pattern: /^\/badgemanagement$/, title: 'Badge Management' },
+    { pattern: /^\/permissionsmanagement$/, title: 'Permissions Management' },
+    { pattern: /^\/permissionsmanagement\/[^/]+$/, title: 'User Role Permissions' },
+    { pattern: /^\/teams$/, title: 'Teams' },
+    { pattern: /^\/announcements$/, title: 'Announcements' },
+    { pattern: /^\/totalorgsummary$/, title: 'Total Organization Summary' },
+    { pattern: /^\/bmdashboard$/, title: 'BM Dashboard' },
+    { pattern: /^\/bmdashboard\/login$/, title: 'BM Dashboard Login' },
+    { pattern: /^\/bmdashboard\/materials\/purchase$/, title: 'Purchase Materials' },
+    { pattern: /^\/bmdashboard\/reusables\/purchase$/, title: 'Purchase Reusables' },
+    { pattern: /^\/bmdashboard\/equipment\/purchase$/, title: 'Purchase Equipment' },
+    { pattern: /^\/bmdashboard\/tools\/purchase$/, title: 'Purchase Tools' },
+    { pattern: /^\/bmdashboard\/projects\/[^/]+$/, title: 'BM Project Details' },
+    { pattern: /^\/bmdashboard\/lessonlist\/?$/, title: 'Lesson List' },
+    { pattern: /^\/bmdashboard\/materials\/update$/, title: 'Update Materials in Bulk' },
+    { pattern: /^\/bmdashboard\/reusables\/update$/, title: 'Update Reusables in Bulk' },
+    { pattern: /^\/bmdashboard\/materials\/add$/, title: 'Add Material' },
+    { pattern: /^\/bmdashboard\/equipment\/add$/, title: 'Add Equipment Type' },
+    { pattern: /^\/bmdashboard\/consumables\/purchase$/, title: 'Purchase Consumable' },
+    { pattern: /^\/bmdashboard\/inventory\/types$/, title: 'Check Inventory Types' },
+    { pattern: /^\/bmdashboard\/equipment$/, title: 'Equipment List' },
+    { pattern: /^\/bmdashboard\/equipment\/[^/]+$/, title: 'Equipment Detail' },
+    { pattern: /^\/bmdashboard\/consumables$/, title: 'Consumable List' },
+    { pattern: /^\/bmdashboard\/materials$/, title: 'Material List' },
+    { pattern: /^\/bmdashboard\/consumables\/add$/, title: 'Add Consumable' },
+    { pattern: /^\/bmdashboard\/reusables$/, title: 'Reusable List' },
+    { pattern: /^\/bmdashboard\/tools\/[^/]+\/update$/, title: 'Update Tool' },
+    { pattern: /^\/bmdashboard\/tools$/, title: 'Tools List' },
+    { pattern: /^\/bmdashboard\/tools\/add$/, title: 'Add Tool' },
+    { pattern: /^\/bmdashboard\/tools\/log$/, title: 'Log Tools' },
+    { pattern: /^\/bmdashboard\/tools\/[^/]+$/, title: 'Tool Detail' },
+    { pattern: /^\/bmdashboard\/lessonform\/[^/]*$/, title: 'Lesson Form' },
+    { pattern: /^\/bmdashboard\/inventorytypes$/, title: 'Inventory Types List' },
+    { pattern: /^\/login$/, title: 'Login' },
+    { pattern: /^\/forgotpassword$/, title: 'Forgot Password' },
+    { pattern: /^\/email-subscribe$/, title: 'Email Subscribe' },
+    { pattern: /^\/email-unsubscribe$/, title: 'Unsubscribe' },
+    { pattern: /^\/infoCollections$/, title: 'Info Collections' },
+    { pattern: /^\/userprofile\/[^/]+$/, title: 'User Profile' },
+    { pattern: /^\/userprofileedit\/[^/]+$/, title: 'Edit User Profile' },
+    { pattern: /^\/updatepassword\/[^/]+$/, title: 'Update Password' },
+    { pattern: /^\/Logout$/, title: 'Logout' },
+    { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
+    { pattern: /^\/$/, title: 'Dashboard' },
+    { pattern: /.*/, title: 'HGN APP' }, // Default case
+  ];
+
   useEffect(() => {
-    // Customize the title based on the route path
-    switch (true) {
-      case /^\/ProfileInitialSetup\/[^/]+$/.test(location.pathname):
-        document.title = 'Profile Initial Setup';
-        break;
-      case /^\/dashboard$/.test(location.pathname):
-        document.title = 'Dashboard';
-        break;
-      case /^\/dashboard\/[^/]+$/.test(location.pathname):
-        document.title = 'User Dashboard';
-        break;
-      case /^\/project\/members\/[^/]+$/.test(location.pathname):
-        document.title = 'Project Members';
-        break;
-      case /^\/timelog\/?$/.test(location.pathname):
-        document.title = 'Timelog';
-        break;
-      case /^\/timelog\/[^/]+$/.test(location.pathname):
-        document.title = 'User Timelog';
-        break;
-      case /^\/peoplereport\/[^/]+$/.test(location.pathname):
-        document.title = 'People Report';
-        break;
-      case /^\/projectreport\/[^/]+$/.test(location.pathname):
-        document.title = 'Project Report';
-        break;
-      case /^\/teamreport\/[^/]+$/.test(location.pathname):
-        document.title = 'Team Report';
-        break;
-      case /^\/taskeditsuggestions$/.test(location.pathname):
-        document.title = 'Task Edit Suggestions';
-        break;
-      case /^\/inventory\/[^/]+$/.test(location.pathname):
-        document.title = 'Inventory';
-        break;
-      case /^\/inventory\/[^/]+\/wbs\/[^/]+$/.test(location.pathname):
-        document.title = 'Inventory WBS';
-        break;
-      case /^\/weeklysummariesreport$/.test(location.pathname):
-        document.title = 'Weekly Summaries Report';
-        break;
-      case /^\/reports$/.test(location.pathname):
-        document.title = 'Reports';
-        break;
-      case /^\/teamlocations$/.test(location.pathname):
-        document.title = 'Team Locations';
-        break;
-      case /^\/projects$/.test(location.pathname):
-        document.title = 'Projects';
-        break;
-      case /^\/wbs\/tasks\/[^/]+\/[^/]+\/[^/]+$/.test(location.pathname):
-        document.title = 'WBS Task Detail';
-        break;
-      case /^\/project\/wbs\/[^/]+$/.test(location.pathname):
-        document.title = 'Project WBS';
-        break;
-      case /^\/wbs\/tasks\/[^/]+\/[^/]+$/.test(location.pathname):
-        document.title = 'WBS Task Detail';
-        break;
-      case /^\/wbs\/tasks\/[^/]+$/.test(location.pathname):
-        document.title = 'Single Task';
-        break;
-      case /^\/wbs\/samefoldertasks\/[^/]+$/.test(location.pathname):
-        document.title = 'Same Folder Tasks';
-        break;
-      case /^\/usermanagement$/.test(location.pathname):
-        document.title = 'User Management';
-        break;
-      case /^\/badgemanagement$/.test(location.pathname):
-        document.title = 'Badge Management';
-        break;
-      case /^\/permissionsmanagement$/.test(location.pathname):
-        document.title = 'Permissions Management';
-        break;
-      case /^\/permissionsmanagement\/[^/]+$/.test(location.pathname):
-        document.title = 'User Role Permissions';
-        break;
-      case /^\/teams$/.test(location.pathname):
-        document.title = 'Teams';
-        break;
-      case /^\/announcements$/.test(location.pathname):
-        document.title = 'Announcements';
-        break;
-      case /^\/totalorgsummary$/.test(location.pathname):
-        document.title = 'Total Organization Summary';
-        break;
-      case /^\/bmdashboard$/.test(location.pathname):
-        document.title = 'BM Dashboard';
-        break;
-      case /^\/bmdashboard\/login$/.test(location.pathname):
-        document.title = 'BM Dashboard Login';
-        break;
-      case /^\/bmdashboard\/materials\/purchase$/.test(location.pathname):
-        document.title = 'Purchase Materials';
-        break;
-      case /^\/bmdashboard\/reusables\/purchase$/.test(location.pathname):
-        document.title = 'Purchase Reusables';
-        break;
-      case /^\/bmdashboard\/equipment\/purchase$/.test(location.pathname):
-        document.title = 'Purchase Equipment';
-        break;
-      case /^\/bmdashboard\/tools\/purchase$/.test(location.pathname):
-        document.title = 'Purchase Tools';
-        break;
-      case /^\/bmdashboard\/projects\/[^/]+$/.test(location.pathname):
-        document.title = 'BM Project Details';
-        break;
-      case /^\/bmdashboard\/lessonlist\/?$/.test(location.pathname):
-        document.title = 'Lesson List';
-        break;
-      case /^\/bmdashboard\/materials\/update$/.test(location.pathname):
-        document.title = 'Update Materials in Bulk';
-        break;
-      case /^\/bmdashboard\/reusables\/update$/.test(location.pathname):
-        document.title = 'Update Reusables in Bulk';
-        break;
-      case /^\/bmdashboard\/materials\/add$/.test(location.pathname):
-        document.title = 'Add Material';
-        break;
-      case /^\/bmdashboard\/equipment\/add$/.test(location.pathname):
-        document.title = 'Add Equipment Type';
-        break;
-      case /^\/bmdashboard\/consumables\/purchase$/.test(location.pathname):
-        document.title = 'Purchase Consumable';
-        break;
-      case /^\/bmdashboard\/inventory\/types$/.test(location.pathname):
-        document.title = 'Check Inventory Types';
-        break;
-      case /^\/bmdashboard\/equipment$/.test(location.pathname):
-        document.title = 'Equipment List';
-        break;
-      case /^\/bmdashboard\/equipment\/[^/]+$/.test(location.pathname):
-        document.title = 'Equipment Detail';
-        break;
-      case /^\/bmdashboard\/consumables$/.test(location.pathname):
-        document.title = 'Consumable List';
-        break;
-      case /^\/bmdashboard\/materials$/.test(location.pathname):
-        document.title = 'Material List';
-        break;
-      case /^\/bmdashboard\/consumables\/add$/.test(location.pathname):
-        document.title = 'Add Consumable';
-        break;
-      case /^\/bmdashboard\/reusables$/.test(location.pathname):
-        document.title = 'Reusable List';
-        break;
-      case /^\/bmdashboard\/tools\/[^/]+\/update$/.test(location.pathname):
-        document.title = 'Update Tool';
-        break;
-      case /^\/bmdashboard\/tools$/.test(location.pathname):
-        document.title = 'Tools List';
-        break;
-      case /^\/bmdashboard\/tools\/add$/.test(location.pathname):
-        document.title = 'Add Tool';
-        break;
-      case /^\/bmdashboard\/tools\/log$/.test(location.pathname):
-        document.title = 'Log Tools';
-        break;
-      case /^\/bmdashboard\/tools\/[^/]+$/.test(location.pathname):
-        document.title = 'Tool Detail';
-        break;
-      case /^\/bmdashboard\/lessonform\/[^/]*$/.test(location.pathname):
-        document.title = 'Lesson Form';
-        break;
-      case /^\/bmdashboard\/inventorytypes$/.test(location.pathname):
-        document.title = 'Inventory Types List';
-        break;
-      case /^\/login$/.test(location.pathname):
-        document.title = 'Login';
-        break;
-      case /^\/forgotpassword$/.test(location.pathname):
-        document.title = 'Forgot Password';
-        break;
-      case /^\/email-subscribe$/.test(location.pathname):
-        document.title = 'Email Subscribe';
-        break;
-      case /^\/email-unsubscribe$/.test(location.pathname):
-        document.title = 'Unsubscribe';
-        break;
-      case /^\/infoCollections$/.test(location.pathname):
-        document.title = 'Info Collections';
-        break;
-      case /^\/userprofile\/[^/]+$/.test(location.pathname):
-        document.title = 'User Profile';
-        break;
-      case /^\/userprofileedit\/[^/]+$/.test(location.pathname):
-        document.title = 'Edit User Profile';
-        break;
-      case /^\/updatepassword\/[^/]+$/.test(location.pathname):
-        document.title = 'Update Password';
-        break;
-      case /^\/Logout$/.test(location.pathname):
-        document.title = 'Logout';
-        break;
-      case /^\/forcePasswordUpdate\/[^/]+$/.test(location.pathname):
-        document.title = 'Force Password Update';
-        break;
-      case /^\/$/.test(location.pathname):
-        document.title = 'Dashboard';
-        break;
-      default:
-        document.title = 'HGN APP';
-    }    
+    // Find the first matching route and set the document title
+    const match = routes.find(route => route.pattern.test(location.pathname));
+    document.title = match.title;
   }, [location]);
 
   return null;
