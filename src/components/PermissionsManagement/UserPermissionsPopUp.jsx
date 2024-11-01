@@ -86,15 +86,15 @@ function UserPermissionsPopUp({
     await axios
       .put(url, newUserInfo)
       .then(() => {
-        if(!toastShown){
-        const SUCCESS_MESSAGE = `
+        if (!toastShown) {
+          const SUCCESS_MESSAGE = `
         Permissions have been updated successfully. 
         Please inform the user to log out and log back in for the new permissions to take effect.`;
-        toast.success(SUCCESS_MESSAGE, {
-          autoClose: 10000,
-        });
-        setToastShown(true);
-      }
+          toast.success(SUCCESS_MESSAGE, {
+            autoClose: 10000,
+          });
+          setToastShown(true);
+        }
         toggle();
       })
       .catch(err => {
