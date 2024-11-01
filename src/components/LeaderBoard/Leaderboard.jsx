@@ -69,7 +69,7 @@ function LeaderBoard({
   getOrgData,
   getMouseoverText,
   leaderBoardData,
-  loggedInUser,
+  displayUserRole,
   organizationData,
   timeEntries,
   isVisible,
@@ -80,10 +80,9 @@ function LeaderBoard({
   darkMode,
   getWeeklySummaries,
 }) {
-  const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  const isOwner = ['Owner'].includes(loggedInUser.role);
+  const isOwner = ['Owner'].includes(displayUserRole);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
@@ -101,7 +100,7 @@ function LeaderBoard({
   const [userRole, setUserRole] = useState();
   const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
   const [innerWidth, setInnerWidth] = useState();
-  const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(loggedInUser.role);
+  const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(displayUserRole);
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
 
@@ -118,7 +117,7 @@ function LeaderBoard({
     };
 
     fetchInitial();
-  }, []);
+  }, [displayUserId]);
 
   useEffect(() => {
     if (!isEqual(leaderBoardData, teamsUsers)) {
@@ -173,16 +172,16 @@ function LeaderBoard({
     setMouseoverTextValue(text);
   };
   useDeepEffect(() => {
-    getLeaderboardData(userId);
+    getLeaderboardData(displayUserId);
     getOrgData();
-  }, [timeEntries, userId]);
+  }, [timeEntries, displayUserId]);
 
   useDeepEffect(() => {
     try {
       if (window.screen.width < 540) {
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
-          const elem = document.getElementById(`id${userId}`);
+          const elem = document.getElementById(`id${displayUserId}`);
 
           if (elem) {
             const topPos = elem.offsetTop;
@@ -223,10 +222,10 @@ function LeaderBoard({
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
-      await getLeaderboardData(userId);
+      await getLeaderboardData(displayUserId);
       setTeamsUsers(leaderBoardData);
     } else {
-      await getLeaderboardData(userId);
+      await getLeaderboardData(displayUserId);
       renderTeamsList(usersSelectedTeam);
       setTextButton('View All');
     }
@@ -330,7 +329,7 @@ function LeaderBoard({
           <EditableInfoModal
             areaName="LeaderboardOrigin"
             areaTitle="Leaderboard"
-            role={loggedInUser.role}
+            role={displayUserRole}
             fontSize={24}
             darkMode={darkMode}
             isPermissionPage
@@ -385,7 +384,7 @@ function LeaderBoard({
             <EditableInfoModal
               areaName="LeaderboardInvisibleInfoPoint"
               areaTitle="Leaderboard settings"
-              role={loggedInUser.role}
+              role={displayUserRole}
               fontSize={24}
               darkMode={darkMode}
               isPermissionPage
@@ -417,7 +416,7 @@ function LeaderBoard({
                   <EditableInfoModal
                     areaName="Leaderboard"
                     areaTitle="Team Members Navigation"
-                    role={loggedInUser.role}
+                    role={displayUserRole}
                     fontSize={18}
                     isPermissionPage
                     darkMode={darkMode}
@@ -453,7 +452,7 @@ function LeaderBoard({
               <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
                 <span>{organizationData.name}</span>
-                {viewZeroHouraMembers(loggedInUser.role) && (
+                {viewZeroHouraMembers(displayUserRole) && (
                   <span className="leaderboard-totals-title">
                     0 hrs Totals:{' '}
                     {filteredUsers.filter(user => user.weeklycommittedHours === 0).length} Members
