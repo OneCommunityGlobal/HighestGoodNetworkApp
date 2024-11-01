@@ -325,7 +325,7 @@ const TeamMemberTasks = React.memo(props => {
 
     if (usersWithTasks.length > 0) {
       usersWithTasks.forEach(user => {
-        const teamNames = user.teams?.map(team => team.teamName) ?? [];
+        const teamNames = user.teams!==undefined?user.teams.map(team => team.teamName):[];
         const code = user.teamCode || 'noCodeLabel';
         const color = user.weeklySummaryOption || 'noColorLabel';
 
@@ -484,11 +484,7 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   return (
-    <div
-      className={
-        'container ' + (darkMode ? 'team-member-tasks bg-space-cadet' : 'team-member-tasks')
-      }
-    >
+    <div className={`container team-member-tasks ${darkMode ? " bg-space-cadet border-left border-right border-secondary" : ""}`}>
       <header className="header-box">
         <section className="d-flex flex-column">
           <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
@@ -507,8 +503,8 @@ const TeamMemberTasks = React.memo(props => {
               </span>
             </>
           ) : !isLoading && (userRole === 'Administrator' || userRole === 'Owner') ? (
-            <section className="d-flex flex-row mr-xl-2">
-              <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="mb-3">
+            <section className="team-selector-container">
+              <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className='mb-1 mr-1'>
                 <DropdownToggle caret>{selectedTeamName}</DropdownToggle>
                 <DropdownMenu>
                   {teams.length === 0 ? (
@@ -526,7 +522,6 @@ const TeamMemberTasks = React.memo(props => {
                   )}
                 </DropdownMenu>
               </Dropdown>
-              &nbsp; &nbsp;
               {teams.length === 0 ? (
                 <Link to="/teams">
                   <Button color="success" className="fw-bold" boxstyle={boxStyle}>
@@ -550,11 +545,11 @@ const TeamMemberTasks = React.memo(props => {
         </section>
         {finishLoading ? (
           <section className=" hours-btn-container flex-wrap ml-2">
-            <div className="mb-2 ">
+            <div className="hours-btn-div">
               <button
                 type="button"
                 className={
-                  ` mr-1 show-time-off-btn ${
+                  `m-1 show-time-off-btn ${
                     showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
                   }` + (darkMode ? ' box-shadow-dark' : '')
                 }
@@ -592,7 +587,7 @@ const TeamMemberTasks = React.memo(props => {
                   key={idx}
                   type="button"
                   className={
-                    `m-1 circle-border ${days} days ` + (darkMode ? 'box-shadow-dark' : '')
+                    `m-1 responsive-btn-size circle-border ${days} days ` + (darkMode ? 'box-shadow-dark' : '')
                   }
                   title={`Timelogs submitted in the past ${days} days`}
                   style={{
@@ -603,11 +598,40 @@ const TeamMemberTasks = React.memo(props => {
                   }}
                   onClick={() => selectPeriod(days)}
                 >
-                  {days} days
+                  {days} {days === "1" ? "day" : "days"}
                 </button>
               ))}
-            </div>
-            <EditableInfoModal
+              <select
+                className={`m-1 mobile-view-select circle-border ${darkMode ? 'box-shadow-dark' : ''}`}
+                onChange={(e) => selectPeriod(e.target.value)}
+                value={selectedPeriod}
+                title={`Timelogs submitted in the past ${selectedPeriod} days`}
+                style={{
+                  color: isTimeFilterActive ? 'white' : hrsFilterBtnColorMap[selectedPeriod],
+                  backgroundColor: isTimeFilterActive
+                    ? hrsFilterBtnColorMap[selectedPeriod]
+                    : '#007BFF',
+                  border: `1px solid ${hrsFilterBtnColorMap[selectedPeriod]}`,
+                }}
+              >
+                {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
+                  <option
+                    key={idx}
+                    value={days}
+                    style={{
+                      color: color,
+                      backgroundColor:
+                        selectedPeriod === days && isTimeFilterActive
+                          ? color
+                          : 'white',
+                      border: `1px solid ${color}`,
+                    }}
+                  >
+                    {days} {days === "1" ? "day" : "days"}
+                  </option>
+                ))}
+              </select>
+              <EditableInfoModal
               areaName="TeamMemberTasksTimeFilterInfoPoint"
               areaTitle="Team Member Task Time Filter"
               fontSize={22}
@@ -615,6 +639,7 @@ const TeamMemberTasks = React.memo(props => {
               role={authUser.role}
               darkMode={darkMode}
             />
+            </div>
           </section>
         ) : (
           <SkeletonLoading template="TimelogFilter" />
@@ -650,10 +675,12 @@ const TeamMemberTasks = React.memo(props => {
       )}
       {['Administrator', 'Owner', 'Manager', 'Mentor'].some(role => role === displayUser.role) && (
         <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 4 }} xs={{ size: 12 }}>
-            <span className={darkMode ? 'text-light' : ''}>Select Team</span>
+          <Col lg={{ size: 4}} xs={{ size: 12}} className='ml-3'>
+            <span className={darkMode ? "text-light responsive-font-size" : ""}>
+              Select Team
+            </span>
             <MultiSelect
-              className="multi-select-filter"
+              className="multi-select-filter responsive-font-size"
               options={teamNames}
               value={selectedTeamNames}
               onChange={e => {
@@ -661,10 +688,12 @@ const TeamMemberTasks = React.memo(props => {
               }}
             />
           </Col>
-          <Col lg={{ size: 4 }} xs={{ size: 12 }}>
-            <span className={darkMode ? 'text-light' : ''}>Select Team Code</span>
+          <Col lg={{ size: 4}} xs={{ size: 12}} className='ml-3'>
+            <span className={darkMode ? "text-light responsive-font-size" : ""}>
+            Select Team Code
+            </span>
             <MultiSelect
-              className="multi-select-filter"
+              className="multi-select-filter responsive-font-size"
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
@@ -672,10 +701,12 @@ const TeamMemberTasks = React.memo(props => {
               }}
             />
           </Col>
-          <Col lg={{ size: 4 }} xs={{ size: 12 }}>
-            <span className={darkMode ? 'text-light' : ''}>Select Color</span>
+          <Col lg={{ size: 4 }} xs={{ size: 12 }} className='ml-3'>
+            <span className={darkMode ? "text-light responsive-font-size" : ""}>
+            Select Color
+            </span>
             <MultiSelect
-              className="multi-select-filter"
+              className="multi-select-filter responsive-font-size"
               options={colors}
               value={selectedColors}
               onChange={e => {
@@ -686,23 +717,14 @@ const TeamMemberTasks = React.memo(props => {
         </Row>
       )}
       <div className="task_table-container">
-        <Table>
-          <thead
-            className={`pc-component ${darkMode ? 'bg-space-cadet' : ''}`}
-            style={{ position: 'sticky', top: 0 }}
-          >
+        <Table className='task-table'>
+          <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
               {/* Empty column header for hours completed icon */}
-              <th colSpan={1} className={darkMode ? 'bg-space-cadet' : ''} />
-              <th
-                colSpan={2}
-                className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}
-              >
-                <Table
-                  borderless
-                  className={'team-member-tasks-subtable ' + (darkMode ? 'text-light' : '')}
-                >
-                  <thead className={darkMode ? 'bg-space-cadet' : ''}>
+              <th colSpan={1} className={`hours-completed-column ${darkMode ? "bg-space-cadet" : ""}`}/>
+              <th colSpan={2} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
+                <Table borderless className={`team-member-tasks-subtable ${darkMode ? "text-light" : ""}`}>
+                  <thead className={darkMode ? "bg-space-cadet" : ""}>
                     <tr>
                       <th
                         className={`team-member-tasks-headers team-member-tasks-user-name ${
