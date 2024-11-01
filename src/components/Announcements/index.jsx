@@ -170,7 +170,7 @@ function Announcements() {
         return;
       }
   
-      // 直接向后端请求发布内容到 LinkedIn
+      // post to LinkedIn
       const postResponse = await fetch('http://localhost:4500/api/postToLinkedIn', {
         method: 'POST',
         headers: {
