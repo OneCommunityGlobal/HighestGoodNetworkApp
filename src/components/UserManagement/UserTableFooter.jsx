@@ -1,10 +1,11 @@
 import React from 'react';
+
 const NUMBER_OF_PAGE_LINK = 5;
 
 const UserTableFooter = React.memo(props => {
-  const darkMode = props.darkMode;
+  const { darkMode } = props;
   const onSelectPageSize = pageSize => {
-    props.onSelectPageSize(parseInt(pageSize));
+    props.onSelectPageSize(parseInt(pageSize, 10));
   };
 
   const onPageSelect = page => {
@@ -25,12 +26,11 @@ const UserTableFooter = React.memo(props => {
             <button
               type="button"
               className={`btn btn-default ${darkMode ? 'text-light' : ''}`}
-              onClick={e => {
+              onClick={() => {
                 if (props.selectedPage > 1) {
                   props.onPageSelect(props.selectedPage - 1);
                 }
               }}
-
             >
               Previous
             </button>
@@ -43,8 +43,8 @@ const UserTableFooter = React.memo(props => {
             <button
               type="button"
               className={`btn btn-default ${darkMode ? 'text-light' : ''}`}
-              onClick={e => {
-                if (props.selectedPage <= parseInt(props.datacount / props.pageSize)) {
+              onClick={() => {
+                if (props.selectedPage <= parseInt(props.datacount / props.pageSize, 10)) {
                   props.onPageSelect(props.selectedPage + 1);
                 }
               }}
@@ -70,7 +70,7 @@ const PageSizeDropDown = React.memo(props => {
             id="ember739"
             className="changePageSize form-control ember-view"
             onChange={e => {
-              props.onSelectPageSize(parseInt(e.target.value));
+              props.onSelectPageSize(parseInt(e.target.value, 10));
             }}
           >
             <option value="10">10</option>
@@ -87,16 +87,21 @@ const PageSizeDropDown = React.memo(props => {
  * Stateless component to display the page summary labels.
  */
 const PageSummaryLabel = React.memo(props => {
-  let firstUserOfPage = (props.selectedPage - 1) * props.pageSize + 1;
-  let totalUsersFind = props.datacount;
-  let lastUserOfPage = props.selectedPage * props.pageSize;
+  const firstUserOfPage = (props.selectedPage - 1) * props.pageSize + 1;
+  const totalUsersFind = props.datacount;
+  const lastUserOfPage = props.selectedPage * props.pageSize;
 
-  const displayedUsers =
-    totalUsersFind < 10 || lastUserOfPage > totalUsersFind
-      ? totalUsersFind === 0
-        ? `Showing 0 - ${totalUsersFind} of ${totalUsersFind}`
-        : `Showing ${firstUserOfPage} - ${totalUsersFind} of ${totalUsersFind}`
-      : `Showing ${firstUserOfPage} - ${lastUserOfPage} of ${totalUsersFind}`;
+  let displayedUsers;
+
+  if (totalUsersFind < 10 || lastUserOfPage > totalUsersFind) {
+    if (totalUsersFind === 0) {
+      displayedUsers = `Showing 0 - ${totalUsersFind} of ${totalUsersFind}`;
+    } else {
+      displayedUsers = `Showing ${firstUserOfPage} - ${totalUsersFind} of ${totalUsersFind}`;
+    }
+  } else {
+    displayedUsers = `Showing ${firstUserOfPage} - ${lastUserOfPage} of ${totalUsersFind}`;
+  }
 
   return (
     <div
@@ -118,17 +123,20 @@ const PageLinks = React.memo(props => {
     // change page on props
   };
 
-  let pageLinks = [];
-  let totalPages = parseInt(props.datacount / props.pageSize) + 1;
+  const pageLinks = [];
+  const totalPages = parseInt(props.datacount / props.pageSize, 10) + 1;
 
   /* Start page will be 1 for the first time,  
    and it will change based on the selected page and total page so that we can show the lin for 5 . */
-  let startPage =
-    totalPages <= NUMBER_OF_PAGE_LINK
-      ? 1
-      : totalPages - props.selectedPage < NUMBER_OF_PAGE_LINK
-        ? totalPages - (NUMBER_OF_PAGE_LINK - 1)
-        : props.selectedPage;
+  let startPage;
+
+  if (totalPages <= NUMBER_OF_PAGE_LINK) {
+    startPage = 1; // When total pages are less than or equal to the number of page links
+  } else if (totalPages - props.selectedPage < NUMBER_OF_PAGE_LINK) {
+    startPage = totalPages - (NUMBER_OF_PAGE_LINK - 1); // When the remaining pages are less than the number of page links
+  } else {
+    startPage = props.selectedPage; // Default case
+  }
 
   let pageCounter = startPage;
 
@@ -140,7 +148,7 @@ const PageLinks = React.memo(props => {
       <PageLinkItem
         pageNo={pageCounter}
         onPageSelect={onPageSelect}
-        key={'page-link-' + pageCounter}
+        key={`page-link-${pageCounter}`}
         isSelected={props.selectedPage === pageCounter}
       />,
     );
@@ -156,13 +164,14 @@ const PageLinks = React.memo(props => {
 const PageLinkItem = React.memo(props => {
   return (
     <button
+      type="button"
       style={{ fontWeight: props.isSelected ? 'bold' : 'normal' }}
       className="page-no-link link-button"
       onClick={e => {
         e.preventDefault();
         props.onPageSelect(props.pageNo);
       }}
-      key={'page-' + props.pageNo}
+      key={`page-${props.pageNo}`}
     >
       {props.pageNo}
     </button>
