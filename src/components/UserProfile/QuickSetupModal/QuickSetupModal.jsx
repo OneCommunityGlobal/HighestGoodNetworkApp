@@ -1,34 +1,32 @@
 import { useState, useEffect } from 'react';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { connect, useSelector } from 'react-redux';
+import hasPermission from '../../../utils/permissions';
+import { boxStyle, boxStyleDark } from '../../../styles';
 import AssignSetUpModal from './AssignSetupModal';
 import QuickSetupCodes from './QuickSetupCodes';
 import SaveButton from '../UserProfileEdit/SaveButton';
 import AddNewTitleModal from './AddNewTitleModal';
 import { getAllTitle } from '../../../actions/title';
-
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import './QuickSetupModal.css';
-import '../../Header/DarkMode.css'
-import { connect, useSelector } from 'react-redux';
-import { boxStyle, boxStyleDark } from 'styles';
-import hasPermission from 'utils/permissions';
+import '../../Header/DarkMode.css';
 
 function QuickSetupModal(props) {
-  const darkMode = useSelector(state => state.theme.darkMode)
-  const canEditTitle=props.hasPermission('editTitle')
-  const canAddTitle=props.hasPermission('addNewTitle')
-  const canAssignTitle=props.hasPermission('assignTitle')
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const canEditTitle = props.hasPermission('editTitle');
+  const canAddTitle = props.hasPermission('addNewTitle');
+  const canAssignTitle = props.hasPermission('assignTitle');
   const [showAddTitle, setShowAddTitle] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [titles, setTitles] = useState([]);
   const [curtitle, setTitleOnClick] = useState({});
   const [titleOnSet, setTitleOnSet] = useState(true);
-  const [editMode, setEditMode]=useState(false);
+  const [editMode, setEditMode] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
-  const [adminLinks, setAdminLinks] = useState([])
+  const [adminLinks, setAdminLinks] = useState([]);
 
   useEffect(() => {
-
     getAllTitle()
       .then(res => {
         setTitles(res.data);
@@ -41,13 +39,13 @@ function QuickSetupModal(props) {
     getAllTitle()
       .then(res => {
         setTitles(res.data);
-        props.setUserProfile(props.userProfile)
-        props.setUserProfile(prev => ({ ...prev,adminLinks: adminLinks }));
+        props.setUserProfile(props.userProfile);
+        props.setUserProfile(prev => ({ ...prev, adminLinks }));
       })
       .catch(err => console.log(err));
   };
 
-  //handle save changes
+  // handle save changes
   const handleSaveChanges = () => {
     handleSubmit()
       .then(() => {
@@ -60,42 +58,57 @@ function QuickSetupModal(props) {
 
   return (
     <div className="container pt-3">
-      {(canAssignTitle || canEditTitle || canAddTitle)?
-      <QuickSetupCodes
-        setSaved={props.setSaved}
-        userProfile={props.userProfile}
-        setUserProfile={props.setUserProfile}
-        titles={titles}
-        setShowAssignModal={setShowAssignModal}
-        setTitleOnClick={setTitleOnClick}
-        editMode={editMode}
-        assignMode={canAssignTitle}
-        setShowAddTitle={setShowAddTitle}
-      />: ('')
-      }
+      {canAssignTitle || canEditTitle || canAddTitle ? (
+        <QuickSetupCodes
+          setSaved={props.setSaved}
+          userProfile={props.userProfile}
+          setUserProfile={props.setUserProfile}
+          titles={titles}
+          setShowAssignModal={setShowAssignModal}
+          setTitleOnClick={setTitleOnClick}
+          editMode={editMode}
+          assignMode={canAssignTitle}
+          setShowAddTitle={setShowAddTitle}
+        />
+      ) : (
+        ''
+      )}
 
-       <div className="col text-center mt-3 flex">
+      <div className="col text-center mt-3 flex">
         {canAddTitle ? (
           <Button
-          color="primary"
-          onClick={() => setShowAddTitle(true)}
-          style={darkMode ? boxStyleDark : boxStyle}
-          disabled={editMode==true?true:false}
+            color="primary"
+            onClick={() => setShowAddTitle(true)}
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={editMode == true}
+            title="Click this to add a new QST"
           >
-            Add A New Title
+            Add New QST
           </Button>
         ) : (
           ''
         )}
-        {canEditTitle? (!editMode ? (
-          <Button color="primary mx-2" onClick={() => setEditMode(true)} style={darkMode ? boxStyleDark : boxStyle}>
-            Edit
-          </Button>
+        {canEditTitle ? (
+          !editMode ? (
+            <Button
+              color="primary mx-2"
+              onClick={() => setEditMode(true)}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Edit
+            </Button>
+          ) : (
+            <Button
+              color="primary mx-2"
+              onClick={() => setEditMode(false)}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Save
+            </Button>
+          )
         ) : (
-          <Button color="primary mx-2" onClick={() => setEditMode(false)} style={darkMode ? boxStyleDark : boxStyle}>
-            Save
-          </Button>
-        )):('')}
+          ''
+        )}
       </div>
       <div className="col text-center mt-3">
         {canAssignTitle ? (
@@ -110,7 +123,7 @@ function QuickSetupModal(props) {
           ''
         )}
       </div>
-      {(showAddTitle || editMode)? (
+      {showAddTitle || editMode ? (
         <AddNewTitleModal
           teamsData={props.teamsData}
           projectsData={props.projectsData}
@@ -126,7 +139,7 @@ function QuickSetupModal(props) {
         ''
       )}
 
-      {(canAssignTitle && showAssignModal && editMode===false) ? (
+      {canAssignTitle && showAssignModal && editMode === false ? (
         <AssignSetUpModal
           setSaved={() => props.setSaved(true)}
           handleSubmit={props.handleSubmit}
@@ -163,11 +176,9 @@ function QuickSetupModal(props) {
             </Button>
           </ModalFooter>
         </Modal>
-      )} 
-    </div> 
+      )}
+    </div>
   );
 }
 
-
-
-export default connect(null,{hasPermission})(QuickSetupModal);
+export default connect(null, { hasPermission })(QuickSetupModal);
