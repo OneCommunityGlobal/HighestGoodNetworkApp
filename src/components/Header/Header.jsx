@@ -31,6 +31,7 @@ import {
   SEND_EMAILS,
   VOLUNTEER_SUMMARY_REPORT,
   TOTAL_ORG_SUMMARY,
+  SCHEDULE_MEETINGS,
 } from '../../languages/en/ui';
 import {
   Collapse,
@@ -137,6 +138,9 @@ export function Header(props) {
     props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
+  // ScheduleMeetings
+  const canAccessScheduleMeetings = props.hasPermission('scheduleMeetings', !isAuthUser);
+  // console.log("canAccessScheduleMeetings", canAccessScheduleMeetings);
   // Permissions
   const canAccessPermissionsManagement =
     props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
@@ -394,6 +398,7 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
+                  canAccessScheduleMeetings ||
                   canAccessPermissionsManagement) && (
                   <UncontrolledDropdown nav inNavbar className='responsive-spacing'>
                     <DropdownToggle nav caret>
@@ -427,6 +432,11 @@ export function Header(props) {
                       {canAccessSendEmails && (
                         <DropdownItem tag={Link} to="/announcements" className={fontColor}>
                           {SEND_EMAILS}
+                        </DropdownItem>
+                      )}
+                      {canAccessScheduleMeetings && (
+                        <DropdownItem tag={Link} to="/schedulemeetings" className={fontColor}>
+                          {SCHEDULE_MEETINGS}
                         </DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (

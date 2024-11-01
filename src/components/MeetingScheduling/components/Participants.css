@@ -1,0 +1,17 @@
+.custom-dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  max-height: 200px;
+  overflow-y: auto;
+  background-color: #f8f9fa;
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+  border-radius: 0.25rem;
+  z-index: 100;
+}
+
+.custom-scrollable-menu {
+  max-height: 200px;
+  overflow-y: auto;
+}

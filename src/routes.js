@@ -76,6 +76,7 @@ const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/
 const Projects = lazy(() => import('./components/Projects'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
 const TotalOrgSummary = lazy(() => import('./components/TotalOrgSummary'));
+const MeetingScheduling = lazy(() => import('./components/MeetingScheduling'));
 const Reports = lazy(() => import('./components/Reports'));
 const PeopleReport = lazy(() => import('./components/Reports/PeopleReport'));
 const ProjectReport = lazy(() => import('./components/Reports/ProjectReport'));
@@ -251,12 +252,27 @@ export default (
           allowedRoles={[
             UserRole.Administrator,
             UserRole.Manager,
-            UserRole.CoreTeam,
+            UserRoleTab.CoreTeam,
             UserRole.Owner,
             UserRole.Mentor,
           ]}
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
+        />
+
+        <ProtectedRoute 
+          path="/schedulemeetings"
+          exact
+          component={MeetingScheduling}
+          fallback
+          allowedRoles={[
+            UserRole.Administrator,
+            UserRole.Manager,
+            UserRoleTab.CoreTeam,
+            UserRole.Owner,
+            UserRole.Mentor,
+          ]}
+          routePermissions={RoutePermissions.meetings}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}

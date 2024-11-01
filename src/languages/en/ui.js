@@ -78,3 +78,4 @@ export const ADD_MEMBER = 'Add Member';
 export const REQUESTED_TIME_OFF = 'Requested Time Off';
 
 export const SEND_EMAILS = 'Send Emails';
+export const SCHEDULE_MEETINGS = 'Schedule Meetings';
