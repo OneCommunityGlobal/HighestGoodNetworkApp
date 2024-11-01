@@ -4,11 +4,12 @@ import './UserProfileModal.css';  // For custom styling
 import axios from "axios";
 import { ENDPOINTS } from "utils/URL";
 import { toast } from "react-toastify";
+
 const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
-  // State to store the selected image info
+
   const [selectedImage, setSelectedImage] = useState(null);
   const suggestedProfilePics=userProfile.suggestedProfilePics;
-  console.log(suggestedProfilePics)
+  
   // Function to handle image selection
   const handleImageSelect = (image) => {
     setSelectedImage(image);  // Store the selected image info
@@ -35,8 +36,8 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
               className={`suggestedProfileTile ${selectedImage === image ? 'selected' : ''}`}
               onClick={() => handleImageSelect(image)}
             >
-              <img src={image.imgs[0].nitroLazySrc} alt={image.strongTexts[0]} />
-              <p>{image.strongTexts[0]}</p>
+              <img src={image} alt={image.alt} />
+              <p>{image.alt}</p>
             </div>
           ))}
         </div>
