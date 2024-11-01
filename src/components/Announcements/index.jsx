@@ -14,6 +14,7 @@ function Announcements() {
   const [headerContent, setHeaderContent] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
+  const [linkedinContent, setLinkedinContent] = useState(''); // LinkedIn content state
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
 
   useEffect(() => {
@@ -54,7 +55,7 @@ function Announcements() {
         const reader = new FileReader();
         reader.onload = function() {
           /*
-            Note: Now we need to register the blob in TinyMCEs image blob
+            Note: Now we need to register the blob in TinyMCE's image blob
             registry. In the next release this part hopefully won't be
             necessary, as we are looking to handle it internally.
           */
@@ -112,7 +113,7 @@ function Announcements() {
     });
     e.target.value = '';
   };
-  // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
+
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
@@ -158,6 +159,42 @@ function Announcements() {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const handleLinkedinContentChange = e => {
+    setLinkedinContent(e.target.value);
+  }
+
+  const handlePostToLinkedIn = async () => {
+    try {
+      if (linkedinContent.trim() === '') {
+        toast.error('Error: LinkedIn post content cannot be empty.');
+        return;
+      }
+  
+      // 直接向后端请求发布内容到 LinkedIn
+      const postResponse = await fetch('http://localhost:4500/api/postToLinkedIn', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: linkedinContent,
+        }),
+      });
+      
+  
+      if (!postResponse.ok) {
+        throw new Error('Failed to post to LinkedIn');
+      }
+  
+      toast.success('Post to LinkedIn successful!');
+      setLinkedinContent('');
+    } catch (error) {
+      toast.error('Failed to post to LinkedIn');
+      console.error('Error posting to LinkedIn:', error);
+    }
+  };
+
+  
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
       <div className="email-update-container">
@@ -176,7 +213,29 @@ function Announcements() {
           <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
             Broadcast Weekly Update
           </button>
+        {/* LinkedIn Editor Section */}
+        <div className="linkedin-editor">
+          <h3>LinkedIn Post Editor</h3>
+          <br />
+          {showEditor && <Editor
+            tinymceScriptSrc="/tinymce/tinymce.min.js"
+            id="linkedin-editor"
+            initialValue="<p>Enter LinkedIn content here</p>"
+            init={editorInit}
+            onEditorChange={(content) => {
+              setLinkedinContent(content);
+            }}
+          />}
+          <button
+            type="button"
+            className="send-button"
+            onClick={handlePostToLinkedIn}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Post to LinkedIn
+          </button>
         </div>
+        </div>        
         <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}  style={darkMode ? boxStyleDark : boxStyle}>
           <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
             Email List (comma-separated):
@@ -224,4 +283,3 @@ function Announcements() {
 }
 
 export default Announcements;
-
