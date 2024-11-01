@@ -65,6 +65,7 @@ import {
 import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
+import TaskNotification from './TaskNotification';
 
 export function Header(props) {
   const location = useLocation();
@@ -379,14 +380,7 @@ export function Header(props) {
                   </NavItem>
                 )}
                 <NavItem className='responsive-spacing'>
-                  <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
-                    <i className="fa fa-bell i-large">
-                      <i className="badge badge-pill badge-danger badge-notify">
-                        {/* Pull number of unread messages */}
-                      </i>
-                      <span className="sr-only">unread messages</span>
-                    </i>
-                  </NavLink>
+                  <TaskNotification/>
                 </NavItem>
                 {(canAccessUserManagement ||
                   canAccessBadgeManagement ||
