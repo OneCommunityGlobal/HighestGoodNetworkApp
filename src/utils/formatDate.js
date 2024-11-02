@@ -14,7 +14,9 @@ export const formatDateAndTime = (date) => moment(date).format('MMM-DD-YY, h:mm:
  * @param {*} date UTC timestamp string
  * @returns formatted date in 'MMM-DD-YY' format. Aug-30-2023
  */
-export const formatDate = (date) => moment(date).tz(LA_TIME_ZONE).format('MMM-DD-YY');
+export const formatDate = (date) => moment(date).tz(LA_TIME_ZONE).startOf('day').format('MMM-DD-YY');
+export const formatDateLocal = (date) => moment.utc(date).format('MMM-DD-YY');
+
 /**
  * 
  * @param {*} date UTC timestamp string
@@ -43,3 +45,4 @@ const DAY_OF_WEEK = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Fr
  */
 export const getDayOfWeekStringFromUTC = (utcTs) => moment(utcTs).tz('America/Los_Angeles').day();
 
+export const CREATED_DATE_CRITERIA = '2022-01-01';

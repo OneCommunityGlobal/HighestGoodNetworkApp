@@ -89,7 +89,6 @@
   border-color: #ca50db;
   outline-color: #ca50db;
 }
-
 @media (min-width: 1300px) {
   .tasks-table-filters-wrapper {
     flex-direction: row;

@@ -37,7 +37,7 @@ function UserRoleTab(props) {
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-      <div className="userRoleTab__container">
+      <div className="userRoleTab__container pb-5">
         <button
           type="button"
           onClick={() => history.push('/permissionsmanagement')}

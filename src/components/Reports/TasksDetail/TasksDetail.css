@@ -61,24 +61,35 @@
 }
 
 .tasks-detail-center-cells {
-  justify-self: center;
+  text-align: center;
 }
 
 .tasks-detail-task-name {
-  word-break: break-all;
+  flex: 2;
 }
 
-.tasks-detail-total {
-  text-align: left;
-  margin-bottom: 12px;
-  font-size: 18px;
-  color: #acacac;
+.isActive i {
+  color: green;
+}
+
+.isNotActive i {
+  color: red;
+}
+
+.dark-mode-row {
+  background-color: #3A506B ;
+  color: #fff;
+}
+/* Responsive design */
+@media screen and (max-width: 1100px) {
+  .collapse-column {
+    display: none;
+  }
 }
 .dark-mode-row {
   background-color:  #162e4c;
   color: #fff;
 }
-
 .dark-mode .tasks-detail-table-head > div {
   border-bottom: none; /* Remove bottom border in header */
   border-top: none; /* Remove top border in header */
