@@ -190,8 +190,11 @@ function BadgeReport(props) {
   };
 
   useEffect(() => {
-    setSortBadges(JSON.parse(JSON.stringify(props.badges)) || []);
-    let newBadges = sortBadges.slice();
+    // Deep copy of props.badges to avoid direct mutation
+    const initialBadges = JSON.parse(JSON.stringify(props.badges)) || [];
+    let newBadges = initialBadges.slice();
+
+    // Sorting logic
     newBadges.sort((a, b) => {
       if (a.badge.ranking === 0) return 1;
       if (b.badge.ranking === 0) return -1;
@@ -201,16 +204,23 @@ function BadgeReport(props) {
       if (a.badge.badgeName < b.badge.badgeName) return -1;
       return 0;
     });
-    setNumFeatured(0);
-    newBadges.forEach((badge, index) => {
-      if (badge.featured) {
-        setNumFeatured(++numFeatured);
-      }
 
-      if (typeof newBadges[index] === 'string') {
-        newBadges[index].lastModified = new Date(newBadges[index].lastModified);
+    // Count featured badges and update lastModified date
+    let featuredCount = 0;
+    newBadges = newBadges.map(badge => {
+      if (badge.featured) {
+        featuredCount++;
       }
+      if (typeof badge === 'string') {
+        return {
+          ...badge,
+          lastModified: new Date(badge.lastModified),
+        };
+      }
+      return badge;
     });
+
+    setNumFeatured(featuredCount);
     setSortBadges(newBadges);
   }, [props.badges]);
 
@@ -314,7 +324,7 @@ function BadgeReport(props) {
   const deleteBadge = () => {
     let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
     if (badgeToDelete.featured) {
-      setNumFeatured(--numFeatured);
+      setNumFeatured(prevNumFeatured => prevNumFeatured - 1);
     }
     setSortBadges(newBadges);
     setShowModal(false);
@@ -347,7 +357,10 @@ function BadgeReport(props) {
       <div className="desktop">
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
-            <thead style={{ zIndex: '10' }}>
+            <thead
+              style={{ zIndex: '10', pointerEvents: 'none' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
+            >
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>

@@ -8,11 +8,13 @@ export const ENDPOINTS = {
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,
+  USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) => `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   USERS_ALLTEAMCODE_CHANGE : `${APIEndpoint}/AllTeamCodeChanges`,
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
+  USER_PROFILE_BASIC_INFO : `${APIEndpoint}/userProfile/basicInfo`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
@@ -41,6 +43,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/TimeEntry/user/${userId}/${fromDate}/${toDate}`,
   TIME_ENTRIES_USER_LIST: `${APIEndpoint}/TimeEntry/users`,
   TIME_ENTRIES_REPORTS: `${APIEndpoint}/TimeEntry/reports`,
+  TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT: `${APIEndpoint}/TimeEntry/reports/projects`,
+  TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT: `${APIEndpoint}/TimeEntry/reports/people`,
   TIME_ENTRIES_LOST_USER_LIST: `${APIEndpoint}/TimeEntry/lostUsers`,
   TIME_ENTRIES_LOST_PROJ_LIST: `${APIEndpoint}/TimeEntry/lostProjects`,
   TIME_ENTRIES_LOST_TEAM_LIST: `${APIEndpoint}/TimeEntry/lostTeams`,
@@ -177,9 +181,9 @@ export const ENDPOINTS = {
   GET_TOTAL_COUNTRY_COUNT: () => `${APIEndpoint}/getTotalCountryCount`,
 
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
-
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: (searchName) => `${APIEndpoint}/userProfile/projects/${searchName}`,
+
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
