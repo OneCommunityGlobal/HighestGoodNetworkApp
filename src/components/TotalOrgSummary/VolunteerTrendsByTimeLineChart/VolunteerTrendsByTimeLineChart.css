@@ -1,0 +1,13 @@
+.chart-container {
+  display: grid;
+  justify-content: center;
+  text-align: center;
+  padding: 10px;
+}
+
+@media (max-width: 500px) {
+  .chart-container {
+    justify-content: start;
+    overflow: scroll;
+  }
+}
