@@ -3,8 +3,14 @@ import { useDispatch } from 'react-redux';
 // import whatever file I need to pull the information of a given role's permissions
 import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
 import './PermissionChangeModal.css';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
-function PermissionChangeModal({ userProfile, oldUserProfile }) {
+function PermissionChangeModal({ 
+  userProfile, 
+  oldUserProfile, 
+  isOpen, 
+  closeModal 
+}) {
   // Creating a modal that pops up when someone changes a user's role
   // and the user has custom permissions that differ from the permissions
   // of their old role. It should show the difference between the current permissions of the user
@@ -17,6 +23,8 @@ function PermissionChangeModal({ userProfile, oldUserProfile }) {
   const [checkedAddedPermissions, setCheckedAddedPermissions] = useState({});
   const [checkedRemovedPermissions, setCheckedRemovedPermissions] = useState({});
 
+  const openPermissionModal = () => setPermissionModalOpen(true);
+  const closePermissionModal = () => setPermissionModalOpen(false);
   // create variable for user
   const user = userProfile;
   // create variable for old role
@@ -124,13 +132,10 @@ function PermissionChangeModal({ userProfile, oldUserProfile }) {
 
   return (
     <div className="modal-content">
-      <div className="modal-header">
-        <h2 className="modal-title">Change User Role</h2>
-        <button className="close-button" /* onClick={closeModal} */ type="button">
-          &times;
-        </button>
-      </div>
-      <div className="modal-body">
+    <Modal isOpen={isOpen} toggle={closeModal}>
+      <ModalHeader toggle={closeModal}>Change User Role</ModalHeader>
+      <ModalBody>
+      {/* <div className="modal-body"> */}
         <p>
           You are changing the role of a Special Person with special permissions. This person has
           the following permissions that are different from the {newRole} role you are
@@ -166,7 +171,10 @@ function PermissionChangeModal({ userProfile, oldUserProfile }) {
             </li>
           ))}
         </ul>
-        <div className="modal-footer">
+      {/* </div> */}
+        </ModalBody>
+        <ModalFooter>
+        {/* <div className="modal-footer"> */}
           <button className="modal-cancel-button" 
           /* onClick={closeModal} */ 
           /* onClick={testUser}  */
@@ -177,8 +185,10 @@ function PermissionChangeModal({ userProfile, oldUserProfile }) {
           <button className="modal-confirm-button" /* onClick={confirmModal} */ type="submit">
             Confirm
           </button>
-        </div>
-      </div>
+        {/* </div> */}
+        </ModalFooter>
+      {/* </div> */}
+    </Modal>
     </div>
   );
 }

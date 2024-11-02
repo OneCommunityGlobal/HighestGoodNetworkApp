@@ -310,6 +310,7 @@ const BasicInformationTab = props => {
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
   const [oldUserProfile, setOldUserProfile] = useState(null);
+  const [isPermissionModalOpen, setPermissionModalOpen] = useState(true);
 
   let topMargin = '6px';
   if (isUserSelf) {
@@ -367,6 +368,9 @@ const BasicInformationTab = props => {
     setOldUserProfile(userProfile);
     console.log('oldUserProfile: ', userProfile);
   }, [userProfile]);
+
+  const openPermissionModal = () => setPermissionModalOpen(true);
+  const closePermissionModal = () => setPermissionModalOpen(false);
 
   const nameComponent = (
     <>
@@ -510,7 +514,12 @@ const BasicInformationTab = props => {
 
   const roleComponent = (
     <>
-      <PermissionChangeModal userProfile={userProfile} oldUserProfile={oldUserProfile} />
+      <PermissionChangeModal 
+        userProfile={userProfile} 
+        oldUserProfile={oldUserProfile} 
+        isOpen={isPermissionModalOpen}
+        closeModal={closePermissionModal}
+      />
       <Col>
         <Label className={darkMode ? 'text-light' : ''}>Role</Label>
       </Col>
