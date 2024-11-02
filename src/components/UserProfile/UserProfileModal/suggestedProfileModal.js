@@ -36,8 +36,8 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
               className={`suggestedProfileTile ${selectedImage === image ? 'selected' : ''}`}
               onClick={() => handleImageSelect(image)}
             >
-              <img src={image} alt={image.alt} />
-              <p>{image.alt}</p>
+              <img src={image.nitro_src} alt={image.alt} title={image.title} />
+              <p>{image.title!==undefined && image.title.trim()!==""?image.title:image.alt.split(" ").slice(0, 3).join(" ")}</p>
             </div>
           ))}
         </div>
