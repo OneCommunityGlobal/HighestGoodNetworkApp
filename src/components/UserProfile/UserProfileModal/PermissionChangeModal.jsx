@@ -2,6 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch } from 'react-redux';
 // import whatever file I need to pull the information of a given role's permissions
 import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
+import { permissionLabels } from '../../PermissionsManagement/PermissionsConst'
 import './PermissionChangeModal.css';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
@@ -81,7 +82,7 @@ function PermissionChangeModal({
     return customAddedPermissions.filter(permission => !newRolePermissions.includes(permission));
   }, [customAddedPermissions, newRolePermissions]);
 
-  const formatPermission = permission => {
+  /* const formatPermission = permission => {
     let formattedPermission = '';
     for (let i = 0; i < permission.length; i++) {
       if (permission[i] === permission[i].toUpperCase()) {
@@ -90,6 +91,20 @@ function PermissionChangeModal({
       formattedPermission += permission[i];
     }
     return formattedPermission.charAt(0).toUpperCase() + formattedPermission.slice(1);
+  }; */
+
+  const formatPermission = permission => {
+    // find the permission in the permissionLabels array, then subperms array
+    for (let label of permissionLabels) {
+      for (let subperm of label.subperms) {
+        // if the key matches the permission, return the label
+        if (subperm.key === permission) {
+          return subperm.label;
+        }
+      }
+    }
+    // if the permission is not found in the permissionLabels array, return the permission
+    return permission;
   };
 
   useEffect(() => {
