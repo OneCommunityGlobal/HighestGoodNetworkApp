@@ -1,49 +1,117 @@
-
+/* Default full size layout (applies to all screen sizes by default) */
 .teams__overview--top {
   display: flex;
-  gap: 10px; 
+  gap: 10px;
   background-color: transparent;
 }
 
 .teams__overview--top .card {
-  flex: 1; 
-  background-color: white; 
-  box-shadow: none; 
-  border: none; 
+  flex: 1;
+  background-color: white;
+  box-shadow: none;
+  border: none;
 }
 
-@media (max-width: 479px) {
-  .teams__overview--top .card {
-    flex: 1 1 45%; 
-    margin: 5px 0;
-  }
-
-  .teams__overview--top {
-    justify-content: space-between; 
-  }
-}
-
-@media (max-width: 768px) {
-  .teams__overview--top .card {
-    padding: 10px; /* Add padding to the cards at 768px and below */
-  }
-}
-/* Table CSS */
-
+/* General table layout */
 .table-container {
   width: 100%;
-  overflow-x: auto;
+  overflow: hidden; /* Stops horizontal scrolling on the table */
   padding-left: 5px;
-  padding-right: 5px; 
-  box-sizing: border-box; 
+  padding-right: 5px;
+  box-sizing: border-box;
 }
 
 .table {
   width: 100%;
-  margin: 0 auto; 
-  border-collapse: collapse; 
+  margin: 0 auto;
+  border-collapse: collapse;
+  table-layout: auto; /* Allows more flexibility in layout */
 }
 
+.table th, .table td {
+  padding: 10px;
+  font-size: 14px;
+  white-space: normal; /* Allows wrapping within each cell */
+  word-break: break-word; /* Breaks long text to fit within cells */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Set width percentages to control column sizes */
+.table th:nth-child(1), .table td:nth-child(1) {
+  width: 5%; /* Adjust first column width */
+  white-space: nowrap; /* Prevent stacking/wrapping of numbers */
+  text-align: center; 
+}
+
+
+.table th:nth-child(2), .table td:nth-child(2) {
+  width: 40%; /* Adjust team name column to take up more space */
+}
+
+.table th:nth-child(3), .table td:nth-child(3) {
+  width: 15%; /* Adjust Active column width */
+}
+
+.table th:nth-child(4), .table td:nth-child(4) {
+  width: 20%; /* Adjust Members column width */
+}
+
+/* Buttons should stay aligned horizontally */
+.usermanagement-actions-cell {
+  white-space: nowrap; /* Prevent line breaks in the buttons' container */
+}
+
+.usermanagement-actions-cell .btn-group {
+  display: flex;
+  gap: 5px; /* Add space between buttons */
+}
+
+.usermanagement-actions-cell .btn {
+  padding: 5px 8px; /* Adjust padding for better fit */
+}
+
+/* Cards styling */
+.card#card_team, .card#card_active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 8px;
+  height: 40px;
+  width: 300px;
+  margin: 10px;
+  padding: 10px;
+}
+
+.card#card_team {
+  background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
+}
+
+.card#card_active {
+  background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-text i {
+  margin-right: 5px;
+}
+
+/* Media Queries */
+
+/* 800px and below */
 @media (max-width: 800px) {
   .table-container {
     padding-left: 5px;
@@ -53,50 +121,150 @@
   .table {
     display: block;
     width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch; /* Smooth scrolling on mobile */
+  }
+
+  .table th, .table td {
+    padding: 8px;
+    font-size: 13px;
   }
 }
 
-.card#card_team {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
-    border-radius: 8px;
-    height: 40px;
-    width: 300px;
-    margin-top: 10px;
-    padding: 10px;
-  }
-  
-  .card#card_active {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
-    border-radius: 8px;
-    height: 40px;
-    width: 300px;
-    margin: 10px;
-    padding: 10px;
+/* 767px and below */
+@media (max-width: 767px) {
+  body {
+    overflow-x: hidden;
   }
 
-  .card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  .table-container {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden; /* Avoid side scrolling */
   }
 
-  .card-text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .table {
+    table-layout: auto;
+    width: 100%; /* Ensure table fits within viewport */
+    max-width: 100%;
   }
 
-  .card-text i {
-    margin-right: 5px;
+  .table th, .table td {
+    padding: 6px;
+    font-size: 12px;
   }
+
+  .btn {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+
+  .usermanagement-actions-cell .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+}
+
+/* 575px and below */
+@media (max-width: 575px) {
+  .table th, .table td {
+    padding: 5px;
+    font-size: 11px;
+  }
+
+  .table-container {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden; /* Prevents scrolling within table container */
+  }
+
+  .btn {
+    font-size: 9px;
+    padding: 3px 5px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+}
+
+/* 479px and below */
+@media (max-width: 479px) {
+  .teams__overview--top .card {
+    flex: 1 1 45%;
+    margin: 5px 0;
+  }
+
+  .teams__overview--top {
+    justify-content: space-between;
+  }
+
+  .table th, .table td {
+    padding: 4px;
+    font-size: 10px;
+  }
+
+  .table-container {
+    width: 100%;
+    padding-left: 3px;
+    padding-right: 3px;
+    overflow: hidden;
+  }
+
+  .btn {
+    font-size: 8px;
+    padding: 2px 4px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+}
+
+/* 400px and below */
+@media (max-width: 400px) {
+  .table th, .table td {
+    padding: 2px;
+    font-size: 9px;
+  }
+
+  .table-container {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
+  }
+
+  .btn {
+    font-size: 7px;
+    padding: 2px 4px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+}
+
+/* Ensure no overflow */
+.table-container {
+  overflow-x: hidden !important; /* Prevents horizontal scroll within table container */
+}
+
+.usermanagement-actions-cell {
+  white-space: nowrap;
+}
+
+.usermanagement-actions-cell .btn-group {
+  display: flex;
+  gap: 5px;
+}
+
+@media (max-width: 767px) {
+  .table, .table-container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
