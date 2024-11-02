@@ -122,7 +122,7 @@ export const Badges = (props) => {
                   <Button className="btn--dark-sea-green" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
                     Select Featured
                   </Button>
-                  <Modal size="lg" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
+                  <Modal size="xl" isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''} fullscreen>
                     <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Full View of Badge History</ModalHeader>
                     <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                       <BadgeReport

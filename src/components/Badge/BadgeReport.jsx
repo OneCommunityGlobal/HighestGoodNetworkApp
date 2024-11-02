@@ -47,6 +47,7 @@ function BadgeReport(props) {
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
 
+
   const darkMode = props.darkMode;
 
   async function imageToUri(url, callback) {
@@ -362,13 +363,13 @@ function BadgeReport(props) {
               className={darkMode ? 'bg-space-cadet' : ''}
             >
               <tr style={{ zIndex: '10' }}>
-                <th style={{ width: '90px' }}>Badge</th>
+                <th >Badge</th>
                 <th>Name</th>
-                <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '110px' }}>Earned Dates</th>
-                <th style={{ width: '90px' }}>Count</th>
+                <th >Modified</th>
+                <th>Earned Dates</th>
+                <th >Count</th>
                 {canDeleteBadges ? <th>Delete</th> : []}
-                <th style={{ width: '70px', zIndex: '1' }}>Featured</th>
+                <th>Featured</th>
               </tr>
             </thead>
             <tbody>
@@ -406,7 +407,7 @@ function BadgeReport(props) {
                             timeZone: 'America/Los_Angeles',
                           })}
                     </td>
-                    <td style={{ display: 'flex', alignItems: 'center' }}>
+                    <td>
                       <>
                         {' '}
                         <UncontrolledDropdown className="me-2" direction="down">
@@ -548,13 +549,16 @@ function BadgeReport(props) {
       </div>
       <div className="tablet">
         <div style={{ overflow: 'auto', height: '68vh' }}>
-          <Table className={darkMode ? 'text-light' : ''}>
+          <Table>
             <thead style={{ zIndex: '10' }}>
               <tr style={{ zIndex: '10' }}>
-                <th style={{ width: '93px' }}>Badge</th>
+                <th >Badge</th>
                 <th>Name</th>
-                <th style={{ width: '110px' }}>Modified</th>
+                <th>Modified</th>
                 <th style={{ width: '100%', zIndex: '10' }}>Earned</th>
+                <th >Count</th>
+                {canDeleteBadges ? <th>Delete</th> : []}
+                <th>Featured</th>
               </tr>
             </thead>
             <tbody>
@@ -683,6 +687,50 @@ function BadgeReport(props) {
                           </DropdownMenu>
                         </UncontrolledDropdown>
                       </ButtonGroup>
+                    </td>
+                    <td>
+                      {canUpdateBadges ? (
+                        <Input
+                          type="number"
+                          value={Math.round(value.count)}
+                          min={0}
+                          step={1}
+                          onChange={e => {
+                            countChange(value, index, e.target.value);
+                          }}
+                        ></Input>
+                      ) : (
+                        Math.round(value.count)
+                      )}
+                    </td>
+                    {canDeleteBadges ? (
+                      <td>
+                        <button
+                          type="button"
+                          className="btn btn-outline-danger"
+                          onClick={e => handleDeleteBadge(sortBadges[index])}
+                          style={darkMode ? boxStyleDark : boxStyle}
+                        >
+                          Delete
+                        </button>
+                      </td>
+                    ) : (
+                      []
+                    )}
+                    <td style={{ textAlign: 'center' }}>
+                      <FormGroup check inline style={{ zIndex: '0' }}>
+                        <Input
+                          /* alternative to using the formgroup
+                          style={{ position: 'static' }} 
+                          */
+                          type="checkbox"
+                          id={value.badge._id}
+                          checked={value.featured}
+                          onChange={e => {
+                            featuredChange(value, index, e);
+                          }}
+                        />
+                      </FormGroup>
                     </td>
                   </tr>
                 ))
