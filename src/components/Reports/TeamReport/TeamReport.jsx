@@ -419,14 +419,9 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
             <div className="team-report-id">
               <span className="team-report-star">&#9733;</span> Team ID: {team._id}
             </div>
-            {/*
-          This LoginPrivilegesSimulation component will be removed once the backend team link the login privileges.
-          It is just to simulate the toggle between the login privileges. The logic is
-          inside the userLoginPrivileges.jsx file.
-          */}
-            {/* <LoginPrivileges selectedInput={selectedInput} handleInputChange={handleInputChange} />  */}
-            Last updated:
-            {moment(team?.modifiedDatetime).format('MMM-DD-YY')}
+            <div className="team-report-last-updated" style={{ color: darkMode ? 'white' : '' }}>
+              Last updated: {moment(team.modifiedDatetime).format('MMM-DD-YY')}
+            </div>
           </div>
         </div>
       </ReportPage.ReportBlock>
