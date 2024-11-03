@@ -6,9 +6,6 @@ import { boxStyle, boxStyleDark } from 'styles';
 
 function PeopleTable({ userProfiles, darkMode }) {
   let PeopleList = [];
-  function onStatusClick(person, isActive) {
-    person.isActive = !isActive;
-  }
   
   if (userProfiles.length > 0) {
     PeopleList = userProfiles
