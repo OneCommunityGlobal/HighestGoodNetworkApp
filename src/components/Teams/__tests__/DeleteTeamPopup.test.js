@@ -1,9 +1,9 @@
 import React from 'react';
 import DeleteTeamPopup from 'components/Teams/DeleteTeamPopup';
 import { screen, fireEvent } from '@testing-library/react';
-import { renderWithProvider } from '../../../__tests__/utils';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
+import { renderWithProvider } from '../../../__tests__/utils';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
 const mock = jest.fn();

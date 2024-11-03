@@ -14,7 +14,7 @@ describe('InfoModal', () => {
     theme: themeMock,
   });
 
-  let renderInfoModal = props => {
+  const renderInfoModal = props => {
     const { rerender } = render(
       <Provider store={store}>
         <InfoModal {...props} />

@@ -1,14 +1,14 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react'; // Removed React and useCallback
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reactstrap';
 import Input from 'components/common/Input';
 import { createLocation, editLocation } from 'services/mapLocationsService';
 import axios from 'axios';
-import CustomInput from './CustomInput.jsx';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
+import '../Header/DarkMode.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import CustomInput from './CustomInput'; // Removed .jsx extension
 
 const initialLocationData = {
   firstName: '',
@@ -22,6 +22,7 @@ const initialLocationData = {
     },
   },
 };
+
 function AddOrEditPopup({
   onClose,
   open,
@@ -33,7 +34,7 @@ function AddOrEditPopup({
   editProfile,
   submitText,
 }) {
-  const darkMode = useSelector(state => state.theme.darkMode)
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
@@ -43,6 +44,9 @@ function AddOrEditPopup({
     jobTitle: null,
     location: null,
   });
+
+  const firstNameRef = useRef(null);
+  const [formSubmitted, setFormSubmitted] = useState(false); // Moved above onSubmitHandler
 
   const getCoordsHandler = () => {
     const location = locationData.location.userProvided;
@@ -68,6 +72,7 @@ function AddOrEditPopup({
       toast.error(`An error occurred : ${err.response.data}`);
     });
   };
+
   useEffect(() => {
     if (isEdit) {
       const priorData = {
@@ -85,7 +90,7 @@ function AddOrEditPopup({
     } else {
       setLocationData(initialLocationData);
     }
-  }, [open]);
+  }, [open, isEdit, editProfile]);
 
   const locationDataHandler = e => {
     const { value, name } = e.target;
@@ -198,9 +203,6 @@ function AddOrEditPopup({
       locationValue = `${locationData.location.country}`;
     }
   }
-
-  const firstNameRef = useRef(null);
-  const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
     if (open) {

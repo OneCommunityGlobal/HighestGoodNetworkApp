@@ -5,16 +5,24 @@ import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import './TeamLocations.css';
 
-const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocation, isOpen, randomLocationOffset, darkMode}) => {
+function MarkerPopup({
+  profile,
+  userName,
+  isAbleToEdit,
+  editHandler,
+  removeLocation,
+  isOpen,
+  darkMode, // Removed randomLocationOffset
+}) {
   const popupRef = useRef();
 
   useEffect(() => {
-    if ( popupRef.current !== undefined) {
-        if(isOpen){
-            popupRef.current.openPopup();
-        }else{
-            popupRef.current.closePopup();
-        }
+    if (popupRef.current !== undefined) {
+      if (isOpen) {
+        popupRef.current.openPopup();
+      } else {
+        popupRef.current.closePopup();
+      }
     }
   }, [isOpen]);
 
@@ -22,16 +30,10 @@ const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocat
     <CircleMarker
       center={[
         profile.location.coords.lat,
-        profile.location.coords.lng
+        profile.location.coords.lng,
       ]}
       key={profile._id}
       color={profile.isActive ? 'green' : 'gray'}
-      // eventHandlers={{
-      //   mouseover: e => {
-      //     e.target.openPopup();
-      //   },
-
-      // }}
       ref={popupRef}
     >
       <Popup autoClose={false}>
@@ -40,7 +42,7 @@ const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocat
           {userName && <div>Name: {userName}</div>}
           {profile.jobTitle && <div>{`Title: ${profile.jobTitle}`}</div>}
           <div>{`Location: ${profile.location.city || profile.location.userProvided}`}</div>
-          {isAbleToEdit ? (
+          {isAbleToEdit && (
             <div className="mt-3">
               <Button
                 color="Primary"
@@ -59,11 +61,11 @@ const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocat
                 Remove
               </Button>
             </div>
-          ) : null}
+          )}
         </div>
       </Popup>
     </CircleMarker>
   );
-};
+}
 
 export default MarkerPopup;

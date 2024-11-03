@@ -1,9 +1,9 @@
 import configureStore from 'redux-mock-store';
 import TeamMembersPopup from 'components/Teams/TeamMembersPopup';
 import thunk from 'redux-thunk';
-import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
+import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
 const mockStore = configureStore([thunk]);
 
