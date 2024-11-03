@@ -180,6 +180,7 @@ export const ENDPOINTS = {
   GET_PROJECT_BY_PERSON: (searchName) => `${APIEndpoint}/userProfile/projects/${searchName}`,
 
   MEETING_POST: () =>  `${APIEndpoint}/meetings/new`,
+  MEETING_GET: (startTime, endTime) => `${APIEndpoint}/meetings?startTime=${startTime}&endTime=${endTime}`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,

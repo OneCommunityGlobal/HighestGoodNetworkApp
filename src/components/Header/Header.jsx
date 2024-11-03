@@ -5,6 +5,7 @@ import axios from 'axios';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
+import { getUnreadMeetingNotification } from 'actions/notificationAction';
 import { Link, useLocation } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
@@ -212,6 +213,12 @@ export function Header(props) {
       dispatch(resetNotificationError());
     }
   }, [props.notification?.error]);
+
+  useEffect(() => {
+    props.getUnreadMeetingNotification();
+    console.log('******', unreadNotifications);
+    console.log('******', props.notification.unreadNotifications);
+  }, []);
 
   const roles = props.role?.roles;
 
@@ -561,5 +568,6 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
-  getWeeklySummaries
+  getWeeklySummaries,
+  getUnreadMeetingNotification,
 })(Header);

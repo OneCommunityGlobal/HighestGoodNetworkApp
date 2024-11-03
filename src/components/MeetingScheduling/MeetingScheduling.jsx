@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { useState, useEffect } from 'react';
+import { useDispatch, connect } from 'react-redux';
 import { Form, FormGroup, Label, Input, Row, Col, Button } from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
@@ -35,21 +35,26 @@ const TINY_MCE_INIT_OPTIONS = {
 const millisecondsForOneDay = 24 * 60 * 60 * 1000;
 
 function MeetingScheduling(props) {
+  const dispatch = useDispatch();
+
+  // props from store
+  const { authUser, allUserProfiles, error, darkMode } = props;
+
   const initialFormValues = {
     dateOfMeeting: moment()
       .tz('America/Los_Angeles')
       .format('YYYY-MM-DD'),
-    startHour: 9,
-    startMinute: 0,
+    startHour: '00',
+    startMinute: '00',
     startTimePeriod: 'AM',
     duration: 0,
     participantList: [],
     location: '',
     notes: '',
+    organizer: authUser.userid,
   };
 
-  // props from store
-  const { allUserProfiles, error, darkMode } = props;
+  // console.log('IMPORTANT! authUser', authUser);
 
   const [formValues, setFormValues] = useState(initialFormValues);
   const [errors, setErrors] = useState({});
@@ -57,6 +62,7 @@ function MeetingScheduling(props) {
 
   useEffect(() => {
     props.getAllUserProfile();
+    // setFormValues(prevValues => ({ ...prevValues, organizer: authUser.userid }));
   }, []);
 
   const handleInputChange = event => {
@@ -66,14 +72,14 @@ function MeetingScheduling(props) {
     //   console.log(target.value, typeof target.value);
     // }
     switch (target.name) {
-      case 'startHour':
-        if (+target.value < 0 || +target.value > 12) return;
-        setFormValues(prevValues => ({ ...prevValues, startHour: +target.value }));
-        break;
-      case 'startMinute':
-        if (+target.value < 0 || +target.value > 59) return;
-        setFormValues(prevValues => ({ ...prevValues, startMinute: +target.value }));
-        break;
+      // case 'startHour':
+      //   if (+target.value < 0 || +target.value > 12) return;
+      //   setFormValues(prevValues => ({ ...prevValues, startHour: target.value.padStart(2, '0') }));
+      //   break;
+      // case 'startMinute':
+      //   if (+target.value < 0 || +target.value > 59) return;
+      //   setFormValues(prevValues => ({ ...prevValues, startMinute: target.value.padStart(2, '0') }));
+      //   break;
       case 'duration':
         setFormValues(prevValues => ({ ...prevValues, duration: +target.value }));
         break;
@@ -102,12 +108,25 @@ function MeetingScheduling(props) {
 
     // now suppose that the time needs to be created or updated
 
-    const meeting = { ...formValues };
+    const meeting = {
+      ...formValues,
+      participantList: formValues.participantList.map(participant => participant.userProfileId),
+    };
+    // const notifications = meeting.participantList.map(participant => ({
+    //   message: `You have a new meeting scheduled on
+    //             ${meeting.dateOfMeeting} ${meeting.startHour} ${meeting.startMinute} for ${meeting.duration}/n
+    //             with . Notes: ${meeting.notes}`,
+    //   sender: null,
+    //   recipient: participant,
+    //   isSystemGenerated: false,
+    //   isRead: false,
+    // }));
+    console.log('Submit', meeting);
 
     try {
       // currently only consider the create situation
-      await postMeeting(meeting);
-      console.log('Submit', meeting);
+      await dispatch(postMeeting(meeting));
+      
       setFormValues(initialFormValues);
       setSubmitting(false);
     } catch (error) {
@@ -158,29 +177,35 @@ function MeetingScheduling(props) {
           <Row form>
             <Col>
               <Input
-                type="number"
+                type="select"
                 name="startHour"
                 id="startHour"
-                min={0}
-                max={12}
-                // placeholder="Hour"
                 value={formValues.startHour}
                 onChange={handleInputChange}
                 // disabled={!canChangeTime}
-              />
+              >
+                {[...Array(13).keys()].map(hour => (
+                  <option key={hour} value={hour.toString().padStart(2, '0')}>
+                    {hour.toString().padStart(2, '0')}
+                  </option>
+                ))}
+              </Input>
             </Col>
             <Col>
               <Input
-                type="number"
+                type="select"
                 name="startMinute"
                 id="startMinute"
-                min={0}
-                max={59}
-                // placeholder="Minute"
                 value={formValues.startMinute}
                 onChange={handleInputChange}
                 // disabled={!canChangeTime}
-              />
+              >
+                {['00', '15', '30', '45'].map(minute => (
+                  <option key={minute} value={minute}>
+                    {minute}
+                  </option>
+                ))}
+              </Input>
             </Col>
             <Col>
               <Input
@@ -225,17 +250,6 @@ function MeetingScheduling(props) {
             </div>
           )}
         </FormGroup>
-
-        {/* <FormGroup>
-          <TagsSearch
-            placeholder="Add Meeting Participants"
-            members={allMembers.filter(user => user.isActive)}
-            addResources={addResources}
-            removeResource={removeResource}
-            resourceItems={resourceItems}
-            disableInput={false}
-          />
-        </FormGroup> */}
 
         <FormGroup>
           <Participants
@@ -308,7 +322,8 @@ function MeetingScheduling(props) {
           )}
         </FormGroup>
       </Form>
-      <Button onClick={clearForm}
+      <Button
+        onClick={clearForm}
         color="primary"
         // style={darkMode ? boxStyleDark : boxStyle}
       >
@@ -327,6 +342,7 @@ function MeetingScheduling(props) {
 }
 
 const mapStateToProps = state => ({
+  authUser: state.auth.user,
   allUserProfiles: state.allUserProfiles.userProfiles,
   error: state.tasks.error,
   darkMode: state.theme.darkMode,
