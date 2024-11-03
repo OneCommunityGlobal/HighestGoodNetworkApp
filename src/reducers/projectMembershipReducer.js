@@ -7,9 +7,16 @@ const allMembershipInital = {
   members: [],
   foundUsers: [],
   error: '',
+
+  allTimeMembers: [],
+  allTimeFetching: false,
+  allTimeFetched: false,
+  allTimeError: '',
+
 };
 
 export const projectMembershipReducer = (allMembership = allMembershipInital, action) => {
+  //console.log('action', action)
   switch (action.type) {
     case types.FETCH_MEMBERS_START:
       return { ...allMembership, fetched: false, fetching: true, error: 'none' };
@@ -47,7 +54,7 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
           ...allMembership.members.slice(0, indexMember),
           ...allMembership.members.slice(indexMember + 1),
         ],
-      };
+    };
     case types.REMOVE_FOUND_USER:
       const indexUser = allMembership.foundUsers.findIndex(user => user._id === action.userId);
       return {
@@ -57,6 +64,22 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
           ...allMembership.foundUsers.slice(indexUser + 1),
         ],
       };
+    
+      case types.FETCH_ALL_TIME_MEMBERS_START:
+        return { ...allMembership, allTimeFetched: false, allTimeFetching: true, allTimeError: 'none' };
+      case types.FETCH_ALL_TIME_MEMBERS_ERROR:
+        return { ...allMembership, allTimeFetched: true, allTimeFetching: false, allTimeError: action.err };
+    case types.RECEIVE_ALL_TIME_MEMBERS:
+     // console.log("Reducer  -- ",action)
+        return {
+          ...allMembership,
+          allTimeMembers: action.allTimeMembers,
+          allTimeFetched: true,
+          allTimeFetching: false,
+          allTimeError: 'none',
+        };
+
+       
     default:
       return allMembership;
   }

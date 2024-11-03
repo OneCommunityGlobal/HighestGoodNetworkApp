@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
-import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
+import { WbsPieChart }  from './WbsPiechart/WbsPieChart';
 import { getProjectDetail } from '../../../actions/project';
-import {getTimeEntryByProjectSpecifiedPeriod} from '../../../actions/index'
-import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
+import { getTimeEntryByProjectSpecifiedPeriod } from '../../../actions/index'
+import { fetchAllMembers, getProjectActiveUser, fetchAllTimeMembers } from '../../../actions/projectMembers';
 import { fetchAllTasks} from '../../../actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
@@ -91,6 +91,9 @@ export function ProjectReport({ match }) {
       dispatch(getProjectDetail(projectId));
       dispatch(fetchAllWBS(projectId));
       dispatch(fetchAllMembers(projectId));
+      dispatch(fetchAllTimeMembers(projectId));
+      console.log("in ProjectReport.jsx",projectMembers);
+
       setTasks([]);
     }
   }, [match?.params.projectId]);

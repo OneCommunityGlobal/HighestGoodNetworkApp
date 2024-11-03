@@ -292,3 +292,52 @@ export const addNewMemberError = err => {
     err,
   };
 };
+
+/**
+ * Set a flag that fetching Members
+ */
+export const setAllTimeMemberStart = () => {
+  return {
+    type: types.FETCH_ALL_TIME_MEMBERS_START,
+  };
+};
+
+/**
+ * set Members in store
+ * @param payload : Members []
+ */
+export const setAllTimeMembers = allTimeMembers => {
+  return {
+    type: types.RECEIVE_ALL_TIME_MEMBERS,
+    allTimeMembers,
+  };
+};
+
+/**
+ * Error when setting project
+ * @param payload : error status code
+ */
+export const setAllTimeMembersError = err => {
+  return {
+    type: types.FETCH_ALL_TIME_MEMBERS_ERROR,
+    err,
+  };
+};
+
+/**
+ * Call API to get all time members 
+ */
+export const fetchAllTimeMembers = projectId => {
+  // const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
+  return async dispatch => {
+    dispatch(setAllTimeMemberStart());
+    // dispatch(foundUsers([])); // Clear found users
+    try {
+      const response = await axios.get(ENDPOINTS.PROJECT_ALL_TIME_MEMBERS(projectId));
+      dispatch(setAllTimeMembers(response.data));
+      //console.log("Action",response.data)
+    } catch (err) {
+      dispatch(setAllTimeMembersError(err));
+    }
+  };
+};
