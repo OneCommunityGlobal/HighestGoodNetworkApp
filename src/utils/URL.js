@@ -235,6 +235,7 @@ export const ENDPOINTS = {
   UNANSWERED_FAQS: `${APIEndpoint}/faqs/unanswered`,
   DELETE_UNANSWERED_FAQ: faqId => `${APIEndpoint}/faqs/unanswered/${faqId}`,
   MEETING_POST: () =>  `${APIEndpoint}/meetings/new`,
+  MEETING_GET: (startTime, endTime) => `${APIEndpoint}/meetings?startTime=${startTime}&endTime=${endTime}`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,

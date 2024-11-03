@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { ApiEndpoint } from '~/utils/URL';
 import * as actionTypes from '../constants/notification';
+import * as meetingActions from '../constants/meetings';
 
 const APIEndpoint = ApiEndpoint;
 
@@ -114,6 +115,44 @@ export function resetNotificationError() {
   return dispatch => {
     dispatch({ type: actionTypes.RESET_ERROR });
   };
+} 
+
+export function getUnreadMeetingNotification(){
+  return async dispatch => {
+    dispatch({ type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_BEGIN});
+    try {
+      const currentTime = new Date();
+      const endTime = new Date(currentTime);
+      endTime.setDate(currentTime.getDate() + 3);
+      endTime.setHours(23, 59, 59, 999);
+      const encodedCurrentTime = encodeURIComponent(currentTime.toISOString());
+      const encodedEndTime = encodeURIComponent(endTime.toISOString());
+
+      // Fetch all meetings within 3 days from now
+      const url = ApiEndpoint.MEETING_GET(encodedCurrentTime, encodedEndTime);
+      const response = await axios.get(url);
+
+      // Convert fetched meetings  to notifications
+      const meetingNotifications = response.data.map(meeting => ({
+        // modify the message later
+        message: `Upcoming meeting: ${new Date(meeting.dateOfMeeting).toLocaleString()} ${meeting.startHour}:${meeting.startMinute}`,
+        sender: meeting.organizer, 
+        recipient: meeting.recipient,
+        isSystemGenerated: false,
+        isRead: false
+      }));
+      await dispatch({
+        type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_SUCCESS,
+        payload: meetingNotifications,
+      });
+    } catch (error) {
+      const errorPayload = constructErrorPayload(error);
+      await dispatch({
+        type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_FAILURE,
+        payload: errorPayload,
+      });
+    }
+  }
 }
 
 // Comment out unused functions

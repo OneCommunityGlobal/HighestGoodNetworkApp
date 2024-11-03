@@ -1,4 +1,5 @@
 import * as actionTypes from '../constants/notification';
+import * as meetingActions from '../constants/meetings';
 
 const initialState = {
   notifications: [], // all notifications. This is used in the notification history for admin/owner.
@@ -17,7 +18,8 @@ const notificationReducer = (state = initialState, action) => {
     case actionTypes.FETCH_SENT_NOTIFICATIONS_REQUEST:
     case actionTypes.CREATE_NOTIFICATION_REQUEST:
     case actionTypes.DELETE_NOTIFICATION_REQUEST:
-    case actionTypes.MARK_NOTIFICATION_AS_READ_REQUEST: {
+    case actionTypes.MARK_NOTIFICATION_AS_READ_REQUEST: 
+    case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_BEGIN: {
       return {
         ...state,
         loading: true,
@@ -64,6 +66,15 @@ const notificationReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
+    }
+
+    case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_SUCCESS:{
+      return {
+        ...state,
+        unreadNotifications: [...state.unreadNotifications, ...action.payload],
+        loading: false,
+        error: null,
+      }
     }
 
     case actionTypes.FETCH_SENT_NOTIFICATIONS_SUCCESS: {

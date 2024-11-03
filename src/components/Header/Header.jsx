@@ -27,6 +27,7 @@ import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunk
 import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
+import { getUnreadMeetingNotification } from 'actions/notificationAction';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
@@ -220,6 +221,12 @@ export function Header(props) {
       dispatch(resetNotificationError());
     }
   }, [props.notification?.error]);
+
+  useEffect(() => {
+    props.getUnreadMeetingNotification();
+    console.log('******', unreadNotifications);
+    console.log('******', props.notification.unreadNotifications);
+  }, []);
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
@@ -690,4 +697,5 @@ export default connect(mapStateToProps, {
   hasPermission,
   getWeeklySummaries,
   getUserProfile,
+  getUnreadMeetingNotification,
 })(Header);
