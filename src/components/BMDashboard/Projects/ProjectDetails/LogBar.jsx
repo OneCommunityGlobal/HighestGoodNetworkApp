@@ -8,21 +8,25 @@ const buttonStyles = {
   team: 'indigo',
 };
 
-
 function LogBar(props) {
   const { projectId } = props;
   const buttonLabels = {
     dailyLogging: {
       name: ['Time', 'Material', 'Tool/Equipment'],
-      url: ["/bmdashboard/timelog", "/bmdashboard/materials/add", "/bmdashboard/tools/log"],
+      url: ['/bmdashboard/timelog', '/bmdashboard/materials/add', '/bmdashboard/tools/log'],
     },
     newItem: {
       name: ['Team', 'Material', 'Tool/Equipment', 'Lessons'],
-      url: ['/teams', "/bmdashboard/materials/add", "/bmdashboard/tools/add", `/bmdashboard/lessonform/${projectId}`],
+      url: [
+        '/teams',
+        '/bmdashboard/materials/add',
+        '/bmdashboard/tools/add',
+        `/bmdashboard/lessonform/${projectId}`,
+      ],
     },
     team: {
       name: ['Create New Team', 'Edit Existing Team', 'Log Issue'],
-      url: ['/teams', '/teams', "/bmdashboard/issues/add"],
+      url: ['/teams', '/teams', '/bmdashboard/issues/add'],
     },
   };
 
@@ -43,33 +47,28 @@ function LogBar(props) {
             })()}
           </h2>
           <ul className="log-bar__btn-group">
-          {buttonLabels[section].name.map((label, index) => (
-            <li key={uuidv4()}>
-              {label !== 'Log Issue' ? (
-                <Link to={buttonLabels[section].url[index]}>
-                  <Button
-                    type="button"
-                    className={`button button--${buttonStyles[section]}`}
-                  >
-                    {label}
-                  </Button>
-                </Link>
-              ) : (
-                <Button
-                  type="button"
-                  className="button button--maroon"
-                >
-                  Log Issue
-                </Button>
-              )}
-            </li>
-          ))}
-        </ul>
+            {buttonLabels[section].name.map((label, index) => (
+              <li key={uuidv4()}>
+                {label !== 'Log Issue' ? (
+                  <Link to={buttonLabels[section].url[index]}>
+                    <Button type="button" className={`button button--${buttonStyles[section]}`}>
+                      {label}
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to={'/bmdashboard/issues/add'}>
+                    <Button type="button" className="button button--maroon">
+                      Log Issue
+                    </Button>
+                  </Link>
+                )}
+              </li>
+            ))}
+          </ul>
         </div>
       ))}
     </div>
   );
 }
-
 
 export default LogBar;
