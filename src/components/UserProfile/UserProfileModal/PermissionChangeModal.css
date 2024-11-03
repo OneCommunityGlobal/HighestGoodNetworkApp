@@ -2,10 +2,6 @@
     padding: 20px;
 }
 
-.close-button {
-    font-size: 1.5rem;
-}
-
 .list {
     list-style-type: none;
 }
@@ -57,10 +53,10 @@
     cursor: pointer;
 }
 
-.modal-cancel-button {
+/* .modal-cancel-button {
     background-color: red;
 }
 
 .modal-confirm-button {
     background-color: green;
-}
+} */

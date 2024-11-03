@@ -8,9 +8,11 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 function PermissionChangeModal({ 
   userProfile, 
+  setUserProfile,
   oldUserProfile, 
   isOpen, 
-  closeModal 
+  closeModal
+  /* potentialRole */
 }) {
   // Creating a modal that pops up when someone changes a user's role
   // and the user has custom permissions that differ from the permissions
@@ -24,14 +26,14 @@ function PermissionChangeModal({
   const [checkedAddedPermissions, setCheckedAddedPermissions] = useState({});
   const [checkedRemovedPermissions, setCheckedRemovedPermissions] = useState({});
 
-  const openPermissionModal = () => setPermissionModalOpen(true);
-  const closePermissionModal = () => setPermissionModalOpen(false);
   // create variable for user
   const user = userProfile;
   // create variable for old role
   const oldRole = oldUserProfile?.role;
+  // const oldRole = user.role;
   // create variable for new role
   const newRole = user.role;
+  // const newRole = potentialRole;
   const currentUserPermissions =  user.permissions.frontPermissions;
 
   useEffect(() => {
@@ -133,6 +135,15 @@ function PermissionChangeModal({
       }));
     }
   };
+
+  const confirmModal = () => {
+    setUserProfile({
+      ...userProfile,
+      role: potentialRole,
+      permissions: { ...userProfile.permissions, frontPermissions: [] },
+    });
+    closeModal();
+  };
   
   /* async function testUser() {
     console.log('user: ', user);
@@ -153,7 +164,7 @@ function PermissionChangeModal({
       {/* <div className="modal-body"> */}
         <p>
           You are changing the role of a Special Person with special permissions. This person has
-          the following permissions that are different from the {newRole} role you are
+          the following permissions that are different from the {potentialRole} role you are
           changing them to. Please confirm which of these you&apos;d like to keep:
         </p>
         <ul className="list">
@@ -190,16 +201,17 @@ function PermissionChangeModal({
         </ModalBody>
         <ModalFooter>
         {/* <div className="modal-footer"> */}
-          <button className="modal-cancel-button" 
-          /* onClick={closeModal} */ 
-          /* onClick={testUser}  */
+          <Button color="secondary" onClick={closeModal}>Cancel</Button>
+          {/* <button className="modal-cancel-button" 
+          onClick={closeModal} 
           type="button"
           >
             Cancel
-          </button>
-          <button className="modal-confirm-button" /* onClick={confirmModal} */ type="submit">
+          </button> */}
+          <Button color="primary" onClick={confirmModal}>Confirm</Button>
+          {/* <button className="modal-confirm-button" */} {/* onClick={confirmModal} */} {/* type="submit">
             Confirm
-          </button>
+          </button> */}
         {/* </div> */}
         </ModalFooter>
       {/* </div> */}
