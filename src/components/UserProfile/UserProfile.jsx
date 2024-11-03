@@ -440,7 +440,7 @@ function UserProfile(props) {
   const onAssignProject = assignedProject => {
     setProjects(prevProjects => [...prevProjects, assignedProject]);
   };
-
+  
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
@@ -950,7 +950,7 @@ function UserProfile(props) {
                 :null}
                 </div>
 
-                <ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>
+                {userProfile!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>}
                 <ConfirmRemoveModal
                   isOpen={isRemoveModalOpen}
                   toggleModal={toggleRemoveModal}
