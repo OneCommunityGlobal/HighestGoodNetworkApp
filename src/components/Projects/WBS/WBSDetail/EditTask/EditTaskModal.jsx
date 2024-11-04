@@ -455,8 +455,8 @@ function EditTaskModal(props) {
                   Hours
                 </td>
                 <td scope="col" className="w-100">
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                  <div className="py-1 flex-responsive">
+                    <label htmlFor="bestCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Best-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -475,13 +475,14 @@ function EditTaskModal(props) {
                       {componentOnly:true}
                     )}
                   </div>
-                  <div className="warning">
+                  {hoursWarning && (
+                  <div className="warning mb-3">
                     {hoursWarning
                       ? 'The number of hours must be less than other cases'
                       : ''}
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                  </div>)}
+                  <div className="py-1 flex-responsive">
+                    <label htmlFor="worstCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Worst-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -499,13 +500,14 @@ function EditTaskModal(props) {
                       {componentOnly:true}
                     )}
                   </div>
-                  <div className="warning">
+                  {hoursWarning && (
+                  <div className="warning mb-3">
                     {hoursWarning
                       ? 'The number of hours must be higher than other cases'
                       : ''}
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                  </div>)}
+                  <div className="py-1 flex-responsive">
+                    <label htmlFor="mostCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Most-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -523,13 +525,14 @@ function EditTaskModal(props) {
                       {componentOnly:true}
                     )}
                   </div>
-                  <div className="warning">
+                  {hoursWarning && (
+                  <div className="warning mb-3">
                     {hoursWarning
                       ? 'The number of hours must range between best and worst cases'
                       : ''}
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                  </div>)}
+                  <div className="py-1 flex-responsive">
+                    <label htmlFor="Estimated" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Estimated
                     </label>
                     {ReadOnlySectionWrapper(
