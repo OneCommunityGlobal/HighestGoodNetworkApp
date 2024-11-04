@@ -309,182 +309,182 @@ const UserTeamsTable = props => {
           </div>
         </div>
       ) : (
-
-    <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
-      <TeamMember
-        isOpenModalTeamMember={isOpenModalTeamMember}
-        setIsOpenModalTeamMember={setIsOpenModalTeamMember}
-        members={members}
-        fetchTeamSelected={fetchTeamSelected}
-      />
-      <div style={{ display: 'flex', flexDirection: 'column' }}>
-        {props.canEditVisibility && (
-          <>
-            <Col
-              md="12"
-              style={{
-                backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
-                border: '1px solid #ced4da',
-                marginBottom: '10px',
-              }}
-            >
-              <span className="teams-span">Visibility</span>
-            </Col>
-            <Col
-              md="12"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
-            >
-              <ToggleSwitch
-                switchType="visible"
-                state={props.isVisible}
-                handleUserProfile={props.onUserVisibilitySwitch}
-                darkMode={darkMode}
-              />
-            </Col>
-          </>
-        )}
-            <div className="row">
-              <Col
-                md="9"
-                xs="12"
-                style={{
-                  backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
-                  border: '1px solid #ced4da',
-                  marginBottom: '10px',
-                  height: '10%',
-                }}
-              >
-                <span className="teams-span">Teams</span>
-              </Col>
-              <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
-                {props.canEditTeamCode ? (
-                  <AutoCompleteTeamCode
-                    refDropdown={refDropdown}
-                    teamCode={teamCode}
-                    showDropdown={showDropdown}
-                    handleCodeChange={handleCodeChange}
-                    setShowDropdown={setShowDropdown}
-                    arrayInputAutoComplete={arrayInputAutoComplete}
-                    inputAutoStatus={props.inputAutoStatus}
-                    isLoading={props.isLoading}
-                    fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+        <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
+          <TeamMember
+            isOpenModalTeamMember={isOpenModalTeamMember}
+            setIsOpenModalTeamMember={setIsOpenModalTeamMember}
+            members={members}
+            fetchTeamSelected={fetchTeamSelected}
+          />
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            {props.canEditVisibility && (
+              <>
+                <Col
+                  md="12"
+                  style={{
+                    backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
+                    border: '1px solid #ced4da',
+                    marginBottom: '10px',
+                  }}
+                >
+                  <span className="teams-span">Visibility</span>
+                </Col>
+                <Col
+                  md="12"
+                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+                >
+                  <ToggleSwitch
+                    switchType="visible"
+                    state={props.isVisible}
+                    handleUserProfile={props.onUserVisibilitySwitch}
                     darkMode={darkMode}
-                    isMobile={true}
                   />
-                ) : (
-                  <div style={{ paddingTop: '6px', textAlign: 'center' }}>
-                    {teamCode == '' ? 'No assigned team code' : teamCode}
-                  </div>
-                )}
-              </Col>
-            </div>
-            {props.edit && props.role && (
-              <Col md="12" style={{ padding: '0' }}>
-                {canAssignTeamToUsers ? (
-                  props.disabled ? (
-                    <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
-                      Assign Team
-                    </Button>
-                  ) : (
-                    <>
-                      <Button
-                        id="teamCodeAssign"
-                        className="btn-addteam"
-                        color="primary"
-                        onClick={() => {
-                          props.onButtonClick();
-                        }}
-                      >
-                        Assign Team
-                      </Button>
-                      <Tooltip
-                        placement="top" // Adjust the placement as needed
-                        isOpen={teamCodeExplainTooltip}
-                        target="teamCodeAssign"
-                        toggle={toggleTeamCodeExplainTooltip}
-                      >
-                        This team code should only be used by admin/owner, and has nothing to do with
-                        the team data model.
-                      </Tooltip>
-                    </>
-                  )
-                ) : (
-                  <></>
-                )}
-              </Col>
-        )}
-      </div>
-      <div style={{ maxHeight: '300px', overflow: 'auto' }}>
-        <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
-          <thead>
-            {props.role && (
-              <tr>
-                <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
-                <th className={darkMode ? 'bg-space-cadet' : ''}>Team Name</th>
-                {canAssignTeamToUsers ? (
-                  <>
-                    <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
-                    <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
-                      { }
-                    </th>
-                  </>
-                ) : null}
-              </tr>
+                </Col>
+              </>
             )}
-          </thead>
-          <tbody className={darkMode ? 'text-light' : ''}>
-            {props.userTeamsById.length > 0 ? (
-              props.userTeamsById.map((team, index) => (
-                <tr key={index} className="tr">
-                  <td>{index + 1}</td>
-                  <td>{`${team.teamName}`}</td>
-                  {props.edit && props.role && (
-                    <>
-                      <td>
-                        <button
-                          style={darkMode ? {} : boxStyle}
-                          disabled={!canAssignTeamToUsers}
-                          type="button"
-                          className="btn btn-outline-info"
-                          data-testid="members-btn"
-                          onClick={() => fetchTeamSelected(team._id, team.teamName)}
-                        >
-                          <i className="fa fa-users" aria-hidden="true" />
-                        </button>
-                      </td>
-
-                      <td>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
+                <div className="row">
+                  <Col
+                    md="9"
+                    xs="12"
+                    style={{
+                      backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
+                      border: '1px solid #ced4da',
+                      marginBottom: '10px',
+                      height: '10%',
+                    }}
+                  >
+                    <span className="teams-span">Teams</span>
+                  </Col>
+                  <Col md="3" xs="12" style={{ padding: '0', marginBottom: '10px' }}>
+                    {props.canEditTeamCode ? (
+                      <AutoCompleteTeamCode
+                        refDropdown={refDropdown}
+                        teamCode={teamCode}
+                        showDropdown={showDropdown}
+                        handleCodeChange={handleCodeChange}
+                        setShowDropdown={setShowDropdown}
+                        arrayInputAutoComplete={arrayInputAutoComplete}
+                        inputAutoStatus={props.inputAutoStatus}
+                        isLoading={props.isLoading}
+                        fetchTeamCodeAllUsers={props.fetchTeamCodeAllUsers}
+                        darkMode={darkMode}
+                        isMobile={true}
+                      />
+                    ) : (
+                      <div style={{ paddingTop: '6px', textAlign: 'center' }}>
+                        {teamCode == '' ? 'No assigned team code' : teamCode}
+                      </div>
+                    )}
+                  </Col>
+                </div>
+                {props.edit && props.role && (
+                  <Col md="12" style={{ padding: '0' }}>
+                    {canAssignTeamToUsers ? (
+                      props.disabled ? (
+                        <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
+                          Assign Team
+                        </Button>
+                      ) : (
+                        <>
                           <Button
-                            disabled={!canAssignTeamToUsers}
-                            color="danger"
-                            onClick={e => {
-                              props.onDeleteClick(team._id);
+                            id="teamCodeAssign"
+                            className="btn-addteam"
+                            color="primary"
+                            onClick={() => {
+                              props.onButtonClick();
                             }}
                           >
-                            Delete
+                            Assign Team
                           </Button>
-                        </div>
-                      </td>
-                    </>
-                  )}
-                </tr>
-              ))
-            ) : (
-              <></>
+                          <Tooltip
+                            placement="top" // Adjust the placement as needed
+                            isOpen={teamCodeExplainTooltip}
+                            target="teamCodeAssign"
+                            toggle={toggleTeamCodeExplainTooltip}
+                          >
+                            This team code should only be used by admin/owner, and has nothing to do with
+                            the team data model.
+                          </Tooltip>
+                        </>
+                      )
+                    ) : (
+                      <></>
+                    )}
+                  </Col>
             )}
-          </tbody>
-        </table>
-      </div>
-    </div>
+          </div>
+          <div style={{ maxHeight: '300px', overflow: 'auto' }}>
+            <table className={`table table-bordered ${darkMode ? 'text-light' : ''}`}>
+              <thead>
+                {props.role && (
+                  <tr>
+                    <th className={darkMode ? 'bg-space-cadet' : ''}>#</th>
+                    <th className={darkMode ? 'bg-space-cadet' : ''}>Team Name</th>
+                    {canAssignTeamToUsers ? (
+                      <>
+                        <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
+                        <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
+                          { }
+                        </th>
+                      </>
+                    ) : null}
+                  </tr>
+                )}
+              </thead>
+                <tbody className={darkMode ? 'text-light' : ''}>
+                  {props.userTeamsById.length > 0 ? (
+                    props.userTeamsById.map((team, index) => (
+                      <tr key={index} className="tr">
+                        <td>{index + 1}</td>
+                        <td>{`${team.teamName}`}</td>
+                        {props.edit && props.role && (
+                          <>
+                            <td>
+                              <button
+                                style={darkMode ? {} : boxStyle}
+                                disabled={!canAssignTeamToUsers}
+                                type="button"
+                                className="btn btn-outline-info"
+                                data-testid="members-btn"
+                                onClick={() => fetchTeamSelected(team._id, team.teamName)}
+                              >
+                                <i className="fa fa-users" aria-hidden="true" />
+                              </button>
+                            </td>
 
-  );
-};
+                            <td>
+                              <div
+                                style={{
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              >
+                                <Button
+                                  disabled={!canAssignTeamToUsers}
+                                  color="danger"
+                                  onClick={e => {
+                                    props.onDeleteClick(team._id);
+                                  }}
+                                >
+                                  Delete
+                                </Button>
+                              </div>
+                            </td>
+                          </>
+                        )}
+                      </tr>
+                    ))
+                  ) : (
+                    <></>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        )}
+        </div>
+      );
+    };
 
 export default connect(null, { hasPermission })(UserTeamsTable);
