@@ -9,22 +9,20 @@ function NotFoundPage() {
   return (
     <section
       // eslint-disable-next-line react/jsx-curly-brace-presence
-      className={`h-100 d-flex   align-items-center  flex-column justify-content-center`}
+      // d-flex   align-items-center  flex-column justify-content-center
+      className={`h-100 `}
       style={{ backgroundColor: darkMode ? '#121212' : 'white' }}
     >
-      <div className={`${darkMode ? 'containerImageDarkMode' : 'containerImage'}`}>
-        <div className={`${!darkMode ? 'image-404' : 'image-404DarkMode'}`}>
+      <div className="backgroungContainer">
+        <div className="container">
           <img
             src={`${darkMode ? '/imagePage404DarkMode.png' : 'imagePage404.png'}`}
-            className={`${darkMode ? 'imageDarkMode' : 'image'}`}
             alt="404 error page illustration"
           />
           {validateUserLogin ? (
             <p
-              //  28rem
-              className={`${
-                darkMode ? 'text-light message-error-404DarkMode ' : 'text-dark  message-error-404'
-              }`}
+              style={{ marginBottom: '50px' }}
+              className={`${darkMode ? 'text-light' : 'text-dark '}`}
             >
               The rabbits have been nibbling the cables again... Maybe this will help
               <Link style={{ marginLeft: '6px' }} to="/dashboard">
@@ -38,7 +36,7 @@ function NotFoundPage() {
           ) : (
             // eslint-disable-next-line react/jsx-curly-brace-presence
             <p
-              style={{ fontSize: '25px' }}
+              style={{}}
               className={`${
                 darkMode ? 'text-light message-error-404DarkMode ' : 'text-dark  message-error-404'
               }`}
