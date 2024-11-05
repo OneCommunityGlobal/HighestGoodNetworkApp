@@ -137,24 +137,6 @@ const UserTeamsTable = props => {
   };
 
   return (
-    <div>
-      {innerWidth >= 1025 ? (
-        <div className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
-          <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
-            {props.canEditVisibility && (
-              <div className="row ml-1">
-                <Col md="7">
-                  <span className="teams-span">Visibility</span>
-                </Col>
-                <Col md='5'>
-                  <Switch
-                    isOn={props.isVisible}
-                    handleToggle={props.onUserVisibilitySwitch }
-                  
-                  />
-                </Col>
-              </div>
-
     <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
       <TeamMember
         isOpenModalTeamMember={isOpenModalTeamMember}
