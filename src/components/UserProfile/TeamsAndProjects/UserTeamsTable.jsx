@@ -9,6 +9,7 @@ import './TeamsAndProjects.css';
 import './UserTeamsTable.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
 const UserTeamsTable = props => {
   const { darkMode } = props;
