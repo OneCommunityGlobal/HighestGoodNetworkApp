@@ -3,7 +3,8 @@ import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
-import { allUserProfilesReducer } from './allUserProfilesReducer';
+import { allUserProfilesBasicInfoReducer } from  './allUserProfilesBasicInfoReducer';
+import { allUserProfilesReducer, changeUserPageStatusReducer, enableUserInfoEditReducer, updateUserInfoReducer } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
@@ -80,6 +81,7 @@ const localReducers = {
   blueSquareEmailAssignment : BlueSquareEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
+  allUserProfilesBasicInfo : allUserProfilesBasicInfoReducer,
 
   // bmdashboard
   materials: materialsReducer,
@@ -97,6 +99,8 @@ const localReducers = {
 };
 
 const sessionReducers = {
+  userPagination:changeUserPageStatusReducer,
+  userProfileEdit:enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,
   userTask: userTaskByIdReducer,
   leaderBoardData: leaderboardDataReducer,

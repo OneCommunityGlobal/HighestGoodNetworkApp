@@ -5,7 +5,7 @@ import axios from 'axios';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
@@ -67,6 +67,7 @@ import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 
 export function Header(props) {
+  const location = useLocation();
   const darkMode = props.darkMode;
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
@@ -134,6 +135,8 @@ export function Header(props) {
   const canAccessPopups =
     props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+  // SendEmails
+  const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
   // Permissions
   const canAccessPermissionsManagement =
     props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
@@ -296,6 +299,8 @@ export function Header(props) {
 
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
+  if (location.pathname === '/login') return null;
+
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
@@ -320,7 +325,7 @@ export function Header(props) {
                 style={{ width: '100%' }}
               >
                 {canUpdateTask && (
-                  <NavItem>
+                  <NavItem className='responsive-spacing'>
                     <NavLink tag={Link} to="/taskeditsuggestions">
                       <div className="redBackGroupHeader">
                         <span>{props.taskEditSuggestionCount}</span>
@@ -328,12 +333,12 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem>
+                <NavItem className='responsive-spacing'>
                   <NavLink tag={Link} to="/dashboard">
                     <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-                <NavItem>
+                <NavItem className='responsive-spacing'>
                   <NavLink tag={Link} to={`/timelog`}>
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
@@ -341,7 +346,7 @@ export function Header(props) {
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
-                  <UncontrolledDropdown nav inNavbar>
+                  <UncontrolledDropdown nav inNavbar className='responsive-spacing'>
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
@@ -367,13 +372,13 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
-                  <NavItem>
+                  <NavItem className='responsive-spacing'>
                     <NavLink tag={Link} to="/teamlocations">
                       {TEAM_LOCATIONS}
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem>
+                <NavItem className='responsive-spacing'>
                   <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                     <i className="fa fa-bell i-large">
                       <i className="badge badge-pill badge-danger badge-notify">
@@ -388,8 +393,9 @@ export function Header(props) {
                   canAccessProjects ||
                   canAccessTeams ||
                   canAccessPopups ||
+                  canAccessSendEmails ||
                   canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar>
+                  <UncontrolledDropdown nav inNavbar className='responsive-spacing'>
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
@@ -418,7 +424,7 @@ export function Header(props) {
                           {TEAMS}
                         </DropdownItem>
                       )}
-                      {canAccessPermissionsManagement && (
+                      {canAccessSendEmails && (
                         <DropdownItem tag={Link} to="/announcements" className={fontColor}>
                           {SEND_EMAILS}
                         </DropdownItem>
@@ -438,7 +444,7 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-                <NavItem>
+                <NavItem className='responsive-spacing'>
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
                       src={`${profilePic || '/pfp-default-header.png'}`}
@@ -448,7 +454,7 @@ export function Header(props) {
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav>
+                <UncontrolledDropdown nav className='responsive-spacing'>
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">
                       {WELCOME}, {firstName}
@@ -478,7 +484,7 @@ export function Header(props) {
                         {UPDATE_PASSWORD}
                       </DropdownItem>
                     )}
-                    <DropdownItem>
+                    <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
                     <DropdownItem divider />
