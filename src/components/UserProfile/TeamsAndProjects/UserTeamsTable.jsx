@@ -1,7 +1,6 @@
 import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Tooltip, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
