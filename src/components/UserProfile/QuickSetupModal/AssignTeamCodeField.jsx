@@ -3,7 +3,13 @@ import { Dropdown, Input } from 'reactstrap';
 
 
 const AssignTeamCodeField = React.memo(props => {
-  const [searchText, onInputChange] = useState('');
+  const [searchText, onInputChange] = useState(()=>{
+    if(props.editMode){
+      return props.value
+    }else{
+      return ''
+    }
+  });
   const [isOpen, toggle] = useState(false);
   useEffect(() => {
     if (props.selectedTeamCode && props.selectedTeamCode !== searchText) {
@@ -45,10 +51,10 @@ const AssignTeamCodeField = React.memo(props => {
               }
             })
             .slice(0, 10)
-            .map(item => (
+            .map((item,index) => (
               <div
                 className="project-auto-complete"
-                key={item._id}
+                key={index}
                 onClick={() => {
                   onInputChange(item);
                   toggle(false);
