@@ -20,8 +20,6 @@ src/components/AutoReload/**
 src/components/Badge/**
 src/components/common/**
 src/components/Header/**
-src/components/MonthlyEffort/**
-src/components/ProfileLinks/**
 src/components/Projects/**
 src/components/Reports/**
 src/components/SetupProfile/**
