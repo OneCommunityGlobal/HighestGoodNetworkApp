@@ -176,8 +176,8 @@ const Timelog = props => {
     role === 'Volunteer' && userHaveTask.length > 0
       ? (tab = 0)
       : role === 'Volunteer' && userHaveTask.length === 0
-      ? (tab = 1)
-      : null;
+        ? (tab = 1)
+        : null;
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
     if (!props.isDashboard) {
       tab = 1;
@@ -192,15 +192,15 @@ const Timelog = props => {
     return tab;
   };
 
-    const tabMapping = {
-      '#tasks': 0,
-      '#currentWeek': 1,
-      '#lastWeek': 2,
-      '#beforeLastWeek': 3,
-      '#dateRange': 4,
-      '#weeklySummaries': 5,
-      '#badgesearned': 6,
-    };
+  const tabMapping = {
+    '#tasks': 0,
+    '#currentWeek': 1,
+    '#lastWeek': 2,
+    '#beforeLastWeek': 3,
+    '#dateRange': 4,
+    '#weeklySummaries': 5,
+    '#badgesearned': 6,
+  };
 
   useEffect(() => {
     const tab = tabMapping[location.hash];
@@ -334,7 +334,7 @@ const Timelog = props => {
 
     // Clear the hash to trigger the useEffect on hash change
     if (location.hash) {
-      window.location.hash='';
+      window.location.hash = '';
     }
 
     setTimeLogState({
@@ -351,7 +351,7 @@ const Timelog = props => {
     //check if the toDate is before the fromDate
     if (moment(timeLogState.fromDate).isAfter(moment(timeLogState.toDate))) {
       alert('Invalid Date Range: the From Date must be before the To Date');
-    }else{
+    } else {
       e.preventDefault();
       props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
     }
@@ -488,19 +488,19 @@ const Timelog = props => {
     }
   }, [urlId]);
 
-/**
-   * made a change here to reset the user viewing to current user and not the displayed user id we were testing
-   * component reloads when we click the x icon to close the current viewing
-  */
+  /**
+     * made a change here to reset the user viewing to current user and not the displayed user id we were testing
+     * component reloads when we click the x icon to close the current viewing
+    */
 
-useEffect(() => {
-  // Reset displayUserId when switching btw users
-  const newUserId = getUserId();
-  if (displayUserId !== newUserId) {
-    setDisplayUserId(newUserId);
-    loadAsyncData(newUserId); // Reload data for the prev viewing user
-  }
-}, [userprofileId, viewingUser]);
+  useEffect(() => {
+    // Reset displayUserId when switching btw users
+    const newUserId = getUserId();
+    if (displayUserId !== newUserId) {
+      setDisplayUserId(newUserId);
+      loadAsyncData(newUserId); // Reload data for the prev viewing user
+    }
+  }, [userprofileId, viewingUser]);
 
   useEffect(() => {
     props.getBadgeCount(displayUserId);
@@ -537,10 +537,10 @@ useEffect(() => {
 
   return (
 
-    <div 
-      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`} 
-      style={darkMode ? (!props.isDashboard ? {padding: "0 15px 300px 15px"} : {}) : {}}>
-    
+    <div
+      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
+      style={darkMode ? (!props.isDashboard ? { padding: "0 15px 300px 15px" } : {}) : {}}>
+
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
