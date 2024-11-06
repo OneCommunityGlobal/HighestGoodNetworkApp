@@ -124,7 +124,7 @@ class Teams extends React.PureComponent {
                   areaTitle="Teams"
                   fontSize={30}
                   isPermissionPage={true}
-                  role={this.props.state.userProfile.role}
+                  role={this.props.state?.auth?.user?.role}
                 />
               
               <TeamOverview
