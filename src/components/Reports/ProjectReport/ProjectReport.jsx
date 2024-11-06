@@ -18,11 +18,9 @@ import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequire
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
-import { boxStyle, boxStyleDark } from '../../../styles';
 import { PieChartByProject } from './PiechartByProject/PieChartByProject';
 
 
-// eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
   const [memberCount, setMemberCount] = useState(0);
   const [activeMemberCount, setActiveMemberCount] = useState(0);
@@ -132,45 +130,44 @@ export function ProjectReport({ match }) {
 
   return (
     <div className={`container-project-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-    <ReportPage
-      renderProfile={() => (
-        <ReportPage.ReportHeader
-          isActive={isActive}
-          avatar={<FiBox />}
-          name={projectName}
-          counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
-          hoursCommitted={hoursCommitted.toFixed(0)}
-          darkMode={darkMode}
-        />
-      )}
-      darkMode={darkMode}
-    >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
-      <div className="wbs-and-members-blocks-wrapper">
-        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
-          <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
-            <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} darkMode={darkMode}/>
-          </Paging>
-        </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
-          <Paging totalElementsCount={memberCount} darkMode={darkMode}>
-            <ProjectMemberTable
-              projectMembers={projectMembers}
-              handleMemberCount={handleMemberCount}
-              darkMode={darkMode}
-              counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
-            />
-          </Paging>
-        </ReportPage.ReportBlock>
-      </div>
-        <ReportPage.ReportBlock darkMode={darkMode}>
-          <TasksTable darkMode={darkMode} tasks={tasks}/>
-        </ReportPage.ReportBlock>
-        <ReportPage.ReportBlock darkMode={darkMode}>
-          <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>
-          <div style={{ marginTop: '40px' }}></div>
-          <WbsPieChart projectMembers={projectMembers} projectName={projectName} darkMode={darkMode}/>
-        </ReportPage.ReportBlock>
+      <ReportPage
+        renderProfile={() => (
+          <ReportPage.ReportHeader
+            isActive={isActive}
+            avatar={<FiBox />}
+            name={projectName}
+            counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
+            hoursCommitted={hoursCommitted.toFixed(0)}
+            darkMode={darkMode}
+          />
+        )}
+        projectName={projectName}
+        darkMode={darkMode}
+      >
+        <div className="blocks-wrapper">
+          <ReportPage.ReportBlock darkMode={darkMode}>
+            <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
+              <WbsTable wbs={wbs} match={match} canViewWBS={canViewWBS} darkMode={darkMode}/>
+            </Paging>
+          </ReportPage.ReportBlock>
+          <ReportPage.ReportBlock darkMode={darkMode}>
+            <Paging totalElementsCount={memberCount} darkMode={darkMode}>
+              <ProjectMemberTable
+                projectMembers={projectMembers}
+                handleMemberCount={handleMemberCount}
+                darkMode={darkMode}
+              />
+            </Paging>
+          </ReportPage.ReportBlock>
+          <ReportPage.ReportBlock className="block-span" darkMode={darkMode}>
+            <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
+          </ReportPage.ReportBlock>
+          <ReportPage.ReportBlock className="block-span"darkMode={darkMode}>
+            <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>
+            <div style={{ marginTop: '40px' }}></div>
+            <WbsPieChart projectMembers={projectMembers} projectName={projectName} darkMode={darkMode}/>
+          </ReportPage.ReportBlock>
+        </div>
       </ReportPage>
     </div>
   );

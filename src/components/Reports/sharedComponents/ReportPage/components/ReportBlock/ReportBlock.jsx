@@ -1,4 +1,3 @@
-import classnames from 'classnames';
 import './ReportBlock.css';
 
 export const ReportBlock = ({ className, children, firstColor, secondColor, darkMode }) => {
@@ -7,7 +6,7 @@ export const ReportBlock = ({ className, children, firstColor, secondColor, dark
     : firstColor;
 
   return (
-    <div className={classnames(`${darkMode ? 'report-block-wrapper-dark' : 'report-block-wrapper'}`, className)}>
+    <div className={`${className ? className : ''} ${darkMode ? 'report-block-wrapper-dark' : 'report-block-wrapper'}`}>
       <div className="report-block-content" style={{ background: secondColor ? color : darkMode ? '#3A506B' : firstColor || 'white' }}>
         {children}
       </div>
