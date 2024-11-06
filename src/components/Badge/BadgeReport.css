@@ -2,6 +2,10 @@
   display: none;
 }
 
+.desktop {
+  display: block;
+}
+
 @media (max-width: 1024px) {
   .desktop {
     display: none;
@@ -11,6 +15,20 @@
     display: block;
   }
 }
+
+ /* Adjust column widths */
+ .tablet th:nth-child(2), /* Name column */
+ .tablet th:nth-child(3), /* Modified column */
+ .tablet td:nth-child(2), /* Name cell */
+ .tablet td:nth-child(3) /* Modified cell */ {
+   width: 80px; 
+   padding: 0 8px; 
+ }
+
+ /* Apply dark background */
+ .dark-mode .tablet thead {
+   background-color: #1C2541 !important;
+ }
 
 .badge_dropdown {
   max-height: 150px; /* Limits the dropdown height */
