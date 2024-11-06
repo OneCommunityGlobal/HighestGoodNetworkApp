@@ -12,8 +12,9 @@ const Project = props => {
   const { darkMode, index } = props;
   const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName, category, isActive, _id: projectId } = projectData;
+  const { projectName, isActive, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
+  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
@@ -47,8 +48,9 @@ const Project = props => {
   }
 
   const onUpdateProjectCategory = (e) => {
-    updateProject('category', e.target.value);
-  }
+    setCategory(e.target.value);
+    updateProject('category', e.target.value); // Update the projectData state
+  };
 
   const onArchiveProject = () => {
     props.onClickArchiveBtn(projectData);
@@ -59,6 +61,9 @@ const Project = props => {
       setFirstLoad(false);
     } else {
       props.onUpdateProject(projectData)
+    }
+    if (props.projectData.category) {
+      setCategory(props.projectData.category);
     }
   }, [projectData]);
 
@@ -92,15 +97,13 @@ const Project = props => {
           <select
 
             data-testid="projects__category--input" //added for unit test
-            value={props.category}
+            value={category}
             onChange={e => {
-              setCategory(e.target.value);
+              onUpdateProjectCategory(e);
             }}
 
           >
-            <option default value="Unspecified">
-              Unspecified
-            </option>
+            <option value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>
             <option value="Housing">Housing</option>
@@ -114,14 +117,10 @@ const Project = props => {
           category
         )}
       </td>
-
-
       {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
           <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
               {isActive ? (
-
-
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
           </div>

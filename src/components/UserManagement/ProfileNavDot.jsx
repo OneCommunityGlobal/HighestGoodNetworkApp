@@ -1,11 +1,10 @@
-import { React } from 'react';
 import { useHistory } from 'react-router';
 
 // pass userId of an account to navigate to user profile onClick of icon and open in new tab if Command or Control key is pressed
-export const ProfileNavDot = ({ userId }) => {
+function ProfileNavDot({ userId }) {
   const history = useHistory();
 
-  const handleClick = (event) => {
+  const handleClick = event => {
     const url = `/userprofile/${userId}`;
 
     // Check if Command key (metaKey) or Control key (ctrlKey) is pressed
@@ -24,7 +23,9 @@ export const ProfileNavDot = ({ userId }) => {
       onClick={handleClick}
       title="Click here to go to the user's profile."
     >
-      <i className="fa fa-user"/>
+      <i className="fa fa-user" />
     </span>
   );
-};
+}
+
+export default ProfileNavDot;

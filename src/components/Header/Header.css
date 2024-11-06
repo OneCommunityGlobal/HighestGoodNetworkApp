@@ -95,3 +95,9 @@
     display: none;
   }
 }
+
+@media screen and (max-width: 769px) {
+  .responsive-spacing{
+    margin-right: 5px;
+  }
+}
