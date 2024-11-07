@@ -6,7 +6,7 @@ import PhoneInput from 'react-phone-input-2';
 // import 'react-phone-input-2/lib/style.css';
 import PauseAndResumeButton from 'components/UserManagement/PauseAndResumeButton';
 import TimeZoneDropDown from '../TimeZoneDropDown';
-import { connect } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import SetUpFinalDayButton from 'components/UserManagement/SetUpFinalDayButton';
 import styles from './BasicInformationTab.css';
@@ -18,6 +18,7 @@ import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
 import PermissionChangeModal from '../UserProfileModal/PermissionChangeModal';
+import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
@@ -309,8 +310,10 @@ const BasicInformationTab = props => {
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
-  const [oldUserProfile, setOldUserProfile] = useState(null);
-  const [isPermissionModalOpen, setPermissionModalOpen] = useState(true);
+  /* const [oldUserProfile, setOldUserProfile] = useState(null); */
+  const [oldRolePermissions, setOldRolePermissions] = useState([]);
+  const [isPermissionModalOpen, setPermissionModalOpen] = useState(false);
+  const [potentialRole, setPotentialRole] = useState('');
 
   let topMargin = '6px';
   if (isUserSelf) {
@@ -364,10 +367,27 @@ const BasicInformationTab = props => {
     };
   }, []);
 
-  useEffect(() => {
+  /* useEffect(() => {
     setOldUserProfile(userProfile);
     console.log('oldUserProfile: ', userProfile);
-  }, [userProfile]);
+  }, [userProfile]); */
+
+  const oldRole = userProfile.role;
+  const currentUserPermissions =  userProfile.permissions.frontPermissions;
+  const dispatch = useDispatch();
+
+  useEffect(() => {
+    const fetchOldRolePermissions = async () => {
+      if (oldRole) {
+        const oldRolePresets = await dispatch(getPresetsByRole(oldRole));
+        if (oldRolePresets && oldRolePresets.presets && oldRolePresets.presets[2]) {
+          setOldRolePermissions(oldRolePresets.presets[2].permissions);
+        }
+      }
+    };
+
+    fetchOldRolePermissions();
+  }, [dispatch, oldRole]);
 
   const openPermissionModal = () => setPermissionModalOpen(true);
   const closePermissionModal = () => setPermissionModalOpen(false);
@@ -516,9 +536,13 @@ const BasicInformationTab = props => {
     <>
       <PermissionChangeModal 
         userProfile={userProfile} 
-        oldUserProfile={oldUserProfile} 
+        setUserProfile={setUserProfile}
+        /* oldUserProfile={oldUserProfile} */ 
         isOpen={isPermissionModalOpen}
         closeModal={closePermissionModal}
+        potentialRole={potentialRole}
+        oldRolePermissions={oldRolePermissions}
+        currentUserPermissions={currentUserPermissions}
       />
       <Col>
         <Label className={darkMode ? 'text-light' : ''}>Role</Label>
@@ -528,13 +552,29 @@ const BasicInformationTab = props => {
           <FormGroup>
             <select
               value={userProfile.role}
-              onChange={e => {
-                setUserProfile({
-                  ...userProfile,
-                  role: e.target.value,
-                  permissions: { ...userProfile.permissions, frontPermissions: [] },
-                });
+              onChange={(e) => {
+                const permissionsDifferent = 
+                  oldRolePermissions.some(permission => 
+                    !currentUserPermissions.includes(permission)) || 
+                  currentUserPermissions.some(permission => 
+                    !oldRolePermissions.includes(permission))
+                ;
+                
+                if (permissionsDifferent) {
+                  openPermissionModal();
+                  setPotentialRole(e.target.value);
+                } else {
+                  setUserProfile({
+                    ...userProfile,
+                    role: e.target.value,
+                    permissions: { ...userProfile.permissions, frontPermissions: [] },
+                  });  
+                }              
               }}
+              // /* onChange={(e) => {
+                // openPermissionModal();
+                // setPotentialRole(e.target.value);
+              // }} */
               id="role"
               name="role"
               className="form-control"
