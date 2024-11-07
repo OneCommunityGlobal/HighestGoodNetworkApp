@@ -263,20 +263,21 @@ class UserManagement extends React.PureComponent {
 
   filteredUserList = userProfiles => {
     return userProfiles.filter(user => {
+      const fullName = user.firstName + user.lastName;
       // Applying the search filters before creating each table data element
-      // const search = result => {
-      //   if (typeof result === 'string') {
-      //     return result
-      //       .toLowerCase()
-      //       .trim()
-      //       .replace(/\s+/g, '');
-      //   }
-      //   const numberToString = String(result)
-      //     .trim()
-      //     .replace(/\s+/g, '');
-      //   const stringToNumber = Number(numberToString);
-      //   return stringToNumber;
-      // };
+      const search = result => {
+        if (typeof result === 'string') {
+          return result
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, '');
+        }
+        const numberToString = String(result)
+          .trim()
+          .replace(/\s+/g, '');
+        const stringToNumber = Number(numberToString);
+        return stringToNumber;
+      };
 
       return (
         // Check if the user matches the search criteria
@@ -296,8 +297,7 @@ class UserManagement extends React.PureComponent {
         ((this.state.allSelected && true) ||
           this.state.isPaused === false ||
           (user.reactivationDate && new Date(user.reactivationDate) > new Date())) &&
-        (searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
-          searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
+        (search(fullName).indexOf(search(this.state.wildCardSearchText)) > -1 ||
           user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
           user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
           user.weeklycommittedHours === Number(this.state.wildCardSearchText))
@@ -316,7 +316,6 @@ class UserManagement extends React.PureComponent {
       wildCardSearchText: text,
     }));
   };
-
 
   /**
    * Call back on Pause or Resume button click to trigger the action to update user status
@@ -345,7 +344,7 @@ class UserManagement extends React.PureComponent {
       }
       return;
     }
-    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests')
+    const canManageTimeOffRequests = this.props.hasPermission('manageTimeOffRequests');
 
     const hasRolePermission =
       this.props.state.auth.user.role === 'Administrator' ||
