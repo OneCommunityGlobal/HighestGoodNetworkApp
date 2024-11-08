@@ -6,7 +6,7 @@ const normalizeString = str => {
 };
 
 // search whether the input contains searchText (ignoring accents, ignoring case)
-const searchWithAccent = (input, searchText) => {
+export const searchWithAccent = (input, searchText) => {
   if (!searchText) return true;
   if (!input) return false;
 
