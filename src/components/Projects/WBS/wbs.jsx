@@ -4,20 +4,23 @@
  * Display WBSs of project
  ********************************************************************************/
 import React, { useState, useEffect } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { addNewWBS, fetchAllWBS } from '../../../actions/wbs';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import AddWBS from './AddWBS';
 import WBSItem from './WBSItem/WBSItem';
 import { boxStyle, boxStyleDark } from 'styles';
+import { getProjectDetail } from 'actions/project';
 
 const WBS = props => {
   const darkMode = props.state.theme.darkMode;
   const projectId = props.match.params.projectId;
+  const projectName = useSelector(state => state.projectById?.projectName || '');
 
   useEffect(() => {
     props.fetchAllWBS(projectId);
+    props.getProjectDetail(projectId); 
   }, [projectId]);
 
   return (
@@ -30,9 +33,9 @@ const WBS = props => {
                 <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
                   <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
                 </button>
+                <span style={{ marginLeft: '8px' }}>Return to Projects List</span>
               </NavItem>
-
-              <div id="member_project__name">Projects</div>
+              <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold' }}>Project: {projectName}</div>
             </ol>
           </nav>
 
@@ -73,4 +76,4 @@ const WBS = props => {
 const mapStateToProps = state => {
   return { state };
 };
-export default connect(mapStateToProps, { addNewWBS, fetchAllWBS })(WBS);
+export default connect(mapStateToProps, { addNewWBS, fetchAllWBS, getProjectDetail })(WBS);
