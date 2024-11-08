@@ -90,8 +90,10 @@ export function WbsPieChart({
       <div className= "pie-chart-title" >
         <div>
           <label style={{
-            paddingRight: '1rem'
-          }}>{isChecked ? 'Weekly Commited Hours By Active Member(Hide Piechart)' : 'Weekly Commited Hours By Member(Show Piechart)'}</label>
+            paddingRight: '1rem',
+          }}
+          className={darkMode ? 'text-light' : ''}
+          >{isChecked ? 'Weekly Commited Hours By Active Member(Hide Piechart)' : 'Weekly Commited Hours By Member(Show Piechart)'}</label>
           <input
             type="checkbox"
             checked={isChecked}
