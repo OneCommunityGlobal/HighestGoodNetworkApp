@@ -82,6 +82,7 @@ const Projects = function(props) {
 
   const handleProjectArchived = () => {
     props.fetchAllProjects();
+    refreshProjects();
   };
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
