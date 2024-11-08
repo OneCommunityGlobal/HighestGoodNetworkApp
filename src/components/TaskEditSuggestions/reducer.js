@@ -6,11 +6,13 @@ const initialState = {
   count: 0,
 };
 
-export const taskEditSuggestionsReducer = (state = initialState, action) => {
+// eslint-disable-next-line default-param-last
+const taskEditSuggestionsReducer = (state = initialState, action) => {
   switch (action.type) {
     case 'FETCH_TASK_EDIT_SUGGESTIONS_BEGIN':
       return { ...state, isLoading: true };
-    case 'FETCH_TASK_EDIT_SUGGESTIONS_SUCESS':
+
+    case 'FETCH_TASK_EDIT_SUGGESTIONS_SUCCESS': {
       const fetchedTaskEditSuggestions = [...action.payload];
       return {
         ...state,
@@ -20,21 +22,30 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
           tes2.dateSuggested.localeCompare(tes1.dateSuggested),
         ),
       };
+    }
+
     case 'FETCH_TASK_EDIT_SUGGESTIONS_ERROR':
       return { ...state, isLoading: false };
-    case 'REJECT_TASK_EDIT_SUGGESTION_SUCCESS':
-      const filteredTaskEditSuggestions = [...state.taskEditSuggestions].filter(
-        tes => tes._id !== action.payload,
+
+    case 'REJECT_TASK_EDIT_SUGGESTION_SUCCESS': {
+      const filteredTaskEditSuggestions = state.taskEditSuggestions.filter(
+        (tes) => tes._id !== action.payload,
       );
       return {
         ...state,
         taskEditSuggestions: filteredTaskEditSuggestions,
         count: filteredTaskEditSuggestions.length,
       };
-    case 'FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCESS':
+    }
+
+    case 'FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCCESS':
       return { ...state, count: action.payload };
-    case 'TOGGLE_DATE_SUGGESTED_SORT_DIRECTION':
-      if (state.dateSuggestedSortDirection == null || state.dateSuggestedSortDirection == 'asc') {
+
+    case 'TOGGLE_DATE_SUGGESTED_SORT_DIRECTION': {
+      if (
+        state.dateSuggestedSortDirection === null ||
+        state.dateSuggestedSortDirection === 'asc'
+      ) {
         return {
           ...state,
           dateSuggestedSortDirection: 'desc',
@@ -43,7 +54,8 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
           ),
           userSortDirection: null,
         };
-      } if (state.dateSuggestedSortDirection == 'desc') {
+      }
+      if (state.dateSuggestedSortDirection === 'desc') {
         return {
           ...state,
           dateSuggestedSortDirection: 'asc',
@@ -53,8 +65,14 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
           userSortDirection: null,
         };
       }
-    case 'TOGGLE_USER_SORT_DIRECTION':
-      if (state.userSortDirection == null || state.userSortDirection == 'asc') {
+      return state;
+    }
+
+    case 'TOGGLE_USER_SORT_DIRECTION': {
+      if (
+        state.userSortDirection === null ||
+        state.userSortDirection === 'asc'
+      ) {
         return {
           ...state,
           userSortDirection: 'desc',
@@ -63,7 +81,8 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
           ),
           dateSuggestedSortDirection: null,
         };
-      } if (state.userSortDirection == 'desc') {
+      }
+      if (state.userSortDirection === 'desc') {
         return {
           ...state,
           userSortDirection: 'asc',
@@ -73,7 +92,12 @@ export const taskEditSuggestionsReducer = (state = initialState, action) => {
           dateSuggestedSortDirection: null,
         };
       }
+      return state;
+    }
+
     default:
-      return { ...state };
+      return state;
   }
 };
+
+export default taskEditSuggestionsReducer;

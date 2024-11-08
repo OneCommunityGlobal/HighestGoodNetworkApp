@@ -24,10 +24,7 @@ src/components/Projects/**
 src/components/Reports/**
 src/components/SummaryBar/**
 src/components/SummaryManagement/**
-src/components/TaskEditSuggestions/**
-src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/Announcements/**
-src/components/EmailSubscribeForm/**
 src/components/Dashboard/**

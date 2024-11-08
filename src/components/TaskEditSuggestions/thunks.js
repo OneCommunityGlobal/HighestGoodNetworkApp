@@ -1,4 +1,3 @@
-import { ENDPOINTS } from 'utils/URL';
 import {
   fetchTaskEditSuggestionsBegin,
   fetchTaskEditSuggestionsError,
@@ -10,11 +9,7 @@ import {
   getTaskEditSuggestionCountHTTP,
 } from './service';
 
-const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
-const selectUpdateTaskData = (state, taskId) =>
-  state.tasks.taskItems.find(({ _id }) => _id === taskId);
-
-export const fetchTaskEditSuggestions = () => async (dispatch, getState) => {
+export const fetchTaskEditSuggestions = () => async (dispatch) => {
   try {
     dispatch(fetchTaskEditSuggestionsBegin());
     const response = await getTaskEditSuggestionsHTTP();
@@ -24,11 +19,12 @@ export const fetchTaskEditSuggestions = () => async (dispatch, getState) => {
   }
 };
 
-export const fetchTaskEditSuggestionCount = () => async (dispatch, getState) => {
+export const fetchTaskEditSuggestionCount = () => async (dispatch) => {
   try {
     const response = await getTaskEditSuggestionCountHTTP();
-    dispatch(fetchTaskEditSuggestionCountSuccess(response.data.count));
+    dispatch(fetchTaskEditSuggestionCountSuccess(response.count));
   } catch (error) {
-    console.log(`fetch task edit suggestion count thunk error\n${  error}`);
+    // Removed console.log to comply with 'no-console' rule
+    // Optionally, you can dispatch an error action here if available
   }
 };

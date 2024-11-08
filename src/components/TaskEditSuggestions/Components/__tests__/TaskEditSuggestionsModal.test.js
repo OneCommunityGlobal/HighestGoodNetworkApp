@@ -1,15 +1,13 @@
-import React from 'react';
 import { TaskEditSuggestionsModal } from 'components/TaskEditSuggestions/Components/TaskEditSuggestionsModal';  
 import * as reduxHooks from 'react-redux';
-import { waitFor, render, fireEvent, screen } from '@testing-library/react';
-import { act } from 'react-dom/test-utils';
+import { render, screen } from '@testing-library/react';
+import '@testing-library/jest-dom/extend-expect';
 
 jest.mock('react-redux', () => ({
   useDispatch: jest.fn(),
   useSelector: jest.fn(),
   useStore: jest.fn(),
 }));
-
 
 const mockDispatch = jest.fn();
 const mockGetState = jest.fn();
@@ -24,18 +22,33 @@ beforeEach(() => {
   jest.clearAllMocks();
   reduxHooks.useDispatch.mockReturnValue(mockDispatch);
   reduxHooks.useStore.mockReturnValue({ getState: mockGetState });
-
 });
 
 describe('TaskEditSuggestionsModal Rendering', () => {
   it('does not render with default props', () => {
-    render(<TaskEditSuggestionsModal {...defaultProps} />);
+    render(
+      <TaskEditSuggestionsModal
+        isTaskEditSuggestionsModalOpen={defaultProps.isTaskEditSuggestionsModalOpen}
+        taskEditSuggestion={defaultProps.taskEditSuggestion}
+        handleToggleTaskEditSuggestionsModal={defaultProps.handleToggleTaskEditSuggestionsModal}
+      />
+    );
     expect(screen.queryByText(/Changes suggested by:/i)).not.toBeInTheDocument();
   });
 
   it('renders correctly when open', () => {
-    const props = { ...defaultProps, isTaskEditSuggestionsModalOpen: true };
-    render(<TaskEditSuggestionsModal {...props} />);
+    const props = {
+      isTaskEditSuggestionsModalOpen: true,
+      taskEditSuggestion: defaultProps.taskEditSuggestion,
+      handleToggleTaskEditSuggestionsModal: defaultProps.handleToggleTaskEditSuggestionsModal,
+    };
+    render(
+      <TaskEditSuggestionsModal
+        isTaskEditSuggestionsModalOpen={props.isTaskEditSuggestionsModalOpen}
+        taskEditSuggestion={props.taskEditSuggestion}
+        handleToggleTaskEditSuggestionsModal={props.handleToggleTaskEditSuggestionsModal}
+      />
+    );
     expect(screen.queryByText(/Changes suggested by:/i)).not.toBeInTheDocument(); // Adjust as per the actual content
   });
 
@@ -49,19 +62,31 @@ describe('TaskEditSuggestionsModal Rendering', () => {
         taskName: 'New Task Name',
       },
     };
-    const props = { ...defaultProps, taskEditSuggestion, isTaskEditSuggestionsModalOpen: true };
-    const { queryByText } = render(<TaskEditSuggestionsModal {...props} />);
-    expect(queryByText(/John Doe/i)).not.toBeInTheDocument();
-    
+    const props = {
+      isTaskEditSuggestionsModalOpen: true,
+      taskEditSuggestion,
+      handleToggleTaskEditSuggestionsModal: defaultProps.handleToggleTaskEditSuggestionsModal,
+    };
+    render(
+      <TaskEditSuggestionsModal
+        isTaskEditSuggestionsModalOpen={props.isTaskEditSuggestionsModalOpen}
+        taskEditSuggestion={props.taskEditSuggestion}
+        handleToggleTaskEditSuggestionsModal={props.handleToggleTaskEditSuggestionsModal}
+      />
+    );
+    expect(screen.queryByText(/John Doe/i)).not.toBeInTheDocument();
   });
 });
 
-
-
 describe('TaskEditSuggestionsModal Redux Integration', () => {
   it('uses useDispatch hook', () => {
-    render(<TaskEditSuggestionsModal {...defaultProps} />);
+    render(
+      <TaskEditSuggestionsModal
+        isTaskEditSuggestionsModalOpen={defaultProps.isTaskEditSuggestionsModalOpen}
+        taskEditSuggestion={defaultProps.taskEditSuggestion}
+        handleToggleTaskEditSuggestionsModal={defaultProps.handleToggleTaskEditSuggestionsModal}
+      />
+    );
     expect(reduxHooks.useDispatch).toHaveBeenCalled();
   });
-
 });

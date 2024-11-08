@@ -1,12 +1,11 @@
-import React from 'react';
-import { TaskEditSuggestions } from '../TaskEditSuggestions';  
-import { render, fireEvent, screen } from '@testing-library/react';
+// Removed unused React import
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import * as reduxHooks from 'react-redux';
 import configureStore from 'redux-mock-store';
 import { Provider } from 'react-redux';
-import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from '../actions';
-import { waitFor } from '@testing-library/react';
 import { themeMock } from '__tests__/mockStates';
+import { toggleDateSuggestedSortDirection, toggleUserSortDirection } from '../actions';
+import { TaskEditSuggestions } from '../TaskEditSuggestions';  
 
 
 describe('TaskEditSuggestions', () => {
@@ -44,8 +43,10 @@ describe('TaskEditSuggestions', () => {
     },
     theme: themeMock,
   };
+  
   const mockStore = configureStore();
-  let store, mockDispatch;
+  let store; 
+  let mockDispatch;
   
   beforeEach(() => {
     store = mockStore(initialState);
@@ -71,7 +72,6 @@ describe('TaskEditSuggestions', () => {
   });
 
   
-
 
   it('dispatches toggleDateSuggestedSortDirection on date header click', () => {
     render(
@@ -132,8 +132,10 @@ describe('TaskEditSuggestions loading', () => {
     },
     theme: themeMock,
   };
+  
   const mockStore = configureStore();
-  let store, mockDispatch;
+  let store; 
+  let mockDispatch;
   
   beforeEach(() => {
     store = mockStore(initialState);
@@ -147,10 +149,17 @@ describe('TaskEditSuggestions loading', () => {
   });
 
   it('should render Loading when isLoading is true', async () => {
-    const testStore = mockStore({ ...initialState, taskEditSuggestions: { ...initialState.taskEditSuggestions, isLoading: true}  });
+    const testStore = mockStore({ 
+      ...initialState, 
+      taskEditSuggestions: { 
+        ...initialState.taskEditSuggestions, 
+        isLoading: true 
+      }  
+    });
     testStore.dispatch({ type: 'FETCH_TASK_EDIT_SUGGESTIONS_BEGIN' });
     
-    const state = testStore.getState()
+    // Removed the unused 'state' variable
+    // const state = testStore.getState()
     
     render(
       <Provider store={testStore}>

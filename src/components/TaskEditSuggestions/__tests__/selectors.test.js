@@ -1,5 +1,5 @@
 import { themeMock } from '__tests__/mockStates';
-import { getTaskEditSuggestionsData } from '../selectors'; 
+import getTaskEditSuggestionsData from '../selectors'; 
 
 describe('getTaskEditSuggestionsData', () => {
   it('should return the expected data from state', () => {

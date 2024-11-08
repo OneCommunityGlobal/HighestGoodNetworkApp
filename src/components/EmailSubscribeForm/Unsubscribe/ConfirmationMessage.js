@@ -1,22 +1,25 @@
-import React from 'react';
-import styles from './ConfirmationMessage.module.css'; // Make sure to create this CSS module
 import { useHistory } from 'react-router-dom';
+import styles from './ConfirmationMessage.module.css';
 
-const ConfirmationMessage = ({ message, isSuccess, confirmationMessageCallback }) => {
+function ConfirmationMessage({ message, isSuccess, confirmationMessageCallback }) {
   const history = useHistory();
   return (
     <div className={styles.confirmationContainer}>
-      {isSuccess && <div className={styles.oneCommunityIcon}></div>}
-      <p></p>
-      <p></p>
-      <div className={styles.envelope}>
-        <div className={styles.iconContainer}>
-          <div className={styles.checkmark}>→</div>
+      {isSuccess && <div className={styles.oneCommunityIcon} />}
+
+      {isSuccess && (
+        <div className={styles.envelope}>
+          <div className={styles.iconContainer}>
+            <div className={styles.checkmark}>→</div>
+          </div>
         </div>
-      </div>
-      <p></p>
+      )}
+
+      {message && <p className={styles.message}>{message}</p>}
+
       <div className={styles.buttonsContainer}>
         <button
+          type="button"
           className={styles.button}
           onClick={() => {
             history.push('/email-subscribe');
@@ -28,6 +31,6 @@ const ConfirmationMessage = ({ message, isSuccess, confirmationMessageCallback }
       </div>
     </div>
   );
-};
+}
 
 export default ConfirmationMessage;

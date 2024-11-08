@@ -1,5 +1,4 @@
 // ReminderModal.test.js
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import ReminderModal from '../../TimeEntryForm/ReminderModal'; // Adjust the path as necessary
@@ -18,18 +17,45 @@ describe('ReminderModal Component', () => {
   };
 
   it('should render the modal when visible is true', () => {
-    const { getByText } = render(<ReminderModal {...baseProps} />);
+    const { getByText } = render(
+      <ReminderModal
+        visible={baseProps.visible}
+        setVisible={baseProps.setVisible}
+        reminder={baseProps.reminder}
+        edit={baseProps.edit}
+        inputs={baseProps.inputs}
+        cancelChange={baseProps.cancelChange}
+      />
+    );
     expect(getByText('Reminder')).toBeInTheDocument();
     expect(getByText('Test Reminder')).toBeInTheDocument();
   });
 
   it('should not render the modal when visible is false', () => {
-    const { queryByText } = render(<ReminderModal {...{ ...baseProps, visible: false }} />);
+    const { queryByText } = render(
+      <ReminderModal
+        visible={false}
+        setVisible={baseProps.setVisible}
+        reminder={baseProps.reminder}
+        edit={baseProps.edit}
+        inputs={baseProps.inputs}
+        cancelChange={baseProps.cancelChange}
+      />
+    );
     expect(queryByText('Reminder')).not.toBeInTheDocument();
   });
 
   it('should render Continue button and trigger setVisible on click', () => {
-    const { getByText } = render(<ReminderModal {...baseProps} />);
+    const { getByText } = render(
+      <ReminderModal
+        visible={baseProps.visible}
+        setVisible={baseProps.setVisible}
+        reminder={baseProps.reminder}
+        edit={baseProps.edit}
+        inputs={baseProps.inputs}
+        cancelChange={baseProps.cancelChange}
+      />
+    );
     const continueButton = getByText('Continue');
     fireEvent.click(continueButton);
     expect(mockSetVisible).toHaveBeenCalledWith(false);
@@ -38,27 +64,63 @@ describe('ReminderModal Component', () => {
   it('should conditionally render the Cancel button based on edit and data comparison', () => {
     // Case where Cancel button should be rendered
     const propsWithEdit = {
-      ...baseProps,
+      visible: baseProps.visible,
+      setVisible: baseProps.setVisible,
+      reminder: baseProps.reminder,
       edit: true,
-      data: { hours: 1, minutes: 30 },
       inputs: { hours: 2, minutes: 30 },
+      cancelChange: mockCancelChange,
+      data: { hours: 1, minutes: 30 },
     };
-    const { getByText, rerender } = render(<ReminderModal {...propsWithEdit} />);
+    const { getByText, rerender } = render(
+      <ReminderModal
+        visible={propsWithEdit.visible}
+        setVisible={propsWithEdit.setVisible}
+        reminder={propsWithEdit.reminder}
+        edit={propsWithEdit.edit}
+        inputs={propsWithEdit.inputs}
+        cancelChange={propsWithEdit.cancelChange}
+        data={propsWithEdit.data}
+      />
+    );
     expect(getByText('Cancel')).toBeInTheDocument();
 
     // Case where Cancel button should not be rendered
-    rerender(<ReminderModal {...{ ...propsWithEdit, inputs: { hours: 1, minutes: 30 } }} />);
+    rerender(
+      <ReminderModal
+        visible={propsWithEdit.visible}
+        setVisible={propsWithEdit.setVisible}
+        reminder={propsWithEdit.reminder}
+        edit={propsWithEdit.edit}
+        inputs={{ hours: 1, minutes: 30 }}
+        cancelChange={propsWithEdit.cancelChange}
+        data={propsWithEdit.data}
+      />
+    );
     expect(() => getByText('Cancel')).toThrow();
   });
 
   it('should call cancelChange when Cancel button is clicked', () => {
     const propsWithEdit = {
-      ...baseProps,
+      visible: baseProps.visible,
+      setVisible: baseProps.setVisible,
+      reminder: baseProps.reminder,
       edit: true,
-      data: { hours: 1, minutes: 30 },
       inputs: { hours: 2, minutes: 30 },
+      cancelChange: mockCancelChange,
+      data: { hours: 1, minutes: 30 },
     };
-    const { getByText } = render(<ReminderModal {...propsWithEdit} />);
+    const { getByText } = render(
+      <ReminderModal
+        visible={propsWithEdit.visible}
+        setVisible={propsWithEdit.setVisible}
+        reminder={propsWithEdit.reminder}
+        edit={propsWithEdit.edit}
+        inputs={propsWithEdit.inputs}
+        cancelChange={propsWithEdit.cancelChange}
+        data={propsWithEdit.data}
+      />
+    );
     const cancelButton = getByText('Cancel');
     fireEvent.click(cancelButton);
     expect(mockCancelChange).toHaveBeenCalled();

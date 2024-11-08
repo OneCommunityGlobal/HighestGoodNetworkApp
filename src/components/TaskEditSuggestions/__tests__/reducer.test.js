@@ -1,40 +1,44 @@
-import { taskEditSuggestionsReducer, initialState } from "../reducer";
+// Updated Import Statement: Use default import instead of named import
+import taskEditSuggestionsReducer from "../reducer";
 
 describe('taskEditSuggestionsReducer', () => {
-  // test for inital state
+  // Define initialState within the test file
+  const initialState = {
+    count: 0,
+    dateSuggestedSortDirection: 'desc',
+    isLoading: false,
+    taskEditSuggestions: [],
+    userSortDirection: null
+  };
+
+  // Test for initial state
   it('should return the initial state', () => {
-    expect(taskEditSuggestionsReducer(undefined,{})).toEqual({
-      count:0,
-      dateSuggestedSortDirection: 'desc',
-      isLoading: false,
-      taskEditSuggestions: [],
-      userSortDirection: null
-    });
+    expect(taskEditSuggestionsReducer(undefined, {})).toEqual(initialState);
   });
-// test for FETCH_TASK_EDIT_SUGGESTIONS_BEGIN
+
+  // Test for FETCH_TASK_EDIT_SUGGESTIONS_BEGIN
   it('handles FETCH_TASK_EDIT_SUGGESTIONS_BEGIN action', () => {
     const startAction = {
       type: 'FETCH_TASK_EDIT_SUGGESTIONS_BEGIN'
-
     };
-    expect(taskEditSuggestionsReducer(undefined, startAction)).toEqual({ 
-      isLoading: true,
-      taskEditSuggestions:[],
-      userSortDirection: null,
-      dateSuggestedSortDirection: 'desc',
-      count:0
-     });
+    const expectedState = { 
+      ...initialState,
+      isLoading: true
+    };
+    expect(taskEditSuggestionsReducer(initialState, startAction)).toEqual(expectedState);
   });
 
-  //test for FETCH_TASK_EDIT_SUGGESTIONS_SUCESS
-  it('handles FETCH_TASK_EDIT_SUGGESTIONS_SUCESS action', () => {
+  // Test for FETCH_TASK_EDIT_SUGGESTIONS_SUCCESS
+  it('handles FETCH_TASK_EDIT_SUGGESTIONS_SUCCESS action', () => {
     const mockAction = {
-      type: 'FETCH_TASK_EDIT_SUGGESTIONS_SUCESS',
-      payload: [{ _id: '1', dateSuggested: '2023-01-01', user: 'UserA' }, { _id: '2', dateSuggested: '2023-01-02', user: 'UserB'}],
+      type: 'FETCH_TASK_EDIT_SUGGESTIONS_SUCCESS',
+      payload: [
+        { _id: '1', dateSuggested: '2023-01-01', user: 'UserA' },
+        { _id: '2', dateSuggested: '2023-01-02', user: 'UserB' }
+      ],
     };
     const expectedState = {
-      dateSuggestedSortDirection: 'desc',
-      userSortDirection: null,
+      ...initialState,
       isLoading: false,
       count: 2,
       taskEditSuggestions: mockAction.payload.sort((a, b) => b.dateSuggested.localeCompare(a.dateSuggested)),
@@ -42,88 +46,96 @@ describe('taskEditSuggestionsReducer', () => {
     expect(taskEditSuggestionsReducer(initialState, mockAction)).toEqual(expectedState);
   });
 
-  //test for FETCH_TASK_EDIT_SUGGESTIONS_ERROR
+  // Test for FETCH_TASK_EDIT_SUGGESTIONS_ERROR
   it('handles FETCH_TASK_EDIT_SUGGESTIONS_ERROR action', () => {
     const errorAction = {
       type: 'FETCH_TASK_EDIT_SUGGESTIONS_ERROR'
     };
-    expect(taskEditSuggestionsReducer(undefined, errorAction)).toEqual({
-      dateSuggestedSortDirection: 'desc',
-      userSortDirection: null,
-      taskEditSuggestions:[],
-      count: 0,
-      isLoading: false,
-    });
+    const expectedState = {
+      ...initialState,
+      isLoading: false
+    };
+    expect(taskEditSuggestionsReducer(initialState, errorAction)).toEqual(expectedState);
   });
 
-  // test for REJECT_TASK_EDIT_SUGGESTION_SUCCESS
+  // Test for REJECT_TASK_EDIT_SUGGESTION_SUCCESS
   it('handles REJECT_TASK_EDIT_SUGGESTION_SUCCESS action', () => {
     const rejectAction = {
       type: 'REJECT_TASK_EDIT_SUGGESTION_SUCCESS',
-      payload: '1' // Assuming _id: 1 is the id to be rejected
+      payload: '1' // Assuming _id: '1' is the id to be rejected
     };
     const currentState = {
-      dateSuggestedSortDirection: 'desc',
+      ...initialState,
       isLoading: false,
-      userSortDirection: null,
-      taskEditSuggestions: [{ _id: '1', user: 'UserA' }, { _id: '2', user: 'UserB' }],
+      taskEditSuggestions: [
+        { _id: '1', user: 'UserA' },
+        { _id: '2', user: 'UserB' }
+      ],
       count: 2,
     };
-    expect(taskEditSuggestionsReducer(currentState, rejectAction)).toEqual({
+    const expectedState = {
       ...currentState,
-      taskEditSuggestions: [{ _id: '2', user: 'UserB' }],
+      taskEditSuggestions: currentState.taskEditSuggestions.filter(suggestion => suggestion._id !== rejectAction.payload),
       count: 1
-    });
+    };
+    expect(taskEditSuggestionsReducer(currentState, rejectAction)).toEqual(expectedState);
   });
 
-  // test for FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCESS
-  it('handles FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCESS action', () => {
+  // Test for FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCCESS
+  it('handles FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCCESS action', () => {
     const countAction = {
-      type: 'FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCESS',
+      type: 'FETCH_TASK_EDIT_SUGGESTIONS_COUNT_SUCCESS',
       payload: 5
     };
-    expect(taskEditSuggestionsReducer(initialState, countAction)).toEqual({
-      dateSuggestedSortDirection: 'desc',
-      isLoading: false,
-      taskEditSuggestions: [],
-      userSortDirection: null,
+    const expectedState = {
+      ...initialState,
       count: 5
-    });
+    };
+    expect(taskEditSuggestionsReducer(initialState, countAction)).toEqual(expectedState);
   });
 
-  //test for TOGGLE_DATE_SUGGESTED_SORT_DIRECTION
-  it('should handle TOGGLE_DATE_SUGGESTED_SORT_DIRECTION',()=>{ 
+  // Test for TOGGLE_DATE_SUGGESTED_SORT_DIRECTION
+  it('should handle TOGGLE_DATE_SUGGESTED_SORT_DIRECTION', () => { 
     const currentState = {
-      taskEditSuggestions: [{_id: '1', dateSuggested: '2023-01-02' }, { _id: '2', dateSuggested: '2023-01-01' }],
+      ...initialState,
+      taskEditSuggestions: [
+        { _id: '1', dateSuggested: '2023-01-02' },
+        { _id: '2', dateSuggested: '2023-01-01' }
+      ],
       dateSuggestedSortDirection: 'asc'
     };
-    const toggleDateAction={
-      type:'TOGGLE_DATE_SUGGESTED_SORT_DIRECTION' 
+    const toggleDateAction = {
+      type: 'TOGGLE_DATE_SUGGESTED_SORT_DIRECTION' 
     };
-    expect(taskEditSuggestionsReducer(currentState,toggleDateAction)).toEqual({ 
+    const expectedState = { 
       ...currentState, 
       dateSuggestedSortDirection: 'desc',
-      taskEditSuggestions: currentState.taskEditSuggestions.sort((a, b) => b.dateSuggested.localeCompare(a.dateSuggested)),
+      taskEditSuggestions: [...currentState.taskEditSuggestions].sort((a, b) => b.dateSuggested.localeCompare(a.dateSuggested)),
       userSortDirection: null
-    });
+    };
+    expect(taskEditSuggestionsReducer(currentState, toggleDateAction)).toEqual(expectedState);
   });
 
   // Test for TOGGLE_USER_SORT_DIRECTION
-  it('should handle TOGGLE_USER_SORT_DIRECTION',()=>{ 
-    const currentState ={
+  it('should handle TOGGLE_USER_SORT_DIRECTION', () => { 
+    const currentState = {
+      ...initialState,
       isLoading: false,
-      userSortDirection: null,
-      taskEditSuggestions: [{_id: '1', user: 'UserA'}, {_id: '2', user: 'UserB' }], 
-      userSortDirection: 'asc'
+      userSortDirection: 'asc',
+      taskEditSuggestions: [
+        { _id: '1', user: 'UserA' },
+        { _id: '2', user: 'UserB' }
+      ]
     };
-    const toggleUserAction={
-      type:'TOGGLE_USER_SORT_DIRECTION'
+    const toggleUserAction = {
+      type: 'TOGGLE_USER_SORT_DIRECTION'
     };
-    expect(taskEditSuggestionsReducer(currentState, toggleUserAction)).toEqual({ 
+    const expectedState = { 
       ...currentState,
       userSortDirection: 'desc',
-      taskEditSuggestions: currentState.taskEditSuggestions.sort((a, b) => b.user.localeCompare(a.user)), 
+      taskEditSuggestions: [...currentState.taskEditSuggestions].sort((a, b) => b.user.localeCompare(a.user)), 
       dateSuggestedSortDirection: null
-    });
+    };
+    expect(taskEditSuggestionsReducer(currentState, toggleUserAction)).toEqual(expectedState);
   }); 
 });
