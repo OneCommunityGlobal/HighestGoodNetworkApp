@@ -32,5 +32,6 @@ export const RoutePermissions = {
     'resolveTask',
     'putReviewStatus',
     'suggestTask'
-  ]
+  ],
+  announcements : ['sendEmails']
 };

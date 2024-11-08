@@ -12,7 +12,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
 
   useEffect(() => {
     handleMemberCount(activeMemberList.length);
-  })
+  }, [activeMemberList])
 
   useEffect(() => {
     if (fetched) {

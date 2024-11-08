@@ -28,6 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
+import { Spinner, Alert } from 'reactstrap';
 import { updateRehireableStatus } from '../../../actions/userManagement'
 
 class PeopleReport extends Component {
@@ -122,7 +123,6 @@ class PeopleReport extends Component {
           ...timeEntries,
         },
       });
-
     }
   }
 
@@ -291,7 +291,6 @@ class PeopleReport extends Component {
     // eslint-disable-next-line no-unused-vars
     const { firstName, lastName, weeklycommittedHours, hoursByCategory } = userProfile;
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
-
 
     let totalTangibleHrsRound = 0;
     if (hoursByCategory) {
@@ -513,6 +512,13 @@ class PeopleReport extends Component {
       }
     };
 
+    const activeTasks = userTask.reduce((accumulator, item) => {
+      const incompleteTasks = item.resources.filter(
+        task => task.completedTask === false && task.userID === userProfile._id,
+      );
+      return accumulator.concat(incompleteTasks);
+    }, []);
+
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
@@ -520,10 +526,10 @@ class PeopleReport extends Component {
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
-              className="people-report-time-log-blocks"
+              className="people-report-time-log-block"
               darkMode={darkMode}
             >
-              <h3 className='text-light'>{weeklycommittedHours}</h3>
+              <h3 className="text-light">{weeklycommittedHours}</h3>
               <p>Weekly Committed Hours</p>
             </ReportPage.ReportBlock>
 
@@ -536,7 +542,7 @@ class PeopleReport extends Component {
                 className="people-report-time-log-block"
                 darkMode={darkMode}
               >
-                <h3 className='text-light'>{tangibleHoursReportedThisWeek}</h3>
+                <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
                 <p>Hours Logged This Week</p>
               </ReportPage.ReportBlock>
             )}
@@ -547,7 +553,7 @@ class PeopleReport extends Component {
               className="people-report-time-log-block"
               darkMode={darkMode}
             >
-              <h3 className='text-light'>{infringements.length}</h3>
+              <h3 className="text-light">{infringements.length}</h3>
               <p>Blue squares</p>
             </ReportPage.ReportBlock>
             <ReportPage.ReportBlock
@@ -556,20 +562,32 @@ class PeopleReport extends Component {
               className="people-report-time-log-block"
               darkMode={darkMode}
             >
-              <h3 className='text-light'>{totalTangibleHrsRound}</h3>
+              <h3 className="text-light">{totalTangibleHrsRound}</h3>
               <p>Total Hours Logged</p>
             </ReportPage.ReportBlock>
           </div>
-
+          
           <PeopleTasksPieChart darkMode={darkMode} />
+          
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
-              <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
-                <h4>Tasks contributed</h4>
-              </div>
-
-              <PeopleDataTable />
-
+              {this.state.isLoading ? (
+                <p
+                  className={`${darkMode ? 'text-light' : ''}
+                   d-flex align-items-center flex-row justify-content-center`}
+                >
+                  Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+                </p>
+              ) : activeTasks.length > 0 ? (
+                <>
+                  <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
+                    <h4>Tasks contributed</h4>
+                  </div>
+                  <PeopleDataTable />
+                </>
+              ) : (
+                <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
+              )}
               <div className="Infringementcontainer">
                 <div className="InfringementcontainerInner">
                   <UserProject userProjects={userProjects} />

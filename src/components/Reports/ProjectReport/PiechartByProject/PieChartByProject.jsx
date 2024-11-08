@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ProjectPieChart } from '../ProjectPieChart/ProjectPieChart';
+import {ProjectPieChart} from '../ProjectPieChart/ProjectPieChart';
 import './PieChartByProject.css';
 import TriMembersStateToggleSwitch from '../TriMembersStateToggleSwitch/TriMembersStateToggleSwitch'
 import style from '../../../UserProfile/UserProfileEdit/ToggleSwitch/ToggleSwitch.module.scss';
@@ -128,42 +128,60 @@ export function PieChartByProject({
   }];
 
   return (
-    <div className={darkMode ? 'text-light' : ''}>
+    <div className={`${darkMode ? 'text-light' : ''} w-100`}>
       <div className='pie-chart-title'><h4>Pie Charts</h4></div>
       <div><h5>{projectName}</h5></div>
-      <div className= "pie-chart-description" >
+      <div className="pie-chart-description">
         <div>
-          <label className={darkMode ? 'text-light' : ''} style={{
-            paddingRight: '1rem'
-          }}>{isChecked ? 'All-Time Total Hours by All Member (Hide PieChart)' : 'All-Time Total Hours by Member (Show PieChart)'}</label>
+        <label
+          className={darkMode ? 'text-light' : ''}
+          style={{paddingRight: '1rem' }}
+        >
+            {isChecked ? 'All-Time Total Hours by All Member (Hide PieChart)' : 'All-Time Total Hours by Member (Show PieChart)'}
+        </label>
           <input
             type="checkbox"
+            className="pie-chart-checkbox"
             checked={isChecked}
             onChange={handleShowPieChart}
           />
+        </div>
 
-        </div>
-        {isChecked && ( <div style={{textAlign:'left', margin:'auto'}}>
-        <p style={{textAlign:'center'}}>{showMembers === null ? 'All members' : ''}</p>
-        <div className={style.switchSection}>
-            <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}} className={style.switchContainer}>
-              <span className={darkMode ? 'text-light' : 'blue'}> Inactive Members</span>
-              <TriMembersStateToggleSwitch
-              value={showMembers}
-              onChange={handleShowMembersChange}
-            />
-              <span className={darkMode ? 'text-light' : 'green'}> Active Members</span>
+        {isChecked && (
+          <div style={{ textAlign: 'left', margin: 'auto' }}>
+            <p style={{ textAlign: 'center' }}>{showMembers === null ? 'All members' : ''}</p>
+            <div className={style.switchSection}>
+            <div 
+              style={{ 
+                wordBreak: 'keep-all', 
+                color: darkMode ? '#fff' : '' /* Text in switch section should be white in dark mode */ 
+              }} 
+              className={style.switchContainer}
+            >
+              <span> Inactive Members</span>
+              <TriMembersStateToggleSwitch value={showMembers} onChange={handleShowMembersChange} />
+              <span> Active Members</span>
             </div>
-        </div>
-          <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  <span> - Hrs Applied: { globalactiveHours.toFixed(2) } </span> </p>
-          <p style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: { globalInactiveHours.toFixed(2) } </span> </p>
-          <p style={{fontWeight:'bold'}}>Total Applied Hours: {totalHours.toFixed(2)} </p>
-          <p style={{fontWeight:'bold'}}>Total Members:  {mergedProjectUsersArray.length}</p>
-        </div>)}
+          </div>
+          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
+            Total Active Members: {activeData.length} <span> - Hrs Applied: {globalactiveHours.toFixed(2)}</span>
+          </p>
+          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
+            Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: {globalInactiveHours.toFixed(2)}</span>
+          </p>
+          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
+            Total Applied Hours: {totalHours.toFixed(2)}
+          </p>
+          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
+            Total Members: {mergedProjectUsersArray.length}
+          </p>
+          </div>
+        )}
       </div>
         {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
         <ProjectPieChart userData={totalHours > 0 ? userData : noDataPlaceholder} windowSize={windowSize.width} darkMode={darkMode} />
       </div>)}
+
     </div>
-  )
-}
+  )  
+}  
