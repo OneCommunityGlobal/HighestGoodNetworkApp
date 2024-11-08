@@ -1,4 +1,4 @@
-import { pieChartColors, generateArrayOfUniqColors } from './colorsGenerator'; // Replace 'yourFile' with the actual path to your file
+import { pieChartColors, generateArrayOfUniqColors } from '../colorsGenerator';
 
 describe('pieChartColors', () => {
   test('contains the correct number of colors', () => {
@@ -7,7 +7,7 @@ describe('pieChartColors', () => {
 
   test('contains valid RGB color strings', () => {
     pieChartColors.forEach(color => {
-      expect(color).toMatch(/^rgb\(\d+, \d+, \d+\)$/);
+      expect(color).toMatch(/^rgb\(\d{1,3}, \d{1,3}, \d{1,3}\)$/);
     });
   });
 });
@@ -25,7 +25,7 @@ describe('generateArrayOfUniqColors', () => {
     const result = generateArrayOfUniqColors(numberOfColors);
 
     result.forEach(color => {
-      expect(color).toMatch(/^rgb\(\d+, \d+, \d+\)$/);
+      expect(color).toMatch(/^rgb\(\d{1,3}, \d{1,3}, \d{1,3}\)$/);
     });
   });
 
@@ -34,5 +34,26 @@ describe('generateArrayOfUniqColors', () => {
     const result = generateArrayOfUniqColors(numberOfColors);
 
     expect(result).toEqual(pieChartColors.slice(0, numberOfColors));
+  });
+
+  test('returns additional unique colors when numberOfColors exceeds the length of pieChartColors', () => {
+    const numberOfColors = 10;
+    const result = generateArrayOfUniqColors(numberOfColors);
+
+    expect(result).toHaveLength(numberOfColors);
+
+    const uniqueSet = new Set(result);
+    expect(uniqueSet.size).toBe(numberOfColors);
+
+    result.forEach(color => {
+      expect(color).toMatch(/^rgb\(\d{1,3}, \d{1,3}, \d{1,3}\)$/);
+    });
+  });
+
+  test('returns an empty array when numberOfColors is 0', () => {
+    const numberOfColors = 0;
+    const result = generateArrayOfUniqColors(numberOfColors);
+
+    expect(result).toEqual([]);
   });
 });
