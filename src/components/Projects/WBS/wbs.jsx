@@ -17,11 +17,29 @@ const WBS = props => {
   const darkMode = props.state.theme.darkMode;
   const projectId = props.match.params.projectId;
   const projectName = useSelector(state => state.projectById?.projectName || '');
+  const [sortOrder, setSortOrder] = useState('recent'); // 'recent' | 'asc' | 'desc'
+  const [sortedWBSItems, setSortedWBSItems] = useState([]);
 
   useEffect(() => {
     props.fetchAllWBS(projectId);
     props.getProjectDetail(projectId); 
   }, [projectId]);
+
+  useEffect(() => {
+    const sortedItems = [...props.state.wbs.WBSItems];
+    if (sortOrder === 'asc') {
+      sortedItems.sort((a, b) => a.wbsName.localeCompare(b.wbsName));
+    } else if (sortOrder === 'desc') {
+      sortedItems.sort((a, b) => b.wbsName.localeCompare(a.wbsName));
+    } else {
+      sortedItems.sort((a, b) => new Date(b.modifiedDatetime) - new Date(a.modifiedDatetime));
+    }
+    setSortedWBSItems(sortedItems);
+  }, [props.state.wbs.WBSItems, sortOrder]);
+
+  const handleSortChange = (newOrder) => {
+    setSortOrder(newOrder);
+  };
 
   return (
     <React.Fragment>
@@ -50,12 +68,18 @@ const WBS = props => {
                 </th>
                 <th scope="col" id="members__name">
                   Name
+                  <span style={{ marginLeft: '8px', cursor: 'pointer' }}>
+                    <i
+                      className={`fa ${sortOrder === 'recent' ? 'fa-minus' : sortOrder === 'asc' ? 'fa-arrow-up' : 'fa-arrow-down'}`}
+                      onClick={() => handleSortChange(sortOrder === 'asc' ? 'desc' : sortOrder === 'desc' ? 'recent' : 'asc')}
+                    ></i>
+                  </span>
                 </th>
                 <th scope="col" id="members__name"></th>
               </tr>
             </thead>
             <tbody>
-              {props.state.wbs.WBSItems.map((item, i) =>
+              {sortedWBSItems.map((item, i) =>
                 item ? (
                   <WBSItem
                     index={i + 1}
