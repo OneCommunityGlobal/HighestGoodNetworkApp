@@ -6,17 +6,13 @@ src/actions/**
 src/App.css
 src/config.json
 
-src/index.js
 src/reducers/**
-src/styles.js
 src/utils/**
 src/__tests__/**
 
 /public/
 /build/
 /node_modules/
-src/components/App.jsx
-src/components/AutoReload/**
 src/components/Badge/**
 src/components/common/**
 src/components/Header/**
@@ -32,6 +28,5 @@ src/components/TeamLocations/**
 src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
-src/components/Announcements/**
 src/components/EmailSubscribeForm/**
 src/components/Dashboard/**
