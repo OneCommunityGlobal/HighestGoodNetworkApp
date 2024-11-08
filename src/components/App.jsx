@@ -1,8 +1,9 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import jwtDecode from 'jwt-decode';
 import { Provider } from 'react-redux';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
+import { ModalProvider } from 'context/ModalContext';
 import routes from '../routes';
 import logger from '../services/logService';
 
@@ -14,10 +15,9 @@ import Loading from './common/Loading';
 
 import config from '../config.json';
 import '../App.css';
-import { ModalProvider } from 'context/ModalContext';
 
 const { persistor, store } = configureStore();
-const {tokenKey} = config;
+const { tokenKey } = config;
 // Require re-login 2 days before the token expires on server side
 // Avoid failure due to token expiration when user is working
 const TOKEN_LIFETIME_BUFFER = 86400 * 2;
@@ -42,9 +42,12 @@ if (localStorage.getItem(tokenKey)) {
 }
 
 class App extends Component {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {}; // Moving state initialization into constructor as per linting rule.
+  }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error) {
     logger.logError(error);
   }
 
@@ -53,7 +56,7 @@ class App extends Component {
       <Provider store={store}>
         <PersistGate loading={<Loading />} persistor={persistor}>
           <ModalProvider>
-          <Router>{routes}</Router>
+            <Router>{routes}</Router>
           </ModalProvider>
         </PersistGate>
       </Provider>
