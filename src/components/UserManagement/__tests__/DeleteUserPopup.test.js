@@ -1,11 +1,11 @@
-// import React from 'react';
-import { screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
-import thunk from 'redux-thunk';
-import configureStore from 'redux-mock-store';
+import React from 'react';
+import { screen, render } from '@testing-library/react';
 import { renderWithProvider } from '../../../__tests__/utils';
+import userEvent from '@testing-library/user-event';
 import DeleteUserPopup from '../DeleteUserPopup';
 import { UserDeleteType } from '../../../utils/enums';
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
 import { authMock, userProfileMock, rolesMock, themeMock } from '../../../__tests__/mockStates';
 
 import {
@@ -14,7 +14,7 @@ import {
   USER_DELETE_DATA_FOREVER,
   USER_DELETE_DATA_INACTIVE,
   USER_DELETE_DATA_ARCHIVE,
-  USER_DELETE_OPTION_HEADING,
+  USER_DELETE_OPTION_HEADING
 } from '../../../languages/en/messages';
 
 const mockStore = configureStore([thunk]);
@@ -24,8 +24,8 @@ let store;
 
 const defaultProps = {
   open: true,
-  onClose,
-  onDelete,
+  onClose: onClose,
+  onDelete: onDelete,
 };
 
 beforeEach(() => {
@@ -39,8 +39,9 @@ beforeEach(() => {
 });
 
 describe('delete user popup', () => {
+  
   beforeEach(() => {
-    renderWithProvider(<DeleteUserPopup {...defaultProps} />, { store });
+    renderWithProvider(<DeleteUserPopup {...defaultProps} />, {store});
   });
   describe('Structure', () => {
     it('should render the modal', () => {
@@ -61,7 +62,7 @@ describe('delete user popup', () => {
   });
   describe('behavior', () => {
     it('should fire onClose() once the user clicks close buttons', () => {
-      screen.getAllByRole('button', { name: /close/i }).forEach(button => {
+      screen.getAllByRole('button', { name: /close/i }).forEach((button) => {
         userEvent.click(button);
       });
       expect(onClose).toHaveBeenCalledTimes(2);
@@ -82,31 +83,28 @@ describe('delete user popup', () => {
 });
 
 describe('delete user popup additional tests', () => {
+
   beforeEach(() => {
-    renderWithProvider(<DeleteUserPopup {...defaultProps} />, { store });
+    renderWithProvider(<DeleteUserPopup {...defaultProps} />, {store});
   });
   describe('Texts display', () => {
     it('should render USER_DELETE_CONFIRMATION_FIRST_LINE', () => {
-      expect(
-        screen.getByText(new RegExp(USER_DELETE_CONFIRMATION_FIRST_LINE, 'i')),
-      ).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(USER_DELETE_CONFIRMATION_FIRST_LINE, "i"))).toBeInTheDocument();
     });
     it('should render USER_DELETE_CONFIRMATION_SECOND_LINE', () => {
-      expect(
-        screen.getByText(new RegExp(USER_DELETE_CONFIRMATION_SECOND_LINE, 'i')),
-      ).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(USER_DELETE_CONFIRMATION_SECOND_LINE, "i"))).toBeInTheDocument();
     });
     it('should render USER_DELETE_DATA_FOREVER', () => {
-      expect(screen.getByText(new RegExp(USER_DELETE_DATA_FOREVER, 'i'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(USER_DELETE_DATA_FOREVER, "i"))).toBeInTheDocument();
     });
     it('should render USER_DELETE_DATA_INACTIVE', () => {
-      expect(screen.getByText(new RegExp(USER_DELETE_DATA_INACTIVE, 'i'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(USER_DELETE_DATA_INACTIVE, "i"))).toBeInTheDocument();
     });
     it('should render USER_DELETE_DATA_ARCHIVE', () => {
-      expect(screen.getByText(new RegExp(USER_DELETE_DATA_ARCHIVE, 'i'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(USER_DELETE_DATA_ARCHIVE, "i"))).toBeInTheDocument();
     });
     it('should render USER_DELETE_OPTION_HEADING', () => {
-      expect(screen.getByText(new RegExp(USER_DELETE_OPTION_HEADING, 'i'))).toBeInTheDocument();
+      expect(screen.getByText(new RegExp(USER_DELETE_OPTION_HEADING, "i"))).toBeInTheDocument();
     });
   });
   describe('more behaviors', () => {

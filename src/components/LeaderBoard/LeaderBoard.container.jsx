@@ -5,7 +5,6 @@ import Leaderboard from './Leaderboard';
 import { getcolor, getprogress, getProgressValue } from '../../utils/effortColors';
 import { getMouseoverText } from '../../actions/mouseoverTextAction';
 import { showTimeOffRequestModal } from '../../actions/timeOffRequestAction';
-import { getWeeklySummaries } from '../../actions/weeklySummaries';
 
 const mapStateToProps = state => {
   let leaderBoardData = get(state, 'leaderBoardData', []);
@@ -74,5 +73,4 @@ export default connect(mapStateToProps, {
   getOrgData,
   getMouseoverText,
   showTimeOffRequestModal,
-  getWeeklySummaries,
 })(Leaderboard);

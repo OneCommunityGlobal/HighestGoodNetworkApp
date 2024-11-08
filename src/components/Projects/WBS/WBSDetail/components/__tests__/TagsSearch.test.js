@@ -63,17 +63,15 @@ describe('Tags Search component', () => {
       />,
     );
     const searchInputElement = screen.getByPlaceholderText('Add resources');
-    fireEvent.focus(searchInputElement);
     fireEvent.change(searchInputElement, { target: { value: 'aaa' } });
 
     await waitFor(() => {
-      expect(screen.getByText('aaa volunteer')).toBeInTheDocument();
-      expect(screen.getByText('aaa owner')).toBeInTheDocument();
+      expect(screen.queryByText('aaa volunteer')).toBeInTheDocument();
+      expect(screen.queryByText('aaa owner')).toBeInTheDocument();
       expect(screen.queryByText('bbb test')).not.toBeInTheDocument();
       expect(screen.queryByText('ccc manager')).not.toBeInTheDocument();
     });
   });
-
   it('check filtered text click: add resources', async () => {
     const resourceItems = [];
     const { addResources, removeResources } = mockFunctions(resourceItems);
@@ -87,16 +85,14 @@ describe('Tags Search component', () => {
       />,
     );
     const searchInputElement = screen.getByPlaceholderText('Add resources');
-    fireEvent.focus(searchInputElement);
     fireEvent.change(searchInputElement, { target: { value: 'aaa' } });
 
-    await waitFor(() => {
-      const userOneElement = screen.getByText('aaa volunteer');
-      const userTwoElement = screen.getByText('aaa owner');
+    await waitFor(() => {});
+    const userOneElement = screen.getByText('aaa volunteer');
+    const userTwoElement = screen.getByText('aaa owner');
 
-      fireEvent.click(userOneElement);
-      fireEvent.click(userTwoElement);
-    });
+    fireEvent.click(userOneElement);
+    fireEvent.click(userTwoElement);
 
     //
     const assignedUserElement = container.querySelectorAll(
@@ -145,7 +141,9 @@ describe('Tags Search component', () => {
     expect(addResources).not.toHaveBeenCalled();
   });
   it('check filtered text click: remove resources', async () => {
-    let resourceItems = [];
+    let resourceItems;
+    resourceItems = [];
+
     const { addResources, removeResources } = mockFunctions(resourceItems);
     const { container, rerender } = render(
       <TagsSearch
@@ -156,28 +154,24 @@ describe('Tags Search component', () => {
         removeResource={removeResources}
       />,
     );
-  
+
     const searchInputElement = screen.getByPlaceholderText('Add resources');
-    fireEvent.focus(searchInputElement);
     fireEvent.change(searchInputElement, { target: { value: 'aaa' } });
-  
-    await waitFor(() => {
-      const userOneElement = screen.getByText('aaa volunteer');
-      const userTwoElement = screen.getByText('aaa owner');
-  
-      fireEvent.click(userOneElement);
-      fireEvent.click(userTwoElement);
-    });
-  
-    expect(resourceItems.length).toBe(2);
-  
+
+    await waitFor(() => {});
+    const userOneElement = screen.getByText('aaa volunteer');
+    const userTwoElement = screen.getByText('aaa owner');
+
+    fireEvent.click(userOneElement);
+    fireEvent.click(userTwoElement);
+
     const removeUserOneElement = container.querySelectorAll(
       '.rounded-pill.badge.bg-primary.text-wrap',
     );
     fireEvent.click(removeUserOneElement[0]);
     expect(removeResources).toHaveBeenCalledWith(allMembers[0]._id);
-  
-    // rerender with updated resourceItems prop
+
+    // rerender with updated newResourceItems prop
     rerender(
       <TagsSearch
         placeholder="Add resources"
@@ -187,13 +181,12 @@ describe('Tags Search component', () => {
         removeResource={removeResources}
       />,
     );
-  
-    // check the usernames after resourceItems is updated after calling removeResources
-    const assignedUserElements = container.querySelectorAll(
+
+    // check the usernames after newResourceItems is updated after calling removeResources
+    const assignedUserElement = container.querySelectorAll(
       '.rounded-pill.badge.bg-primary.text-wrap',
     );
-    expect(assignedUserElements.length).toBe(1);
-    expect(resourceItems.length).toBe(1);
-    expect(resourceItems[0].name).toBe('aaa owner');
+    expect(assignedUserElement.length).toEqual(resourceItems.length);
+    expect(assignedUserElement[0].textContent).toBe('aaa owner');
   });
 });

@@ -6,14 +6,7 @@ import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
 
 // eslint-disable-next-line import/prefer-default-export, react/function-component-definition
-export const PieChart = ({
-  data,
-  dataLegend,
-  chartLegend,
-  pieChartId,
-  dataLegendHeader,
-  darkMode,
-}) => {
+export const PieChart = ({ data, dataLegend, pieChartId, dataLegendHeader, darkMode }) => {
   const [totalHours, setTotalHours] = useState(0);
   const [colors] = useState(generateArrayOfUniqColors(Object.keys(data).length));
   // create the pie chart
@@ -34,11 +27,9 @@ export const PieChart = ({
 
     return svg;
   };
-  let color = d3.scaleOrdinal().range(colors);
+  const color = d3.scaleOrdinal().range(colors);
   const pie = d3.pie().value(d => d[1]);
   useEffect(() => {
-    color = d3.scaleOrdinal().range(colors);
-
     // eslint-disable-next-line camelcase
     const data_ready = pie(Object.entries(data));
 
@@ -80,10 +71,10 @@ export const PieChart = ({
           .duration(50)
           .style('opacity', 1)
           .style('visibility', 'visible');
-        const taskName = Object.keys(chartLegend).map(key => {
-          return chartLegend[key][0];
+        const taskName = Object.keys(dataLegend).map(key => {
+          return dataLegend[key][0];
         });
-        const index = Object.keys(chartLegend)
+        const index = Object.keys(dataLegend)
           .map(function(e) {
             return e;
           })
@@ -116,7 +107,7 @@ export const PieChart = ({
   return (
     <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
-      <div className="pie-chart-legend-container">
+      <div>
         <div className="pie-chart-legend-header">
           <div>Name</div>
           <div>{dataLegendHeader}</div>

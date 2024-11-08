@@ -3,7 +3,7 @@ import { render, fireEvent } from '@testing-library/react';
 import CopyToClipboard from '../CopyToClipboard';
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
-import { themeMock } from '../../../../__tests__/mockStates';
+import { themeMock } from '__tests__/mockStates';
 
 // Create a mock Redux store
 const mockStore = configureMockStore();

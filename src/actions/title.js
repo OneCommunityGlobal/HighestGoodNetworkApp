@@ -15,22 +15,6 @@ export async function addTitle(titleData) {
   }
 }
 
-
-export async function editTitle(titleData){
-  try {
-    const url = ENDPOINTS.EDIT_OLD_TITLE();
-    const response = await axios.post(url, titleData);
-    return Promise.resolve(response);
-  } catch (error) {
-    console.log(error)
-    return {
-      message: error.response.data.message,
-      errorCode: error.response.data.message,
-      status: error.response.status,
-    };
-  }
-}
-
 export async function getAllTitle() {
   try {
     const url = ENDPOINTS.TITLES();

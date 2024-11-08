@@ -149,7 +149,6 @@ function SingleTask(props) {
           <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <tr>
               <th scope="row">
-                <div className="d-flex">
                 <EditTaskModal
                   key={`editTask_${task._id}`}
                   parentNum={task.num}
@@ -169,7 +168,7 @@ function SingleTask(props) {
                       <Button
                         type="button"
                         size="sm"
-                        className="btn btn-danger"
+                        className="btn btn-danger mt-1"
                         onClick={() => showUpDeleteModal()}
                         style={darkMode ? boxStyleDark : boxStyle}
                       >
@@ -189,7 +188,6 @@ function SingleTask(props) {
                       />
                     </>
                   )}
-                  </div>
               </th>
               <th scope="row">{task.num}</th>
               <td>{task.taskName}</td>

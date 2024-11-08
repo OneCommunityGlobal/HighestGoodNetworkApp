@@ -6,20 +6,9 @@ import {
   RECEIVE_ALL_USER_PROFILES,
   USER_PROFILE_UPDATE,
   USER_PROFILE_DELETE,
-  FETCH_USER_PROFILE_BASIC_INFO,
-  RECEIVE_USER_PROFILE_BASIC_INFO,
-  FETCH_USER_PROFILE_BASIC_INFO_ERROR,
-  ENABLE_USER_PROFILE_EDIT,
-  DISABLE_USER_PROFILE_EDIT,
-  CHANGE_USER_PROFILE_PAGE,
-  START_USER_INFO_UPDATE,
-  FINISH_USER_INFO_UPDATE,
-  ERROR_USER_INFO_UPDATE
 } from '../constants/userManagement';
 import { ENDPOINTS } from '../utils/URL';
 import { UserStatus } from '../utils/enums';
-import { getTimeEndDateEntriesByPeriod } from './timeEntries';
-
 
 /**
  * fetching all user profiles
@@ -49,33 +38,19 @@ export const updateUserStatus = (user, status, reactivationDate) => {
   userProfile.isActive = status === UserStatus.Active;
   userProfile.reactivationDate = reactivationDate;
   const patchData = { status, reactivationDate };
+  if (status === UserStatus.InActive) {
+    patchData.endDate = moment(new Date()).format('YYYY-MM-DD');
+    userProfile.endDate = moment(new Date()).format('YYYY-MM-DD');
+  } else {
+    patchData.endDate = undefined;
+    userProfile.endDate = undefined;
+  }
+
+  const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
   return async dispatch => {
-    if (status === UserStatus.InActive) {
-      try {
-        //Check for last week of work
-        const lastEnddate = await dispatch(getTimeEndDateEntriesByPeriod(user._id, user.createdDate, userProfile.toDate));
-        if (lastEnddate !== "N/A") { //if work exists, set EndDate to that week
-          patchData.endDate = moment(lastEnddate).format('YYYY-MM-DDTHH:mm:ss');
-          userProfile.endDate = moment(lastEnddate).format('YYYY-MM-DDTHH:mm:ss');
-        } else { //No work exists, set end date to start date
-          patchData.endDate = moment(user.createdDate).format('YYYY-MM-DDTHH:mm:ss');
-          userProfile.endDate = moment(user.createdDate).format('YYYY-MM-DDTHH:mm:ss');
-        }
-        const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
-        updateProfilePromise.then(res => {
-          dispatch(userProfileUpdateAction(userProfile));
-        });
-      } catch (error) {
-        console.error("Error updating user status:", error);
-      }
-    } else {//user is active
-      patchData.endDate = undefined;
-      userProfile.endDate = undefined;
-      const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
-      updateProfilePromise.then(res => {
-        dispatch(userProfileUpdateAction(userProfile));
-      });
-    }
+    updateProfilePromise.then(res => {
+      dispatch(userProfileUpdateAction(userProfile));
+    });
   };
 };
 
@@ -218,88 +193,3 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
     });
   };
 };
-
-/**
- * fetching all user profiles basic info
- */
-export const getUserProfileBasicInfo = () => {
-  // API request to fetch basic user profile information
-  const userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
-
-  return async dispatch => {
-    // Dispatch action indicating the start of the fetch process
-    await dispatch(userProfilesBasicInfoFetchStartAction());
-
-    return userProfileBasicInfoPromise
-      .then(res => {
-        // Dispatch action with the fetched basic profile data
-        dispatch(userProfilesBasicInfoFetchCompleteACtion(res.data));
-        return res.data; // Return the fetched data
-      })
-      .catch(err => {
-        // Dispatch error action if the fetch fails
-        dispatch(userProfilesBasicInfoFetchErrorAction());
-      });
-  };
-};
-
-
-/**
- * Set a flag that starts fetching user profile basic info
- */
-export const userProfilesBasicInfoFetchStartAction = () => {
-  return {
-    type: FETCH_USER_PROFILE_BASIC_INFO,
-  };
-};
-
-/**
- * Fetching user profile basic info
- * @param payload : projects []
- */
-export const userProfilesBasicInfoFetchCompleteACtion = payload => {
-  return {
-    type: RECEIVE_USER_PROFILE_BASIC_INFO,
-    payload,
-  };
-};
-
-/**
- * Error when fetching the user profils basic info
- * @param payload : error status code
- */
-export const userProfilesBasicInfoFetchErrorAction = payload => {
-  return {
-    type: FETCH_USER_PROFILE_BASIC_INFO_ERROR,
-    payload,
-  };
-};
-
-export const enableEditUserInfo=(value)=>(dispatch,getState)=>{
-  dispatch({type:ENABLE_USER_PROFILE_EDIT,payload:value});
-}
-
-export const disableEditUserInfo=(value)=>(dispatch,getState)=>{
-  dispatch({type:DISABLE_USER_PROFILE_EDIT,payload:value});
-}
-
-export const changePagination=(value)=>(dispatch,getState)=>{
-  dispatch({type:CHANGE_USER_PROFILE_PAGE,payload:value});
-}
-
-export const updateUserInfomation=(value)=>(dispatch,getState)=>{
-  dispatch({type:START_USER_INFO_UPDATE,payload:value})
-}
-
-// export const updateUserInformation=(value)=>async(dispatch,getState)=>{
-//   try {
-//     dispatch({type:START_USER_INFO_UPDATE})
-//     var response=await axios.patch(ENDPOINTS.USER_PROFILE_UPDATE,value);
-//     const {data} = await axios.get(ENDPOINTS.USER_PROFILES);
-//     dispatch({type:FINISH_USER_INFO_UPDATE,payload:data})
-//   } catch (error) {
-//     console.log(error)
-//     dispatch({type:ERROR_USER_INFO_UPDATE})
-//   }
-// }
-

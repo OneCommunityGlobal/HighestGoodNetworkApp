@@ -1,4 +1,4 @@
-// import React from 'react';
+import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import DuplicateNamePopup from '../DuplicateNamePopup';
 
@@ -10,11 +10,11 @@ describe('DuplicateNamePopup', () => {
   it('renders and displays modal content correctly', () => {
     const { getByText } = render(
       <DuplicateNamePopup
-        open
+        open={true}
         createUserProfile={mockCreateUserProfile}
         onClose={mockOnClose}
         popupClose={mockPopupClose}
-      />,
+      />
     );
 
     expect(getByText('There is already a user with the same name.')).toBeInTheDocument();
@@ -26,11 +26,11 @@ describe('DuplicateNamePopup', () => {
   it('calls createUserProfile and onClose on confirm click', () => {
     const { getByText } = render(
       <DuplicateNamePopup
-        open
+        open={true}
         createUserProfile={mockCreateUserProfile}
         onClose={mockOnClose}
         popupClose={mockPopupClose}
-      />,
+      />
     );
 
     fireEvent.click(getByText('Confirm'));
@@ -42,11 +42,11 @@ describe('DuplicateNamePopup', () => {
   it('calls popupClose on change name click', () => {
     const { getByText } = render(
       <DuplicateNamePopup
-        open
+        open={true}
         createUserProfile={mockCreateUserProfile}
         onClose={mockOnClose}
         popupClose={mockPopupClose}
-      />,
+      />
     );
 
     fireEvent.click(getByText('Change name'));
@@ -57,15 +57,15 @@ describe('DuplicateNamePopup', () => {
   it('calls popupClose on modal close button click', () => {
     const { getByLabelText } = render(
       <DuplicateNamePopup
-        open
+        open={true}
         createUserProfile={mockCreateUserProfile}
         onClose={mockOnClose}
         popupClose={mockPopupClose}
-      />,
+      />
     );
-
+  
     fireEvent.click(getByLabelText('Close'));
-
+  
     expect(mockPopupClose).toHaveBeenCalled();
   });
 });

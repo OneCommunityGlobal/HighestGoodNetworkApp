@@ -1,10 +1,8 @@
 import { useState } from 'react';
-import { connect } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import BadgeDevelopmentTable from './BadgeDevelopmentTable';
 import CreateNewBadgePopup from './CreateNewBadgePopup';
-import hasPermission from '../../utils/permissions';
 import '../Header/DarkMode.css';
 
 function BadgeDevelopment(props) {
@@ -14,14 +12,11 @@ function BadgeDevelopment(props) {
 
   const toggle = () => setCreateNewBadgePopupOpen(prevIsOpen => !prevIsOpen);
 
-  const canCreateBadge = props.hasPermission('createBadges');
-
   return (
     <div className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
       <Button
         className="btn--dark-sea-green"
         onClick={toggle}
-        disabled={!canCreateBadge}
         style={darkMode ? { ...boxStyleDark, margin: 20 } : { ...boxStyle, margin: 20 }}
       >
         Create New Badge
@@ -44,12 +39,4 @@ function BadgeDevelopment(props) {
   );
 }
 
-const mapStateToProps = state => ({
-  darkMode: state.theme.darkMode,
-});
-
-const mapDispatchToProps = dispatch => ({
-  hasPermission: permission => dispatch(hasPermission(permission)),
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(BadgeDevelopment);
+export default BadgeDevelopment;

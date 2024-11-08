@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Nav, NavItem, NavLink, TabContent, TabPane } from 'reactstrap';
 import classnames from 'classnames';
@@ -6,24 +6,22 @@ import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import AssignBadge from './AssignBadge';
 import BadgeDevelopment from './BadgeDevelopment';
-import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
+import { fetchAllBadges } from '../../actions/badgeManagement';
 
 function BadgeManagement(props) {
-  const { darkMode, activeTab, setActiveTab, role } = props;
+  const { darkMode } = props;
 
-  useEffect(() => {
-    props.fetchAllBadges(); 
-  }, [props.fetchAllBadges]);
+  const [activeTab, setActiveTab] = useState('1');
 
-  const handleTabChange = tabId => {
-    setActiveTab(tabId);
+  const toggle = tab => {
+    if (activeTab !== tab) setActiveTab(tab);
   };
 
+  const { role } = props; // Access the 'role' prop
   useEffect(() => {
-    if (!activeTab) {
-      setActiveTab('1');
-    }
-  }, [activeTab, setActiveTab]);
+    props.fetchAllBadges();
+  }, []);
+
   return (
     <div
       className={darkMode ? 'bg-oxford-blue' : ''}
@@ -39,7 +37,7 @@ function BadgeManagement(props) {
           areaTitle="Badge Management"
           fontSize={24}
           isPermissionPage
-          role={role}
+          role={role} // Pass the 'role' prop to EditableInfoModal
           darkMode={darkMode}
         />
       </div>
@@ -49,7 +47,9 @@ function BadgeManagement(props) {
             className={`mr-2 ${classnames({ active: activeTab === '1' })} ${
               darkMode && activeTab !== '1' ? 'bg-light' : ''
             }`}
-            onClick={() => handleTabChange('1')}
+            onClick={() => {
+              toggle('1');
+            }}
             style={
               darkMode ? { ...boxStyleDark, cursor: 'pointer' } : { ...boxStyle, cursor: 'pointer' }
             }
@@ -62,7 +62,9 @@ function BadgeManagement(props) {
             className={`${classnames({ active: activeTab === '2' })} ${
               darkMode && activeTab !== '2' ? 'bg-light' : ''
             }`}
-            onClick={() => handleTabChange('2')}
+            onClick={() => {
+              toggle('2');
+            }}
             style={
               darkMode ? { ...boxStyleDark, cursor: 'pointer' } : { ...boxStyle, cursor: 'pointer' }
             }
@@ -87,18 +89,10 @@ const mapStateToProps = state => ({
   allBadgeData: state.badge.allBadgeData,
   role: state.userProfile.role,
   darkMode: state.theme.darkMode,
-  permissions: state.userProfile.permissions,
-  activeTab: state.badge.activeTab,
 });
 
 const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
-  setActiveTab: tab => dispatch(setActiveTab(tab)),
 });
-
-function checkIfBadgeAssignmentIsAllowed(permissions, role) {
-  if (role === 'Administrator' || role === 'Owner') return true;
-  return permissions?.frontPermissions.includes('assignBadges');
-}
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);

@@ -1,25 +1,6 @@
 .reviewBtn {
-  width: auto;
+  width: 190px;
   height: auto; /* Allow the height to adjust based on content */
   white-space: normal; /* Allow content to wrap within the button */
   overflow: hidden; /* Hide any overflowing content */
-}
-
-.dark-mode-btn:hover{
-  background-color: #2f4157 !important;
-}
-
-
-@media screen and (max-width: 1307px) and (min-width: 1152px) {
-  .reviewBtn {
-    padding: 5px !important;
-    font-size: 0.75rem !important;
-  }
-}
-
-@media screen and (max-width: 1151px) and (min-width: 992px) {
-  .reviewBtn {
-    padding: 2px !important;
-    font-size: 0.75rem !important;
-  }
 }

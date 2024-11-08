@@ -1,47 +1,46 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Button } from 'react-bootstrap';
 import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
 import 'react-table/react-table.css';
 import Collapse from 'react-bootstrap/Collapse';
 import './TasksDetail.css';
 
-const ShowCollapse = (props) => {
+const ShowCollapse = props => {
   const [open, setOpen] = useState(false);
   return (
-    <>
-      <div>{props.resources[0].name}</div>
-      {props.resources.slice(1).map((resource) => (
-        <Collapse in={open} key={resource._id}>
-          <div>{resource.name}</div>
-        </Collapse>
-      ))}
-      <Button onClick={() => setOpen(!open)} aria-expanded={open} size='sm'>
+    <div>
+      <Button onClick={() => setOpen(!open)} aria-expanded={open}>
         {props.resources.length} ➤
       </Button>
-    </>
+
+      <div>{props.resources[0].name}</div>
+
+      {props.resources.slice(1).map(resource => (
+        <Collapse in={open} key={resource._id}>
+          <div key={resource._id} className="new-line">
+            {resource.name}
+          </div>
+        </Collapse>
+      ))}
+    </div>
   );
 };
 
-const formatDate = (datetime) => {
-  if(datetime){
-    const options = { year: 'numeric', month: 'short', day: 'numeric' };
-    return new Date(datetime).toLocaleDateString(undefined, options);
-  }
-  return 'N/A'
-};
-
-const truncate = (str, n) => {
-  return str.length > n ? str.substring(0, n - 1) + '...' : str;
-};
-
-export const TasksDetail = (props) => {
-  const [filteredTasks, setFilteredTasks] = useState(props.tasks_filter);
+export const TasksDetail = props => {
   const darkMode = props.darkMode;
   let tasksList = [];
   let tasks = props.tasks_filter;
 
-  useEffect(() => {
-    let tasks = props.tasks_filter;
+  if (props.tasks_filter.length > 0) {
+    tasks = ['priority', 'status', 'classification', 'isActive', 'isAssigned'].reduce(
+      (filteredTask, filter) => {
+        return props[filter]
+          ? filteredTask.filter(item => item[filter] === props[filter])
+          : filteredTask;
+      },
+      tasks,
+    );
+
     if (props.users) {
       let test = [];
       for (var i = 0; i < tasks.length; i++) {
@@ -51,7 +50,10 @@ export const TasksDetail = (props) => {
           }
         }
       }
+      tasks = test;
     }
+  }
+
   tasksList = tasks.map((task, index) => (
     <div key={task._id} className={`tasks-detail-grid tasks-detail-table-row ${darkMode ? 'dark-mode-row' : ''}`}>
       <div>
@@ -75,12 +77,13 @@ export const TasksDetail = (props) => {
       <div>{task.status}</div>
       <div>
         {task.resources.length <= 2 ? (
-          task.resources.map((resource) => <div key={resource._id}>{resource.name}</div>)
+          task.resources.map(resource => <div key={resource._id}>{resource.name}</div>)
         ) : (
           <ShowCollapse resources={task.resources} />
         )}
-      </td>
-      <td className="tasks-detail-center-cells">
+      </div>
+
+      <div className="tasks-detail-center-cells">
         {task.isActive ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
@@ -90,8 +93,9 @@ export const TasksDetail = (props) => {
             <i className="fa fa-circle-o" aria-hidden="true"></i>
           </div>
         )}
-      </td>
-      <td className="tasks-detail-center-cells collapse-column">
+      </div>
+
+      <div className="tasks-detail-center-cells">
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
       </div>
       <div className="tasks-detail-center-cells">{task.classification}</div>

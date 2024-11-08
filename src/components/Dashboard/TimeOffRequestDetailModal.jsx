@@ -5,7 +5,6 @@ import { useSelector, useDispatch } from 'react-redux';
 import { hideTimeOffRequestModal } from '../../actions/timeOffRequestAction';
 
 const TimeOffRequestDetailModal = () => {
-  const darkMode = useSelector(state => state.theme.darkMode);
   const { isOpen, data } = useSelector(state => state.timeOffRequests.timeOffModal);
   const dispatch = useDispatch();
   const detailModalClose = () => {
@@ -29,16 +28,9 @@ const TimeOffRequestDetailModal = () => {
 
   return (
     <div>
-      <Modal
-        isOpen={isOpen}
-        toggle={() => detailModalClose()}
-        returnFocusAfterClose={true}
-        className={darkMode ? 'dark-mode text-light' : ''}
-      >
-        <ModalHeader toggle={() => detailModalClose()} className={darkMode ? 'bg-space-cadet' : ''}>
-          Time Off Details
-        </ModalHeader>
-        <ModalBody className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
+      <Modal isOpen={isOpen} toggle={() => detailModalClose()} returnFocusAfterClose={true}>
+        <ModalHeader toggle={() => detailModalClose()}>Time Off Details</ModalHeader>
+        <ModalBody className="time-off-detail-modal">
           {data?.leaderboard ? (
             <>
               <Container>
@@ -47,7 +39,7 @@ const TimeOffRequestDetailModal = () => {
                 </Row>
               </Container>
               {data.requests?.map(req => (
-                <Container className="time-off-detail-modal-card-container" key={req._id}>
+                <Container className='time-off-detail-modal-card-container' key={req._id}>
                   <Row className="pl-2">
                     <Col className="mb-2 font-italic">
                       {getWeekIntervals(req)[0].map((week, index) => (

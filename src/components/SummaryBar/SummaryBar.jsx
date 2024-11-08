@@ -361,7 +361,6 @@ const SummaryBar = props => {
     window.location.hash = '#badgesearned';
   };
 
-
   const getWeeklySummary = user => {
     const latestSummary = user?.weeklySummaries?.[0];
     return latestSummary && new Date() < new Date(latestSummary.dueDate)
@@ -383,10 +382,10 @@ const SummaryBar = props => {
       loadUserProfile();
       getUserTasks();
     } else {
-      setUserProfile(authUser);
+      setUserProfile(userProfile);
       setTasks(displayUserTask.length);
     }
-  }, [isAuthUser]);
+  }, [displayUserId]);
 
   useEffect(() => {
     if (summaryBarData && displayUserProfile !== undefined) {
@@ -411,7 +410,6 @@ const SummaryBar = props => {
               ? (darkMode ? 'bg-space-cadet text-light box-shadow-dark' : 'bg--bar text--black box-shadow-light')
               : (darkMode ? 'bg-space-cadet disabled-bar text-light box-shadow-dark' : 'bg--bar disabled-bar text--black box-shadow-light'))
           }
-          style={{width: '97%'}}
         >
           <Row className="no-gutters row-eq-height">
             <Col
@@ -425,8 +423,7 @@ const SummaryBar = props => {
                 </font>
                 <CardTitle className={`align-middle ${darkMode ? 'text-light' : 'text-dark'}`} tag="h3">
                   <div className='font-weight-bold'>
-                    {userProfile?.firstName || displayUserProfile.firstName}
-                    {' '}
+                    {userProfile?.firstName ||displayUserProfile.firstName + ' '}
                     {userProfile?.lastName || displayUserProfile.lastName}
                   </div>
                 </CardTitle>
@@ -562,14 +559,14 @@ const SummaryBar = props => {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
+              {isAuthUser || canEditData() ? (
+                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick} />
+              ) : (
+                <img className="sum_img" src={badges_icon} alt="" />
+              )}
               <div className="redBackgroup">
                 <span>{badges}</span>
               </div>
-              {isAuthUser || canEditData() ? (
-                <img className="sum_img" src={badges_icon} alt="" onClick={onBadgeClick}/>
-                ) : (
-                <img className="sum_img" src={badges_icon} alt="" />
-              )}
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">

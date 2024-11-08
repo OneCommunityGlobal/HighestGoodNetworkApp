@@ -50,14 +50,16 @@ const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocat
               >
                 Edit
               </Button>
-              <Button
-                color="danger"
-                className="btn btn-outline-error mr-1 btn-sm"
-                onClick={() => removeLocation(profile._id)}
-                style={darkMode ? boxStyleDark : boxStyle}
-              >
-                Remove
-              </Button>
+              {profile.type === 'm_user' && profile._id ? (
+                <Button
+                  color="danger"
+                  className="btn btn-outline-error mr-1 btn-sm"
+                  onClick={() => removeLocation(profile._id)}
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  Remove
+                </Button>
+              ) : null}
             </div>
           ) : null}
         </div>

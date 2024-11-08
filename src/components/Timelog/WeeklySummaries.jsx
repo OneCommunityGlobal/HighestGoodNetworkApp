@@ -102,13 +102,6 @@ const WeeklySummaries = ({ userProfile }) => {
 
   };
 
-  // Images are not allowed while editing weekly summaries
-  const customImageUploadHandler = () =>
-    new Promise((_, reject) => {
-      // eslint-disable-next-line prefer-promise-reject-errors
-      reject({ message: 'Pictures are not allowed here!', remove: true });
-    });
-
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
     menubar: false,
@@ -119,7 +112,6 @@ const WeeklySummaries = ({ userProfile }) => {
     min_height: 180,
     max_height: 500,
     autoresize_bottom_margin: 1,
-    images_upload_handler: customImageUploadHandler,
   }; 
 
   const renderSummary = (title, summary, index) => {
@@ -178,7 +170,7 @@ const WeeklySummaries = ({ userProfile }) => {
   };
 
   return (
-    <div className={`responsive-font-size p-2 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+    <div className={"p-2 " + (darkMode ? 'bg-yinmn-blue text-light' : '')}>
       {renderSummary("This week's summary", userProfile.weeklySummaries[0]?.summary, 0)}
       {renderSummary("Last week's summary", userProfile.weeklySummaries[1]?.summary, 1)}
       {renderSummary("The week before last's summary",userProfile.weeklySummaries[2]?.summary,2)}

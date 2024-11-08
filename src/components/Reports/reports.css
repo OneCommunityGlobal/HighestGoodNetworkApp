@@ -2,8 +2,7 @@
   box-shadow: 2px 2px 4px 1px rgba(78, 32, 125, 0.2);
 }
 @media screen and (max-width: 1100px) {
-  .custom-scrollbar {
-    overflow-y: scroll;
-    display: relative;
+  .hide-mobile-start-end {
+    display: none;
   }
 }

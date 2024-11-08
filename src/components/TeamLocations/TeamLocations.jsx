@@ -3,7 +3,7 @@ import 'leaflet/dist/leaflet.css';
 import { useEffect, useRef, useState } from 'react';
 import { MapContainer, TileLayer, useMapEvents } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import { Button, Container, Spinner } from 'reactstrap';
+import { Button, Container } from 'reactstrap';
 import './TeamLocations.css';
 
 import { SEARCH } from 'languages/en/ui';
@@ -30,7 +30,6 @@ function TeamLocations() {
   const [markerPopupVisible, setMarkerPopupVisible] = useState(false);
   const role = useSelector(state => state.auth.user.role);
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [loading, setLoading] = useState(true);  // State variable for loading spinner
 
 
   const isAbleToEdit = role === 'Owner';
@@ -58,11 +57,10 @@ function TeamLocations() {
               },
           },
       }))
-        setMapMarkers(allMapMarkersOffset);
-        setLoading(false);  // Set loading to false after data is loaded
+        setMapMarkers(allMapMarkersOffset)
+
       } catch (error) {
         toast.error(error.message);
-        setLoading(false);  // Set loading to false if there's an error
       }
     }
     getUserProfiles();
@@ -150,9 +148,8 @@ function TeamLocations() {
   
   const countries = mapMarkers.map(user => user.location.country);
   const totalUniqueCountries = [...new Set(countries)].length;
-  let filteredMapMarkers = mapMarkers;
   if (searchText) {
-    filteredMapMarkers = filteredMapMarkers.filter(
+    mapMarkers = mapMarkers.filter(
       item =>
         item.location.city?.toLowerCase().includes(searchText.toLowerCase()) ||
         item.location.country?.toLowerCase().includes(searchText.toLowerCase()) ||
@@ -174,7 +171,7 @@ function TeamLocations() {
     });
   } 
 
-  const markerPopups = filteredMapMarkers.map(profile => {
+  const markerPopups = mapMarkers.map(profile => {
     let userName = getUserName(profile);
 
     return (
@@ -191,8 +188,8 @@ function TeamLocations() {
   });
 
   return (
-    <Container fluid className={`${darkMode ? 'bg-oxford-blue text-light team-locations-container dark-mode' : ''}`} style={{minHeight: "100%", paddingBottom: "73px"}}>
-      {isAbleToEdit && (
+    <Container fluid className={`${darkMode ? 'bg-oxford-blue text-light dark-mode' : ''}`} style={{minHeight: "100%", paddingBottom: "73px"}}>
+      {isAbleToEdit ? (
         <>
           <AddOrEditPopup
             open={editIsOpen || addNewIsOpen}
@@ -213,11 +210,11 @@ function TeamLocations() {
             setEdit={editHandler}
           />
         </>
-      ) }
+      ) : null}
       <div className="py-2 d-flex justify-content-between flex-column flex-md-row">
         <div className='text-and-table-icon-container'>
           <h5>Total Countries: {totalUniqueCountries}</h5>
-          <button id='toggle-table-button' disabled={filteredMapMarkers.length == 0} onClick={toggleTableVisibility}>
+          <button id='toggle-table-button' disabled={mapMarkers.length == 0} onClick={toggleTableVisibility}>
             <i className={`fa fa-table ${darkMode ? 'text-light' : 'text-dark'}`} aria-hidden="true"
 />
           </button>
@@ -233,21 +230,21 @@ function TeamLocations() {
                   type="text"
                   className="form-control"
                   aria-label="Search"
-                  placeholder="Search by Location"
+                  placeholder="Search Text"
                   value={searchText}
                   onChange={searchHandler}
                 />
               </div>
-              {dropdown && (
-                <div className="position-absolute map-dropdown-table">
+              {dropdown ? (
+                <div className="position-absolute map-dropdown-table w-100">
                   <div
                     className="overflow-auto pr-3"
-                    style={{ height: '300px' }}
+                    style={{ height: mapMarkers.length > 4 ? '300px' : 'unset' }}
                   >
-                    {filteredMapMarkers.length > 0 ? (
-                      <table className={`table table-bordered table-responsive-md ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
+                    {mapMarkers.length > 0 ? (
+                      <table className="table table-bordered table-responsive-md">
                         <tbody>
-                          {filteredMapMarkers.map(profile => {
+                          {mapMarkers.map(profile => {
                             let userName = '';
                             if (profile.firstName && profile.lastName) {
                               userName = `${profile.firstName} ${profile.lastName}`;
@@ -299,7 +296,7 @@ function TeamLocations() {
                     )}
                   </div>
                 </div>
-              ) }
+              ) : null}
             </div>
             <div className="d-flex align-center">
               <Button
@@ -325,15 +322,8 @@ function TeamLocations() {
         ) : null}
       </div>
       <div style={{position: 'relative'}}>
-      
-      <div>{tableVisible && <TeamLocationsTable visible={tableVisible} filteredMapMarkers={filteredMapMarkers} setCurrentUser={setCurrentUser} darkMode={darkMode} />}</div>
-      {loading? (
-           <div animation="border" size="md" className="d-flex justify-content-center align-items-center" style={{ minHeight: '50vh' }}>
-           <Spinner animation="border" size="lg" />
-         </div>
-        ):
-      (
-      <MapContainer 
+      <div>{tableVisible && <TeamLocationsTable visible={tableVisible} mapMarkers={mapMarkers} setCurrentUser={setCurrentUser} darkMode={darkMode} />}</div>
+      <MapContainer
         id='map-container'
         center={[51.505, -0.09]}
         maxBounds={[
@@ -374,7 +364,6 @@ function TeamLocations() {
             : markerPopups }
         </MarkerClusterGroup>
       </MapContainer>
-      )}
       </div>
     </Container>
   );

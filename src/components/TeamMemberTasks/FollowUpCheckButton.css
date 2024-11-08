@@ -26,13 +26,3 @@
   font-size: 10px;
   color: green;
 }
-@media screen and (max-width: 1240px) {
-  .team-task-progress-follow-up {
-    box-sizing: border-box;
-    grid-column: 1 / span 1;
-    grid-row: 3 / span 1;
-    justify-self: end;
-    width: 15px;
-    height: 15px;
-  }
-}

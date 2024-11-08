@@ -1,22 +1,6 @@
-.table-responsive {
-  overflow-x: auto;
-}
-
 .permission-change-log-table {
   border-collapse: 'collapse';
   width: 100%;
-}
-
-@media (max-width: 1290px) {
-  .permission-change-log-table {
-    font-size: 12px;
-  }
-}
-
-@media (max-width: 1010px) {
-  .permission-change-log-table {
-    font-size: 10px;
-  }
 }
 
 .permission-change-log-table--header {
@@ -24,8 +8,7 @@
 }
 
 .permission-change-log-table--header-dark {
-  background-color: #1c2541;
-  border: 1px solid red;
+  background-color: #1C2541;
 }
 
 .permission-change-log-table--header,
@@ -40,58 +23,14 @@
 }
 
 .table-row-dark:hover {
-  background-color: #1c2541;
+  background-color: #1C2541;
 }
 
 .permission-change-log-table--button {
   padding: 5px 10px;
   margin: 0 5px;
-  color: #ffffff;
+  color: #FFFFFF;
   border: 'none';
   border-radius: 5px;
-  cursor: 'pointer';
-}
-
-.pagination-container {
-  display: flex;
-  justify-content: center;
-  width: 100%;
-}
-
-.pagination {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  width: 360px;
-  margin: 5px auto;
-  padding: 10px;
-}
-
-.pagination button {
-  background: none;
-  border: none;
-  cursor: pointer;
-  padding: 0px 6px;
-  font-size: 20px;
-  border-radius: 5px;
-}
-
-.pagination button:disabled {
-  cursor: not-allowed;
-  color: gray;
-}
-
-.pagination .activeDark {
-  font-weight: bold;
-  background-color: #0d111d;
-}
-
-.pagination .activeLight {
-  font-weight: bold;
-  background-color: #dadada;
-}
-
-.pagination span {
-  display: inline-block;
-  padding: 5px 10px;
+  cursor: 'pointer'
 }

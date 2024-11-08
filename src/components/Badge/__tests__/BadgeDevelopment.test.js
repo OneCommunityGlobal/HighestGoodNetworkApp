@@ -3,7 +3,6 @@ import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import BadgeDevelopment from '../BadgeDevelopment';
 import { Provider } from 'react-redux';
-import thunk from 'redux-thunk';
 import configureStore from 'redux-mock-store';
 import { themeMock } from '__tests__/mockStates';
 
@@ -12,62 +11,51 @@ jest.mock('components/Badge/BadgeDevelopmentTable', () => () => <div>BadgeDevelo
 jest.mock('components/Badge/CreateNewBadgePopup', () => () => <div>CreateNewBadgePopup</div>);
 
 describe('BadgeDevelopment Component', () => {
-  const mockStore = configureStore([thunk]);
- 
-  const renderComponent = () => {
-    const store = mockStore({
-      allProjects: {
-        projects: [],
-      },
-      auth: {
-        isAuthenticated: true,
-        user: {
-          userid: '123',
-          role: 'Owner',
-          firstName: 'John',
-          profilePic: '/path/to/image.jpg',
-          permissions: {
-            frontPermissions: ['updateBadges', 'deleteBadges', 'createBadges'],
-            backPermissions: [],
-          },
-        },
-      },
-      userProfile: {
-        email: 'test@example.com',
-      },
-      taskEditSuggestionCount: 0,
-      role: {
-        roles: ['Owner'],
-      },
-      theme: themeMock,
-    });
-  
-    return render(
+  const mockStore = configureStore([]);
+  const initialState = {
+    theme: themeMock,
+  };
+  let store;
+
+  beforeEach(() => {
+    store = mockStore(initialState);
+  });
+
+  it('Should render without crashing', () => {
+    render(
       <Provider store={store}>
         <BadgeDevelopment />
       </Provider>,
     );
-  };
-
-  it('Should render without crashing', () => {
-    renderComponent();
     expect(screen.getByText('Create New Badge')).toBeInTheDocument();
   });
 
   it('Should open the create new badge popup when the button is clicked', () => {
-    renderComponent();
+    render(
+      <Provider store={store}>
+        <BadgeDevelopment />
+      </Provider>,
+    );
     fireEvent.click(screen.getByText('Create New Badge'));
     expect(screen.getByText('New Badge')).toBeInTheDocument();
   });
 
   it('should render the BadgeDevelopmentTable component', () => {
-    renderComponent();
+    render(
+      <Provider store={store}>
+        <BadgeDevelopment />
+      </Provider>,
+    );
     const table = document.querySelector('.table');
     expect(table);
   });
 
   it('should close the New Badge popup when the button is clicked', () => {
-    renderComponent();
+    render(
+      <Provider store={store}>
+        <BadgeDevelopment />
+      </Provider>,
+    );
     fireEvent.click(screen.getByText('Create New Badge'));
     expect(screen.getByText('New Badge')).toBeInTheDocument();
     fireEvent.click(screen.getByText('New Badge'));

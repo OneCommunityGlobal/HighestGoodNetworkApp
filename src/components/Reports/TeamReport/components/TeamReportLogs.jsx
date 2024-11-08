@@ -1,9 +1,8 @@
 import { ReportPage } from 'components/Reports/sharedComponents/ReportPage';
 // eslint-disable-next-line no-unused-vars
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 
 import './ReportLogs.css';
-import { Spinner } from 'reactstrap';
 
 function TeamReportLogs({
   title,
@@ -11,14 +10,13 @@ function TeamReportLogs({
   teamTotalBlueSquares,
   teamWeeklyCommittedHours,
   totalTeamWeeklyWorkedHours,
-  darkMode,
-  teamDataLoading 
+  darkMode
 }) {
   return (
     <section>
       <h2 style={{ textAlign: 'center' }} className="teams-report-time-title">
-          {teamDataLoading ?  <Spinner className="mt-3 mr-1" color="primary" />: title}
-       </h2>
+        {title}
+      </h2>
       <div className="teams-report-time-logs-wrapper">
         <ReportPage.ReportBlock
           firstColor="#ff5e82"

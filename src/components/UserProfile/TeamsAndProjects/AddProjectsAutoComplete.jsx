@@ -3,11 +3,12 @@ import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 
 const AddProjectsAutoComplete = React.memo(props => {
+  const [searchText, onInputChange] = useState('');
   const [isOpen, toggle] = useState(false);
 
   useEffect(() => {
-    if (!props.selectedProject) props.onInputChange('');
-    else props.onInputChange(props.selectedProject.projectName);
+    if (!props.selectedProject) onInputChange('');
+    else onInputChange(props.selectedProject.projectName);
   }, [props.selectedProject]);
 
   return (
@@ -20,16 +21,15 @@ const AddProjectsAutoComplete = React.memo(props => {
     >
       <Input
         type="text"
-        value={props.searchText}
+        value={searchText}
         autoFocus={true}
         onChange={e => {
-          props.onInputChange(e.target.value);
+          onInputChange(e.target.value);
           toggle(true);
-          props.isSetUserIsNotSelectedAutoComplete(true);
         }}
       />
 
-      {props.searchText !== '' && props.projectsData && props.projectsData.length > 0 ? (
+      {searchText !== '' && props.projectsData && props.projectsData.length > 0 ? (
         <div
           tabIndex="-1"
           role="menu"
@@ -39,10 +39,7 @@ const AddProjectsAutoComplete = React.memo(props => {
         >
           {props.projectsData
             .filter(project => {
-              if (
-                //prettier-ignore
-                props.formatText(project.projectName).indexOf(props.formatText(props.searchText)) >-1
-              ) {
+              if (project.projectName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
                 return project;
               }
             })
@@ -52,7 +49,7 @@ const AddProjectsAutoComplete = React.memo(props => {
                 className="project-auto-complete"
                 key={item._id}
                 onClick={() => {
-                  props.onInputChange(item.projectName);
+                  onInputChange(item.projectName);
                   toggle(false);
                   props.onDropDownSelect(item);
                 }}
@@ -60,20 +57,6 @@ const AddProjectsAutoComplete = React.memo(props => {
                 {item.projectName}
               </div>
             ))}
-
-          {props.projectsData.every(
-            item => props.formatText(item.projectName) !== props.formatText(props.searchText),
-          ) && (
-            <div
-              className="project-auto-complete"
-              onClick={() => {
-                toggle(false);
-                props.setIsOpenDropdown(true);
-              }}
-            >
-              Create new project: {props.searchText}
-            </div>
-          )}
         </div>
       ) : (
         <></>

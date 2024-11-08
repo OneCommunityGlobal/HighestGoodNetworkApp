@@ -177,16 +177,6 @@
   margin: 0;
 }
 
-/* Remove arrows in number input for Firefox and other browsers */
-input[type='number'] {
-  -moz-appearance: textfield;
-  appearance: textfield;
-}
-/* Hide spin buttons in number input for Firefox */
-input[type='number']::-moz-inner-spin-button {
-  display: none;
-}
-
 .bottom .goal input:focus {
   outline: none;
   box-shadow: none;

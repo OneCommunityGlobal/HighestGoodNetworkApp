@@ -22,11 +22,11 @@ import { PieChartByProject } from './PiechartByProject/PieChartByProject';
 
 
 export function ProjectReport({ match }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [memberCount, setMemberCount] = useState(0);
   const [activeMemberCount, setActiveMemberCount] = useState(0);
   const [nonActiveMemberCount, setNonActiveMemberCount] = useState(0);
   const [hoursCommitted, setHoursCommitted] = useState(0);
-  const [tasks, setTasks] = useState([]);
   const dispatch = useDispatch();
 
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator';
@@ -38,8 +38,7 @@ export function ProjectReport({ match }) {
   const { wbs, projectMembers, isActive, projectName, wbsTasksID } = useSelector(
     projectReportViewData
   );
-  const darkMode = useSelector(state => state.theme.darkMode);
-  const tasksState = useSelector(state => state.tasks);
+  const tasks = useSelector(state => state.tasks);
 
   let projectId = '';
   if (match && match.params) {
@@ -63,53 +62,45 @@ export function ProjectReport({ match }) {
     }).catch(() => {
       console.log('error on fetching data');
     });
-  }, [projectId]);
+  }, [projectId, fromDate, toDate, dispatch]);
 
   useEffect(() => {
     const mergedProjectUsers = projectUsers.reduce((acc, curr) => {
       if (curr.personId && !acc[curr.personId._id]) {
+        // Si el usuario no existe en el acumulador, lo inicializamos con el objeto actual
         acc[curr.personId._id] = {...curr};
       } else if (curr.personId) {
+        // Si el usuario ya existe, sumamos totalSeconds al existente
         acc[curr.personId._id].totalSeconds += curr.totalSeconds;
       }
       return acc;
     }, {});
-    setMergedProjectUsersArray(Object.values(mergedProjectUsers));
+    setMergedProjectUsersArray(Object.values(mergedProjectUsers));    // console.log('merged project users', mergedProjectUsersArray);
+    // console.log('length of merged project users', mergedProjectUsersArray.length);
   }, [projectUsers]);
 
   useEffect(() => {
-
-    setMemberCount(0);
-    setActiveMemberCount(0);
-    setNonActiveMemberCount(0);
-    setHoursCommitted(0);
-
     if (match) {
-      const { projectId } = match.params;
       dispatch(getProjectDetail(projectId));
       dispatch(fetchAllWBS(projectId));
       dispatch(fetchAllMembers(projectId));
-      setTasks([]);
     }
-  }, [match?.params.projectId]);
+  }, [dispatch, projectId]);
+
 
   useEffect(() => {
     if (wbs.fetching === false) {
-      wbs.WBSItems.forEach(wbsItem => {
-        dispatch(fetchAllTasks(wbsItem._id));
+      wbs.WBSItems.forEach(wbs => {
+        dispatch(fetchAllTasks(wbs._id));
       });
     }
-  }, [dispatch, wbs]);
+  }, [wbs]);
 
   useEffect(() => {
-    if (tasksState.taskItems.length > 0) {
-      setTasks(tasksState.taskItems);
-      return setHoursCommitted(tasksState.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
+    if (tasks.taskItems.length > 0) {
+      setHoursCommitted(tasks.taskItems.reduce((total, task) => total + task.hoursLogged, 0));
     }
-
-    return setHoursCommitted(0);
-
-  }, [tasksState, wbs]);
+  }, [tasks]);
 
   useEffect(() => {
     if (projectMembers.members) {
@@ -122,7 +113,7 @@ export function ProjectReport({ match }) {
       setActiveMemberCount(activeCount);
       setNonActiveMemberCount(nonActiveCount);
     }
-  }, [dispatch, projectMembers.members]);
+  }, [projectMembers.members]);
 
   const handleMemberCount = elementCount => {
     setMemberCount(elementCount);

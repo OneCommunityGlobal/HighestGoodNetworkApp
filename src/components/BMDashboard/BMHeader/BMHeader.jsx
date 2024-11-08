@@ -1,22 +1,9 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
-import { Link } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-} from 'reactstrap';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { getHeaderData } from '../../../actions/authActions';
 import { getAllRoles } from '../../../actions/role';
+import { Link } from 'react-router-dom';
+import { connect, useDispatch } from 'react-redux';
 import Timer from '../../Timer/Timer';
 import OwnerMessage from '../../OwnerMessage/OwnerMessage';
 import {
@@ -48,11 +35,25 @@ import {
   POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
 } from '../../../languages/en/ui';
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+} from 'reactstrap';
 import Logout from '../../Logout/Logout';
 import './BMHeader.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../../utils/permissions';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
-export function Header(props) {
+export const Header = props => {
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user, firstName, profilePic } = props.auth;
@@ -92,13 +93,12 @@ export function Header(props) {
     }
   }, [props.auth.isAuthenticated]);
 
-  const roles = props.role?.roles;
-
   useEffect(() => {
     if (roles.length === 0) {
       props.getAllRoles();
     }
   }, []);
+  const roles = props.role?.roles;
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
@@ -114,7 +114,7 @@ export function Header(props) {
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
-          style={user.role === 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
+          style={user.role == 'Owner' ? { marginRight: '6rem' } : { marginRight: '10rem' }}
         >
           {isAuthenticated && <Timer />}
           {isAuthenticated && (
@@ -233,12 +233,16 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/usermanagement">
                         {USER_MANAGEMENT}
                       </DropdownItem>
-                    ) : null}
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
                     {canCreateBadges ? (
                       <DropdownItem tag={Link} to="/badgemanagement">
                         {BADGE_MANAGEMENT}
                       </DropdownItem>
-                    ) : null}
+                    ) : (
+                      <React.Fragment></React.Fragment>
+                    )}
                     {canPostProject && (
                       <DropdownItem tag={Link} to="/projects">
                         {PROJECTS}
@@ -252,7 +256,7 @@ export function Header(props) {
                     {canCreatePopup || canUpdatePopup ? (
                       <>
                         <DropdownItem divider />
-                        <DropdownItem tag={Link} to="/admin/">
+                        <DropdownItem tag={Link} to={`/admin/`}>
                           {POPUP_MANAGEMENT}
                         </DropdownItem>
                       </>
@@ -302,7 +306,7 @@ export function Header(props) {
       </Navbar>
     </div>
   );
-}
+};
 
 const mapStateToProps = state => ({
   auth: state.auth,

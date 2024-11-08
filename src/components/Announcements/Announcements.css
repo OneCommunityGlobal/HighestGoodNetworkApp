@@ -8,30 +8,17 @@ h3 {
 
 label {
   display: block;
-  margin-bottom: 5px;
+  margin-bottom: 10px;
   font-weight: bold;
   color: #333;
 }
 
-.text-light {
-  color: #fff; /* White text for dark mode */
-}
-
-.text-dark {
-  color: #333; /* Default dark text for light mode */
-}
-
 .input-text-for-announcement,
 textarea {
-  margin-top: 5px;   /* Space above input fields */
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
   border-radius: 4px;
-}
-
-.input-file-upload {
-  margin-top: 5px;
 }
 
 button.send-button {

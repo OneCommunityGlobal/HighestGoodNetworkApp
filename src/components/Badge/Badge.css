@@ -97,7 +97,7 @@
 .badge_history_container {
   display: flex;
   flex-wrap: wrap;
-  overflow-y: auto;
+  overflow-y: scroll;
 }
 
 .badge_image_container {
@@ -155,10 +155,4 @@
   height: 100%;
   max-width: 120px;
   margin: 0 auto;
-}
-
-@media screen and (max-width: 544px) {
-  .responsive-font-size {
-    font-size: 0.75rem !important;
-  }
 }

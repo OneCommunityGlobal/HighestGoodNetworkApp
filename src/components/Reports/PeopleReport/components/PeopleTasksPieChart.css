@@ -5,7 +5,7 @@
   color: rgba(0, 0, 0, 0.5);
 }
 
-@media (min-width: 2000px) {
+@media (min-width: 1420px) {
   .people-pie-charts-wrapper {
     grid-auto-flow: column;
     column-gap: 24px;

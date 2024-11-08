@@ -42,7 +42,7 @@ describe('Badges Component', () => {
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
           store,
         });
-        expect(renderedBadges.find('.card-footer').text()).toBe('You have no badges.');
+        expect(renderedBadges.find('.card-footer').text()).toBe('You have no badges. ');
       });
 
       it('should display the correct text when you have exactly 1 badge', () => {
@@ -54,7 +54,7 @@ describe('Badges Component', () => {
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
           store,
         });
-        expect(renderedBadges.find('.card-footer').text()).toBe('Bravo! You have earned 1 badge!');
+        expect(renderedBadges.find('.card-footer').text()).toBe('Bravo! You have earned 1 badge! ');
       });
 
       it('should display the correct text when you have amount of badges > 1', () => {
@@ -71,7 +71,7 @@ describe('Badges Component', () => {
         });
         // This uses a regular expression that matches all postive numbers > 1.
         expect(renderedBadges.find('.card-footer').text()).toMatch(
-          /Bravo! You have earned ([1-9]\d+|[2-9]) badges!/,
+          /Bravo! You have earned ([1-9]\d+|[2-9]) badges! /,
         );
       });
     });
@@ -81,7 +81,7 @@ describe('Badges Component', () => {
         const renderedBadges = renderWithProvider(<Badges {...badgeProps} />, {
           store,
         });
-        expect(renderedBadges.find('.card-footer').text()).toBe('This person has no badges.');
+        expect(renderedBadges.find('.card-footer').text()).toBe('This person has no badges. ');
       });
 
       it('should display the correct text when they have exactly 1 badge', () => {
@@ -93,7 +93,7 @@ describe('Badges Component', () => {
           store,
         });
         expect(renderedBadges.find('.card-footer').text()).toBe(
-          'Bravo! This person has earned 1 badge!',
+          'Bravo! This person has earned 1 badge! ',
         );
       });
 
@@ -110,7 +110,7 @@ describe('Badges Component', () => {
           store,
         });
         expect(renderedBadges.find('.card-footer').text()).toMatch(
-          /Bravo! This person has earned ([1-9]\d+|[2-9]) badges!/,
+          /Bravo! This person has earned ([1-9]\d+|[2-9]) badges! /,
         );
       });
     });

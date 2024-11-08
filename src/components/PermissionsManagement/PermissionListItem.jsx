@@ -36,18 +36,18 @@ function PermissionListItem(props) {
     setinfoRoleModal(!infoRoleModal);
   };
 
-  const togglePermission = permissionKey => {
-    if (rolePermissions.includes(permissionKey) || immutablePermissions.includes(permissionKey)) {
-      setPermissions(previous => previous.filter(perm => perm !== permissionKey));
+  const togglePermission = () => {
+    if (rolePermissions.includes(permission) || immutablePermissions.includes(permission)) {
+      setPermissions(previous => previous.filter(perm => perm !== permission));
     } else {
-      setPermissions(previous => [...previous, permissionKey]);
+      setPermissions(previous => [...previous, permission]);
     }
     // eslint-disable-next-line react/destructuring-assignment
     props.onChange();
   };
 
-  const setSubpermissions = (recursiveSubperms, adding) => {
-    recursiveSubperms.forEach(subperm => {
+  const setSubpermissions = adding => {
+    subperms.forEach(subperm => {
       if (subperm.subperms) {
         setSubpermissions(subperm.subperms, adding);
       } else if (adding !== rolePermissions.includes(subperm.key)) {
@@ -91,20 +91,18 @@ function PermissionListItem(props) {
   let color;
   if (isCategory) {
     if (howManySubpermsInRole === 'All') {
-      color = darkMode ? 'lightgreen' : 'green';
+      color = 'green';
     } else if (howManySubpermsInRole === 'Some') {
       color = darkMode ? 'white' : 'black';
     } else {
-      color = darkMode ? '#f94144' : 'red';
+      color = 'red';
     }
-  } else if (darkMode) {
-    color = hasThisPermission ? 'lightgreen' : '#f94144';
   } else {
     color = hasThisPermission ? 'green' : 'red';
   }
 
   const fontSize = isCategory ? '20px' : undefined;
-  const paddingLeft = `${50 * depth}px`;
+  const textIndent = `${50 * depth}px`;
   const textShadow = darkMode ? '0.5px 0.5px 2px black' : '';
 
   const getColor = () => {
@@ -119,15 +117,14 @@ function PermissionListItem(props) {
 
   return (
     <>
-      <li className="user-role-tab__permissions" key={permission} data-testid={permission}>
+      <li className="user-role-tab__permissions pr-2" key={permission} data-testid={permission}>
         <p
           style={{
             color,
             fontSize,
-            paddingLeft,
+            textIndent,
             textShadow,
           }}
-          className="permission-label"
         >
           {label}
         </p>
@@ -142,7 +139,6 @@ function PermissionListItem(props) {
               onClick={() => {
                 handleModalOpen(description);
               }}
-              style={{ color: darkMode ? 'white' : 'black' }}
             />
           </div>
           {/* eslint-disable-next-line no-nested-ternary */}
@@ -151,14 +147,13 @@ function PermissionListItem(props) {
               className="icon-button"
               color={getColor()}
               onClick={() => {
-                // eslint-disable-next-line no-debugger
                 // const state = howManySubpermsInRole !== 'None';
                 setSubpermissions(subperms, howManySubpermsInRole !== 'All');
                 // eslint-disable-next-line react/destructuring-assignment
                 props.onChange();
               }}
               // eslint-disable-next-line react/destructuring-assignment
-              disabled={immutablePermissions.includes(permission)}
+              disabled={!props.hasPermission('putRole')}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {howManySubpermsInRole === 'All' ? 'Delete' : 'Add'}
@@ -170,7 +165,10 @@ function PermissionListItem(props) {
               onClick={() => {
                 togglePermission(permission);
               }}
-              disabled={immutablePermissions.includes(permission)}
+              disabled={
+                // eslint-disable-next-line react/destructuring-assignment
+                !props.hasPermission('putRole') || immutablePermissions.includes(permission)
+              }
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {hasThisPermission ? 'Delete' : 'Add'}

@@ -4,14 +4,14 @@ export const get_task_by_wbsId = (WbsTasksID, tasks) => {
     let i = 0;
     while (i < WbsTasksID.length && tasks.fetched) {
       const result = tasks.taskItems.filter(task => task.wbsId === WbsTasksID[i]);
-      get_tasks.push(...result);
+      get_tasks.push(result);
       i += 1;
     }
   }
 
-  return get_tasks;
+  return get_tasks[1];
 };
 
-export const getTasksTableData = (tasks, { WbsTasksID }) => ({
-  get_tasks: get_task_by_wbsId(WbsTasksID, tasks) || [],
+export const getTasksTableData = (state, { WbsTasksID }) => ({
+  get_tasks: get_task_by_wbsId(WbsTasksID, state.tasks) || [],
 });

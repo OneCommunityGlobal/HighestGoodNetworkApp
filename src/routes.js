@@ -75,7 +75,6 @@ const AddConsumable = lazy(() => import('./components/BMDashboard/AddConsumable/
 // Code-Splitting
 const Projects = lazy(() => import('./components/Projects'));
 const WeeklySummariesReport = lazy(() => import('./components/WeeklySummariesReport'));
-const TotalOrgSummary = lazy(() => import('./components/TotalOrgSummary'));
 const Reports = lazy(() => import('./components/Reports'));
 const PeopleReport = lazy(() => import('./components/Reports/PeopleReport'));
 const ProjectReport = lazy(() => import('./components/Reports/ProjectReport'));
@@ -108,11 +107,8 @@ export default (
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
-        <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render ={(props) => {
-           const {userId} = props.match.params;
-            return <Timelog userId ={userId}/>
-        }} />
+        <ProtectedRoute path="/timelog/" exact component={Timelog} />
+        <ProtectedRoute path="/timelog/:userId" exact component={Timelog} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
@@ -240,23 +236,8 @@ export default (
           path="/announcements"
           exact
           component={Announcements}
-          routePermissions={RoutePermissions.announcements}
-        />
-
-        <ProtectedRoute
-          path="/totalorgsummary"
-          exact
-          component={TotalOrgSummary}
-          fallback
-          allowedRoles={[
-            UserRole.Administrator,
-            UserRole.Manager,
-            UserRole.CoreTeam,
-            UserRole.Owner,
-            UserRole.Mentor,
-          ]}
-          // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
-          routePermissions={RoutePermissions.weeklySummariesReport}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
         />
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}

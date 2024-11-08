@@ -81,13 +81,13 @@ function Task(props) {
     props.deleteWBSTask(taskId, mother);
   };
 
-  function getInitials(name) {
+  function getInitials(name){
     const initials = name
-      .split(' ')
-      .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
-      .map(n => n[0])
-      .join('')
-      .toUpperCase();
+    .split(' ')
+    .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
+    .map(n => n[0])
+    .join('')
+    .toUpperCase();
     return initials;
   }
 
@@ -113,23 +113,23 @@ function Task(props) {
     ];
     let colors = {};
     let colorIndex = {};
-
+    
     for (let name of names) {
       const initials = getInitials(name);
       // If the initials haven't been encountered yet, assign a base color
       if (!colorIndex[initials]) {
         colors[name] = {
           color: '#bbb', // Base color
-          initials: initials,
+          initials: initials, 
         };
         colorIndex[initials] = 1;
       } else {
         // If initials have been encountered, assign a new color
         colors[name] = {
-          color: colorsHex[Math.floor(Math.random() * colorsHex.length)] + '30',
-          initials: initials,
+          color: colorsHex[Math.floor(Math.random() * colorsHex.length)] + '30', 
+          initials: initials, 
         };
-        colorIndex[initials]++;
+        colorIndex[initials]++; 
       }
     }
     return colors;
@@ -170,26 +170,20 @@ function Task(props) {
           <tr
             ref={tableRowRef}
             key={props.key}
-            className={`num_${props.num?.split('.').join('')} wbsTask  ${props.isNew ? 'newTask' : ''
-              } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${props.parentId3
-              } mother_${props.mother} lv_${props.level} ${bgColor}`}
+            className={`num_${props.num?.split('.').join('')} wbsTask  ${
+              props.isNew ? 'newTask' : ''
+            } parentId1_${props.parentId1} parentId2_${props.parentId2} parentId3_${
+              props.parentId3
+            } mother_${props.mother} lv_${props.level} ${bgColor}`}
             id={props.taskId}
           >
             <td
-              className={`tag_color tag_color_${props.num?.length > 0 ? props.num.split('.')[0] : props.num
-                } tag_color_lv_${props.level}`}
+              className={`tag_color tag_color_${
+                props.num?.length > 0 ? props.num.split('.')[0] : props.num
+              } tag_color_lv_${props.level}`}
             ></td>
             <td>
-              <Button
-                color="primary"
-                size="sm"
-                onClick={activeController}
-                style={{
-                  ...(darkMode ? boxStyleDark : boxStyle),
-                  display: 'flex',
-                  alignItems: 'center'
-                }}
-              >
+              <Button color="primary" size="sm" onClick={activeController} style={darkMode ? boxStyleDark : boxStyle}>
                 <span className="action-edit-btn">EDIT</span>
                 {controllerRow ? <BsFillCaretUpFill /> : <BsFillCaretDownFill />}
               </Button>
@@ -237,31 +231,31 @@ function Task(props) {
             <td className="desktop-view">
               {props.resources.length
                 ? props.resources
-                  .filter((elm, i) => i < 2 || showMoreResources)
-                  .map((elm, i) => {
-                    const name = elm.name; //Getting initials and formatting them here
-                    const initials = getInitials(name);
-                    //getting background color here
-                    const bg = colors_objs[name].color;
-                    return (
-                      <a
-                        key={`res_${i}`}
-                        data-tip={elm.name}
-                        className="name"
-                        href={`/userprofile/${elm.userID}`}
-                        target="_blank"
-                        rel="noreferrer"
-                      >
-                        {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
-                          <span className="dot" style={{ backgroundColor: bg }}>
-                            {initials}{' '}
-                          </span>
-                        ) : (
-                          <img className="img-circle" src={elm.profilePic} />
-                        )}
-                      </a>
-                    );
-                  })
+                    .filter((elm, i) => i < 2 || showMoreResources)
+                    .map((elm, i) => {
+                      const name = elm.name; //Getting initials and formatting them here
+                      const initials = getInitials(name);
+                      //getting background color here
+                      const bg = colors_objs[name].color;
+                      return (
+                        <a
+                          key={`res_${i}`}
+                          data-tip={elm.name}
+                          className="name"
+                          href={`/userprofile/${elm.userID}`}
+                          target="_blank"
+                          rel="noreferrer"
+                        >
+                          {!elm.profilePic || elm.profilePic === '/defaultprofilepic.png' ? (
+                            <span className="dot" style={{ backgroundColor: bg }}>
+                              {initials}{' '}
+                            </span>
+                          ) : (
+                            <img className="img-circle" src={elm.profilePic} />
+                          )}
+                        </a>
+                      );
+                    })
                 : null}
               {props.resources.length > 2 ? (
                 <a
@@ -394,11 +388,9 @@ function Task(props) {
             />
           ) : null}
         </>
-      ) : null
-      }
-      {
-        isOpen && children.length
-          ? children.map((task, i) => (
+      ) : null}
+      {isOpen && children.length
+        ? children.map((task, i) => (
             <ConnectedTask
               key={`${task._id}${i}`}
               taskId={task._id}
@@ -439,8 +431,7 @@ function Task(props) {
               setIsLoading={props.setIsLoading}
             />
           ))
-          : null
-      }
+        : null}
     </>
   );
 }

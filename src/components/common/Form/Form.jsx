@@ -286,13 +286,11 @@ class Form extends Component {
     this.handleState = (name, value) => {
       const { errors, data } = this.state;
       data[name] = value;
-      for(const field in data){
-        const errorMessage = this.validateProperty(field, data[field]);
-        if (errorMessage) {
-          errors[field] = errorMessage;
-        } else {
-          delete errors[field];
-        }
+      const errorMessage = this.validateProperty(name, value);
+      if (errorMessage) {
+        errors[name] = errorMessage;
+      } else {
+        delete errors[name];
       }
       this.setState({ data, errors });
     };
@@ -309,11 +307,9 @@ class Form extends Component {
           obj[ref] = this.state.data[ref];
         });
       }
-      const objectSchema = Joi.object(schema);
-      const { error } = objectSchema.validate(obj, { abortEarly: false });
+      const { error } = Joi.validate(obj, schema);
       if (!error) return null;
-      const fieldError = error.details.find(detail => detail.path[0] === name);
-      return fieldError ? fieldError.message : null;
+      return error.details[0].message;
     };
 
     this.validateForm = () => {

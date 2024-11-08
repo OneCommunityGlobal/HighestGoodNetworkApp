@@ -4,7 +4,6 @@ const userTeamsInitial = {
   fetching: false,
   fetched: false,
   allTeams: [],
-  allTeamCode: [],
   status: 404,
 };
 
@@ -91,24 +90,6 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
         fetched: true,
         status: '200',
       });
-    
-      case types.FETCH_ALL_TEAM_CODE_SUCCESS:
-        const payload = action.payload;
-        return {
-          ...allTeams,
-          allTeamCode: payload,
-          fetching: false,
-          fetched: true,
-          status: '200',
-        };
-  
-      case types.FETCH_ALL_TEAM_CODE_FAILURE:
-        return {
-          ...allTeams,
-          fetching: false,
-          fetched: false,
-          status: '500',
-        };
 
     default:
       return allTeams;

@@ -8,9 +8,6 @@ export const searchWithAccent = (input, searchText) => {
   // check if searchText has accent
   if(!searchText) return true;
   if(!input) return false;
-  
-  searchText = searchText.trim();
-  
   const searchNormalized = normalizeString(searchText);
   const hasAccents = searchNormalized !== searchText.toLowerCase();
 

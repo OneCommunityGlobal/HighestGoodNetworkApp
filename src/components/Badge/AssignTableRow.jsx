@@ -1,59 +1,56 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
 import { connect } from 'react-redux';
-import { toast } from 'react-toastify';
-import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
-function AssignTableRow({ badge, index, existBadges }) {
+function AssignTableRow(props) {
   const [isOpen, setOpen] = useState(false);
   const [isSelect, setSelect] = useState(false);
-  const dispatch = useDispatch();
 
   useEffect(() => {
-    if (existBadges?.includes(`assign-badge-${badge._id}`)) {
+    if (props.selectedBadges && props.selectedBadges.includes(`assign-badge-${props.badge._id}`)) {
       setSelect(true);
-      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
     } else {
       setSelect(false);
     }
-  }, []);
+  }, [props.selectedBadges, props.badge._id]);
 
   const toggle = () => setOpen(prevIsOpen => !prevIsOpen);
 
   const handleCheckBoxChange = e => {
-    const isChecked = e.target.checked;
-    setSelect(isChecked);
-    if (isChecked) {
-      dispatch(addSelectBadge(`assign-badge-${badge._id}`));
+    if (e.target.checked) {
+      props.addSelectBadge(e.target.id);
+      setSelect(true);
     } else {
-      dispatch(removeSelectBadge(`assign-badge-${badge._id}`));
+      props.removeSelectBadge(e.target.id);
+      setSelect(false);
     }
   };
 
   return (
     <tr>
       <td className="badge_image_mini">
-        <img src={badge.imageUrl} id={`popover_${index?.toString()}`} alt="" />
+        {' '}
+        <img src={props.badge.imageUrl} id={`popover_${props.index.toString()}`} alt="" />
         <Popover
           trigger="hover"
           isOpen={isOpen}
           toggle={toggle}
-          target={`popover_${index?.toString()}`}
+          target={`popover_${props.index.toString()}`}
         >
           <Card className="text-center">
-            <CardImg className="badge_image_lg" src={badge.imageUrl} />
+            <CardImg className="badge_image_lg" src={props.badge.imageUrl} />
             <CardBody>
-              <CardText>{badge.description}</CardText>
+              <CardText>{props.badge.description}</CardText>
             </CardBody>
           </Card>
         </Popover>
       </td>
-      <td>{badge.badgeName}</td>
+      <td>{props.badge.badgeName}</td>
       <td>
         <CustomInput
           type="checkbox"
-          id={`assign-badge-${badge._id}`}
+          id={`assign-badge-${props.badge._id}`}
           onChange={handleCheckBoxChange}
           checked={isSelect}
         />
@@ -62,4 +59,9 @@ function AssignTableRow({ badge, index, existBadges }) {
   );
 }
 
-export default AssignTableRow;
+const mapDispatchToProps = dispatch => ({
+  addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
+  removeSelectBadge: badgeId => dispatch(removeSelectBadge(badgeId)),
+});
+
+export default connect(null, mapDispatchToProps)(AssignTableRow);

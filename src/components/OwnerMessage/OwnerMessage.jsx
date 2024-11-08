@@ -3,8 +3,7 @@ import { useState, useEffect } from 'react';
 import { toast } from 'react-toastify';
 
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input } from 'reactstrap';
-import { connect, useDispatch } from 'react-redux';
-import hasPermission from 'utils/permissions';
+import { connect } from 'react-redux';
 import { boxStyle, boxStyleDark } from '../../styles';
 import './OwnerMessage.css';
 
@@ -26,7 +25,6 @@ function OwnerMessage({
   updateMessage,
   deleteMessage,
 }) {
-  const dispatch = useDispatch();
   const { user } = auth;
 
   const [disableTextInput, setDisableTextInput] = useState(false);
@@ -35,8 +33,6 @@ function OwnerMessage({
   const [modal, setModal] = useState(false);
   const [modalDeleteWarning, setModalDeleteWarning] = useState(false);
   const [modalWrongPictureFormatWarning, setModalWrongPictureFormatWarning] = useState(false);
-
-  const canEditHeaderMessage = dispatch(hasPermission('editHeaderMessage'));
 
   const isImage = /;base64/g;
 
@@ -137,7 +133,7 @@ function OwnerMessage({
     <div className="message-container">
       {ownerMessage ? getContent(ownerMessage) : getContent(ownerStandardMessage)}
 
-      {(user.role === 'Owner' || canEditHeaderMessage) && (
+      {user.role === 'Owner' && (
         <div className="icon-wrapper">
           <button type="submit" onClick={toggle}>
             <img src={editIcon} alt="edit icon" title="Edit this header" />

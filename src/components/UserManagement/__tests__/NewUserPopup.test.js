@@ -1,11 +1,12 @@
-// import React from 'react';
-import { screen } from '@testing-library/react';
+import React from 'react';
+import { screen, render, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import configureStore from 'redux-mock-store';
-import thunk from 'redux-thunk';
 import { renderWithProvider } from '../../../__tests__/utils';
+import thunk from 'redux-thunk';
+
 import NewUserPopup from '../NewUserPopup';
-import { themeMock } from '../../../__tests__/mockStates';
+import { themeMock } from '__tests__/mockStates';
 
 jest.mock('../../UserProfile/AddNewUserProfile', () => {
   const userprofile = () => (
@@ -42,7 +43,7 @@ describe('new user popup', () => {
   });
   describe('behavior', () => {
     it('should fire onUserPopupClose() when the user clicks close buttons', () => {
-      screen.getAllByRole('button', { name: /close/i }).forEach(close => {
+      screen.getAllByRole('button', { name: /close/i }).forEach((close) => {
         userEvent.click(close);
       });
       expect(onUserPopupClose).toHaveBeenCalledTimes(2);

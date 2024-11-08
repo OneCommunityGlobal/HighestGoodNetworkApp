@@ -1,11 +1,12 @@
-import { useState } from 'react';
+import {useState}from 'react';
 import { useSelector } from 'react-redux';
 import { PieChart } from '../../../common/PieChart';
 import { peopleTasksPieChartViewData } from '../selectors';
 import { ReportPage } from '../../sharedComponents/ReportPage';
+import { NewModal } from '../../../common/NewModal';
 import './PeopleTasksPieChart.css';
 
-export const PeopleTasksPieChart = ({ darkMode }) => {
+export const PeopleTasksPieChart = ({darkMode}) => {
   const {
     tasksWithLoggedHoursById,
     showTasksPieChart,
@@ -13,6 +14,7 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
     tasksLegend,
     projectsWithLoggedHoursById,
     projectsWithLoggedHoursLegend,
+    displayedTasksWithLoggedHoursById,
     displayedTasksLegend,
     showViewAllTasksButton,
   } = useSelector(peopleTasksPieChartViewData);
@@ -23,9 +25,10 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
     return null;
   }
 
-  function handleViewAll() {
+  function handleViewAll(){
     setShowAllTasks(prev => !prev);
   }
+
 
   return (
     <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
@@ -36,7 +39,6 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
             pieChartId={'projectsPieChart'}
             data={projectsWithLoggedHoursById}
             dataLegend={projectsWithLoggedHoursLegend}
-            chartLegend={projectsWithLoggedHoursLegend}
             dataLegendHeader="Hours"
             darkMode={darkMode}
           />
@@ -47,23 +49,30 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
           <h5 className="people-pie-charts-header">{`${
             showViewAllTasksButton ? 'Last ' : ''
           }Tasks With Completed Hours`}</h5>
-          <PieChart
+          {!showAllTasks && <PieChart
             pieChartId={'tasksPieChart'}
-            data={tasksWithLoggedHoursById}
-            dataLegend={showAllTasks ? tasksLegend : displayedTasksLegend}
-            chartLegend={tasksLegend}
+            data={displayedTasksWithLoggedHoursById}
+            dataLegend={displayedTasksLegend}
             dataLegendHeader="Hours"
             darkMode={darkMode}
-          />
+          />}
           {showViewAllTasksButton && (
-            <div>
-              <div onClick={handleViewAll} className="show-all-tasks-button">
-                {showAllTasks ? 'Collapse' : 'View all'}
+         <div>
+           {showAllTasks &&   <PieChart
+                pieChartId={'allTasksPieChart'}
+                data={tasksWithLoggedHoursById}
+                dataLegend={tasksLegend}
+                dataLegendHeader="Hours"
+                darkMode={darkMode}
+              />}
+               <div onClick={handleViewAll} className="show-all-tasks-button">
+                  {showAllTasks ? "Collapse":  "View all"}
               </div>
-            </div>
+        </div>
           )}
         </ReportPage.ReportBlock>
       )}
     </div>
   );
+
 };

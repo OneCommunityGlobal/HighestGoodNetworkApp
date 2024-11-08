@@ -13,15 +13,14 @@
     grid-template-columns: 1fr 1fr;
     column-gap: 40px;
   }
+
   .block-span{
     grid-column-start: span 2;
   }
 }
+
 .container-project-wrapper {
   min-height: 100%;
   background-color: #faf7fc;
   margin: 0;
-}
-.pie-chart-checkbox {
-  margin-right: 8px; /* Space between checkbox and label */
 }

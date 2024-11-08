@@ -4,19 +4,15 @@ import axios from 'axios';
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
 import './PermissionsManagement.css';
 import { connect } from 'react-redux';
-import { useDispatch } from 'react-redux';
 import { updateUserProfile, getUserProfile } from 'actions/userProfile';
 import { getAllUserProfile } from 'actions/userManagement';
 import { useHistory } from 'react-router-dom';
 import { boxStyle, boxStyleDark } from 'styles';
-import { FaInfoCircle } from 'react-icons/fa'; // Importing react-icons for the info icon
-import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip functionality
 import '../Header/DarkMode.css';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
-import { addNewRole } from '../../actions/role';
 import { getInfoCollections } from '../../actions/information';
 import hasPermission from '../../utils/permissions';
 import CreateNewRolePopup from './NewRolePopUp';
@@ -44,9 +40,8 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
     if (role != null) return role;
   });
 
-  const dispatch = useDispatch();
-
   useEffect(() => {
+    getAllRoles();
     getInfoCollections();
     getUserRole(auth?.user.userid);
 
@@ -70,16 +65,6 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
   // eslint-disable-next-line no-shadow
   const roleNames = roles?.map(role => role.roleName);
 
-  useEffect(() => {
-    dispatch(getAllRoles());
-  }, [dispatch]);
-
-  const addRole = async newRole => {
-    // Add the new role
-    const response = await addNewRole(newRole);
-    return response;
-  };
-
   return (
     <div
       className={darkMode ? 'bg-oxford-blue text-light' : ''}
@@ -87,36 +72,11 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
     >
       <div
         key={`${role}+permission`}
-        className={`permissions-management ${darkMode ? 'bg-yinmn-blue dark-box-shadow' : ''}`}
+        className={
+          darkMode ? 'permissions-management-dark bg-yinmn-blue' : 'permissions-management'
+        }
       >
-        <h1 className="permissions-management__title">
-          User Roles
-          {/* Added description for the i icon of permissions management page */}
-          <FaInfoCircle
-            data-tip="<div style='text-align: left;'>
-                      <p>Welcome to the Permissions Management Page!</p>
-                      <p>This page gives access to all the One Community Roles, and the ability to create and delete Roles. Each Role has various permissions within the system, categorized by functionality. These permissions relate to:</p>
-                      <ul>
-                        <li>Reports: 📊 Viewing and editing analytics and summaries.</li>
-                        <li>User Management: 👤 Managing user accounts, statuses, and blue squares.</li>
-                        <li>Badge Management: 🏅 Creating, editing, and assigning badges.</li>
-                        <li>Project Management: 🛠️ Adding, editing, and assigning projects.</li>
-                        <li>Work Breakdown Structures: 🗂️ Adding and deleting WBS.</li>
-                        <li>Tasks: 📋 Managing tasks and interactions.</li>
-                        <li>Teams Management: 👥 Creating, editing, and assigning teams.</li>
-                        <li>Timelog Management: 🕒 Managing time entries and logs.</li>
-                        <li>Permissions Management: 🔑 Editing roles and user permissions.</li>
-                      </ul>
-                    </div>"
-            style={{
-              fontSize: '24px',
-              cursor: 'pointer',
-              color: 'rgb(0, 204, 255)',
-              marginLeft: '10px',
-            }}
-          />
-          <ReactTooltip place="right" type="dark" effect="solid" html />
-        </h1>
+        <h1 className="permissions-management__title">User Roles</h1>
         <div key={`${role}_header`} className="permissions-management__header">
           {canPutRole && (
             <div key={`${role}_name`} className="role-name-container">
@@ -194,11 +154,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
               id="modal-body_new-role--padding"
               className={darkMode ? 'bg-yinmn-blue' : ''}
             >
-              <CreateNewRolePopup
-                toggle={togglePopUpNewRole}
-                roleNames={roleNames}
-                addRole={addRole}
-              />
+              <CreateNewRolePopup toggle={togglePopUpNewRole} roleNames={roleNames} />
             </ModalBody>
           </Modal>
           <Modal
@@ -246,7 +202,6 @@ const mapDispatchToProps = dispatch => ({
   getAllRoles: () => dispatch(getAllRoles()),
   updateUserProfile: data => dispatch(updateUserProfile(data)),
   getAllUsers: () => dispatch(getAllUserProfile()),
-  addNewRole: newRole => dispatch(addNewRole(newRole)),
   getUserRole: id => dispatch(getUserProfile(id)),
   hasPermission: action => dispatch(hasPermission(action)),
 });

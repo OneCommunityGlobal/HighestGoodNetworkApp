@@ -14,7 +14,6 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
-import { connect } from 'react-redux';
 import css from './Timer.module.css';
 import '../Header/DarkMode.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -23,24 +22,11 @@ import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
 
-function Timer({ authUser, darkMode }) {
-  /**
-   *  Because the websocket can not be closed when internet is cut off (lost server connection),
-   *  the readyState will be stuck at OPEN, so here we need to use a custom readyState to
-   *  mimic the real readyState, and when internet is cut off, the custom readyState will be set
-   *  to CLOSED, and the user will be notified to refresh the page to reconnect to the server.
-   * */
-  const [customReadyState, setCustomReadyState] = useState(ReadyState.CONNECTING);
+export default function Timer({ darkMode }) {
   const WSoptions = {
     share: false,
     protocols: localStorage.getItem(config.tokenKey),
-    onOpen: () => setCustomReadyState(ReadyState.OPEN),
-    onClose: () => setCustomReadyState(ReadyState.CLOSED),
-    onError: error => {
-      throw new Error('WebSocket Error:', error);
-    },
   };
-
   /**
    * Expected message format: {
    *  userId: string,
@@ -53,7 +39,7 @@ function Timer({ authUser, darkMode }) {
    * }
    */
 
-  const { sendMessage, sendJsonMessage, lastJsonMessage, getWebSocket } = useWebSocket(
+  const { sendMessage, lastJsonMessage, readyState, getWebSocket } = useWebSocket(
     ENDPOINTS.TIMER_SERVICE,
     WSoptions,
   );
@@ -64,12 +50,11 @@ function Timer({ authUser, darkMode }) {
     PAUSE_TIMER: 'PAUSE_TIMER',
     STOP_TIMER: 'STOP_TIMER',
     CLEAR_TIMER: 'CLEAR_TIMER',
-    GET_TIMER: 'GET_TIMER',
-    SET_GOAL: 'SET_GOAL',
-    ADD_GOAL: 'ADD_TO_GOAL',
-    REMOVE_GOAL: 'REMOVE_FROM_GOAL',
+    SET_GOAL: 'SET_GOAL=',
+    ADD_GOAL: 'ADD_TO_GOAL=',
+    REMOVE_GOAL: 'REMOVE_FROM_GOAL=',
     ACK_FORCED: 'ACK_FORCED',
-    START_CHIME: 'START_CHIME',
+    START_CHIME: 'START_CHIME=',
     HEARTBEAT: 'ping',
   };
 
@@ -87,8 +72,6 @@ function Timer({ authUser, darkMode }) {
   const MAX_HOURS = 5;
   const MIN_MINS = 1;
 
-  const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
-
   const [message, setMessage] = useState(defaultMessage);
   const { time, paused, started, goal, startAt } = message;
 
@@ -100,7 +83,6 @@ function Timer({ authUser, darkMode }) {
   const [timeIsOverModalOpen, setTimeIsOverModalIsOpen] = useState(false);
   const [remaining, setRemaining] = useState(time);
   const [logTimer, setLogTimer] = useState({ hours: 0, minutes: 0 });
-  const [viewingUserId, setViewingUserId] = useState(null);
   const isWSOpenRef = useRef(0);
   const timeIsOverAudioRef = useRef(null);
   const forcedPausedAudioRef = useRef(null);
@@ -109,90 +91,23 @@ function Timer({ authUser, darkMode }) {
   const logHours = timeToLog.hours();
   const logMinutes = timeToLog.minutes();
 
-  const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
+  const sendMessageNoQueue = useCallback(msg => sendMessage(msg, false), [sendMessage]);
 
-  useEffect(() => {
-    const handleStorageEvent = () => {
-      const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
-      if (sessionStorageData) {
-        setViewingUserId(sessionStorageData.userId);
-      } else {
-        setViewingUserId(null);
-      }
-    };
-
-    // Set the initial state when the component mounts
-    handleStorageEvent();
-
-    // Add the event listener
-    window.addEventListener('storage', handleStorageEvent);
-
-    // Clean up the event listener when the component unmounts
-    return () => {
-      window.removeEventListener('storage', handleStorageEvent);
-    };
-  }, []);
-
-  // control whether buttons should be clickable
-  const isButtonDisabled = useMemo(
-    () => viewingUserId && !ALLOWED_ROLES_TO_INTERACT.includes(authUser?.role),
-    [viewingUserId, authUser],
+  const wsMessageHandler = useMemo(
+    () => ({
+      sendStart: () => sendMessageNoQueue(action.START_TIMER),
+      sendPause: () => sendMessageNoQueue(action.PAUSE_TIMER),
+      sendClear: () => sendMessageNoQueue(action.CLEAR_TIMER),
+      sendStop: () => sendMessageNoQueue(action.STOP_TIMER),
+      sendAckForced: () => sendMessageNoQueue(action.ACK_FORCED),
+      sendStartChime: state => sendMessageNoQueue(action.START_CHIME.concat(state)),
+      sendSetGoal: timerGoal => sendMessageNoQueue(action.SET_GOAL.concat(timerGoal)),
+      sendAddGoal: duration => sendMessageNoQueue(action.ADD_GOAL.concat(duration)),
+      sendRemoveGoal: duration => sendMessageNoQueue(action.REMOVE_GOAL.concat(duration)),
+      sendHeartbeat: () => sendMessageNoQueue(action.HEARTBEAT),
+    }),
+    [sendMessageNoQueue],
   );
-  // control whether to send GET_TIMER message to avoid message overriding
-  const isInitialJsonMessageReceived = useMemo(() => !!lastJsonMessage, [lastJsonMessage]);
-
-  const wsJsonMessageHandler = useMemo(() => {
-    if (viewingUserId == null) {
-      return {
-        sendStart: () => sendJsonMessageNoQueue({ action: action.START_TIMER }),
-        sendPause: () => sendJsonMessageNoQueue({ action: action.PAUSE_TIMER }),
-        sendClear: () => sendJsonMessageNoQueue({ action: action.CLEAR_TIMER }),
-        sendStop: () => sendJsonMessageNoQueue({ action: action.STOP_TIMER }),
-        sendAckForced: () => sendJsonMessageNoQueue({ action: action.ACK_FORCED }),
-        sendGetTimer: () => sendJsonMessageNoQueue({ action: action.GET_TIMER }),
-        sendStartChime: state =>
-          sendJsonMessageNoQueue({ action: action.START_CHIME, value: state }),
-        sendSetGoal: timerGoal =>
-          sendJsonMessageNoQueue({ action: action.SET_GOAL, value: timerGoal }),
-        sendAddGoal: duration =>
-          sendJsonMessageNoQueue({ action: action.ADD_GOAL, value: duration }),
-        sendRemoveGoal: duration =>
-          sendJsonMessageNoQueue({ action: action.REMOVE_GOAL, value: duration }),
-        sendHeartbeat: () => sendJsonMessageNoQueue({ action: action.HEARTBEAT }),
-      };
-    }
-    return {
-      sendStart: () =>
-        sendJsonMessageNoQueue({ action: action.START_TIMER, userId: viewingUserId }),
-      sendPause: () =>
-        sendJsonMessageNoQueue({ action: action.PAUSE_TIMER, userId: viewingUserId }),
-      sendClear: () =>
-        sendJsonMessageNoQueue({ action: action.CLEAR_TIMER, userId: viewingUserId }),
-      sendStop: () => sendJsonMessageNoQueue({ action: action.STOP_TIMER, userId: viewingUserId }),
-      sendAckForced: () =>
-        sendJsonMessageNoQueue({ action: action.ACK_FORCED, userId: viewingUserId }),
-      sendGetTimer: () =>
-        sendJsonMessageNoQueue({ action: action.GET_TIMER, userId: viewingUserId }),
-      sendStartChime: state =>
-        sendJsonMessageNoQueue({ action: action.START_CHIME, userId: viewingUserId, value: state }),
-      sendSetGoal: timerGoal =>
-        sendJsonMessageNoQueue({
-          action: action.SET_GOAL,
-          userId: viewingUserId,
-          value: timerGoal,
-        }),
-      sendAddGoal: duration =>
-        sendJsonMessageNoQueue({ action: action.ADD_GOAL, userId: viewingUserId, value: duration }),
-      sendRemoveGoal: duration =>
-        sendJsonMessageNoQueue({
-          action: action.REMOVE_GOAL,
-          userId: viewingUserId,
-          value: duration,
-        }),
-      sendHeartbeat: () =>
-        sendJsonMessageNoQueue({ action: action.HEARTBEAT, userId: viewingUserId }),
-    };
-  }, [sendJsonMessageNoQueue, viewingUserId]);
 
   const {
     sendStart,
@@ -200,12 +115,11 @@ function Timer({ authUser, darkMode }) {
     sendClear,
     sendStop,
     sendAckForced,
-    sendGetTimer,
     sendStartChime,
     sendAddGoal,
     sendRemoveGoal,
     sendHeartbeat,
-  } = wsJsonMessageHandler;
+  } = wsMessageHandler;
 
   const toggleLogTimeModal = () => {
     setLogTimeEntryModal(modal => !modal);
@@ -225,7 +139,7 @@ function Timer({ authUser, darkMode }) {
       return (
         remainingDuration.asMinutes() + addition > 0 &&
         goalDuration.asMinutes() + addition >= MIN_MINS &&
-        goalDuration.asHours() < MAX_HOURS
+        goalDuration.asHours() + addition / 60 <= MAX_HOURS
       );
     },
     [remaining],
@@ -241,18 +155,15 @@ function Timer({ authUser, darkMode }) {
 
   const handleAddButton = useCallback(
     duration => {
-      if (goal >= MAX_HOURS * 3600000) {
-        toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
-        return;
-      }
       const goalAfterAdditionAsHours = moment
         .duration(goal)
         .add(duration, 'minutes')
         .asHours();
       if (goalAfterAdditionAsHours > MAX_HOURS) {
-        toast.info(`Goal time cannot be set over ${MAX_HOURS} hours, Goal time is set to 5 hours`);
+        toast.error(`Goal time cannot be set over ${MAX_HOURS} hours!`);
+      } else {
+        sendAddGoal(moment.duration(duration, 'minutes').asMilliseconds());
       }
-      sendAddGoal(moment.duration(duration, 'minutes').asMilliseconds());
     },
     [remaining],
   );
@@ -299,18 +210,17 @@ function Timer({ authUser, darkMode }) {
     }
   };
 
-  /**
-   * This useEffect is to make sure that all the states will be updated before taking effects,
-   * so that message state and other states like running, inacMoal ... will be updated together
-   * at the same time.
-   */
   useEffect(() => {
     // Exclude heartbeat message
     if (lastJsonMessage && lastJsonMessage.heartbeat === 'pong') {
       isWSOpenRef.current = 0;
       return;
     }
-
+    /**
+     * This useEffect is to make sure that all the states will be updated before taking effects,
+     * so that message state and other states like running, inacMoal ... will be updated together
+     * at the same time.
+     */
     const {
       paused: pausedLJM,
       forcedPause: forcedPauseLJM,
@@ -323,19 +233,17 @@ function Timer({ authUser, darkMode }) {
     setTimeIsOverModalIsOpen(chimingLJM);
   }, [lastJsonMessage]);
 
-  // This useEffect is to make sure that the WS connection is maintained by sending a heartbeat every 60 seconds
   useEffect(() => {
+    // This useEffect is to make sure that the WS is open and send a heartbeat every 60 seconds
     const interval = setInterval(() => {
       if (running) {
         isWSOpenRef.current += 1;
         sendHeartbeat();
         setTimeout(() => {
-          // make sure to notify the user if the heartbeat is not responded for 3 times
           if (isWSOpenRef.current > 3) {
             setRunning(false);
             setInacModal(true);
-            getWebSocket().close(); // try to close the WS connection, but it might not work when internet is cut off
-            setCustomReadyState(ReadyState.CLOSED);
+            getWebSocket().close();
           }
         }, 10000); // close the WS if no response after 10 seconds
       }
@@ -390,13 +298,6 @@ function Timer({ authUser, darkMode }) {
     }
   }, [inacModal]);
 
-  useEffect(() => {
-    // If initial json message is null, do nothing
-    if (!isInitialJsonMessageReceived) return;
-
-    sendGetTimer();
-  }, [isInitialJsonMessageReceived, viewingUserId]);
-
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
@@ -405,13 +306,12 @@ function Timer({ authUser, darkMode }) {
     <div className={css.timerContainer}>
       <button
         type="button"
-        disabled={isButtonDisabled}
         onClick={toggleTimer}
         className={css.btnDiv}
         aria-label="Open timer dropdown"
       >
         <BsAlarmFill
-          className={cs(css.transitionColor, isButtonDisabled ? css.btnDisabled : css.btn)}
+          className={cs(css.transitionColor, css.btn)}
           fontSize="2rem"
           title="Open timer dropdown"
         />
@@ -422,123 +322,86 @@ function Timer({ authUser, darkMode }) {
           <Progress bar value={2} color="light" />
           <Progress bar value={100 * (remaining / goal)} color="primary" animated={running} />
         </Progress>
-        {customReadyState === ReadyState.OPEN ? (
-          <button
-            type="button"
-            disabled={isButtonDisabled}
-            className={cs(css.preview, isButtonDisabled && css.btnDisabled)}
-            onClick={toggleTimer}
-          >
-            {moment.utc(remaining).format('HH:mm:ss')}
+        <button type="button" className={css.preview} onClick={toggleTimer}>
+          {moment.utc(remaining).format('HH:mm:ss')}
+        </button>
+      </div>
+      <div className={css.btns}>
+        <button
+          type="button"
+          onClick={() => {
+            handleAddButton(15);
+          }}
+          title="Add 15min"
+          aria-label="Add 15min"
+        >
+          <FaPlusCircle
+            className={cs(css.transitionColor, checkBtnAvail(15) ? css.btn : css.btnDisabled)}
+            fontSize="1.5rem"
+          />
+        </button>
+        <button
+          type="button"
+          onClick={() => handleSubtractButton(15)}
+          title="Subtract 15min"
+          aria-label="Subtract 15min"
+        >
+          <FaMinusCircle
+            className={cs(css.transitionColor, checkBtnAvail(-15) ? css.btn : css.btnDisabled)}
+            fontSize="1.5rem"
+          />
+        </button>
+        {!started || paused ? (
+          <button type="button" onClick={handleStartButton} aria-label="Start timer">
+            <FaPlayCircle
+              className={cs(css.transitionColor, remaining !== 0 ? css.btn : css.btnDisabled)}
+              fontSize="1.5rem"
+              title="Start timer"
+            />
           </button>
         ) : (
-          <div className={css.disconnected}>Disconnected</div>
+          <button type="button" onClick={sendPause} aria-label="Pause timer">
+            <FaPauseCircle
+              className={cs(css.btn, css.transitionColor)}
+              fontSize="1.5rem"
+              title="Pause timer"
+            />
+          </button>
         )}
+        <button
+          type="button"
+          onClick={handleStopButton}
+          disable={`${!started}`}
+          title="Stop timer and log time"
+          aria-label="Stop timer and log time"
+        >
+          <FaStopCircle
+            className={cs(
+              css.transitionColor,
+              started && goal - remaining >= 60000 ? css.btn : css.btnDisabled,
+            )}
+            fontSize="1.5rem"
+          />
+        </button>
+        <button
+          type="button"
+          onClick={() => setConfirmationResetModal(true)}
+          title="Reset timer"
+          aria-label="Reset timer"
+        >
+          <FaUndoAlt className={cs(css.transitionColor, css.btn)} fontSize="1.3rem" />
+        </button>
       </div>
-      {customReadyState === ReadyState.OPEN && (
-        <div className={css.btns}>
-          <button
-            type="button"
-            disabled={isButtonDisabled}
-            onClick={() => {
-              handleAddButton(15);
-            }}
-            title="Add 15min"
-            aria-label="Add 15min"
-          >
-            <FaPlusCircle
-              className={cs(
-                isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                checkBtnAvail(15) ? css.btn : css.btnDisabled,
-              )}
-              fontSize="1.5rem"
-            />
-          </button>
-          <button
-            type="button"
-            disabled={isButtonDisabled}
-            onClick={() => handleSubtractButton(15)}
-            title="Subtract 15min"
-            aria-label="Subtract 15min"
-          >
-            <FaMinusCircle
-              className={cs(
-                isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                checkBtnAvail(-15) ? css.btn : css.btnDisabled,
-              )}
-              fontSize="1.5rem"
-            />
-          </button>
-          {!started || paused ? (
-            <button
-              type="button"
-              disabled={isButtonDisabled}
-              onClick={handleStartButton}
-              aria-label="Start timer"
-            >
-              <FaPlayCircle
-                className={cs(
-                  isButtonDisabled ? css.btnDisabled : css.transitionColor,
-                  remaining !== 0 ? css.btn : css.btnDisabled,
-                )}
-                fontSize="1.5rem"
-                title="Start timer"
-              />
-            </button>
-          ) : (
-            <button
-              type="button"
-              disabled={isButtonDisabled}
-              onClick={sendPause}
-              aria-label="Pause timer"
-            >
-              <FaPauseCircle
-                className={cs(css.btn, isButtonDisabled ? css.btnDisabled : css.transitionColor)}
-                fontSize="1.5rem"
-                title="Pause timer"
-              />
-            </button>
-          )}
-          <button
-            type="button"
-            disabled={!started || isButtonDisabled}
-            onClick={handleStopButton}
-            title="Stop timer and log time"
-            aria-label="Stop timer and log time"
-          >
-            <FaStopCircle
-              className={cs(
-                css.transitionColor,
-                isButtonDisabled && css.btnDisabled,
-                started && goal - remaining >= 60000 ? css.btn : css.btnDisabled,
-              )}
-              fontSize="1.5rem"
-            />
-          </button>
-          <button
-            type="button"
-            disabled={isButtonDisabled}
-            onClick={() => setConfirmationResetModal(true)}
-            title="Reset timer"
-            aria-label="Reset timer"
-          >
-            <FaUndoAlt
-              className={cs(css.transitionColor, isButtonDisabled && css.btnDisabled, css.btn)}
-              fontSize="1.3rem"
-            />
-          </button>
-        </div>
-      )}
 
       {showTimer && (
         <div className={css.timer}>
           <div className={css.timerContent}>
-            {customReadyState === ReadyState.OPEN ? (
+            {readyState === ReadyState.OPEN ? (
               <Countdown
                 message={message}
                 timerRange={{ MAX_HOURS, MIN_MINS }}
                 running={running}
-                wsMessageHandler={wsJsonMessageHandler}
+                wsMessageHandler={wsMessageHandler}
                 remaining={remaining}
                 setConfirmationResetModal={setConfirmationResetModal}
                 checkBtnAvail={checkBtnAvail}
@@ -549,11 +412,7 @@ function Timer({ authUser, darkMode }) {
                 toggleTimer={toggleTimer}
               />
             ) : (
-              <TimerStatus
-                readyState={customReadyState}
-                message={message}
-                toggleTimer={toggleTimer}
-              />
+              <TimerStatus readyState={readyState} message={message} toggleTimer={toggleTimer} />
             )}
           </div>
         </div>
@@ -570,14 +429,12 @@ function Timer({ authUser, darkMode }) {
       )}
       <audio
         ref={timeIsOverAudioRef}
-        key="timeIsOverAudio"
         loop
         preload="auto"
         src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
       />
       <audio
         ref={forcedPausedAudioRef}
-        key="forcedPausedAudio"
         loop
         preload="auto"
         src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
@@ -676,10 +533,3 @@ function Timer({ authUser, darkMode }) {
     </div>
   );
 }
-
-const mapStateToProps = state => ({
-  authUser: state.auth.user,
-  userProfile: state.userProfile,
-});
-
-export default connect(mapStateToProps, {})(Timer);

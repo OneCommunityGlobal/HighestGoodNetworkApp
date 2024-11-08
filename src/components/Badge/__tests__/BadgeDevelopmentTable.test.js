@@ -62,26 +62,6 @@ const renderComponent = mockProps => {
     allProjects: {
       projects: [],
     },
-    auth: {
-      isAuthenticated: true,
-      user: {
-        userid: '123',
-        role: 'Owner',
-        firstName: 'John',
-        profilePic: '/path/to/image.jpg',
-        permissions: {
-          frontPermissions: ['updateBadges', 'deleteBadges'],
-          backPermissions: [],
-        },
-      },
-    },
-    userProfile: {
-      email: 'test@example.com',
-    },
-    taskEditSuggestionCount: 0,
-    role: {
-      roles: ['Owner'],
-    },
     theme: themeMock,
   });
 

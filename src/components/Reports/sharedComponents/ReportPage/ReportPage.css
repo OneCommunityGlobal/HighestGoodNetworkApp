@@ -20,8 +20,8 @@
 
 
 .report-page-profile {
-  padding-right: 24px;
-  /* background-color: #f1ebf7; */
+  padding: 24px;
+  background-color: #f1ebf7;
   border-top-left-radius: 25px;
   border-radius: 25px;
   width: 100%;

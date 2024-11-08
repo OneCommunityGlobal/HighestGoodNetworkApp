@@ -41,8 +41,8 @@ const TaskCompletedModal = React.memo(props => {
   };
 
   const handleClick = ()=>{
-    closeFunction();
     props.taskModalOption === 'Checkmark' ? removeTaskFromUser(props.task) : removeUserFromTask(props.task);
+    closeFunction();
   }
 
   let isCheckmark = props.taskModalOption === 'Checkmark';

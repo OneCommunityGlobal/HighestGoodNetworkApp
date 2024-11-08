@@ -53,16 +53,15 @@ class Teams extends React.PureComponent {
     this.props.getAllUserTeams();
     this.props.getAllUserProfile();
   }
-  
+
   componentDidUpdate(prevProps, prevState) {
     if (
       !lo.isEqual(prevProps.state.allTeamsData.allTeams, this.props.state.allTeamsData.allTeams) || 
       prevState.teamNameSearchText !== this.state.teamNameSearchText || 
       prevState.wildCardSearchText !== this.state.wildCardSearchText
     ) {
-      this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
-    } 
-    
+     this.setState({ teams: this.teamTableElements(this.props.state.allTeamsData.allTeams) });
+    }
     if (
       prevState.teams !== this.state.teams || 
       prevState.sortTeamNameState !== this.state.sortTeamNameState || 
@@ -70,9 +69,8 @@ class Teams extends React.PureComponent {
     ) {
       this.sortTeams();
     }
-
     if (
-      (prevProps.state.allTeamsData.allTeams && prevProps.state.allTeamsData.allTeams.length) !== (this.props.state.allTeamsData.allTeams && this.props.state.allTeamsData.allTeams.length)
+      prevProps.state.allTeamsData.allTeams.length !== this.props.state.allTeamsData.allTeams.length
     ) {
       // Teams length has changed, update or re-fetch them
       this.props.getAllUserTeams();
@@ -94,18 +92,14 @@ class Teams extends React.PureComponent {
         this.props.getAllUserTeams();
         this.props.getAllUserProfile();
       }
-      if (!lo.isEqual(this.props.state.teamsTeamMembers.teamMembers, prevProps.state.teamsTeamMembers.teamMembers)) {
-        // Members have changed, update or re-fetch them
-        this.props.getAllUserTeams();
-        this.props.getAllUserProfile();
-      }
     }
   }
 
   render() {
     const { allTeams, fetching } = this.props.state.allTeamsData;
     const { darkMode } = this.props.state.theme;
-    const numberOfTeams = allTeams && allTeams.length;
+
+    const numberOfTeams = allTeams.length;
     const numberOfActiveTeams = numberOfTeams ? allTeams.filter(team => team.isActive).length : 0;
 
     return (
@@ -125,22 +119,21 @@ class Teams extends React.PureComponent {
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
                 darkMode={darkMode}
               />
-                <div className="overflow-container">
-                  <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}>
-                    <thead>
-                      <TeamTableHeader 
-                        onTeamNameSort={this.toggleTeamNameSort} 
-                        onTeamActiveSort={this.toggleTeamActiveSort} 
-                        sortTeamNameState={this.state.sortTeamNameState}
-                        sortTeamActiveState={this.state.sortTeamActiveState} 
-                        darkMode={darkMode}
-                      />
-                    </thead>
-                    <tbody className={darkMode ? 'dark-mode' : ''}> 
-                      {this.state.sortedTeams}
-                    </tbody>
-                  </table>
-                </div>
+
+              <table className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''}`}>
+                <thead>
+                  <TeamTableHeader 
+                    onTeamNameSort={this.toggleTeamNameSort} 
+                    onTeamActiveSort={this.toggleTeamActiveSort} 
+                    sortTeamNameState={this.state.sortTeamNameState}
+                    sortTeamActiveState={this.state.sortTeamActiveState} 
+                    darkMode={darkMode}
+                    />
+                </thead>
+                  <tbody className={darkMode ? 'dark-mode' : ''}> 
+                    {this.state.sortedTeams}
+                  </tbody>
+              </table>
               </div>
           </React.Fragment>
         )}
@@ -161,7 +154,9 @@ class Teams extends React.PureComponent {
        */
       return teamSearchData
         .sort((a, b) => {
-          return a.modifiedDatetime === b.modifiedDatetime ? 0 : b.modifiedDatetime - a.modifiedDatetime;
+          if (a.modifiedDatetime > b.modifiedDatetime) return -1;
+          if (a.modifiedDatetime < b.modifiedDatetime) return 1;
+          return 0;
         })
         .map((team, index) => (
           <Team
@@ -207,8 +202,8 @@ class Teams extends React.PureComponent {
    */
 
   teampopupElements = (allTeams) => {
-    const { teamMembers: members, fetching } = this.props.state.teamsTeamMembers;
-    const selectedTeamData = allTeams ? allTeams.filter(team => team.teamName === this.state.selectedTeam) : [];
+    const members = this.props.state ? this.props.state.teamsTeamMembers : [];
+    const selectedTeamData= allTeams? allTeams.filter(team => team.teamName === this.state.selectedTeam) : [];
     return (
       <>
         <TeamMembersPopup
@@ -218,10 +213,9 @@ class Teams extends React.PureComponent {
           onDeleteClick={this.onDeleteTeamMember}
           usersdata={this.props.state ? this.props.state.allUserProfiles : []}
           onAddUser={this.onAddUser}
-          teamData={selectedTeamData}
+          teamData= {selectedTeamData}
           onUpdateTeamMemberVisibility={this.onUpdateTeamMemberVisibility}
           selectedTeamName={this.state.selectedTeam}
-          fetching={fetching}
         />
         <CreateNewTeamPopup
           open={this.state.createNewTeamPopupOpen}
@@ -261,10 +255,10 @@ class Teams extends React.PureComponent {
     this.props.addTeamMember(this.state.selectedTeamId, user._id, user.firstName, user.lastName, user.role, Date.now());
   };
 
-  /** NEW CODE
-  * Update Team member visibility by making a Redux action call
-  */
-  onUpdateTeamMemberVisibility = (userid, visibility) => {
+   /** NEW CODE
+   * Update Team member visibility by making a Redux action call
+   */
+   onUpdateTeamMemberVisibility = (userid, visibility) => {
     this.props.updateTeamMemeberVisibility(this.state.selectedTeamId, userid, visibility);
   };
 
@@ -295,10 +289,10 @@ class Teams extends React.PureComponent {
   /**
    * call back to show delete team popup
    */
-  onDeleteTeamPopupShow = (deletedName, teamId, status, teamCode) => {
+  onDeleteTeamPopupShow = (deletedname, teamId, status, teamCode) => {
     this.setState({
       deleteTeamPopupOpen: true,
-      selectedTeam: deletedName,
+      selectedTeam: deletedname,
       selectedTeamId: teamId,
       isActive: status,
       selectedTeamCode: teamCode,
@@ -394,35 +388,25 @@ class Teams extends React.PureComponent {
         this.state.isActive,
         this.state.selectedTeamCode,
       );
-      if (updateTeamResponse && updateTeamResponse.status === 200) {
+      if (updateTeamResponse.status === 200) {
         toast.success('Team updated successfully');
-      } else if(!updateTeamResponse) {
-        toast.error("You are not authorized to edit team code.");
-      }else{
+      } else {
         toast.error(updateTeamResponse);
       }
     } else {
       const postResponse = await this.props.postNewTeam(name, true);
-      if (postResponse.status && postResponse.status === 200) {
+      if (postResponse.status === 200) {
         toast.success('Team added successfully');
-      } else if(!postResponse) {
-        toast.error("You are not authorized to add team code.");
-      }else{
+      } else {
         toast.error(postResponse);
       }
     }
-
-    this.setState(prevState => ({
-      teams: prevState.teams.map(team => 
-        team.props.teamId === this.state.selectedTeamId
-        ? { ...team, props: { ...team.props, name: name, active: this.state.isActive, teamCode: this.state.selectedTeamCode } }
-        : team
-      ),
+    this.setState({
       selectedTeamId: undefined,
       selectedTeam: '',
       isEdit: false,
       createNewTeamPopupOpen: false,
-    }));
+    });
   };
   /**
    * callback for deleting a team
@@ -446,12 +430,10 @@ class Teams extends React.PureComponent {
   onConfirmClick = async (teamName, teamId, isActive, teamCode) => {
     const updateTeamResponse = await this.props.updateTeam(teamName, teamId, isActive, teamCode);
     if (updateTeamResponse.status === 200) {
-      toast.success(`Status Updated to ${isActive ? 'active' : 'inactive'} Successfully`);
+      toast.success('Status Updated Successfully');
     } else {
       toast.error(updateTeamResponse);
     }
-    this.props.getAllUserTeams();
-    this.props.getAllUserProfile();
     this.setState({
       teamStatusPopupOpen: false,
       deleteTeamPopupOpen: false,
@@ -467,11 +449,6 @@ class Teams extends React.PureComponent {
 
   sortTeams = () => {
     const { teams, sortTeamNameState, sortTeamActiveState } = this.state;
-    
-    if (!Array.isArray(teams)) {
-    console.error("Teams is not an array:", teams);
-    return;
-  }
     const sortedTeams = [...teams].sort((a, b) => {
       const dateA = new Date(a.props.team.modifiedDatetime);
       const dateB = new Date(b.props.team.modifiedDatetime);

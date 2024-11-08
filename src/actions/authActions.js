@@ -22,15 +22,8 @@ export const loginUser = credentials => dispatch => {
       }
     })
     .catch(err => {
-      let errors;
-      if(err.response && err.response.status === 404){
-        errors = {password: err.response.data.message};
-        dispatch({
-          type: GET_ERRORS,
-          payload: errors,
-        });
-      }else if (err.response && err.response.status === 403){
-        errors = {email: err.response.data.message};
+      if (err.response && err.response.status === 403) {
+        const errors = { email: err.response.data.message };
         dispatch({
           type: GET_ERRORS,
           payload: errors,

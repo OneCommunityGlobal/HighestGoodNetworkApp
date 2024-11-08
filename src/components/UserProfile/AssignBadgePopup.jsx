@@ -3,7 +3,7 @@ import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
 import AssignTableRow from '../Badge/AssignTableRow';
-import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
+import { assignBadgesByUserID, clearNameAndSelected } from '../../actions/badgeManagement';
 import { ENDPOINTS } from '../../utils/URL';
 import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
@@ -37,7 +37,7 @@ function AssignBadgePopup(props) {
       toast.success('Badge update successfully');
     } catch (e) {
       //TODO: Proper error handling.
-      toast.error('Badge update failed');
+      toast.error('Badge uodate failed');
     }
     setConfirmButtonDisable(false);
     props.handleSubmit();
@@ -65,18 +65,6 @@ function AssignBadgePopup(props) {
   };
 
   let filteredBadges = filterBadges(badgeList);
-
-  const addExistBadges = () => {
-    if (props.userProfile && props.userProfile.badgeCollection) {
-      const existBadges = props.userProfile.badgeCollection.map(badge => `assign-badge-${badge.badge._id}`);
-      return existBadges;
-    }
-    return [];
-  };
-
-  let existBadges = addExistBadges();
-
-
 
   return (
     <div data-testid="test-assignbadgepopup">
@@ -118,7 +106,7 @@ function AssignBadgePopup(props) {
           </thead>
           <tbody>
             {filteredBadges.map((value, index) => (
-              <AssignTableRow badge={value} index={index} key={index} existBadges={existBadges} />
+              <AssignTableRow badge={value} index={index} key={index} />
             ))}
           </tbody>
         </Table>
@@ -146,7 +134,6 @@ const mapDispatchToProps = dispatch => {
     assignBadgesByUserID: (userId, selectedBadge) =>
       assignBadgesByUserID(userId, selectedBadge)(dispatch),
     clearNameAndSelected: () => dispatch(clearNameAndSelected()),
-    addSelectBadge: badgeId => dispatch(addSelectBadge(badgeId)),
   };
 };
 

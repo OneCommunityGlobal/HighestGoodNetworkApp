@@ -1,34 +1,25 @@
 import React from 'react';
-import { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 
 const AssignTeamField = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
-  const [searchText,setSearchText]=useState(()=>{
-    if(props.editMode){
-      return (props.value==undefined?"":props.value.teamName)
-    }else{
-      return props.searchText
-    }
-  })
- 
- 
+
+//   React.useEffect(() => {
+//     if (!props.selectedTeam) props.setSearchText('');
+//     else props.setSearchText(props.selectedTeam.teamName);
+//   }, [props.selectedTeam, props.setSearchText]);
+
   React.useEffect(() => {
-    if (props.selectedTeam && props.selectedTeam.teamName !== searchText) {
+    if (props.selectedTeam && props.selectedTeam.teamName !== props.searchText) {
       props.onSelectTeam(undefined);
       props.undoTeamAssigned();
     }
 
-    if (searchText === '') {
+    if (props.searchText === '') {
       props.cleanTeamAssigned();
     }
-  }, [searchText]);
+  }, [props.searchText]);
 
-  const sTeam = props.teamsData.allTeams.find(team => team.teamName === '2021 Test new');
-  if (sTeam) {
-    // console.log('sTeam', sTeam);
-  }
-  
   return (
     <Dropdown
       isOpen={isOpen}
@@ -39,15 +30,15 @@ const AssignTeamField = React.memo(props => {
     >
       <Input
         type="text"
-        value={searchText}
+        value={props.searchText}
         autoFocus={true}
         onChange={e => {
-          setSearchText(e.target.value);
+          props.setSearchText(e.target.value);
           toggle(true);
         }}
       />
 
-      {searchText !== '' && props.teamsData && props.teamsData.allTeams.length > 0 ? (
+      {props.searchText !== '' && props.teamsData && props.teamsData.allTeams.length > 0 ? (
         <div
           tabIndex="-1"
           role="menu"
@@ -57,17 +48,18 @@ const AssignTeamField = React.memo(props => {
         >
           {props.teamsData.allTeams
             .filter(team => {
-              if (team.teamName.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
+              if (team.teamName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1) {
                 return team;
               }
             })
             .slice(0, 10)
-            .map((item,index) => (
+            .map(item => (
               <div
-                key={index}
+                key={item._id}
                 className="team-auto-complete"
+                key={item._id}
                 onClick={() => {
-                  setSearchText(item.teamName);
+                  props.setSearchText(item.teamName);
                   toggle(false);
                   props.onDropDownSelect(item);
                 }}

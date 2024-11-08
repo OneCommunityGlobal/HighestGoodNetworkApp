@@ -9,7 +9,6 @@ function OldBadges({ personalBestMaxHrs, badges, darkMode }) {
           backgroundColor: darkMode ? '#3A506B' : '#f6f6f3',
           marginTop: 20,
           marginBottom: 20,
-          padding: '0px 10px',
         }}
       >
         <CardBody>
@@ -20,7 +19,6 @@ function OldBadges({ personalBestMaxHrs, badges, darkMode }) {
               color: darkMode ? '#FFF' : '#285739',
               marginBottom: 15,
             }}
-            className="responsive-font-size"
           >
             Badges Earned Before Last Week <i className="fa fa-info-circle" id="OldBadgeInfo" />
           </CardTitle>

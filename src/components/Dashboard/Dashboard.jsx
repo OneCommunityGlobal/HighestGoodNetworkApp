@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
-import './Dashboard.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
@@ -29,19 +28,16 @@ export function Dashboard(props) {
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const toggle = (forceOpen = null) => {
+  const toggle = () => {
     if (isNotAllowedToEdit) {
-      const warningMessage =
-        viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
-          ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
-          : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
-      alert(warningMessage);
+      if (viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
+        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
+      } else {
+        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
+      }
       return;
     }
-  
-    const shouldOpen = forceOpen !== null ? forceOpen : !popup;
-    setPopup(shouldOpen);
-  
+    setPopup(!popup);
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -49,7 +45,6 @@ export function Dashboard(props) {
       }
     }, 150);
   };
-  
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
@@ -74,9 +69,9 @@ export function Dashboard(props) {
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
 
-      <Row className="w-100 ml-1">
-        <Col lg={7}></Col>
-        <Col lg={5}>
+      <Row>
+        <Col lg={{ size: 7 }}>&nbsp;</Col>
+        <Col lg={{ size: 5 }}>
           <div className="row justify-content-center">
             <div
               role="button"
@@ -98,26 +93,28 @@ export function Dashboard(props) {
           </div>
         </Col>
       </Row>
-      <Row className="w-100 ml-1">
-        <Col lg={5} className="order-lg-2 order-2">
+      <Row>
+        <Col lg={{ size: 5 }} className="order-sm-12">
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
           />
         </Col>
-        <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
-          {popup && (
-            <div className="my-2" id="weeklySum">
-              <WeeklySummary
-                displayUserId={displayUserId}
-                setPopup={setPopup}
-                userRole={authUser.role}
-                isNotAllowedToEdit={isNotAllowedToEdit}
-                darkMode={darkMode}
-              />
+        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
+          {popup ? (
+            <div className="my-2">
+              <div id="weeklySum">
+                <WeeklySummary
+                  displayUserId={displayUserId}
+                  setPopup={setPopup}
+                  userRole={authUser.role}
+                  isNotAllowedToEdit={isNotAllowedToEdit}
+                  darkMode={darkMode}
+                />
+              </div>
             </div>
-          )}
+          ) : null}
           <div className="my-2" id="wsummary">
             <Timelog
               isDashboard
@@ -125,6 +122,11 @@ export function Dashboard(props) {
               isNotAllowedToEdit={isNotAllowedToEdit}
             />
           </div>
+          <Badge
+            userId={displayUserId}
+            role={authUser.role}
+            isNotAllowedToEdit={isNotAllowedToEdit}
+          />
         </Col>
       </Row>
       <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />

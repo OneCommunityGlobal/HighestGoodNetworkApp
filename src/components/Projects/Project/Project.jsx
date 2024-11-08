@@ -6,22 +6,17 @@ import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import { toast } from 'react-toastify';  
+import { toast } from 'react-toastify'; 
 
 const Project = props => {
   const { darkMode, index } = props;
   const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName, isActive, _id: projectId } = projectData;
+  const { projectName, category, isActive, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
-  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
-
-  const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
-  const canEditCategoryAndStatus = props.hasPermission('editProject');
-
 
   const updateProject = (key, value) => {
     setProjectData({
@@ -48,9 +43,8 @@ const Project = props => {
   }
 
   const onUpdateProjectCategory = (e) => {
-    setCategory(e.target.value);
-    updateProject('category', e.target.value); // Update the projectData state
-  };
+    updateProject('category', e.target.value);
+  }
 
   const onArchiveProject = () => {
     props.onClickArchiveBtn(projectData);
@@ -62,23 +56,15 @@ const Project = props => {
     } else {
       props.onUpdateProject(projectData)
     }
-    if (props.projectData.category) {
-      setCategory(props.projectData.category);
-    }
   }, [projectData]);
 
   return (
-    <tr className="projects__tr" id={'tr_' + props.projectId}>
-
+    <tr className={`projects__tr ${darkMode ? 'text-light' : ''}`} id={'tr_' + projectId}>
       <th className="projects__order--input" scope="row">
-        <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
+        <div>{index + 1}</div>
       </th>
-
-
-      <td data-testid="projects__name--input" className="projects__name--input">
-        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
-
-
+      <td className="projects__name--input">
+        {(canPutProject) ? (
           <input
             type="text"
             className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
@@ -91,19 +77,13 @@ const Project = props => {
         )}
       </td>
       <td className="projects__category--input">
-
-        {canEditCategoryAndStatus || canPutProject ? (
-
+        {(canPutProject) ? (
           <select
-
-            data-testid="projects__category--input" //added for unit test
             value={category}
-            onChange={e => {
-              onUpdateProjectCategory(e);
-            }}
-
+            onChange={onUpdateProjectCategory}
+            className={darkMode ? 'bg-yinmn-blue border-primary text-light' : ''}
           >
-            <option value="Unspecified">Unspecified</option>
+            <option default value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>
             <option value="Housing">Housing</option>
@@ -117,10 +97,8 @@ const Project = props => {
           category
         )}
       </td>
-      {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
-        {props.active ? ( */}
-          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
-              {isActive ? (
+      <td className="projects__active--input" onClick={canPutProject ? onUpdateProjectActive : null}>
+        {isActive ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
           </div>
@@ -155,12 +133,9 @@ const Project = props => {
         </NavItem>
       </td>
 
-
       {(canDeleteProject) ? (
-
         <td>
           <button
-            data-testid="delete-button"
             type="button"
             className="btn btn-outline-danger"
             onClick={onArchiveProject}

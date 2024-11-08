@@ -13,9 +13,8 @@ const EffortBar = ({ activeTab, projectsSelected }) => {
         (projectsSelected.includes('all') || projectsSelected.includes(entry.projectId)),
     );
 
-    const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
-    const total = filteredData.reduce(reducer, 0);
-    return Number(total.toFixed(2));
+    const reducer = (total, entry) => Number((total + parseInt(entry.hours) + parseInt(entry.minutes) / 60).toFixed(2));
+    return filteredData.reduce(reducer, 0);
   };
 
   const tangibleTime = calculateTotalTime(data, true);
