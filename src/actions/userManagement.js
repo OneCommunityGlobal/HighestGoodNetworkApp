@@ -6,6 +6,9 @@ import {
   RECEIVE_ALL_USER_PROFILES,
   USER_PROFILE_UPDATE,
   USER_PROFILE_DELETE,
+  FETCH_USER_PROFILE_BASIC_INFO,
+  RECEIVE_USER_PROFILE_BASIC_INFO,
+  FETCH_USER_PROFILE_BASIC_INFO_ERROR,
   ENABLE_USER_PROFILE_EDIT,
   DISABLE_USER_PROFILE_EDIT,
   CHANGE_USER_PROFILE_PAGE,
@@ -213,6 +216,62 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
     updateProfilePromise.then(res => {
       dispatch(userProfileUpdateAction(userProfile));
     });
+  };
+};
+
+/**
+ * fetching all user profiles basic info
+ */
+export const getUserProfileBasicInfo = () => {
+  // API request to fetch basic user profile information
+  const userProfileBasicInfoPromise = axios.get(ENDPOINTS.USER_PROFILE_BASIC_INFO);
+
+  return async dispatch => {
+    // Dispatch action indicating the start of the fetch process
+    await dispatch(userProfilesBasicInfoFetchStartAction());
+
+    return userProfileBasicInfoPromise
+      .then(res => {
+        // Dispatch action with the fetched basic profile data
+        dispatch(userProfilesBasicInfoFetchCompleteACtion(res.data));
+        return res.data; // Return the fetched data
+      })
+      .catch(err => {
+        // Dispatch error action if the fetch fails
+        dispatch(userProfilesBasicInfoFetchErrorAction());
+      });
+  };
+};
+
+
+/**
+ * Set a flag that starts fetching user profile basic info
+ */
+export const userProfilesBasicInfoFetchStartAction = () => {
+  return {
+    type: FETCH_USER_PROFILE_BASIC_INFO,
+  };
+};
+
+/**
+ * Fetching user profile basic info
+ * @param payload : projects []
+ */
+export const userProfilesBasicInfoFetchCompleteACtion = payload => {
+  return {
+    type: RECEIVE_USER_PROFILE_BASIC_INFO,
+    payload,
+  };
+};
+
+/**
+ * Error when fetching the user profils basic info
+ * @param payload : error status code
+ */
+export const userProfilesBasicInfoFetchErrorAction = payload => {
+  return {
+    type: FETCH_USER_PROFILE_BASIC_INFO_ERROR,
+    payload,
   };
 };
 

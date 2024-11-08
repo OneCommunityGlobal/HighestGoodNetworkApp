@@ -243,9 +243,14 @@
 }
 
 .tasks-detail-task-name { /* task column height and width changes*/
+  width: 35%;
   height: auto; 
 }
-
 .tasks-detail-actions {  /* action column width reduced */
   width: 6%; 
+}
+@media (max-width: 768px) { /* arranging the buttons */
+  .button-group button {
+    margin-bottom: 10px;
+  }
 }
