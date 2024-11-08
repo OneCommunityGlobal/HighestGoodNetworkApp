@@ -33,9 +33,10 @@ const WBS = props => {
                 <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
                   <i className="fa fa-chevron-circle-left" aria-hidden="true"></i>
                 </button>
-                <span style={{ marginLeft: '8px' }}>Return to Projects List</span>
+                <span style={{ marginLeft: '8px' }}>Return to Project List</span>
               </NavItem>
-              <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold' }}>Project: {projectName}</div>
+              <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold', display: 'flex',
+                alignItems: 'center', justifyContent: 'center', }}>Project Name: {projectName}</div>
             </ol>
           </nav>
 

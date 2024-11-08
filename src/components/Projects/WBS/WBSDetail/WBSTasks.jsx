@@ -185,9 +185,10 @@ function WBSTasks(props) {
               <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
-              <span style={{ marginLeft: '8px' }}>Return to WBS List: {projectName}</span>
+              <span style={{ marginLeft: '1px' }}>Return to WBS List: {projectName}</span>
             </NavItem>
-            <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold' }}> WBS Name: {wbsName}</div>
+            <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', }}> WBS Name: {wbsName}</div>
           </ol>
         </nav>
         <div
