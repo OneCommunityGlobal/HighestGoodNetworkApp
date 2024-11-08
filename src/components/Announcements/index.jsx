@@ -99,6 +99,28 @@ function Announcements() {
       }
       setHeaderContent(''); // Clear the input field after inserting the header
   };
+  
+  const convertImageToBase64 = (file, callback) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      callback(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
+  const addImageToEmailContent = e => {
+    const imageFile = document.querySelector('input[type="file"]').files[0];
+    convertImageToBase64(imageFile, base64Image => {
+      const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
+      setHeaderContent(prevContent => `${imageTag}${prevContent}`);
+      const editor = tinymce.get('email-editor');
+      if (editor) {
+        editor.insertContent(imageTag);
+        setEmailContent(editor.getContent());
+      }
+    });
+    e.target.value = '';
+  };
 
   const validateEmail = (email) => {
     /* Add a regex pattern for email validation */
