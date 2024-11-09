@@ -19,7 +19,6 @@ src/components/App.jsx
 src/components/AutoReload/**
 src/components/Badge/**
 src/components/common/**
-src/components/Header/**
 src/components/Projects/**
 src/components/Reports/**
 src/components/SetupProfile/**
