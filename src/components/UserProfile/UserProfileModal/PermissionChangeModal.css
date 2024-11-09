@@ -1,6 +1,6 @@
-.modal-content {
+/* .modal-content {
     padding: 20px;
-}
+} */
 
 .list {
     list-style-type: none;
@@ -11,18 +11,19 @@
     -webkit-appearance: none;
     width: 16px;
     height: 16px;
-    border: 1px solid #ccc;
+    border: 1.5px solid #ccc;
     border-radius: 3px;
     display: inline-block;
     position: relative;
     cursor: pointer;
+    font-size: 12px;
 }
 
 .custom-checkbox:checked::before {
     content: '\2713';
     display: block;
     text-align: center;
-    line-height: 16px;
+    line-height: 13px;
     background-color: green;
     color: white;
 }
@@ -31,14 +32,16 @@
     content: '✕';
     display: block;
     text-align: center;
-    line-height: 16px;
+    line-height: 13px;
     background-color: red;
-    margin-left: -1px;
+    /* margin-left: -1px; */
+    /* margin-top: .5px; */
     color: white;
 }
 
 .permission-text {
     margin-left: 8px;
+    color: white;
 }
 
 .modal-footer {
@@ -51,6 +54,7 @@
     color: white;
     font-weight: bold;
     cursor: pointer;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 /* .modal-cancel-button {

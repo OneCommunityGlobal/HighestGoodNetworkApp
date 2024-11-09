@@ -1,18 +1,21 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 // import whatever file I need to pull the information of a given role's permissions
 import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
 import { permissionLabels } from '../../PermissionsManagement/PermissionsConst'
 import './PermissionChangeModal.css';
+import '../../../App.css';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 function PermissionChangeModal({ 
   userProfile, 
   setUserProfile,
-  oldUserProfile, 
+  /* oldUserProfile, */ 
   isOpen, 
-  closeModal
-  /* potentialRole */
+  closeModal,
+  potentialRole,
+  oldRolePermissions,
+  currentUserPermissions
 }) {
   // Creating a modal that pops up when someone changes a user's role
   // and the user has custom permissions that differ from the permissions
@@ -20,23 +23,25 @@ function PermissionChangeModal({
   // and the permissions of the new role, and ask the user to confirm which permissions they want
   // to keep.
 
-  const dispatch = useDispatch();
-  const [oldRolePermissions, setOldRolePermissions] = useState([]);
+  // const [oldRolePermissions, setOldRolePermissions] = useState([]);
   const [newRolePermissions, setNewRolePermissions] = useState([]);
   const [checkedAddedPermissions, setCheckedAddedPermissions] = useState({});
   const [checkedRemovedPermissions, setCheckedRemovedPermissions] = useState({});
 
+  const dispatch = useDispatch();
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   // create variable for user
   const user = userProfile;
   // create variable for old role
-  const oldRole = oldUserProfile?.role;
+  // const oldRole = oldUserProfile?.role;
   // const oldRole = user.role;
   // create variable for new role
-  const newRole = user.role;
-  // const newRole = potentialRole;
-  const currentUserPermissions =  user.permissions.frontPermissions;
+  // const newRole = user.role;
+  const newRole = potentialRole;
+  // const currentUserPermissions =  user.permissions.frontPermissions;
 
-  useEffect(() => {
+  /* useEffect(() => {
     const fetchOldRolePermissions = async () => {
       if (oldRole) {
         const oldRolePresets = await dispatch(getPresetsByRole(oldRole));
@@ -47,7 +52,7 @@ function PermissionChangeModal({
     };
 
     fetchOldRolePermissions();
-  }, [dispatch, oldRole]);
+  }, [dispatch, oldRole]); */
 
   useEffect(() => {
     const fetchNewRolePermissions = async () => {
@@ -157,10 +162,12 @@ function PermissionChangeModal({
   }, [user]); */
 
   return (
-    <div className="modal-content">
-    <Modal isOpen={isOpen} toggle={closeModal}>
-      <ModalHeader toggle={closeModal}>Change User Role</ModalHeader>
-      <ModalBody>
+    <div /* className="modal-content" */>
+    <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>
+        Change User Role
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
       {/* <div className="modal-body"> */}
         <p>
           You are changing the role of a Special Person with special permissions. This person has
@@ -169,7 +176,7 @@ function PermissionChangeModal({
         </p>
         <ul className="list">
           {newRolePermissionsToAdd.map(permission => (
-            <li key={permission}>
+            <li key={permission} className={darkMode ? 'bg-yinmn-blue' : ''}>
               <input 
                 type="checkbox" 
                 id={permission} 
@@ -183,7 +190,7 @@ function PermissionChangeModal({
             </li>
           ))}
           {newRolePermissionsToRemove.map(permission => (
-            <li key={permission}>
+            <li key={permission} className={darkMode ? 'bg-yinmn-blue' : ''}>
               <input 
                 type="checkbox" 
                 id={permission} 
@@ -199,7 +206,7 @@ function PermissionChangeModal({
         </ul>
       {/* </div> */}
         </ModalBody>
-        <ModalFooter>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         {/* <div className="modal-footer"> */}
           <Button color="secondary" onClick={closeModal}>Cancel</Button>
           {/* <button className="modal-cancel-button" 
