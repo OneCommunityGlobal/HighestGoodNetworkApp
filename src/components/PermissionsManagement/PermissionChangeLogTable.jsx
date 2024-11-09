@@ -95,7 +95,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
               <th className={`permission-change-log-table--header${addDark}`}>
                 Log Date and Time (PST)
               </th>
-              <th className={`permission-change-log-table--header${addDark}`}>Role Name</th>
+              <th className={`permission-change-log-table--header${addDark}`}>Name</th>
               <th className={`permission-change-log-table--header${addDark}`}>Permissions</th>
               <th className={`permission-change-log-table--header${addDark}`}>Permissions Added</th>
               <th className={`permission-change-log-table--header${addDark}`}>
