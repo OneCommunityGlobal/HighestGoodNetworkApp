@@ -18,8 +18,8 @@ export default function FormEditor() {
     <>
       <div className="container-fluid">
         <h1>Form Builder</h1>
-        <h2>Untitled Form</h2>
-        <h3>summary</h3>
+        {/* <h2>Untitled Form</h2>
+        <h3>summary</h3> */}
         <div className="m-5 ">
           {formQuestions.map(question => {
             if (question !== null && question !== undefined)

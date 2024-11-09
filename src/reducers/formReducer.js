@@ -7,6 +7,7 @@ const initialState = {
     questions: [{
         id: uuid4(),
         label: '',
+        description:'',
         type: 'select',
         required: false,
         options: [],
@@ -27,6 +28,7 @@ export default function formReducer(state = initialState, action) {
                 questions: [...state.questions, {
                     id: uuid4(),
                     label: '',
+                    description:'',
                     type: 'select',
                     required: false,
                     options: [],

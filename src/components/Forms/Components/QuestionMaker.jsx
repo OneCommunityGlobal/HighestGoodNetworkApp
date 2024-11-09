@@ -1,6 +1,7 @@
 import { updateQuestion, deleteQuestion } from 'actions/formActions';
 import { useDispatch } from 'react-redux';
 import OptionMaker from './OptionMaker';
+import RichTextEditor from './RichTextEditor';
 
 export default function QuestionMaker({ data }) {
   const dispatch = useDispatch();
@@ -57,6 +58,8 @@ export default function QuestionMaker({ data }) {
           placeholder="Enter a Question"
           onChange={handleLabelChange}
         />
+        {/* description */}
+
         <select className="form-select" value={data.type} onChange={handleTypeChange}>
           <option value="select">Select</option>
           <option value="short_answer">Short Answer</option>
@@ -65,8 +68,13 @@ export default function QuestionMaker({ data }) {
           <option value="radio">Radio</option>
         </select>
       </div>
+      <div className="row m-auto">
+        <div className="col">
+          <RichTextEditor data={data} />
+        </div>
+      </div>
 
-      <div className="row w-100 ml-2 ">
+      <div className="row w-100 m-auto">
         <div className="col">
           {data.type === 'paragraph' && (
             <textarea className="form-control m-1" id={data.id} disabled />

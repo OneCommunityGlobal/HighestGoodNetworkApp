@@ -1,3 +1,4 @@
+import dompurify from 'dompurify';
 import OptionViewer from './OptionViewer';
 
 export default function QuestionViewer({ data, SetFormAnswers, formAnwers }) {
@@ -13,6 +14,8 @@ export default function QuestionViewer({ data, SetFormAnswers, formAnwers }) {
     });
     SetFormAnswers(newFormAnswers);
   };
+  const sanitizer = dompurify.sanitize;
+
   return (
     // eslint-disable-next-line react/jsx-no-useless-fragment
     <>
@@ -21,6 +24,8 @@ export default function QuestionViewer({ data, SetFormAnswers, formAnwers }) {
           <div className="row bg-info pl-1">
             <label className="text-white">{data.label}</label>
           </div>
+          {/* eslint-disable-next-line react/no-danger */}
+          <div className="row" dangerouslySetInnerHTML={{ __html: sanitizer(data.description) }} />
           <div className="row">
             {data.type === 'short_answer' && (
               <input
