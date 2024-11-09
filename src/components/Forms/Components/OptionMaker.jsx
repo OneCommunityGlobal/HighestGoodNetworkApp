@@ -1,43 +1,40 @@
-import { updateOption, addOption } from 'actions/formActions';
 import { useDispatch } from 'react-redux';
+import { addOption, deleteOption, updateOption } from 'actions/formActions';
 
 export default function OptionMaker({ data }) {
-  // options is an array of objects
-  // each object has an id and a value
   const dispatch = useDispatch();
 
-  const handleOptionChange = (id, newVal) => {
-    // console.log(newVal);
-    dispatch(updateOption(data.id, id, { value: newVal }));
-  };
-
-  const handleAddOption = () => {
-    dispatch(addOption(data.id));
+  const handleOptionChange = (optionId, e) => {
+    dispatch(updateOption(data.id, optionId, { value: e.target.value }));
   };
 
   return (
-    // eslint-disable-next-line react/jsx-no-useless-fragment
-    <>
-      <div>
-        <ul>
-          {data.options &&
-            data.options.map(option => {
-              return (
-                <li key={option.id}>
-                  <input
-                    type="text"
-                    value={option.value}
-                    onChange={e => handleOptionChange(option.id, e.target.value)}
-                  />
-                  <button type="button">Delete</button>
-                </li>
-              );
-            })}
-        </ul>
-        <button type="button" onClick={handleAddOption}>
-          Add Option
-        </button>
-      </div>
-    </>
+    <div>
+      {data.options.map(option => (
+        <div key={option.id} className="mt-1 mb-1 input-group">
+          <input
+            type="text"
+            className="form-control"
+            value={option.value}
+            placeholder="Enter an option"
+            onChange={e => handleOptionChange(option.id, e)}
+          />
+          <button
+            type="button"
+            className="btn btn-danger btn-sm ml-1"
+            onClick={() => dispatch(deleteOption(data.id, option.id))}
+          >
+            Delete
+          </button>
+        </div>
+      ))}
+      <button
+        type="button"
+        className="btn btn-primary mt-1 mb-1"
+        onClick={() => dispatch(addOption(data.id))}
+      >
+        Add Option
+      </button>
+    </div>
   );
 }
