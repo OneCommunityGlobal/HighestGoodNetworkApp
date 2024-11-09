@@ -50,11 +50,11 @@
 }
 
 .toggle-switch-inner:after {
-  content: "Selected";
-  padding-right: 5px;
+  content: "Select";
+  padding-left: 10px;
   background-color: #FF3B3F;
   color: #fff;
-  text-align: right;
+  text-align: center;
 }
 
 .toggle-switch-switch {
