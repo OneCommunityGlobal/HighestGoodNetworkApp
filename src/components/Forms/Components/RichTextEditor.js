@@ -1,6 +1,6 @@
+/* eslint-disable no-unused-vars */
 import { useRef, useState } from 'react';
 import { Editor } from '@tinymce/tinymce-react';
-import dompurify from 'dompurify';
 import { updateQuestion } from 'actions/formActions';
 import { useDispatch } from 'react-redux';
 
