@@ -70,7 +70,8 @@ const ResetPasswordPopup = React.memo(props => {
             </Label>
           </div>
           <Input
-            label=""
+            darkMode={darkMode}
+            label="New Password"
             autoFocus
             type={showPassword.newPassword ? 'text' : 'password'}
             name="newpassword"
@@ -98,7 +99,8 @@ const ResetPasswordPopup = React.memo(props => {
             </Label>
           </div>
           <Input
-            label=""
+            darkMode={darkMode}
+            label="Confirm Password"
             type={showPassword.confirmPassword ? 'text' : 'password'}
             name="confirmpassword"
             id="confirmpassword"

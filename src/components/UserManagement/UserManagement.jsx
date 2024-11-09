@@ -75,6 +75,9 @@ class UserManagement extends React.PureComponent {
       userTableItems: [],
       editable: props.state.userPagination.editable,
       // updating:props.state.updateUserInfo.updating
+      isMobile: window.innerWidth <= 750,
+      mobileFontSize: 10,
+      mobileWidth: '100px',
     };
     this.onPauseResumeClick = this.onPauseResumeClick.bind(this);
     this.onLogTimeOffClick = this.onLogTimeOffClick.bind(this);
@@ -91,14 +94,26 @@ class UserManagement extends React.PureComponent {
     const { userProfiles } = this.props.state.allUserProfiles;
     const { roles: rolesPermissions } = this.props.state.role;
     const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    window.addEventListener('resize', this.handleResize);
     this.getFilteredData(
       userProfiles,
       rolesPermissions,
       timeOffRequests,
       darkMode,
       this.state.editable,
+      this.state.isMobile,
+      this.state.mobileFontSize,
     );
   }
+
+  componentWillUnmount() {
+    window.removeEventListener('resize', this.handleResize);
+  }
+
+  handleResize = () => {
+    console.log(window.innerWidth);
+    this.setState({ isMobile: window.innerWidth <= 750 });
+  };
 
   async componentDidUpdate(prevProps, prevState) {
     const searchState =
@@ -124,6 +139,8 @@ class UserManagement extends React.PureComponent {
         timeOffRequests,
         darkMode,
         this.state.editable,
+        this.state.isMobile,
+        this.state.mobileFontSize,
       );
     }
   }
@@ -196,7 +213,7 @@ class UserManagement extends React.PureComponent {
   /**
    * Creates the table body elements after applying the search filter and return it.
    */
-  userTableElements = (userProfiles, rolesPermissions, timeOffRequests, darkMode) => {
+  userTableElements = (userProfiles, rolesPermissions, timeOffRequests, darkMode, isMobile, mobileFontSize) => {
     if (userProfiles && userProfiles.length > 0) {
       const usersSearchData = this.filteredUserList(userProfiles);
       this.filteredUserDataCount = usersSearchData.length;
@@ -242,6 +259,8 @@ class UserManagement extends React.PureComponent {
               timeOffRequests={timeOffRequests[user._id] || []}
               darkMode={darkMode}
               // editUser={editUser}
+              isMobile={isMobile}
+              mobileFontSize={mobileFontSize}
             />
           );
         });
@@ -249,7 +268,7 @@ class UserManagement extends React.PureComponent {
     return null;
   };
 
-  getFilteredData = (userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser) => {
+  getFilteredData = (userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser, isMobile, mobileFontSize) => {
     this.setState({
       userTableItems: this.userTableElements(
         userProfiles,
@@ -257,6 +276,8 @@ class UserManagement extends React.PureComponent {
         timeOffRequests,
         darkMode,
         editUser,
+        isMobile,
+        mobileFontSize,
       ),
     });
   };
@@ -719,6 +740,9 @@ class UserManagement extends React.PureComponent {
                   editUser={this.props.state.userProfileEdit.editable}
                   enableEditUserInfo={this.props.enableEditUserInfo}
                   disableEditUserInfo={this.props.disableEditUserInfo}
+                  isMobile={this.state.isMobile}
+                  mobileFontSize={this.state.mobileFontSize}
+                  mobileWidth={this.state.mobileWidth}
                 />
                 <UserTableSearchHeader
                   onFirstNameSearch={this.onFirstNameSearch}
@@ -730,6 +754,9 @@ class UserManagement extends React.PureComponent {
                   authRole={this.props.state.auth.user.role}
                   roleSearchText={this.state.roleSearchText}
                   darkMode={darkMode}
+                  isMobile={this.state.isMobile}
+                  mobileFontSize={this.state.mobileFontSize}
+                  mobileWidth={this.state.mobileWidth}
                 />
               </thead>
               <tbody className={darkMode ? 'dark-mode' : ''}>{this.state.userTableItems}</tbody>
