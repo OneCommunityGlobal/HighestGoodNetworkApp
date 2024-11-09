@@ -111,9 +111,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{`${formatDate(
                   log.logDateTime,
                 )} ${formattedAmPmTime(log.logDateTime)}`}</td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
-                  {log.roleName}
-                </td>
+                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{log.name}</td>
                 <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                   {renderPermissions(log.permissions, log._id)}
                 </td>

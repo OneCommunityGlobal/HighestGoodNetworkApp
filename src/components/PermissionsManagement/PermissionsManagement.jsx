@@ -60,10 +60,11 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
 
     getInfoCollections();
     getUserRole(auth?.user.userid);
-
     const getChangeLogs = async () => {
       try {
-        const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid));
+        const response = await axios.get(
+          ENDPOINTS.GET_USER_PERMISSION_CHANGE_LOGS(auth?.user.userid),
+        );
         setChangeLogs(response.data);
         setLoading(false);
       } catch (error) {
@@ -243,7 +244,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
       </div>
       {loading && <p className="loading-message">Loading...</p>}
       {changeLogs?.length > 0 && (
-        <PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} darkMode={darkMode} />
+        <PermissionChangeLogTable changeLogs={changeLogs} darkMode={darkMode} />
       )}
       <br />
       <br />

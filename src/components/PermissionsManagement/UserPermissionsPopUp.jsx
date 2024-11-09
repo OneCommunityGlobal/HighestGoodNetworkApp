@@ -64,6 +64,16 @@ function UserPermissionsPopUp({
     }
   }, [actualUserProfile]);
 
+  const logPermissionChanges = async (logPermissionChangesUrl, permissionChangeLog) => {
+    try {
+      await axios.post(logPermissionChangesUrl, permissionChangeLog);
+    } catch (error) {
+      toast.error('Error logging permissions:', {
+        autoClose: 10000,
+      });
+    }
+  };
+
   const updateProfileOnSubmit = async e => {
     e.preventDefault();
     const shouldPreventEdit = cantUpdateDevAdminDetails(actualUserProfile?.email, authUser.email);
@@ -80,8 +90,39 @@ function UserPermissionsPopUp({
     const userId = actualUserProfile?._id;
 
     const url = ENDPOINTS.USER_PROFILE(userId);
+    const logPermissionChangesUrl = ENDPOINTS.POST_USER_PERMISSION_CHANGE_LOGS;
     const allUserInfo = await axios.get(url).then(res => res.data);
     const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
+
+    let existingPermissions = allUserInfo.permissions?.frontPermissions || [];
+    const existingPermissionsSet = new Set(existingPermissions || []);
+    const newPermissionsSet = new Set(userPermissions || []);
+    const addedPermissions = (userPermissions || []).filter(
+      permission => !existingPermissionsSet.has(permission),
+    );
+    const removedPermissions = (existingPermissions || []).filter(
+      permission => !newPermissionsSet.has(permission),
+    );
+
+    existingPermissions = [
+      ...existingPermissions.filter(permission => !removedPermissions.includes(permission)),
+      ...addedPermissions,
+    ];
+
+    const permissionChangeLog = {
+      actualUserProfile: {
+        firstName: actualUserProfile.firstName,
+        lastName: actualUserProfile.lastName,
+      },
+      authUser: {
+        email: authUser.email,
+        role: authUser.role,
+      },
+      userId,
+      existingPermissions, // Existing permissions before change
+      addedPermissions, // New permissions added
+      removedPermissions, // Permissions removed
+    };
 
     await axios
       .put(url, newUserInfo)
@@ -94,6 +135,7 @@ function UserPermissionsPopUp({
             autoClose: 10000,
           });
           setToastShown(true);
+          logPermissionChanges(logPermissionChangesUrl, permissionChangeLog);
         }
         toggle();
       })
