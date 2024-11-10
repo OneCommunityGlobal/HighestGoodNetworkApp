@@ -24,6 +24,8 @@ function AssignBadgePopup(props) {
   };
 
   const handleSubmit = () => {
+    console.log('Submitting selected badges ---- ', selectedBadges);
+    console.log('props ---- ', props);
     props.submit();
     dispatch(clearSelected());
   };
@@ -64,6 +66,7 @@ function AssignBadgePopup(props) {
             </tr>
           </thead>
           <tbody>
+            {console.log('selectedBadges', selectedBadges)}
             {filteredBadges.map((value, index) => (
               <AssignTableRow
                 badge={value}

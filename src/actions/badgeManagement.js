@@ -170,7 +170,7 @@ export const assignBadges = (firstName, lastName, selectedBadges) => {
     const userToBeAssignedBadge = res.data[0]._id;
     // return a new badgeCollection for udpate
     const newBadgeCollection = returnUpdatedBadgesCollection(badgeCollection, selectedBadges);
-
+    console.log('assignBadges ----- newBadgeCollection\n-----------------', newBadgeCollection);
     const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
     try {
       await axios.put(url, {
@@ -235,6 +235,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
     const newBadgeCollection = returnUpdatedBadgesCollection(badgeCollection, selectedBadges);
     // send updated badgeCollection to backend
     const url = ENDPOINTS.BADGE_ASSIGN(userToBeAssignedBadge);
+    console.log('assignBadgesByUserID ----- newBadgeCollection\n-----------------', newBadgeCollection);
     try {
       await axios.put(url, {
         badgeCollection: newBadgeCollection,
