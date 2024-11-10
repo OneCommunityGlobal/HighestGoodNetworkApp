@@ -2,11 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import whatever file I need to pull the information of a given role's permissions
 import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
-import { updateUserProfile } from '../../../actions/userProfile';
+import { updateUserProfileProperty } from '../../../actions/userProfile';
 import { permissionLabels } from '../../PermissionsManagement/PermissionsConst';
 import './PermissionChangeModal.css';
 import '../../../App.css';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import { toast } from 'react-toastify';
 
 function PermissionChangeModal({ 
   userProfile, 
@@ -142,18 +143,19 @@ function PermissionChangeModal({
     }
   };
 
-  const confirmModal = () => {
-    setUserProfile({
-      ...userProfile,
-      role: potentialRole,
-      permissions: { ...userProfile.permissions, frontPermissions: [] },
-    });
-    const updatedProfile = {
-      ...userProfile,
-      role: potentialRole,
-    };
-    dispatch(updateUserProfile(updatedProfile));
-    closeModal();
+  const confirmModal = async () => {
+    try {
+      const response = await dispatch(updateUserProfileProperty(userProfile, 'role', potentialRole));
+
+      if (response === 200) {
+        setUserProfile({ ...userProfile, role: potentialRole });
+        toast.success('User role successfully updated');
+        closeModal();
+      }
+    } catch (error) {
+      console.error('Error updating user role: ', error);
+      toast.error('Error updating user role');
+    }
   };
   
   /* async function testUser() {

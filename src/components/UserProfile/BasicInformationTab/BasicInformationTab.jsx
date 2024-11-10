@@ -19,6 +19,7 @@ import { isString } from 'lodash';
 import { toast } from 'react-toastify';
 import PermissionChangeModal from '../UserProfileModal/PermissionChangeModal';
 import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
+import { updateUserProfileProperty } from '../../../actions/userProfile';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
@@ -392,6 +393,30 @@ const BasicInformationTab = props => {
   const openPermissionModal = () => setPermissionModalOpen(true);
   const closePermissionModal = () => setPermissionModalOpen(false);
 
+  const handleRoleChange = async (e) => {
+    const chosenRole = e.target.value;
+    const permissionsDifferent =
+      oldRolePermissions.some((permission) => !userProfile.permissions.frontPermissions.includes(permission)) ||
+      userProfile.permissions.frontPermissions.some((permission) => !oldRolePermissions.includes(permission));
+
+    if (permissionsDifferent) {
+      openPermissionModal();
+      setPotentialRole(chosenRole);
+    } else {
+      try {
+        const response = await dispatch(updateUserProfileProperty(userProfile, 'role', chosenRole));
+
+        if (response === 200) {
+          setUserProfile({ ...userProfile, role: newRole });
+          toast.success('Role updated successfully');
+        }
+      } catch (error) {
+        console.error('Error updating role:', error);
+        toast.error('Failed to update role');
+      }
+    }
+  };
+
   const nameComponent = (
     <>
       <Col>
@@ -552,7 +577,8 @@ const BasicInformationTab = props => {
           <FormGroup>
             <select
               value={userProfile.role}
-              onChange={(e) => {
+              onChange={handleRoleChange}
+              /* onChange={(e) => {
                 const permissionsDifferent = 
                   oldRolePermissions.some(permission => 
                     !currentUserPermissions.includes(permission)) || 
@@ -571,7 +597,7 @@ const BasicInformationTab = props => {
                   });
                   console.log('userProfile: ', userProfile); 
                 }              
-              }}
+              }} */
               // /* onChange={(e) => {
                 // openPermissionModal();
                 // setPotentialRole(e.target.value);
