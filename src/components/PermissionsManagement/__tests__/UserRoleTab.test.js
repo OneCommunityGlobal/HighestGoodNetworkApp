@@ -10,6 +10,7 @@ import axios from 'axios';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
 import { themeMock } from '__tests__/mockStates';
+import { ModalProvider } from 'context/ModalContext';
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -46,7 +47,9 @@ describe('UserRoleTab component when the role does not exist', () => {
     });
     render(
       <Provider store={store}>
+        <ModalProvider>
         <UserRoleTab match={{ params: { userRole: 'Test' } }} />
+        </ModalProvider>
       </Provider>,
     );
   });
@@ -57,7 +60,9 @@ describe('UserRoleTab component when the role does not exist', () => {
     });
     render(
       <Provider store={store}>
+        <ModalProvider>
         <UserRoleTab match={{ params: { userRole: 'Test' } }} />
+        </ModalProvider>
       </Provider>,
     );
     expect(screen.queryByText('Error')).toBeInTheDocument();
@@ -69,7 +74,9 @@ describe('UserRoleTab component when the role does not exist', () => {
     });
     render(
       <Provider store={store}>
+        <ModalProvider>
         <UserRoleTab match={{ params: { userRole: 'Test' } }} />
+        </ModalProvider>
       </Provider>,
     );
     expect(screen.queryByText('User Role not existent')).toBeInTheDocument();
@@ -81,7 +88,9 @@ describe('UserRoleTab component when the role does not exist', () => {
     });
     render(
       <Provider store={store}>
+        <ModalProvider>
         <UserRoleTab match={{ params: { userRole: 'Test' } }} />
+        </ModalProvider>
       </Provider>,
     );
     const linkElement = screen.getByText('Back to permissions management');
@@ -115,7 +124,9 @@ describe('UserRoleTab component when the role does exist', () => {
     render(
       <Router history={history}>
         <Provider store={testStore}>
+          <ModalProvider>
           <UserRoleTab match={{ params: { userRole: 'manager' } }} />
+          </ModalProvider>
         </Provider>
       </Router>,
     );

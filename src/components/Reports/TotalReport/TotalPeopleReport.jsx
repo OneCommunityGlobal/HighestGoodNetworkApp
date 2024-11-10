@@ -27,7 +27,7 @@ function TotalPeopleReport(props) {
 
   const loadTimeEntriesForPeriod = useCallback(async (controller) => {
     try {
-      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT;
       const res = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal });
       const timeEntries = res.data.map(entry => ({
         userId: entry.personId,
@@ -131,7 +131,8 @@ function TotalPeopleReport(props) {
         sumData[0].months = 12 - startMonth;
         sumData[sumData.length - 1].months = endMonth + 1;
       }
-      return sumData;
+      const filteredData = sumData.filter(data => data.value > 0);
+      return filteredData;
     }
     return groupedDate.map(range => ({
       label: range.timeRange,
@@ -181,18 +182,18 @@ function TotalPeopleReport(props) {
 
   const totalPeopleTable = totalPeople => (
     <table className="table table-bordered table-responsive-sm">
-      <thead>
+      <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{pointerEvents: 'none' }}>
         <tr>
           <th scope="col" id="projects__order">#</th>
           <th scope="col">Person Name</th>
           <th scope="col">Total Logged Time (Hrs)</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
         {totalPeople
           .sort((a, b) => a.firstName.localeCompare(b.firstName))
           .map((person, index) => (
-            <tr className="teams__tr" id={`tr_${person.userId}`} key={person.userId}>
+            <tr className={darkMode ? 'teams__tr hover-effect-reports-page-dark-mode text-light' : 'teams__tr'} id={`tr_${person.userId}`} key={person.userId}>
               <th className="teams__order--input" scope="row">
                 <div>{index + 1}</div>
               </th>
@@ -258,7 +259,22 @@ function TotalPeopleReport(props) {
   return (
     <div>
       {!totalPeopleReportDataReady ? (
-        <Loading align="center" darkMode={darkMode} />
+        <div style={{ textAlign: 'center' }}>
+        <Loading align="center" darkMode={darkMode}/>
+        <div
+          style={{
+            width: '50%',
+            height: '2px',
+            backgroundColor: 'gray',
+            margin: '10px auto',
+          }}
+        />
+        <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'gray' }}>
+          🚀 Data is on a secret mission! 📊 Report is being generated. ✨
+          <br />
+          Please hang tight while we work our magic! 🧙‍♂️🔮
+        </div>
+      </div>
       ) : (
         <div>
           <div>{totalPeopleInfo(allPeople)}</div>

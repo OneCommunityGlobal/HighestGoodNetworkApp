@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { Button } from 'reactstrap';
+import { toast } from 'react-toastify';
 import { PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActivationDatePopup from './ActivationDatePopup';
 import { updateUserStatus } from '../../actions/userManagement';
-import { Button } from 'reactstrap';
-import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../styles';
 
 /**
  * @param {*} props
@@ -14,8 +14,8 @@ import { boxStyle, boxStyleDark } from 'styles';
  * @param {*} props.userProfile
  * @returns
  */
-const PauseAndResumeButton = props => {
-  const {darkMode} = props;
+function PauseAndResumeButton(props) {
+  const { darkMode } = props;
   const [activationDateOpen, setActivationDateOpen] = useState(false);
   const [isActive, setIsActive] = useState(true);
 
@@ -57,21 +57,20 @@ const PauseAndResumeButton = props => {
       setActivationDateOpen(true);
     }
   };
-
   return (
-    <React.Fragment>
+    <>
       <ActivationDatePopup
         open={activationDateOpen}
         onClose={activationDatePopupClose}
         onPause={pauseUser}
       />
       <Button
-        outline
-        color="primary"
-        className={`btn btn-outline-${isActive ? 'warning' : 'success'} ${
+        outline={!darkMode}
+        color={isActive ? 'warning' : 'success'}
+        className={`btn ${darkMode ? '' : `btn-outline-${isActive ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
-        onClick={e => {
+        onClick={() => {
           onPauseResumeClick(props.userProfile, isActive ? UserStatus.InActive : UserStatus.Active);
         }}
         style={darkMode ? boxStyleDark : boxStyle}
@@ -79,7 +78,7 @@ const PauseAndResumeButton = props => {
       >
         {isActive ? PAUSE : RESUME}
       </Button>
-    </React.Fragment>
+    </>
   );
-};
+}
 export default PauseAndResumeButton;
