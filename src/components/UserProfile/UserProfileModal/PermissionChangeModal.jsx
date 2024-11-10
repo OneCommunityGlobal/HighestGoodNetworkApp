@@ -2,7 +2,8 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 // import whatever file I need to pull the information of a given role's permissions
 import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
-import { permissionLabels } from '../../PermissionsManagement/PermissionsConst'
+import { updateUserProfile } from '../../../actions/userProfile';
+import { permissionLabels } from '../../PermissionsManagement/PermissionsConst';
 import './PermissionChangeModal.css';
 import '../../../App.css';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
@@ -39,7 +40,7 @@ function PermissionChangeModal({
   // create variable for new role
   // const newRole = user.role;
   const newRole = potentialRole;
-  // const currentUserPermissions =  user.permissions.frontPermissions;
+  // const currentUserPermissions = user.permissions.frontPermissions;
 
   /* useEffect(() => {
     const fetchOldRolePermissions = async () => {
@@ -147,6 +148,11 @@ function PermissionChangeModal({
       role: potentialRole,
       permissions: { ...userProfile.permissions, frontPermissions: [] },
     });
+    const updatedProfile = {
+      ...userProfile,
+      role: potentialRole,
+    };
+    dispatch(updateUserProfile(updatedProfile));
     closeModal();
   };
   
@@ -186,7 +192,7 @@ function PermissionChangeModal({
                 onChange={() => togglePermission(permission, 'added')}
                 className="custom-checkbox" 
               />
-              <label className="permission-text" htmlFor={permission}>{formatPermission(permission)}</label> (Added)
+              <label className={darkMode ? "permission-text-dark-mode permission-text" : "permission-text"} htmlFor={permission}>{formatPermission(permission)}</label> (Added)
             </li>
           ))}
           {newRolePermissionsToRemove.map(permission => (
@@ -200,7 +206,7 @@ function PermissionChangeModal({
                 onChange={() => togglePermission(permission, 'removed')}
                 className="custom-checkbox"
               />
-              <label className="permission-text" htmlFor={permission}>{formatPermission(permission)}</label> (Removed)
+              <label className={darkMode ? "permission-text-dark-mode permission-text" : "permission-text"} htmlFor={permission}>{formatPermission(permission)}</label> (Removed)
             </li>
           ))}
         </ul>

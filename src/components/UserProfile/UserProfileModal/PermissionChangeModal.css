@@ -41,6 +41,9 @@
 
 .permission-text {
     margin-left: 8px;
+}
+
+.permission-text-dark-mode {
     color: white;
 }
 

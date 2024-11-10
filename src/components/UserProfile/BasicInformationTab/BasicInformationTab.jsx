@@ -568,7 +568,8 @@ const BasicInformationTab = props => {
                     ...userProfile,
                     role: e.target.value,
                     permissions: { ...userProfile.permissions, frontPermissions: [] },
-                  });  
+                  });
+                  console.log('userProfile: ', userProfile); 
                 }              
               }}
               // /* onChange={(e) => {
