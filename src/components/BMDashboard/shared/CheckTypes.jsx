@@ -8,6 +8,7 @@ function CheckTypes({ type }) {
   const dispatch = useDispatch();
   const [InvType, setInvType] = useState(type);
   const [buildingInvTypes, setbuildingInvTypes] = useState([]);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     if (buildingInventoryTypes.invTypeList[InvType] != null)
@@ -23,11 +24,32 @@ function CheckTypes({ type }) {
   }, [InvType]);
 
   return (
-    <div>
-      <Card>
+    <div
+      style={{
+        backgroundColor: darkMode ? '#1B2A41' : '#ffffff',
+        color: darkMode ? '#ffffff' : '#000000',
+        padding: '20px',
+        minHeight: '100vh',
+      }}
+    >
+      <Card
+        style={{
+          backgroundColor: darkMode ? '#1C2541' : '#ffffff',
+          margin: '20px auto',
+          width: '80%',
+          borderRadius: '15px',
+        }}
+      >
         <CardBody>
           <FormGroup row>
-            <Label for="selectType" lg={2} sm={4}>
+            <Label
+              for="selectType"
+              lg={2}
+              sm={4}
+              style={{
+                color: darkMode ? '#ffffff' : '#000000',
+              }}
+            >
               Select Type
             </Label>
             <Col lg={4} sm={8}>
@@ -53,18 +75,24 @@ function CheckTypes({ type }) {
               overflowY: 'auto',
               padding: '10px',
               borderRadius: '15px',
-              border: '1px solid #dcdcdc',
-              boxShadow: '0 2px 10px rgba(0, 0, 0, 0.05)',
+              backgroundColor: darkMode ? '#3A506B' : '#f9f9f9',
+              border: darkMode ? '1px solid #444' : '1px solid #dcdcdc',
+              boxShadow: darkMode
+                ? '0 2px 10px rgba(255, 255, 255, 0.1)'
+                : '0 2px 10px rgba(0, 0, 0, 0.05)',
             }}
           >
-            <Table size="sm" responsive hover striped>
+            <Table size="sm" responsive hover>
               <thead
                 style={{
-                  backgroundColor: '#f5f5f5',
+                  backgroundColor: darkMode ? '#1C2541' : '#ffffff',
+                  color: darkMode ? '#ffffff' : '#000000',
                   fontWeight: 'bold',
                   position: 'sticky',
                   top: 0,
                   zIndex: 1,
+                  borderTop: '1px solid #444',
+                  borderBottom: '1px solid #444',
                 }}
               >
                 <tr>
@@ -85,20 +113,26 @@ function CheckTypes({ type }) {
                 ))}
               </tbody>
             </Table>
+            <style jsx>{`
+              tbody tr:nth-child(odd) {
+                background-color: ${darkMode ? '#1C2541' : '#ffffff'};
+                color: ${darkMode ? '#ffffff' : '#000000'};
+              }
+              tbody tr:nth-child(even) {
+                background-color: ${darkMode ? '#3A506B' : '#f9f9f9'};
+                color: ${darkMode ? '#ffffff' : '#000000'};
+              }
+              tbody tr:hover {
+                background-color: ${darkMode ? '#23395d !important' : '#e9ecef !important'};
+                color: ${darkMode ? '#ffffff !important' : '#000000 !important'};
+              }
+              thead tr:hover {
+                background-color: ${darkMode ? '#1C2541' : '#ffffff'};
+              }
+            `}</style>
           </div>
         </CardBody>
       </Card>
-      <style jsx>{`
-        tbody tr:nth-child(even) {
-          background-color: #f9f9f9;
-        }
-        tbody tr:nth-child(odd) {
-          background-color: #ffffff;
-        }
-        tr:hover {
-          background-color: #e9ecef;
-        }
-      `}</style>
     </div>
   );
 }
