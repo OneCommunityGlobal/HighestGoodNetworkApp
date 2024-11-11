@@ -89,16 +89,40 @@ class UserManagement extends React.PureComponent {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    let search_state = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || (prevState.lastNameSearchText !== this.state.lastNameSearchText) || (prevState.roleSearchText !== this.state.roleSearchText) || (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || (prevState.emailSearchText !== this.state.emailSearchText);
-    let page_size_value=(prevState.pageSize!==this.state.pageSize);
-     if ((prevState.selectedPage !== this.state.selectedPage) || (prevState.wildCardSearchText !== this.state.wildCardSearchText) || search_state || page_size_value) {
+    
+    if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
+      const darkMode = this.props.state.theme.darkMode;
+      let { userProfiles, fetching } = this.props.state.allUserProfiles;
+      let { roles: rolesPermissions } = this.props.state.role;
+      let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      
+      
+      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
+    }
+  
+    
+    const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || 
+                               (prevState.lastNameSearchText !== this.state.lastNameSearchText) || 
+                               (prevState.roleSearchText !== this.state.roleSearchText) || 
+                               (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || 
+                               (prevState.emailSearchText !== this.state.emailSearchText);
+  
+    const pageSizeChanged = prevState.pageSize !== this.state.pageSize;
+    
+    if ((prevState.selectedPage !== this.state.selectedPage) || 
+        (prevState.wildCardSearchText !== this.state.wildCardSearchText) || 
+        searchStateChanged || pageSizeChanged) {
+  
       let darkMode = this.props.state.theme.darkMode;
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
       let { roles: rolesPermissions } = this.props.state.role;
       let { requests: timeOffRequests } = this.props.state.timeOffRequests;
-      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable)
+      
+      
+      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
     }
   }
+  
 
 
   render() {
@@ -289,41 +313,46 @@ class UserManagement extends React.PureComponent {
   
   filteredUserList = userProfiles => {
     return userProfiles.filter(user => {
-      
       const firstNameSearch = this.state.firstNameSearchText || '';
       const lastNameSearch = this.state.lastNameSearchText || '';
   
-     
       const firstName = user.firstName.toLowerCase();
       const lastName = user.lastName.toLowerCase();
   
-      
-      const trimmedFirstNameSearch = firstNameSearch.trim().toLowerCase();
-      const trimmedLastNameSearch = lastNameSearch.trim().toLowerCase();
+      const trimmedFirstNameSearch = firstNameSearch.trim();
+      const trimmedLastNameSearch = lastNameSearch.trim();
+  
+      const isFirstNameExactMatch = firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
+      const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
   
      
       const firstNameMatches = trimmedFirstNameSearch
-        ? firstName === trimmedFirstNameSearch // Exact match required
+        ? (isFirstNameExactMatch
+            ? firstName === trimmedFirstNameSearch.toLowerCase() 
+            : firstName.includes(trimmedFirstNameSearch.toLowerCase())) 
         : true;
   
-     
+    
       const lastNameMatches = trimmedLastNameSearch
-        ? lastName === trimmedLastNameSearch // Exact match required
+        ? (isLastNameExactMatch
+            ? lastName === trimmedLastNameSearch.toLowerCase() 
+            : lastName.includes(trimmedLastNameSearch.toLowerCase()))
         : true;
   
-      // Combine first name and last name matching logic
-      const nameMatches = (firstNameSearch ? firstNameMatches : true) && (lastNameSearch ? lastNameMatches : true);
   
-     
+      const nameMatches = firstNameMatches && lastNameMatches;
+  
       return (
         nameMatches &&
         user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
         user.email.toLowerCase().includes(this.state.emailSearchText.toLowerCase()) &&
-        (this.state.weeklyHrsSearchText === '' || user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
-       
-        ((this.state.allSelected && true) || (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
-    
-        ((this.state.allSelected && true) || (this.state.isPaused === false || (user.reactivationDate && new Date(user.reactivationDate) > new Date())))
+        (this.state.weeklyHrsSearchText === '' ||
+          user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
+        ((this.state.allSelected && true) ||
+          (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
+        ((this.state.allSelected && true) ||
+          (this.state.isPaused === false ||
+            (user.reactivationDate && new Date(user.reactivationDate) > new Date())))
       );
     });
   };
@@ -539,7 +568,7 @@ class UserManagement extends React.PureComponent {
    */
   onFirstNameSearch = searchText => {
     this.setState({
-      firstNameSearchText: searchText.trim(),
+      firstNameSearchText: searchText,
       selectedPage: 1,
     });
   };
@@ -549,7 +578,7 @@ class UserManagement extends React.PureComponent {
    */
   onLastNameSearch = searchText => {
     this.setState({
-      lastNameSearchText: searchText.trim(),
+      lastNameSearchText: searchText,
       selectedPage: 1,
     });
   };
