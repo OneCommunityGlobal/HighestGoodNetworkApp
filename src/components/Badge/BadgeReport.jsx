@@ -28,6 +28,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import hasPermission from '../../utils/permissions';
@@ -306,23 +307,7 @@ function BadgeReport(props) {
     }
   };
 
-  // const featuredChange = (badge, index, e) => {
-  //   let newBadges = sortBadges.slice();
-  //   if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
-  //     let count = 0;
-  //     setNumFeatured(count);
-  //     newBadges[index].featured = e.target.checked;
-  //     newBadges.forEach((badge, index) => {
-  //       if (badge.featured) {
-  //         setNumFeatured(++count);
-  //       }
-  //     });
-  //   } else {
-  //     e.target.checked = false;
-  //     toast.error('Unfortunately, you may only select five badges to be featured.');
-  //   }
-  //   setSortBadges(newBadges);
-  // };
+  
 
   const featuredChange = (badge, index, e) => {
     let newBadges = [...sortBadges];
@@ -375,31 +360,49 @@ function BadgeReport(props) {
 
   const saveChanges = async () => {
     setSavingChanges(true);
-    let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
-    for (let i = 0; i < newBadgeCollection.length; i++) {
-      newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
+    try {
+      let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
+      for (let i = 0; i < newBadgeCollection.length; i++) {
+        newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
+      }
+  
+      await props.changeBadgesByUserID(props.userId, newBadgeCollection);
+      await props.getUserProfile(props.userId);
+  
+      props.setUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+      props.setOriginalUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+  
+      // Display success message
+      toast.success('Badges successfully saved.');
+  
+      props.handleSubmit();
+      // Close the modal
+      props.close();
+    } catch (error) {
+      // Handle errors and display error message
+      toast.error('Failed to save badges. Please try again.');
+    } finally {
+      setSavingChanges(false);
     }
-
-    await props.changeBadgesByUserID(props.userId, newBadgeCollection);
-    await props.getUserProfile(props.userId);
-
-    props.setUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.setOriginalUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.handleSubmit();
-    //close the modal
-    props.close();
   };
+  
 
   return (
     <div>
       <div className="desktop">
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
-            <thead style={{ zIndex: '10' }}>
+          <thead
+            style={{
+              zIndex: '10',
+              backgroundColor: darkMode ? '#1c2541' : undefined,
+              color: darkMode ? '#ffffff' : undefined,
+            }}
+          >
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
@@ -785,6 +788,7 @@ function BadgeReport(props) {
               Yes, Delete
             </Button>
           </ModalFooter>
+          <ToastContainer />
         </Modal>
       </div>
     </div>
