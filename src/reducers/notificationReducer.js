@@ -19,7 +19,8 @@ const notificationReducer = (state = initialState, action) => {
     case actionTypes.CREATE_NOTIFICATION_REQUEST:
     case actionTypes.DELETE_NOTIFICATION_REQUEST:
     case actionTypes.MARK_NOTIFICATION_AS_READ_REQUEST: 
-    case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_BEGIN: {
+    case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_BEGIN: 
+    case meetingActions.MARK_MEETING_AS_READ_REQUEST: {
       return {
         ...state,
         loading: true,
@@ -33,7 +34,9 @@ const notificationReducer = (state = initialState, action) => {
     case actionTypes.FETCH_SENT_NOTIFICATIONS_FAILURE:
     case actionTypes.CREATE_NOTIFICATION_FAILURE:
     case actionTypes.DELETE_NOTIFICATION_FAILURE:
-    case actionTypes.MARK_NOTIFICATION_AS_READ_FAILURE: {
+    case actionTypes.MARK_NOTIFICATION_AS_READ_FAILURE:
+    case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_FAILURE:
+    case meetingActions.MARK_MEETING_AS_READ_FAILURE:
       return {
         ...state,
         loading: false,
@@ -62,7 +65,7 @@ const notificationReducer = (state = initialState, action) => {
     case actionTypes.FETCH_UNREAD_USER_NOTIFICATIONS_SUCCESS: {
       return {
         ...state,
-        unreadNotifications: action.payload,
+        unreadNotifications: [...state.unreadNotifications, ...action.payload],
         loading: false,
         error: null,
       };
@@ -116,9 +119,19 @@ const notificationReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
-    }
+    
+    case meetingActions.MARK_MEETING_AS_READ_SUCCESS:
+      const { newNotifications } = state;
+      const newUnreadNotifications = newNotifications.filter((notification) => notification.eventType !== 'Meeting scheduled' || notification.meetingId !== action.payload);
+      return {
+        ...state,
+        // remove the meeting notification from unreadNotifications
+        unreadNotifications: newUnreadNotifications,
+        loading: false,
+        error: null,
+      };
 
-    // Default case
+    
     default:
       return state;
   }
