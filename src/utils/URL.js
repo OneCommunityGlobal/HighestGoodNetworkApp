@@ -181,6 +181,7 @@ export const ENDPOINTS = {
 
   MEETING_POST: () =>  `${APIEndpoint}/meetings/new`,
   MEETING_GET: (startTime, endTime) => `${APIEndpoint}/meetings?startTime=${startTime}&endTime=${endTime}`,
+  MEETING_MARK_READ: (meetingId) => `${APIEndpoint}/meetings/markRead/${meetingId}`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,

@@ -2,7 +2,10 @@ import React from 'react';
 import { Card, CardTitle, CardText, Button, CardBody, Container } from 'reactstrap';
 import parse from 'html-react-parser';
 import { useDispatch } from 'react-redux';
-import { markNotificationAsRead } from '../../actions/notificationAction';
+import {
+  markNotificationAsRead,
+  markMeetingNotificationAsRead,
+} from '../../actions/notificationAction';
 import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
 
 // Mock data
@@ -64,7 +67,11 @@ function NotificationCard({ notification }) {
 
   const onClickMarkAsRead = () => {
     setFade(true);
-    dispatch(markNotificationAsRead(_id));
+    if (notification.eventType === 'Meeting scheduled') {
+      dispatch(markMeetingNotificationAsRead(notification));
+    } else {
+      dispatch(markNotificationAsRead(_id));
+    }
   };
 
   return (

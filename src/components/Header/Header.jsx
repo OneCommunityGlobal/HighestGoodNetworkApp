@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { getUnreadMeetingNotification } from 'actions/notificationAction';
 import { Link, useLocation } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
@@ -63,6 +62,7 @@ import {
   getUnreadUserNotifications,
   markNotificationAsRead,
   resetNotificationError,
+  getUnreadMeetingNotification,
 } from '../../actions/notificationAction';
 import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
@@ -156,7 +156,8 @@ export function Header(props) {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
-  const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
+  // const unreadNotifications = props.unreadNotifications; // List of unread notifications
+  const { unreadNotifications } = props;
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -204,6 +205,7 @@ export function Header(props) {
     // Fetch unread notification
     if (isAuthenticated && userId) {
       dispatch(getUnreadUserNotifications(userId));
+      dispatch(getUnreadMeetingNotification(userId));
     }
   }, []);
 
@@ -214,11 +216,7 @@ export function Header(props) {
     }
   }, [props.notification?.error]);
 
-  useEffect(() => {
-    props.getUnreadMeetingNotification();
-    console.log('******', unreadNotifications);
-    console.log('******', props.notification.unreadNotifications);
-  }, []);
+  console.log('CHECK VALUES', props.unreadNotifications);
 
   const roles = props.role?.roles;
 
@@ -561,6 +559,7 @@ const mapStateToProps = state => ({
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
   notification: state.notification,
+  unreadNotifications: state.notification.unreadNotifications,
   darkMode: state.theme.darkMode,
 });
 
@@ -569,5 +568,5 @@ export default connect(mapStateToProps, {
   getAllRoles,
   hasPermission,
   getWeeklySummaries,
-  getUnreadMeetingNotification,
+  // getUnreadMeetingNotification,
 })(Header);
