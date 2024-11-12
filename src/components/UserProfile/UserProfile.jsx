@@ -950,7 +950,7 @@ function UserProfile(props) {
                 :null}
                 </div>
 
-                {userProfile!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>}
+                {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>}
                 <ConfirmRemoveModal
                   isOpen={isRemoveModalOpen}
                   toggleModal={toggleRemoveModal}
