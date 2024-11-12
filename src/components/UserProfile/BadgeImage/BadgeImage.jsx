@@ -8,7 +8,7 @@ const BadgeImage = props => {
   const toggle = () => setOpen(isOpen => !isOpen);
 
   const updateBadgeValue = (countValue, personalBestMaxHrs) => {
-    if(props.badgeData.type == 'Personal Max'){ 
+    if(props.badgeData?.type == 'Personal Max'){ 
       // show the personal best hours or mannually updated hours
       if (countValue > personalBestMaxHrs) {
         setBadgeValue(countValue);
@@ -38,7 +38,7 @@ const BadgeImage = props => {
             alt=""
           />
 
-          {props.badgeData.type == 'Personal Max' ? (
+          {props.badgeData?.type == 'Personal Max' ? (
             <span data-testid="badge_featured_count_personalmax" className={'badge_featured_count_personalmax'}>
               {`${Math.floor(badgeValue)} ${Math.floor(badgeValue) <= 1 ? ' hr' : ' hrs'}`}
             </span>

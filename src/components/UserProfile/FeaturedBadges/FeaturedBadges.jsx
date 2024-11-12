@@ -7,12 +7,12 @@ const FeaturedBadges = props => {
     let filteredList = allBadges || [];
 
     filteredList = filteredList.sort((a, b) => {
-      if (a.featured > b.featured) return -1;
-      if (a.featured < b.featured) return 1;
-      if (a.badge.ranking > b.badge.ranking) return 1;
-      if (a.badge.ranking < b.badge.ranking) return -1;
-      if (a.badge.badgeName > b.badge.badgeName) return 1;
-      if (a.badge.badgeName < b.badge.badgeName) return -1;
+      if (a?.featured > b?.featured) return -1;
+      if (a?.featured < b?.featured) return 1;
+      if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+      if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+      if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+      if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
       return 0;
     });
 
@@ -25,7 +25,7 @@ const FeaturedBadges = props => {
   return (
     <div data-testid="badge_featured_container" className="badge_featured_container">
       {filteredBadges.map((value, index) => (
-        <BadgeImage personalBestMaxHrs={props.personalBestMaxHrs} count={value.count} badgeData={value.badge} index={index} key={index} />
+        <BadgeImage personalBestMaxHrs={props.personalBestMaxHrs} count={value?.count} badgeData={value?.badge} index={index} key={index} />
       ))}
     </div>
   );
