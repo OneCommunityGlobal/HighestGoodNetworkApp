@@ -12,7 +12,6 @@ src/routes.js
 src/setupTests.js
 src/store.js
 src/styles.js
-src/utils/**
 src/__tests__/**
 
 
