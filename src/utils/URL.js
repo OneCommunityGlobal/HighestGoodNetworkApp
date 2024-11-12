@@ -168,6 +168,11 @@ export const ENDPOINTS = {
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
 
+  FAQS: `${APIEndpoint}/faqs`,
+  FAQ_BY_ID: faqId => `${APIEndpoint}/faqs/${faqId}`,
+  SEARCH_FAQS: searchQuery => `${APIEndpoint}/faqs/search?q=${searchQuery}`,
+  LOG_UNANSWERED_QUESTION: `${APIEndpoint}/faqs/log-unanswered`,
+
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
   BM_MATERIAL_TYPES: `${APIEndpoint}/bm/invtypes/materials`,
