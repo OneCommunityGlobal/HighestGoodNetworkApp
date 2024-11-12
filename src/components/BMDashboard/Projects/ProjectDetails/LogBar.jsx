@@ -1,6 +1,6 @@
 import { v4 as uuidv4 } from 'uuid';
 import { Button } from 'reactstrap';
-import { Link, NavLink } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 // button styles for each section
 const buttonStyles = {
   dailyLogging: 'green',
@@ -56,7 +56,7 @@ function LogBar(props) {
                     </Button>
                   </Link>
                 ) : (
-                  <Link to={'/bmdashboard/issues/add'}>
+                  <Link to="/bmdashboard/issues/add">
                     <Button type="button" className="button button--maroon">
                       Log Issue
                     </Button>
