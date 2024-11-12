@@ -1017,11 +1017,11 @@ function UserProfile(props) {
                  fontFamily: 'Arial, sans-serif',
                }}
                className='mr-2'
-               title="Click here to redirect to Reports Page"
+               title="Click here to visit the People Report for this individual"
                onClick={handleReportsPageRouting}
              >
                R
-               <i title='Click here to redirect to Reports Page'></i>
+               <i title='Click here to visit the People Report for this individual'></i>
              </span>
               )}
               <Button
