@@ -1,4 +1,4 @@
-import React from 'react';
+// import React from 'react';
 import { render } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import userTableDataPermissions from '../../../utils/userTableDataPermissions';
@@ -85,7 +85,7 @@ describe('UserTableHeader', () => {
       <Provider store={store}>
       <table>
         <thead>
-          <UserTableHeader authRole={notPermittedAuthRole} roleSearchText={''} />
+          <UserTableHeader authRole={notPermittedAuthRole} roleSearchText="" />
         </thead>
       </table>,
       </Provider>

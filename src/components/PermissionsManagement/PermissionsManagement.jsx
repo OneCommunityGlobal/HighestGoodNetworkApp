@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useContext } from 'react';
 import axios from 'axios';
 
 import { Button, Modal, ModalBody, ModalHeader } from 'reactstrap';
@@ -14,6 +14,7 @@ import ReactTooltip from 'react-tooltip'; // Importing react-tooltip for tooltip
 import '../Header/DarkMode.css';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
+import { ModalContext } from 'context/ModalContext';
 import UserPermissionsPopUp from './UserPermissionsPopUp';
 import { getAllRoles } from '../../actions/role';
 import { addNewRole } from '../../actions/role';
@@ -25,6 +26,8 @@ import PermissionChangeLogTable from './PermissionChangeLogTable';
 function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode }) {
   const [isNewRolePopUpOpen, setIsNewRolePopUpOpen] = useState(false);
   const [isUserPermissionsOpen, setIsUserPermissionsOpen] = useState(false);
+  const [reminderModal, setReminderModal] = useState(false);
+  const { modalStatus, reminderUser } = useContext(ModalContext);
 
   const canPostRole = hasPermission('postRole');
   const canPutRole = hasPermission('putRole');
@@ -47,6 +50,14 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
   const dispatch = useDispatch();
 
   useEffect(() => {
+    if (reminderUser !== null) {
+      // console.log(reminderUser);
+    }
+  }, [reminderUser]);
+
+  useEffect(() => {
+    getAllRoles();
+
     getInfoCollections();
     getUserRole(auth?.user.userid);
 
@@ -64,7 +75,11 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
   }, []);
 
   const togglePopUpUserPermissions = () => {
-    setIsUserPermissionsOpen(previousState => !previousState);
+    if (modalStatus === false) {
+      setIsUserPermissionsOpen(previousState => !previousState);
+    } else {
+      setReminderModal(!reminderModal);
+    }
   };
   const role = userProfile?.role;
   // eslint-disable-next-line no-shadow
@@ -210,15 +225,18 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
             <ModalHeader
               toggle={togglePopUpUserPermissions}
               cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
-              className={darkMode ? 'bg-space-cadet' : ''}
+              className={darkMode ? 'bg-oxford-blue text-light' : ''}
             >
               Manage User Permissions
             </ModalHeader>
-            <ModalBody
-              id="modal-body_new-role--padding"
-              className={darkMode ? 'bg-yinmn-blue' : ''}
-            >
-              <UserPermissionsPopUp toggle={togglePopUpUserPermissions} />
+            <ModalBody id="modal-body_new-role--padding">
+              <UserPermissionsPopUp
+                toggle={togglePopUpUserPermissions}
+                setReminderModal={setReminderModal}
+                reminderModal={reminderModal}
+                modalStatus={modalStatus}
+                darkMode={darkMode}
+              />
             </ModalBody>
           </Modal>
         </div>
