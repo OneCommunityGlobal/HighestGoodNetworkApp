@@ -124,12 +124,16 @@ const Projects = function(props) {
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
     const projectList = projects.filter(project => {
-      if (categorySelectedForSort && showStatus){
-        return project.category === categorySelectedForSort && project.isActive === showStatus;
-      } else if (categorySelectedForSort) {
+      if (categorySelectedForSort && showStatus === 'Active'){
+        return project.category === categorySelectedForSort && project.isActive === true;
+      } else if (categorySelectedForSort && showStatus === 'Inactive'){
+        return project.category === categorySelectedForSort && project.isActive === false;
+      }else if (categorySelectedForSort) {
         return project.category === categorySelectedForSort;
-      } else if (showStatus) {
-        return project.isActive === showStatus;
+      } else if (showStatus === 'Active') {
+        return project.isActive === true;
+      } else if (showStatus === 'Inactive') {
+        return project.isActive === false;
       } else {
         return true;
       }
