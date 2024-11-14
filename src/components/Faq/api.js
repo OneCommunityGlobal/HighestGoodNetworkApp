@@ -15,3 +15,5 @@ export const editFAQ = async (id, question, answer) =>
     axios.put(ENDPOINTS.EDIT_FAQ(id), { question, answer });
 
 export const deleteFAQ = async id => axios.delete(ENDPOINTS.DELETE_FAQ(id));
+
+export const getFAQHistory = async id => axios.get(ENDPOINTS.FAQ_HISTORY(id));

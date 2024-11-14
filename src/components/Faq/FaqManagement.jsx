@@ -51,7 +51,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
 
   const handleEditFAQ = async () => {
     if (!editingFAQ || !editingFAQ._id) {
-      console.error("No FAQ selected for editing.");
+      console.error('No FAQ selected for editing.');
       return;
     }
 
@@ -88,19 +88,23 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
     setAnswer(faq.answer);
   };
 
+  const openFaqDetailInNewTab = faqId => {
+    window.open(`/faqs/${faqId}/history`, '_blank');
+  };
+
   return (
     <div>
-      <h3>{editingFAQ ? 'Edit FAQ' : 'Add FAQ'}</h3>
+      <h2>{editingFAQ ? 'Edit FAQ' : 'Add FAQ'}</h2>
       <input
         type="text"
         value={question}
-        onChange={(e) => setQuestion(e.target.value)}
+        onChange={e => setQuestion(e.target.value)}
         placeholder="Enter question"
       />
       <input
         type="text"
         value={answer}
-        onChange={(e) => setAnswer(e.target.value)}
+        onChange={e => setAnswer(e.target.value)}
         placeholder="Enter answer"
       />
       <button onClick={editingFAQ ? handleEditFAQ : handleAddFAQ}>
@@ -115,15 +119,20 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
       ) : (
         <ul>
           {Array.isArray(faqs) ? (
-            faqs.map((faq) => (
+            faqs.map(faq => (
               <li key={faq._id}>
-                <strong>{faq.question}</strong>
+                <span
+                  onClick={() => openFaqDetailInNewTab(faq._id)}
+                  style={{ color: 'blue', textDecoration: 'underline', cursor: 'pointer' }}
+                >
+                  {faq.question}
+                </span>
                 <p>{faq.answer}</p>
-                <Button color='primary' onClick={() => handleEditClick(faq)}>
-                    Edit FAQ
+                <Button color="primary" onClick={() => handleEditClick(faq)}>
+                  Edit FAQ
                 </Button>
-                <Button color='danger' onClick={() => handleDeleteFAQ(faq._id)}>
-                    Delete FAQ
+                <Button color="danger" onClick={() => handleDeleteFAQ(faq._id)}>
+                  Delete FAQ
                 </Button>
               </li>
             ))
