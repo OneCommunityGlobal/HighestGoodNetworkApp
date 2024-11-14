@@ -33,6 +33,7 @@ const NUM_TASKS_SHOW_TRUNCATE = 6;
 const TeamMemberTask = React.memo(
   ({
     user,
+    teamRoles,
     handleMarkAsDoneModal,
     handleRemoveFromTaskModal,
     handleOpenTaskNotificationModal,
@@ -86,6 +87,21 @@ const TeamMemberTask = React.memo(
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
+    const colors_objs = {
+      'Assistant Manager' :'#0000FF', // blue
+      'Manager' : '#00FF00', // green
+      'Mentor' : '#FFFF00' // yellow
+    }
+
+    function getInitials(name) {
+      const initials = name
+        .split(' ')
+        .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
+        .map(n => n[0])
+        .join('')
+        .toUpperCase();
+      return initials;
+    }
     const handleTruncateTasksButtonClick = () => {
       if (!isTruncated) {
         ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -160,7 +176,7 @@ const TeamMemberTask = React.memo(
               <tr className="remove-child-borders"> 
                 {/* green if member has met committed hours for the week, red if not */}
                 <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
                     <div className="committed-hours-circle">
                       <FontAwesomeIcon
                         style={{
@@ -183,6 +199,28 @@ const TeamMemberTask = React.memo(
                         title="Click to see user's timelog"
                       />
                     </Link>
+                    {canGetWeeklySummaries && teamRoles && ['Manager', 'Assistant Manager', 'Mentor'].map((role, roleIndex) => {
+                      return teamRoles[role]?.map((elm, i) => {
+                        const name = elm.name; // Getting initials and formatting them here
+                        const initials = getInitials(name);
+                        // Getting background color dynamically based on the role
+                        const bg = colors_objs[role];
+                        return (
+                          <a
+                            key={`res_${roleIndex}_${i}`}
+                            title={`${role} : ${name}`}
+                            className="name"
+                            href={`/userprofile/${elm.id}`}
+                            target="_blank"
+                            rel="noreferrer"
+                          >
+                            <span className="name-initial" style={{ backgroundColor: bg }}>
+                              {initials}{' '}
+                            </span>
+                          </a>
+                        );
+                      });
+                    })}
                   </div>
                 </td>
                 <td colSpan={2} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>

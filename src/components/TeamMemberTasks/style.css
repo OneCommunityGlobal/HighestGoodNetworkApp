@@ -399,6 +399,26 @@
   flex-direction: row;
 }
 
+.name {
+  margin-bottom: 2px;
+  margin-right: 2px;
+}
+
+.name-initial {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  color: black;
+  display: flex;
+  justify-content: center;
+  /* Center horizontally */
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+
+}
+
 @media (max-width: 1240px) and (min-width: 992px) {
   .header-box {
     flex-direction: column;
