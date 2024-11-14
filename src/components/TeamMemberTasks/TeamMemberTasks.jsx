@@ -825,6 +825,9 @@ const TeamMemberTasks = React.memo(props => {
                         userPermission={props?.auth?.user?.permissions?.frontPermissions?.includes(
                           'putReviewStatus',
                         )}
+                        teamRoles = {(
+                          (user.teams!==undefined && user.teams.length > 0) ? filteredTeamRoles(user.teams) : ''
+                        )}
                         key={user.personId}
                         handleOpenTaskNotificationModal={handleOpenTaskNotificationModal}
                         handleMarkAsDoneModal={handleMarkAsDoneModal}
