@@ -172,6 +172,9 @@ export const ENDPOINTS = {
   FAQ_BY_ID: faqId => `${APIEndpoint}/faqs/${faqId}`,
   SEARCH_FAQS: searchQuery => `${APIEndpoint}/faqs/search?q=${searchQuery}`,
   LOG_UNANSWERED_QUESTION: `${APIEndpoint}/faqs/log-unanswered`,
+  ADD_FAQ: `${APIEndpoint}/faqs`,
+  EDIT_FAQ: faqId => `${APIEndpoint}/faqs/${faqId}`,
+  DELETE_FAQ: faqId => `${APIEndpoint}/faqs/${faqId}`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
