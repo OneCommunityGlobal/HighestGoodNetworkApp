@@ -202,6 +202,12 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
+    if (displayUserRole !== 'Owner' && displayUserRole !== 'Admin') {
+      dashboardClose();
+      toast.error("You do not have permission to view other's dashboard.");
+      return;
+    }
+
     getWeeklySummaries(item.personId);
     dispatch(getUserProfile(item.personId)).then(user => {
       const { _id, role, firstName, lastName, profilePic, email } = user;

@@ -51,8 +51,12 @@ function Badge(props) {
     if (!totalBadges) return 'You have no badges. ';
 
     const newBadges = badgeCollection.filter(
-      value => Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF,
+      (value) =>
+        value &&
+        value.lastModified && 
+        Date.now() - new Date(value.lastModified).getTime() <= WEEK_DIFF
     );
+
 
     const roundedHours = Math.floor(personalBestMaxHrs);
     const personalMaxText = newBadges.find(badgeObj => badgeObj.badge.type === 'Personal Max')
