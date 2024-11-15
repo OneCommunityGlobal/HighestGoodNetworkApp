@@ -48,6 +48,7 @@ export const postNewProject = (projectName, projectCategory) => {
         isActive: true,
       };
       dispatch(addNewProject({ newProject, status }));
+      await dispatch(fetchAllProjects());
       return _id;
     } catch (err) {
       status = err.response.status;
