@@ -1,5 +1,7 @@
 import { Component } from 'react';
 import './Collaboration.css';
+import { toast } from 'react-toastify';
+import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
 
 class Collaboration extends Component {
@@ -10,6 +12,7 @@ class Collaboration extends Component {
       selectedCategory: '',
       currentPage: 1,
       jobAds: [],
+      totalPages: 0,
     };
   }
 
@@ -18,42 +21,45 @@ class Collaboration extends Component {
   }
 
   fetchJobAds = async () => {
-    const response = await fetch(`http://localhost:4500/api/jobs`);
-    if (!response.ok) {
-      throw new Error(`Failed to fetch jobs: ${response.statusText}`);
+    const { searchTerm, selectedCategory, currentPage } = this.state;
+    const adsPerPage = 18;
+
+    try {
+      const response = await fetch(
+        `${ApiEndpoint}/jobs?page=${currentPage}&limit=${adsPerPage}&search=${searchTerm}&category=${selectedCategory}`,
+        {
+          method: 'GET',
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch jobs: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      this.setState({
+        jobAds: data.jobs,
+        totalPages: data.pagination.totalPages, // Update total pages from the backend
+      });
+    } catch (error) {
+      toast.error('Error fetching jobs');
     }
-    const data = await response.json();
-    this.setState({
-      jobAds: data.jobs,
-    });
   };
 
   handleSearch = event => {
-    this.setState({ searchTerm: event.target.value });
+    this.setState({ searchTerm: event.target.value, currentPage: 1 }, this.fetchJobAds);
   };
 
   handleCategoryChange = event => {
-    this.setState({ selectedCategory: event.target.value });
+    this.setState({ selectedCategory: event.target.value, currentPage: 1 }, this.fetchJobAds);
   };
 
   setPage = pageNumber => {
-    this.setState({ currentPage: pageNumber });
+    this.setState({ currentPage: pageNumber }, this.fetchJobAds);
   };
 
   render() {
-    const { searchTerm, selectedCategory, currentPage, jobAds } = this.state;
-    const adsPerPage = 18;
-
-    // Filtering and pagination logic
-    const filteredAds = jobAds
-      .filter(ad => ad.title.toLowerCase().includes(searchTerm.toLowerCase()))
-      .filter(ad => (selectedCategory ? ad.category === selectedCategory : true));
-
-    const paginatedAds = filteredAds.slice(
-      (currentPage - 1) * adsPerPage,
-      currentPage * adsPerPage,
-    );
-    const totalPages = Math.ceil(filteredAds.length / adsPerPage);
+    const { searchTerm, selectedCategory, currentPage, jobAds, totalPages } = this.state;
 
     return (
       <div className="job-landing">
@@ -90,7 +96,7 @@ class Collaboration extends Component {
           </div>
 
           <div className="job-list">
-            {paginatedAds.map(ad => (
+            {jobAds.map(ad => (
               <div key={ad._id} className="job-ad">
                 <img src={ad.imageUrl} alt={`${ad.title}`} />
                 <a
