@@ -47,7 +47,12 @@ class Collaboration extends Component {
   };
 
   handleSearch = event => {
-    this.setState({ searchTerm: event.target.value, currentPage: 1 }, this.fetchJobAds);
+    this.setState({ searchTerm: event.target.value });
+  };
+
+  handleSubmit = event => {
+    event.preventDefault();
+    this.setState({ currentPage: 1 }, this.fetchJobAds);
   };
 
   handleCategoryChange = event => {
@@ -75,12 +80,19 @@ class Collaboration extends Component {
         <div className="container">
           <nav className="navbar">
             <div className="navbar-left">
-              <input
-                type="text"
-                placeholder="Search by title..."
-                value={searchTerm}
-                onChange={this.handleSearch}
-              />
+              <form className="search-form">
+                <input
+                  type="text"
+                  placeholder="Search by title..."
+                  value={searchTerm}
+                  onChange={this.handleSearch}
+                />
+                <button className="search" type="submit" onClick={this.handleSubmit}>
+                  Go
+                </button>
+              </form>
+            </div>
+            <div className="navbar-right">
               <select value={selectedCategory} onChange={this.handleCategoryChange}>
                 <option value="">All Categories</option>
                 <option value="Engineering">Engineering</option>
