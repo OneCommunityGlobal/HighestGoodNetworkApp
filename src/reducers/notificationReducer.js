@@ -4,6 +4,7 @@ import * as meetingActions from '../constants/meetings';
 const initialState = {
   notifications: [], // all notifications. This is used in the notification history for admin/owner.
   unreadNotifications: [], // unread notifications. This is to store all unread notification for a user.
+  unreadMeetingNotifications: [],
   sentNotifications: [],
   loading: false,
   error: null,
@@ -59,7 +60,7 @@ const notificationReducer = (state = initialState, action) => {
     case actionTypes.FETCH_UNREAD_USER_NOTIFICATIONS_SUCCESS:
       return {
         ...state,
-        unreadNotifications: [...state.unreadNotifications, ...action.payload],
+        unreadNotifications: action.payload,
         loading: false,
         error: null,
       };
@@ -67,7 +68,8 @@ const notificationReducer = (state = initialState, action) => {
     case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_SUCCESS:
       return {
         ...state,
-        unreadNotifications: [...state.unreadNotifications, ...action.payload],
+        // unreadNotifications: [...state.unreadNotifications, ...action.payload],
+        unreadMeetingNotifications: action.payload,
         loading: false,
         error: null,
       }
@@ -108,12 +110,12 @@ const notificationReducer = (state = initialState, action) => {
       };
     
     case meetingActions.MARK_MEETING_AS_READ_SUCCESS:
-      const { newNotifications } = state;
-      const newUnreadNotifications = newNotifications.filter((notification) => notification.eventType !== 'Meeting scheduled' || notification.meetingId !== action.payload);
+      const { unreadMeetingNotifications } = state;
+      const newUnreadMeetingNotifications = unreadMeetingNotifications.filter((notification) => !(notification.meetingId === action.payload.meetingId && notification.recipient === action.payload.recipient));
       return {
         ...state,
         // remove the meeting notification from unreadNotifications
-        unreadNotifications: newUnreadNotifications,
+        unreadMeetingNotifications: newUnreadMeetingNotifications,
         loading: false,
         error: null,
       };

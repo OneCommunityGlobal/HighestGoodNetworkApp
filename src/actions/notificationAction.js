@@ -117,14 +117,14 @@ export function resetNotificationError() {
   };
 } 
 
-export function getUnreadMeetingNotification(userId){
+export function getUnreadMeetingNotification(){
   // console.log('ENTER ACTION');
   return async dispatch => {
     dispatch({ type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_BEGIN});
     try {
       const currentTime = new Date();
       const endTime = new Date(currentTime);
-      endTime.setDate(currentTime.getDate() + 3);
+      endTime.setDate(currentTime.getDate() + 30);
       endTime.setHours(23, 59, 59, 999);
       const encodedCurrentTime = encodeURIComponent(currentTime.toISOString());
       const encodedEndTime = encodeURIComponent(endTime.toISOString());
@@ -168,12 +168,13 @@ export function markMeetingNotificationAsRead(notification){
   return async dispatch => {
     dispatch({ type: meetingActions.MARK_MEETING_AS_READ_REQUEST});
     try{
-      const url = ENDPOINTS.MEETING_MARK_READ(notification.meetingId);
+      console.log('DEBUG mark as read', notification.meetingId, notification.recipient);
+      const url = ENDPOINTS.MEETING_MARK_READ(notification.meetingId, notification.recipient);
       const response = await axios.post(url);
 
       await dispatch({
         type: meetingActions.MARK_MEETING_AS_READ_SUCCESS,
-        payload: notification.meetingId,
+        payload: notification,
       });
     } catch (error) {
       const errorPayload = constructErrorPayload(error);
