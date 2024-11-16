@@ -15,7 +15,8 @@ function PermissionChangeModal({
   closeModal,
   potentialRole,
   oldRolePermissions,
-  currentUserPermissions
+  currentUserPermissions,
+  permissionLabelPermissions
 }) {
   // Creating a modal that pops up when someone changes a user's role
   // and the user has custom permissions that differ from the permissions
@@ -37,7 +38,10 @@ function PermissionChangeModal({
       if (newRole) {
         const newRolePresets = await dispatch(getPresetsByRole(newRole));
         if (newRolePresets && newRolePresets.presets && newRolePresets.presets[2]) {
-          setNewRolePermissions(newRolePresets.presets[2].permissions);
+          // setNewRolePermissions(newRolePresets.presets[2].permissions);
+          // const validPermissions = getValidPermissions(permissionLabels);
+          const filteredPermissions = newRolePresets.presets[2].permissions.filter(permission => permissionLabelPermissions.has(permission));
+          setNewRolePermissions(filteredPermissions);
         }
       }
     };
@@ -65,30 +69,50 @@ function PermissionChangeModal({
 
   const formatPermission = permission => {
     // find the permission in the permissionLabels array, then subperms array
-    for (let label of permissionLabels) {
-      for (let subperm of label.subperms) {
+    /* for (let label of permissionLabels) {
+      for (let subperm of label.subperms) { */
         // if the key matches the permission, return the label
-        if (subperm.key === permission) {
+        /* if (subperm.key === permission) {
           return subperm.label;
         }
       }
-    }
+    } */
     // if the permission is not found in the permissionLabels array, return the permission
-    return permission;
+    /* return permission; */
+    const findPermissionLabel = (perms) => {
+      for (let perm of perms) {
+        if (perm.key === permission) {
+          return perm.label;
+        }
+        if (perm.subperms) {
+          const label = findPermissionLabel(perm.subperms);
+          if (label) {
+            return label;
+          }
+        }
+      }
+      return null;
+    };
+  
+    const label = findPermissionLabel(permissionLabels);
+    return label || permission;
   };
 
   useEffect(() => {
-    const initialCheckedAddedPermissions = {};
-    const initialCheckedRemovedPermissions = {};
-    newRolePermissionsToAdd.forEach(permission => {
-      initialCheckedRemovedPermissions[permission] = true;
-    });
-    newRolePermissionsToRemove.forEach(permission => {
-      initialCheckedAddedPermissions[permission] = true;
-    });
-    setCheckedRemovedPermissions(initialCheckedRemovedPermissions);
-    setCheckedAddedPermissions(initialCheckedAddedPermissions);
-  }, [newRolePermissionsToAdd, newRolePermissionsToRemove]);
+    if (isOpen) {
+      const initialCheckedAddedPermissions = {};
+      const initialCheckedRemovedPermissions = {};
+
+      newRolePermissionsToAdd.forEach(permission => {
+        initialCheckedRemovedPermissions[permission] = true;
+      });
+      newRolePermissionsToRemove.forEach(permission => {
+        initialCheckedAddedPermissions[permission] = true;
+      });
+      setCheckedRemovedPermissions(initialCheckedRemovedPermissions);
+      setCheckedAddedPermissions(initialCheckedAddedPermissions);
+    }
+  }, [isOpen, newRolePermissionsToAdd, newRolePermissionsToRemove]);
 
   const togglePermission = (permission, type) => {
     if (type === 'added') {
@@ -106,10 +130,28 @@ function PermissionChangeModal({
 
   const confirmModal = async () => {
     try {
-      const response = await dispatch(updateUserProfileProperty(userProfile, 'role', potentialRole));
+      const updatedPermissions = [
+        // ...currentUserPermissions.filter(permission => !checkedRemovedPermissions[permission]),
+        ...newRolePermissions.filter(permission => !checkedRemovedPermissions[permission]),
+        // ...newRolePermissionsToRemove.filter(permission => checkedAddedPermissions[permission])
+        ...Object.keys(checkedAddedPermissions).filter(permission => checkedAddedPermissions[permission])
+      ];
+      
+      const response = await dispatch(updateUserProfileProperty(userProfile, 'role', newRole));
 
-      if (response === 200) {
-        setUserProfile({ ...userProfile, role: potentialRole });
+      if (response === 200) {        
+        setUserProfile({ 
+          ...userProfile, 
+          role: newRole,
+          permissions: {
+            ...userProfile.permissions,
+            // frontPermissions: [
+              // for each added permission, add it to the user's permissions if it's checked
+              // for each removed permission, remove it from the user's permissions if it has an x mark
+            // ]
+            frontPermissions: updatedPermissions
+          }
+        });
         toast.success('User role successfully updated');
         closeModal();
       }
@@ -128,7 +170,7 @@ function PermissionChangeModal({
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           You are changing the role of a Special Person with special permissions. This person has
-          the following permissions that are different from the {potentialRole} role you are
+          the following permissions that are different from the {newRole} role you are
           changing them to. Please confirm which of these you&apos;d like to keep:
         </p>
         <ul className="list">
