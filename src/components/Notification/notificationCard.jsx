@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import {
   markNotificationAsRead,
   markMeetingNotificationAsRead,
+  getUnreadMeetingNotification,
 } from '../../actions/notificationAction';
 import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
 
@@ -70,6 +71,7 @@ function NotificationCard({ notification }) {
     } else {
       dispatch(markNotificationAsRead(_id));
     }
+    dispatch(getUnreadMeetingNotification());
   };
 
   return (

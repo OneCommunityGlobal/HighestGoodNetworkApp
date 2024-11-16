@@ -27,6 +27,9 @@ import { fetchTaskEditSuggestions } from '~/components/TaskEditSuggestions/thunk
 import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
+import { getWeeklySummaries } from 'actions/weeklySummaries';
+import { Link, useLocation } from 'react-router-dom';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
@@ -162,7 +165,9 @@ export function Header(props) {
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
   // const unreadNotifications = props.unreadNotifications; // List of unread notifications
-  const { unreadNotifications } = props;
+  const { unreadNotifications, unreadMeetingNotifications } = props;
+  const userUnreadMeetings = unreadMeetingNotifications.filter(meeting => meeting.recipient === userId);
+  const allUnreadNotifications = [...unreadNotifications, ...userUnreadMeetings];
   const dispatch = useDispatch();
   const history = useHistory();
 
@@ -213,7 +218,7 @@ export function Header(props) {
     // Fetch unread notification
     if (isAuthenticated && userId) {
       dispatch(getUnreadUserNotifications(userId));
-      dispatch(getUnreadMeetingNotification(userId));
+      dispatch(getUnreadMeetingNotification());
     }
   }, []);
 
@@ -230,7 +235,9 @@ export function Header(props) {
     console.log('******', props.notification.unreadNotifications);
   }, []);
 
-  console.log('CHECK VALUES', props.unreadNotifications);
+  console.log('CHECK VALUES', allUnreadNotifications);
+
+  const roles = props.role?.roles;
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
@@ -678,8 +685,11 @@ export function Header(props) {
         </div>
       )}
       {/* Only render one unread message at a time */}
-      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
-        <NotificationCard notification={unreadNotifications[0]} />
+      {props.auth.isAuthenticated && allUnreadNotifications?.length > 0 ? (
+        <NotificationCard 
+          key={allUnreadNotifications[0].meetingId}
+          notification={allUnreadNotifications[0]} 
+        />
       ) : null}
       <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
     </div>
@@ -693,6 +703,7 @@ const mapStateToProps = state => ({
   role: state.role,
   notification: state.notification,
   unreadNotifications: state.notification.unreadNotifications,
+  unreadMeetingNotifications: state.notification.unreadMeetingNotifications,
   darkMode: state.theme.darkMode,
 });
 
@@ -702,5 +713,4 @@ export default connect(mapStateToProps, {
   hasPermission,
   getWeeklySummaries,
   getUserProfile,
-  // getUnreadMeetingNotification,
 })(Header);

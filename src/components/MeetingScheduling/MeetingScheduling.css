@@ -1,0 +1,17 @@
+h3 {
+  color: #4285f4;
+}
+
+.meeting-scheduling-container{
+  padding: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.main{
+  flex: 1;
+  /* Editor takes up remaining space */
+  margin-right: 20px;
+  /* Add some spacing between editor and email inputs */
+}
