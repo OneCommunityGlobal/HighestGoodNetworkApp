@@ -421,11 +421,12 @@ const BasicInformationTab = props => {
 
   useEffect(() => {
     const fetchOldRolePermissions = async () => {
+      console.log('currentUserPermissions: ', currentUserPermissions);
       console.log('Fetching old role permissions');
       if (oldRole) {
         try {
           const oldRolePresets = await dispatch(getPresetsByRole(oldRole));
-          console.log('oldRolePresets:', oldRolePresets);
+          // console.log('oldRolePresets:', oldRolePresets);
           if (oldRolePresets && oldRolePresets.presets && oldRolePresets.presets[2]) {
             const filteredOldRolePermissions = oldRolePresets.presets[2].permissions.filter(permission => permissionLabelPermissions.has(permission));
             setOldRolePermissions(filteredOldRolePermissions);
@@ -446,7 +447,6 @@ const BasicInformationTab = props => {
     const chosenRole = e.target.value;
 
     console.log('oldRolePermissions: ', oldRolePermissions);
-    console.log('currentUserPermissions: ', currentUserPermissions);
     const permissionsDifferent =
       // oldRolePermissions.some((permission) => !userProfile.permissions.frontPermissions.includes(permission)) ||
       // userProfile.permissions.frontPermissions.some((permission) => !oldRolePermissions.includes(permission));
