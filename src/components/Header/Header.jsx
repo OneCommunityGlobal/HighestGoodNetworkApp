@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
@@ -63,6 +63,7 @@ import {
   markNotificationAsRead,
   resetNotificationError,
   getUnreadMeetingNotification,
+  markMeetingNotificationAsRead,
 } from '../../actions/notificationAction';
 import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
@@ -156,12 +157,16 @@ export function Header(props) {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
+  const [meetingModalOpen, setMeetingModalOpen] = useState(false);
+  const [meetingModalMessage, setMeetingModalMessage] = useState('');
+
   // const unreadNotifications = props.unreadNotifications; // List of unread notifications
-  const { unreadNotifications, unreadMeetingNotifications } = props;
+  const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
   const userUnreadMeetings = unreadMeetingNotifications.filter(meeting => meeting.recipient === userId);
   const allUnreadNotifications = [...unreadNotifications, ...userUnreadMeetings];
   const dispatch = useDispatch();
   const history = useHistory();
+  const MeetingNotificationAudioRef = useRef(null);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -218,7 +223,7 @@ export function Header(props) {
     }
   }, [props.notification?.error]);
 
-  console.log('CHECK VALUES', allUnreadNotifications);
+  // console.log('CHECK VALUES', allUnreadNotifications);
 
   const roles = props.role?.roles;
 
@@ -311,6 +316,42 @@ export function Header(props) {
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
   if (location.pathname === '/login') return null;
+
+  useEffect(() => {
+    if (userUnreadMeetings.length > 0) {
+      const currMeeting = userUnreadMeetings[0];
+      const organizerProfile = allUserProfiles.filter(user => user._id === currMeeting.sender)[0];
+      console.log(currMeeting, organizerProfile);
+      if (!meetingModalOpen) {
+        setMeetingModalOpen(true);
+        setMeetingModalMessage(`Reminder: You have an upcoming meeting! Please check the details and be prepared.<br>
+          Time: ${new Date(currMeeting.dateTime).toLocaleString()},<br>
+          Organizer: ${organizerProfile.firstName} ${organizerProfile.lastName}<br>
+          ${currMeeting.notes ? `Notes: ${currMeeting.notes}<br>` : ''}
+        `);
+      }
+      MeetingNotificationAudioRef.current?.play();
+    } else {
+      if (meetingModalOpen) {
+        setMeetingModalOpen(false);
+        setMeetingModalMessage('');
+      }
+      if (MeetingNotificationAudioRef.current) {
+        MeetingNotificationAudioRef.current.pause();
+        MeetingNotificationAudioRef.current.currentTime = 0;
+      }
+    }
+  }, [userUnreadMeetings]);
+
+  const handleMeetingRead = () => {
+    console.log('handleMeetingRead');
+    setMeetingModalOpen(!meetingModalOpen);
+    if (userUnreadMeetings?.length > 0){
+      console.log('userUnreadMeetings[0]', userUnreadMeetings[0]);
+      dispatch(markMeetingNotificationAsRead(userUnreadMeetings[0]));
+      console.log('after dispatch');
+    }
+  };
 
   return (
     <div className="header-wrapper">
@@ -548,12 +589,33 @@ export function Header(props) {
         </Card>
       )}
       {/* Only render one unread message at a time */}
-      {props.auth.isAuthenticated && allUnreadNotifications?.length > 0 ? (
+      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard 
-          key={allUnreadNotifications[0].meetingId}
-          notification={allUnreadNotifications[0]} 
+          key={unreadNotifications[0]._id || 'default-key'}
+          notification={unreadNotifications[0]} 
         />
       ) : null}
+      <audio
+        ref={MeetingNotificationAudioRef}
+        key="meetingNotificationAudio"
+        // loop
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
+      />
+      <Modal isOpen={meetingModalOpen} toggle={handleMeetingRead}>
+        <ModalHeader  toggle={handleMeetingRead}>Meeting Notification</ModalHeader>
+        <ModalBody>
+          <div
+            style={{ lineHeight: '2' }}
+            dangerouslySetInnerHTML={{ __html: meetingModalMessage }} 
+          />
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={handleMeetingRead}>
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
@@ -566,6 +628,7 @@ const mapStateToProps = state => ({
   notification: state.notification,
   unreadNotifications: state.notification.unreadNotifications,
   unreadMeetingNotifications: state.notification.unreadMeetingNotifications,
+  allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,
 });
 

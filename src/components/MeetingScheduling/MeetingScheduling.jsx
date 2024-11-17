@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, connect } from 'react-redux';
-import { Form, FormGroup, Label, Input, Row, Col, Button } from 'reactstrap';
+import { Form, FormGroup, Label, Input, Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 import { toast } from 'react-toastify';
@@ -54,10 +54,13 @@ function MeetingScheduling(props) {
     notes: '',
     organizer: authUser.userid,
   };
- 
+
   const [formValues, setFormValues] = useState(initialFormValues);
   const [errors, setErrors] = useState({});
   const [submitting, setSubmitting] = useState(false);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [modalMessage, setModalMessage] = useState('');
+  const [modalTitle, setModalTitle] = useState('');
 
   useEffect(() => {
     props.getAllUserProfile();
@@ -88,22 +91,42 @@ function MeetingScheduling(props) {
   const handleSubmit = async event => {
     event.preventDefault();
     setSubmitting(true);
+    setErrors({});
 
     const meeting = {
       ...formValues,
       participantList: formValues.participantList.map(participant => participant.userProfileId),
     };
 
+    const participantMessage = formValues.participantList
+      .map(participant => participant.name)
+      .join(', ');
+
     try {
       // currently only consider the create situation
       await dispatch(postMeeting(meeting));
 
+      setModalTitle('Success!');
+      setModalMessage(`
+        You have scheduled a meeting with the following details:<br> 
+        Participants: ${participantMessage}<br>
+        Time: ${meeting.startHour}:${meeting.startMinute} ${meeting.startTimePeriod} on ${meeting.dateOfMeeting}<br>
+        Duration: ${meeting.duration} minutes<br>
+        ${meeting.location ? `Location: ${meeting.location}<br>` : ''}
+        ${meeting.notes ? `Notes: ${meeting.notes}<br>` : ''}
+      `);
       setFormValues(initialFormValues);
-      setSubmitting(false);
     } catch (err) {
-      toast.error(`
+      setModalTitle('Error');
+      setModalMessage(`
         An error occurred while attempting to submit your meeting schedules. Error: ${err}`);
+      const errorMessage = err?.message || 'An unknown error occurred';
+      const errorObject = err instanceof Error ? err : new Error(errorMessage);
+      setErrors({ general: errorMessage });
+    } finally {
       setSubmitting(false);
+      setModalOpen(true);
+      // console.log("useState errors", errors);
     }
   };
 
@@ -121,6 +144,10 @@ function MeetingScheduling(props) {
   const removeParticipant = userProfileId => {
     const newParticipantList = formValues.participantList.filter(user => user.userProfileId !== userProfileId);
     setFormValues(prevValues => ({ ...prevValues, participantList: newParticipantList }));
+  };
+
+  const toggleModal = () => {
+    setModalOpen(!modalOpen);
   };
 
   return (
@@ -226,6 +253,7 @@ function MeetingScheduling(props) {
 
             <FormGroup>
               <Participants
+                authUserId={authUser.userid}
                 userProfiles={allUserProfiles.filter(user => user.isActive)}
                 participantList={formValues.participantList}
                 addParticipant={addParticipant}
@@ -294,21 +322,34 @@ function MeetingScheduling(props) {
               )}
             </FormGroup>
           </Form>
-          <Button
-            onClick={clearForm}
-            color="primary"
-            // style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Clear Form
-          </Button>
-          <Button
-            color="primary"
-            onClick={handleSubmit}
-            // style={darkMode ? boxStyleDark : boxStyle}
-            disabled={submitting}
-          >
-            {submitting ? 'Saving...' : 'Save'}
-          </Button>
+          <div style={{ display: 'flex', gap: '10px' }}>
+            <Button
+              onClick={clearForm}
+              color="primary"
+              // style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Clear Form
+            </Button>
+            <Button
+              color="primary"
+              onClick={handleSubmit}
+              // style={darkMode ? boxStyleDark : boxStyle}
+              disabled={submitting}
+            >
+              {submitting ? 'Saving...' : 'Save'}
+            </Button>
+          </div>
+          <Modal isOpen={modalOpen} toggle={toggleModal}>
+            <ModalHeader toggle={toggleModal}>{modalTitle}</ModalHeader>
+            <ModalBody>
+              <div style={{ lineHeight: '2' }} dangerouslySetInnerHTML={{ __html: modalMessage }}/>
+            </ModalBody>
+            <ModalFooter>
+              <Button color="primary" onClick={toggleModal}>
+                Close
+              </Button>
+            </ModalFooter>
+          </Modal>
         </div>
       </div>
     </div>

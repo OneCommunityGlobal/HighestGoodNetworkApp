@@ -3,8 +3,8 @@ import './Participants.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
-function Participants({ userProfiles, participantList, addParticipant, removeParticipant }) {
-  console.log("participantList", participantList)
+function Participants({ userProfiles, participantList, addParticipant, removeParticipant, authUserId }) {
+  // console.log("participantList", participantList)
 
   const [searchWord, setSearchWord] = useState('');
   const [filteredData, setFilteredData] = useState([]);
@@ -13,6 +13,7 @@ function Participants({ userProfiles, participantList, addParticipant, removePar
   const sortByStartingWith = keyword => {
     const newFilterList = userProfiles.filter(
       userProfile =>
+        userProfile._id !== authUserId &&
         !participantList.some(
           participant => participant.name === `${userProfile.firstName} ${userProfile.lastName}`,
         ) && `${userProfile.firstName} ${userProfile.lastName}`.toLowerCase().includes(keyword.toLowerCase()),

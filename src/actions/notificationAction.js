@@ -134,21 +134,24 @@ export function getUnreadMeetingNotification(){
       const url = ENDPOINTS.MEETING_GET(encodedCurrentTime, encodedEndTime);
       // console.log('url', url);
       const response = await axios.get(url);
-      console.log('axios get', response.data);
+      // console.log('axios get', response.data);
 
       // Convert fetched meetings to notifications
       const meetingNotifications = response.data
         .filter(meeting => meeting.isRead === false)
         .map(meeting => ({
           meetingId: meeting._id,
+          eventType: 'Meeting scheduled',
           message: `Upcoming meeting: ${new Date(meeting.dateTime).toLocaleString()}`,
           sender: meeting.organizer, 
           recipient: meeting.recipient,
           isSystemGenerated: false,
           isRead: meeting.isRead,
-          eventType: 'Meeting scheduled',
+          dateTime: meeting.dateTime,
+          location: meeting.location,
+          notes: meeting.notes,
         }));
-      console.log('meeting notification list', meetingNotifications);
+      // console.log('meeting notification list', meetingNotifications);
       await dispatch({
         type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_SUCCESS,
         payload: meetingNotifications,
@@ -166,9 +169,10 @@ export function getUnreadMeetingNotification(){
 
 export function markMeetingNotificationAsRead(notification){
   return async dispatch => {
-    dispatch({ type: meetingActions.MARK_MEETING_AS_READ_REQUEST});
+    // console.log('Enter markMeetingNotificationAsRead Action');
+    await dispatch({ type: meetingActions.MARK_MEETING_AS_READ_REQUEST});
     try{
-      console.log('DEBUG mark as read', notification.meetingId, notification.recipient);
+      // console.log('DEBUG mark as read', notification.meetingId, notification.recipient);
       const url = ENDPOINTS.MEETING_MARK_READ(notification.meetingId, notification.recipient);
       const response = await axios.post(url);
 
