@@ -16,11 +16,12 @@ import {
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
 // import { toast } from 'react-toastify';
-
+import { boxStyle, boxStyleDark } from 'styles';
 import { getAllUserProfile } from '../../actions/userManagement';
 import { postMeeting } from '../../actions/meetings';
 import Participants from './components/Participants';
 import './MeetingScheduling.css';
+
 
 const customImageUploadHandler = () =>
   new Promise((_, reject) => {
@@ -175,7 +176,9 @@ function MeetingScheduling(props) {
           <h3>Schedule a New Meeting</h3>
           <Form>
             <FormGroup>
-              <Label for="dateOfMeeting">Date</Label>
+              <Label for="dateOfMeeting" className={darkMode ? 'text-light' : ''}>
+                Date
+              </Label>
               <Input
                 type="date"
                 name="dateOfMeeting"
@@ -193,7 +196,9 @@ function MeetingScheduling(props) {
             </FormGroup>
 
             <FormGroup>
-              <Label for="startTimeOfMeeting">Start Time (HH:MM AM/PM)</Label>
+              <Label for="startTimeOfMeeting" className={darkMode ? 'text-light' : ''}>
+                Start Time (HH:MM AM/PM)
+              </Label>
               <Row form>
                 <Col>
                   <Input
@@ -246,7 +251,9 @@ function MeetingScheduling(props) {
             </FormGroup>
 
             <FormGroup>
-              <Label for="duration">Duration</Label>
+              <Label for="duration" className={darkMode ? 'text-light' : ''}>
+                Duration
+              </Label>
               <Input
                 type="select"
                 name="duration"
@@ -270,17 +277,23 @@ function MeetingScheduling(props) {
             </FormGroup>
 
             <FormGroup>
+              <Label for="participants" className={darkMode ? 'text-light' : ''}>
+                Participants
+              </Label>
               <Participants
                 authUserId={authUser.userid}
                 userProfiles={allUserProfiles.filter(user => user.isActive)}
                 participantList={formValues.participantList}
                 addParticipant={addParticipant}
                 removeParticipant={removeParticipant}
+                darkMode={darkMode}
               />
             </FormGroup>
 
             <FormGroup>
-              <Label for="location">Location</Label>
+              <Label for="location" className={darkMode ? 'text-light' : ''}>
+                Location
+              </Label>
               <div style={{ paddingLeft: '20px' }}>
                 <Input
                   type="radio"
@@ -290,7 +303,11 @@ function MeetingScheduling(props) {
                   checked={formValues.location === 'Zoom'}
                   onChange={handleInputChange}
                 />
-                <Label for="locationZoom" style={{ marginLeft: '5px' }}>
+                <Label
+                  for="locationZoom"
+                  style={{ marginLeft: '5px' }}
+                  className={darkMode ? 'text-light' : ''}
+                >
                   Zoom
                 </Label>
               </div>
@@ -303,7 +320,11 @@ function MeetingScheduling(props) {
                   checked={formValues.location === 'Phone call'}
                   onChange={handleInputChange}
                 />
-                <Label for="locationPhone" style={{ marginLeft: '5px' }}>
+                <Label
+                  for="locationPhone"
+                  style={{ marginLeft: '5px' }}
+                  className={darkMode ? 'text-light' : ''}
+                >
                   Phone call
                 </Label>
               </div>
@@ -316,7 +337,11 @@ function MeetingScheduling(props) {
                   checked={formValues.location === 'On-site'}
                   onChange={handleInputChange}
                 />
-                <Label for="locationOnSite" style={{ marginLeft: '5px' }}>
+                <Label
+                  for="locationOnSite"
+                  style={{ marginLeft: '5px' }}
+                  className={darkMode ? 'text-light' : ''}
+                >
                   On-site
                 </Label>
               </div>
@@ -328,7 +353,9 @@ function MeetingScheduling(props) {
             </FormGroup>
 
             <FormGroup>
-              <Label for="notes">Notes</Label>
+              <Label for="notes" className={darkMode ? 'text-light' : ''}>
+                Notes
+              </Label>
               <Editor
                 tinymceScriptSrc="/tinymce/tinymce.min.js"
                 init={TINY_MCE_INIT_OPTIONS}
@@ -347,25 +374,23 @@ function MeetingScheduling(props) {
             </FormGroup>
           </Form>
           <div style={{ display: 'flex', gap: '10px' }}>
-            <Button
-              onClick={clearForm}
-              color="primary"
-              // style={darkMode ? boxStyleDark : boxStyle}
-            >
+            <Button onClick={clearForm} color="primary" style={darkMode ? boxStyleDark : boxStyle}>
               Clear Form
             </Button>
             <Button
               color="primary"
               onClick={handleSubmit}
-              // style={darkMode ? boxStyleDark : boxStyle}
+              style={darkMode ? boxStyleDark : boxStyle}
               disabled={submitting}
             >
               {submitting ? 'Saving...' : 'Save'}
             </Button>
           </div>
-          <Modal isOpen={modalOpen} toggle={toggleModal}>
-            <ModalHeader toggle={toggleModal}>{modalTitle}</ModalHeader>
-            <ModalBody>
+          <Modal isOpen={modalOpen} toggle={toggleModal} className={darkMode ? 'text-light' : ''}>
+            <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}>
+              {modalTitle}
+            </ModalHeader>
+            <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
               <div style={{ lineHeight: '2' }}>
                 <p>You have scheduled a meeting with the following details:</p>
                 <p>Participants: {modalMessage.participants}</p>
@@ -375,8 +400,12 @@ function MeetingScheduling(props) {
                 {modalMessage.notes && <p>Notes: {modalMessage.notes}</p>}
               </div>
             </ModalBody>
-            <ModalFooter>
-              <Button color="primary" onClick={toggleModal}>
+            <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
+              <Button
+                color="primary"
+                onClick={toggleModal}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
                 Close
               </Button>
             </ModalFooter>

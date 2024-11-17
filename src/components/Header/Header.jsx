@@ -53,6 +53,7 @@ import {
   Button,
   Card,
 } from 'reactstrap';
+import { boxStyle, boxStyleDark } from 'styles';
 import Logout from '../Logout/Logout';
 import PopUpBar from 'components/PopUpBar';
 import './Header.css';
@@ -60,8 +61,6 @@ import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permission
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import {
   getUnreadUserNotifications,
-  markNotificationAsRead,
-  resetNotificationError,
   getUnreadMeetingNotification,
   markMeetingNotificationAsRead,
 } from '../../actions/notificationAction';
@@ -602,16 +601,16 @@ export function Header(props) {
         preload="auto"
         src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
       />
-      <Modal isOpen={meetingModalOpen} toggle={handleMeetingRead}>
-        <ModalHeader  toggle={handleMeetingRead}>Meeting Notification</ModalHeader>
-        <ModalBody>
+      <Modal isOpen={meetingModalOpen} toggle={handleMeetingRead} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader  toggle={handleMeetingRead} className={darkMode ? 'bg-space-cadet' : ''}>Meeting Notification</ModalHeader>
+        <ModalBody  className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div
             style={{ lineHeight: '2' }}
             dangerouslySetInnerHTML={{ __html: meetingModalMessage }} 
           />
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleMeetingRead}>
+        <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
+          <Button color="primary" onClick={handleMeetingRead} style={darkMode ? boxStyleDark : boxStyle}>
             Close
           </Button>
         </ModalFooter>
