@@ -9,6 +9,7 @@ function Participants({
   addParticipant,
   removeParticipant,
   authUserId,
+  darkMode,
 }) {
   // console.log("participantList", participantList)
 
@@ -94,7 +95,11 @@ function Participants({
           onBlur={handleBlur}
         />
         {filteredData.length !== 0 && isFocused && (
-          <ul className="filter-userprofiles custom-dropdown-menu position-absolute">
+          <ul
+            className={`filter-userprofiles custom-dropdown-menu position-absolute ${
+              darkMode ? 'text-light bg-dark' : 'text-dark bg-light'
+            }`}
+          >
             {filteredData.map(userProfile => (
               // <a key={userProfile._id}>
               //   <li onClick={event => handleClick(event, userProfile)}>

@@ -55,6 +55,7 @@ import {
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   SCHEDULE_MEETINGS,
 } from '../../languages/en/ui';
+import { boxStyle, boxStyleDark } from 'styles';
 import Logout from '../Logout/Logout';
 import '../../App.css';
 import './Header.css';
@@ -739,16 +740,16 @@ export function Header(props) {
         preload="auto"
         src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
       />
-      <Modal isOpen={meetingModalOpen} toggle={handleMeetingRead}>
-        <ModalHeader  toggle={handleMeetingRead}>Meeting Notification</ModalHeader>
-        <ModalBody>
+      <Modal isOpen={meetingModalOpen} toggle={handleMeetingRead} className={darkMode ? 'text-light' : ''}>
+        <ModalHeader  toggle={handleMeetingRead} className={darkMode ? 'bg-space-cadet' : ''}>Meeting Notification</ModalHeader>
+        <ModalBody  className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div
             style={{ lineHeight: '2' }}
             dangerouslySetInnerHTML={{ __html: meetingModalMessage }} 
           />
         </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleMeetingRead}>
+        <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
+          <Button color="primary" onClick={handleMeetingRead} style={darkMode ? boxStyleDark : boxStyle}>
             Close
           </Button>
         </ModalFooter>
