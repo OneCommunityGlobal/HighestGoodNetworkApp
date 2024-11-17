@@ -32,7 +32,8 @@ export const badgeReducer = (state = badgeInitial, action) => {
     case GET_ALL_BADGE_DATA:
       return { ...state, allBadgeData: action.allBadges };
     case ADD_SELECT_BADGE:
-      console.log('ADD_SELECT_BADGE\n badgeId : ', action.badgeId);
+      // console.log('ADD_SELECT_BADGE\n badgeId : ', action.badgeId);
+      // console.log('state.selectedBadges : ', state.selectedBadges);
       return {
         ...state,
         selectedBadges: [...state.selectedBadges, action.badgeId],
