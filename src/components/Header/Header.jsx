@@ -183,6 +183,20 @@ export function Header(props) {
     };
   }, [user.userid, props.auth.firstName]);
 
+  // useEffect(() => {
+  //   const handleResize = () => {
+  //     console.log('Window size: ', window.innerWidth);
+  //   };
+  
+  //   // Add event listener
+  //   window.addEventListener('resize', handleResize);
+  //   handleResize();
+  
+  //   return () => {
+  //     window.removeEventListener('resize', handleResize);
+  //   };
+  // }, []); // Empty dependency array means this effect will only run once, similar to componentDidMount
+  
   useEffect(() => {
     if (props.auth.isAuthenticated) {
       props.getHeaderData(props.auth.user.userid);
@@ -319,7 +333,7 @@ export function Header(props) {
         <NavbarToggler onClick={toggle} />
         {isAuthenticated && (
           <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links" navbar>
+            <Nav className="ml-auto nav-links d-flex" navbar>
               <div
                 className="d-flex justify-content-center align-items-center"
                 style={{ width: '100%' }}
