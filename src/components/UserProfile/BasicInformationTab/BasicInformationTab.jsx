@@ -398,22 +398,45 @@ const BasicInformationTab = props => {
 
   const permissionLabelPermissions = getValidPermissions(permissionLabels);
   // const currentUserPermissions =  userProfile.permissions.frontPermissions;
-  const currentUserPermissions = userProfile.permissions.frontPermissions.filter(permission => permissionLabelPermissions.has(permission));
+  // const currentUserPermissions = userProfile.permissions.frontPermissions.filter(permission => permissionLabelPermissions.has(permission));
+  // const currentUserPermissions = for all permissions in permissionLabels, if user hasPermission(permission) then add permission to currentUserPermissions
+  const getCurrentUserPermissions = (permissions) => {
+    const userPermissions = [];
+
+    const traversePermissions = (perms) => {
+      for (let perm of perms) {
+        if (perm.key && dispatch(hasPermission(perm.key))) {
+          userPermissions.push(perm.key);
+        }
+        if (perm.subperms) {
+          traversePermissions(perm.subperms);
+        }
+      }
+    };
+
+    traversePermissions(permissions);
+    return userPermissions;
+  };
+  const currentUserPermissions = getCurrentUserPermissions(permissionLabels)
 
   useEffect(() => {
     const fetchOldRolePermissions = async () => {
+      console.log('Fetching old role permissions');
       if (oldRole) {
-        const oldRolePresets = await dispatch(getPresetsByRole(oldRole));
-        if (oldRolePresets && oldRolePresets.presets && oldRolePresets.presets[2]) {
-          // setOldRolePermissions(oldRolePresets.presets[2].permissions);
-          const filteredOldRolePermissions = oldRolePresets.presets[2].permissions.filter(permission => permissionLabelPermissions.has(permission));
-          setOldRolePermissions(filteredOldRolePermissions);
+        try {
+          const oldRolePresets = await dispatch(getPresetsByRole(oldRole));
+          console.log('oldRolePresets:', oldRolePresets);
+          if (oldRolePresets && oldRolePresets.presets && oldRolePresets.presets[2]) {
+            const filteredOldRolePermissions = oldRolePresets.presets[2].permissions.filter(permission => permissionLabelPermissions.has(permission));
+            setOldRolePermissions(filteredOldRolePermissions);
+          }
+        } catch (error) {
+          console.error('Error fetching old role presets:', error);
         }
       }
     };
 
     fetchOldRolePermissions();
-    console.log('userProfile front permissions: ', userProfile.permissions.frontPermissions);
   }, [dispatch, oldRole]);
 
   const openPermissionModal = () => setPermissionModalOpen(true);

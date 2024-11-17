@@ -35,13 +35,17 @@ function PermissionChangeModal({
 
   useEffect(() => {
     const fetchNewRolePermissions = async () => {
+      console.log('Fetching new role permissions');
       if (newRole) {
-        const newRolePresets = await dispatch(getPresetsByRole(newRole));
-        if (newRolePresets && newRolePresets.presets && newRolePresets.presets[2]) {
-          // setNewRolePermissions(newRolePresets.presets[2].permissions);
-          // const validPermissions = getValidPermissions(permissionLabels);
-          const filteredPermissions = newRolePresets.presets[2].permissions.filter(permission => permissionLabelPermissions.has(permission));
-          setNewRolePermissions(filteredPermissions);
+        try {
+          const newRolePresets = await dispatch(getPresetsByRole(newRole));
+          console.log('newRolePresets:', newRolePresets);
+          if (newRolePresets && newRolePresets.presets && newRolePresets.presets[2]) {
+            const filteredPermissions = newRolePresets.presets[2].permissions.filter(permission => permissionLabelPermissions.has(permission));
+            setNewRolePermissions(filteredPermissions);
+          }
+        } catch (error) {
+          console.error('Error fetching new role presets:', error);
         }
       }
     };
@@ -66,6 +70,15 @@ function PermissionChangeModal({
   const newRolePermissionsToRemove = useMemo(() => {
     return customAddedPermissions.filter(permission => !newRolePermissions.includes(permission));
   }, [customAddedPermissions, newRolePermissions]);
+
+  useEffect(() => {
+    console.log('oldRolePermissions:', oldRolePermissions);
+    console.log('newRolePermissions:', newRolePermissions);
+    console.log('customAddedPermissions:', customAddedPermissions);
+    console.log('customRemovedPermissions:', customRemovedPermissions);
+    console.log('newRolePermissionsToAdd:', newRolePermissionsToAdd);
+    console.log('newRolePermissionsToRemove:', newRolePermissionsToRemove);
+  }, [newRolePermissions, customAddedPermissions, customRemovedPermissions, newRolePermissionsToAdd, newRolePermissionsToRemove]);
 
   const formatPermission = permission => {
     // find the permission in the permissionLabels array, then subperms array
