@@ -1,9 +1,21 @@
 import { useState, useEffect } from 'react';
 import { useDispatch, connect } from 'react-redux';
-import { Form, FormGroup, Label, Input, Row, Col, Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import {
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Row,
+  Col,
+  Button,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+} from 'reactstrap';
 import { Editor } from '@tinymce/tinymce-react';
 import moment from 'moment-timezone';
-import { toast } from 'react-toastify';
+// import { toast } from 'react-toastify';
 
 import { getAllUserProfile } from '../../actions/userManagement';
 import { postMeeting } from '../../actions/meetings';
@@ -39,7 +51,7 @@ function MeetingScheduling(props) {
   const dispatch = useDispatch();
 
   // props from store
-  const { authUser, allUserProfiles, error, darkMode } = props;
+  const { authUser, allUserProfiles, darkMode } = props;
 
   const initialFormValues = {
     dateOfMeeting: moment()
@@ -121,7 +133,7 @@ function MeetingScheduling(props) {
       setModalMessage(`
         An error occurred while attempting to submit your meeting schedules. Error: ${err}`);
       const errorMessage = err?.message || 'An unknown error occurred';
-      const errorObject = err instanceof Error ? err : new Error(errorMessage);
+      // const errorObject = err instanceof Error ? err : new Error(errorMessage);
       setErrors({ general: errorMessage });
     } finally {
       setSubmitting(false);
