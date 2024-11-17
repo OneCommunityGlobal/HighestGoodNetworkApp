@@ -164,7 +164,7 @@ function UserProfile(props) {
 
   const { userid: requestorId, role: requestorRole } = props.auth.user;
 
-  const canEditTeamCode = props.hasPermission('editTeamCode');
+  const [canEditTeamCode, setCanEditTeamCode] = useState(false);
   const [titleOnSet, setTitleOnSet] = useState(false); 
 
   /* useEffect functions */
@@ -336,6 +336,7 @@ function UserProfile(props) {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const currentUserEmail = response.data.email;
       dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail }));
+      setCanEditTeamCode(response.data.permissions.frontPermissions.includes('editTeamCode'));
     } catch (err) {
       toast.error('Error while getting current logged in user email');
     }
