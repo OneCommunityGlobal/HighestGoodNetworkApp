@@ -16,7 +16,10 @@ function Participants({ userProfiles, participantList, addParticipant, removePar
         userProfile._id !== authUserId &&
         !participantList.some(
           participant => participant.name === `${userProfile.firstName} ${userProfile.lastName}`,
-        ) && `${userProfile.firstName} ${userProfile.lastName}`.toLowerCase().includes(keyword.toLowerCase()),
+        ) &&
+        `${userProfile.firstName} ${userProfile.lastName}`
+          .toLowerCase()
+          .includes(keyword.toLowerCase()),
     );
 
     const finalList = newFilterList.sort((a, b) => {
@@ -63,12 +66,16 @@ function Participants({ userProfiles, participantList, addParticipant, removePar
   const handleClick = (event, userProfile) => {
     // addResources(member._id, member.firstName, member.lastName);
     addParticipant(userProfile._id, userProfile.firstName, userProfile.lastName);
-    event.target.closest(".filter-userprofiles").previousElementSibling.value = '';
+    // event.target.closest('.filter-userprofiles').previousElementSibling.value = '';
+    const closestElement = event.target.closest('.filter-userprofiles');
+    if (closestElement && closestElement.previousElementSibling) {
+      closestElement.previousElementSibling.value = '';
+    }
     setSearchWord('');
     setFilteredData([]);
   };
 
-  console.log("isFocused", isFocused);
+  // console.log("isFocused", isFocused);
 
   return (
     <div>
@@ -80,13 +87,11 @@ function Participants({ userProfiles, participantList, addParticipant, removePar
           onFocus={handleFocus}
           onBlur={handleBlur}
         />
-        {(filteredData.length !== 0 && isFocused) && (
+        {filteredData.length !== 0 && isFocused && (
           <ul className="filter-userprofiles custom-dropdown-menu position-absolute">
             {filteredData.map(userProfile => (
               <a key={userProfile._id}>
-                <li
-                  onClick={event => handleClick(event, userProfile)}
-                >
+                <li onClick={event => handleClick(event, userProfile)}>
                   {`${userProfile.firstName} ${userProfile.lastName}`}
                 </li>
               </a>
@@ -96,9 +101,7 @@ function Participants({ userProfiles, participantList, addParticipant, removePar
       </div>
       <div>
         {participantList?.map(participant => (
-          <ul
-            key={`${participant.userProfileId}`}
-          >
+          <ul key={`${participant.userProfileId}`}>
             <li
               className="rounded-pill badge bg-primary text-wrap"
               onClick={() => removeParticipant(participant.userProfileId)}
@@ -112,7 +115,7 @@ function Participants({ userProfiles, participantList, addParticipant, removePar
         ))}
       </div>
     </div>
-  )
+  );
 }
 
 export default Participants;
