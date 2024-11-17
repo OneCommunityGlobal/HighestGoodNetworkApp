@@ -1,8 +1,9 @@
+/* General Styling */
 .header-wrapper {
   height: fit-content;
-  width: clamp(100vw, 0.1rem + 1vw, 100%);
+  width: 100%;
+  padding: 0 1rem;
 }
-
 .close-button {
   position: absolute;
   top: 0;
@@ -10,95 +11,89 @@
   padding: 12px; 
 }
 
-.card-content {
-  padding: 5px; 
-  padding-left: 40px;
-  padding-right: 40px;
-  white-space: pre-line;
-  color: white;
-  font-size: medium;
-}
-
-.navbar {
-  z-index: 100;
-  white-space: nowrap;
-  margin-bottom: 20px;
-}
-
+/* Timer Message Section */
 .timer-message-section {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   width: 100%;
   gap: 1rem;
-}
-
-.redBackGroupHeader {
-  z-index: 10;
-  bottom: 0;
-  right: 0;
-  position: relative;
-  height: 30px;
-  text-align: center;
-  vertical-align: middle;
-  background: #ff4d4f;
-  border-radius: 40px;
-  color: #fff;
-  padding: 3px 6px;
-  max-width: 39px;
-  font-size: 1rem;
-  min-width: 29px;
+  
 }
 
 .owner-message {
-  margin-right: 3rem;
+  margin-right: 1rem;
+  white-space: nowrap; /* Prevent text from wrapping */
+  flex-shrink: 0; /* Prevent shrinking */
+  
+}
+
+.navbar {
+  z-index: 100;
+  flex-wrap: wrap;
+  overflow: visible;
 }
 
 .nav-links {
   display: flex;
   align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap; /* Allow wrapping of nav items */
+  overflow: visible;
 }
 
-.dropdown-item-hover:hover{
+.dashboard-text-link {
+  font-size: 16px;
+}
+
+.dropdown-item-hover:hover {
   background-color: #2f4157 !important;
 }
 
+/* Media Queries for Responsiveness */
 @media (max-width: 1400px) {
-  .nav-links{
-    flex-direction: column !important;
-  }
-}
-
-@media (max-width: 1500px) {
-  .dashboard-text-link {
-    font-size: 14px;
-  }
-
-  .owner-message {
-    margin-right: 0;
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    width: 100%;
+    overflow: visible;
+    flex-wrap: wrap;
   }
 }
 
 @media (max-width: 1050px) {
   .timer-message-section {
-    display: flex;
-    width: 0;
+    width: 100%;
     margin-right: 0;
   }
 
   .owner-message {
-    display: none;
+    display: block;
+    margin-right: 0;
+    text-align: center;
+    width: 100%;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    overflow: visible;
+    flex-wrap: wrap;
   }
 }
 
-@media screen and (min-width: 1400px) and (max-width: 1700px) {
-  .owner-message {
-    display: none;
-  }
-}
-
-@media screen and (max-width: 769px) {
-  .responsive-spacing{
+@media screen and (max-width: 768px) {
+  .responsive-spacing {
     margin-right: 5px;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    width: 100%;
+    overflow: visible;
+    flex-wrap: wrap;
   }
 }
