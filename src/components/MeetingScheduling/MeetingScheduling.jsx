@@ -33,10 +33,15 @@ const TINY_MCE_INIT_OPTIONS = {
   menubar: false,
   placeholder: 'Describe the details of the meeting',
   plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar:
-    'bold italic underline link removeformat | bullist numlist outdent indent |\
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                    subscript superscript charmap  | help',
+  toolbar: [
+    'bold italic underline link removeformat',
+    'bullist numlist outdent indent',
+    'styleselect fontsizeselect',
+    'table',
+    'strikethrough forecolor backcolor',
+    'subscript superscript charmap',
+    'help',
+  ].join(' | '),
   branding: false,
   min_height: 180,
   max_height: 300,
@@ -119,14 +124,13 @@ function MeetingScheduling(props) {
       await dispatch(postMeeting(meeting));
 
       setModalTitle('Success!');
-      setModalMessage(`
-        You have scheduled a meeting with the following details:<br> 
-        Participants: ${participantMessage}<br>
-        Time: ${meeting.startHour}:${meeting.startMinute} ${meeting.startTimePeriod} on ${meeting.dateOfMeeting}<br>
-        Duration: ${meeting.duration} minutes<br>
-        ${meeting.location ? `Location: ${meeting.location}<br>` : ''}
-        ${meeting.notes ? `Notes: ${meeting.notes}<br>` : ''}
-      `);
+      setModalMessage({
+        participants: participantMessage,
+        time: `${meeting.startHour}:${meeting.startMinute} ${meeting.startTimePeriod} on ${meeting.dateOfMeeting}`,
+        duration: `${meeting.duration} minutes`,
+        location: meeting.location,
+        notes: meeting.notes,
+      });
       setFormValues(initialFormValues);
     } catch (err) {
       setModalTitle('Error');
@@ -154,7 +158,9 @@ function MeetingScheduling(props) {
   };
 
   const removeParticipant = userProfileId => {
-    const newParticipantList = formValues.participantList.filter(user => user.userProfileId !== userProfileId);
+    const newParticipantList = formValues.participantList.filter(
+      user => user.userProfileId !== userProfileId,
+    );
     setFormValues(prevValues => ({ ...prevValues, participantList: newParticipantList }));
   };
 
@@ -284,7 +290,9 @@ function MeetingScheduling(props) {
                   checked={formValues.location === 'Zoom'}
                   onChange={handleInputChange}
                 />
-                <Label for="locationZoom" style={{ marginLeft: '5px' }}>Zoom</Label>
+                <Label for="locationZoom" style={{ marginLeft: '5px' }}>
+                  Zoom
+                </Label>
               </div>
               <div style={{ paddingLeft: '20px' }}>
                 <Input
@@ -295,7 +303,9 @@ function MeetingScheduling(props) {
                   checked={formValues.location === 'Phone call'}
                   onChange={handleInputChange}
                 />
-                <Label for="locationPhone" style={{ marginLeft: '5px' }}>Phone call</Label>
+                <Label for="locationPhone" style={{ marginLeft: '5px' }}>
+                  Phone call
+                </Label>
               </div>
               <div style={{ paddingLeft: '20px' }}>
                 <Input
@@ -306,7 +316,9 @@ function MeetingScheduling(props) {
                   checked={formValues.location === 'On-site'}
                   onChange={handleInputChange}
                 />
-                <Label for="locationOnSite" style={{ marginLeft: '5px' }}>On-site</Label>
+                <Label for="locationOnSite" style={{ marginLeft: '5px' }}>
+                  On-site
+                </Label>
               </div>
               {'location' in errors && (
                 <div className="text-danger">
@@ -354,7 +366,14 @@ function MeetingScheduling(props) {
           <Modal isOpen={modalOpen} toggle={toggleModal}>
             <ModalHeader toggle={toggleModal}>{modalTitle}</ModalHeader>
             <ModalBody>
-              <div style={{ lineHeight: '2' }} dangerouslySetInnerHTML={{ __html: modalMessage }}/>
+              <div style={{ lineHeight: '2' }}>
+                <p>You have scheduled a meeting with the following details:</p>
+                <p>Participants: {modalMessage.participants}</p>
+                <p>Time: {modalMessage.time}</p>
+                <p>Duration: {modalMessage.duration}</p>
+                {modalMessage.location && <p>Location: {modalMessage.location}</p>}
+                {modalMessage.notes && <p>Notes: {modalMessage.notes}</p>}
+              </div>
             </ModalBody>
             <ModalFooter>
               <Button color="primary" onClick={toggleModal}>
@@ -365,7 +384,7 @@ function MeetingScheduling(props) {
         </div>
       </div>
     </div>
-  )
+  );
 }
 
 const mapStateToProps = state => ({

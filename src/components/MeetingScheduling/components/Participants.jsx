@@ -3,10 +3,16 @@ import './Participants.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
 
-function Participants({ userProfiles, participantList, addParticipant, removeParticipant, authUserId }) {
+function Participants({
+  userProfiles,
+  participantList,
+  addParticipant,
+  removeParticipant,
+  authUserId,
+}) {
   // console.log("participantList", participantList)
 
-  const [searchWord, setSearchWord] = useState('');
+  // const [searchWord, setSearchWord] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -71,7 +77,7 @@ function Participants({ userProfiles, participantList, addParticipant, removePar
     if (closestElement && closestElement.previousElementSibling) {
       closestElement.previousElementSibling.value = '';
     }
-    setSearchWord('');
+    // setSearchWord('');
     setFilteredData([]);
   };
 
@@ -90,11 +96,23 @@ function Participants({ userProfiles, participantList, addParticipant, removePar
         {filteredData.length !== 0 && isFocused && (
           <ul className="filter-userprofiles custom-dropdown-menu position-absolute">
             {filteredData.map(userProfile => (
-              <a key={userProfile._id}>
-                <li onClick={event => handleClick(event, userProfile)}>
+              // <a key={userProfile._id}>
+              //   <li onClick={event => handleClick(event, userProfile)}>
+              //     {`${userProfile.firstName} ${userProfile.lastName}`}
+              //   </li>
+              // </a>
+              <li>
+                <button
+                  type="button"
+                  onClick={event => handleClick(event, userProfile)}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                  }}
+                >
                   {`${userProfile.firstName} ${userProfile.lastName}`}
-                </li>
-              </a>
+                </button>
+              </li>
             ))}
           </ul>
         )}
@@ -102,16 +120,20 @@ function Participants({ userProfiles, participantList, addParticipant, removePar
       <div>
         {participantList?.map(participant => (
           <ul key={`${participant.userProfileId}`}>
-            <li
-              className="rounded-pill badge bg-primary text-wrap"
+            <button
+              type="button"
+              className="rounded-pill badge bg-primary text-wrap text-white"
               onClick={() => removeParticipant(participant.userProfileId)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+              }}
             >
-              <div className="text-white">
-                <small className="fs-6 mr-1">{`${participant.name}`}</small>
-                <FontAwesomeIcon icon={faTimesCircle} />
-              </div>
-            </li>
-        </ul>
+              <small className="fs-6 mr-1">{`${participant.name}`}</small>
+              <FontAwesomeIcon icon={faTimesCircle} />
+            </button>
+          </ul>
         ))}
       </div>
     </div>
