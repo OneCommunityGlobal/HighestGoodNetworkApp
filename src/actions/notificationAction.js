@@ -124,7 +124,7 @@ export function getUnreadMeetingNotification(){
     try {
       const currentTime = new Date();
       const endTime = new Date(currentTime);
-      endTime.setDate(currentTime.getDate() + 3);
+      endTime.setDate(currentTime.getDate() + 30);
       endTime.setHours(23, 59, 59, 999);
       const encodedCurrentTime = encodeURIComponent(currentTime.toISOString());
       const encodedEndTime = encodeURIComponent(endTime.toISOString());
