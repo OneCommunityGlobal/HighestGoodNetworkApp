@@ -14,7 +14,8 @@ function Announcements() {
   const [headerContent, setHeaderContent] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
-  const [linkedinContent, setLinkedinContent] = useState(''); // LinkedIn content state
+  const [linkedinContent, setLinkedinContent] = useState(''); //linkedin 
+  const [linkedinMedia, setLinkedinMedia] = useState(null); // linkedin 
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
 
   useEffect(() => {
@@ -163,36 +164,50 @@ function Announcements() {
     setLinkedinContent(e.target.value);
   }
 
-  const handlePostToLinkedIn = async () => {
-    try {
-      if (linkedinContent.trim() === '') {
-        toast.error('Error: LinkedIn post content cannot be empty.');
-        return;
-      }
-  
-      // post to LinkedIn
-      const postResponse = await fetch('http://localhost:4500/api/postToLinkedIn', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: linkedinContent,
-        }),
-      });
-      
-  
-      if (!postResponse.ok) {
-        throw new Error('Failed to post to LinkedIn');
-      }
-  
-      toast.success('Post to LinkedIn successful!');
-      setLinkedinContent('');
-    } catch (error) {
-      toast.error('Failed to post to LinkedIn');
-      console.error('Error posting to LinkedIn:', error);
-    }
+// Function to post to LinkedIn
+const handleMediaUpload = (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onloadend = () => {
+    setLinkedinMedia(reader.result); 
   };
+  reader.readAsDataURL(file);
+};
+
+const handlePostToLinkedIn = async () => {
+  try {
+    if (linkedinContent.trim() === '') {
+      toast.error('Error: LinkedIn post content cannot be empty.');
+      return;
+    }
+
+    const postPayload = {
+      content: linkedinContent,
+      media: linkedinMedia || null, // check have media 
+    };
+
+    const response = await fetch('http://localhost:4500/api/postToLinkedIn', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(postPayload),
+    });
+
+    if (!response.ok) {
+      throw new Error('Failed to post to LinkedIn');
+    }
+
+    toast.success('Post to LinkedIn successful!');
+    setLinkedinContent('');
+    setLinkedinMedia(null); 
+  } catch (error) {
+    toast.error('Failed to post to LinkedIn');
+    console.error('Error posting to LinkedIn:', error);
+  }
+};
 
   
   return (
@@ -214,27 +229,21 @@ function Announcements() {
             Broadcast Weekly Update
           </button>
         {/* LinkedIn Editor Section */}
-        <div className="linkedin-editor">
-          <h3>LinkedIn Post Editor</h3>
-          <br />
-          {showEditor && <Editor
-            tinymceScriptSrc="/tinymce/tinymce.min.js"
-            id="linkedin-editor"
-            initialValue="<p>Enter LinkedIn content here</p>"
-            init={editorInit}
-            onEditorChange={(content) => {
-              setLinkedinContent(content);
-            }}
-          />}
-          <button
-            type="button"
-            className="send-button"
-            onClick={handlePostToLinkedIn}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Post to LinkedIn
-          </button>
-        </div>
+        <div>
+      <h3>LinkedIn Post Editor</h3>
+      <textarea
+        value={linkedinContent}
+        onChange={(e) => setLinkedinContent(e.target.value)}
+        placeholder="Enter LinkedIn content here"
+      />
+      <input
+        type="file"
+        accept="image/*,video/*"
+        onChange={handleMediaUpload} // 处理媒体上传
+        style={{ margin: '10px 0' }}
+      />
+      <button onClick={handlePostToLinkedIn}>Post to LinkedIn</button>
+    </div>
         </div>        
         <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}  style={darkMode ? boxStyleDark : boxStyle}>
           <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
