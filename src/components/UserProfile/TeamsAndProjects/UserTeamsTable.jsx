@@ -22,18 +22,14 @@ const UserTeamsTable = props => {
 
   const [showDropdown, setShowDropdown] = useState(false);
 
-  const [autoComplete, setAutoComplete] = useState(false);
-
   const [teamCode, setTeamCode] = useState(
     props.userProfile ? props.userProfile.teamCode : props.teamCode,
   );
 
   const [isOpenModalTeamMember, setIsOpenModalTeamMember] = useState(false);
 
-  const refInput = useRef(null);
-
-  const arrayInputAutoComplete = useRef(props.inputAutoComplete);
   const [autoCompleteUpdateMessage, setAutoCompleteUpdateMessage] = useState(false);
+  const [deduplicatedValidation, setDeduplicatedValidation] = useState('');
 
   const [members, setMembers] = useState({
     members: [],
@@ -43,6 +39,8 @@ const UserTeamsTable = props => {
   });
 
   const refDropdown = useRef();
+  const refInput = useRef(null);
+  const arrayInputAutoComplete = useRef(props.inputAutoComplete);
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
@@ -55,8 +53,13 @@ const UserTeamsTable = props => {
   }, [props.userProfile?.teamCode]);
 
   const handleCodeChange = async (e, autoComplete) => {
+    if (props.inputAutoStatus !== 200) {
+      toast.warn('Please wait until the autocomplete is loaded to use this input.');
+      return;
+    }
     autoComplete ? setShowDropdown(false) : null;
     const validation = autoComplete ? e : e.target.value;
+
     const isUpdateAutoComplete = validationUpdateAutoComplete(validation, props.inputAutoComplete);
 
     const regexTest = fullCodeRegex.test(validation);
@@ -71,18 +74,11 @@ const UserTeamsTable = props => {
           await axios.patch(url, { userIds: props.userProfile._id, replaceCode: refInput.current });
           refInput.current.length > 0 &&
             toast.success('The code is valid, and the team code was updated!');
-        if (isUpdateAutoComplete && isUpdateAutoComplete.length === 0) {
-          // props.inputAutoComplete.push(refInput.current);
-          // const t = props.inputAutoComplete.filter(item => item === refInput.current);
-          // console.log(t);
-             const newAutoComplete = await props.fetchTeamCodeAllUsers();
-             toast.info('The suggestions in auto-complete were updated!');
-            //  console.log(newAutoComplete);
-            //  validationUpdateAutoComplete(refInput.current, newAutoComplete);
-          //   // prettier-ignore
-          //   setAutoCompleteUpdateMessage(false);
-
-           }
+          if (isUpdateAutoComplete && isUpdateAutoComplete.length === 0) {
+            const newAutoComplete = await props.fetchTeamCodeAllUsers();
+            toast.info('The suggestions in auto-complete were updated!');
+            validationUpdateAutoComplete(refInput.current, newAutoComplete);
+          }
         } catch {
           toast.error('It is not possible to save the team code.');
         }
