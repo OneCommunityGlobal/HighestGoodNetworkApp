@@ -12,7 +12,6 @@ import storage from 'redux-persist/lib/storage';
 import { compressToUTF16, decompressFromUTF16 } from 'lz-string';
 import { rootReducers } from '../../../store.js';
 import { ENDPOINTS } from 'utils/URL';
-import { getTeamDetail } from '../../../actions/team';
 import {
   getAllUserTeams,
   postNewTeam,
@@ -23,10 +22,10 @@ import {
   addTeamMember,
 } from '../../../actions/allTeamsAction';
 
-import { getTeamReportData } from './selectors';
 import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
+import { useRef } from 'react';
 
 const parser = (val) => {
   try {
@@ -50,7 +49,9 @@ export function TeamReport({ match }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
-  const { team } = useSelector(getTeamReportData);
+  // const {team}=useSelector(getTeamReportData);
+const [team,setTeam] = useState({});
+const [teamDataLoading,setTeamDataLoading] = useState(false);
   const user = useSelector(state => state.auth.user);
   const [teamMembers, setTeamMembers] = useState([]);
   const [allTeams, setAllTeams] = useState([]);
@@ -62,6 +63,7 @@ export function TeamReport({ match }) {
     isActive: false,
     isInactive: false,
   });
+  const hasFetchIds = useRef(new Set());
 
   const [selectedTeams, setSelectedTeams] = useState([]);
 
@@ -74,6 +76,26 @@ export function TeamReport({ match }) {
     // Update the selectedInput state variable with the value of the selected radio input
     setSelectedInput(event.target.value);
   };
+ 
+  const getTeamDetails = async (teamId)=>{
+     try {
+      
+       if (teamDataLoading ||(team && team._id === match.params.teamId) || hasFetchIds.current.has(teamId)) {
+        return; // Prevent repeated calls if data is already loading or loaded
+       }
+        setTeamDataLoading(true);
+        const url =  ENDPOINTS.TEAM_BY_ID(teamId);
+        const res = await axios.get(url);
+        setTeam(res.data);
+        hasFetchIds.current.add(teamId);
+        setTeamDataLoading(false);
+     } catch (error) {
+        setTeam(null);
+     }
+     finally{
+        setTeamDataLoading(false);
+     }
+  }
 
   const handleStatus = useMemo(
     () =>
@@ -192,40 +214,72 @@ export function TeamReport({ match }) {
     return getFormattedDate(date);
   }
 
+  useEffect(()=>{
+    if(match&&match.params&&match.params.teamId){
+      getTeamDetails(match.params.teamId);
+    }
+  },[])
+
+  
   useEffect(() => {
     let isMounted = true; // flag to check component mount status
-  
-    if (match) {
-      dispatch(getTeamDetail(match.params.teamId));
-  
-      dispatch(getTeamMembers(match.params.teamId)).then(result => {
-        if (isMounted) { // Only update state if component is still mounted
-          setTeamMembers([...result]);
-        }
-      });
-  
-      dispatch(getAllUserTeams())
-        .then(result => {
-          if (isMounted) {
-            setAllTeams([...result]);
+    const fetchTeamDetails = async (teamId)=>{
+       try {
+        if (teamDataLoading || (team && team._id === match.params.teamId)) {
+          return; // Prevent repeated calls if data is already loading or loaded
+         }
+          await getTeamDetails(teamId);
+       } catch (error) {
+         console.log("Error fetching team Details:",error);
+       }
+    }
+
+    const fetchTeamMembers = async (teamId)=>{
+       try {
+        await dispatch(getTeamMembers(teamId)).then(result => {
+          if (isMounted) { // Only update state if component is still mounted
+            setTeamMembers([...result]);
           }
-          return result;
-        })
-        .then(result => {
-          const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
-          Promise.all(allTeamMembersPromises).then(results => {
-            if (isMounted) { // Only update state if component is still mounted
-              setAllTeamsMembers([...results]);
-            }
-          });
         });
+       } catch (error) {
+          console.log("Error: fetching teamMembers:",error);
+       }
+    }
+
+    const fetchAllUserTeams = async () =>{
+        try {
+             if(isMounted){
+              dispatch(getAllUserTeams())
+              .then(result => {
+                if (isMounted) {
+                  setAllTeams([...result]);
+                }
+                return result;
+              })
+              .then(result => {
+                const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
+                Promise.all(allTeamMembersPromises).then(results => {
+                  if (isMounted) { // Only update state if component is still mounted
+                    setAllTeamsMembers([...results]);
+                  }
+                });
+              });
+             }
+        } catch (error) {
+           console.log("Error:All users error:",error);
+        }
+    }
+    if (match && match.params && match.params.teamId) {
+      fetchTeamDetails(match.params.teamId);
+      fetchTeamMembers(match.params.teamId);
+      fetchAllUserTeams();
     }
   
     return () => {
       isMounted = false; // Set the flag as false when the component unmounts
     };
-  }, [dispatch, match]); // include all dependencies in the dependency array  
-
+  }, [match?.params?.teamId]); // include all dependencies in the dependency array  
+//
   // Get Total Tangible Hours this week [main TEAM]
   const [teamMembersWeeklyEffort, setTeamMembersWeeklyEffort] = useState([]);
   const [totalTeamWeeklyWorkedHours, setTotalTeamWeeklyWorkedHours] = useState('');
@@ -342,9 +396,9 @@ export function TeamReport({ match }) {
       contentClassName="team-report-blocks"
       darkMode={darkMode}
       renderProfile={() => (
-        <ReportPage.ReportHeader isActive={team.isActive} avatar={<FiUsers />} name={team.teamName} darkMode={darkMode}>
+        <ReportPage.ReportHeader isActive={team?.isActive} avatar={<FiUsers />} name={team?.teamName} darkMode={darkMode}>
           <div className={darkMode ? 'text-light' : ''}>
-            <h5>{moment(team.createdDatetime).format('MMM-DD-YY')}</h5>
+            <h5>{moment(team?.createdDatetime).format('MMM-DD-YY')}</h5>
             <p>Created Date</p>
           </div>
         </ReportPage.ReportHeader>
@@ -354,7 +408,7 @@ export function TeamReport({ match }) {
         <div className="team-report-main-info-id">
           <div style={{ wordBreak: 'break-all', color: darkMode ? 'white' : ''}} className="update-date">
             <div>
-              <span className="team-report-star">&#9733;</span> Team ID: {team._id}
+              <span className="team-report-star">&#9733;</span> Team ID: {team?._id}
             </div>
             {/*
           This LoginPrivilegesSimulation component will be removed once the backend team link the login privileges.
@@ -363,20 +417,21 @@ export function TeamReport({ match }) {
           */}
             {/* <LoginPrivileges selectedInput={selectedInput} handleInputChange={handleInputChange} />  */}
             Last updated:
-            {moment(team.modifiedDatetime).format('MMM-DD-YY')}
+            {moment(team?.modifiedDatetime).format('MMM-DD-YY')}
           </div>
         </div>
       </ReportPage.ReportBlock>
       <UserLoginPrivileges
         role={user.role}
         handleInputChange={handleInputChange}
-        teamName={team.teamName}
+        teamName={team?.teamName}
         teamMembers={teamMembers}
         totalTeamWeeklyWorkedHours={totalTeamWeeklyWorkedHours}
         selectedTeams={selectedTeams}
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
         allTeamsMembers={allTeamsMembers}
         darkMode={darkMode}
+        teamDataLoading ={teamDataLoading}
       />
       <div className="table-mobile">
         <ReportPage.ReportBlock darkMode={darkMode}>
@@ -487,7 +542,7 @@ export function TeamReport({ match }) {
                 </td>
               </tr>
             </thead>
-            {allTeamsMembers.length > 1 ? (
+            {allTeamsMembers?.length > 1 ? (
               <tbody className="table">
                 {/* eslint-disable-next-line no-shadow */}
                 {/* Note: the handleSearch() function will cause the white page error */}
@@ -505,9 +560,9 @@ export function TeamReport({ match }) {
                       />
                     </td>
                     <td>
-                      <strong>{team.teamName}</strong>
+                      <strong>{team?.teamName}</strong>
                     </td>
-                    <td>{handleStatus(team.isActive)}</td>
+                    <td>{handleStatus(team?.isActive)}</td>
                     <td>
                       <Dropdown>
                         <Dropdown.Toggle
@@ -515,14 +570,16 @@ export function TeamReport({ match }) {
                           id="dropdown-basic"
                           style={{ backgroundColor: '#996cd3', border: 'none' }}
                         >
-                          See
+                          <span  onClick={()=>getCurrentTeamMembers(team?._id)}>
+                             See
+                          </span>
                         </Dropdown.Toggle>
                         <Dropdown.Menu>
                           {allTeamsMembers[index].length > 1 ? (
                             allTeamsMembers[index].map(member => (
-                              <div key={`${team._id}-${member._id}`}>
+                              <div key={`${team?._id}-${member?._id}`}>
                                 <Dropdown.Item href="#/action-1">
-                                  {member.firstName} {member.lastName}
+                                  {member?.firstName} {member?.lastName}
                                 </Dropdown.Item>
                                 <Dropdown.Divider />
                               </div>
@@ -536,8 +593,8 @@ export function TeamReport({ match }) {
                       </Dropdown>
                     </td>
                     <td>{team._id}</td>
-                    <td>{handleDate(team.createdDatetime)}</td>
-                    <td>{handleDate(team.modifiedDatetime)}</td>
+                    <td>{handleDate(team?.createdDatetime)}</td>
+                    <td>{handleDate(team?.modifiedDatetime)}</td>
                   </tr>
                 ))*/}
               </tbody>

@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
-import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
-import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
-import { updateUserFinalDayStatusIsSet } from 'actions/userManagement';
 import { toast } from 'react-toastify';
-import { boxStyle, boxStyleDark } from 'styles';
+import { updateUserFinalDayStatusIsSet } from '../../actions/userManagement';
+import { boxStyle, boxStyleDark } from '../../styles';
+import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
+import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { FinalDay } from '../../utils/enums';
 /**
  * @param {*} props
@@ -13,8 +13,8 @@ import { FinalDay } from '../../utils/enums';
  * @param {*} props.userProfile.isSet
  * @returns
  */
-const SetUpFinalDayButton = props => {
-  const {darkMode} = props;
+function SetUpFinalDayButton(props) {
+  const { darkMode } = props;
   const [isSet, setIsSet] = useState(false);
   const [finalDayDateOpen, setFinalDayDateOpen] = useState(false);
   const dispatch = useDispatch();
@@ -23,14 +23,19 @@ const SetUpFinalDayButton = props => {
     if (props.userProfile?.endDate !== undefined) setIsSet(true);
   }, []);
 
-  const onFinalDayClick = async (user, status) => {
-    const activeStatus = props.userProfile.isActive? 'Active':'Inactive';
+  const onFinalDayClick = async () => {
+    const activeStatus = props.userProfile.isActive ? 'Active' : 'Inactive';
     if (isSet) {
       // updateUserFinalDayStatus(props.userProfile, activeStatus, undefined)(dispatch);
       setIsSet(!isSet);
       setTimeout(async () => {
         await props.loadUserProfile();
-        await updateUserFinalDayStatusIsSet(props.userProfile, activeStatus, undefined, FinalDay.NotSetFinalDay)(dispatch)
+        await updateUserFinalDayStatusIsSet(
+          props.userProfile,
+          activeStatus,
+          undefined,
+          FinalDay.NotSetFinalDay,
+        )(dispatch);
         toast.success("This user's final day has been deleted.");
       }, 1000);
     } else {
@@ -48,32 +53,37 @@ const SetUpFinalDayButton = props => {
     setFinalDayDateOpen(false);
     setTimeout(async () => {
       await props.loadUserProfile();
-      await updateUserFinalDayStatusIsSet(props.userProfile, 'Active', finalDayDate, FinalDay.FinalDay)(dispatch)
+      await updateUserFinalDayStatusIsSet(
+        props.userProfile,
+        'Active',
+        finalDayDate,
+        FinalDay.FinalDay,
+      )(dispatch);
       toast.success("This user's final day has been set.");
     }, 1000);
   };
 
   return (
-    <React.Fragment>
+    <>
       <SetUpFinalDayPopUp
         open={finalDayDateOpen}
         onClose={setUpFinalDayPopupClose}
         onSave={deactiveUser}
       />
       <Button
-        {...(darkMode ? { outline: false } : {outline: true})}
+        outline={!darkMode}
         color={isSet ? 'warning' : 'success'}
         className={`btn ${darkMode ? '' : `btn-outline-${isSet ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
-        onClick={e => {
+        onClick={() => {
           onFinalDayClick(props.userProfile, isSet);
         }}
         style={darkMode ? boxStyleDark : boxStyle}
       >
         {isSet ? CANCEL : SET_FINAL_DAY}
       </Button>
-    </React.Fragment>
+    </>
   );
-};
+}
 export default SetUpFinalDayButton;

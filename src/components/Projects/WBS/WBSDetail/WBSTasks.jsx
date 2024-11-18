@@ -63,8 +63,10 @@ function WBSTasks(props) {
       case 'assigned': return tasks.filter(task => task.isAssigned === true)
       case 'unassigned': return tasks.filter(task => task.isAssigned === false)
       case 'active': return tasks.filter(task => ['Active', 'Started'].includes(task.status))
-      case 'inactive': return tasks.filter(task => task.status === 'Not Started')
+      case 'inactive': return tasks.filter(task => ['Not Started', 'Paused'].includes(task.status))
       case 'complete': return tasks.filter(task => task.status === 'Complete')
+      case 'paused': return tasks.filter(task => task.status === 'Paused');
+
     }
   }
 
@@ -187,7 +189,7 @@ function WBSTasks(props) {
           </ol>
         </nav>
         <div
-          className='mb-2'
+          className='mb-2 button-group' // Grouping the buttons
           style={{
             // display: 'flex',
             // justifyContent: 'space-between'
@@ -278,6 +280,16 @@ function WBSTasks(props) {
           >
             Active
           </Button>
+        
+          <Button
+         color="info"
+        size="sm"
+        onClick={() => setFilterState('paused')}
+       className="ml-2"
+       style={darkMode ? boxStyleDark : boxStyle}
+        >
+          Paused
+        </Button>
           <Button
             color="warning"
             size="sm"
@@ -302,13 +314,13 @@ function WBSTasks(props) {
         <table className={`table table-bordered tasks-table ${darkMode ? 'text-light' : ''}`} ref={myRef}>
           <thead>
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th scope="col" data-tip="Action" colSpan="2">
+              <th scope="col" className="tasks-detail-actions" data-tip="Action" colSpan="2">
                 Action
               </th>
               <th scope="col" data-tip="WBS ID" colSpan="1">
                 #
               </th>
-              <th scope="col" data-tip="Task Name" className="task-name">
+              <th scope="col" data-tip="Task Name" className="tasks-detail-task-name task-name">
                 Task
               </th>
               <th scope="col" data-tip="Priority">

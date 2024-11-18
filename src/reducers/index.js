@@ -3,7 +3,8 @@ import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
-import { allUserProfilesReducer } from './allUserProfilesReducer';
+import { allUserProfilesBasicInfoReducer } from  './allUserProfilesBasicInfoReducer';
+import { allUserProfilesReducer, changeUserPageStatusReducer, enableUserInfoEditReducer, updateUserInfoReducer } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
@@ -46,6 +47,7 @@ import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
+import dashboardReducer  from '../reducers/dashboardReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
@@ -80,6 +82,7 @@ const localReducers = {
   blueSquareEmailAssignment : BlueSquareEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
+  allUserProfilesBasicInfo : allUserProfilesBasicInfoReducer,
 
   // bmdashboard
   materials: materialsReducer,
@@ -93,10 +96,13 @@ const localReducers = {
   bmEquipments: equipmentReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
-  bmReusables: reusablesReducer
+  bmReusables: reusablesReducer,
+  dashboard: dashboardReducer
 };
 
 const sessionReducers = {
+  userPagination:changeUserPageStatusReducer,
+  userProfileEdit:enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,
   userTask: userTaskByIdReducer,
   leaderBoardData: leaderboardDataReducer,
