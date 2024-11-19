@@ -611,7 +611,7 @@ function UserProfile(props) {
       description: newWarningData.title,
       color: newWarningData.colorAssigned,
       iconId: uuidv4(),
-      date: moment().format('MM/DD/YYYY HH:mm:ss'),
+      date: moment().format('MM/DD/YYYY'),
       monitorData: {
         firstName: userProfile.firstName,
         lastName: userProfile.lastName,
