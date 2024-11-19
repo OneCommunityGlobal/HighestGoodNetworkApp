@@ -1,4 +1,4 @@
-export const PermissionPresets = [
+export const permissionPresets = [
     {
         name: 'Owner',
         permissions: [
@@ -95,6 +95,10 @@ export const PermissionPresets = [
             'postTask', 
             'updateTask', 
             'deleteTask', 
+            // just testing these ones
+            'suggestTask',
+            'putReviewStatus',
+            // end testing
             'putTeam', 
             'deleteTeam', 
             'postTeam', 
@@ -115,6 +119,45 @@ export const PermissionPresets = [
     {
         name: 'Manager',
         permissions: [
+            // testing these ones
+            'seeUsersInDashboard', 
+            'getReports', 
+            'getWeeklySummaries', 
+            'totalValidWeeklySummaries', 
+            'editTeamCode', 
+            'postUserProfile', 
+            'changeUserStatus', 
+            'putUserProfileImportantInfo', 
+            'updateSummaryRequirements', 
+            'manageTimeOffRequests', 
+            'changeUserRehireableStatus', 
+            'seeBadges', 
+            'createBadges', 
+            'updateBadges', 
+            'deleteBadges', 
+            'assignBadges', 
+            'postProject', 
+            'deleteProject', 
+            'putProject', 
+            'assignProjectToUsers', 
+            'postWbs', 
+            'deleteWbs', 
+            'deleteTask', 
+            'deleteTeam', 
+            'postTeam', 
+            'assignTeamToUsers', 
+            'postTimeEntry', 
+            'deleteTimeEntry', 
+            'editTimeEntryTime', 
+            'editTimeEntryDescription', 
+            'editTimeEntryToggleTangible', 
+            'editTimeEntryDate', 
+            'putRole', 
+            'putUserProfilePermissions', 
+            'updatePopup', 
+            'addNewTitle', 
+            'assignTitle',
+            // end testing
             'getUserProfiles', 
             'putUserProfile', 
             'addInfringements', 
@@ -139,7 +182,10 @@ export const PermissionPresets = [
             'getProjectMembers', 
             'updateTask', 
             'suggestTask', 
-            'putReviewStatus'
+            'putReviewStatus',
+            // testing these ones
+            'seeUsersInDashboard', 'getReports', 'getWeeklySummaries', 'totalValidWeeklySummaries', 'editTeamCode', 'postUserProfile', 'changeUserStatus', 'putUserProfileImportantInfo', 'updateSummaryRequirements', 'manageTimeOffRequests', 'changeUserRehireableStatus', 'seeBadges', 'createBadges', 'updateBadges', 'deleteBadges', 'assignBadges', 'postProject', 'deleteProject', 'putProject', 'assignProjectToUsers', 'postWbs', 'deleteWbs', 'postTask', 'deleteTask', 'putTeam', 'deleteTeam', 'postTeam', 'assignTeamToUsers', 'postTimeEntry', 'deleteTimeEntry', 'editTimeEntryTime', 'editTimeEntryDescription', 'editTimeEntryToggleTangible', 'editTimeEntryDate', 'putRole', 'putUserProfilePermissions', 'updatePopup', 'addNewTitle', 'assignTitle'
+            // end testing
         ],
     },
     {
@@ -173,21 +219,36 @@ export const PermissionPresets = [
             'putUserProfileImportantInfo', 
             'updateSummaryRequirements', 
             'manageTimeOffRequests', 
-            'changeUserRehireableStatus'
+            'changeUserRehireableStatus',
+            // testing these ones
+            'getProjectMembers'
+            // end testing
         ],
     },
     {
         name: 'TestRole',
         permissions: [
+            // testing these ones
+            'seeUsersInDashboard', 'editHeaderMessage',
+            // end testing
             'getReports', 
             'getWeeklySummaries', 
             'totalValidWeeklySummaries', 
             'highlightEligibleBios', 
             'getVolunteerWeeklySummary', 
+            // testing these ones
+            'editTeamCode',
+            // end testing
             'getUserProfiles', 
+            // testing these ones
+            'postUserProfile',
+            // end testing
             'putUserProfile', 
             'changeUserStatus', 
-            'putUserProfilePermissions'
+            // testing these ones
+            'addInfringements', 'editInfringements', 'deleteInfringements', 'putUserProfileImportantInfo', 'updateSummaryRequirements', 'manageTimeOffRequests', 'changeUserRehireableStatus', 'getProjectMembers',
+            // end testing
+            // 'putUserProfilePermissions' - testing this one not in the list
         ],
     },
     {
@@ -200,41 +261,76 @@ export const PermissionPresets = [
             'totalValidWeeklySummaries', 
             'highlightEligibleBios', 
             'getVolunteerWeeklySummary', 
-            'editTeamCode'
+            'editTeamCode',
+            // testing these ones
+            'getUserProfiles', 'getProjectMembers'
+            // end testing
         ],
     },
     {
         name: 'usethistotest',
         permissions: [
+            // testing these ones
+            'seeUsersInDashboard', 'getReports', 'getWeeklySummaries',
+            // end testing
             'totalValidWeeklySummaries', 
             'highlightEligibleBios', 
+            // testing these ones
+            'getUserProfiles',
+            // end testing
             'postUserProfile', 
             'putUserProfile', 
             'updateBadges', 
-            'deleteBadges'
+            'deleteBadges',
+            // testing these ones
+            'getProjectMembers'
+            // end testing
         ],
     },
     {
         name: 'Creator',
-        permissions: ['seeUsersInDashboard', 'getReports'],
+        permissions: [
+            'seeUsersInDashboard', 
+            'getReports',
+            // testing these ones
+            'getWeeklySummaries', 'getUserProfiles', 'getProjectMembers'
+            // end testing
+        ],
     },
     {
         name: 'Test Role 3',
         permissions: [
+            // testing these ones
+            'seeUsersInDashboard',
+            // end testing
             'getReports', 
             'getWeeklySummaries', 
             'totalValidWeeklySummaries', 
             'highlightEligibleBios', 
             'getVolunteerWeeklySummary', 
-            'editTeamCode'
+            'editTeamCode',
+            // testing these ones
+            'getUserProfiles', 'getProjectMembers'
+            // end testing
         ],
     },
     {
         name: 'Assistant Manager',
-        permissions: ['suggestTask', 'putReviewStatus'],
+        permissions: [
+            // testing these ones
+            'seeUsersInDashboard', 'getReports', 'getWeeklySummaries', 'getUserProfiles', 'getProjectMembers',
+            // end testing
+            'suggestTask', 
+            'putReviewStatus'
+        ],
     },
     {
         name: 'Volunteer',
-        permissions: ['suggestTask'],
+        permissions: [
+            // testing these ones
+            'seeUsersInDashboard', 'getReports', 'getWeeklySummaries', 'getUserProfiles', 'getProjectMembers',
+            // end testing
+            'suggestTask'
+        ],
     }
 ]
