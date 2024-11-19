@@ -174,3 +174,8 @@
   font-weight: bold;
   font-size: 1.3rem;
 }
+
+input[type='text'] {
+  word-wrap: break-word;
+  word-break: break-all;
+}

@@ -232,7 +232,11 @@ function WarningTrackerModal({
   }
 
   return (
-    <Modal isOpen={toggleWarningTrackerModal} toggle={() => setToggleWarningTrackerModal(false)}>
+    <Modal
+      isOpen={toggleWarningTrackerModal}
+      toggle={() => setToggleWarningTrackerModal(false)}
+      className="warnings__tracker__modal"
+    >
       <ModalHeader className="modal__header">
         Current Warning Descriptions
         <OverlayTrigger
@@ -305,7 +309,7 @@ function WarningTrackerModal({
               <FontAwesomeIcon icon={faTimes} />
             </Button>
 
-            <input
+            <textarea
               type="text"
               onChange={e => handleEditWarningDescription(e, warning._id)}
               value={warning.warningTitle}

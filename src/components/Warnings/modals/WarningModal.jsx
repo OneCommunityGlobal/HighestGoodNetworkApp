@@ -74,29 +74,39 @@ function WarningModal({
         </ModalBody>
 
         <ModalFooter className="warning-modal-footer">
-          <Button
-            onClick={() => {
-              // email will be sent and logged
-              handleIssueWarning({ ...warning, colorAssigned: 'yellow' });
-              setToggleModal(false);
-            }}
-            color="warning"
-            className="warning__modal__footer__btn"
-          >
-            Issue Warning
-          </Button>
+          {numberOfWarnings >= 8 ? (
+            <div>
+              <p className="warning__body--bold warning__body--margin"> Plase Note:</p>
+              <p> the user has received the maximum number of warnings for this category</p>
+              <p>please select another one in order to issue a warning</p>
+            </div>
+          ) : (
+            <>
+              <Button
+                onClick={() => {
+                  // email will be sent and logged
+                  handleIssueWarning({ ...warning, colorAssigned: 'yellow' });
+                  setToggleModal(false);
+                }}
+                color="warning"
+                className="warning__modal__footer__btn"
+              >
+                Issue Warning
+              </Button>
 
-          <Button
-            onClick={() => {
-              // alert('BLUE SQUARE ISSUED!!');
-              handleIssueWarning({ ...warning, colorAssigned: 'red' });
-              setToggleModal(false);
-            }}
-            color="primary"
-            className="warning__modal__footer__btn"
-          >
-            Issue Blue Square
-          </Button>
+              <Button
+                onClick={() => {
+                  // alert('BLUE SQUARE ISSUED!!');
+                  handleIssueWarning({ ...warning, colorAssigned: 'red' });
+                  setToggleModal(false);
+                }}
+                color="primary"
+                className="warning__modal__footer__btn"
+              >
+                Issue Blue Square
+              </Button>
+            </>
+          )}
           <Button
             onClick={() => setToggleModal(false)}
             color="danger"
