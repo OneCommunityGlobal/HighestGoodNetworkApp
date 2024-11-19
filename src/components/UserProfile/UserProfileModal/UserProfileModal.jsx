@@ -191,32 +191,6 @@ const UserProfileModal = props => {
         handleIssueWarning={handleLogNewWarning}
       />
 
-      {/* <Modal isOpen={toggleLogWarning} toggle={() => setToggleLogWarning(prev => !prev)}>
-        <ModalHeader>
-          Are you sure you want to log a warning for{' '}
-          <p>
-            <strong>
-              {' '}
-              {warningType === 'BS4NS' ? 'No summary submitted' : 'Not enough hours logged'}?
-            </strong>
-          </p>
-        </ModalHeader>
-
-        <ModalBody>
-          <p>The warning will be loged to usernames's warnings</p>
-          <p>After 3 warnings they'll be emailed for said warning</p>
-        </ModalBody>
-
-        <ModalFooter>
-          <Button color="danger" onClick={() => setToggleLogWarning(false)}>
-            Cancel
-          </Button>
-          <Button color="primary" onClick={() => handleLogNewWarning()}>
-            Log Warning
-          </Button>
-        </ModalFooter>
-      </Modal> */}
-
       <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
         <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>
           {modalTitle}
@@ -501,7 +475,6 @@ const UserProfileModal = props => {
             <>
               <div>
                 {specialWarnings.map(warning => (
-                  // <div key={index} style={{ display: 'flex', margin: '5px' }}>
                   <OverlayTrigger
                     key={warning.abbreviation}
                     placement="top"
@@ -521,7 +494,6 @@ const UserProfileModal = props => {
                       </Popover>
                     }
                   >
-                    {/* <div className="customInput">{warning.abbreviation}</div> */}
                     <Button
                       color="warning"
                       onClick={e => {
@@ -532,7 +504,11 @@ const UserProfileModal = props => {
                     >
                       {warning.abbreviation}
                     </Button>
-                    {/* {warning.warnings < 8 ? (
+
+                    {/* 
+                    place holder for the warning button
+                    incase i want to hide it if the user has reached the max warnings
+                    {warning.warnings < 8 ? (
                       <Button
                         color="warning"
                         onClick={e => {

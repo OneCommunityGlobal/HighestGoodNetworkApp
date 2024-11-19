@@ -591,7 +591,6 @@ function UserProfile(props) {
   };
 
   const fetchSpecialWarnings = async () => {
-    console.log('fetchSpecialWarnings called');
     const userId = props?.match?.params?.userId;
     try {
       dispatch(getSpecialWarnings(userId)).then(res => {
@@ -623,12 +622,12 @@ function UserProfile(props) {
     dispatch(postWarningByUserId(warningData))
       .then(response => {
         if (response.error) {
-          alert('Failed to log warning');
+          toast.success('Warning failed to log try again');
           return;
         } else {
-          alert('Warning successfully logged');
           setShowModal(false);
           fetchSpecialWarnings();
+          toast.success('Warning successfully logged');
         }
       })
       .catch(err => {
