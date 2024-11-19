@@ -45,6 +45,9 @@ const TeamMemberTask = React.memo(
     goingOnTimeOff,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
+    const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
+      // console.log('Task counts:', taskCounts);
+      // console.log('Task IDs:', Object.keys(taskCounts));
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
@@ -317,7 +320,7 @@ const TeamMemberTask = React.memo(
                                         title="Deadline Follow-up Count"
                                         data-testid={`deadline-${task.taskName}`}
                                       >
-                                        {task.deadlineCount === undefined ? 0 : task.deadlineCount}
+                                        {taskCounts[task._id] !== undefined ? taskCounts[task._id] : (task.deadlineCount === undefined ? 0 : task.deadlineCount)}
                                       </span>
                                     )}
                                     <div className="team-task-progress-container">
