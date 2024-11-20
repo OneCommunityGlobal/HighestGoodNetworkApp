@@ -16,7 +16,8 @@ function PermissionChangeModal({
   potentialRole,
   oldRolePermissions,
   currentUserPermissions,
-  permissionLabelPermissions
+  permissionLabelPermissions,
+  permissionPresets
 }) {
   // Creating a modal that pops up when someone changes a user's role
   // and the user has custom permissions that differ from the permissions
@@ -33,7 +34,7 @@ function PermissionChangeModal({
 
   const newRole = potentialRole;
 
-  useEffect(() => {
+  /* useEffect(() => {
     const fetchNewRolePermissions = async () => {
       console.log('Fetching new role permissions');
       if (newRole) {
@@ -51,7 +52,21 @@ function PermissionChangeModal({
     };
 
     fetchNewRolePermissions();
-  }, [dispatch, newRole]);
+  }, [dispatch, newRole]); */
+
+  useEffect(() => {
+    const findNewRolePresets = (role) => {
+      for (let preset of permissionPresets) {
+        if (preset.name === role) {
+          return preset.permissions;
+        }
+      }
+      return [];
+    };
+    
+    const newRolePresets = findNewRolePresets(newRole);
+    setNewRolePermissions(newRolePresets);
+  }, [newRole, permissionPresets]);
 
   // difference between old role permissions and user permissions
   // permissions that were added to user (user permissions - old role permissions)
@@ -72,6 +87,7 @@ function PermissionChangeModal({
   }, [customAddedPermissions, newRolePermissions]);
 
   useEffect(() => {
+    console.log('currentUserPermissions:', currentUserPermissions);
     console.log('oldRolePermissions:', oldRolePermissions);
     console.log('newRolePermissions:', newRolePermissions);
     console.log('customAddedPermissions:', customAddedPermissions);
@@ -125,6 +141,8 @@ function PermissionChangeModal({
       setCheckedRemovedPermissions(initialCheckedRemovedPermissions);
       setCheckedAddedPermissions(initialCheckedAddedPermissions);
     }
+    console.log('checkedAddedPermissions:', checkedAddedPermissions);
+    console.log('checkedRemovedPermissions:', checkedRemovedPermissions);
   }, [isOpen, newRolePermissionsToAdd, newRolePermissionsToRemove]);
 
   const togglePermission = (permission, type) => {
@@ -145,6 +163,8 @@ function PermissionChangeModal({
     try {
       const updatedPermissions = [
         // ...currentUserPermissions.filter(permission => !checkedRemovedPermissions[permission]),
+        // ...newRolePermissions.filter(permission => !checkedRemovedPermissions[permission]),
+        // filter newRolePermissions to remove checkedRemovedPermissions permissions that have the value false
         ...newRolePermissions.filter(permission => !checkedRemovedPermissions[permission]),
         // ...newRolePermissionsToRemove.filter(permission => checkedAddedPermissions[permission])
         ...Object.keys(checkedAddedPermissions).filter(permission => checkedAddedPermissions[permission])
