@@ -400,8 +400,8 @@
 }
 
 .name {
-  margin-bottom: 2px;
-  margin-right: 2px;
+  margin-bottom: 4px;
+  margin-right: 4px;
 }
 
 .name-initial {
@@ -416,7 +416,16 @@
   font-size: 10px;
   font-weight: 700;
   text-transform: uppercase;
+}
 
+.name-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.member-links-wrapper {
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 1240px) and (min-width: 992px) {
