@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useSelector } from 'react-redux';
+import { toast } from 'react-toastify';
 import _ from 'lodash';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '../../utils/URL';
@@ -34,17 +35,15 @@ const SetupNewUserPopup = React.memo(props => {
         .post(ENDPOINTS.SETUP_NEW_USER(), { baseUrl, email, weeklyCommittedHours })
         .then(res => {
           if (res.status === 200) {
-            setAlert({
-              visibility: 'visible',
-              message: 'The setup link has been successfully sent',
-              state: 'success',
-            });
+            props.handleShouldRefreshInvitationHistory();
+            toast.success('The setup link has been successfully sent');
+            closePopup();
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
         })
         .catch(err => {
-          if (err.response.data === 'email already in use') {
+          if (err.response?.data === 'email already in use') {
             setAlert({
               visibility: 'visible',
               message: 'This email is associated with an existing user account.',
