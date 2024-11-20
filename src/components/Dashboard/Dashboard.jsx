@@ -22,6 +22,7 @@ import {
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
+  const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
 
@@ -173,6 +174,7 @@ export function Dashboard(props) {
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
+            setFilteredUserTeamIds={setFilteredUserTeamIds}
           />
         </Col>
         <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
@@ -192,6 +194,7 @@ export function Dashboard(props) {
               isDashboard
               passSummaryBarData={setSummaryBarData}
               isNotAllowedToEdit={isNotAllowedToEdit}
+              filteredUserTeamIds={filteredUserTeamIds}
             />
           </div>
         </Col>
