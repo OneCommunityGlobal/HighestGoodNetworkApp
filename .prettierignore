@@ -17,13 +17,11 @@ src/__tests__/**
 
 src/components/App.jsx
 src/components/AutoReload/**
-src/components/Header/**
 src/components/Inventory/**
 src/components/Memberships/**
 src/components/Projects/**
 src/components/Reports/**
 src/components/SetupProfile/**
-src/components/SummaryBar/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamLocations/**
