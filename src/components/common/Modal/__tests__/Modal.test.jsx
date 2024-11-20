@@ -1,7 +1,7 @@
 import React from 'react';
 import { render, fireEvent, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import ModalExample from './Modal';
+import ModalExample from '../Modal';
 
 describe('ModalExample Component', () => {
   it('renders when isOpen is true', () => {
