@@ -5,6 +5,7 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function Announcements() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -14,8 +15,8 @@ function Announcements() {
   const [headerContent, setHeaderContent] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
-  const [linkedinContent, setLinkedinContent] = useState(''); //linkedin 
-  const [linkedinMedia, setLinkedinMedia] = useState(null); // linkedin 
+  const [linkedinContent, setLinkedinContent] = useState(''); //linkedin
+  const [linkedinMedia, setLinkedinMedia] = useState(null); // linkedin
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
 
   useEffect(() => {
@@ -82,16 +83,16 @@ function Announcements() {
       bullist numlist outdent indent | removeformat | help',
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
-  }
+  };
 
   const handleEmailListChange = e => {
     const emails = e.target.value.split(',');
     setEmailList(emails);
   };
-  
+
   const handleHeaderContentChange = e => {
     setHeaderContent(e.target.value);
-  }
+  };
 
   const convertImageToBase64 = (file, callback) => {
     const reader = new FileReader();
@@ -118,15 +119,15 @@ function Announcements() {
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-      const editor = tinymce.get('email-editor');
-      if (editor) {
-        editor.insertContent(imageTag);
-        setEmailContent(editor.getContent());
-      }
-      setHeaderContent(''); // Clear the input field after inserting the header
+    const editor = tinymce.get('email-editor');
+    if (editor) {
+      editor.insertContent(imageTag);
+      setEmailContent(editor.getContent());
+    }
+    setHeaderContent(''); // Clear the input field after inserting the header
   };
 
-  const validateEmail = (email) => {
+  const validateEmail = email => {
     /* Add a regex pattern for email validation */
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
@@ -134,22 +135,21 @@ function Announcements() {
 
   const handleSendEmails = () => {
     const htmlContent = emailContent;
-    
+
     if (emailList.length === 0 || emailList.every(email => !email.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
-  
+
     const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
-    
+
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
       return;
     }
-  
+
     dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
   };
-  
 
   const handleBroadcastEmails = () => {
     const htmlContent = `
@@ -162,90 +162,95 @@ function Announcements() {
 
   const handleLinkedinContentChange = e => {
     setLinkedinContent(e.target.value);
-  }
-
-// Function to post to LinkedIn
-const handleMediaUpload = (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-
-  const reader = new FileReader();
-  reader.onloadend = () => {
-    setLinkedinMedia(reader.result); 
   };
-  reader.readAsDataURL(file);
-};
 
-const handlePostToLinkedIn = async () => {
-  try {
-    if (linkedinContent.trim() === '') {
-      toast.error('Error: LinkedIn post content cannot be empty.');
-      return;
-    }
+  // Function to post to LinkedIn
+  const handleMediaUpload = e => {
+    const file = e.target.files[0];
+    if (!file) return;
 
-    const postPayload = {
-      content: linkedinContent,
-      media: linkedinMedia || null, // check have media 
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setLinkedinMedia(reader.result);
     };
+    reader.readAsDataURL(file);
+  };
 
-    const response = await fetch('http://localhost:4500/api/postToLinkedIn', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(postPayload),
-    });
+  const handlePostToLinkedIn = async () => {
+    try {
+      if (linkedinContent.trim() === '') {
+        toast.error('Error: LinkedIn post content cannot be empty.');
+        return;
+      }
 
-    if (!response.ok) {
-      throw new Error('Failed to post to LinkedIn');
+      const postPayload = {
+        content: linkedinContent,
+        media: linkedinMedia || null, // check have media
+      };
+
+      const response = await axios.post('http://localhost:4500/api/postToLinkedIn', {
+        postPayload,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to post to LinkedIn');
+      }
+
+      toast.success('Post to LinkedIn successful!');
+      setLinkedinContent('');
+      setLinkedinMedia(null);
+    } catch (error) {
+      toast.error('Failed to post to LinkedIn');
+      console.error('Error posting to LinkedIn:', error);
     }
+  };
 
-    toast.success('Post to LinkedIn successful!');
-    setLinkedinContent('');
-    setLinkedinMedia(null); 
-  } catch (error) {
-    toast.error('Failed to post to LinkedIn');
-    console.error('Error posting to LinkedIn:', error);
-  }
-};
-
-  
   return (
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
         <div className="editor">
           <h3>Weekly Progress Editor</h3>
           <br />
-          {showEditor && <Editor
-            tinymceScriptSrc="/tinymce/tinymce.min.js"
-            id="email-editor"
-            initialValue="<p>This is the initial content of the editor</p>"
-            init={editorInit}
-            onEditorChange={(content, editor) => {
-              setEmailContent(content);
-            }}
-          />}
-          <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
+          {showEditor && (
+            <Editor
+              tinymceScriptSrc="/tinymce/tinymce.min.js"
+              id="email-editor"
+              initialValue="<p>This is the initial content of the editor</p>"
+              init={editorInit}
+              onEditorChange={(content, editor) => {
+                setEmailContent(content);
+              }}
+            />
+          )}
+          <button
+            type="button"
+            className="send-button"
+            onClick={handleBroadcastEmails}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             Broadcast Weekly Update
           </button>
-        {/* LinkedIn Editor Section */}
-        <div>
-      <h3>LinkedIn Post Editor</h3>
-      <textarea
-        value={linkedinContent}
-        onChange={(e) => setLinkedinContent(e.target.value)}
-        placeholder="Enter LinkedIn content here"
-      />
-      <input
-        type="file"
-        accept="image/*,video/*"
-        onChange={handleMediaUpload} // 处理媒体上传
-        style={{ margin: '10px 0' }}
-      />
-      <button onClick={handlePostToLinkedIn}>Post to LinkedIn</button>
-    </div>
-        </div>        
-        <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}  style={darkMode ? boxStyleDark : boxStyle}>
+          {/* LinkedIn Editor Section */}
+          <div>
+            <h3>LinkedIn Post Editor</h3>
+            <textarea
+              value={linkedinContent}
+              onChange={e => setLinkedinContent(e.target.value)}
+              placeholder="Enter LinkedIn content here"
+            />
+            <input
+              type="file"
+              accept="image/*,video/*"
+              onChange={handleMediaUpload} // 处理媒体上传
+              style={{ margin: '10px 0' }}
+            />
+            <button onClick={handlePostToLinkedIn}>Post to LinkedIn</button>
+          </div>
+        </div>
+        <div
+          className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
+          style={darkMode ? boxStyleDark : boxStyle}
+        >
           <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
             Email List (comma-separated):
           </label>
@@ -255,39 +260,47 @@ const handlePostToLinkedIn = async () => {
             onChange={handleEmailListChange}
             className="input-text-for-announcement"
           />
-          <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
+          <button
+            type="button"
+            className="send-button"
+            onClick={handleSendEmails}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             Send Email to specific user
           </button>
-          
-            <hr />
-            <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Insert header or image link:
-            </label>
-            <input
-              type="text"
-              id="header-content-input"  
-              onChange={handleHeaderContentChange}
-              className="input-text-for-announcement"
-            />
 
-            <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
-              Insert
-            </button>
-            <hr />
-            <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Upload Header (or footer):
-            </label>
-            <input
-              type="file"
-              id="upload-header-input"  
-              onChange={addImageToEmailContent}
-              className="input-file-upload"
-            />
+          <hr />
+          <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+            Insert header or image link:
+          </label>
+          <input
+            type="text"
+            id="header-content-input"
+            onChange={handleHeaderContentChange}
+            className="input-text-for-announcement"
+          />
 
-            </div>
-          </div>
+          <button
+            type="button"
+            className="send-button"
+            onClick={addHeaderToEmailContent}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Insert
+          </button>
+          <hr />
+          <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
+            Upload Header (or footer):
+          </label>
+          <input
+            type="file"
+            id="upload-header-input"
+            onChange={addImageToEmailContent}
+            className="input-file-upload"
+          />
         </div>
-      
+      </div>
+    </div>
   );
 }
 
