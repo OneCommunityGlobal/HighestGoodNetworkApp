@@ -717,15 +717,16 @@ const TeamMemberTasks = React.memo(props => {
         </Row>
       )}
       <div className="task_table-container">
-        <Table className='task-table'>
+      <Table className='task-table'>
           <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
-              {/* Empty column header for hours completed icon */}
-              <th colSpan={1} className={`hours-completed-column ${darkMode ? "bg-space-cadet" : ""}`}/>
-              <th colSpan={2} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
+              <th colSpan={3} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
                 <Table borderless className={`team-member-tasks-subtable ${darkMode ? "text-light" : ""}`}>
                   <thead className={darkMode ? "bg-space-cadet" : ""}>
                     <tr>
+                      <th className={darkMode ? "bg-space-cadet" : ""}>
+                        User Status
+                      </th>
                       <th
                         className={`team-member-tasks-headers team-member-tasks-user-name ${
                           darkMode ? 'bg-space-cadet' : ''
