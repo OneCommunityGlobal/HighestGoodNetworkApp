@@ -399,6 +399,12 @@
   flex-direction: row;
 }
 
+.container .google-icon-wrapper img {
+  width: 24px;
+  height: auto;
+}
+
+
 .name {
   margin-bottom: 4px;
   margin-right: 4px;

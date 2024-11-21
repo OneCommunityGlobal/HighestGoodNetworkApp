@@ -203,7 +203,7 @@ const TeamMemberTask = React.memo(
                           title="Click to see user's timelog"
                         />
                       </Link>
-                      {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
+                      {canGetWeeklySummaries && <div className="google-icon-wrapper"><GoogleDocIcon link={userGoogleDocLink} /></div>}
                     </div>
                     {canGetWeeklySummaries && teamRoles && <div className="name-wrapper">
                       {['Manager', 'Assistant Manager', 'Mentor'].map((role, roleIndex) => {
