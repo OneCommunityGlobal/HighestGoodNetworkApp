@@ -22,7 +22,6 @@ import { postMeeting } from '../../actions/meetings';
 import Participants from './components/Participants';
 import './MeetingScheduling.css';
 
-
 const customImageUploadHandler = () =>
   new Promise((_, reject) => {
     // eslint-disable-next-line prefer-promise-reject-errors
