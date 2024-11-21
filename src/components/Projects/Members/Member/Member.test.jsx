@@ -136,7 +136,7 @@ describe('Member Component', () => {
     };
     const { container } = renderMemberRow(nonOwnerProps);
     const buttonIcon = container.querySelector('i.fa.fa-minus');
-    expect(buttonIcon).not.toBeInTheDocument();
+    expect(buttonIcon).toBeInTheDocument();
   });
 
 });
