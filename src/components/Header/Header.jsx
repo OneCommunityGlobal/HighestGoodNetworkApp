@@ -55,6 +55,25 @@ import {
   BLUE_SQUARE_EMAIL_MANAGEMENT,
   SCHEDULE_MEETINGS,
 } from '../../languages/en/ui';
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  NavbarBrand,
+  Nav,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Card,
+} from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import Logout from '../Logout/Logout';
 import '../../App.css';
@@ -171,14 +190,17 @@ export function Header(props) {
 
   // const unreadNotifications = props.unreadNotifications; // List of unread notifications
   const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
+  // const userUnreadMeetings = useMemo(() => {
+  //   if (!unreadMeetingNotifications || !userId) return [];
+  //   return unreadMeetingNotifications.filter(meeting => meeting.recipient === userId);
+  // }, [unreadMeetingNotifications, userId]);
   const userUnreadMeetings = unreadMeetingNotifications.filter(meeting => meeting.recipient === userId);
-  const allUnreadNotifications = [...unreadNotifications, ...userUnreadMeetings];
   const dispatch = useDispatch();
   const history = useHistory();
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
   const MeetingNotificationAudioRef = useRef(null);
-
+  
   useEffect(() => {
     const handleStorageEvent = () => {
       const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
@@ -241,9 +263,31 @@ export function Header(props) {
     console.log('******', props.notification.unreadNotifications);
   }, []);
 
-  // console.log('CHECK VALUES', allUnreadNotifications);
-
-  const roles = props.role?.roles;
+  useEffect(() => {
+    if (userUnreadMeetings.length > 0) {
+      const currMeeting = userUnreadMeetings[0];
+      const organizerProfile = allUserProfiles.filter(user => user._id === currMeeting.sender)[0];
+      
+      if (!meetingModalOpen) {
+        setMeetingModalOpen(true);
+        setMeetingModalMessage(`Reminder: You have an upcoming meeting! Please check the details and be prepared.<br>
+          Time: ${new Date(currMeeting.dateTime).toLocaleString()},<br>
+          Organizer: ${organizerProfile.firstName} ${organizerProfile.lastName}<br>
+          ${currMeeting.notes ? `Notes: ${currMeeting.notes}<br>` : ''}
+        `);
+      }
+      MeetingNotificationAudioRef.current?.play();
+    } else {
+      if (meetingModalOpen) {
+        setMeetingModalOpen(false);
+        setMeetingModalMessage('');
+      }
+      if (MeetingNotificationAudioRef.current) {
+        MeetingNotificationAudioRef.current.pause();
+        MeetingNotificationAudioRef.current.currentTime = 0;
+      }
+    }
+  }, [userUnreadMeetings]);
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
@@ -364,39 +408,10 @@ export function Header(props) {
 
   if (location.pathname === '/login') return null;
 
-  useEffect(() => {
-    if (userUnreadMeetings.length > 0) {
-      const currMeeting = userUnreadMeetings[0];
-      const organizerProfile = allUserProfiles.filter(user => user._id === currMeeting.sender)[0];
-      console.log(currMeeting, organizerProfile);
-      if (!meetingModalOpen) {
-        setMeetingModalOpen(true);
-        setMeetingModalMessage(`Reminder: You have an upcoming meeting! Please check the details and be prepared.<br>
-          Time: ${new Date(currMeeting.dateTime).toLocaleString()},<br>
-          Organizer: ${organizerProfile.firstName} ${organizerProfile.lastName}<br>
-          ${currMeeting.notes ? `Notes: ${currMeeting.notes}<br>` : ''}
-        `);
-      }
-      MeetingNotificationAudioRef.current?.play();
-    } else {
-      if (meetingModalOpen) {
-        setMeetingModalOpen(false);
-        setMeetingModalMessage('');
-      }
-      if (MeetingNotificationAudioRef.current) {
-        MeetingNotificationAudioRef.current.pause();
-        MeetingNotificationAudioRef.current.currentTime = 0;
-      }
-    }
-  }, [userUnreadMeetings]);
-
   const handleMeetingRead = () => {
-    console.log('handleMeetingRead');
     setMeetingModalOpen(!meetingModalOpen);
     if (userUnreadMeetings?.length > 0){
-      console.log('userUnreadMeetings[0]', userUnreadMeetings[0]);
       dispatch(markMeetingNotificationAsRead(userUnreadMeetings[0]));
-      console.log('after dispatch');
     }
   };
 
