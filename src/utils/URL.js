@@ -4,8 +4,6 @@ const APIEndpoint =
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
   USER_PROFILE: userId => `${APIEndpoint}/userprofile/${userId}`,
-  POST_USER_PERMISSION_CHANGE_LOGS: `${APIEndpoint}/logPermissionChanges`,
-  GET_USER_PERMISSION_CHANGE_LOGS: userId => `${APIEndpoint}/logPermissionChanges/${userId}`,
   USER_PROFILE_PROPERTY: userId => `${APIEndpoint}/userprofile/${userId}/property`,
   USER_PROFILES: `${APIEndpoint}/userprofile/`,
   UPDATE_REHIREABLE_STATUS: userId => `${APIEndpoint}/userprofile/${userId}/rehireable`,

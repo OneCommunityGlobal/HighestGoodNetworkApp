@@ -62,9 +62,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
     getUserRole(auth?.user.userid);
     const getChangeLogs = async () => {
       try {
-        const response = await axios.get(
-          ENDPOINTS.GET_USER_PERMISSION_CHANGE_LOGS(auth?.user.userid),
-        );
+        const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid));
         setChangeLogs(response.data);
         setLoading(false);
       } catch (error) {
