@@ -1,6 +1,5 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
 import { updateUserProfileProperty } from '../../../actions/userProfile';
 import { permissionLabels } from '../../PermissionsManagement/PermissionsConst';
 import './PermissionChangeModal.css';
@@ -13,11 +12,14 @@ function PermissionChangeModal({
   setUserProfile, 
   isOpen, 
   closeModal,
-  potentialRole,
+  newRole,
   oldRolePermissions,
+  newRolePermissions,
   currentUserPermissions,
   permissionLabelPermissions,
-  permissionPresets
+  permissionPresets,
+  newRolePermissionsToAdd,
+  newRolePermissionsToRemove
 }) {
   // Creating a modal that pops up when someone changes a user's role
   // and the user has custom permissions that differ from the permissions
@@ -25,89 +27,14 @@ function PermissionChangeModal({
   // and the permissions of the new role, and ask the user to confirm which permissions they want
   // to keep.
 
-  const [newRolePermissions, setNewRolePermissions] = useState([]);
   const [checkedAddedPermissions, setCheckedAddedPermissions] = useState({});
   const [checkedRemovedPermissions, setCheckedRemovedPermissions] = useState({});
 
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const newRole = potentialRole;
-
-  /* useEffect(() => {
-    const fetchNewRolePermissions = async () => {
-      console.log('Fetching new role permissions');
-      if (newRole) {
-        try {
-          const newRolePresets = await dispatch(getPresetsByRole(newRole));
-          console.log('newRolePresets:', newRolePresets);
-          if (newRolePresets && newRolePresets.presets && newRolePresets.presets[2]) {
-            const filteredPermissions = newRolePresets.presets[2].permissions.filter(permission => permissionLabelPermissions.has(permission));
-            setNewRolePermissions(filteredPermissions);
-          }
-        } catch (error) {
-          console.error('Error fetching new role presets:', error);
-        }
-      }
-    };
-
-    fetchNewRolePermissions();
-  }, [dispatch, newRole]); */
-
-  useEffect(() => {
-    const findNewRolePresets = (role) => {
-      for (let preset of permissionPresets) {
-        if (preset.name === role) {
-          return preset.permissions;
-        }
-      }
-      return [];
-    };
-    
-    const newRolePresets = findNewRolePresets(newRole);
-    setNewRolePermissions(newRolePresets);
-  }, [newRole, permissionPresets]);
-
-  // difference between old role permissions and user permissions
-  // permissions that were added to user (user permissions - old role permissions)
-  const customAddedPermissions = useMemo(() => {
-    return currentUserPermissions.filter(permission => !oldRolePermissions.includes(permission));
-  }, [currentUserPermissions, oldRolePermissions]);
-  // permissions that were removed from user (old role permissions - user permissions)
-  const customRemovedPermissions = useMemo(() => {
-    return oldRolePermissions.filter(permission => !currentUserPermissions.includes(permission));
-  }, [oldRolePermissions, currentUserPermissions]);
-  // permissions that were removed from user but are in new role (newRolePermissions - customRemovedPermissions)
-  const newRolePermissionsToAdd = useMemo(() => {
-    return newRolePermissions.filter(permission => customRemovedPermissions.includes(permission));
-  }, [newRolePermissions, customRemovedPermissions]);
-  // permissions that were added to user but are not in new role (newRolePermissions + customAddedPermissions)
-  const newRolePermissionsToRemove = useMemo(() => {
-    return customAddedPermissions.filter(permission => !newRolePermissions.includes(permission));
-  }, [customAddedPermissions, newRolePermissions]);
-
-  useEffect(() => {
-    console.log('currentUserPermissions:', currentUserPermissions);
-    console.log('oldRolePermissions:', oldRolePermissions);
-    console.log('newRolePermissions:', newRolePermissions);
-    console.log('customAddedPermissions:', customAddedPermissions);
-    console.log('customRemovedPermissions:', customRemovedPermissions);
-    console.log('newRolePermissionsToAdd:', newRolePermissionsToAdd);
-    console.log('newRolePermissionsToRemove:', newRolePermissionsToRemove);
-  }, [newRolePermissions, customAddedPermissions, customRemovedPermissions, newRolePermissionsToAdd, newRolePermissionsToRemove]);
-
   const formatPermission = permission => {
     // find the permission in the permissionLabels array, then subperms array
-    /* for (let label of permissionLabels) {
-      for (let subperm of label.subperms) { */
-        // if the key matches the permission, return the label
-        /* if (subperm.key === permission) {
-          return subperm.label;
-        }
-      }
-    } */
-    // if the permission is not found in the permissionLabels array, return the permission
-    /* return permission; */
     const findPermissionLabel = (perms) => {
       for (let perm of perms) {
         if (perm.key === permission) {
@@ -162,8 +89,6 @@ function PermissionChangeModal({
   const confirmModal = async () => {
     try {
       const updatedPermissions = [
-        // ...currentUserPermissions.filter(permission => !checkedRemovedPermissions[permission]),
-        // ...newRolePermissions.filter(permission => !checkedRemovedPermissions[permission]),
         // filter newRolePermissions to remove checkedRemovedPermissions permissions that have the value false
         ...newRolePermissions.filter(permission => !checkedRemovedPermissions[permission]),
         // ...newRolePermissionsToRemove.filter(permission => checkedAddedPermissions[permission])
