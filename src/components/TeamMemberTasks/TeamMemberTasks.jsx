@@ -319,7 +319,7 @@ const TeamMemberTasks = React.memo(props => {
   const filteredTeamRoles = teams => {
     const roles = {}; 
 
-    teams.forEach(team => {
+    teamRoles && teams.forEach(team => {
         if (teamRoles[team.teamName]) {
             Object.entries(teamRoles[team.teamName]).forEach(([role, { id, name }]) => {
                 if (!roles[role]) {
