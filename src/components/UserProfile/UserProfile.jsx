@@ -65,6 +65,7 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
+
 import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
 
@@ -330,7 +331,15 @@ function UserProfile(props) {
         await loadSummaryIntroDetails(teamId, response.data);
       }
 
+      const startDate = newUserProfile?.startDate.split('T')[0];
       // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
+      const createdDate = newUserProfile?.createdDate ? newUserProfile.createdDate.split('T')[0] : null;
+
+
+      if (startDate && createdDate && new Date(startDate) < new Date(createdDate)) {
+        newUserProfile.startDate = createdDate;
+      }
+      //if start date is earlier than createdDate, update it to createdDate
       newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
       newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
       setTeams(newUserProfile.teams);
@@ -356,12 +365,13 @@ function UserProfile(props) {
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
         ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
       });
-      setUserStartDate(newUserProfile?.startDate.split('T')[0]);
+      setUserStartDate(startDate);
       checkIsProjectsEqual();
       // isTeamSaved(true);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
+      console.log(err);
     }
   };
 

@@ -30,7 +30,7 @@ import { connect, useSelector } from 'react-redux';
 import moment from 'moment';
 import ReactTooltip from 'react-tooltip';
 import ActiveCell from 'components/UserManagement/ActiveCell';
-import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
+import ProfileNavDot from '../UserManagement/ProfileNavDot';
 import TeamMemberTasks from 'components/TeamMemberTasks';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
@@ -359,7 +359,7 @@ const Timelog = props => {
 
   const calculateTotalTime = (data, isTangible) => {
     const filteredData = data.filter(entry => entry.isTangible === isTangible);
-    const reducer = (total, entry) => total + parseInt(entry.hours) + parseInt(entry.minutes) / 60;
+    const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
     return filteredData.reduce(reducer, 0);
   };
 
