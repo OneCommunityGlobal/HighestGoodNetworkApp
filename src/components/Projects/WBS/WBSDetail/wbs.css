@@ -161,10 +161,15 @@
   justify-content: center; /* Centers horizontally */
   align-items: center; /* Centers vertically */
   gap: 6px;
-  overflow-x: auto; /* Ensures it takes up the full height of the cell */
+  overflow: hidden;
+  transition: max-height 0.3s ; /* Smooth transition */ 
   max-width: 100%;
 }
 
+.resourceMoreToggle.expanded {
+  max-height: 1000px; /* Large enough to accommodate content dynamically */
+  padding: 10px; /* Optional: add spacing during expansion */
+}
 .resourceMore {
   display: none;
   justify-content: center; /* Centers the element horizontally */
