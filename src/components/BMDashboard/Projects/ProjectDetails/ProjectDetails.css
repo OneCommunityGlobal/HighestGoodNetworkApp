@@ -8,7 +8,7 @@
   font-weight: bold;
 }
 
-.project-details h1{
+.project-details h1 {
   font-size: 1.5rem;
 }
 
@@ -24,20 +24,21 @@
   background-color: #eaeeef;
 }
 
-
 .log-bar__section {
   width: 100%;
   margin-top: 1em;
 }
 
-.log-bar__section h2, .card.cards-container h2, .project-log h2{
+.log-bar__section h2,
+.card.cards-container h2,
+.project-log h2 {
   font-size: 1em;
   font-weight: bold;
 }
 
-.log-bar__section ul{
-    list-style-type: none;
-  }
+.log-bar__section ul {
+  list-style-type: none;
+}
 
 .button.btn {
   border: 0;
@@ -46,8 +47,8 @@
   width: 100%;
 }
 
-.button.btn:hover{
-  outline:auto;
+.button.btn:hover {
+  outline: auto;
   filter: brightness(130%);
 }
 
@@ -75,7 +76,7 @@
     flex-direction: column;
   }
 
-   .log-bar__btn-group {
+  .log-bar__btn-group {
     margin-top: -0.5em;
     display: flex;
     justify-content: center;
@@ -90,7 +91,7 @@
   }
 }
 
-@media (min-width: 750px) {
+@media (min-width: 880px) {
   .log-bar {
     display: flex;
     flex-direction: row;
@@ -162,7 +163,7 @@
 /* TO DO: dynamic value to be added */
 /* .single-card__info .warning{
   color: white;
-  background-color: #980101; 
+  background-color: #980101;
 } */
 
 @media (min-width: 600px) {
@@ -192,13 +193,17 @@
   font-weight: lighter;
 }
 
-.project-log thead{
+.project-log thead {
   background-color: transparent;
 }
 
-@media (max-width: 768px){
-  .project-log td, .project-log th {
+@media (max-width: 768px) {
+  .project-log td,
+  .project-log th {
     font-size: 0.6em;
   }
 }
 
+ul.log-bar__btn-group {
+  padding: 0px;
+}

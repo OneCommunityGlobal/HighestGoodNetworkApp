@@ -25,6 +25,7 @@ import { getUserProfile } from 'actions/userProfile';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
+import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
@@ -141,6 +142,7 @@ const TimeEntryForm = props => {
   const [reminder, setReminder] = useState(initialReminder);
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibility] = useState(false);
   const [isAboutModalVisible, setAboutModalVisible] = useState(false);
+  const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -202,7 +204,13 @@ const TimeEntryForm = props => {
         if (+target.value < 0 || +target.value > 59) return;
         return setFormValues(formValues => ({ ...formValues, minutes: +target.value }));
       case 'isTangible':
-        return setFormValues(formValues => ({ ...formValues, isTangible: target.checked }));
+        // Trigger modal on attempting to check the box
+        if (target.checked && !formValues.isTangible) {
+            setTimelogConfirmationModalVisible(true);
+        } else {
+            setFormValues(formValues => ({ ...formValues, isTangible: target.checked }));
+        }
+        break;
       default:
         return setFormValues(formValues => ({ ...formValues, [target.name]: target.value }));
     }
@@ -231,6 +239,16 @@ const TimeEntryForm = props => {
       enoughWords,
       hasLink,
     }));
+  };
+
+  // Function to handle modal confirmation
+  const handleConfirm = () => {
+    setFormValues(prev => ({ ...prev, isTangible: true }));
+    setTimelogConfirmationModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setTimelogConfirmationModalVisible(false);
   };
 
   const validateForm = isTimeModified => {
@@ -685,6 +703,14 @@ const TimeEntryForm = props => {
         visible={reminder.openModal}
         setVisible={toggleRemainder}
         cancelChange={cancelChange}
+        darkMode={darkMode}
+      />
+      <TimeLogConfirmationModal
+        isOpen={isTimelogConfirmationModalVisible}
+        toggleModal={handleCancel}
+        onConfirm={handleConfirm}
+        onReject={handleCancel}
+        onIntangible={handleCancel}
         darkMode={darkMode}
       />
     </>
