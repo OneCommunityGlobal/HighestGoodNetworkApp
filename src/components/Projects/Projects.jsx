@@ -99,8 +99,8 @@ const Projects = function(props) {
   // }
   const handleSort = (e) => {
     const clickedId = e.target.id;
-    if (clickedId === "LastEdited") {
-      setSortedByName(prevState => prevState === "LastEdited" ? "" : "LastEdited");
+    if (clickedId === "SortingByRecentEditedInventory") {
+      setSortedByName(prevState => prevState === "SortingByRecentEditedInventory" ? "" : "SortingByRecentEditedInventory");
     } else {
       setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
     }
@@ -150,8 +150,8 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
       } else if (sortedByName === "SortingByRecentEditedMembers") {
         return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
-      } else if (sortedByName === "LastEdited") {
-        return new Date(b.membersModifiedDatetime) - new Date(a.membersModifiedDatetime);
+      } else if (sortedByName === "SortingByRecentEditedInventory") {
+        return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
       } else {
         return 0;
       }

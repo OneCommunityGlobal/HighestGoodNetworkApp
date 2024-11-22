@@ -70,6 +70,12 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__inv" className='align-middle'>
         <span className='d-flex justify-content-between'>
           {INVENTORY}
+          <Button size="sm" className="ml-2" id="SortingByRecentEditedInventory" onClick={props.handleSort}>
+          <FontAwesomeIcon
+            icon={props.sorted === "SortingByRecentEditedInventory" ? faSort : faSortDown}
+            pointerEvents="none"
+          />
+          </Button>
         </span> 
       </th>
       <th scope="col" id="projects__members" className='align-middle'>
