@@ -3,7 +3,7 @@ import { render, userEvent, waitFor, screen, fireEvent } from '@testing-library/
 import { Provider } from 'react-redux';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import Member from './Member';
+import Member from '../Member';
 jest.mock('utils/permissions', () => ({
   //...jest.requireActual('utils/permissions'), // Use the actual implementation for other functions
   hasPermission: jest.fn((a) => true), // 
@@ -137,6 +137,7 @@ describe('Member Component', () => {
     const { container } = renderMemberRow(nonOwnerProps);
     const buttonIcon = container.querySelector('i.fa.fa-minus');
     expect(buttonIcon).toBeInTheDocument();
+
   });
 
 });

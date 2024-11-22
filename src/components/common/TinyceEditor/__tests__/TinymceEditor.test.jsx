@@ -1,5 +1,5 @@
 import { render, screen, waitFor } from '@testing-library/react';
-import TinyMCEEditor from './tinymceEditor';
+import TinyMCEEditor from '../tinymceEditor';
 
 describe('TinyMCEEditor Component', () => {
   const mockProps = {
@@ -32,7 +32,7 @@ describe('TinyMCEEditor Component', () => {
 
   it('displays an error message when error prop is provided', async () => {
     render(<TinyMCEEditor {...mockProps} error="Error message" />);
-    expect(await screen.findByText("Error message")).toBeInTheDocument();
+    expect(await screen.findByText('Error message')).toBeInTheDocument();
   });
 
   it('applies custom class name to the wrapper', async () => {
@@ -62,9 +62,9 @@ describe('TinyMCEEditor Component', () => {
       error: '',
       value: '',
     };
-  
+
     render(<TinyMCEEditor {...mockProps} />);
-  
+
     expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();
     expect(screen.getByLabelText(mockProps.label)).toHaveAttribute('id', mockProps.name);
   });
@@ -77,14 +77,14 @@ describe('TinyMCEEditor Component', () => {
       error: '',
       value: '',
     };
-  
+
     const config = {
       plugins: 'autolink link image lists print preview',
       toolbar: 'undo redo | bold italic | alignleft aligncenter alignright',
     };
-  
+
     render(<TinyMCEEditor {...mockProps} config={config} />);
-    
+
     const editorTextarea = document.getElementById(mockProps.name);
     expect(editorTextarea).toBeInTheDocument();
     expect(screen.getByLabelText(mockProps.label)).toBeInTheDocument();
