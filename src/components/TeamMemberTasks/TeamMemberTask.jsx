@@ -203,9 +203,9 @@ const TeamMemberTask = React.memo(
                           title="Click to see user's timelog"
                         />
                       </Link>
-                      {canGetWeeklySummaries && <div className="google-icon-wrapper"><GoogleDocIcon link={userGoogleDocLink} /></div>}
+                      {canUpdateTask && <div className="google-icon-wrapper"><GoogleDocIcon link={userGoogleDocLink} /></div>}
                     </div>
-                    {canGetWeeklySummaries && teamRoles && <div className="name-wrapper">
+                    {canUpdateTask && teamRoles && <div className="name-wrapper">
                       {['Manager', 'Assistant Manager', 'Mentor'].map((role, roleIndex) => {
                           return teamRoles[role]?.map((elm, i) => {
                             const name = elm.name; // Getting initials and formatting them here
