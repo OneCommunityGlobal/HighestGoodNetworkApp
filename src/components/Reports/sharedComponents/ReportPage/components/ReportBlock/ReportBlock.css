@@ -1,7 +1,6 @@
 .report-block-wrapper {
   border-radius: 12px;
   box-shadow: 0 0 12px #eae1f6;
-  overflow: hidden;
   text-align: center;
 }
 
@@ -13,6 +12,5 @@
 .report-block-wrapper-dark {
   border-radius: 12px;
   box-shadow: 0 0 12px black;
-  overflow: hidden;
   text-align: center;
 }
