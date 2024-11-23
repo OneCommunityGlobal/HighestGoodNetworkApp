@@ -83,7 +83,8 @@ function LeaderBoard({
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  const isOwner = ['Owner'].includes(loggedInUser.role);
+  // const isOwner = ['Owner'].includes(loggedInUser.role);
+  const isOwner = loggedInUser && loggedInUser.role && ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
