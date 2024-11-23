@@ -1,9 +1,9 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom/extend-expect';
 import configureStore from 'redux-mock-store';
-import { themeMock } from '__tests__/mockStates';
 import { Provider } from 'react-redux';
 import axios from 'axios';
+import { themeMock } from '../../../__tests__/mockStates';
 import SetUpFinalDayButton from '../SetUpFinalDayButton';
 import { SET_FINAL_DAY, CANCEL } from '../../../languages/en/ui';
 // import { updateUserFinalDayStatus } from '../../../actions/userManagement.js';
@@ -26,7 +26,7 @@ describe('SetUpFinalDayButton', () => {
   const store = mockStore({
     theme: themeMock,
   });
-  let renderSetUpFinalDayButton = props => {
+  const renderSetUpFinalDayButton = props => {
     render(
       <Provider store={store}>
         <SetUpFinalDayButton {...props} />
