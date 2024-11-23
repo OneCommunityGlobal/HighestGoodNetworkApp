@@ -190,11 +190,8 @@ function BadgeReport(props) {
   };
 
   useEffect(() => {
-    // Deep copy of props.badges to avoid direct mutation
-    const initialBadges = JSON.parse(JSON.stringify(props.badges)) || [];
-    let newBadges = initialBadges.slice();
+    let newBadges = JSON.parse(JSON.stringify(props.badges)) || [];
 
-    // Sorting logic
     newBadges.sort((a, b) => {
       if (a.badge.ranking === 0) return 1;
       if (b.badge.ranking === 0) return -1;
@@ -205,24 +202,19 @@ function BadgeReport(props) {
       return 0;
     });
 
-    // Count featured badges and update lastModified date
-    let featuredCount = 0;
-    newBadges = newBadges.map(badge => {
-      if (badge.featured) {
-        featuredCount++;
+    // Compute the total number of featured badges once
+    const featuredCount = newBadges.filter(badge => badge.featured).length;
+    setNumFeatured(featuredCount);
+
+    newBadges.forEach((badge, index) => {
+      if (typeof newBadges[index].lastModified === 'string') {
+        newBadges[index].lastModified = new Date(newBadges[index].lastModified);
       }
-      if (typeof badge === 'string') {
-        return {
-          ...badge,
-          lastModified: new Date(badge.lastModified),
-        };
-      }
-      return badge;
     });
 
-    setNumFeatured(featuredCount);
     setSortBadges(newBadges);
   }, [props.badges]);
+
 
   const countChange = (badge, index, newValue) => {
     let copyOfExisitingBadges = [...sortBadges];
@@ -290,21 +282,26 @@ function BadgeReport(props) {
   };
 
   const featuredChange = (badge, index, e) => {
-    let newBadges = sortBadges.slice();
-    if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
-      let count = 0;
-      setNumFeatured(count);
-      newBadges[index].featured = e.target.checked;
-      newBadges.forEach((badge, index) => {
-        if (badge.featured) {
-          setNumFeatured(++count);
-        }
-      });
+    let newBadges = [...sortBadges];
+    const newFeaturedState = e.target.checked;
+
+    // Compute the total number of featured badges, including the new change
+    const totalFeatured = newBadges.reduce((count, b, i) => {
+      if (i === index) {
+        return count + (newFeaturedState ? 1 : 0);
+      }
+      return count + (b.featured ? 1 : 0);
+    }, 0);
+
+    if (totalFeatured <= 5) {
+      // Update the featured state of the badge
+      newBadges[index].featured = newFeaturedState;
+      setNumFeatured(totalFeatured);
+      setSortBadges(newBadges);
     } else {
-      e.target.checked = false;
+      // If the limit is exceeded, prevent the change and show an error
       toast.error('Unfortunately, you may only select five badges to be featured.');
     }
-    setSortBadges(newBadges);
   };
 
   const handleDeleteBadge = oldBadge => {
@@ -475,7 +472,7 @@ function BadgeReport(props) {
                       <FormGroup check inline style={{ zIndex: '0' }}>
                         <Input
                           /* alternative to using the formgroup
-                          style={{ position: 'static' }} 
+                          style={{ position: 'static' }}
                           */
                           type="checkbox"
                           id={value.badge._id}
@@ -649,7 +646,7 @@ function BadgeReport(props) {
                               <FormGroup check inline style={{ zIndex: '0' }}>
                                 <Input
                                   /* alternative to using the formgroup
-                                  style={{ position: 'static' }} 
+                                  style={{ position: 'static' }}
                                   */
                                   type="checkbox"
                                   id={value.badge._id}
