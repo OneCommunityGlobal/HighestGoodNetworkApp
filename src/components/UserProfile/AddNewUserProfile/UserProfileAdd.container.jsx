@@ -21,6 +21,7 @@ const mapStateToProps = state => ({
   userProjects: state.userProjects,
   allProjects: get(state, 'allProjects'),
   allTeams: state,
+  darkMode: state.theme.darkMode,
   state,
 });
 

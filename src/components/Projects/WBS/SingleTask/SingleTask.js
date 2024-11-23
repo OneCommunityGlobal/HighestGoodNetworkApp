@@ -11,7 +11,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
 import { getUserProfile } from 'actions/userProfile';
 import hasPermission from 'utils/permissions';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
 import EditTaskModal from '../WBSDetail/EditTask/EditTaskModal';
 import ModalDelete from '../../../common/Modal';
 import { deleteTask } from '../../../../actions/task';
@@ -32,6 +32,7 @@ const TINY_MCE_INIT_OPTIONS =
 };
   
 function SingleTask(props) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const {taskId} = props.match.params;
   const { user } = props.auth;
   const [task, setTask] = useState({});
@@ -68,17 +69,18 @@ function SingleTask(props) {
 
   return (
     <>
+    <div className={`${darkMode ? 'bg-oxford-blue' : 'bg-white'} h-100`}>
       <ReactTooltip />
       <div className="container-single-task">
         {canPostProject && (
           <nav aria-label="breadcrumb">
-            <ol className="breadcrumb">
+            <ol className={`breadcrumb mx-2 ${darkMode ? 'bg-space-cadet text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
               <NavItem tag={Link} to={`/wbs/samefoldertasks/${taskId}`}>
-                <Button type="button" className="btn btn-secondary" style={boxStyle}>
+                <Button type="button" className="btn btn-secondary" style={darkMode ? boxStyleDark : boxStyle}>
                   <i className="fa fa-chevron-circle-left" aria-hidden="true" />
                 </Button>
               </NavItem>
-              <div id="single_task_name">
+              <div id="single_task_name" className='ml-2'>
                 See tasks in the same folder as &quot;
                 {task.taskName}
                 &quot;
@@ -87,8 +89,8 @@ function SingleTask(props) {
           </nav>
         )}
 
-        <table className="table table-bordered tasks-table">
-          <thead>
+        <table className={`table table-bordered tasks-table ${darkMode ? 'dark-mode text-light' : ''}`}>
+          <thead className={darkMode ? 'bg-space-cadet' : ''}>
             <tr>
               <th scope="col" data-tip="Action" colSpan="1">
                 Action
@@ -144,9 +146,10 @@ function SingleTask(props) {
               </th>
             </tr>
           </thead>
-          <tbody>
+          <tbody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <tr>
               <th scope="row">
+                <div className="d-flex">
                 <EditTaskModal
                   key={`editTask_${task._id}`}
                   parentNum={task.num}
@@ -168,7 +171,7 @@ function SingleTask(props) {
                         size="sm"
                         className="btn btn-danger"
                         onClick={() => showUpDeleteModal()}
-                        style={boxStyle}
+                        style={darkMode ? boxStyleDark : boxStyle}
                       >
                         Delete
                         {' '}
@@ -182,9 +185,11 @@ function SingleTask(props) {
                           props.popupEditor.currPopup.popupContent || 'DELETE THIS TASK ?'
                         }
                         modalTitle={Message.CONFIRM_DELETION}
+                        darkMode={darkMode}
                       />
                     </>
                   )}
+                  </div>
               </th>
               <th scope="row">{task.num}</th>
               <td>{task.taskName}</td>
@@ -248,7 +253,7 @@ function SingleTask(props) {
       </div>
 
       <Modal isOpen={modal} toggle={toggleModel}>
-        <ModalBody>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
           <h6>WHY THIS TASK IS IMPORTANT:</h6>
           <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -277,6 +282,7 @@ function SingleTask(props) {
           />
         </ModalBody>
       </Modal>
+      </div>
     </>
   );
 }

@@ -1,28 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
-  Alert,
-  Form,
-} from 'reactstrap';
-import Input from 'components/common/Input';
-import { boxStyle } from 'styles';
+import { useSelector } from 'react-redux';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Alert, Form } from 'reactstrap';
+import Input from '../common/Input';
+import { boxStyle, boxStyleDark } from '../../styles';
+import '../Header/DarkMode.css';
 /**
  * Modal popup to show the reset password action
  */
 const ResetPasswordPopup = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
+
   const [newPassword, onNewPasswordChange] = useState({ password: '', isValid: false });
   const [confirmPassword, onConfirmPasswordChange] = useState({ password: '', isValid: false });
   const [errorMessage, setError] = useState('');
-  const [showPassword, setShowPassword] = useState({
+  const [showPassword] = useState({
     newPassword: false,
-    confirmPassword: false
+    confirmPassword: false,
   });
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
 
@@ -33,12 +28,12 @@ const ResetPasswordPopup = React.memo(props => {
     setError('');
   }, [props.open]);
 
-  const togglePasswordVisibility = (field) => {
-    setShowPassword(prevState => ({
-      ...prevState,
-      [field]: !prevState[field]
-    }));
-  };
+  // const togglePasswordVisibility = (field) => {
+  //   setShowPassword(prevState => ({
+  //     ...prevState,
+  //     [field]: !prevState[field]
+  //   }));
+  // };
 
   const resetPassword = () => {
     if (!newPassword.isValid) {
@@ -53,47 +48,60 @@ const ResetPasswordPopup = React.memo(props => {
   };
 
   const isValidPassword = password => {
-    const regex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\\-])(?=.{8,})');
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\\-])(?=.{8,})/;
     return regex.test(password);
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
-      <ModalHeader toggle={closePopup}>Reset Password</ModalHeader>
-      <ModalBody>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      autoFocus={false}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        Reset Password
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
-          <div className="flex justify-between items-center mb-2">
-            <Label className="mr-2" for="newpassword">New Password</Label>
+          <div className="flex justify-between items-center">
+            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="newpassword">
+              New Password
+            </Label>
           </div>
           <Input
+            label=""
             autoFocus
             type={showPassword.newPassword ? 'text' : 'password'}
             name="newpassword"
             id="newpassword"
-            label="New Password"
             value={newPassword.password}
             onChange={event => {
-              const value = event.target.value;
+              const { value } = event.target;
               onNewPasswordChange({
                 password: value,
                 isValid: isValidPassword(value),
               });
               if (!isValidPassword(value)) {
-                setError('Please choose a strong password which is at least 8 characters long and should contains a digit, a capital letter, and a special character.');
+                setError(
+                  'Please choose a strong password which is at least 8 characters long and should contains a digit, a capital letter, and a special character.',
+                );
               } else {
                 setError('');
               }
             }}
           />
 
-          <div className="flex justify-between items-center mt-4 mb-2">
-            <Label className="mr-2" for="confirmpassword">Confirm Password</Label>
+          <div className="flex justify-between items-center mt-4">
+            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="confirmpassword">
+              Confirm Password
+            </Label>
           </div>
           <Input
+            label=""
             type={showPassword.confirmPassword ? 'text' : 'password'}
             name="confirmpassword"
             id="confirmpassword"
-            label="Confirm Password"
             value={confirmPassword.password}
             onChange={event => {
               onConfirmPasswordChange({
@@ -109,12 +117,12 @@ const ResetPasswordPopup = React.memo(props => {
           />
         </Form>
       </ModalBody>
-      <ModalFooter>
-        {errorMessage === '' ? <React.Fragment /> : <Alert color="danger">{errorMessage}</Alert>}
-        <Button color="primary" onClick={resetPassword} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        {errorMessage === '' ? null : <Alert color="danger">{errorMessage}</Alert>}
+        <Button color="primary" onClick={resetPassword} style={darkMode ? boxStyleDark : boxStyle}>
           Reset Password
         </Button>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>

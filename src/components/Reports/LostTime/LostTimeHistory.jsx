@@ -19,17 +19,20 @@ function LostTimeHistory(props) {
   const toDate = props.endDate.toLocaleDateString('en-CA');
 
   const idList = props.allData.map(data => data._id);
-  const canEditTimeEntry = props.hasPermission('editTimeEntry');
 
   useEffect(() => {
     loadLostTimeEntries(type, idList, fromDate, toDate);
   }, []);
-
+  
   const reload = () => {
     setDataLoading(true);
     loadLostTimeEntries(type, idList, fromDate, toDate);
   }
-
+  
+  useEffect(() => {
+    reload();
+  }, [darkMode])
+  
   const alphabetize = timeEntries => {
     const temp = [...timeEntries];
     return temp.sort((a, b) =>
@@ -121,22 +124,20 @@ function LostTimeHistory(props) {
               </div>
             )}
           </td>
-          {canEditTimeEntry &&
-            <td>
-              <EditHistoryModal
-                _id={entry._id}
-                dataId={entry.dataId}
-                dateOfWork={entry.date}
-                hours={entry.hours}
-                minutes={entry.minutes}
-                isTangible={entry.isTangible}
-                entryType={entry.entryType}
-                allData={props.allData}
-                reload={reload}
-                darkMode={darkMode}
-              />
-            </td>
-          }
+          <td>
+            <EditHistoryModal
+              _id={entry._id}
+              dataId={entry.dataId}
+              dateOfWork={entry.date}
+              hours={entry.hours}
+              minutes={entry.minutes}
+              isTangible={entry.isTangible}
+              entryType={entry.entryType}
+              allData={props.allData}
+              reload={reload}
+              darkMode={darkMode}
+            />
+          </td>
         </tr>
       ));
     }
@@ -155,8 +156,8 @@ function LostTimeHistory(props) {
           <table 
           className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
           style={darkMode ? boxStyleDark : boxStyle}>
-          <thead className={darkMode ? 'bg-space-cadet text-light' : 'text-black'}>
-            <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+          <thead>
+            <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
               <th scope="col">
                 Name
               </th>
@@ -169,14 +170,12 @@ function LostTimeHistory(props) {
               <th scope="col">
                 Tangible
               </th>
-              {canEditTimeEntry && 
-                <th scope="col">
-                  Action
-                </th>
-              }
+              <th scope="col">
+                Action
+              </th>
             </tr>
           </thead>
-          <tbody>{entriesRow}</tbody>
+          <tbody className={darkMode ? 'dark-mode' : ''}>{entriesRow}</tbody>
         </table>
         )
       )}

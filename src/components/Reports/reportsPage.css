@@ -1,7 +1,6 @@
 * {
   box-sizing: border-box;
   margin: 0;
-  padding: 0;
 }
 
 .container-component-wrapper {
@@ -128,8 +127,8 @@
 
 .total-report-item {
   display: flex;
-  flex-direction: row;
-  margin: 0px 25px 0px 0px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
 .lost-time-container {
@@ -141,8 +140,8 @@
 
 .lost-time-item {
   display: flex;
-  flex-direction: row;
-  margin: 0px 25px 0px 0px;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
 .type-container {
@@ -173,6 +172,10 @@
   .container-component-category {
     width: 500px;
     padding: 16px;
+  }
+
+  .category-container {
+    margin-top: 20px;
   }
 
   .card-category-item {

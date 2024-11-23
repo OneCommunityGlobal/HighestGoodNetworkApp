@@ -1,11 +1,14 @@
-import { Redirect } from 'react-router-dom';
-import { useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import { useDispatch, useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyle, boxStyleDark } from 'styles';
+import '../Header/DarkMode.css';
 import { logoutUser } from '../../actions/authActions';
 
 function Logout({ setLogoutPopup, open }) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
+  const history = useHistory();
 
   const closePopup = () => {
     setLogoutPopup(false);
@@ -20,22 +23,24 @@ function Logout({ setLogoutPopup, open }) {
 
     closePopup();
     dispatch(logoutUser());
-    return <Redirect to="/login" auth={false} />;
+    return history.push('/login');
   };
 
   return (
-    <Modal isOpen={open} toggle={closePopup}>
-      <ModalHeader toggle={closePopup}>Are you sure you want to logout?</ModalHeader>
-      <ModalBody>
+    <Modal isOpen={open} toggle={closePopup} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>
+        Are you sure you want to logout?
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <div>
           <p>Don&apos;t forget to log your time before logout!</p>
         </div>
       </ModalBody>
-      <ModalFooter>
-        <Button color="danger" onClick={onLogout} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="danger" onClick={onLogout} style={darkMode ? boxStyleDark : boxStyle}>
           Logout
         </Button>{' '}
-        <Button color="primary" onClick={closePopup} style={boxStyle}>
+        <Button color="primary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Cancel
         </Button>
       </ModalFooter>

@@ -3,39 +3,18 @@ import PropTypes from 'prop-types';
 import {
   Button,
   Modal,
+  ModalHeader,
   ModalBody,
   ModalFooter,
-  ModalHeader,
   Row,
   Col,
 } from 'reactstrap';
 import Select from 'react-select'
-import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
 import { getInfoCollections, addInfoCollection, updateInfoCollection, deleteInfoCollectionById } from '../../../actions/information';
-import { boxStyle } from 'styles';
-
-// New RichTextEditor component
-const RichTextEditor = ({ disabled, value, onEditorChange }) => (
-  <Editor
-    tinymceScriptSrc="/tinymce/tinymce.min.js"
-    init={{
-      license_key: 'gpl',
-      menubar: false,
-      placeholder: 'Please input infos',
-      plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-      toolbar: 'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-      branding: false,
-      min_height: 180,
-      max_height: 500,
-      autoresize_bottom_margin: 1,
-    }}
-    disabled={disabled}
-    value={value}
-    onEditorChange={onEditorChange}
-  />
-);
+import { boxStyle, boxStyleDark } from 'styles';
+import RichTextEditor from './RichTextEditor';
 
 const options = [
   { value: '0', label: 'All (default)' },
@@ -228,6 +207,7 @@ export class EditableInfoModal extends Component {
       isPermissionPage,
     } = this.state;
 
+    const { darkMode } = this.props;
     return (
       (CanRead) && (
         <div>
@@ -241,9 +221,9 @@ export class EditableInfoModal extends Component {
             onClick={() => this.setState({ editableModalOpen: true })}
           />
           {editableModalOpen && (
-            <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg">
-              <ModalHeader>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
-              <ModalBody>
+            <Modal isOpen={editableModalOpen} toggle={this.toggleEditableModal} size="lg" className={darkMode ? 'text-light' : ''}>
+              <ModalHeader className={`d-flex justify-content-center ${darkMode ? 'bg-space-cadet' : ''}`}>Welcome to the {this.props.areaTitle} Information Page!</ModalHeader>
+              <ModalBody className={`${darkMode ? 'bg-yinmn-blue' : ''} text-center`} style={{ padding: '20px 40px' }}>
                 {this.state.editing
                   ? <RichTextEditor
                     disabled={!this.state.editing}
@@ -255,16 +235,8 @@ export class EditableInfoModal extends Component {
                     dangerouslySetInnerHTML={{ __html: infoContent }}
                     onClick={() => this.handleEdit(true)} />
                 }
-                {isPermissionPage && CanEdit &&
-                  (
-                    <div style={{ paddingLeft: '20px' }}>
-                      <p>Click above to edit this content. (Note: Only works on Permissions Management Page)</p>
-                    </div>
-
-                  )
-                }
               </ModalBody>
-              <ModalFooter>
+              <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                 <Row className='no-gutters'>
                   {(this.state.editing) &&
                     (
@@ -284,13 +256,14 @@ export class EditableInfoModal extends Component {
                         <Button
                           className='saveBtn'
                           onClick={this.handleSave}
-                          style={boxStyle}>Save</Button>
+                          color='primary'
+                          style={darkMode ? boxStyleDark : boxStyle}>Save</Button>
                       </Col>)
                   }
                   <Col
-                    md={3}
+                    md={3} className='d-flex justify-content-center'
                   >
-                    <Button onClick={this.handleClose} style={boxStyle}>Close</Button>
+                    <Button onClick={this.handleClose} color='danger' style={darkMode ? boxStyleDark : boxStyle}>Close</Button>
                   </Col>
                 </Row>
               </ModalFooter>

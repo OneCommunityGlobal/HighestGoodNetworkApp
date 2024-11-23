@@ -19,6 +19,7 @@ import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
+import hasPermission from '../../utils/permissions';
 import './Badge.css';
 
 function BadgeDevelopmentTable(props) {
@@ -34,6 +35,9 @@ function BadgeDevelopmentTable(props) {
 
   const [editBadgeValues, setEditBadgeValues] = useState('');
   const [editPopup, setEditPopup] = useState(false);
+
+  const canDeleteBadges = props.hasPermission('deleteBadges');
+  const canUpdateBadges = props.hasPermission('updateBadges');
 
   const detailsText = badegValue => {
     let returnText = '';
@@ -182,7 +186,9 @@ function BadgeDevelopmentTable(props) {
 
   return (
     <Container fluid>
-      <table className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+      <table
+        className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
+      >
         <thead>
           <BadgeTableHeader darkMode={darkMode} />
           <BadgeTableFilter
@@ -200,12 +206,12 @@ function BadgeDevelopmentTable(props) {
         </thead>
         <tbody>
           {filteredBadges.map(value => (
-            <tr key={value._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
                 <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
                 <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
-                  <Card className="text-center">
+                  <Card className={`text-center ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
                     <CardImg className="badge_image_lg" src={value?.imageUrl} />
                     <CardBody>
                       <CardTitle
@@ -233,6 +239,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="info"
+                    disabled = {!canUpdateBadges}
                     onClick={() => onEditButtonClick(value)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -243,6 +250,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="danger"
+                    disabled = {!canDeleteBadges}
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -263,11 +271,35 @@ function BadgeDevelopmentTable(props) {
         badgeId={deleteId}
         badgeName={deleteName}
       />
-      <Modal isOpen={props.alertVisible} toggle={() => props.closeAlert()}>
-        <ModalBody className={`badge-message-background-${props.color}`}>
-          <p className={`badge-message-text-${props.color}`}>{props.message}</p>
+      <Modal
+        isOpen={props.alertVisible}
+        toggle={() => props.closeAlert()}
+        className={darkMode ? 'text-light' : ''}
+      >
+        <ModalBody
+          className={`${darkMode ? 'bg-yinmn-blue' : `badge-message-background-${props.color}`} ${
+            props.color === 'success' ? 'border-success' : 'border-danger'
+          } border`}
+        >
+          <p
+            className={`${
+              props.color === 'success'
+                ? darkMode
+                  ? 'text-success'
+                  : 'text-success'
+                : darkMode
+                ? 'text-danger'
+                : 'text-danger'
+            } font-weight-bold mb-0`}
+          >
+            {props.message}
+          </p>
         </ModalBody>
-        <ModalFooter className={`badge-message-background-${props.color}`}>
+        <ModalFooter
+          className={`${darkMode ? 'bg-space-cadet' : `badge-message-background-${props.color}`} ${
+            props.color === 'success' ? 'border-success' : 'border-danger'
+          } border-top-0`}
+        >
           <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK
           </Button>
@@ -288,6 +320,7 @@ const mapDispatchToProps = dispatch => ({
   deleteBadge: badgeId => dispatch(deleteBadge(badgeId)),
   updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
   closeAlert: () => dispatch(closeAlert()),
+  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeDevelopmentTable);
