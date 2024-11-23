@@ -1,8 +1,5 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
-import { connect, useSelector } from 'react-redux';
-import hasPermission from '../../../utils/permissions';
-import { boxStyle, boxStyleDark } from '../../../styles';
 import AssignSetUpModal from './AssignSetupModal';
 import QuickSetupCodes from './QuickSetupCodes';
 import SaveButton from '../UserProfileEdit/SaveButton';
@@ -10,9 +7,12 @@ import AddNewTitleModal from './AddNewTitleModal';
 import { getAllTitle } from '../../../actions/title';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css';
+import { connect, useSelector } from 'react-redux';
+import { boxStyle, boxStyleDark } from 'styles';
+import hasPermission from 'utils/permissions';
 
 function QuickSetupModal(props) {
-  const darkMode = useSelector(state => state.theme.darkMode);
+  const darkMode = useSelector((state) => state.theme.darkMode);
   const canEditTitle = props.hasPermission('editTitle');
   const canAddTitle = props.hasPermission('addNewTitle');
   const canAssignTitle = props.hasPermission('assignTitle');
@@ -24,25 +24,31 @@ function QuickSetupModal(props) {
   const [editMode, setEditMode] = useState(false);
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
-  const [adminLinks, setAdminLinks] = useState([]);
+
+  //new 
+  const [sortBy, setSortBy] = useState('');
 
   useEffect(() => {
     getAllTitle()
-      .then(res => {
+      .then((res) => {
         setTitles(res.data);
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   }, []);
+
+  const sortedTitles = [...titles].sort((a, b) => {
+    if (sortBy === 'team-code') {
+      return a.teamCode.localeCompare(b.teamCode);
+    } 
+  });
 
   // refresh the QSCs after CREATE/DELETE operations on titles
   const refreshModalTitles = () => {
     getAllTitle()
-      .then(res => {
+      .then((res) => {
         setTitles(res.data);
-        props.setUserProfile(props.userProfile);
-        props.setUserProfile(prev => ({ ...prev, adminLinks }));
       })
-      .catch(err => console.log(err));
+      .catch((err) => console.log(err));
   };
 
   // handle save changes
@@ -51,24 +57,30 @@ function QuickSetupModal(props) {
       .then(() => {
         setTitleOnSet(true);
       })
-      .catch(e => {
+      .catch((e) => {
         console.log(e);
       });
   };
 
+  const handleSortChange = (e) => {
+    setSortBy(e.target.value);
+    console.log(e.target.value);
+  }
+
   return (
     <div className="container pt-3">
-      {canAssignTitle || canEditTitle || canAddTitle ? (
+      {(canAssignTitle || canEditTitle || canAddTitle) ? (
         <QuickSetupCodes
           setSaved={props.setSaved}
           userProfile={props.userProfile}
           setUserProfile={props.setUserProfile}
-          titles={titles}
+          titles={sortedTitles}
           setShowAssignModal={setShowAssignModal}
           setTitleOnClick={setTitleOnClick}
           editMode={editMode}
           assignMode={canAssignTitle}
           setShowAddTitle={setShowAddTitle}
+          setSortBy={setSortBy}
         />
       ) : (
         ''
@@ -77,39 +89,44 @@ function QuickSetupModal(props) {
       <div className="col text-center mt-3 flex">
         {canAddTitle ? (
           <Button
-            color="primary"
+            color="primary mx-2"
             onClick={() => setShowAddTitle(true)}
             style={darkMode ? boxStyleDark : boxStyle}
-            disabled={editMode == true}
-            title="Click this to add a new QST"
+            disabled={editMode === true ? true : false}
           >
             Add New QST
           </Button>
         ) : (
           ''
         )}
+
         {canEditTitle ? (
           !editMode ? (
-            <Button
+              <Button
               color="primary mx-2"
               onClick={() => setEditMode(true)}
               style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Edit
-            </Button>
+              >
+                Edit
+              </Button>
+            
           ) : (
-            <Button
+            <div>
+              <Button
               color="primary mx-2"
               onClick={() => setEditMode(false)}
               style={darkMode ? boxStyleDark : boxStyle}
             >
               Save
-            </Button>
+            </Button>       
+            </div>
           )
         ) : (
           ''
         )}
       </div>
+
+
       <div className="col text-center mt-3">
         {canAssignTitle ? (
           <SaveButton
@@ -123,7 +140,7 @@ function QuickSetupModal(props) {
           ''
         )}
       </div>
-      {showAddTitle || editMode ? (
+      {(showAddTitle || editMode) ? (
         <AddNewTitleModal
           teamsData={props.teamsData}
           projectsData={props.projectsData}
@@ -155,6 +172,7 @@ function QuickSetupModal(props) {
       ) : (
         ''
       )}
+
       {showMessage && (
         <Modal
           isOpen={showMessage}
@@ -182,3 +200,4 @@ function QuickSetupModal(props) {
 }
 
 export default connect(null, { hasPermission })(QuickSetupModal);
+
