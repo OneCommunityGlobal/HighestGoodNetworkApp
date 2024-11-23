@@ -56,7 +56,7 @@ function UpdateDocumentTitle() {
     { pattern: /^\/project\/members\/[^/]+$/, title: 'Project Members' },
     { pattern: /^\/timelog\/?$/, title: `Timelog - ${fullName}` },
     { pattern: /^\/timelog\/[^/]+$/, title: `Timelog - ${fullName}` },
-    { pattern: /^\/peoplereport\/[^/]+$/, title: `People Report- ${fullName}` },
+    { pattern: /^\/peoplereport\/[^/]+$/, title: `People Report - ${fullName}` },
     { pattern: /^\/projectreport\/[^/]+$/, title: 'Project Report' },
     { pattern: /^\/teamreport\/[^/]+$/, title: 'Team Report' },
     { pattern: /^\/taskeditsuggestions$/, title: 'Task Edit Suggestions' },
