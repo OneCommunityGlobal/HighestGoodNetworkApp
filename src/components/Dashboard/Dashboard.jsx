@@ -1,19 +1,32 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
+import './Dashboard.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import { ENDPOINTS } from 'utils/URL';
+import './Dashboard.css';
+import axios from 'axios';
+import { Modal, ModalHeader, ModalBody, Button } from 'reactstrap';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
+
+  const [actualUserProfile, setActualUserProfile] = useState(null);
+  const [showModal, setShowModal] = useState(false);
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
@@ -23,12 +36,19 @@ export function Dashboard(props) {
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const toggle = () => {
+  const toggle = (forceOpen = null) => {
     if (isNotAllowedToEdit) {
-      alert('STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS. Please reconsider your choices.');
+      const warningMessage =
+        viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
+          ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
+          : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
+      alert(warningMessage);
       return;
     }
-    setPopup(!popup);
+  
+    const shouldOpen = forceOpen !== null ? forceOpen : !popup;
+    setPopup(shouldOpen);
+  
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -36,6 +56,7 @@ export function Dashboard(props) {
       }
     }, 150);
   };
+  
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
@@ -50,8 +71,70 @@ export function Dashboard(props) {
     };
   }, []);
 
+  const getUserData = async () => {
+
+    try {
+      const url = ENDPOINTS.USER_PROFILE(authUser.userid);
+      const allUserInfo = await axios.get(url).then(res => res.data);
+
+      const userType = authUser.role.toLowerCase();
+      const permissionsKey = `permissions_${userType}`;
+      const storedPermissions = JSON.parse(localStorage.getItem(permissionsKey)) || [];
+      const currentPermissions = allUserInfo.permissions.frontPermissions;
+      const hasPermissionsChanged = JSON.stringify(storedPermissions) !== JSON.stringify(currentPermissions);
+
+
+      if (currentPermissions.includes('showModal') && hasPermissionsChanged) {
+        setShowModal(true);
+        setActualUserProfile(allUserInfo);
+        localStorage.setItem(permissionsKey, JSON.stringify(currentPermissions));
+      }
+
+    } catch (error) {
+      console.error("Error", error);
+    }
+  };
+
+  const handleCloseModal = async () => {
+    if (actualUserProfile) {
+
+      try {
+        const userId = actualUserProfile?._id;
+        const url = ENDPOINTS.USER_PROFILE(userId);
+
+        const FilteredPermission = actualUserProfile.permissions.frontPermissions.filter(permission => permission !== 'showModal');
+        const newUserInfo = { ...actualUserProfile, permissions: { frontPermissions: FilteredPermission } };
+
+        await axios.put(url, newUserInfo);
+
+        setActualUserProfile(null);
+      } catch (error) {
+        console.error("Error", error);
+      }
+    }
+    setShowModal(false);
+  };
+
+  useEffect(() => {
+    getUserData()
+  }, [authUser.userid]);
+
+
+
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
+      <Modal isOpen={showModal} toggle={handleCloseModal} id="modal-content__new-role">
+        <ModalHeader
+          toggle={handleCloseModal}
+          cssModule={{ 'modal-title': 'w-100 text-center my-auto' }}
+        >
+          Important Notification
+        </ModalHeader>
+        <ModalBody id="modal-body_new-role--padding">
+          Your permissions have been updated. Please log out and log back in for the changes to take effect.
+          <Button color="primary" className="mt-3" onClick={handleCloseModal}>Close</Button>
+        </ModalBody>
+      </Modal>
       <SummaryBar
         displayUserId={displayUserId}
         toggleSubmitForm={toggle}
@@ -60,9 +143,9 @@ export function Dashboard(props) {
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
 
-      <Row>
-        <Col lg={{ size: 7 }}>&nbsp;</Col>
-        <Col lg={{ size: 5 }}>
+      <Row className="w-100 ml-1">
+        <Col lg={7}></Col>
+        <Col lg={5}>
           <div className="row justify-content-center">
             <div
               role="button"
@@ -76,6 +159,7 @@ export function Dashboard(props) {
                 isPopup={popup}
                 userRole={authUser.role}
                 displayUserId={displayUserId}
+                displayUserEmail={viewingUser?.email}
                 isNotAllowedToEdit={isNotAllowedToEdit}
                 darkMode={darkMode}
               />
@@ -83,28 +167,26 @@ export function Dashboard(props) {
           </div>
         </Col>
       </Row>
-      <Row>
-        <Col lg={{ size: 5 }} className="order-sm-12">
+      <Row className="w-100 ml-1">
+        <Col lg={5} className="order-lg-2 order-2">
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
           />
         </Col>
-        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-          {popup ? (
-            <div className="my-2">
-              <div id="weeklySum">
-                <WeeklySummary
-                  displayUserId={displayUserId}
-                  setPopup={setPopup}
-                  userRole={authUser.role}
-                  isNotAllowedToEdit={isNotAllowedToEdit}
-                  darkMode={darkMode}
-                />
-              </div>
+        <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
+          {popup && (
+            <div className="my-2" id="weeklySum">
+              <WeeklySummary
+                displayUserId={displayUserId}
+                setPopup={setPopup}
+                userRole={authUser.role}
+                isNotAllowedToEdit={isNotAllowedToEdit}
+                darkMode={darkMode}
+              />
             </div>
-          ) : null}
+          )}
           <div className="my-2" id="wsummary">
             <Timelog
               isDashboard
@@ -112,11 +194,6 @@ export function Dashboard(props) {
               isNotAllowedToEdit={isNotAllowedToEdit}
             />
           </div>
-          <Badge
-            userId={displayUserId}
-            role={authUser.role}
-            isNotAllowedToEdit={isNotAllowedToEdit}
-          />
         </Col>
       </Row>
       <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />

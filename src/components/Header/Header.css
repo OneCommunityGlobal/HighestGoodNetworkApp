@@ -58,6 +58,10 @@
   align-items: center;
 }
 
+.dropdown-item-hover:hover{
+  background-color: #2f4157 !important;
+}
+
 @media (max-width: 1400px) {
   .nav-links{
     flex-direction: column !important;
@@ -83,5 +87,17 @@
 
   .owner-message {
     display: none;
+  }
+}
+
+@media screen and (min-width: 1400px) and (max-width: 1700px) {
+  .owner-message {
+    display: none;
+  }
+}
+
+@media screen and (max-width: 769px) {
+  .responsive-spacing{
+    margin-right: 5px;
   }
 }

@@ -19,8 +19,5 @@
     "**/.project": true,
     "**/.settings": true,
     "**/.factorypath": true
-  },
-  "files.associations": {
-    "limits": "cpp"
   }
 }

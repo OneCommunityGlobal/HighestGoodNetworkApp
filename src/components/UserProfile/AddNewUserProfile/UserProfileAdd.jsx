@@ -93,11 +93,15 @@ class UserProfileAdd extends Component {
         actualEmail: 'Actual Email is required',
         actualPassword: 'Actual Password is required',
         actualConfirmedPassword: 'Actual Confirmed Password is required',
+        jobTitle: 'Job Title is required',
       },
       timeZoneFilter: '',
       formSubmitted: false,
       teamCode: '',
       codeValid: false,
+      inputAutoComplete: [],
+      inputAutoStatus: null,
+      isLoading: false,
     };
 
     const { user } = this.props.auth;
@@ -119,7 +123,32 @@ class UserProfileAdd extends Component {
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
+    this.fetchTeamCodeAllUsers(); 
   }
+
+  // Replace fetchTeamCodeAllUsers with a method that dispatches getAllTeamCode
+  fetchTeamCodeAllUsers = async() => {
+    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+    try {
+      this.setState({isLoading:true})
+     
+      const response = await axios.get(url);
+      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
+      const stringNoRepeat = stringWithValue
+        .map(item => item)
+        .filter((item, index, array) => array.indexOf(item) === index);
+      this.setState({inputAutoComplete:stringNoRepeat})
+      
+      this.setState({inputAutoStatus:response.status})
+      this.setState({isLoading:false})
+      
+    } catch (error) {
+      console.log(error);
+      this.setState({isLoading:false})
+      toast.error(`It was not possible to retrieve the team codes. 
+      Please try again by clicking the icon inside the input auto complete.`);
+    }
+  };
 
   render() {
     const {
@@ -200,7 +229,9 @@ class UserProfileAdd extends Component {
                         value={jobTitle}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
+                        invalid={!!this.state.formErrors.jobTitle}
                       />
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.jobTitle}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -539,8 +570,11 @@ class UserProfileAdd extends Component {
                     codeValid={this.state.codeValid}
                     setCodeValid={this.setCodeValid}
                     edit
-                    userProfile={this.state.userProfile}
                     darkMode={darkMode}
+                    inputAutoComplete={this.state.inputAutoComplete}
+                    inputAutoStatus={this.state.inputAutoStatus}
+                    isLoading={this.state.isLoading}
+                    fetchTeamCodeAllUsers={this.fetchTeamCodeAllUsers}
                   />
                 </TabPane>
               </TabContent>
@@ -649,9 +683,12 @@ class UserProfileAdd extends Component {
     const firstLength = this.state.userProfile.firstName !== '';
     const lastLength = this.state.userProfile.lastName !== '';
     const phone = this.state.userProfile.phoneNumber;
-
+    
     if (phone === null) {
       toast.error('Phone Number is required');
+      return false;
+    } else if (!this.state.codeValid) {
+      toast.error('Team Code is invalid');
       return false;
     } else if (firstLength && lastLength && phone.length >= 9) {
       return true;
@@ -1031,6 +1068,14 @@ class UserProfileAdd extends Component {
           userProfile: {
             ...this.state.userProfile,
             jobTitle: event.target.value,
+          },
+          formValid: {
+            ...formValid,
+            [event.target.id]: event.target.value.length > 0,
+          },
+          formErrors: {
+            ...formErrors,
+            jobTitle: event.target.value.length > 0 ? '' : 'Job Title is required',
           },
         });
         break;

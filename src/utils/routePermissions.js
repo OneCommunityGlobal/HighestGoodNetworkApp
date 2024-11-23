@@ -1,21 +1,11 @@
 //  Necessary permission(s) to access a route. Only one in the list is required.
 // Route : Permissions
-export const RoutePermissions = {
+const RoutePermissions = {
   reports: ['getReports'],
   weeklySummariesReport: ['getWeeklySummaries'],
-  userManagement: [
-    'getUserProfiles',
-    'postUserProfile',
-    'deleteUserProfile',
-    'changeUserStatus'
-  ],
-  badgeManagement: [
-    'seeBadges',
-    'createBadges',
-    'updateBadges',
-    'deleteBadges',
-    'assignBadges'
-  ],
+  weeklyVolunteerSummary: ['getWeeklyVolunteerSummary'],
+  userManagement: ['getUserProfiles', 'postUserProfile', 'deleteUserProfile', 'changeUserStatus'],
+  badgeManagement: ['seeBadges', 'createBadges', 'updateBadges', 'deleteBadges', 'assignBadges'],
   projects: [
     'postProject',
     'deleteProject',
@@ -26,19 +16,10 @@ export const RoutePermissions = {
     'deleteWbs',
     'postTask',
     'updateTask',
-    'deleteTask'
+    'deleteTask',
   ],
-  teams: [
-    'postTeam',
-    'putTeam',
-    'deleteTeam',
-    'assignTeamToUsers'
-  ],
-  permissionsManagement: [
-    'postRole',
-    'putRole',
-    'deleteRole'
-  ],
+  teams: ['postTeam', 'putTeam', 'deleteTeam', 'assignTeamToUsers'],
+  permissionsManagement: ['postRole', 'putRole', 'deleteRole'],
   userPermissionsManagement: ['putUserProfilePermissions'],
   inventoryProject: [''],
   inventoryProjectWbs: [''],
@@ -49,6 +30,9 @@ export const RoutePermissions = {
     'updateTask',
     'deleteTask',
     'resolveTask',
-    'putReviewStatus'
-  ]
+    'putReviewStatus',
+    'suggestTask',
+  ],
+  announcements: ['sendEmails'],
 };
+export default RoutePermissions;
