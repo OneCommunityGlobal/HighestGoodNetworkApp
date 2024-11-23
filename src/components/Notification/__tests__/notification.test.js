@@ -14,11 +14,7 @@ describe('NotificationCard', () => {
   let store;
 
   beforeEach(() => {
-    store = mockStore({
-      theme: {
-        darkMode: false,
-      },
-    });
+    store = mockStore({});
 
     store.dispatch = jest.fn();
   });
