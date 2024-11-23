@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as types from "../constants/projects";
+import * as types from '../constants/projects';
 import { ENDPOINTS } from '../utils/URL';
 
 /** *****************************************
@@ -48,6 +48,7 @@ export const postNewProject = (projectName, projectCategory) => {
         isActive: true,
       };
       dispatch(addNewProject({ newProject, status }));
+      await dispatch(fetchAllProjects());
       return _id;
     } catch (err) {
       status = err.response.status;
@@ -58,7 +59,7 @@ export const postNewProject = (projectName, projectCategory) => {
   };
 };
 
-export const modifyProject = (updatedProject) => {
+export const modifyProject = updatedProject => {
   return async dispatch => {
     const url = ENDPOINTS.PROJECT + updatedProject._id;
     let status, error;
@@ -92,7 +93,7 @@ export const deleteProject = projectId => {
       dispatch(removeProject({ status, error }));
     }
   };
-}
+};
 
 /** *****************************************
  * PLAIN OBJECT ACTIONS
@@ -126,7 +127,7 @@ const setProjectsError = ({ status, error }) => ({
   error,
 });
 
-/** 
+/**
  * Add new project to store
  * @param payload : new project
  * @param status: status code
@@ -146,7 +147,7 @@ const addNewProject = ({ newProject, status, error }) => ({
  * @param error: error message
  */
 // const updateProject = (projectId, projectName, category, isActive, status, error) => {
-const updateProject = ({ updatedProject, status, error}) => ({
+const updateProject = ({ updatedProject, status, error }) => ({
   type: types.UPDATE_PROJECT,
   updatedProject,
   status,
@@ -171,4 +172,3 @@ const removeProject = ({ projectId, status, error }) => ({
 export const clearError = () => ({
   type: types.CLEAR_ERROR,
 });
-

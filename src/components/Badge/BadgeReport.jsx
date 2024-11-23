@@ -190,34 +190,9 @@ function BadgeReport(props) {
     });
   };
 
-  // useEffect(() => {
-  //   setSortBadges(JSON.parse(JSON.stringify(props.badges)) || []);
-  //   let newBadges = sortBadges.slice();
-  //   newBadges.sort((a, b) => {
-  //     if (a.badge.ranking === 0) return 1;
-  //     if (b.badge.ranking === 0) return -1;
-  //     if (a.badge.ranking > b.badge.ranking) return 1;
-  //     if (a.badge.ranking < b.badge.ranking) return -1;
-  //     if (a.badge.badgeName > b.badge.badgeName) return 1;
-  //     if (a.badge.badgeName < b.badge.badgeName) return -1;
-  //     return 0;
-  //   });
-  //   setNumFeatured(0);
-  //   newBadges.forEach((badge, index) => {
-  //     if (badge.featured) {
-  //       setNumFeatured(++numFeatured);
-  //     }
-
-  //     if (typeof newBadges[index] === 'string') {
-  //       newBadges[index].lastModified = new Date(newBadges[index].lastModified);
-  //     }
-  //   });
-  //   setSortBadges(newBadges);
-  // }, [props.badges]);
-
   useEffect(() => {
     let newBadges = JSON.parse(JSON.stringify(props.badges)) || [];
-    
+
     newBadges.sort((a, b) => {
       if (a.badge.ranking === 0) return 1;
       if (b.badge.ranking === 0) return -1;
@@ -227,20 +202,20 @@ function BadgeReport(props) {
       if (a.badge.badgeName < b.badge.badgeName) return -1;
       return 0;
     });
-  
+
     // Compute the total number of featured badges once
     const featuredCount = newBadges.filter(badge => badge.featured).length;
     setNumFeatured(featuredCount);
-  
+
     newBadges.forEach((badge, index) => {
       if (typeof newBadges[index].lastModified === 'string') {
         newBadges[index].lastModified = new Date(newBadges[index].lastModified);
       }
     });
-  
+
     setSortBadges(newBadges);
   }, [props.badges]);
-  
+
 
   const countChange = (badge, index, newValue) => {
     let copyOfExisitingBadges = [...sortBadges];
@@ -307,12 +282,12 @@ function BadgeReport(props) {
     }
   };
 
-  
+
 
   const featuredChange = (badge, index, e) => {
     let newBadges = [...sortBadges];
     const newFeaturedState = e.target.checked;
-  
+
     // Compute the total number of featured badges, including the new change
     const totalFeatured = newBadges.reduce((count, b, i) => {
       if (i === index) {
@@ -320,7 +295,7 @@ function BadgeReport(props) {
       }
       return count + (b.featured ? 1 : 0);
     }, 0);
-  
+
     if (totalFeatured <= 5) {
       // Update the featured state of the badge
       newBadges[index].featured = newFeaturedState;
@@ -331,8 +306,6 @@ function BadgeReport(props) {
       toast.error('Unfortunately, you may only select five badges to be featured.');
     }
   };
-  
-  
 
   const handleDeleteBadge = oldBadge => {
     setShowModal(true);
@@ -351,7 +324,7 @@ function BadgeReport(props) {
   const deleteBadge = () => {
     let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
     if (badgeToDelete.featured) {
-      setNumFeatured(--numFeatured);
+      setNumFeatured(prevNumFeatured => prevNumFeatured - 1);
     }
     setSortBadges(newBadges);
     setShowModal(false);
@@ -365,20 +338,20 @@ function BadgeReport(props) {
       for (let i = 0; i < newBadgeCollection.length; i++) {
         newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
       }
-  
+
       await props.changeBadgesByUserID(props.userId, newBadgeCollection);
       await props.getUserProfile(props.userId);
-  
+
       props.setUserProfile(prevProfile => {
         return { ...prevProfile, badgeCollection: sortBadges };
       });
       props.setOriginalUserProfile(prevProfile => {
         return { ...prevProfile, badgeCollection: sortBadges };
       });
-  
+
       // Display success message
       toast.success('Badges successfully saved.');
-  
+
       props.handleSubmit();
       // Close the modal
       props.close();
@@ -389,20 +362,17 @@ function BadgeReport(props) {
       setSavingChanges(false);
     }
   };
-  
+
 
   return (
     <div>
       <div className="desktop">
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
-          <thead
-            style={{
-              zIndex: '10',
-              backgroundColor: darkMode ? '#1c2541' : undefined,
-              color: darkMode ? '#ffffff' : undefined,
-            }}
-          >
+            <thead
+              style={{ zIndex: '10', pointerEvents: 'none' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
+            >
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
@@ -517,7 +487,7 @@ function BadgeReport(props) {
                       <FormGroup check inline style={{ zIndex: '0' }}>
                         <Input
                           /* alternative to using the formgroup
-                          style={{ position: 'static' }} 
+                          style={{ position: 'static' }}
                           */
                           type="checkbox"
                           id={value.badge._id}
@@ -691,7 +661,7 @@ function BadgeReport(props) {
                               <FormGroup check inline style={{ zIndex: '0' }}>
                                 <Input
                                   /* alternative to using the formgroup
-                                  style={{ position: 'static' }} 
+                                  style={{ position: 'static' }}
                                   */
                                   type="checkbox"
                                   id={value.badge._id}

@@ -24,7 +24,7 @@
 .reports-table-head-members {
   background-color: #eee7f8;  
   display: grid;
-  grid-template-columns: 55px 110px 50px 3fr;
+  grid-template-columns: 1fr 2fr 1fr 3fr;
   column-gap: 4px;
   min-height: 42px;
   align-items: center;
