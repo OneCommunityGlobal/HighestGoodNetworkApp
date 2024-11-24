@@ -64,9 +64,9 @@
 
 .pie-chart-info-key {
   font-size: 16px;
-  align-items: center;
-  width: auto;
-  margin: 4px 0;
+  width: 100%;
+  margin: auto;
+  text-align: left;
 }
 
 .pie-chart-info-value {
