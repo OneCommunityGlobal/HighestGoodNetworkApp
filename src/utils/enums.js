@@ -31,3 +31,11 @@ export const UserFinalDayStatus = {
   Set: ' Set',
   Unset: 'Unset',
 };
+
+export const QuestionType = {
+  Select: 'select',
+  ShortAnswer: 'short_answer',
+  Paragraph: 'paragraph',
+  MultiSelect: 'multi_select',
+  Radio: 'radio',
+};
