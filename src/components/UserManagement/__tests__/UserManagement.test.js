@@ -48,6 +48,14 @@ describe('UserManagement Component', () => {
         timeOffRequests: { requests: {} },
         auth: { user: { role: 'Administrator' } },
         userProfile: { email: 'test@example.com' },
+        userProfileEdit: { editable: false },
+        userPagination: { 
+          pagestats: {
+            selectedPage: 1,
+            pageSize: 10,
+          },
+          editable: false,
+        },
       },
     };
 
