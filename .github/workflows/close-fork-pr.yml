@@ -27,9 +27,11 @@ jobs:
         if: env.is_fork == 'true'
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
-          echo "Closing PR #$PR_NUMBER"
+          GH_REPO=${{ github.repository }}
+          echo "Closing PR #$PR_NUMBER in repository $GH_REPO"
           gh pr close \
             "$PR_NUMBER" \
+            --repo "${{ github.repository }}" \
             --comment "This PR has been closed because PRs from forks are not allowed. Please create a branch directly off the origin repository and resubmit your PR."
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
