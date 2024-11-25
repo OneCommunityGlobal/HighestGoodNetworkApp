@@ -6,28 +6,6 @@ import {
   POST_BUILDING_MATERIAL_INVENTORY_UNIT, RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT
 } from "constants/bmdashboard/inventoryTypeConstants"; import { GET_ERRORS } from "constants/errors";
 
-
-export const setInvUnits = payload => {
-  return {
-    type: FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
-    payload
-  }
-}
-
-export const setErrors = payload => {
-  return {
-    type: GET_ERRORS,
-    payload
-  }
-}
-
-export const setPostInvUnitResult = (payload) => {
-  return {
-    type: POST_BUILDING_MATERIAL_INVENTORY_UNIT,
-    payload
-  }
-}
-
 export const fetchInvUnits = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_INVENTORY_UNITS)
@@ -52,10 +30,29 @@ export const postBuildingInventoryUnit = (payload) => {
   }
 }
 
-
+export const setPostInvUnitResult = (payload) => {
+  return {
+    type: POST_BUILDING_MATERIAL_INVENTORY_UNIT,
+    payload
+  }
+}
 
 export const resetPostInvUnitResult = () => {
   return {
     type: RESET_POST_BUILDING_MATERIAL_INVENTORY_UNIT
+  }
+}
+
+export const setInvUnits = payload => {
+  return {
+    type: FETCH_BUILDING_MATERIAL_INVENTORY_UNITS,
+    payload
+  }
+}
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload
   }
 }

@@ -6,54 +6,9 @@ import axios from 'axios';
 import * as types from '../constants/WBS';
 import { ENDPOINTS } from '../utils/URL';
 
-/**
- * Set a flag that fetching WBS
- */
-export const setWBSStart = () => ({
-  type: types.FETCH_WBS_START,
-});
-
-/**
- * Set WBS in store
- * @param {Array} WBSItems - WBS items array
- */
-export const setWBS = (WBSItems) => ({
-  type: types.RECEIVE_WBS,
-  WBSItems,
-});
-
-/**
- * Error when setting WBS
- * @param {Object} err - Error object
- */
-export const setWBSError = (err) => ({
-  type: types.FETCH_WBS_ERROR,
-  err,
-});
-
-/**
- * Remove WBS from store
- * @param {string} wbsId - WBS ID to remove
- */
-export const removeWBS = (wbsId) => ({
-  type: types.DELETE_WBS,
-  wbsId,
-});
-
-/**
- * Post new WBS to store
- * @param {Object} wbs - WBS object
- * @param {number} status - HTTP status code
- */
-export const postNewWBS = (wbs, status) => ({
-  type: types.ADD_NEW_WBS,
-  wbs,
-  status,
-});
-
 export const addNewWBS = (wbsName, projectId) => {
   const url = ENDPOINTS.WBS(projectId);
-  return async (dispatch) => {
+  return async dispatch => {
     let status = 200;
     let _id = null;
 
@@ -64,7 +19,7 @@ export const addNewWBS = (wbsName, projectId) => {
       _id = res.data._id;
       status = res.status;
     } catch (err) {
-      // Removed console.log as per no-console rule
+      console.log('TRY CATCH ERR', err);
       status = 400;
     }
 
@@ -81,9 +36,9 @@ export const addNewWBS = (wbsName, projectId) => {
   };
 };
 
-export const deleteWbs = (wbsId) => {
+export const deleteWbs = wbsId => {
   const request = axios.delete(ENDPOINTS.WBS(wbsId));
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       axios.post(ENDPOINTS.TASK_WBS_DELETE(wbsId));
     } catch (err) {
@@ -91,26 +46,72 @@ export const deleteWbs = (wbsId) => {
     }
 
     request
-      .then(() => {
+      .then(res => {
         dispatch(removeWBS(wbsId));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(setWBSError(err));
       });
   };
 };
 
-export const fetchAllWBS = (projectId) => {
+export const fetchAllWBS = projectId => {
   const request = axios.get(ENDPOINTS.WBS(projectId));
 
-  return async (dispatch) => {
+  return async dispatch => {
     await dispatch(setWBSStart());
     request
-      .then((res) => {
+      .then(res => {
         dispatch(setWBS(res.data));
       })
-      .catch((err) => {
+      .catch(err => {
         dispatch(setWBSError(err));
       });
+  };
+};
+
+/**
+ * Set a flag that fetching WBS
+ */
+export const setWBSStart = () => {
+  return {
+    type: types.FETCH_WBS_START,
+  };
+};
+
+/**
+ * set WBS in store
+ * @param payload : WBS []
+ */
+export const setWBS = WBSItems => {
+  return {
+    type: types.RECEIVE_WBS,
+    WBSItems,
+  };
+};
+
+/**
+ * Error when setting project
+ * @param payload : error status code
+ */
+export const setWBSError = err => {
+  return {
+    type: types.FETCH_WBS_ERROR,
+    err,
+  };
+};
+
+export const removeWBS = wbsId => {
+  return {
+    type: types.DELETE_WBS,
+    wbsId,
+  };
+};
+
+export const postNewWBS = (wbs, status) => {
+  return {
+    type: types.ADD_NEW_WBS,
+    wbs,
+    status,
   };
 };

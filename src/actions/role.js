@@ -2,13 +2,6 @@ import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
 import * as types from '../constants/role';
 
-export const setRoleError = payload => {
-  return {
-    type: types.FETCH_ROLES_ERROR,
-    payload,
-  };
-};
-
 export const fetchAllRoles = roles => {
   return {
     type: types.RECEIVE_ROLES,
@@ -69,3 +62,9 @@ export const setRoleStart = () => {
   };
 };
 
+export const setRoleError = payload => {
+  return {
+    type: types.FETCH_ROLES_ERROR,
+    payload,
+  };
+};
