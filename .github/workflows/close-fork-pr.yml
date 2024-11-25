@@ -1,5 +1,9 @@
 name: Close PRs from Forks
 
+permissions:
+  pull-requests: write
+  contents: write
+
 on:
   pull_request:
     types:
