@@ -39,6 +39,9 @@ describe('new user popup', () => {
     it('should render two close buttons', () => {
       expect(screen.getAllByRole('button', { name: /close/i })).toHaveLength(2);
     });
+    it('should render create new user heading', () => {
+      expect(screen.getByText('Create New User')).toBeInTheDocument();
+    });
   });
   describe('behavior', () => {
     it('should fire onUserPopupClose() when the user clicks close buttons', () => {
@@ -47,5 +50,20 @@ describe('new user popup', () => {
       });
       expect(onUserPopupClose).toHaveBeenCalledTimes(2);
     });
+  });
+});
+
+describe('new user popup close test', () => {
+  const onUserPopupClose = jest.fn();
+  let store;
+  it('should not render new user popup when closed', () => {
+  store = mockStore({
+    userProfile: {
+      role: 'userRole', // Provide the role here in the initial state
+    },
+    theme: themeMock,
+  });
+  const {testid} = renderWithProvider(<NewUserPopup close onUserPopupClose={onUserPopupClose} />, { store });
+  expect(testid).toBeFalsy();
   });
 });
