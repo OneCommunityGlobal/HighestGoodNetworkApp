@@ -36,4 +36,5 @@ jobs:
             --repo "${{ github.repository }}" \
             --comment "This PR has been closed because PRs from forks are not allowed. Please create a branch directly off the origin repository and resubmit your PR."
         env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
