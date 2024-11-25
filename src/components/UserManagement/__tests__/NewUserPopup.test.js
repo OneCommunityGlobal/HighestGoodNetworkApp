@@ -15,6 +15,8 @@ jest.mock('../../UserProfile/AddNewUserProfile', () => {
   );
   return userprofile;
 });
+
+jest.mock('axios');
 const mockStore = configureStore([thunk]);
 
 describe('new user popup', () => {
@@ -26,6 +28,11 @@ describe('new user popup', () => {
         role: 'userRole', // Provide the role here in the initial state
       },
       theme: themeMock,
+      infoCollections: {
+        loading: false, // Ensure loading is defined
+        error: null,
+        infos: [{ infoName: 'example', infoContent: 'example content', visibility: '1' }],
+      },
     });
     renderWithProvider(<NewUserPopup open onUserPopupClose={onUserPopupClose} />, { store });
   });
@@ -57,13 +64,21 @@ describe('new user popup close test', () => {
   const onUserPopupClose = jest.fn();
   let store;
   it('should not render new user popup when closed', () => {
-  store = mockStore({
-    userProfile: {
-      role: 'userRole', // Provide the role here in the initial state
-    },
-    theme: themeMock,
-  });
-  const {testid} = renderWithProvider(<NewUserPopup close onUserPopupClose={onUserPopupClose} />, { store });
-  expect(testid).toBeFalsy();
+    store = mockStore({
+      userProfile: {
+        role: 'userRole', // Provide the role here in the initial state
+      },
+      theme: themeMock,
+      infoCollections: {
+        loading: false, // Ensure loading is defined
+        error: null,
+        infos: [{ infoName: 'example', infoContent: 'example content', visibility: '1' }],
+      },
+    });
+    const { testid } = renderWithProvider(
+      <NewUserPopup close onUserPopupClose={onUserPopupClose} />,
+      { store },
+    );
+    expect(testid).toBeFalsy();
   });
 });
