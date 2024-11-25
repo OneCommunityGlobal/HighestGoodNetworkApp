@@ -28,6 +28,8 @@ jobs:
         run: |
           PR_NUMBER=${{ github.event.pull_request.number }}
           echo "Closing PR #$PR_NUMBER"
-          gh pr close $PR_NUMBER --comment "This PR has been closed because PRs from forks are not allowed. Please create a branch directly off the origin repository and resubmit your PR."
+          gh pr close \
+            --comment "This PR has been closed because PRs from forks are not allowed. Please create a branch directly off the origin repository and resubmit your PR." 
+            --delete-branch "$PR_NUMBER"
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}    
