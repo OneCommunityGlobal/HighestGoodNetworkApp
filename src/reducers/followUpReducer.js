@@ -1,4 +1,4 @@
-import * as types from './../constants/followUpConstants';
+import * as types from "../constants/followUpConstants";
 
 const initialState = {
   followUps: {},

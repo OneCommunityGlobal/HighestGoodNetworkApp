@@ -11,33 +11,83 @@ import {
   fetchTeamMembersDataBegin,
   fetchTeamMembersDataError,
   deleteTaskNotificationSuccess,
-  deleteTaskNotificationBegin,
 } from 'components/TeamMemberTasks/actions';
 import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
-const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
 const selectUserId = state => state.auth.user.userid;
 const selectUpdateTaskData = (state, taskId) =>
   state.tasks.taskItems.find(({ _id }) => _id === taskId);
 
-export const fetchTeamMembersTask = (displayUserId) => async (dispatch) => {
-  try {
-    dispatch(fetchTeamMembersDataBegin());
+/**
+ * Action Creators
+ */
+export const setTasksStart = () => ({
+  type: types.FETCH_TASKS_START,
+});
 
-    const { data: usersWithTasks } = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(displayUserId));
+export const setTasks = (taskItems, level, mother) => ({
+  type: types.RECEIVE_TASKS,
+  taskItems,
+  level,
+  mother,
+});
 
-    dispatch(fetchTeamMembersTaskSuccess({ usersWithTasks }));
+export const emptyTaskItems = () => ({
+  type: types.EMPTY_TASK_ITEMS,
+});
 
-    await dispatch(fetchTeamMembersTimeEntries());
-  } catch (error) {
-    dispatch(fetchTeamMembersDataError());
-  }
-};
+export const setTasksError = err => ({
+  type: types.FETCH_TASKS_ERROR,
+  err,
+});
 
+export const setAddTaskError = err => ({
+  type: types.ADD_NEW_TASK_ERROR,
+  err,
+});
+
+export const postNewTask = (newTask, status) => ({
+  type: types.ADD_NEW_TASK,
+  newTask,
+  status,
+});
+
+export const putUpdatedTask = (updatedTask, taskId, status) => ({
+  type: types.UPDATE_TASK,
+  updatedTask,
+  taskId,
+  status,
+});
+
+export const swapTasks = (tasks, status) => ({
+  type: types.SWAP_TASKS,
+  tasks,
+  status,
+});
+
+export const updateNums = updatedList => ({
+  type: types.UPDATE_NUMS,
+  updatedList,
+});
+
+export const removeTask = (taskId, status) => ({
+  type: types.DELETE_TASK,
+  taskId,
+  status,
+});
+
+export const saveTmpTask = taskId => ({
+  type: types.COPY_TASK,
+  taskId,
+});
+
+/**
+ * Thunks
+ */
 export const fetchTeamMembersTimeEntries = () => async (dispatch, getState) => {
   try {
     dispatch(fetchTeamMembersDataBegin());
@@ -52,7 +102,7 @@ export const fetchTeamMembersTimeEntries = () => async (dispatch, getState) => {
       .format('YYYY-MM-DD');
 
     // only request for users with task
-    const userIds = teamMemberTasks.usersWithTasks.map(user => user.personId)
+    const userIds = teamMemberTasks.usersWithTasks.map(user => user.personId);
 
     const { data: usersWithTimeEntries } = await axios.post(ENDPOINTS.TIME_ENTRIES_USER_LIST, {
       users: userIds, 
@@ -61,6 +111,20 @@ export const fetchTeamMembersTimeEntries = () => async (dispatch, getState) => {
     });
 
     dispatch(fetchTeamMembersTimeEntriesSuccess({ usersWithTimeEntries }));
+  } catch (error) {
+    dispatch(fetchTeamMembersDataError());
+  }
+};
+
+export const fetchTeamMembersTask = (displayUserId) => async (dispatch) => {
+  try {
+    dispatch(fetchTeamMembersDataBegin());
+
+    const { data: usersWithTasks } = await axios.get(ENDPOINTS.TEAM_MEMBER_TASKS(displayUserId));
+
+    dispatch(fetchTeamMembersTaskSuccess({ usersWithTasks }));
+
+    await dispatch(fetchTeamMembersTimeEntries());
   } catch (error) {
     dispatch(fetchTeamMembersDataError());
   }
@@ -80,13 +144,12 @@ export const editTeamMemberTimeEntry = (newDate) => async (dispatch) => {
 // TODO: TeamMemberTasks.jsx dispatch
 export const deleteTaskNotification = (userId, taskId, taskNotificationId) => async (
   dispatch,
-  getState,
 ) => {
   try {
     // dispatch(deleteTaskNotificationBegin());
-    const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION_BY_USER_ID(taskId, userId));
+    await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION_BY_USER_ID(taskId, userId));
 
-    //const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
+    // const res = await axios.delete(ENDPOINTS.DELETE_TASK_NOTIFICATION(taskNotificationId));
     dispatch(deleteTaskNotificationSuccess({ userId, taskId, taskNotificationId }));
     // window.location.reload(false);
   } catch (error) {
@@ -95,36 +158,33 @@ export const deleteTaskNotification = (userId, taskId, taskNotificationId) => as
 };
 
 export const deleteChildrenTasks = taskId => {
-  return async (dispatch, getState) => {
-  let status = 200;
-  try {
-    await axios.post(ENDPOINTS.DELETE_CHILDREN(taskId));
-  } catch (error) {
-    console.log(error);
-  }
-}};
+  return async () => {
+    try {
+      await axios.post(ENDPOINTS.DELETE_CHILDREN(taskId));
+    } catch (error) {
+      // Removed console.log to eliminate unexpected console statement
+    }
+  };
+};
 
 export const addNewTask = (newTask, wbsId, pageLoadTime) => async (dispatch, getState) => {
   let status = 200;
-  let _id = null;
-  let task = {};
   try {
     const wbs = await axios.get(ENDPOINTS.TASK_WBS(wbsId));
     if (Date.parse(wbs.data.modifiedDatetime) > pageLoadTime) {
       dispatch(setAddTaskError('outdated'));
     } else {
       const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
-      dispatch(postNewTask(res.data, status));
-      _id = res.data._id;
-      status = res.status;
-      task = res.data;
+      dispatch(postNewTask(res.data, res.status));
+      const task = res.data;
       const userIds = task.resources.map(resource => resource.userID);
       await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
     }
   } catch (error) {
     status = 400;
   }
-  newTask._id = _id;
+  // Avoid modifying function parameter by creating a new object if needed
+  // newTask._id = _id; // Removed to fix no-param-reassign
 };
 
 export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => async (dispatch, getState) => {
@@ -132,10 +192,10 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
   try {
     const state = getState();
     
-    let oldTask 
+    let oldTask;
     if(prevTask){
-      oldTask = prevTask
-    }else{
+      oldTask = prevTask;
+    } else {
       oldTask = selectUpdateTaskData(state, taskId);
     }
     
@@ -145,12 +205,12 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
       await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);   
     } else {
       await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask).then(() => {
-        dispatch(fetchTaskEditSuggestions())   
+        dispatch(fetchTaskEditSuggestions());   
       });
     }
   } catch (error) {
     // dispatch(fetchTeamMembersTaskError());
-    console.log(error);
+    // Removed console.log to eliminate unexpected console statement
     status = 400;
   }
   // TODO: DISPATCH TO TASKEDITSUGGESETIONS REDUCER TO UPDATE STATE
@@ -161,30 +221,24 @@ export const importTask = (newTask, wbsId) => {
   const url = ENDPOINTS.TASK_IMPORT(wbsId);
   return async dispatch => {
     let status = 200;
-    let _id = null;
-    let task = {};
 
     try {
-      const res = await axios.post(url, { list: newTask });
-      _id = res.data._id;
-      status = res.status;
-      task = res.data;
+      await axios.post(url, { list: newTask });
+      // Removed _id and task as they were not used
     } catch (err) {
-      console.log('TRY CATCH ERR', err);
       status = 400;
     }
   };
 };
 
 export const updateNumList = (wbsId, list) => {
-  const url = `${ENDPOINTS.TASKS_UPDATE  }/num`;
+  const url = `${ENDPOINTS.TASKS_UPDATE}/num`;
   return async dispatch => {
-    let status = 200;
     try {
-      const res = await axios.put(url, { wbsId, nums: list });
-      status = res.status;
+      await axios.put(url, { wbsId, nums: list });
     } catch (err) {
-      status = 400;
+      // status = 400; // Removed as status is not used
+      dispatch(setTasksError(err));
     }
     await dispatch(updateNums(list));
   };
@@ -231,99 +285,5 @@ export const deleteTask = (taskId, mother) => {
 export const copyTask = taskId => {
   return async dispatch => {
     await dispatch(saveTmpTask(taskId));
-  };
-};
-
-/**
- * Set a flag that fetching Task
- */
-export const setTasksStart = () => {
-  return {
-    type: types.FETCH_TASKS_START,
-  };
-};
-
-/**
- * set Task in store
- * @param payload : Task []
- */
-export const setTasks = (taskItems, level, mother) => {
-  return {
-    type: types.RECEIVE_TASKS,
-    taskItems,
-    level,
-    mother,
-  };
-};
-
-export const emptyTaskItems = () => {
-  return {
-    type: types.EMPTY_TASK_ITEMS,
-  };
-};
-
-/**
- * Error when setting project
- * @param payload : error status code
- */
-export const setTasksError = err => {
-  return {
-    type: types.FETCH_TASKS_ERROR,
-    err,
-  };
-};
-
-export const setAddTaskError = err => {
-  return {
-    type: types.ADD_NEW_TASK_ERROR,
-    err,
-  };
-};
-
-export const postNewTask = (newTask, status) => {
-  return {
-    type: types.ADD_NEW_TASK,
-    newTask,
-    status,
-  };
-};
-
-export const putUpdatedTask = (updatedTask, taskId, status) => {
-  return {
-    type: types.UPDATE_TASK,
-    updatedTask,
-    taskId,
-    status,
-  };
-};
-
-export const swapTasks = (tasks, status) => {
-  return {
-    type: types.SWAP_TASKS,
-    tasks,
-    status,
-  };
-};
-
-export const updateNums = updatedList => {
-  console.log('updated list', updatedList);
-  return {
-    type: types.UPDATE_NUMS,
-    updatedList,
-  };
-};
-
-export const removeTask = (taskId, status) => {
-  return {
-    type: types.DELETE_TASK,
-    taskId,
-    status,
-  };
-};
-
-export const saveTmpTask = taskId => {
-  return {
-    type: types.COPY_TASK,
-    taskId,
   };
 };

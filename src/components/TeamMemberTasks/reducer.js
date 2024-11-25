@@ -1,5 +1,3 @@
-import { fetchTeamMembersTask } from 'actions/task';
-import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
 import axios from 'axios';
 import { ApiEndpoint } from 'utils/URL';
 

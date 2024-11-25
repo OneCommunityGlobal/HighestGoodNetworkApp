@@ -3,7 +3,7 @@ import * as actions from '../constants/weeklySummaries';
 import { ENDPOINTS } from '../utils/URL';
 import {
   getUserProfileActionCreator,
-} from '../actions/userProfile';
+} from "./userProfile";
 
 /**
  * Action to set the 'loading' flag to true.

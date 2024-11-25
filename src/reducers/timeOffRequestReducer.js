@@ -1,4 +1,4 @@
-import * as types from './../constants/timeOffRequestConstants';
+import * as types from "../constants/timeOffRequestConstants";
 
 const initialState = {
   requests: {},

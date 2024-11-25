@@ -3,6 +3,20 @@ import GET_TOOL_BY_ID, { GET_TOOLS } from '../../constants/bmdashboard/toolsCons
 import { GET_ERRORS } from '../../constants/errors';
 import { ENDPOINTS } from '../../utils/URL';
 
+export const setTool = payload => {
+  return {
+    type: GET_TOOL_BY_ID,
+    payload,
+  };
+};
+
+export const setErrors = payload => {
+  return {
+    type: GET_ERRORS,
+    payload,
+  };
+};
+
 export const fetchTools = () => {
   const url = ENDPOINTS.BM_TOOLS;
   return async dispatch => {
@@ -53,16 +67,4 @@ export const setTools = payload => {
   };
 };
 
-export const setTool = payload => {
-  return {
-    type: GET_TOOL_BY_ID,
-    payload,
-  };
-};
 
-export const setErrors = payload => {
-  return {
-    type: GET_ERRORS,
-    payload,
-  };
-};

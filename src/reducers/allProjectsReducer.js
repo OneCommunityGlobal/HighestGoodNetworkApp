@@ -16,7 +16,7 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
     };
   };
   const { status, error = null } = action;
-  let index, projects;
+  let index; let projects;
   switch (action.type) {
     case types.FETCH_PROJECTS_START:
       return updateState({ fetching: true });

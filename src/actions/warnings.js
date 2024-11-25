@@ -17,9 +17,9 @@ export const getWarningsByUserId = userId => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
+      } 
         return { error: error.message };
-      }
+      
     }
   };
 };
@@ -37,9 +37,9 @@ export const postWarningByUserId = warningData => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: 'Error occured when posting' };
-      } else {
+      } 
         return { error: 'Something else went wrong' };
-      }
+      
     }
   };
 };
@@ -55,9 +55,9 @@ export const deleteWarningsById = (warningId, personId) => {
     } catch (error) {
       if (error.response && error.response.status === 400) {
         return { error: error.response.data.message };
-      } else {
+      } 
         return { error: 'Something else went wrong' };
-      }
+      
     }
   };
 };

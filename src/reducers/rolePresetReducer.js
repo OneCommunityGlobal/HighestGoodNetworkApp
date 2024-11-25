@@ -24,7 +24,7 @@ export const rolePresetReducer = (state = initialState, action) => {
       return { ...state, presets: presetsCopy };
 
     case types.DELETE_PRESET:
-      const presetsFiltered = state.presets.filter(preset => preset._id != action.presetId);
+      const presetsFiltered = state.presets.filter(preset => preset._id !== action.presetId);
       return {...state, presets: presetsFiltered};
 
     default:

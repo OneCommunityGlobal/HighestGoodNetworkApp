@@ -3,6 +3,15 @@ import { ENDPOINTS } from '../utils/URL';
 
 import * as types from "../constants/ownerMessageConstants";
 
+
+// action creator
+export const updateOwnerMessageAction = payload => {
+  return {
+    type: types.UPDATE_OWNER_MESSAGE,
+    payload,
+  };
+}
+
 // redux thunk functions
 export const getOwnerMessage = () => {
   const url = ENDPOINTS.OWNERMESSAGE();
@@ -46,10 +55,4 @@ export const deleteOwnerMessage = () => {
   }
 }
 
-// action creator
-export const updateOwnerMessageAction = payload => {
-  return {
-    type: types.UPDATE_OWNER_MESSAGE,
-    payload,
-  };
-}
+

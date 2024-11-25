@@ -8,6 +8,16 @@ import { SET_CURRENT_USER, SET_HEADER_DATA } from '../constants/auth';
 
 const { tokenKey } = config;
 
+export const setCurrentUser = decoded => ({
+  type: SET_CURRENT_USER,
+  payload: decoded,
+});
+
+export const setHeaderData = data => ({
+  type: SET_HEADER_DATA,
+  payload: data,
+});
+
 export const loginUser = credentials => dispatch => {
   return httpService
     .post(ENDPOINTS.LOGIN, credentials)
@@ -85,12 +95,3 @@ export const refreshToken = userId => {
   };
 };
 
-export const setCurrentUser = decoded => ({
-  type: SET_CURRENT_USER,
-  payload: decoded,
-});
-
-export const setHeaderData = data => ({
-  type: SET_HEADER_DATA,
-  payload: data,
-});

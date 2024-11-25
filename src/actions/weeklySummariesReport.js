@@ -70,9 +70,9 @@ export const updateOneSummaryReport = (userId, updatedField) => {
       if (res.status === 200) {
         dispatch(updateSummaryReport({ _id: userId, updatedField }));
         return res;
-      } else {
+      } 
         throw new Error(`An error occurred while attempting to save the changes to the profile.`)
-      }
+      
     } catch (err) {
       throw err;
     }

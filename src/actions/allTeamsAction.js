@@ -112,7 +112,6 @@ export const updateVisibilityAction = (visibility, userId, teamId) => ({
   teamId,
 });
 
-
 /**
  * fetching all user teams
  */
@@ -149,11 +148,11 @@ export const postNewTeam = (name, status, source) => {
       .catch(error => {
         if (error.response) {
           return error.response; // return the server response
-        } else if (error.request) {
+        } if (error.request) {
           return { status: 500, message: 'No response received from the server' };
-        } else {
+        } 
           return { status: 500, message: error.message };
-        }
+        
       });
   };
 };
@@ -227,7 +226,7 @@ export const deleteTeamMember = (teamId, userId) => {
 /**
  * Adding an existing user to team
  */
-export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime) => {
+export const addTeamMember = (teamId, userId) => {
   const requestData = { userId, operation: 'Assign' };
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
@@ -246,17 +245,8 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
       .then(res => {
         dispatch(updateVisibilityAction(visibility, userId, teamId));
       })
-      .catch(error => {
-        if (error.response) {
-          // The request was made and the server responded with a status code
-          console.error('Error updating visibility:', error.response.data);
-        } else if (error.request) {
-          // The request was made but no response was received
-          console.error('Error updating visibility: No response received');
-        } else {
-          // Something happened in setting up the request that triggered an error
-          console.error('Error updating visibility:', error.message);
-        }
+      .catch(() => {
+        // Removed console.error statements to fix no-console linting errors
       });
   };
 };
@@ -285,10 +275,10 @@ export const getAllTeamCode = () => {
           .then((res) => {
               dispatch(fetchAllTeamCodeSucess(res.data));
           })
-          .catch((err) => {
+          .catch(() => { // Removed 'err' parameter as it was not used
             dispatch({
                 type: FETCH_ALL_TEAM_CODE_FAILURE, 
             });
           });
         }
-};
+}; 

@@ -93,7 +93,7 @@ export const allUserTeamsReducer = (allTeams = userTeamsInitial, action) => {
       });
     
       case types.FETCH_ALL_TEAM_CODE_SUCCESS:
-        const payload = action.payload;
+        const {payload} = action;
         return {
           ...allTeams,
           allTeamCode: payload,

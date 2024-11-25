@@ -1,4 +1,4 @@
-import * as types from './../constants/mouseoverTextConstants';
+import * as types from "../constants/mouseoverTextConstants";
 
 const initialState = null;
 
