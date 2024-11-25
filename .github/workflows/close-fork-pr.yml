@@ -1,9 +1,5 @@
 name: Close PRs from Forks
 
-permissions:
-  pull-requests: write
-  contents: write
-
 on:
   pull_request:
     types:
@@ -13,6 +9,8 @@ on:
 jobs:
   check-fork:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     steps:
       - name: Check if PR is from a fork
         id: check
