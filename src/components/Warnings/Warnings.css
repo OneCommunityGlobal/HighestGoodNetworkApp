@@ -169,6 +169,11 @@
   margin-top: 0.5em;
   text-align: center;
 }
+.modal__header--center {
+  text-align: center;
+  justify-content: center !important;
+  align-items: center;
+}
 
 .modal__warning__deletion {
   font-weight: bold;

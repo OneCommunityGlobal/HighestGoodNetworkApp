@@ -1065,6 +1065,9 @@ function UserProfile(props) {
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);
+
+                    //change based on action occured
+                    //Warning succesfully logged or blue square issued or summary intro copied
                     toast.success('Summary Intro Copied!');
                   }}
                   color="primary"

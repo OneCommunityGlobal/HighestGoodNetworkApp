@@ -1,7 +1,7 @@
 /* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import getOrdinal from '../../../utils/getOrdinal';
-
+import '../Warnings.css';
 function WarningModal({
   setToggleModal,
   visible,
@@ -46,7 +46,9 @@ function WarningModal({
     <div>
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
         {userProfileHeader ? (
-          <ModalHeader>{times + ordinal} time doing this - choose action </ModalHeader>
+          <ModalHeader className="modal__header--center">
+            {times + ordinal} time doing this - choose action{' '}
+          </ModalHeader>
         ) : (
           <ModalHeader>Issue Warning</ModalHeader>
         )}
