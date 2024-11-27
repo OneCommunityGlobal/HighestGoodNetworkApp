@@ -189,6 +189,7 @@ const UserProfileModal = props => {
         visible={displayWarningModal}
         setToggleModal={() => setDisplayWarningModal(false)}
         handleIssueWarning={handleLogNewWarning}
+        userProfileHeader={true}
       />
 
       <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
@@ -473,39 +474,49 @@ const UserProfileModal = props => {
 
           {type === 'modBlueSquare' && (
             <>
-              <div>
-                {specialWarnings.map(warning => (
-                  <OverlayTrigger
-                    key={warning.abbreviation}
-                    placement="top"
-                    delay={{ show: 100, hide: 100 }}
-                    overlay={
-                      <Popover id="popover-basic">
-                        <Popover.Title as="h4">
-                          {warning.abbreviation === 'RBS4NS'
-                            ? 'Blue Square for no summary'
-                            : 'Blue Square for not enough hours logged'}{' '}
-                        </Popover.Title>
-                        <Popover.Content>
-                          {warning.abbreviation === 'RBS4NS'
-                            ? 'Issues a warning if no summary was submitted'
-                            : 'Issues a warning if hours were not completed'}
-                        </Popover.Content>
-                      </Popover>
-                    }
-                  >
-                    <Button
-                      color="warning"
-                      onClick={e => {
-                        handleToggleLogWarning(warning);
-                      }}
-                      name={warning.abbreviation}
-                      style={boxStyling}
-                    >
-                      {warning.abbreviation}
-                    </Button>
+              {/* <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  justifyContent: 'center',
+                  alignItems: 'flex-start',
+                }} */}
 
-                    {/* 
+              {specialWarnings.map(warning => (
+                <OverlayTrigger
+                  key={warning.abbreviation}
+                  placement="top"
+                  delay={{ show: 100, hide: 100 }}
+                  overlay={
+                    <Popover id="popover-basic">
+                      <Popover.Title as="h4" className="popover__title">
+                        <p>Removed Blue Square </p>
+                        {warning.abbreviation === 'RBS4NS' ? (
+                          <p>for No Summary</p>
+                        ) : (
+                          <p>for Not Enough Hours Logged</p>
+                        )}{' '}
+                      </Popover.Title>
+                      <Popover.Content>
+                        {warning.abbreviation === 'RBS4NS'
+                          ? 'Issues a warning if no summary was submitted'
+                          : 'Issues a warning if hours were not completed'}
+                      </Popover.Content>
+                    </Popover>
+                  }
+                >
+                  <Button
+                    color="warning"
+                    onClick={e => {
+                      handleToggleLogWarning(warning);
+                    }}
+                    name={warning.abbreviation}
+                    style={boxStyling}
+                  >
+                    {warning.abbreviation}
+                  </Button>
+
+                  {/* 
                     place holder for the warning button
                     incase i want to hide it if the user has reached the max warnings
                     {warning.warnings < 8 ? (
@@ -522,23 +533,21 @@ const UserProfileModal = props => {
                     ) : (
                       <span>User has received maximum warnings</span>
                     )} */}
-                  </OverlayTrigger>
-                  // </div>
-                ))}
-              </div>
+                </OverlayTrigger>
+                // </div>
+              ))}
               {
                 //BOTH WILL NEED TO BE ADJUSTED!
                 <OverlayTrigger
                   placement="top"
                   delay={{ show: 100, hide: 100 }}
                   overlay={
-                    <Popover id="popover-basic">
+                    <Popover id="popover-basic" className="popover__title">
                       <Popover.Title as="h4">
-                        Issues a warning if not enough hours were logged and no summary were
-                        submitted
+                        Removes Blue Square for both Not Enough Hours and No Summary
                       </Popover.Title>
                       <Popover.Content>
-                        Issues a warning if hours and no summary were completed
+                        Logs both hours and no summary being completed
                       </Popover.Content>
                     </Popover>
                   }
@@ -555,6 +564,7 @@ const UserProfileModal = props => {
                   </Button>
                 </OverlayTrigger>
               }
+
               {canEditInfringements && (
                 <Button
                   color="info"

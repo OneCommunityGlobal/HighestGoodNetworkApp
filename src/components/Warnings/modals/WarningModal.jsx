@@ -1,5 +1,6 @@
 /* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import getOrdinal from '../../../utils/getOrdinal';
 
 function WarningModal({
   setToggleModal,
@@ -9,9 +10,11 @@ function WarningModal({
   deleteWarningTriggered,
   deleteWarning,
   numberOfWarnings,
+  userProfileHeader,
 }) {
   const { warningText, username } = warning || {};
 
+  const [times, ordinal] = getOrdinal(numberOfWarnings?.length + 1);
   if (deleteWarning) {
     return (
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
@@ -42,7 +45,11 @@ function WarningModal({
   return (
     <div>
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
-        <ModalHeader>Issue Warning</ModalHeader>
+        {userProfileHeader ? (
+          <ModalHeader>{times + ordinal} time doing this - choose action </ModalHeader>
+        ) : (
+          <ModalHeader>Issue Warning</ModalHeader>
+        )}
         <ModalBody>
           <h3>
             Are you sure you want to issue a {numberOfWarnings >= 3 ? 'blue square' : 'warning'} to:{' '}
@@ -51,7 +58,9 @@ function WarningModal({
           <p>
             The {numberOfWarnings >= 3 ? 'blue square' : 'warning'} will be because they didn&apos;t
             meet the criteria for the following area:{' '}
-            <span className="warning__body--bold">{warningText}</span>
+            <span className="warning__body--bold">
+              {times + ordinal} {warningText}
+            </span>
           </p>
           {numberOfWarnings >= 3 && (
             <>

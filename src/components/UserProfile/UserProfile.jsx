@@ -628,7 +628,7 @@ function UserProfile(props) {
         } else {
           setShowModal(false);
           fetchSpecialWarnings();
-          toast.success('Warning successfully logged');
+          toast.success('Successfully logged and tracked');
         }
       })
       .catch(err => {

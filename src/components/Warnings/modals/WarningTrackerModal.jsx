@@ -20,6 +20,7 @@ import {
   editWarningDescription,
 } from '../../../actions/warnings';
 
+import '../Warnings.css';
 import reorder from '../reorder.svg';
 
 /**
@@ -205,13 +206,16 @@ function WarningTrackerModal({
     return (
       <Modal isOpen={toggleDeleteModal} toggle={() => setToggleDeleteModal(false)}>
         <ModalBody>
-          <h2>Whooooo Tiger!! </h2>
+          <h2>Whoooa Tiger!! </h2>
           <p>Are you sure you want to delete this warning? </p>
-          <p>Deleteing this warning will delete all associated data tied to it from all users.</p>
+          <p>
+            Deleteing this warning will delete all associated data tied to it from{' '}
+            <span className="modal__warning__users--bold">All Users</span>.
+          </p>
           <p className="modal__warning__deletion">Warning Title: {warningTitle}</p>
         </ModalBody>
 
-        <ModalFooter>
+        <ModalFooter className="modal__footer--centered">
           <Button onClick={() => setToggleDeleteModal(false)} color="danger">
             No, I changed my mind!
           </Button>

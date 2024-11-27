@@ -174,7 +174,13 @@
   font-weight: bold;
   font-size: 1.3rem;
 }
-
+.modal__warning__users--bold {
+  font-weight: bold;
+}
+.modal__footer--centered {
+  display: flex;
+  justify-content: center;
+}
 input[type='text'] {
   word-wrap: break-word;
   word-break: break-all;
