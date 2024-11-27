@@ -57,7 +57,14 @@ describe('Update Password Page', () => {
   beforeEach(() => {
     store = mockStore({
       errors: '',
-      theme: {darkMode: true}
+      theme: { darkMode: true },
+      allProjects: {
+        projects: [],
+        loading: false,
+        error: null,
+        status: null,
+      },
+      // Add other state slices if necessary
     });
     store.dispatch = jest.fn();
     renderWithRouterMatch(

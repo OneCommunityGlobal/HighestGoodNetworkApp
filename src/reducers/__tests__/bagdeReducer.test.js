@@ -1,4 +1,5 @@
-import { badgeReducer } from '../badgeReducer';
+// Corrected import statement for default export
+import badgeReducer from '../badgeReducer';
 import * as types from '../../constants/badge';
 
 describe('Badge Reducer', () => {
@@ -60,6 +61,7 @@ describe('Badge Reducer', () => {
       selectedBadges: [],
       firstName: '',
       lastName: '',
+      userId: '',
     });
   });
 
