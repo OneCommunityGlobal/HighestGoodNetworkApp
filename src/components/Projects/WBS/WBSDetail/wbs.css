@@ -233,9 +233,17 @@
   border-left: 1px solid #bbb;
   padding-left: .25em;
 }
+
+.bg-yinmn-blue:hover{
+  background-color: #3A506B !important;
+}
+
+.bg-yinmn-blue-light:hover{
+  background-color:#2f4157;
+}
+
 .tasks-detail-task-name { /* task column height and width changes*/
-  width: 35%; 
-.tasks-detail-task-name { /* task column height and width changes*/
+  width: 35%;
   height: auto; 
 }
 .tasks-detail-actions {  /* action column width reduced */
@@ -245,5 +253,4 @@
   .button-group button {
     margin-bottom: 10px;
   }
-}
 }
