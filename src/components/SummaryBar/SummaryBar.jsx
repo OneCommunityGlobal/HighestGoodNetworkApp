@@ -21,18 +21,16 @@ import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
-import { useLocation } from 'react-router-dom';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';
 import BlueScoreIcon from './bluesquare_icon.png';
 import ReportIcon from './report_icon.png';
 import SuggestionsIcon from './suggestions_icon.png';
 import httpService from '../../services/httpService';
+
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 
 function SummaryBar(props) {
-  const location = useLocation();
-
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
@@ -363,11 +361,6 @@ function SummaryBar(props) {
     }
     setShowSuggestionModal(prev => !prev);
   };
-
-  useEffect(() => {
-    // eslint-disable-next-line no-unused-expressions
-    location.search === '?openModalReport' && openSuggestionModal();
-  }, []);
 
   const onTaskClick = () => {
     window.location.hash = '#tasks';
