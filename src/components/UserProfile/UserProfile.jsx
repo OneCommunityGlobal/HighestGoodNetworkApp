@@ -616,13 +616,14 @@ function UserProfile(props) {
         firstName: userProfile.firstName,
         lastName: userProfile.lastName,
         email: userProfile.email,
+        userId: props.auth.user.userid,
       },
     };
 
     dispatch(postWarningByUserId(warningData))
       .then(response => {
         if (response.error) {
-          toast.success('Warning failed to log try again');
+          toast.error('Warning failed to log try again');
           return;
         } else {
           setShowModal(false);
