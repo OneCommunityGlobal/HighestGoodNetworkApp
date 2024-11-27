@@ -46,4 +46,46 @@ describe('Notification Reducer', () => {
     };
     expect(notificationReducer(initialState, action)).toEqual(expectedState);
   });
+
+  it('should handle FETCH_UNREAD_USER_NOTIFICATIONS_SUCCESS and update unreadNotifications', () => {
+    const action = {
+      type: actionTypes.FETCH_UNREAD_USER_NOTIFICATIONS_SUCCESS,
+      payload: [{ id: 1, message: 'Unread notification' }],
+    };
+    const expectedState = {
+      ...initialState,
+      unreadNotifications: action.payload,
+      loading: false,
+      error: null,
+    };
+    expect(notificationReducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should handle MARK_NOTIFICATION_AS_READ_SUCCESS and remove notification from unreadNotifications', () => {
+    const initialStateWithUnread = {
+      ...initialState,
+      unreadNotifications: [
+        { _id: '1', message: 'Unread notification 1' },
+        { _id: '2', message: 'Unread notification 2' },
+      ],
+    };
+    const action = {
+      type: actionTypes.MARK_NOTIFICATION_AS_READ_SUCCESS,
+      payload: '1',
+    };
+    const expectedState = {
+      ...initialStateWithUnread,
+      unreadNotifications: [{ _id: '2', message: 'Unread notification 2' }],
+      loading: false,
+      error: null,
+    };
+    expect(notificationReducer(initialStateWithUnread, action)).toEqual(expectedState);
+  });
+
+  it('should handle RESET_ERROR and clear error', () => {
+    const stateWithError = { ...initialState, error: 'Some error' };
+    const action = { type: actionTypes.RESET_ERROR };
+    const expectedState = { ...stateWithError, error: null };
+    expect(notificationReducer(stateWithError, action)).toEqual(expectedState);
+  });
 });
