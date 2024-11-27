@@ -42,6 +42,7 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+import NotFoundPage from './components/not-found/notFoundPage';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -351,6 +352,7 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
+        <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
   </Switch>
