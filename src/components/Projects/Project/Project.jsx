@@ -15,7 +15,7 @@ const Project = props => {
   const { darkMode, index } = props;
   const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName, category, isActive,isArchived = false, _id: projectId } = projectData;
+  const { projectName, isActive,isArchived = false, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
   const initialModalData = {
     showModal: false,
@@ -24,6 +24,7 @@ const Project = props => {
     hasConfirmBtn: false,
     hasInactiveBtn: false,
   };
+  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
 
   const [modalData, setModalData] = useState(initialModalData);
 
@@ -63,8 +64,9 @@ const Project = props => {
   }
 
   const onUpdateProjectCategory = (e) => {
-    updateProject('category', e.target.value);
-  }
+    setCategory(e.target.value);
+    updateProject('category', e.target.value); // Update the projectData state
+  };
 
   const onArchiveProject = () => {
     if(isArchived){
@@ -106,6 +108,9 @@ const Project = props => {
     };
 
     onUpdateProject();
+    if (props.projectData.category) {
+      setCategory(props.projectData.category);
+    }
   }, [projectData]);
 
   return (
@@ -159,14 +164,10 @@ const Project = props => {
           category
         )}
       </td>
-
-
       {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
           <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
               {isActive ? (
-
-
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
           </div>

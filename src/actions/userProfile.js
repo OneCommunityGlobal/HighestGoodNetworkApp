@@ -6,7 +6,8 @@ import {
   EDIT_USER_PROFILE,
   CLEAR_USER_PROFILE,
   GET_PROJECT_BY_USER_NAME,
-  USER_NOT_FOUND_ERROR
+  USER_NOT_FOUND_ERROR,
+  GET_USER_AUTOCOMPLETE 
 } from '../constants/userProfile';
 import { ENDPOINTS } from '../utils/URL';
 import { toast } from 'react-toastify';
@@ -91,6 +92,21 @@ export const getProjectsByUsersName = searchName => {
   };
 };
 
+// Action to get user suggestions for autocomplete
+export const getUserByAutocomplete = (searchText) => {
+  const url = ENDPOINTS.USER_AUTOCOMPLETE(searchText);
+  return async (dispatch) => {
+    try {
+      const res = await axios.get(url);
+      dispatch(getUserAutocompleteActionCreator(res.data)); // Dispatching the data to the store
+      return res.data; // Return the data to be used in the component
+    } catch (error) {
+      toast.error('Error fetching autocomplete suggestions');
+      return [];
+    }
+  };
+};
+
 export const getProjectsByPersonActionCreator = data => ({
   type: GET_PROJECT_BY_USER_NAME,
   payload: data
@@ -118,5 +134,11 @@ export const editFirstNameActionCreator = data => ({
 
 export const putUserProfileActionCreator = data => ({
   type: EDIT_USER_PROFILE,
+  payload: data,
+});
+
+// Action creator for user autocomplete
+export const getUserAutocompleteActionCreator = (data) => ({
+  type: GET_USER_AUTOCOMPLETE,
   payload: data,
 });
