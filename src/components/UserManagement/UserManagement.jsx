@@ -311,9 +311,9 @@ class UserManagement extends React.PureComponent {
   /**
    * reload user list and close user creation popup
    */
-  userCreated = () => {
+  userCreated = async () => {
     const text = this.state.wildCardSearchText;
-    this.props.getAllUserProfile();
+    this.getRefreshedData()
     this.setState(() => ({
       newUserPopupOpen: false,
       wildCardSearchText: text,
