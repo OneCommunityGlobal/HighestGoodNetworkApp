@@ -83,9 +83,8 @@ class UserManagement extends React.PureComponent {
     this.onActiveInactiveClick = this.onActiveInactiveClick.bind(this);
   }
 
-  componentDidMount() {
-    // Initiating the user profile fetch action.
-    this.props.getAllUserProfile();
+  async getRefreshedData (){
+    await this.props.getAllUserProfile();
     this.props.getAllTimeOffRequests();
     const { darkMode } = this.props.state.theme;
     const { userProfiles } = this.props.state.allUserProfiles;
@@ -98,6 +97,10 @@ class UserManagement extends React.PureComponent {
       darkMode,
       this.state.editable,
     );
+  }
+  componentDidMount() {
+    // Initiating the user profile fetch action.
+    this.getRefreshedData();
   }
 
   async componentDidUpdate(prevProps, prevState) {
@@ -457,12 +460,13 @@ class UserManagement extends React.PureComponent {
   /**
    * Callback to trigger the status change on confirmation ok click.
    */
-  setActiveInactive = isActive => {
-    this.props.updateUserStatus(
+  setActiveInactive = async isActive => {
+   await this.props.updateUserStatus(
       this.state.selectedUser,
       isActive ? UserStatus.Active : UserStatus.InActive,
       undefined,
     );
+    this.getRefreshedData();
     this.setState({
       activeInactivePopupOpen: false,
       selectedUser: undefined,
@@ -500,7 +504,7 @@ class UserManagement extends React.PureComponent {
     this.setState({
       deletePopupOpen: false,
       selectedUser: undefined,
-    });
+    },()=>this.getRefreshedData());
   };
 
   /**
