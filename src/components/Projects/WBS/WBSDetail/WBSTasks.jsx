@@ -1,9 +1,10 @@
+
 /*********************************************************************************
  * Component: TASK
  * Author: Henry Ng - 21/03/20 ≢
  ********************************************************************************/
 import React, { useState, useEffect, useRef } from 'react';
-import { connect } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { NavItem, Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
@@ -20,6 +21,7 @@ import AddTaskModal from './AddTask/AddTaskModal';
 import ImportTask from './ImportTask';
 import './wbs.css';
 import { boxStyle, boxStyleDark } from 'styles';
+import { getProjectDetail } from 'actions/project';
 
 function WBSTasks(props) {
   /*
@@ -31,6 +33,7 @@ function WBSTasks(props) {
   const { wbsId } = props.match.params;
   const { projectId } = props.match.params;
   const { wbsName } = props.match.params;
+  const projectName = useSelector(state => state.projectById?.projectName || '');
 
   // states from hooks
   const [showImport, setShowImport] = useState(false);
@@ -158,6 +161,7 @@ function WBSTasks(props) {
       setIsLoading(false);
     };
     initialLoad();
+    props.getProjectDetail(projectId); 
   }, [wbsId, projectId]);
 
   useEffect(() => {
@@ -184,8 +188,10 @@ function WBSTasks(props) {
               <button type="button" className="btn btn-secondary mr-2" style={darkMode ? boxStyleDark : boxStyle}>
                 <i className="fa fa-chevron-circle-left" aria-hidden="true" />
               </button>
+              <span style={{ marginLeft: '1px' }}>Return to WBS List: {projectName}</span>
             </NavItem>
-            <div id="member_project__name">{wbsName}</div>
+            <div id="member_project__name" style={{ flex: '1', textAlign: 'center', fontWeight: 'bold', display: 'flex',
+              alignItems: 'center', justifyContent: 'center', }}> WBS Name: {wbsName}</div>
           </ol>
         </nav>
         <div
@@ -427,4 +433,5 @@ export default connect(mapStateToProps, {
   deleteTask,
   fetchAllMembers,
   hasPermission,
+  getProjectDetail,
 })(WBSTasks);

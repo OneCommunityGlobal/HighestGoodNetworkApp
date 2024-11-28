@@ -768,3 +768,5 @@ export default connect(mapStateToProps, {
   disableEditUserInfo,
   getAllRoles,
 })(UserManagement);
+// exporting without connect
+export { UserManagement as UnconnectedUserManagement };

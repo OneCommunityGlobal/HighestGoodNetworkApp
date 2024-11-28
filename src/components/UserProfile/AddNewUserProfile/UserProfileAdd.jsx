@@ -687,7 +687,7 @@ class UserProfileAdd extends Component {
     if (phone === null) {
       toast.error('Phone Number is required');
       return false;
-    } else if (!this.state.codeValid) {
+    } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
       return false;
     } else if (firstLength && lastLength && phone.length >= 9) {
