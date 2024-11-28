@@ -619,7 +619,7 @@ function UserProfile(props) {
         userId: props.auth.user.userid,
       },
     };
-
+    let toastMessage = '';
     dispatch(postWarningByUserId(warningData))
       .then(response => {
         if (response.error) {
@@ -628,8 +628,16 @@ function UserProfile(props) {
         } else {
           setShowModal(false);
           fetchSpecialWarnings();
-          toast.success('Successfully logged and tracked');
+
+          if (warningData.color === 'blue') {
+            toastMessage = 'Successfully logged and tracked';
+          } else if (warningData.color === 'yellow') {
+            toastMessage = 'Warning successfully logged';
+          } else {
+            toastMessage = 'Successfully logged and Blue Square issued';
+          }
         }
+        toast.success(toastMessage);
       })
       .catch(err => {
         console.log(err);
@@ -1065,9 +1073,6 @@ function UserProfile(props) {
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);
-
-                    //change based on action occured
-                    //Warning succesfully logged or blue square issued or summary intro copied
                     toast.success('Summary Intro Copied!');
                   }}
                   color="primary"
