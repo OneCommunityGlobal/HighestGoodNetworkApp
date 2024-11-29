@@ -11,6 +11,7 @@ import {
   CLOSE_ALERT,
   GET_BADGE_COUNT,
   RESET_BADGE_COUNT,
+  SET_ACTIVE_TAB,
 } from '../constants/badge';
 
 const badgeInitial = {
@@ -23,6 +24,7 @@ const badgeInitial = {
   color: null,
   alertVisible: false,
   badgeCount: 0,
+  activeTab: '1',
 };
 
 export const badgeReducer = (state = badgeInitial, action) => {
@@ -64,6 +66,8 @@ export const badgeReducer = (state = badgeInitial, action) => {
       return { ...state, message: action.message, alertVisible: true, color: action.color };
     case CLOSE_ALERT:
       return { ...state, alertVisible: false };
+    case SET_ACTIVE_TAB:
+      return { ...state, activeTab: action.payload };
     default:
       return state;
   }
