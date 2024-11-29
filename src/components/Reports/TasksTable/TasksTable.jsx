@@ -56,9 +56,20 @@ export function TasksTable({ darkMode, tasks }) {
 
   const getUserOptions = () => {
     let users = [];
-    tasks.forEach(task => task.resources?.forEach(resource => users.push(resource.name)));
-    users = Array.from(new Set(users)).sort();
-    return users.map(user => ({ value: user, label: user }));
+    
+    tasks.forEach(task => {
+      // Collect all resource names for each task
+      if (task.resources) {
+        const resourceNames = task.resources.map(resource => resource.name);
+        // Join all resource names into a single comma-separated string
+        const commaSeparatedResources = resourceNames.join(', ');
+        users.push(commaSeparatedResources);
+      }
+    });
+
+    // Create unique options from the list of comma-separated resource strings
+    const uniqueUsers = Array.from(new Set(users)).sort();
+    return uniqueUsers.map(user => ({ value: user, label: user }));
   };
 
   const handleSelectChange = (selectedOption, filterName) => {
