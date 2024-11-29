@@ -129,7 +129,7 @@ export function PieChartByProject({
 
   return (
     <div className={`${darkMode ? 'text-light' : ''} w-100`}>
-      <div className='pie-chart-title'><h4>Pie Charts</h4></div>
+      <div className={`${darkMode ? 'text-light' : ''} pie-chart-title w-100`}><h4>Pie Charts</h4></div>
       <div><h5>{projectName}</h5></div>
       <div className="pie-chart-description">
         <div>
