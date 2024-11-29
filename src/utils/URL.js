@@ -209,6 +209,7 @@ export const ENDPOINTS = {
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
+  JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
 };
 
 export const ApiEndpoint = APIEndpoint;
