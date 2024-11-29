@@ -13,11 +13,14 @@ class Collaboration extends Component {
       currentPage: 1,
       jobAds: [],
       totalPages: 0,
+      categories: [],
+      jobAdsByCategories: {},
     };
   }
 
   componentDidMount() {
     this.fetchJobAds();
+    this.fetchCategories();
   }
 
   fetchJobAds = async () => {
@@ -41,8 +44,26 @@ class Collaboration extends Component {
         jobAds: data.jobs,
         totalPages: data.pagination.totalPages, // Update total pages from the backend
       });
+      console.log('inside fetchJobAds: data', data);
     } catch (error) {
       toast.error('Error fetching jobs');
+    }
+  };
+
+  fetchCategories = async () => {
+    try {
+      const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch categories: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
+      this.setState({ categories: sortedCategories });
+      console.log('inside fetchCategories: sortedCategories', sortedCategories);
+    } catch (error) {
+      toast.error('Error fetching categories');
     }
   };
 
@@ -64,7 +85,14 @@ class Collaboration extends Component {
   };
 
   render() {
-    const { searchTerm, selectedCategory, currentPage, jobAds, totalPages } = this.state;
+    const {
+      searchTerm,
+      selectedCategory,
+      currentPage,
+      jobAds,
+      totalPages,
+      categories,
+    } = this.state;
 
     return (
       <div className="job-landing">
@@ -92,12 +120,17 @@ class Collaboration extends Component {
                 </button>
               </form>
             </div>
+
             <div className="navbar-right">
-              <select value={selectedCategory} onChange={this.handleCategoryChange}>
-                <option value="">All Categories</option>
-                <option value="Engineering">Engineering</option>
-                <option value="Design">Design</option>
-                <option value="Marketing">Marketing</option>
+              <select value={selectedCategory} onChange={event => this.handleCategoryChange(event)}>
+                <option value="" disabled>
+                  Select from Categories
+                </option>
+                {categories.map(category => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </select>
             </div>
           </nav>
