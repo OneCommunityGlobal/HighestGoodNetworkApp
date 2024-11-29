@@ -33,6 +33,7 @@ const NUM_TASKS_SHOW_TRUNCATE = 6;
 const TeamMemberTask = React.memo(
   ({
     user,
+    teamRoles,
     handleMarkAsDoneModal,
     handleRemoveFromTaskModal,
     handleOpenTaskNotificationModal,
@@ -89,6 +90,21 @@ const TeamMemberTask = React.memo(
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
+    const colors_objs = {
+      'Assistant Manager' :'#0000FF', // blue
+      'Manager' : '#00FF00', // green
+      'Mentor' : '#FFFF00' // yellow
+    }
+
+    function getInitials(name) {
+      const initials = name
+        .split(' ')
+        .filter((n, index) => index === 0 || index === name.split(' ').length - 1)
+        .map(n => n[0])
+        .join('')
+        .toUpperCase();
+      return initials;
+    }
     const handleTruncateTasksButtonClick = () => {
       if (!isTruncated) {
         ref.current?.scrollIntoView({ behavior: 'smooth' });
@@ -163,29 +179,57 @@ const TeamMemberTask = React.memo(
               <tr className="remove-child-borders"> 
                 {/* green if member has met committed hours for the week, red if not */}
                 <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
-                  <div style={{ display: 'flex', alignItems: 'center' }}>
-                    <div className="committed-hours-circle">
-                      <FontAwesomeIcon
-                        style={{
-                          color:
-                            user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
-                        }}
-                        icon={faCircle}
-                        data-testid="icon"
-                      />
+                  <div style={{ display: 'flex', alignItems: 'center', flexWrap: 'wrap' }}>
+                    <div className='member-links-wrapper'>
+                      <div className="committed-hours-circle">
+                        <FontAwesomeIcon
+                          style={{
+                            color:
+                              user.totaltangibletime_hrs >= user.weeklycommittedHours ? 'green' : 'red',
+                          }}
+                          icon={faCircle}
+                          data-testid="icon"
+                        />
+                      </div>
+                      <Link to={`/timelog/${user.personId}`}>
+                        <i
+                          className="fa fa-clock-o"
+                          aria-hidden="true"
+                          style={{
+                            fontSize: 24,
+                            cursor: 'pointer',
+                            color: darkMode ? 'lightgray' : 'black',
+                          }}
+                          title="Click to see user's timelog"
+                        />
+                      </Link>
+                      {canUpdateTask && <div className="google-icon-wrapper"><GoogleDocIcon link={userGoogleDocLink} /></div>}
                     </div>
-                    <Link to={`/timelog/${user.personId}`}>
-                      <i
-                        className="fa fa-clock-o"
-                        aria-hidden="true"
-                        style={{
-                          fontSize: 24,
-                          cursor: 'pointer',
-                          color: darkMode ? 'lightgray' : 'black',
-                        }}
-                        title="Click to see user's timelog"
-                      />
-                    </Link>
+                    {canUpdateTask && teamRoles && <div className="name-wrapper">
+                      {['Manager', 'Assistant Manager', 'Mentor'].map((role, roleIndex) => {
+                          return teamRoles[role]?.map((elm, i) => {
+                            const name = elm.name; // Getting initials and formatting them here
+                            const initials = getInitials(name);
+                            // Getting background color dynamically based on the role
+                            const bg = colors_objs[role];
+                            return (
+                              <a
+                                key={`res_${roleIndex}_${i}`}
+                                title={`${role} : ${name}`}
+                                className="name"
+                                href={`/userprofile/${elm.id}`}
+                                target="_blank"
+                                rel="noreferrer"
+                              >
+                                <span className="name-initial" style={{ backgroundColor: bg }}>
+                                  {initials}{' '}
+                                </span>
+                              </a>
+                            );
+                          });
+                        })}
+                      </div>
+                      }
                   </div>
                 </td>
                 <td colSpan={2} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
@@ -207,7 +251,6 @@ const TeamMemberTask = React.memo(
                               fontSize: '20px'
                             }}
                           >{`${user.name}`}</Link>
-                          {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
 
                           <Warning
                             username={user.name}
