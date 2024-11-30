@@ -79,12 +79,15 @@ import Logout from '../Logout/Logout';
 import '../../App.css';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import {
   getUnreadUserNotifications,
   resetNotificationError,
   getUnreadMeetingNotification,
-  markMeetingNotificationAsRead,
+  markMeetingNotificationAsRead
 } from '../../actions/notificationAction';
+import { getUnreadMeetingNotification, markMeetingNotificationAsRead } from '../../actions/meetingNotificationAction';
+import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 import BellNotification from './BellNotification';
@@ -189,11 +192,13 @@ export function Header(props) {
   const [meetingModalMessage, setMeetingModalMessage] = useState('');
 
   // const unreadNotifications = props.unreadNotifications; // List of unread notifications
-  const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
+  const { allUserProfiles, notification, unreadNotifications, unreadMeetingNotifications } = props;
   // const userUnreadMeetings = useMemo(() => {
   //   if (!unreadMeetingNotifications || !userId) return [];
   //   return unreadMeetingNotifications.filter(meeting => meeting.recipient === userId);
   // }, [unreadMeetingNotifications, userId]);
+  console.log('test', notification);
+  console.log('unreadMeetingNotifications', unreadMeetingNotifications, typeof unreadMeetingNotifications);
   const userUnreadMeetings = unreadMeetingNotifications.filter(meeting => meeting.recipient === userId);
   const dispatch = useDispatch();
   const history = useHistory();
@@ -781,7 +786,8 @@ const mapStateToProps = state => ({
   role: state.role,
   notification: state.notification,
   unreadNotifications: state.notification.unreadNotifications,
-  unreadMeetingNotifications: state.notification.unreadMeetingNotifications,
+  // unreadMeetingNotifications: state.notification.unreadMeetingNotifications,
+  unreadMeetingNotifications: state.meetingNotification.unreadMeetingNotifications,
   allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,
 });

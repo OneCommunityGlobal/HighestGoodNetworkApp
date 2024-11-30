@@ -33,6 +33,7 @@ import warningsByUserIdReducer from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
+import meetingNotificationReducer from './meetingNotificationReducer';
 import weeklySummaryRecipientsReducer from './weeklySummaryRecipientsReducer';
 import { followUpReducer } from './followUpReducer';
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
@@ -121,6 +122,7 @@ const localReducers = {
   mouseoverText: mouseoverTextReducer,
   weeklySummaryRecipients: weeklySummaryRecipientsReducer,
   notification: notificationReducer,
+  meetingNotification: meetingNotificationReducer,
   userFollowUp: followUpReducer,
   userProjectsByUserNameReducer,
   teamCodes: teamCodesReducer,
