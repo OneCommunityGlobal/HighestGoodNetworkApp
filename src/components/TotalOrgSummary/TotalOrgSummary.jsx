@@ -24,7 +24,8 @@ import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
-import RoleDistributionPieChart from './RoleDistributionPieChart';
+import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
+import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -327,7 +328,12 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className="role-distribution-title">
+                <p>Work Distribution</p>
+              </div>
+              <WorkDistributionBarChart
+                workDistributionStats={volunteerOverview?.workDistributionStats}
+              />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
@@ -349,7 +355,6 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  // totalOrgSummary: state.totalOrgSummary,
   volunteerOverview: state.totalOrgSummary.volunteerOverview,
   role: state.auth.user.role,
   auth: state.auth,
