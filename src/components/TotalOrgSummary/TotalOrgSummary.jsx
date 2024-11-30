@@ -161,10 +161,18 @@ function TotalOrgSummary(props) {
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
   useEffect(() => {
     async function fetchData() {
-      const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
+      // const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
+      // const {
+      //   taskHours: lastTaskHours,
+      //   projectHours: lastProjectHours,
+      // } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
       const {
-        taskHours: lastTaskHours,
-        projectHours: lastProjectHours,
+        taskHours: { count: taskHours },
+        projectHours: { count: projectHours },
+      } = await props.getTaskAndProjectStats(fromDate, toDate);
+      const {
+        taskHours: { count: lastTaskHours },
+        projectHours: { count: lastProjectHours },
       } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
 
       if (taskHours && projectHours) {
