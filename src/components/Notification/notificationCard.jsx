@@ -2,11 +2,12 @@ import React from 'react';
 import { Card, CardTitle, CardText, Button, CardBody, Container } from 'reactstrap';
 import parse from 'html-react-parser';
 import { useDispatch } from 'react-redux';
+import { markNotificationAsRead } from '../../actions/notificationAction';
 import {
-  markNotificationAsRead,
-  markMeetingNotificationAsRead,
   getUnreadMeetingNotification,
-} from '../../actions/notificationAction';
+  markMeetingNotificationAsRead,
+} from '../../actions/meetingNotificationAction';
+
 import { convertDateFormatToMMMDDYY } from '../../utils/formatDate';
 
 // Mock data
