@@ -1,7 +1,8 @@
-import React from 'react';
+// import React from 'react';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UserTableSearchHeader from '../UserTableSearchHeader';
+
 describe('user table search header row', () => {
   let onFirstNameSearch;
   let onLastNameSearch;
@@ -23,7 +24,7 @@ describe('user table search header row', () => {
             onRoleSearch={onRoleSearch}
             onEmailSearch={onEmailSearch}
             onWeeklyHrsSearch={onWeeklyHrsSearch}
-            roles={['1', '2', '3', '4','Volunteer','Owner','Manager']}
+            roles={['1', '2', '3', '4', 'Volunteer', 'Owner', 'Manager']}
           />
         </tbody>
       </table>,
@@ -74,7 +75,9 @@ describe('user table search header row', () => {
       expect(onEmailSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire Email search once the user type something in the email search box', async () => {
-      await userEvent.type(screen.getAllByRole('textbox')[2], 'Jhon.wick@email.com', { allAtOnce: true });
+      await userEvent.type(screen.getAllByRole('textbox')[2], 'Jhon.wick@email.com', {
+        allAtOnce: true,
+      });
       expect(onEmailSearch).toHaveBeenCalled();
     });
     it('should fire onWeeklyHrsSearch once the user type something in the weeklycommitted hrs search box', async () => {
