@@ -1,6 +1,6 @@
 //  Necessary permission(s) to access a route. Only one in the list is required.
 // Route : Permissions
-export const RoutePermissions = {
+const RoutePermissions = {
   reports: ['getReports'],
   weeklySummariesReport: ['getWeeklySummaries'],
   weeklyVolunteerSummary: ['getWeeklyVolunteerSummary'],
@@ -31,8 +31,9 @@ export const RoutePermissions = {
     'deleteTask',
     'resolveTask',
     'putReviewStatus',
-    'suggestTask'
+    'suggestTask',
   ],
-  announcements : ['sendEmails'],
-  meetings: ['scheduleMeetings']
+  announcements: ['sendEmails'],
+  meetings: ['scheduleMeetings'],
 };
+export default RoutePermissions;

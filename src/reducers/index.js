@@ -3,6 +3,7 @@ import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
+import { allUserProfilesBasicInfoReducer } from  './allUserProfilesBasicInfoReducer';
 import { allUserProfilesReducer, changeUserPageStatusReducer, enableUserInfoEditReducer, updateUserInfoReducer } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
@@ -35,6 +36,7 @@ import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer
 import { followUpReducer } from "./followUpReducer";
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 import {userProjectsByUserNameReducer} from './userProjectsByUserNameReducer';
+import { projectByIdReducer } from './projectByIdReducer';
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -47,6 +49,7 @@ import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
+import dashboardReducer  from '../reducers/dashboardReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
@@ -82,6 +85,8 @@ const localReducers = {
   blueSquareEmailAssignment : BlueSquareEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
+  allUserProfilesBasicInfo : allUserProfilesBasicInfoReducer,
+  projectById: projectByIdReducer,
 
   // bmdashboard
   materials: materialsReducer,
@@ -95,7 +100,8 @@ const localReducers = {
   bmEquipments: equipmentReducer,
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
-  bmReusables: reusablesReducer
+  bmReusables: reusablesReducer,
+  dashboard: dashboardReducer
 };
 
 const sessionReducers = {
