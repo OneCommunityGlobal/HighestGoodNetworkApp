@@ -14,7 +14,6 @@ class Collaboration extends Component {
       jobAds: [],
       totalPages: 0,
       categories: [],
-      jobAdsByCategories: {},
     };
   }
 
@@ -44,7 +43,6 @@ class Collaboration extends Component {
         jobAds: data.jobs,
         totalPages: data.pagination.totalPages, // Update total pages from the backend
       });
-      console.log('inside fetchJobAds: data', data);
     } catch (error) {
       toast.error('Error fetching jobs');
     }
@@ -61,7 +59,6 @@ class Collaboration extends Component {
       const data = await response.json();
       const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
       this.setState({ categories: sortedCategories });
-      console.log('inside fetchCategories: sortedCategories', sortedCategories);
     } catch (error) {
       toast.error('Error fetching categories');
     }
@@ -77,7 +74,11 @@ class Collaboration extends Component {
   };
 
   handleCategoryChange = event => {
-    this.setState({ selectedCategory: event.target.value, currentPage: 1 }, this.fetchJobAds);
+    const selectedValue = event.target.value;
+    this.setState(
+      { selectedCategory: selectedValue === '' ? '' : selectedValue, currentPage: 1 },
+      this.fetchJobAds,
+    );
   };
 
   setPage = pageNumber => {
@@ -123,9 +124,7 @@ class Collaboration extends Component {
 
             <div className="navbar-right">
               <select value={selectedCategory} onChange={event => this.handleCategoryChange(event)}>
-                <option value="" disabled>
-                  Select from Categories
-                </option>
+                <option value="">Select from Categories</option>
                 {categories.map(category => (
                   <option key={category} value={category}>
                     {category}
