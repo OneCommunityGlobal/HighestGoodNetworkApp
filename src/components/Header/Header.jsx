@@ -161,6 +161,7 @@ export function Header(props) {
 
   // const unreadNotifications = props.unreadNotifications; // List of unread notifications
   const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
+  // get the meeting notifications for the current user
   const userUnreadMeetings = unreadMeetingNotifications.filter(
     meeting => meeting.recipient === userId,
   );
@@ -224,6 +225,7 @@ export function Header(props) {
     }
   }, [props.notification?.error]);
 
+  // display the notification and enable the bell ring when there are unread meeting notifications
   useEffect(() => {
     if (userUnreadMeetings.length > 0) {
       const currMeeting = userUnreadMeetings[0];
@@ -250,6 +252,13 @@ export function Header(props) {
       }
     }
   }, [userUnreadMeetings]);
+
+  const handleMeetingRead = () => {
+    setMeetingModalOpen(!meetingModalOpen);
+    if (userUnreadMeetings?.length > 0) {
+      dispatch(markMeetingNotificationAsRead(userUnreadMeetings[0]));
+    }
+  };
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
@@ -341,13 +350,6 @@ export function Header(props) {
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
   if (location.pathname === '/login') return null;
-
-  const handleMeetingRead = () => {
-    setMeetingModalOpen(!meetingModalOpen);
-    if (userUnreadMeetings?.length > 0) {
-      dispatch(markMeetingNotificationAsRead(userUnreadMeetings[0]));
-    }
-  };
 
   return (
     <div className="header-wrapper">
