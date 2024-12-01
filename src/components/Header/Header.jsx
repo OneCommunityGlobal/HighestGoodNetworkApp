@@ -24,6 +24,8 @@ import {
   Button,
   Card,
 } from 'reactstrap';
+import DOMPurify from 'dompurify';
+import parse from 'html-react-parser';
 import PopUpBar from 'components/PopUpBar';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
@@ -613,10 +615,9 @@ export function Header(props) {
           Meeting Notification
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <div
-            style={{ lineHeight: '2' }}
-            dangerouslySetInnerHTML={{ __html: meetingModalMessage }}
-          />
+          <div style={{ lineHeight: '2' }}>
+            <p>{parse(DOMPurify.sanitize(meetingModalMessage))}</p>
+          </div>
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
           <Button
