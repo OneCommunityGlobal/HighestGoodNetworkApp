@@ -11,9 +11,6 @@ function Participants({
   authUserId,
   darkMode,
 }) {
-  // console.log("participantList", participantList)
-
-  // const [searchWord, setSearchWord] = useState('');
   const [filteredData, setFilteredData] = useState([]);
   const [isFocused, setIsFocused] = useState(false);
 
@@ -56,10 +53,8 @@ function Participants({
 
   const handleFilter = event => {
     const wordToSearch = event.target.value;
-    // setSearchWord(wordToSearch);
     const newFilter = sortByStartingWith(wordToSearch);
     setFilteredData(newFilter);
-    // setIsFocused(false);
   };
 
   const handleFocus = () => {
@@ -71,18 +66,13 @@ function Participants({
   };
 
   const handleClick = (event, userProfile) => {
-    // addResources(member._id, member.firstName, member.lastName);
     addParticipant(userProfile._id, userProfile.firstName, userProfile.lastName);
-    // event.target.closest('.filter-userprofiles').previousElementSibling.value = '';
     const closestElement = event.target.closest('.filter-userprofiles');
     if (closestElement && closestElement.previousElementSibling) {
       closestElement.previousElementSibling.value = '';
     }
-    // setSearchWord('');
     setFilteredData([]);
   };
-
-  // console.log("isFocused", isFocused);
 
   return (
     <div>
@@ -101,11 +91,6 @@ function Participants({
             }`}
           >
             {filteredData.map(userProfile => (
-              // <a key={userProfile._id}>
-              //   <li onClick={event => handleClick(event, userProfile)}>
-              //     {`${userProfile.firstName} ${userProfile.lastName}`}
-              //   </li>
-              // </a>
               <li>
                 <button
                   type="button"

@@ -31,6 +31,7 @@ const constructErrorPayload = error => {
   };
 };
 
+// get all the unread meetings within a time range
 export function getUnreadMeetingNotification(){
   return async dispatch => {
     dispatch({ type: meetingActions.FETCH_UNREAD_UPCOMING_MEETING_BEGIN});
@@ -75,6 +76,7 @@ export function getUnreadMeetingNotification(){
   }
 }
 
+// mark a specific meeting and recipient pair as read
 export function markMeetingNotificationAsRead(notification){
   return async dispatch => {
     await dispatch({ type: meetingActions.MARK_MEETING_AS_READ_REQUEST});
