@@ -1,16 +1,15 @@
-import React, { useState, useEffect, useMemo, useRef } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
 import { Link, useLocation } from 'react-router-dom';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useDispatch } from 'react-redux';
 import { useHistory } from 'react-router-dom';
 import {
   Collapse,
   Navbar,
   NavbarToggler,
-  NavbarBrand,
   Nav,
   NavItem,
   NavLink,
@@ -28,12 +27,12 @@ import {
 import PopUpBar from 'components/PopUpBar';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
+import { boxStyle, boxStyleDark } from 'styles';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
-  LOGO,
   DASHBOARD,
   TIMELOG,
   REPORTS,
@@ -53,12 +52,17 @@ import {
   TOTAL_ORG_SUMMARY,
   SCHEDULE_MEETINGS,
 } from '../../languages/en/ui';
-import { boxStyle, boxStyleDark } from 'styles';
 import Logout from '../Logout/Logout';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { getUnreadUserNotifications } from '../../actions/notificationAction';
-import { getUnreadMeetingNotification, markMeetingNotificationAsRead, } from '../../actions/meetingNotificationAction';
+import {
+  getUnreadUserNotifications,
+  resetNotificationError,
+} from '../../actions/notificationAction';
+import {
+  getUnreadMeetingNotification,
+  markMeetingNotificationAsRead,
+} from '../../actions/meetingNotificationAction';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 
@@ -154,18 +158,20 @@ export function Header(props) {
   const [meetingModalMessage, setMeetingModalMessage] = useState('');
 
   // const unreadNotifications = props.unreadNotifications; // List of unread notifications
-  const { allUserProfiles, notification, unreadNotifications, unreadMeetingNotifications } = props;
+  const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
   // const userUnreadMeetings = useMemo(() => {
   //   if (!unreadMeetingNotifications || !userId) return [];
   //   return unreadMeetingNotifications.filter(meeting => meeting.recipient === userId);
   // }, [unreadMeetingNotifications, userId]);
-  console.log('test', notification);
-  console.log('unreadMeetingNotifications', unreadMeetingNotifications, typeof unreadMeetingNotifications);
-  const userUnreadMeetings = unreadMeetingNotifications.filter(meeting => meeting.recipient === userId);
+  // console.log('test', notification);
+  // console.log('unreadMeetingNotifications', unreadMeetingNotifications, typeof unreadMeetingNotifications);
+  const userUnreadMeetings = unreadMeetingNotifications.filter(
+    meeting => meeting.recipient === userId,
+  );
   const dispatch = useDispatch();
   const history = useHistory();
   const MeetingNotificationAudioRef = useRef(null);
-  
+
   useEffect(() => {
     const handleStorageEvent = () => {
       const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
@@ -225,8 +231,9 @@ export function Header(props) {
   useEffect(() => {
     if (userUnreadMeetings.length > 0) {
       const currMeeting = userUnreadMeetings[0];
-      const organizerProfile = allUserProfiles.filter(user => user._id === currMeeting.sender)[0];
-      
+      const organizerProfile = allUserProfiles.filter(
+        userprofile => userprofile._id === currMeeting.sender,
+      )[0];
       if (!meetingModalOpen) {
         setMeetingModalOpen(true);
         setMeetingModalMessage(`Reminder: You have an upcoming meeting! Please check the details and be prepared.<br>
@@ -341,7 +348,7 @@ export function Header(props) {
 
   const handleMeetingRead = () => {
     setMeetingModalOpen(!meetingModalOpen);
-    if (userUnreadMeetings?.length > 0){
+    if (userUnreadMeetings?.length > 0) {
       dispatch(markMeetingNotificationAsRead(userUnreadMeetings[0]));
     }
   };
@@ -583,9 +590,9 @@ export function Header(props) {
       )}
       {/* Only render one unread message at a time */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
-        <NotificationCard 
+        <NotificationCard
           key={unreadNotifications[0]._id || 'default-key'}
-          notification={unreadNotifications[0]} 
+          notification={unreadNotifications[0]}
         />
       ) : null}
       <audio
@@ -594,17 +601,29 @@ export function Header(props) {
         // loop
         preload="auto"
         src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
-      />
-      <Modal isOpen={meetingModalOpen} toggle={handleMeetingRead} className={darkMode ? 'text-light' : ''}>
-        <ModalHeader  toggle={handleMeetingRead} className={darkMode ? 'bg-space-cadet' : ''}>Meeting Notification</ModalHeader>
-        <ModalBody  className={darkMode ? 'bg-yinmn-blue' : ''}>
+      >
+        <track kind="captions" />
+      </audio>
+      <Modal
+        isOpen={meetingModalOpen}
+        toggle={handleMeetingRead}
+        className={darkMode ? 'text-light' : ''}
+      >
+        <ModalHeader toggle={handleMeetingRead} className={darkMode ? 'bg-space-cadet' : ''}>
+          Meeting Notification
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div
             style={{ lineHeight: '2' }}
-            dangerouslySetInnerHTML={{ __html: meetingModalMessage }} 
+            dangerouslySetInnerHTML={{ __html: meetingModalMessage }}
           />
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
-          <Button color="primary" onClick={handleMeetingRead} style={darkMode ? boxStyleDark : boxStyle}>
+          <Button
+            color="primary"
+            onClick={handleMeetingRead}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
             Close
           </Button>
         </ModalFooter>
