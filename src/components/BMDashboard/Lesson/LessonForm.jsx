@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Form, FormControl, Button } from 'react-bootstrap';
 import './LessonForm.css';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
@@ -20,7 +22,8 @@ function LessonForm() {
   const roles = useSelector(state => state.role.roles); // grab all roles from store
   // const projects = useSelector(state => state.allProjects.projects); // grab all projects from store(not BM projects)
   const projects = useSelector(state => state.bmProjects); // grab all BM projects from store
-  const [LessonFormtags, setLessonFormTags] = useState([]); // save all tags user inputs
+  const [LessonFormtags, setLessonFormTags] = useState(['Building 1', 'Building 2', 'Building 3']); // save all tags user inputs
+  const [permanentTags, setPermanentTags] = useState(['Building 1', 'Building 2', 'Building 3']);
   const [tagInput, setTagInput] = useState(''); // track user input in tag input
   const [selectedFile, setSelectedFile] = useState(null); // track file that was selected or droped in upload appendix
   const [prevselectedProject, setprevSelectedProject] = useState(null); // used to track the previously project selected for deletion in tags when changed
@@ -30,25 +33,59 @@ function LessonForm() {
   const [LessonTitleText, setLessonTitleText] = useState(null); // track lessontitle text
   const { projectId } = useParams(); // passed project id in parameters
   const [projectname, setProjectName] = useState(null);
+  // track filtered tags
+  const [filteredTags, setFilteredTags] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+
   // track user input in the tag input feild
+
   const handleTagInput = e => {
     e.preventDefault();
-    setTagInput(e.target.value);
+    const input = e.target.value;
+    setTagInput(input);
+
+    if (input.trim()) {
+      const filtered = permanentTags.filter(tag => tag.toLowerCase().includes(input.toLowerCase()));
+      setFilteredTags(filtered);
+      setShowDropdown(true);
+    } else {
+      setFilteredTags([]);
+      setShowDropdown(false);
+    }
   };
+
+  const handleTagSelection = selectedTag => {
+    if (!LessonFormtags.includes(selectedTag)) {
+      setLessonFormTags([...LessonFormtags, selectedTag]);
+    }
+    setTagInput('');
+    setShowDropdown(false);
+  };
+
   // when user hits enter add the tag to LessonFromtags
-  const addTag = e => {
+  const addTag = async e => {
     e.preventDefault();
-    const trimmedTagInput = tagInput.trim().replace(/\s+/g, ' '); // Replace consecutive spaces with a single space
-    if (trimmedTagInput !== '') {
-      if (!LessonFormtags.includes(trimmedTagInput)) {
-        setLessonFormTags([...LessonFormtags, trimmedTagInput]);
-        setTagInput('');
+    const trimmedTagInput = tagInput.trim().replace(/\s+/g, ' ');
+    if (trimmedTagInput && !LessonFormtags.includes(trimmedTagInput)) {
+      try {
+        const response = await axios.post(ENDPOINTS.BM_TAG_ADD, {
+          tag: trimmedTagInput,
+        });
+        if (response.data) {
+          setLessonFormTags(prev => [...prev, trimmedTagInput]);
+          setPermanentTags(response.data);
+          setTagInput('');
+          toast.success('Tag added successfully');
+        }
+      } catch (error) {
+        const errorMsg = error.response?.data?.details || error.message;
+        toast.error(`Failed to add tag: ${errorMsg}`);
       }
     }
   };
   // removes tag when 'x' is clicked from LessonFormtags variable
-  const removeTag = tagIndex => {
-    const newTags = LessonFormtags.filter((_, index) => index !== tagIndex);
+  const removeTag = tagToRemove => {
+    const newTags = LessonFormtags.filter(tag => tag !== tagToRemove);
     setLessonFormTags(newTags);
   };
   // removes the previously added project from tags if a new one is selected from belongs to dropdown
@@ -56,11 +93,21 @@ function LessonForm() {
     const newTags = LessonFormtags.filter(project => project !== prevproject);
     setLessonFormTags(newTags);
   };
+
+  const fetchTags = async () => {
+    try {
+      const response = await axios.get(ENDPOINTS.BM_TAGS);
+      setPermanentTags(response.data);
+    } catch (error) {
+      toast.error('Error fetching tags: ', error.message);
+    }
+  };
   // Dispatch the action to fetch roles and projects when the component mounts
   useEffect(() => {
+    fetchTags();
     dispatch(fetchBMProjects(projectId));
     dispatch(getAllRoles());
-  }, [dispatch]);
+  }, [dispatch, projectId]);
   // logic if there is a projectId passed in params(on project specific from) to add the project tag automatically
   useEffect(() => {
     if (projectId) {
@@ -95,6 +142,10 @@ function LessonForm() {
 
   const handleDragOver = e => {
     e.preventDefault();
+  };
+
+  const onHandleCancel = () => {
+    window.location.href = `/bmdashboard/projects/${projectId}`;
   };
 
   const handleDrop = e => {
@@ -170,10 +221,10 @@ function LessonForm() {
     };
     try {
       const response = await dispatch(postNewLesson(lessonData));
-
       // Check if the response indicates success
       if (response && response._id) {
         toast.success('Lesson Added');
+        fetchTags();
       } else {
         // Handle unexpected response
         toast.error('Unexpected Response: Lesson may not have been added');
@@ -211,7 +262,7 @@ function LessonForm() {
               />
             </Form.Group>
             <Form.Group controlId="exampleForm.ControlInput1">
-              <Form.Label>Add tag</Form.Label>
+              <Form.Label>Add tag (Press enter to add tag)</Form.Label>
               <div className="input-group">
                 <input
                   type="text"
@@ -225,23 +276,25 @@ function LessonForm() {
                   }}
                   className="form-control"
                 />
+                {showDropdown && filteredTags.length > 0 && (
+                  <div className="tag-dropdown">
+                    {filteredTags.map(tag => (
+                      <div key={tag} className="tag-option" onClick={() => handleTagSelection(tag)}>
+                        <span>{tag}</span>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="TagsDiv">
-                {LessonFormtags.map((tag, index) => {
-                  const key = `${tag}_${index}`;
-                  return (
-                    <div className="Tag" key={key}>
-                      <span className="TagSpan">{tag}</span>
-                      <button
-                        className="removeTagBTN"
-                        type="button"
-                        onClick={() => removeTag(index)}
-                      >
-                        X
-                      </button>
-                    </div>
-                  );
-                })}
+                {LessonFormtags.map(tag => (
+                  <div className="Tag" key={tag}>
+                    <span className="TagSpan">{tag}</span>
+                    <button className="removeTagBTN" type="button" onClick={() => removeTag(tag)}>
+                      X
+                    </button>
+                  </div>
+                ))}
               </div>
             </Form.Group>
           </div>
@@ -306,7 +359,6 @@ function LessonForm() {
                 ) : (
                   <div className="TextAndImageDiv">
                     <div className="ImageDiv" style={style} />
-
                     <p className="DragandDropText">Drag and drop a file here</p>
                   </div>
                 )}
@@ -314,8 +366,8 @@ function LessonForm() {
             </Form.Group>
           </div>
           <div className="ButtonDiv">
-            <Button className="LessonFormButtonCancel" type="cancel">
-              Cancel
+            <Button className="LessonFormButtonCancel" type="cancel" onClick={onHandleCancel}>
+              Back
             </Button>
             <Button className="LessonFormButtonSubmit" type="submit">
               Post
