@@ -44,6 +44,8 @@ function BadgeReport(props) {
   const [badgeToDelete, setBadgeToDelete] = useState([]);
   const [savingChanges, setSavingChanges] = useState(false);
 
+
+
   const canDeleteBadges = props.hasPermission('deleteBadges');
   const canUpdateBadges = props.hasPermission('updateBadges');
 
@@ -364,11 +366,8 @@ function BadgeReport(props) {
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
-                <th style={{ width: '110px' }}>Modified</th>
-                {/* Desktop view - visible only on larger screens */}
-                {window.innerWidth > 1024 && (
-                  <th style={{ width: '110px' }} data-testid="desktop-earned-dates">Earned Dates</th>
-                )}
+                <th style={{ width: '110px' }}>Modified</th>                             
+                <th style={{ width: '110px' }} data-testid="desktop-earned-dates">Earned Dates</th> {/* Earned dates for desktop view */}
                 <th style={{ width: '90px' }}>Count</th>
                 {canDeleteBadges ? <th>Delete</th> : []}
                 <th style={{ width: '70px', zIndex: '1' }}>Featured</th>
@@ -557,10 +556,7 @@ function BadgeReport(props) {
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
-                {/*Tablet view - visible only on smaller screens*/}
-                {window.innerWidth <= 1024 && (
-                  <th style={{ width: '110px' }} data-testid="tablet-earned-dates">Earned Dates</th>
-                )}
+                <th style={{ width: '110px' }} data-testid="tablet-earned-dates">Earned Dates</th> {/*Earned dates for tablet view*/}
                 <th style={{ width: '80px' }}></th> {/* Ensure Options column is included here */}
               </tr>
             </thead>
