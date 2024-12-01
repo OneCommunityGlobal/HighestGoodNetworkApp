@@ -188,11 +188,12 @@ function Announcements() {
         media: linkedinMedia || null, // Include media if present
       };
   
-      console.log('Payload being sent:', postPayload); // Debug log
+      console.log('Payload being sent:', postPayload);
   
+      // Make the POST request to the backend
       const response = await axios.post(
         'http://localhost:4500/api/postToLinkedIn',
-        postPayload, // Send the payload directly
+        postPayload,
         {
           headers: {
             'Content-Type': 'application/json',
@@ -200,7 +201,8 @@ function Announcements() {
         }
       );
   
-      if (response.status === 200) {
+      // Check if the status is 201 (Created) or 200 (Success)
+      if (response.status === 201 || response.status === 200) {
         toast.success('Post to LinkedIn successful!');
         setLinkedinContent('');
         setLinkedinMedia(null);
