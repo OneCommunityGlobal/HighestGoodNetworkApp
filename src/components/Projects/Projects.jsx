@@ -5,7 +5,7 @@ import {
   modifyProject,
   clearError,
 } from '../../actions/projects';
-import {getProjectsByUsersName, getUserByAutocomplete } from '../../actions/userProfile';
+import { getProjectsByUsersName, getUserByAutocomplete } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
@@ -20,7 +20,7 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
 import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
 
-const Projects = function(props) {
+const Projects = function (props) {
   const role = props.state.userProfile.role;
   const { darkMode } = props.state.theme;
   const numberOfProjects = props.state.allProjects.projects.length;
@@ -52,17 +52,17 @@ const Projects = function(props) {
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
-  
+
     useEffect(() => {
       const handler = setTimeout(() => {
         setDebouncedValue(value);
       }, delay);
-  
+
       return () => {
         clearTimeout(handler);
       };
     }, [value, delay]);
-  
+
     return debouncedValue;
   };
 
@@ -100,7 +100,7 @@ const Projects = function(props) {
   }
 
   const onUpdateProject = async (updatedProject) => {
-    await props.modifyProject(updatedProject);  
+    await props.modifyProject(updatedProject);
     /* refresh the page after updating the project */
     await props.fetchAllProjects();
   };
@@ -113,7 +113,7 @@ const Projects = function(props) {
   };
 
   const setInactiveProject = async () => {
-    const updatedProject = { ...projectTarget, isActive: !isActive };
+    const updatedProject = { ...projectTarget, isActive: false };
     await onUpdateProject(updatedProject);
     onCloseModal();
   };
@@ -125,7 +125,7 @@ const Projects = function(props) {
 
   // Fetch autocomplete suggestions
   const fetchSuggestions = useCallback(async () => {
-      try {
+    try {
       if (debouncedSearchName) {
         const userSuggestions = await props.getUserByAutocomplete(debouncedSearchName);
         if (userSuggestions) {
@@ -156,7 +156,7 @@ const Projects = function(props) {
       setProjectList(allProjects); // Reset project list to all projects
       setSelectedUser(null); // Clear selected user
       return;
-    } 
+    }
 
     try {
       setSearchName(`${user.firstName} ${user.lastName}`);
@@ -166,11 +166,11 @@ const Projects = function(props) {
       const userProjects = await props.getProjectsByUsersName(`${user.firstName} ${user.lastName}`);
 
       if (userProjects) {
-        const newProjectList = allProjects.filter(project => 
+        const newProjectList = allProjects.filter(project =>
           userProjects.some(p => p === project.key)
         );
         setProjectList(newProjectList);
-      }else{
+      } else {
         setProjectList(allProjects);
       }
     } catch (error) {
@@ -183,7 +183,7 @@ const Projects = function(props) {
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
     const projectList = projects.filter(project => {
-      if (categorySelectedForSort && showStatus){
+      if (categorySelectedForSort && showStatus) {
         return project.category === categorySelectedForSort && project.isActive === showStatus;
       } else if (categorySelectedForSort) {
         return project.category === categorySelectedForSort;
@@ -203,14 +203,14 @@ const Projects = function(props) {
         return 0;
       }
     }).map((project, index) => (
-        <Project
-          key={project._id}
-          index={index}
-          projectData={project}
-          onUpdateProject={onUpdateProject}
-          onClickArchiveBtn={onClickArchiveBtn}
-          darkMode={darkMode}
-        />
+      <Project
+        key={project._id}
+        index={index}
+        projectData={project}
+        onUpdateProject={onUpdateProject}
+        onClickArchiveBtn={onClickArchiveBtn}
+        darkMode={darkMode}
+      />
     ));
     setProjectList(projectList);
     setAllProjects(projectList);
@@ -268,10 +268,10 @@ const Projects = function(props) {
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader 
-                onChange={onChangeCategory} 
-                selectedValue={categorySelectedForSort} 
-                showStatus={showStatus} 
+              <ProjectTableHeader
+                onChange={onChangeCategory}
+                selectedValue={categorySelectedForSort}
+                showStatus={showStatus}
                 selectStatus={onSelectStatus}
                 sorted={sortedByName}
                 handleSort={handleSort}
