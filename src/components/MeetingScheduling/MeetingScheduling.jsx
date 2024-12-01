@@ -55,7 +55,7 @@ const millisecondsForOneDay = 24 * 60 * 60 * 1000;
 function MeetingScheduling(props) {
   const dispatch = useDispatch();
 
-  // props from store
+  // props from redux store
   const { authUser, allUserProfiles, darkMode } = props;
 
   const initialFormValues = {
@@ -120,7 +120,7 @@ function MeetingScheduling(props) {
       .join(', ');
 
     try {
-      // currently only consider the create situation
+      console.log('meeting', meeting);
       await dispatch(postMeeting(meeting));
 
       setModalTitle('Success!');
@@ -137,12 +137,10 @@ function MeetingScheduling(props) {
       setModalMessage(`
         An error occurred while attempting to submit your meeting schedules. Error: ${err}`);
       const errorMessage = err?.message || 'An unknown error occurred';
-      // const errorObject = err instanceof Error ? err : new Error(errorMessage);
       setErrors({ general: errorMessage });
     } finally {
       setSubmitting(false);
       setModalOpen(true);
-      // console.log("useState errors", errors);
     }
   };
 
@@ -185,7 +183,6 @@ function MeetingScheduling(props) {
                 value={formValues.dateOfMeeting}
                 onChange={handleInputChange}
                 min={new Date(Date.now() - millisecondsForOneDay).toISOString().split('T')[0]}
-                // disabled={!canEditTimeEntryDate}
               />
               {'dateOfMeeting' in errors && (
                 <div className="text-danger">

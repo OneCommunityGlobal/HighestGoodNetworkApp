@@ -196,12 +196,6 @@ export function Header(props) {
 
   // const unreadNotifications = props.unreadNotifications; // List of unread notifications
   const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
-  // const userUnreadMeetings = useMemo(() => {
-  //   if (!unreadMeetingNotifications || !userId) return [];
-  //   return unreadMeetingNotifications.filter(meeting => meeting.recipient === userId);
-  // }, [unreadMeetingNotifications, userId]);
-  // console.log('test', notification);
-  // console.log('unreadMeetingNotifications', unreadMeetingNotifications, typeof unreadMeetingNotifications);
   const userUnreadMeetings = unreadMeetingNotifications.filter(
     meeting => meeting.recipient === userId,
   );
@@ -257,6 +251,7 @@ export function Header(props) {
     if (isAuthenticated && userId) {
       dispatch(getUnreadUserNotifications(userId));
       dispatch(getUnreadMeetingNotification());
+      console.log('dispatch(getUnreadMeetingNotification());');
     }
   }, []);
 
@@ -274,12 +269,20 @@ export function Header(props) {
   }, []);
 
   useEffect(() => {
+    props.getUnreadMeetingNotification();
+    console.log('******', unreadNotifications);
+    console.log('******', props.notification.unreadNotifications);
+  }, []);
+  
+  useEffect(() => {
+    console.log('check if (userUnreadMeetings.length > 0)');
     if (userUnreadMeetings.length > 0) {
       const currMeeting = userUnreadMeetings[0];
       const organizerProfile = allUserProfiles.filter(
         userprofile => userprofile._id === currMeeting.sender,
       )[0];
       if (!meetingModalOpen) {
+        console.log('setMeetingModalOpen(true);');
         setMeetingModalOpen(true);
         setMeetingModalMessage(`Reminder: You have an upcoming meeting! Please check the details and be prepared.<br>
           Time: ${new Date(currMeeting.dateTime).toLocaleString()},<br>
@@ -803,7 +806,6 @@ const mapStateToProps = state => ({
   role: state.role,
   notification: state.notification,
   unreadNotifications: state.notification.unreadNotifications,
-  // unreadMeetingNotifications: state.notification.unreadMeetingNotifications,
   unreadMeetingNotifications: state.meetingNotification.unreadMeetingNotifications,
   allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,

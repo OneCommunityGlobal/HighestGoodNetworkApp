@@ -28,7 +28,6 @@ const meetingNotificationReducer = (state = initialState, action) => {
     case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_SUCCESS:
       return {
         ...state,
-        // unreadNotifications: [...state.unreadNotifications, ...action.payload],
         unreadMeetingNotifications: action.payload,
         loading: false,
         error: null,
@@ -39,7 +38,6 @@ const meetingNotificationReducer = (state = initialState, action) => {
       const newUnreadMeetingNotifications = unreadMeetingNotifications.filter((notification) => !(notification.meetingId === action.payload.meetingId && notification.recipient === action.payload.recipient));
       return {
         ...state,
-        // remove the meeting notification from unreadNotifications
         unreadMeetingNotifications: newUnreadMeetingNotifications,
         loading: false,
         error: null,
