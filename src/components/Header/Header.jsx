@@ -214,7 +214,6 @@ export function Header(props) {
     if (isAuthenticated && userId) {
       dispatch(getUnreadUserNotifications(userId));
       dispatch(getUnreadMeetingNotification());
-      console.log('dispatch(getUnreadMeetingNotification());');
     }
   }, []);
 
@@ -226,14 +225,12 @@ export function Header(props) {
   }, [props.notification?.error]);
 
   useEffect(() => {
-    console.log('check if (userUnreadMeetings.length > 0)');
     if (userUnreadMeetings.length > 0) {
       const currMeeting = userUnreadMeetings[0];
       const organizerProfile = allUserProfiles.filter(
         userprofile => userprofile._id === currMeeting.sender,
       )[0];
       if (!meetingModalOpen) {
-        console.log('setMeetingModalOpen(true);');
         setMeetingModalOpen(true);
         setMeetingModalMessage(`Reminder: You have an upcoming meeting! Please check the details and be prepared.<br>
           Time: ${new Date(currMeeting.dateTime).toLocaleString()},<br>

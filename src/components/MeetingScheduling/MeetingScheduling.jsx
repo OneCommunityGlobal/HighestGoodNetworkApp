@@ -120,7 +120,6 @@ function MeetingScheduling(props) {
       .join(', ');
 
     try {
-      console.log('meeting', meeting);
       await dispatch(postMeeting(meeting));
 
       setModalTitle('Success!');
