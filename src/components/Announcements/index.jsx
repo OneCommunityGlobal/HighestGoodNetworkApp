@@ -182,26 +182,34 @@ function Announcements() {
         toast.error('Error: LinkedIn post content cannot be empty.');
         return;
       }
-
+  
       const postPayload = {
         content: linkedinContent,
-        media: linkedinMedia || null, // check have media
+        media: linkedinMedia || null, // Include media if present
       };
-
-      const response = await axios.post('http://localhost:4500/api/postToLinkedIn', {
-        postPayload,
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to post to LinkedIn');
+  
+      console.log('Payload being sent:', postPayload); // Debug log
+  
+      const response = await axios.post(
+        'http://localhost:4500/api/postToLinkedIn',
+        postPayload, // Send the payload directly
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+      if (response.status === 200) {
+        toast.success('Post to LinkedIn successful!');
+        setLinkedinContent('');
+        setLinkedinMedia(null);
+      } else {
+        toast.error('Failed to post to LinkedIn');
       }
-
-      toast.success('Post to LinkedIn successful!');
-      setLinkedinContent('');
-      setLinkedinMedia(null);
     } catch (error) {
       toast.error('Failed to post to LinkedIn');
-      console.error('Error posting to LinkedIn:', error);
+      console.error('Error posting to LinkedIn:', error.response?.data || error.message);
     }
   };
 
@@ -241,7 +249,7 @@ function Announcements() {
             <input
               type="file"
               accept="image/*,video/*"
-              onChange={handleMediaUpload} // 处理媒体上传
+              onChange={handleMediaUpload} 
               style={{ margin: '10px 0' }}
             />
             <button onClick={handlePostToLinkedIn}>Post to LinkedIn</button>
