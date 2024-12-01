@@ -5,7 +5,6 @@ import { ENDPOINTS } from '../utils/URL';
 
 export const postMeeting = meeting => {
   const url = ENDPOINTS.MEETING_POST();
-  console.log('URL:', url);
   return async dispatch => {
     try {
       const res = await axios.post(url, meeting);

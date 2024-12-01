@@ -1,10 +1,8 @@
 import * as actionTypes from '../constants/notification';
-// import * as meetingActions from '../constants/meetings';
 
 const initialState = {
   notifications: [], // all notifications. This is used in the notification history for admin/owner.
   unreadNotifications: [], // unread notifications. This is to store all unread notification for a user.
-  // unreadMeetingNotifications: [],
   sentNotifications: [],
   loading: false,
   error: null,
@@ -19,8 +17,6 @@ const notificationReducer = (state = initialState, action) => {
     case actionTypes.CREATE_NOTIFICATION_REQUEST:
     case actionTypes.DELETE_NOTIFICATION_REQUEST:
     case actionTypes.MARK_NOTIFICATION_AS_READ_REQUEST:
-    // case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_BEGIN:
-    // case meetingActions.MARK_MEETING_AS_READ_REQUEST:
       return {
         ...state,
         loading: true,
@@ -35,8 +31,6 @@ const notificationReducer = (state = initialState, action) => {
     case actionTypes.CREATE_NOTIFICATION_FAILURE:
     case actionTypes.DELETE_NOTIFICATION_FAILURE:
     case actionTypes.MARK_NOTIFICATION_AS_READ_FAILURE:
-    // case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_FAILURE:
-    // case meetingActions.MARK_MEETING_AS_READ_FAILURE:
       return {
         ...state,
         loading: false,
@@ -64,17 +58,6 @@ const notificationReducer = (state = initialState, action) => {
         loading: false,
         error: null,
       };
-
-    // Huijie
-    // case meetingActions.FETCH_UNREAD_UPCOMING_MEETING_SUCCESS:
-    //   return {
-    //     ...state,
-    //     // unreadNotifications: [...state.unreadNotifications, ...action.payload],
-    //     unreadMeetingNotifications: action.payload,
-    //     loading: false,
-    //     error: null,
-    //   }
-    // Huijie
 
     // case actionTypes.FETCH_SENT_NOTIFICATIONS_SUCCESS:
     //   return {
@@ -105,24 +88,10 @@ const notificationReducer = (state = initialState, action) => {
       const updatedUnreadNotifications = unreadNotifications.filter((notification) => notification._id !== action.payload);
       return {
         ...state,
-        // remove the notification from unreadNotifications
         unreadNotifications: updatedUnreadNotifications,
         loading: false,
         error: null,
       };
-    
-    // Huijie
-    // case meetingActions.MARK_MEETING_AS_READ_SUCCESS:
-    //   const { unreadMeetingNotifications } = state;
-    //   const newUnreadMeetingNotifications = unreadMeetingNotifications.filter((notification) => !(notification.meetingId === action.payload.meetingId && notification.recipient === action.payload.recipient));
-    //   return {
-    //     ...state,
-    //     // remove the meeting notification from unreadNotifications
-    //     unreadMeetingNotifications: newUnreadMeetingNotifications,
-    //     loading: false,
-    //     error: null,
-    //   };
-    // Huije
     
     default:
       return state;
