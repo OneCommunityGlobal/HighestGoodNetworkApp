@@ -867,8 +867,8 @@ function SummaryBar(props) {
                     {' '}
                     -- select an option --{' '}
                   </option>
-                  {suggestionCategory.map(item => {
-                    return <option key={item.id} value={item}>{`${item.id + 1}. ${item}`}</option>;
+                  {suggestionCategory.map((item, index) => {
+                    return <option key={item.id} value={item}>{`${index + 1}. ${item}`}</option>;
                   })}
                 </Input>
               </FormGroup>
