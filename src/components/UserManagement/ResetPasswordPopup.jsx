@@ -1,18 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Button,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Label,
-  Alert,
-  Form,
-} from 'reactstrap';
-import Input from 'components/common/Input';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
 import { useSelector } from 'react-redux';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Alert, Form } from 'reactstrap';
+import Input from '../common/Input';
+import { boxStyle, boxStyleDark } from '../../styles';
+import '../Header/DarkMode.css';
 /**
  * Modal popup to show the reset password action
  */
@@ -22,11 +13,11 @@ const ResetPasswordPopup = React.memo(props => {
   const [newPassword, onNewPasswordChange] = useState({ password: '', isValid: false });
   const [confirmPassword, onConfirmPasswordChange] = useState({ password: '', isValid: false });
   const [errorMessage, setError] = useState('');
-  const [showPassword, setShowPassword] = useState({
+  const [showPassword] = useState({
     newPassword: false,
-    confirmPassword: false
+    confirmPassword: false,
   });
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
 
@@ -37,12 +28,12 @@ const ResetPasswordPopup = React.memo(props => {
     setError('');
   }, [props.open]);
 
-  const togglePasswordVisibility = (field) => {
-    setShowPassword(prevState => ({
-      ...prevState,
-      [field]: !prevState[field]
-    }));
-  };
+  // const togglePasswordVisibility = (field) => {
+  //   setShowPassword(prevState => ({
+  //     ...prevState,
+  //     [field]: !prevState[field]
+  //   }));
+  // };
 
   const resetPassword = () => {
     if (!newPassword.isValid) {
@@ -57,17 +48,26 @@ const ResetPasswordPopup = React.memo(props => {
   };
 
   const isValidPassword = password => {
-    const regex = new RegExp('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\\-])(?=.{8,})');
+    const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*\\-])(?=.{8,})/;
     return regex.test(password);
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>Reset Password</ModalHeader>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      autoFocus={false}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        Reset Password
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <div className="flex justify-between items-center">
-            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="newpassword">New Password</Label>
+            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="newpassword">
+              New Password
+            </Label>
           </div>
           <Input
             label=""
@@ -77,13 +77,15 @@ const ResetPasswordPopup = React.memo(props => {
             id="newpassword"
             value={newPassword.password}
             onChange={event => {
-              const value = event.target.value;
+              const { value } = event.target;
               onNewPasswordChange({
                 password: value,
                 isValid: isValidPassword(value),
               });
               if (!isValidPassword(value)) {
-                setError('Please choose a strong password which is at least 8 characters long and should contains a digit, a capital letter, and a special character.');
+                setError(
+                  'Please choose a strong password which is at least 8 characters long and should contains a digit, a capital letter, and a special character.',
+                );
               } else {
                 setError('');
               }
@@ -91,7 +93,9 @@ const ResetPasswordPopup = React.memo(props => {
           />
 
           <div className="flex justify-between items-center mt-4">
-            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="confirmpassword">Confirm Password</Label>
+            <Label className={`mr-2 ${darkMode ? 'text-light' : ''}`} for="confirmpassword">
+              Confirm Password
+            </Label>
           </div>
           <Input
             label=""
@@ -114,7 +118,7 @@ const ResetPasswordPopup = React.memo(props => {
         </Form>
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        {errorMessage === '' ? <React.Fragment /> : <Alert color="danger">{errorMessage}</Alert>}
+        {errorMessage === '' ? null : <Alert color="danger">{errorMessage}</Alert>}
         <Button color="primary" onClick={resetPassword} style={darkMode ? boxStyleDark : boxStyle}>
           Reset Password
         </Button>
