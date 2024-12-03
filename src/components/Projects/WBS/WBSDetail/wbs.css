@@ -271,6 +271,11 @@
 .tasks-detail-actions {  /* action column width reduced */
   width: 6%; 
 }
+
+.modal-content{
+  overflow: visible;
+}
+
 @media (max-width: 768px) { /* arranging the buttons */
   .button-group button {
     margin-bottom: 10px;
