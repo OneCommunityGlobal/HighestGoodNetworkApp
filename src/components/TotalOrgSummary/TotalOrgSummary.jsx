@@ -102,7 +102,6 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
-
   const { darkMode, loading, error, allUserProfiles, volunteerOverview } = props;
 
   const [usersId, setUsersId] = useState([]);
