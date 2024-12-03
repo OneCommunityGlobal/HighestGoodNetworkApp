@@ -13,6 +13,7 @@ function WarningItem({
   username,
   handleDeleteWarning,
   submitWarning,
+  userProfileWarnings,
 }) {
   const [toggleModal, setToggleModal] = useState(false);
   const [warning, setWarning] = useState(null);
@@ -32,6 +33,19 @@ function WarningItem({
     handleDeleteWarning(warningId);
   };
 
+  if (userProfileWarnings) {
+    return (
+      <div className="warning-wrapper">
+        <WarningIcons
+          warnings={warnings}
+          warningText={warningText}
+          numberOfWarnings={warnings.length}
+          disabled={true}
+        />
+        <p className="warning-text"> {warningText}</p>
+      </div>
+    );
+  }
   return (
     <div className="warning-item-container">
       {warning && (

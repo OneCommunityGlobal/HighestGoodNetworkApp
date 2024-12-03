@@ -12,6 +12,7 @@ import {
   CardBody,
   Card,
   Col,
+  Spinner,
 } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../../Header/DarkMode.css';
@@ -52,7 +53,7 @@ const UserProfileModal = props => {
   const canEditInfringements = props.hasPermission('editInfringements');
   const canDeleteInfringements = props.hasPermission('deleteInfringements');
 
-  const [toggleLogWarning, setToggleLogWarning] = useState(false);
+  // const [toggleLogWarning, setToggleLogWarning] = useState(false);
   const [warningType, setWarningType] = useState('');
 
   const [linkName, setLinkName] = useState('');
@@ -68,6 +69,7 @@ const UserProfileModal = props => {
   const [summaryFieldView, setSummaryFieldView] = useState(true);
   const [displayWarningModal, setDisplayWarningModal] = useState(false);
 
+  const [showSpinner, setShowSpinner] = useState(false);
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
       switch (type) {
@@ -148,7 +150,7 @@ const UserProfileModal = props => {
       username: `${userProfile.firstName} ${userProfile.lastName}`,
       warningText: warningData.title,
     });
-    setToggleLogWarning(prev => !prev);
+    // setToggleLogWarning(prev => !prev);
 
     if (warningData.warnings.length < 2) {
       setDisplayWarningModal(false);
@@ -158,10 +160,12 @@ const UserProfileModal = props => {
     setDisplayWarningModal(true);
   };
   const handleLogNewWarning = warningData => {
-    setToggleLogWarning(false);
+    // setToggleLogWarning(false);
+    setShowSpinner(true);
     setWarningType('');
     props.handleLogWarning(warningData);
     setDisplayWarningModal(false);
+    // setShowSpinner(false);
   };
   function checkFields(field1, field2) {
     // console.log('f1:', field1, ' f2:', field2);
@@ -183,18 +187,20 @@ const UserProfileModal = props => {
 
   return (
     <>
-      <WarningModal
-        numberOfWarnings={warningType.warnings}
-        warning={warningType}
-        visible={displayWarningModal}
-        setToggleModal={() => setDisplayWarningModal(false)}
-        handleIssueWarning={handleLogNewWarning}
-        userProfileHeader={true}
-      />
+      {displayWarningModal && (
+        <WarningModal
+          numberOfWarnings={warningType.warnings}
+          warning={warningType}
+          visible={displayWarningModal}
+          setToggleModal={() => setDisplayWarningModal(false)}
+          handleIssueWarning={handleLogNewWarning}
+          userProfileHeader={true}
+        />
+      )}
 
       <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
         <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>
-          {modalTitle}
+          {modalTitle} {showSpinner && <Spinner color="primary" width="300px" />}{' '}
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {type === 'updateLink' && (

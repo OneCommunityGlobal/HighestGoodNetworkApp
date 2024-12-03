@@ -22,7 +22,9 @@
 .warning-icons {
   display: flex;
 }
-
+.warning-icons--disabled {
+  cursor: not-allowed;
+}
 .warning-text {
   text-align: center;
   font-size: 1em;
@@ -189,4 +191,10 @@
 input[type='text'] {
   word-wrap: break-word;
   word-break: break-all;
+}
+
+.warning__modal__userprofile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

@@ -1,5 +1,6 @@
 /* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
+import WarningItem from '../WarningItem';
 import getOrdinal from '../../../utils/getOrdinal';
 import '../Warnings.css';
 function WarningModal({
@@ -47,7 +48,7 @@ function WarningModal({
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
         {userProfileHeader ? (
           <ModalHeader className="modal__header--center">
-            {times + ordinal} time doing this - choose action{' '}
+            {times + ordinal} occurance - choose an action{' '}
           </ModalHeader>
         ) : (
           <ModalHeader>Issue Warning</ModalHeader>
@@ -82,6 +83,14 @@ function WarningModal({
             Issue a blue square and the dot color will be:{' '}
             <span className="warning__body--bold">Red</span>
           </p>
+
+          <div className="warning__modal__userprofile">
+            <WarningItem
+              warnings={warning.warnings}
+              userProfileWarnings={true}
+              warningText={warning.title}
+            />
+          </div>
         </ModalBody>
 
         <ModalFooter className="warning-modal-footer">
