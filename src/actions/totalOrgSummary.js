@@ -32,7 +32,7 @@ export const fetchTotalOrgSummaryReportError = error => ({
 export const getTaskAndProjectStats = (startDate, endDate) => {
   const url = ENDPOINTS.HOURS_TOTAL_ORG_SUMMARY(startDate, endDate);
   return async dispatch => {
-    dispatch(fetchTotalOrgSummaryReportBegin());
+    await dispatch(fetchTotalOrgSummaryReportBegin());
     try {
       const response = await axios.get(url);
       dispatch(fetchTotalOrgSummaryReportSuccess(response.data));
