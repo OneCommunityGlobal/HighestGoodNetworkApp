@@ -3,20 +3,74 @@ import { connect } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import './LessonListForm.css';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { ENDPOINTS } from 'utils/URL';
 import { fetchBMLessons } from 'actions/bmdashboard/lessonsAction';
 import Lessons from './Lessons';
+import {
+  Modal,
+  ModalBody,
+  ModalFooter,
+} from 'reactstrap';
 
 function LessonList(props) {
   const { lessons, dispatch } = props;
   const [tags, setTags] = useState([]);
   const [inputValue, setInputValue] = useState('');
+  const [deleteValue, setDeleteInputValue] = useState('');
   const [filteredLessons, setFilteredLessons] = useState(lessons);
   const [filterOption, setFilterOption] = useState('1');
   const [sortOption, setSortOption] = useState('1');
+  const [availableTags, setAvailableTags] = useState([]);
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [showDeleteDropdown, setShowDeleteDropdown] = useState(false);
+  const [tagsToDelete, setTagsToDelete] = useState([]);
+  const [showConfirmModal, setConfirmModal] = useState(false);
 
+  
   useEffect(() => {
-    dispatch(fetchBMLessons());
+    const fetchData = async () => {
+      try {
+        // Fetch both lessons and tags in parallel
+        const [lessonsResponse, tagsResponse] = await Promise.all([
+          axios.get(`${ENDPOINTS.BM_LESSONS}`),
+          axios.get(`${ENDPOINTS.BM_TAGS}`)
+        ]);
+  
+        // Update Redux store 
+        dispatch({
+          type: 'SET_LESSONS',
+          payload: lessonsResponse.data
+        });
+  
+        // Update available tags
+        setAvailableTags(tagsResponse.data);
+        
+        // Update filtered lessons
+        setFilteredLessons(lessonsResponse.data);
+  
+      } catch (error) {
+        console.error('Error fetching data:', error);
+        toast.error('Failed to load data');
+      }
+    };
+  
+    fetchData();
   }, []);
+
+  const getFilteredTags = () => {
+    return availableTags.filter(tag => 
+      tag.toLowerCase().includes(inputValue.toLowerCase()) && 
+      !tags.includes(tag)
+    );
+  };
+
+  const getFilteredTagsToDelete = () => {
+    return availableTags.filter(tag => 
+      tag.toLowerCase().includes(deleteValue.toLowerCase())
+    );
+  }
 
   const getWeekNumber = date => {
     const currentDate = new Date(date);
@@ -33,6 +87,25 @@ function LessonList(props) {
 
     return weekNumber;
   };
+
+  const ConfirmationModal = () => (
+    <Modal isOpen={showConfirmModal} toggle={() => setConfirmModal(false)}>
+      <ModalBody>
+        <p>Whoa tiger! This is a very aggressive move… please confirm you are SURE you want to do this. Deleting tags cannot be undone and removes them from every lesson that uses them, not just this one.</p>
+      </ModalBody>
+      <ModalFooter>
+        <Button color="danger" onClick={() => {
+          handleDeleteTags();
+          setConfirmModal(false);
+        }}>
+          Yep, I'm sure, scratch them!
+        </Button>
+        <Button color="secondary" onClick={() => setConfirmModal(false)}>
+          No, take me back!
+        </Button>
+      </ModalFooter>
+    </Modal>
+  );
 
   const isInThisWeek = date => {
     // Convert the date string to a Date object with consistent formatting
@@ -77,6 +150,21 @@ function LessonList(props) {
       });
     });
   }, [lessons]);
+
+  useEffect(() => {
+    const handleClickOutside = event => {
+      if (!event.target.closest('.tags-input-container')) {
+        setShowDropdown(false);
+        setShowDeleteDropdown(false);
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside);
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    }
+  }, []);
 
   useEffect(() => {
     const filterAndSort = () => {
@@ -129,6 +217,15 @@ function LessonList(props) {
     }
     setInputValue('');
   };
+
+  const addDeleteTag = tag => {
+    if (!tagsToDelete.includes(tag)) {
+      setTagsToDelete(prev => [...prev, tag]);
+    }
+    setDeleteInputValue('');
+    setShowDeleteDropdown(false);
+  }
+
   const handleInputKeyDown = event => {
     if (event.key === 'Enter' || event.key === ',') {
       event.preventDefault();
@@ -136,26 +233,108 @@ function LessonList(props) {
     }
   };
 
+  const handleDeleteKeyDown = event => {
+    if (event.key === 'Enter' && deleteValue.trim()) {
+      addDeleteTag(deleteValue.trim());
+    }
+  };
+
+  const handleDeleteButtonClick = () => {
+    setConfirmModal(true);
+  }
+
+  const handleDeleteTags = async() => {
+    try {
+      const tagExistsChecks = tagsToDelete.map(tag => 
+        availableTags.includes(tag)
+      );
+
+      if (tagExistsChecks.includes(false)) {
+        toast.error("One or more tags don't exist");
+        return;
+      }
+      
+      const deletePromises = tagsToDelete.map(tag => 
+        axios.delete(`${ENDPOINTS.BM_TAGS}/${tag}`)
+      );
+      
+      // Wait for all deletions to process
+      await Promise.all(deletePromises);
+      
+      const lessonsResponse = await axios.get(`${ENDPOINTS.BM_LESSONS}`);
+      
+      // Update Redux store 
+      dispatch({
+        type: 'SET_LESSONS',
+        payload: lessonsResponse.data
+      });
+      
+      // filter lessons
+      setFilteredLessons(lessonsResponse.data);
+
+      // Update available tags
+      const updatedTagsResponse = await axios.get(`${ENDPOINTS.BM_TAGS}`);
+      setAvailableTags(updatedTagsResponse.data);
+      
+      setTagsToDelete([]);
+      setConfirmModal(false);
+      toast.success('Tags deleted successfully');
+      
+    } catch (error) {
+      console.error('Error deleting tags: ', error);
+      toast.error('Failed to delete tags');
+    }
+  }
+
   const removeTag = index => {
     const newTags = [...tags];
     newTags.splice(index, 1);
     setTags(newTags);
   };
   const filterLessonsByTags = () => {
-    if (tags.length === 0) {
-      // No tags to filter, show all lessons
-      setFilteredLessons(lessons);
-    } else {
-      // Filter lessons based on tags
-      setFilteredLessons(
-        lessons.filter(lesson => lesson.tags && tags.some(tag => lesson.tags.includes(tag))),
+    let filtered = [...lessons];
+  
+    // If tags exist
+    if (tags.length > 0) {
+      filtered = filtered.filter(lesson => 
+        lesson.tags && tags.every(tag => lesson.tags.includes(tag))
       );
     }
+  
+    //  date filtering
+    switch (filterOption) {
+      case '2':
+        filtered = filtered.filter(item => isInThisYear(item.date));
+        break;
+      case '3':
+        filtered = filtered.filter(item => isInThisMonth(item.date));
+        break;
+      case '4':
+        filtered = filtered.filter(item => isInThisWeek(item.date));
+        break;
+    }
+  
+    //  apply sorting
+    switch (sortOption) {
+      case '1':
+        filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+        break;
+      case '2':
+        filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+        break;
+      case '3':
+        filtered.sort((a, b) => b.totalLikes - a.totalLikes);
+        break;
+    }
+  
+    setFilteredLessons(filtered);
   };
+  
 
   useEffect(() => {
     filterLessonsByTags();
-  }, [tags, lessons]);
+  }, [tags, lessons, filterOption, sortOption]);
+  
 
   return (
     <div className="main-container">
@@ -202,29 +381,111 @@ function LessonList(props) {
             </div>
           </div>
           <Form.Group controlId="tagInput">
-            <Form.Label>Tags:</Form.Label>
-            <InputGroup className="mb-3">
-              {tags.length > 0 &&
-                tags.map((tag, index) => (
-                  <div key={tag} className="tag">
+          <Form.Label>Tags:</Form.Label>
+          <div className="tags-input-container">
+            <InputGroup className="tags-wrapper">
+              <input
+                type="text"
+                placeholder="Select tag"
+                value={inputValue}
+                onChange={(e) => {
+                  setInputValue(e.target.value);
+                  setShowDropdown(true);
+                }}
+                onFocus={() => setShowDropdown(true)}
+                className="form-control"
+              />
+              {showDropdown && inputValue && (
+                <div className="tag-dropdown">
+                  {getFilteredTags().map(tag => (
+                    <div
+                      key={tag}
+                      className="tag-dropdown-item"
+                      onClick={() => {
+                        addTag(tag);
+                        setShowDropdown(false);
+                      }}
+                    >
+                      {tag}
+                    </div>
+                  ))}
+                </div>
+              )}
+              
+            </InputGroup>
+            <div className="tag-container">
+              {tags.map((tag, index) => (
+                <div key={index} className="tag">
+                  <span>{tag}</span>
+                  <Button
+                    className = "button-close"
+                    onClick={() => removeTag(index)}
+                  >
+                    x
+                  </Button>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          <Form.Label>Delete Tags (Press enter to add a tag to delete): </Form.Label>
+          <div className="tags-input-container">
+            <div className="delete-input-wrapper">
+              <input
+                    type="text"
+                    placeholder="Search tag to delete"
+                    value={deleteValue}
+                    className="form-control-delete"
+                    onChange={(e) => {
+                      setDeleteInputValue(e.target.value);
+                      setShowDeleteDropdown(true);
+                    }}
+                    onFocus ={()=>setShowDeleteDropdown(true)}
+                    onKeyDown={handleDeleteKeyDown}
+              />
+              {showDeleteDropdown && deleteValue && (
+                <div className="tag-dropdown">
+                  {getFilteredTagsToDelete().map(tag => (
+                    <div
+                      key={tag}
+                      className="tag-dropdown-item"
+                      onClick={() => addDeleteTag(tag)}
+                    >
+                      {tag}
+                    </div>
+                  ))}
+                </div>
+              )}
+              <div className="tag-container">
+                {tagsToDelete.map((tag, index) => (
+                  <div key={index} className="tag">
                     <span>{tag}</span>
                     <Button
-                      variant="light"
-                      className="close-button"
-                      onClick={() => removeTag(index)}
+                      className="button-close"
+                      onClick={() => {
+                        const newTags = tagsToDelete.filter((_, i) => i !== index);
+                        setTagsToDelete(newTags);
+                      }}
                     >
-                      &times;
+                      x
                     </Button>
                   </div>
                 ))}
-              <FormControl
-                placeholder="Add tags"
-                value={inputValue}
-                onKeyDown={handleInputKeyDown}
-                onChange={e => setInputValue(e.target.value)}
-              />
-            </InputGroup>
-          </Form.Group>
+              </div>
+            </div>
+            {tagsToDelete.length > 0 && (
+                <Button 
+                  style={{ backgroundColor: 'red', marginLeft: '10px' }}
+                  onClick={handleDeleteButtonClick}
+                >
+                  Delete
+                </Button>
+              )}
+
+              <ConfirmationModal />
+          </div>
+          
+        </Form.Group>
         </Form>
         <Lessons
           filteredLessons={filteredLessons}
@@ -242,3 +503,4 @@ const mapStateToProps = state => ({
 });
 
 export default connect(mapStateToProps)(LessonList);
+
