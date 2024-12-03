@@ -45,6 +45,9 @@ const TeamMemberTask = React.memo(
     goingOnTimeOff,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
+    const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
+      // console.log('Task counts:', taskCounts);
+      // console.log('Task IDs:', Object.keys(taskCounts));
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
@@ -84,6 +87,7 @@ const TeamMemberTask = React.memo(
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
+    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const handleTruncateTasksButtonClick = () => {
@@ -286,7 +290,7 @@ const TeamMemberTask = React.memo(
                                         data-testid={`tick-${task.taskName}`}
                                       />
                                     )}
-                                    {canUpdateTask && (
+                                    {(canUpdateTask || canRemoveUserFromTask) && (
                                       <FontAwesomeIcon
                                         className="team-member-task-remove"
                                         icon={faTimes}
@@ -317,7 +321,7 @@ const TeamMemberTask = React.memo(
                                         title="Deadline Follow-up Count"
                                         data-testid={`deadline-${task.taskName}`}
                                       >
-                                        {task.deadlineCount === undefined ? 0 : task.deadlineCount}
+                                        {taskCounts[task._id] !== undefined ? taskCounts[task._id] : (task.deadlineCount === undefined ? 0 : task.deadlineCount)}
                                       </span>
                                     )}
                                     <div className="team-task-progress-container">
