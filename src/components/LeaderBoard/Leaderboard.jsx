@@ -17,6 +17,7 @@ import {
   Spinner,
   Input,
 } from 'reactstrap';
+import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -291,12 +292,19 @@ function LeaderBoard({
       sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
       sortedRequests[0];
 
-    const isCurrentlyOff = moment().isBetween(
-      moment(mostRecentRequest.startingDate),
-      moment(mostRecentRequest.endingDate),
-      null,
-      '[]',
-    );
+    const startOfWeek = moment().startOf('week');
+    const endOfWeek = moment().endOf('week');
+
+    const isCurrentlyOff =
+      moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
+      moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
+
+    // const isCurrentlyOff = moment().isBetween(
+    //   moment(mostRecentRequest.startingDate),
+    //   moment(mostRecentRequest.endingDate),
+    //   null,
+    //   '[]',
+    // );
 
     let additionalWeeks = 0;
     // additional weeks until back
@@ -745,13 +753,18 @@ function LeaderBoard({
                           fontSize: '15px',
                           justifyItems: 'center',
                         }}
-                        title={
-                          isCurrentlyOff
-                            ? `${additionalWeeks} additional weeks off`
-                            : `${additionalWeeks} weeks until next time off`
-                        }
                       >
                         {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                        <i
+                          className="fa fa-info-circle"
+                          style={{ marginLeft: '5px', cursor: 'pointer' }}
+                          data-tip={
+                            isCurrentlyOff
+                              ? `${additionalWeeks} additional weeks off`
+                              : `${additionalWeeks} weeks until next time off`
+                          }
+                        />
+                        <ReactTooltip place="top" type="dark" effect="solid" />
                       </span>
                     )}
                   </th>
