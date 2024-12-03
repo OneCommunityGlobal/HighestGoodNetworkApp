@@ -88,7 +88,7 @@ const endOfWeek = offset => {
 };
 
 const Timelog = props => {
-  const darkMode = useSelector(state => state.theme.darkMode)
+  const darkMode = useSelector(state => state.theme.darkMode);
   const location = useLocation();
 
   // Main Function component
@@ -102,7 +102,7 @@ const Timelog = props => {
     roles,
     displayUserProjects,
     disPlayUserTasks,
-    userId
+    userId,
   } = props;
 
   const initialState = {
@@ -143,24 +143,20 @@ const Timelog = props => {
     try {
       if (viewingUser) {
         return viewingUser.userId;
-      }
-      else if (userId != null) {
+      } else if (userId != null) {
         return userId;
       }
       return authUser.userid;
     } catch (error) {
       return null;
     }
-  }
+  };
 
-  const [displayUserId, setDisplayUserId] = useState(
-    getUserId()
-  );
+  const [displayUserId, setDisplayUserId] = useState(getUserId());
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;
 
-
-  const defaultTab = (data) => {
+  const defaultTab = data => {
     const userHaveTask = doesUserHaveTaskWithWBS(data);
     //change default to time log tab(1) in the following cases:
     const role = authUser.role;
@@ -192,22 +188,22 @@ const Timelog = props => {
     return tab;
   };
 
-    const tabMapping = {
-      '#tasks': 0,
-      '#currentWeek': 1,
-      '#lastWeek': 2,
-      '#beforeLastWeek': 3,
-      '#dateRange': 4,
-      '#weeklySummaries': 5,
-      '#badgesearned': 6,
-    };
+  const tabMapping = {
+    '#tasks': 0,
+    '#currentWeek': 1,
+    '#lastWeek': 2,
+    '#beforeLastWeek': 3,
+    '#dateRange': 4,
+    '#weeklySummaries': 5,
+    '#badgesearned': 6,
+  };
 
   useEffect(() => {
     const tab = tabMapping[location.hash];
     if (tab !== undefined) {
       changeTab(tab);
     }
-  }, [location.hash]);  // This effect will run whenever the hash changes
+  }, [location.hash]); // This effect will run whenever the hash changes
 
   /*---------------- methods -------------- */
   const updateTimeEntryItems = () => {
@@ -334,7 +330,7 @@ const Timelog = props => {
 
     // Clear the hash to trigger the useEffect on hash change
     if (location.hash) {
-      window.location.hash='';
+      window.location.hash = '';
     }
 
     setTimeLogState({
@@ -351,7 +347,7 @@ const Timelog = props => {
     //check if the toDate is before the fromDate
     if (moment(timeLogState.fromDate).isAfter(moment(timeLogState.toDate))) {
       alert('Invalid Date Range: the From Date must be before the To Date');
-    }else{
+    } else {
       e.preventDefault();
       props.getTimeEntriesForPeriod(displayUserId, timeLogState.fromDate, timeLogState.toDate);
     }
@@ -364,18 +360,22 @@ const Timelog = props => {
   };
 
   const renderViewingTimeEntriesFrom = () => {
-    if (timeLogState.activeTab === 0 || timeLogState.activeTab === 5 || timeLogState.activeTab === 6) {
+    if (
+      timeLogState.activeTab === 0 ||
+      timeLogState.activeTab === 5 ||
+      timeLogState.activeTab === 6
+    ) {
       return <></>;
     } else if (timeLogState.activeTab === 4) {
       return (
-        <p className={`ml-1 responsive-font-size ${darkMode ? "text-light" : ""}`}>
+        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
           Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
           <b>{formatDate(timeLogState.toDate)}</b>
         </p>
       );
     } else {
       return (
-        <p className={`ml-1 responsive-font-size ${darkMode ? "text-light" : ""}`}>
+        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
           Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
           <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
         </p>
@@ -397,7 +397,7 @@ const Timelog = props => {
   const buildOptions = () => {
     const projectsObject = {};
     const options = [
-      <option className='responsive-font-size' value="all" key="TimeLogDefaultProjectOrTask" >
+      <option className="responsive-font-size" value="all" key="TimeLogDefaultProjectOrTask">
         Select Project/Task (all)
       </option>,
     ];
@@ -415,18 +415,18 @@ const Timelog = props => {
             [wbsId]: {
               wbsName,
               taskObject: {
-                [taskId]: task
-              }
-            }
-          }
-        }
+                [taskId]: task,
+              },
+            },
+          },
+        };
       } else if (!projectsObject[projectId].WBSObject[wbsId]) {
         projectsObject[projectId].WBSObject[wbsId] = {
           wbsName,
           taskObject: {
-            [taskId]: task
-          }
-        }
+            [taskId]: task,
+          },
+        };
       } else {
         projectsObject[projectId].WBSObject[wbsId].taskObject[taskId] = task;
       }
@@ -435,24 +435,29 @@ const Timelog = props => {
     for (const [projectId, project] of Object.entries(projectsObject)) {
       const { projectName, WBSObject } = project;
       options.push(
-        <option className='responsive-font-size' value={projectId} key={`TimeLog_${projectId}`} >
+        <option className="responsive-font-size" value={projectId} key={`TimeLog_${projectId}`}>
           {projectName}
         </option>,
       );
       for (const [wbsId, WBS] of Object.entries(WBSObject)) {
         const { wbsName, taskObject } = WBS;
         options.push(
-          <option value={wbsId} key={`TimeLog_${wbsId}`} disabled className={`${darkMode ? "text-white-50" : ''} responsive-font-size`}>
+          <option
+            value={wbsId}
+            key={`TimeLog_${wbsId}`}
+            disabled
+            className={`${darkMode ? 'text-white-50' : ''} responsive-font-size`}
+          >
             {`\u2003WBS: ${wbsName}`}
-          </option>
-        )
+          </option>,
+        );
         for (const [taskId, task] of Object.entries(taskObject)) {
           const { taskName } = task;
           options.push(
-            <option className='responsive-font-size' value={taskId} key={`TimeLog_${taskId}`} >
+            <option className="responsive-font-size" value={taskId} key={`TimeLog_${taskId}`}>
               {`\u2003\u2003 ↳ ${taskName}`}
-            </option>
-          )
+            </option>,
+          );
         }
       }
     }
@@ -477,7 +482,7 @@ const Timelog = props => {
     if (sessionStorageData && sessionStorageData.userId != authUser.userId) {
       setDisplayUserId(sessionStorageData.userId);
     }
-  }
+  };
 
   /*---------------- useEffects -------------- */
 
@@ -497,7 +502,6 @@ const Timelog = props => {
   useEffect(() => {
     props.getBadgeCount(displayUserId);
   }, [displayUserId, props]);
-
 
   useEffect(() => {
     changeTab(initialTab);
@@ -520,6 +524,7 @@ const Timelog = props => {
   }, [timeLogState.projectsSelected]);
 
   useEffect(() => {
+    setDisplayUserId(getUserId());
     // Listens to sessionStorage changes, when setting viewingUser in leaderboard, an event is dispatched called storage. This listener will catch it and update the state.
     window.addEventListener('storage', handleStorageEvent);
     return () => {
@@ -528,11 +533,10 @@ const Timelog = props => {
   }, []);
 
   return (
-
-    <div 
-      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`} 
-      style={darkMode ? (!props.isDashboard ? {padding: "0 15px 300px 15px"} : {}) : {}}>
-    
+    <div
+      className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
+      style={darkMode ? (!props.isDashboard ? { padding: '0 15px 300px 15px' } : {}) : {}}
+    >
       {!props.isDashboard ? (
         <Container fluid>
           <SummaryBar
@@ -545,41 +549,53 @@ const Timelog = props => {
         </Container>
       ) : (
         <Container style={{ textAlign: 'right', minWidth: '100%' }}>
-          {
-            props.isDashboard ?
-              <></> :
-              <EditableInfoModal
-                areaName="DashboardTimelog"
-                areaTitle="Timelog"
-                fontSize={30}
-                isPermissionPage={true}
-                role={authUser.role}
-                darkMode={darkMode}
-              />
-          }
+          {props.isDashboard ? (
+            <></>
+          ) : (
+            <EditableInfoModal
+              areaName="DashboardTimelog"
+              areaTitle="Timelog"
+              fontSize={30}
+              isPermissionPage={true}
+              role={authUser.role}
+              darkMode={darkMode}
+            />
+          )}
         </Container>
       )}
 
       {timeLogState.isTimeEntriesLoading ? (
         <LoadingSkeleton template="Timelog" />
       ) : (
-        <div className={`${!props.isDashboard ? "timelogPageContainer" : "ml-3 min-width-100"}`}>
+        <div className={`${!props.isDashboard ? 'timelogPageContainer' : 'ml-3 min-width-100'}`}>
           {timeLogState.summary ? (
             <div className="my-2">
               <div id="weeklySum">
-                <WeeklySummary displayUserId={displayUserId} setPopup={toggleSummary} darkMode={darkMode} />
+                <WeeklySummary
+                  displayUserId={displayUserId}
+                  setPopup={toggleSummary}
+                  darkMode={darkMode}
+                />
               </div>
             </div>
           ) : null}
-          <Row style={{ minWidth: "100%" }}>
-            <Col md={12} className='px-0 mx-0'>
+          <Row style={{ minWidth: '100%' }}>
+            <Col md={12} className="px-0 mx-0">
               <Card className={darkMode ? 'border-0' : ''}>
-                <CardHeader className={darkMode ? 'card-header-shadow-dark bg-space-cadet text-light' : 'card-header-shadow'}>
-                  <Row style={{ minWidth: "100%" }} className='px-0 mx-0'>
-                    <Col style={{ minWidth: "100%" }} className='px-0 mx-0'>
+                <CardHeader
+                  className={
+                    darkMode
+                      ? 'card-header-shadow-dark bg-space-cadet text-light'
+                      : 'card-header-shadow'
+                  }
+                >
+                  <Row style={{ minWidth: '100%' }} className="px-0 mx-0">
+                    <Col style={{ minWidth: '100%' }} className="px-0 mx-0">
                       <CardTitle tag="h4">
                         <div className="d-flex align-items-center">
-                          <span className="taskboard-header-title mb-1 mr-2">Tasks and Timelogs</span>
+                          <span className="taskboard-header-title mb-1 mr-2">
+                            Tasks and Timelogs
+                          </span>
                           <EditableInfoModal
                             areaName="TasksAndTimelogInfoPoint"
                             areaTitle="Tasks and Timelogs"
@@ -605,18 +621,29 @@ const Timelog = props => {
                               }}
                             />
                           </span>
-                          <ProfileNavDot userId={displayUserId} style={{ marginLeft: '2px', padding: '1px' }} />
+                          <ProfileNavDot
+                            userId={displayUserId}
+                            style={{ marginLeft: '2px', padding: '1px' }}
+                          />
                         </div>
                       </CardTitle>
-                      <CardSubtitle tag="h6" className={`${darkMode ? "text-azure" : "text-muted"} responsive-font-size`}>
+                      <CardSubtitle
+                        tag="h6"
+                        className={`${darkMode ? 'text-azure' : 'text-muted'} responsive-font-size`}
+                      >
                         Viewing time entries logged in the last 3 weeks
                       </CardSubtitle>
                     </Col>
-                    <Col className='px-0'>
+                    <Col className="px-0">
                       {isAuthUser ? (
                         <div className="tasks-and-timelog-header-add-time-div mt-2">
                           <div>
-                            <Button className='responsive-font-size' color="success" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle}>
+                            <Button
+                              className="responsive-font-size"
+                              color="success"
+                              onClick={toggle}
+                              style={darkMode ? boxStyleDark : boxStyle}
+                            >
                               {'Add Intangible Time Entry '}
                               <i
                                 className="fa fa-info-circle"
@@ -675,7 +702,12 @@ const Timelog = props => {
                           </div>
                         </div>
                       ) : (
-                        !(viewingUser && viewingUser.role === 'Owner' && authUser.role !== 'Owner') && (canPutUserProfileImportantInfo) && (
+                        !(
+                          viewingUser &&
+                          viewingUser.role === 'Owner' &&
+                          authUser.role !== 'Owner'
+                        ) &&
+                        canPutUserProfileImportantInfo && (
                           <div className="tasks-and-timelog-header-add-time-div">
                             <div>
                               <Button color="warning" onClick={toggle} style={boxStyle}>
@@ -723,7 +755,11 @@ const Timelog = props => {
                     </Col>
                   </Row>
                 </CardHeader>
-                <CardBody className={darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'}>
+                <CardBody
+                  className={
+                    darkMode ? 'card-header-shadow-dark bg-space-cadet' : 'card-header-shadow'
+                  }
+                >
                   <Nav tabs className="task-and-timelog-card-nav mb-1 responsive-font-size">
                     <NavItem>
                       <NavLink
@@ -805,21 +841,32 @@ const Timelog = props => {
                         href="#"
                         to="#"
                       >
-                        Badges<span className="badge badge-pill badge-danger ml-2">{props.badgeCount}</span>
+                        Badges
+                        <span className="badge badge-pill badge-danger ml-2">
+                          {props.badgeCount}
+                        </span>
                       </NavLink>
                     </NavItem>
                   </Nav>
 
-                  <TabContent activeTab={timeLogState.activeTab} className={darkMode ? "bg-space-cadet" : ""}>
+                  <TabContent
+                    activeTab={timeLogState.activeTab}
+                    className={darkMode ? 'bg-space-cadet' : ''}
+                  >
                     {renderViewingTimeEntriesFrom()}
                     {timeLogState.activeTab === 4 && (
                       <Form inline className="mb-2">
                         <FormGroup className="mr-2 date-selector-form">
-                          <Label for="fromDate" className={`responsive-font-size mr-2 ml-1 ${darkMode ? "text-light" : ""}`}>
+                          <Label
+                            for="fromDate"
+                            className={`responsive-font-size mr-2 ml-1 ${
+                              darkMode ? 'text-light' : ''
+                            }`}
+                          >
                             From
                           </Label>
                           <Input
-                            className='responsive-font-size'
+                            className="responsive-font-size"
                             type="date"
                             name="fromDate"
                             id="fromDate"
@@ -828,11 +875,14 @@ const Timelog = props => {
                           />
                         </FormGroup>
                         <FormGroup>
-                          <Label for="toDate" className={`responsive-font-size mr-2 ${darkMode ? "text-light" : ""}`}>
+                          <Label
+                            for="toDate"
+                            className={`responsive-font-size mr-2 ${darkMode ? 'text-light' : ''}`}
+                          >
                             To
                           </Label>
                           <Input
-                            className='responsive-font-size'
+                            className="responsive-font-size"
                             type="date"
                             name="toDate"
                             id="toDate"
@@ -850,7 +900,9 @@ const Timelog = props => {
                         </Button>
                       </Form>
                     )}
-                    {timeLogState.activeTab === 0 || timeLogState.activeTab === 5 || timeLogState.activeTab === 6 ? (
+                    {timeLogState.activeTab === 0 ||
+                    timeLogState.activeTab === 5 ||
+                    timeLogState.activeTab === 6 ? (
                       <></>
                     ) : (
                       <Form className="mb-2 responsive-font-size">
@@ -885,7 +937,9 @@ const Timelog = props => {
                       </Form>
                     )}
 
-                    {timeLogState.activeTab === 0 || timeLogState.activeTab === 5 || timeLogState.activeTab === 6 ? (
+                    {timeLogState.activeTab === 0 ||
+                    timeLogState.activeTab === 5 ||
+                    timeLogState.activeTab === 6 ? (
                       <></>
                     ) : (
                       <EffortBar
@@ -895,7 +949,7 @@ const Timelog = props => {
                       />
                     )}
                     <TabPane tabId={0}>
-                      <TeamMemberTasks />
+                      <TeamMemberTasks filteredUserTeamIds={props.filteredUserTeamIds} />
                     </TabPane>
                     <TabPane tabId={1}>{currentWeekEntries}</TabPane>
                     <TabPane tabId={2}>{lastWeekEntries}</TabPane>

@@ -25,15 +25,13 @@ function Announcements({title, email}) {
 
   const editorInit = {
     license_key: 'gpl',
-    selector: 'textarea#open-source-plugins',
+    selector: 'Editor#email-editor',
     height: 500,
     menubar: false,
-    plugins: [
-      'advlist autolink lists link image paste',
-      'charmap print preview anchor help',
-      'searchreplace visualblocks code',
-      'insertdatetime media table paste wordcount',
-    ],
+    branding: false,
+    plugins: 'advlist autolink lists link image charmap preview anchor help \
+      searchreplace visualblocks code insertdatetime media table wordcount\
+      fullscreen emoticons nonbreaking',
     image_title: true,
     automatic_uploads: true,
     file_picker_callback(cb, value, meta) {
@@ -74,9 +72,8 @@ function Announcements({title, email}) {
       input.click();
     },
     a11y_advanced_options: true,
-    menubar: 'file insert edit view format tools',
     toolbar:
-      'undo redo | formatselect | bold italic | blocks fontfamily fontsize | image \
+      'undo redo | bold italic | blocks fontfamily fontsize | image table |\
       alignleft aligncenter alignright | \
       bullist numlist outdent indent | removeformat | help',
     skin: darkMode ? 'oxide-dark' : 'oxide',
@@ -100,6 +97,18 @@ function Announcements({title, email}) {
     setHeaderContent(e.target.value);
   }
 
+  // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
+  const addHeaderToEmailContent = () => {
+    if (!headerContent) return;
+    const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
+      const editor = tinymce.get('email-editor');
+      if (editor) {
+        editor.insertContent(imageTag);
+        setEmailContent(editor.getContent());
+      }
+      setHeaderContent(''); // Clear the input field after inserting the header
+  };
+  
   const convertImageToBase64 = (file, callback) => {
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -120,17 +129,6 @@ function Announcements({title, email}) {
       }
     });
     e.target.value = '';
-  };
-  // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
-  const addHeaderToEmailContent = () => {
-    if (!headerContent) return;
-    const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-      const editor = tinymce.get('email-editor');
-      if (editor) {
-        editor.insertContent(imageTag);
-        setEmailContent(editor.getContent());
-      }
-      setHeaderContent(''); // Clear the input field after inserting the header
   };
 
   const validateEmail = (email) => {
