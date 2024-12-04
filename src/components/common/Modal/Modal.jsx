@@ -17,7 +17,7 @@ import '../../Header/DarkMode.css';
 
 // eslint-disable-next-line react/function-component-definition
 const ModalExample = props => {
-  const darkMode = useSelector(state => state.theme.darkMode);
+  // const darkMode = useSelector(state => state.theme.darkMode);
   const {
     isOpen,
     closeModal,
@@ -27,6 +27,7 @@ const ModalExample = props => {
     modalMessage,
     type,
     linkType,
+    darkMode,
   } = props;
 
   const [linkName, setLinkName] = useState('');
