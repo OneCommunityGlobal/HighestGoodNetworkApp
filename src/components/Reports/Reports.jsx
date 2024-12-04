@@ -24,11 +24,12 @@ import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/DarkMode.css'
-const DATE_PICKER_MIN_DATE = '01/01/2010';
+import '../Header/DarkMode.css';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 import Loading from '../common/Loading';
+
+const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
   constructor(props) {
@@ -124,9 +125,6 @@ class ReportsPage extends Component {
     });
     this.props.getAllUserProfile();
   }
-  setFilterStatus(status) {
-    this.setState({ checkActive: status });
-  }
 
   handleSearch = () => {
     if (this.state.showPeople && this.state.peopleSearchData.length > 0) {
@@ -190,7 +188,6 @@ class ReportsPage extends Component {
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
           searchWithAccent(team.teamName, this.state.wildCardSearchText))
-          searchWithAccent(team.teamName, this.state.wildCardSearchText))
       ) {
         return team;
       }
@@ -202,14 +199,13 @@ class ReportsPage extends Component {
 
   filteredPeopleList = userProfiles => {
     const filteredList = userProfiles.filter(userProfile => {
-      // Applying the search filters before creating each team table data element 
+      // Applying the search filters before creating each team table data element
       if (
         (userProfile.firstName &&
           searchWithAccent(userProfile.firstName, this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
-          searchWithAccent(userProfile.firstName, this.state.wildCardSearchText)) ||
           searchWithAccent(userProfile.firstName, this.state.wildCardSearchText)) ||
         (this.state.wildCardSearchText !== '' &&
           userProfile.lastName &&
@@ -225,24 +221,6 @@ class ReportsPage extends Component {
 
     return filteredList;
   };
-
-  setActive() {
-    this.setState(state => ({
-      checkActive: 'true',
-    }));
-  }
-
-  setAll() {
-    this.setState(state => ({
-      checkActive: '',
-    }));
-  }
-
-  setInActive() {
-    this.setState(() => ({
-      checkActive: 'false',
-    }));
-  }
 
   setTeamMemberList(list) {
     this.setState(() => ({
@@ -373,36 +351,36 @@ class ReportsPage extends Component {
     }));
   }
 
-//   showTotalProject() {
-//     if (this.state.showTotalProject) {
-//       this.setState({
-//         showTotalProject: false,
-//         loading: false,
-//       });
-//       return;
-//     }
-  
-//     this.setState({
-//       loading: true,
-//       showProjects: false,
-//       showPeople: false,
-//       showTeams: false,
-//       showTotalTeam: false,
-//       showTotalPeople: false,
-//       showTotalProject: false,  // Initially hide the report
-//       showAddTimeForm: false,
-//       showAddProjHistory: false,
-//       showAddPersonHistory: false,
-//       showAddTeamHistory: false,
-//     }, () => {
-//       setTimeout(() => {
-//         this.setState({
-//           loading: false,
-//           showTotalProject: true,  // Show the report after loading completes
-//         });
-//       }, 2000);  // Adjust the delay as needed
-//     });
-//   }
+  //   showTotalProject() {
+  //     if (this.state.showTotalProject) {
+  //       this.setState({
+  //         showTotalProject: false,
+  //         loading: false,
+  //       });
+  //       return;
+  //     }
+
+  //     this.setState({
+  //       loading: true,
+  //       showProjects: false,
+  //       showPeople: false,
+  //       showTeams: false,
+  //       showTotalTeam: false,
+  //       showTotalPeople: false,
+  //       showTotalProject: false,  // Initially hide the report
+  //       showAddTimeForm: false,
+  //       showAddProjHistory: false,
+  //       showAddPersonHistory: false,
+  //       showAddTeamHistory: false,
+  //     }, () => {
+  //       setTimeout(() => {
+  //         this.setState({
+  //           loading: false,
+  //           showTotalProject: true,  // Show the report after loading completes
+  //         });
+  //       }, 2000);  // Adjust the delay as needed
+  //     });
+  //   }
   showTotalProject() {
     this.setState(prevState => ({
       showProjects: false,
@@ -417,7 +395,7 @@ class ReportsPage extends Component {
       showAddTeamHistory: false,
     }));
   }
-  
+
   showAddProjHistory() {
     this.setState(prevState => ({
       showProjects: false,
@@ -469,6 +447,27 @@ class ReportsPage extends Component {
       startDate: dates.startDate,
       endDate: dates.endDate,
     });
+  }
+  setActive() {
+    this.setState(state => ({
+      checkActive: 'true',
+    }));
+  }
+
+  setAll() {
+    this.setState(state => ({
+      checkActive: '',
+    }));
+  }
+
+  setInActive() {
+    this.setState(() => ({
+      checkActive: 'false',
+    }));
+  }
+
+  setFilterStatus(status) {
+    this.setState({ checkActive: status });
   }
 
   render() {
@@ -656,22 +655,24 @@ class ReportsPage extends Component {
                     </div>
                   </div>
                   <div>
-                  <div className="total-report-item">
-                    <Button color="info" onClick={this.showTotalTeam}>
-                      {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
-                    </Button>
-                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                      <EditableInfoModal
-                        areaName="totalTeamReportInfoPoint"
-                       areaTitle="Total Team Report"
-                        role={userRole}
-                        fontSize={15}
-                       isPermissionPage
-                        darkMode={darkMode}
-                     />
-                   </div>
-              </div>
-              </div>
+                    <div className="total-report-item">
+                      <Button color="info" onClick={this.showTotalTeam}>
+                        {this.state.showTotalTeam
+                          ? 'Hide Total Team Report'
+                          : 'Show Total Team Report'}
+                      </Button>
+                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                        <EditableInfoModal
+                          areaName="totalTeamReportInfoPoint"
+                          areaTitle="Total Team Report"
+                          role={userRole}
+                          fontSize={15}
+                          isPermissionPage
+                          darkMode={darkMode}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 {myRole != 'Owner' && (
                   <div className="lost-time-container">
@@ -849,12 +850,12 @@ class ReportsPage extends Component {
             )}
             {!this.state.loading && this.state.showTotalProject && (
               <TotalProjectReport
-              startDate={this.state.startDate}
-              endDate={this.state.endDate}
-              userProfiles={userProfiles}
-              projects={projects}
-              darkMode={darkMode}
-            />
+                startDate={this.state.startDate}
+                endDate={this.state.endDate}
+                userProfiles={userProfiles}
+                projects={projects}
+                darkMode={darkMode}
+              />
             )}
             {this.state.showAddTimeForm && myRole === 'Owner' && (
               <AddLostTime
