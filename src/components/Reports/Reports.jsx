@@ -171,7 +171,6 @@ class ReportsPage extends Component {
         // the wild card search, the search text can be match with any item
         (this.state.wildCardSearchText !== '' &&
           searchWithAccent(project.projectName, this.state.wildCardSearchText))
-          searchWithAccent(project.projectName, this.state.wildCardSearchText))
       ) {
         return project;
       }
