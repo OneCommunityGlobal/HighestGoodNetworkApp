@@ -1,15 +1,16 @@
-const { useMemo, useEffect, useState } = require("react");
+const { useMemo, useEffect, useState } = require('react');
 
 /**
  * Check if the dom is in view port
  * @returns {boolean} setIsIntersecting
-*/
-const useIsInViewPort = (ref) => {
+ */
+const useIsInViewPort = ref => {
   const [isIntersecting, setIsIntersecting] = useState(false);
 
-  const observer = useMemo(() =>
-    new IntersectionObserver(([entry]) => setIsIntersecting(entry.isIntersecting))
-  , []);
+  const observer = useMemo(
+    () => new IntersectionObserver(([entry]) => setIsIntersecting(entry.isIntersecting)),
+    [],
+  );
 
   useEffect(() => {
     observer.observe(ref.current);
@@ -18,6 +19,6 @@ const useIsInViewPort = (ref) => {
   }, [ref, observer]);
 
   return isIntersecting;
-}
+};
 
-export default useIsInViewPort
+export default useIsInViewPort;
