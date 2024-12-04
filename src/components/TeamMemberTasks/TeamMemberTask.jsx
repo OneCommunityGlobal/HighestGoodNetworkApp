@@ -208,6 +208,14 @@ const TeamMemberTask = React.memo(
                               fontSize: '20px'
                             }}
                           >{`${user.name}`}</Link>
+
+                       
+                            {user.role !== 'Volunteer' && (
+                              <div className="user-role" style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}>
+                                {user.role}
+                              </div>
+                            )}
+
                           {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
 
                           <Warning
