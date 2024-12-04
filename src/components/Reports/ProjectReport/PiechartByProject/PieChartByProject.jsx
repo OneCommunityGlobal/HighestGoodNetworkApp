@@ -32,7 +32,7 @@ export function PieChartByProject({
 
     const arrData = mergedProjectUsersArray.map(member => {
       const data = {
-        name: `${member.personId.firstName} ${member.personId.lastName}`,
+        name: `${member.personId.firstName}`,
         value: member.totalSeconds/3600,
         projectName,
         totalHoursCalculated,
@@ -46,23 +46,28 @@ export function PieChartByProject({
       const inactiveUsers = mergedProjectUsersArray.filter(member => !member.personId.isActive )
       setInactiveData(inactiveUsers);
 
-      const totalHoursInactive = inactiveUsers.reduce((acc, curr) => {
-        return ((acc + curr.totalSeconds));
-      }, 0) / 3600;
-      setGlobalInactiveHours(totalHoursInactive);
+      if (inactiveUsers.length ===0) {
+        setUserData(noDataPlaceholder)
+      }
+      else {
+        const totalHoursInactive = inactiveUsers.reduce((acc, curr) => {
+          return ((acc + curr.totalSeconds));
+        }, 0) / 3600;
+        setGlobalInactiveHours(totalHoursInactive);
 
-      const inactiveArr = inactiveData.map(member => {
-        const data = {
-          name: `${member.personId.firstName} ${member.personId.lastName}`,
-          value: member.totalSeconds/3600,
-          projectName,
-          totalHoursCalculated: totalHoursInactive,
-          lastName: member.personId.lastName
-        }
-        return data;
-      });
-      const sortedArr = inactiveArr.sort((a, b) => (a.name).localeCompare(b.name))
-      setUserData(sortedArr)
+        const inactiveArr = inactiveData.map(member => {
+          const data = {
+            name: `${member.personId.firstName}`,
+            value: member.totalSeconds/3600,
+            projectName,
+            totalHoursCalculated: totalHoursInactive,
+            lastName: member.personId.lastName
+          }
+          return data;
+        });
+        const sortedArr = inactiveArr.sort((a, b) => (a.name).localeCompare(b.name))
+        setUserData(sortedArr)
+      }
     } else    if (showMembers === true) {
       const activeUsers = mergedProjectUsersArray.filter(member => member.personId.isActive )
       setActiveData(activeUsers);
@@ -74,7 +79,7 @@ export function PieChartByProject({
 
       const activeArr = activeData.map(member => {
         const data = {
-          name: `${member.personId.firstName} ${member.personId.lastName}`,
+          name: `${member.personId.firstName}`,
           value: member.totalSeconds/3600,
           projectName,
           totalHoursCalculated: totalHoursActive,
@@ -123,7 +128,7 @@ export function PieChartByProject({
     name: "No Data",
     value: 1/1000,
     projectName: projectName,
-    totalHoursCalculated: 0,
+    totalHoursCalculated: totalHours,
     lastName: ""
   }];
 
@@ -147,36 +152,27 @@ export function PieChartByProject({
           />
         </div>
 
-        {isChecked && (
-          <div style={{ textAlign: 'left', margin: 'auto' }}>
-            <p style={{ textAlign: 'center' }}>{showMembers === null ? 'All members' : ''}</p>
-            <div className={style.switchSection}>
-            <div 
-              style={{ 
-                wordBreak: 'keep-all', 
-                color: darkMode ? '#fff' : '' /* Text in switch section should be white in dark mode */ 
-              }} 
-              className={style.switchContainer}
-            >
-              <span> Inactive Members</span>
-              <TriMembersStateToggleSwitch value={showMembers} onChange={handleShowMembersChange} />
-              <span> Active Members</span>
-            </div>
+        {isChecked && ( <div style={{textAlign:'left', margin:'auto'}}>
+        <p style={{textAlign:'center'}}>{showMembers === null ? 'All members' : ''}</p>
+        <div className={style.switchSection}>
+        <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}}
+          className={`d-flex flex-row align-items-center justify-content-between ${style.switchContainer}`}>
+          <p className={darkMode ? 'text-light' : 'blue'}>Inactive Members</p>
+          <div className="pr-2">
+            <TriMembersStateToggleSwitch
+              value={showMembers}
+              onChange={handleShowMembersChange}
+            />
           </div>
-          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
-            Total Active Members: {activeData.length} <span> - Hrs Applied: {globalactiveHours.toFixed(2)}</span>
-          </p>
-          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
-            Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: {globalInactiveHours.toFixed(2)}</span>
-          </p>
-          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
-            Total Applied Hours: {totalHours.toFixed(2)}
-          </p>
-          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }}>
-            Total Members: {mergedProjectUsersArray.length}
-          </p>
-          </div>
-        )}
+          <p className={darkMode ? 'text-light' : 'green'}>Active Members</p>
+        </div>
+        </div>
+          <p style={{fontWeight:'bold'}}>Total Active Members:  {activeData.length}  <span> - Hrs Applied: { globalactiveHours.toFixed(2) } </span> </p>
+          <p style={{fontWeight:'bold'}}>Total Inactive Members: {inactiveData.length} <span> - Hrs Applied: { globalInactiveHours.toFixed(2) } </span> </p>
+          <p style={{fontWeight:'bold'}}>Total Applied Hours: {totalHours.toFixed(2)} </p>
+          <p style={{fontWeight:'bold'}}>Total Members:  {mergedProjectUsersArray.length}</p>
+        </div>)}
+
       </div>
         {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
         <ProjectPieChart userData={totalHours > 0 ? userData : noDataPlaceholder} windowSize={windowSize.width} darkMode={darkMode} />
