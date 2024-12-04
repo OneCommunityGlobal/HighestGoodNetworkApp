@@ -72,9 +72,15 @@ const Projects = function(props) {
     setSortedByName(prevState => prevState === clickedId ? "" : clickedId);
   }
 
+  const setInactiveProject = async () => {
+    const updatedProject = { ...projectTarget, isActive: !isActive };
+    await onUpdateProject(updatedProject);
+    onCloseModal();
+  };
+
   const postProject = async (name, category) => {
     await props.postNewProject(name, category);
-    refreshProjects(); // Refresh project list after adding a project
+    await props.fetchAllProjects();
   };
 
   const onCloseModal = () => {
@@ -221,7 +227,7 @@ const Projects = function(props) {
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
-            {canPostProject ? <AddProject hasPermission={hasPermission} /> : null}
+            {canPostProject ? <AddProject hasPermission={hasPermission} onProjectAdded={refreshProjects}/> : null}
           </div>
 
           <SearchProjectByPerson
