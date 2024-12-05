@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import './Collaboration.css';
+import './Collaboration.module.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
