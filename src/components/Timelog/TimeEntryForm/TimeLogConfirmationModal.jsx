@@ -40,3 +40,4 @@ function TimeLogConfirmationModal({ isOpen, toggleModal, onConfirm, onReject, on
 }
 
 export default TimeLogConfirmationModal;
+

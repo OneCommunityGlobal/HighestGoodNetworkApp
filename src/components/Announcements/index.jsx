@@ -6,9 +6,10 @@ import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 
-function Announcements() {
+function Announcements({title, email}) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
+  const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
@@ -79,11 +80,19 @@ function Announcements() {
     content_css: darkMode ? 'dark' : 'default',
   }
 
+  useEffect(() => {
+    if (email) {
+      const trimmedEmail = email.trim();
+      setEmailTo(email);
+      setEmailList(trimmedEmail.split(','));
+    }
+  }, [email]);
+
   const handleEmailListChange = e => {
     const emails = e.target.value.split(',');
     setEmailList(emails);
   };
-  
+
   const handleHeaderContentChange = e => {
     setHeaderContent(e.target.value);
   }
@@ -130,22 +139,22 @@ function Announcements() {
 
   const handleSendEmails = () => {
     const htmlContent = emailContent;
-    
+
     if (emailList.length === 0 || emailList.every(email => !email.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
-  
+
     const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
-    
+
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
       return;
     }
-  
-    dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
+
+    dispatch(sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent));
   };
-  
+
 
   const handleBroadcastEmails = () => {
     const htmlContent = `
@@ -160,7 +169,12 @@ function Announcements() {
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
       <div className="email-update-container">
         <div className="editor">
-          <h3>Weekly Progress Editor</h3>
+          { title ? (
+            <h3> {title} </h3>
+          )
+           :( <h3>Weekly Progress Editor</h3>)
+          }
+
           <br />
           {showEditor && <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
@@ -171,22 +185,38 @@ function Announcements() {
               setEmailContent(content);
             }}
           />}
+        {
+          title ? (
+            ""
+          ) : (
           <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
             Broadcast Weekly Update
           </button>
+          )
+        }
+
         </div>
         <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}  style={darkMode ? boxStyleDark : boxStyle}>
-          <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Email List (comma-separated):
-          </label>
-          <input
-            type="text"
-            id="email-list-input"
-            onChange={handleEmailListChange}
-            className="input-text-for-announcement"
-          />
+          {
+            title ? (
+              <p>Email</p>
+            ) : (
+             
+               <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                 Email List (comma-separated):
+               </label>
+            )
+          }
+          <input type="text" value= {emailTo} id="email-list-input" onChange={ handleEmailListChange} className='input-text-for-announcement' />
+
           <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
-            Send Email to specific user
+          {
+            title ? (
+              "Send Email"
+            ) : (
+              "Send mail to specific users"
+            )
+          }
           </button>
           
             <hr />

@@ -21,10 +21,10 @@ import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import { getUserProfile } from 'actions/userProfile';
-import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
+import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
@@ -203,11 +203,11 @@ const TimeEntryForm = props => {
         if (+target.value < 0 || +target.value > 59) return;
         return setFormValues(formValues => ({ ...formValues, minutes: +target.value }));
       case 'isTangible':
-        // Trigger modal only if trying to check the box to true
+        // Trigger modal on attempting to check the box
         if (target.checked && !formValues.isTangible) {
-          setTimelogConfirmationModalVisible(true);
+            setTimelogConfirmationModalVisible(true);
         } else {
-          setFormValues(prev => ({ ...prev, isTangible: target.checked }));
+            setFormValues(formValues => ({ ...formValues, isTangible: target.checked }));
         }
         break;
       default:
@@ -239,6 +239,7 @@ const TimeEntryForm = props => {
       hasLink,
     }));
   };
+
 
   const validateForm = isTimeModified => {
     const errorObj = {};
