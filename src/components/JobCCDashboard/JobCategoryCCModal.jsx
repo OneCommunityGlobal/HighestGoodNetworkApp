@@ -18,7 +18,7 @@ function JobCategoryCCModal({ categories, onClose, darkMode, onRefresh }) {
 
     setLoading(true);
     try {
-      await axios.post(ENDPOINTS.JOB_NOTIFICATION_LIST, {
+      await axios.post(`${ENDPOINTS.JOB_NOTIFICATION_LIST}/category`, {
         email,
         category: filter,
       });

@@ -17,7 +17,7 @@ function JobCCModal({ job, onClose, darkMode, onRefresh }) {
 
     setLoading(true);
     try {
-      await axios.post(ENDPOINTS.JOB_NOTIFICATION_LIST, {
+      await axios.post(`${ENDPOINTS.JOB_NOTIFICATION_LIST}/job`, {
         email,
         jobId: job._id,
       });
