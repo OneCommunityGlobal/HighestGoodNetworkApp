@@ -7,9 +7,6 @@
   margin-bottom: 1rem;
 }
 
-.table-wrapper-scroll-y {
-  display: relative;
-}
 
 .leaderboard thead th {
   top: 0;
@@ -31,10 +28,6 @@
     margin-bottom: 1rem;
   }
 
-  .table-wrapper-scroll-y {
-    display: relative;
-  }
-
   .leaderboard thead th {
     top: 0;
     border-top: 10px solid #dee2e6;
@@ -49,6 +42,7 @@
 
 .table-fixed tbody td {
   white-space: normal; /* Allow text wrapping within cells */
+  word-break: break-word;
 }
 .table-fixed {
   font-size: 0.93rem;
