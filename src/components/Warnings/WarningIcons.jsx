@@ -9,7 +9,7 @@ function WarningIcons({
   warningText,
   handleModalTriggered,
   numberOfWarnings,
-  disabled,
+  userProfileModal,
 }) {
   const filledWarnings = warnings.concat(Array.from({ length: Math.max(8 - warnings.length, 0) }));
 
@@ -21,12 +21,12 @@ function WarningIcons({
             <WarningIcon
               key={warning._id}
               id={warning._id}
-              disabled={disabled}
               handleWarningIconClicked={handleWarningIconClicked}
               {...warning}
               warningText={warningText}
               handleModalTriggered={handleModalTriggered}
               numberOfWarnings={numberOfWarnings}
+              userProfileModal={userProfileModal}
             />
           );
         }
@@ -34,11 +34,11 @@ function WarningIcons({
           <WarningIcon
             id={uuidv4()}
             key={uuidv4()}
-            disabled={disabled}
             handleWarningIconClicked={handleWarningIconClicked}
             warningText={warningText}
             handleModalTriggered={handleModalTriggered}
             numberOfWarnings={numberOfWarnings}
+            userProfileModal={userProfileModal}
           />
         );
       })}

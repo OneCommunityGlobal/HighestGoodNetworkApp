@@ -12,10 +12,11 @@ function WarningModal({
   deleteWarning,
   numberOfWarnings,
   userProfileHeader,
+  userProfileModal,
 }) {
   const { warningText, username } = warning || {};
 
-  const [times, ordinal] = getOrdinal(numberOfWarnings?.length + 1);
+  const [times, ordinal] = getOrdinal(numberOfWarnings + 1);
   if (deleteWarning) {
     return (
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
@@ -84,13 +85,17 @@ function WarningModal({
             <span className="warning__body--bold">Red</span>
           </p>
 
-          <div className="warning__modal__userprofile">
-            <WarningItem
-              warnings={warning.warnings}
-              userProfileWarnings={true}
-              warningText={warning.title}
-            />
-          </div>
+          {userProfileModal && (
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+              }}
+            >
+              <WarningItem warnings={warning.warnings} userProfileModal={true} />
+            </div>
+          )}
         </ModalBody>
 
         <ModalFooter className="warning-modal-footer">

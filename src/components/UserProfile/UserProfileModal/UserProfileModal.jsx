@@ -189,12 +189,13 @@ const UserProfileModal = props => {
     <>
       {displayWarningModal && (
         <WarningModal
-          numberOfWarnings={warningType.warnings}
+          numberOfWarnings={warningType.warnings.length}
           warning={warningType}
           visible={displayWarningModal}
           setToggleModal={() => setDisplayWarningModal(false)}
           handleIssueWarning={handleLogNewWarning}
           userProfileHeader={true}
+          userProfileModal={true}
         />
       )}
 
