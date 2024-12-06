@@ -42,10 +42,11 @@
 
 .table-fixed tbody td {
   white-space: normal; /* Allow text wrapping within cells */
-  word-break: break-word;
 }
+
 .table-fixed {
   font-size: 0.93rem;
+  word-break: break-word;
 }
 
 .animation {
