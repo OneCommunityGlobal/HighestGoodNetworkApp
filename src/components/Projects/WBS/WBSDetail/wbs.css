@@ -272,8 +272,15 @@
   width: 6%; 
 }
 
-.modal-content{
-  overflow: visible;
+.text-dark.end-modal-dt .DayPickerInput{
+  position: relative;
+}
+
+.text-dark.end-modal-dt .DayPickerInput-OverlayWrapper{
+  position: absolute;
+  bottom: 18.70em;
+  left: -5em; 
+  z-index: 9999;
 }
 
 @media (max-width: 768px) { /* arranging the buttons */

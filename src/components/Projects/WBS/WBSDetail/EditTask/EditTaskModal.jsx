@@ -692,7 +692,7 @@ function EditTaskModal(props) {
                 <td scope="col">Start Date</td>
                 <td>
                 {ReadOnlySectionWrapper(
-                  <div className='text-dark'>
+                  <div className='text-dark end-modal-dt'>
                     <DayPickerInput
                       format={FORMAT}
                       formatDate={formatDate}
@@ -713,7 +713,7 @@ function EditTaskModal(props) {
                 <td scope="col">End Date</td>
                   <td>
                     {ReadOnlySectionWrapper(
-                      <div className='text-dark'>
+                      <div className='text-dark end-modal-dt'>
                         <DayPickerInput
                           format={FORMAT}
                           formatDate={formatDate}
