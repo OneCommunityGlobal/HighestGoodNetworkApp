@@ -98,6 +98,18 @@ export const permissionLabels = [
           'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
       },
       {
+        label: 'Toggle Invisibility Permission Self and Others',
+        key: 'toggleInvisibility',
+        description:
+          'Gives the user permission to change the invisibility toggle for themselves and others',
+      },
+      {
+        label: 'Handle Blue Squares',
+        key: 'infringementAuthorizer',
+        description:
+          'Gives the user permission to Create/Edit/Delete any blue square and assign them to any user.',
+      },
+      {
         label: 'Assign Blue Squares',
         key: 'addInfringements',
         description: 'Gives the user permission to add blue squares to any user.',

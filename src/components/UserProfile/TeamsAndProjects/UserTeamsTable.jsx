@@ -1,4 +1,5 @@
 import { React, useState, useEffect, useRef } from 'react';
+import { Button, Col, Tooltip } from 'reactstrap';
 import { Button, Col, Tooltip, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
@@ -6,6 +7,10 @@ import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
+import Switch from './Switch';
+import './TeamsAndProjects.css';
+import './UserTeamsTable.css';
+
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
 import './../../Teams/Team.css';
 import { TeamMember } from './TeamMember';
@@ -131,6 +136,23 @@ const UserTeamsTable = props => {
   };
 
   return (
+    <div>
+      {innerWidth >= 1025 ? (
+        <div className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
+          <div className="container" style={{ paddingLeft: '4px', paddingRight: '4px' }}>
+            {props.canEditVisibility && (
+              <div className="row ml-1">
+                <Col md="7">
+                  <span className="teams-span">Visibility</span>
+                </Col>
+                <Col md='5'>
+                  <Switch
+                    isOn={props.isVisible}
+                    handleToggle={props.onUserVisibilitySwitch }
+                  
+                  />
+                </Col>
+              </div>
 
     <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
       <TeamMember
