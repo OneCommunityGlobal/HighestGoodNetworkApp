@@ -9,6 +9,7 @@ function WarningIcons({
   warningText,
   handleModalTriggered,
   numberOfWarnings,
+  userProfileModal,
 }) {
   const filledWarnings = warnings.concat(Array.from({ length: Math.max(8 - warnings.length, 0) }));
 
@@ -25,6 +26,7 @@ function WarningIcons({
               warningText={warningText}
               handleModalTriggered={handleModalTriggered}
               numberOfWarnings={numberOfWarnings}
+              userProfileModal={userProfileModal}
             />
           );
         }
@@ -36,6 +38,7 @@ function WarningIcons({
             warningText={warningText}
             handleModalTriggered={handleModalTriggered}
             numberOfWarnings={numberOfWarnings}
+            userProfileModal={userProfileModal}
           />
         );
       })}

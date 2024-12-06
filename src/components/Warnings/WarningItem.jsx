@@ -13,6 +13,7 @@ function WarningItem({
   username,
   handleDeleteWarning,
   submitWarning,
+  userProfileModal,
 }) {
   const [toggleModal, setToggleModal] = useState(false);
   const [warning, setWarning] = useState(null);
@@ -53,6 +54,7 @@ function WarningItem({
           handleWarningIconClicked={handlePostWarningDetails}
           handleModalTriggered={handleModalTriggered}
           numberOfWarnings={warnings.length}
+          userProfileModal={userProfileModal}
         />
         <p className="warning-text"> {warningText}</p>
       </div>
