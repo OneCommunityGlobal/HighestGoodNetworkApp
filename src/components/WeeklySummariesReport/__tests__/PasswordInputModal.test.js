@@ -42,7 +42,7 @@ describe('PasswordInputModal', () => {
           setAuthpassword={mockSetAuthpassword}
           authEmailWeeklySummaryRecipient="test@example.com"
         />
-      </Provider>
+      </Provider>,
     );
 
   test('renders the modal with input field and buttons', () => {
@@ -96,7 +96,7 @@ describe('PasswordInputModal', () => {
       expect(mockSetSummaryRecepientsPopup).toHaveBeenCalledWith(true);
       expect(mockOnClose).toHaveBeenCalled();
       expect(toast.success).toHaveBeenCalledWith(
-        'Authorization successful! Please wait to see Recipients table!'
+        'Authorization successful! Please wait to see Recipients table!',
       );
     });
   });
