@@ -35,9 +35,9 @@ thead {
   text-align: start;
 }
 
-.teams__overview--top {
+/*.teams__overview--top {
   background: gray;
-}
+} */
 
 .teams__overview--top .card {
   width: 200px;
@@ -131,7 +131,7 @@ tr:hover {
   }
 }
 
-body.modal-open {
+body.open-team-members-popup-modal {
   overflow: hidden;
   position: fixed;
   width: 100%;

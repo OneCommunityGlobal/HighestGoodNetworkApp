@@ -15,6 +15,8 @@ import InfoModal from './InfoModal';
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
+  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
+
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
@@ -190,7 +192,7 @@ export const TeamMembersPopup = React.memo(props => {
         toggle={closePopup}
         autoFocus={false}
         size="lg"
-        className={darkMode ? 'dark-mode text-light' : ''}
+        className={`${darkMode ? 'dark-mode text-light' : ''} ${props.open ? ' open-team-members-popup-modal' : ''}`}
       >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet' : ''}
@@ -281,6 +283,9 @@ export const TeamMembersPopup = React.memo(props => {
                               {user.firstName} {user.lastName} ({user.role})
                             </span>
                           )}{' '}
+                          {hasVisibilityIconPermission && !user.isVisible && (  // Invisibility icon from 'Cillian'
+                            <i className="fa fa-eye-slash" title="User is invisible" />
+                          )}
                         </td>
                         {/* <td>{user}</td> */}
                         <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>

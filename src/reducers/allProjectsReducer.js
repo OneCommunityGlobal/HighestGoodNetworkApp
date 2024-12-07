@@ -40,12 +40,16 @@ export const allProjectsReducer = (allProjects = allProjectsInital, action) => {
       if (status !== 200) return updateState({ status, error });
       const { updatedProject } = action;
       index = allProjects.projects.findIndex(project => project._id === updatedProject._id);
-      projects = Object.assign([
-        ...allProjects.projects.slice(0, index),
-        updatedProject,
-        ...allProjects.projects.slice(index + 1),
-      ]);
-      return updateState({ projects, status });
+      if (index !== -1) {
+        projects = [
+          ...allProjects.projects.slice(0, index),
+          updatedProject,
+          ...allProjects.projects.slice(index + 1),
+        ];
+        return updateState({ projects, status });
+      } else {
+        return updateState({ status: 404, error: "Project not found." });
+      }
     case types.DELETE_PROJECT:
       if (status !== 200) return updateState({ status, error });
       const { projectId } = action;
