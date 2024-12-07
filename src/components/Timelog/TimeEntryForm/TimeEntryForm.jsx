@@ -203,13 +203,7 @@ const TimeEntryForm = props => {
         if (+target.value < 0 || +target.value > 59) return;
         return setFormValues(formValues => ({ ...formValues, minutes: +target.value }));
       case 'isTangible':
-        // Trigger modal on attempting to check the box
-        if (target.checked && !formValues.isTangible) {
-            setTimelogConfirmationModalVisible(true);
-        } else {
-            setFormValues(formValues => ({ ...formValues, isTangible: target.checked }));
-        }
-        break;
+        return setFormValues(formValues => ({ ...formValues, isTangible: target.checked }));
       default:
         return setFormValues(formValues => ({ ...formValues, [target.name]: target.value }));
     }
@@ -301,28 +295,37 @@ const TimeEntryForm = props => {
     if (closed === true && isOpen) toggle();
   };
 
-  const handleSubmit = async event => {
-    event.preventDefault();
+  const handleSubmit = async (event) => {
+    if (event) {
+      event.preventDefault();
+    }
     setSubmitting(true);
-
+  
     if (edit && isEqual(formValues, initialFormValues)) {
       toast.info(`Nothing is changed for this time entry`);
       setSubmitting(false);
       return;
     }
+    
+    if (!formValues.isTangible) {
+      setTimelogConfirmationModalVisible(true);
+      setSubmitting(false);
+      return;
+    }
+  
+    await submitTimeEntry();
+  };
 
+  const submitTimeEntry = async () => {
     const { hours: formHours, minutes: formMinutes } = formValues;
-
+    const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
-
+  
     if (!validateForm(isTimeModified)) {
       setSubmitting(false);
       return;
     }
-
-    // Construct the timeEntry object
-    const timeEntry = { ...formValues };
-
+  
     try {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
@@ -372,17 +375,18 @@ const TimeEntryForm = props => {
     } catch (error) {
       toast.error(`An error occurred while attempting to submit your time entry. Error: ${error}`);
       setSubmitting(false);
-    }
+    };
   };
 
-  const handleTangibleTimelogConfirm = () => {
-    setFormValues(prev => ({...prev, isTangible: true}));
+  const handleTangibleTimelogConfirm = async () => {
     setTimelogConfirmationModalVisible(false);
-  }
-
+    await submitTimeEntry();
+  };
+  
+  // When user cancels the operation
   const handleTangibleTimelogCancel = () => {
     setTimelogConfirmationModalVisible(false);
-  }
+  };
 
   const tangibleInfoModalToggle = e => {
     e.preventDefault();
@@ -709,7 +713,7 @@ const TimeEntryForm = props => {
         toggleModal={handleTangibleTimelogCancel}
         onConfirm={handleTangibleTimelogConfirm}
         onReject={handleTangibleTimelogCancel}
-        onIntangible={handleTangibleTimelogCancel}
+        onIntangible={handleTangibleTimelogConfirm}
         darkMode={darkMode}
       />
     </>
