@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './style.css';
 import './reviewButton.css';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -9,13 +9,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
 import { ApiEndpoint } from 'utils/URL';
+import hasPermission from 'utils/permissions';
 
 const ReviewButton = ({
   user,
   task,
   updateTask,
-  userPermission, 
 }) => {
+  const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode)
   const [linkError, setLinkError] = useState(null);
   const myUserId = useSelector(state => state.auth.user.userid);
@@ -24,6 +25,7 @@ const ReviewButton = ({
   const [link, setLink] = useState("");
   const [verifyModal, setVerifyModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
+  const canReview = (dispatch(hasPermission('putReviewStatus')));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false); // New state for the final confirmation modal
 
@@ -143,7 +145,7 @@ const ReviewButton = ({
         Submit for Review
       </Button>;
      } else if (reviewStatus === "Submitted")  {
-      if (myRole === "Owner" ||myRole === "Administrator" || myRole === "Mentor" || myRole === "Manager" || userPermission) {
+      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || canReview) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
