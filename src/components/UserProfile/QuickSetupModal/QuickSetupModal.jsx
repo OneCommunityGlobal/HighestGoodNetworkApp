@@ -39,8 +39,10 @@ function QuickSetupModal(props) {
     getAllTitle()
       .then(res => {
         setTitles(res.data);
-        props.setUserProfile(props.userProfile);
-        props.setUserProfile(prev => ({ ...prev, adminLinks }));
+        props.setUserProfile(prev => ({
+          ...prev,
+          adminLinks,
+        }));
       })
       .catch(err => console.log(err));
   };

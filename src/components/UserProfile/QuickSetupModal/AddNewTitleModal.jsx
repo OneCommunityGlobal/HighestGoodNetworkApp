@@ -74,12 +74,13 @@ function AddNewTitleModal({
   }, [title]);
 
   useEffect(() => {
-    const titleCode = titleData.titleName.slice(0, 5);
-    setTitleData(prev => ({
-      ...prev,
-      titleCode,
-    }));
-  }, [titleData.titleName]);
+    if (!editMode) {
+      setTitleData(prev => ({
+        ...prev,
+        titleCode: prev.titleName.slice(0, 5),
+      }));
+    }
+  }, [titleData.titleName, editMode]);
 
   let existTeamCodes = new Set();
   let existTeamName = new Set();
@@ -172,6 +173,13 @@ function AddNewTitleModal({
     }
 
     if (editMode) {
+      if (!titleData.id) {
+        console.error('ID is missing in the title data. Cannot proceed.');
+        setWarningMessage({ title: 'Error', content: 'ID is required for updating the title.' });
+        setShowMessage(true);
+        return;
+      }
+
       editTitle(titleData)
         .then(resp => {
           if (resp.status !== 200) {
@@ -201,6 +209,11 @@ function AddNewTitleModal({
         });
     }
   };
+
+  const validateTitleCode = (titleCode) => {
+    const titleCodePattern = /^[a-zA-Z0-9\-+!%><]*$/;
+    return titleCodePattern.test(titleCode);
+};
 
   const onTeamCodeValidation = teamCode => {
     const format1 = /^[A-Za-z]-[A-Za-z]{3}$/;
@@ -277,8 +290,17 @@ function AddNewTitleModal({
               id="titleCode"
               value={titleData.titleCode}
               onChange={e => {
-                e.persist();
-                setTitleData({ ...titleData, titleCode: e.target.value });
+                const { value } = e.target;
+                if (validateTitleCode(value)) {
+                  setTitleData({ ...titleData, titleCode: value });
+                } else {
+                  setWarningMessage({
+                    title: 'Error',
+                    content:
+                      'Invalid Title Code: Only letters, numbers, and -,+,!,%,>,< are allowed.',
+                  });
+                  setShowMessage(true);
+                }
               }}
               maxLength={5}
             />
