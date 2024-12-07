@@ -1,4 +1,4 @@
-import React, { Component, createRef } from 'react';
+import React, { Component, useEffect } from 'react';
 import { connect } from 'react-redux';
 import moment from 'moment';
 import { Container, Button } from 'reactstrap';
@@ -24,12 +24,11 @@ import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/DarkMode.css';
+import '../Header/DarkMode.css'
+const DATE_PICKER_MIN_DATE = '01/01/2010';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 import Loading from '../common/Loading';
-
-const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
   constructor(props) {
@@ -104,10 +103,6 @@ class ReportsPage extends Component {
     this.setTeamMemberList = this.setTeamMemberList.bind(this);
     this.setAddTime = this.setAddTime.bind(this);
     this.setRemainedTeams = this.setRemainedTeams.bind(this);
-    this.projectTableRef = createRef();
-    this.peopleTableRef = createRef();
-    this.teamsTableRef = createRef();
-    this.debouncedSearch = this.debounce(this.handleSearch, 1500);
     this.setFilterStatus = this.setFilterStatus.bind(this);
     this.onWildCardSearch = this.onWildCardSearch.bind(this);
     this.onDateChange = this.onDateChange.bind(this);
@@ -117,53 +112,24 @@ class ReportsPage extends Component {
     this.props.fetchAllProjects(); // Fetch to get all projects
     this.props.getAllUserTeams();
     this.props.getUserProfileBasicInfo();
-    this.setState({
-      showProjects: false,
-      showPeople: false,
-      showTeams: false,
-      checkActive: '',
-    });
-    this.props.getAllUserProfile();
   }
 
-  handleSearch = () => {
-    if (this.state.showPeople && this.state.peopleSearchData.length > 0) {
-      this.scrollToRefIfNarrowScreen(this.peopleTableRef);
-    } else if (this.state.showProjects && this.state.projectSearchData.length > 0) {
-      this.scrollToRefIfNarrowScreen(this.projectTableRef);
-    } else if (this.state.showTeams && this.state.teamSearchData.length > 0) {
-      this.scrollToRefIfNarrowScreen(this.teamsTableRef);
-    }
-  };
-
-  debounce = (func, wait) => {
-    let timeout;
-    return (...args) => {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(this, args), wait);
-    };
-  };
+  setFilterStatus(status) {
+    this.setState({ checkActive: status });
+  }
 
   /**
    * callback for search
    */
-  onWildCardSearch = searchText => {
-    this.setState(
-      {
-        wildCardSearchText: searchText,
-      },
-      () => {
-        this.debouncedSearch();
-      },
-    );
-  };
+  onWildCardSearch(searchText) {
+    this.setState({ wildCardSearchText: searchText });
+  }
 
   filteredProjectList = projects => {
     const filteredList = projects.filter(project => {
       // Applying the search filters before creating each team table data element
       if (
         (project.projectName &&
-          searchWithAccent(project.projectName, this.state.teamNameSearchText) &&
           searchWithAccent(project.projectName, this.state.teamNameSearchText) &&
           this.state.wildCardSearchText === '') ||
         // the wild card search, the search text can be match with any item
@@ -199,7 +165,7 @@ class ReportsPage extends Component {
 
   filteredPeopleList = userProfiles => {
     const filteredList = userProfiles.filter(userProfile => {
-      // Applying the search filters before creating each team table data element
+      // Applying the search filters before creating each team table data element 
       if (
         (userProfile.firstName &&
           searchWithAccent(userProfile.firstName, this.state.teamNameSearchText) &&
@@ -221,6 +187,24 @@ class ReportsPage extends Component {
 
     return filteredList;
   };
+
+  setActive() {
+    this.setState(state => ({
+      checkActive: 'true',
+    }));
+  }
+
+  setAll() {
+    this.setState(state => ({
+      checkActive: '',
+    }));
+  }
+
+  setInActive() {
+    this.setState(() => ({
+      checkActive: 'false',
+    }));
+  }
 
   setTeamMemberList(list) {
     this.setState(() => ({
@@ -249,76 +233,49 @@ class ReportsPage extends Component {
     }));
   }
 
-  scrollToRefIfNarrowScreen = (ref, threshold = 900) => {
-    if (ref.current && window.innerWidth < threshold) {
-      ref.current.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
-
   showProjectTable() {
-    this.setState(
-      prevState => ({
-        showProjects: !prevState.showProjects,
-        showPeople: false,
-        showTeams: false,
-        showTotalProject: false,
-        showTotalTeam: false,
-        showTotalPeople: false,
-        showAddTimeForm: false,
-        showAddProjHistory: false,
-        showAddPersonHistory: false,
-        showAddTeamHistory: false,
-      }),
-      () => {
-        if (this.state.showProjects) {
-          this.scrollToRefIfNarrowScreen(this.projectTableRef);
-        }
-      },
-    );
+    this.setState(prevState => ({
+      showProjects: !prevState.showProjects,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+    }));
   }
 
   showTeamsTable() {
-    this.setState(
-      prevState => ({
-        showProjects: false,
-        showPeople: false,
-        showTeams: !prevState.showTeams,
-        showTotalProject: false,
-        showTotalTeam: false,
-        showTotalPeople: false,
-        showAddTimeForm: false,
-        showAddProjHistory: false,
-        showAddPersonHistory: false,
-        showAddTeamHistory: false,
-      }),
-      () => {
-        if (this.state.showTeams) {
-          this.scrollToRefIfNarrowScreen(this.teamsTableRef);
-        }
-      },
-    );
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: !prevState.showTeams,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+    }));
   }
 
   showPeopleTable() {
-    this.setState(
-      prevState => ({
-        showProjects: false,
-        showPeople: !prevState.showPeople,
-        showTeams: false,
-        showTotalProject: false,
-        showTotalTeam: false,
-        showTotalPeople: false,
-        showAddTimeForm: false,
-        showAddProjHistory: false,
-        showAddPersonHistory: false,
-        showAddTeamHistory: false,
-      }),
-      () => {
-        if (this.state.showPeople) {
-          this.scrollToRefIfNarrowScreen(this.peopleTableRef);
-        }
-      },
-    );
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: !prevState.showPeople,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: false,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+    }));
   }
 
   showTotalPeople() {
@@ -351,36 +308,36 @@ class ReportsPage extends Component {
     }));
   }
 
-  //   showTotalProject() {
-  //     if (this.state.showTotalProject) {
-  //       this.setState({
-  //         showTotalProject: false,
-  //         loading: false,
-  //       });
-  //       return;
-  //     }
-
-  //     this.setState({
-  //       loading: true,
-  //       showProjects: false,
-  //       showPeople: false,
-  //       showTeams: false,
-  //       showTotalTeam: false,
-  //       showTotalPeople: false,
-  //       showTotalProject: false,  // Initially hide the report
-  //       showAddTimeForm: false,
-  //       showAddProjHistory: false,
-  //       showAddPersonHistory: false,
-  //       showAddTeamHistory: false,
-  //     }, () => {
-  //       setTimeout(() => {
-  //         this.setState({
-  //           loading: false,
-  //           showTotalProject: true,  // Show the report after loading completes
-  //         });
-  //       }, 2000);  // Adjust the delay as needed
-  //     });
-  //   }
+//   showTotalProject() {
+//     if (this.state.showTotalProject) {
+//       this.setState({
+//         showTotalProject: false,
+//         loading: false,
+//       });
+//       return;
+//     }
+  
+//     this.setState({
+//       loading: true,
+//       showProjects: false,
+//       showPeople: false,
+//       showTeams: false,
+//       showTotalTeam: false,
+//       showTotalPeople: false,
+//       showTotalProject: false,  // Initially hide the report
+//       showAddTimeForm: false,
+//       showAddProjHistory: false,
+//       showAddPersonHistory: false,
+//       showAddTeamHistory: false,
+//     }, () => {
+//       setTimeout(() => {
+//         this.setState({
+//           loading: false,
+//           showTotalProject: true,  // Show the report after loading completes
+//         });
+//       }, 2000);  // Adjust the delay as needed
+//     });
+//   }
   showTotalProject() {
     this.setState(prevState => ({
       showProjects: false,
@@ -395,7 +352,7 @@ class ReportsPage extends Component {
       showAddTeamHistory: false,
     }));
   }
-
+  
   showAddProjHistory() {
     this.setState(prevState => ({
       showProjects: false,
@@ -447,27 +404,6 @@ class ReportsPage extends Component {
       startDate: dates.startDate,
       endDate: dates.endDate,
     });
-  }
-  setActive() {
-    this.setState(state => ({
-      checkActive: 'true',
-    }));
-  }
-
-  setAll() {
-    this.setState(state => ({
-      checkActive: '',
-    }));
-  }
-
-  setInActive() {
-    this.setState(() => ({
-      checkActive: 'false',
-    }));
-  }
-
-  setFilterStatus(status) {
-    this.setState({ checkActive: status });
   }
 
   render() {
@@ -525,6 +461,12 @@ class ReportsPage extends Component {
         >
           <div className="container-component-category">
             <h2 className="mt-3 mb-5">
+                {/* Loading spinner at the top */}
+                {this.state.loading && (
+                <div className="loading-spinner-top">
+                  <Loading align="center" darkMode={darkMode} />
+                </div>
+              )}
               <div className="d-flex align-items-center">
                 <span className="mr-2">Reports Page</span>
                 <EditableInfoModal
@@ -534,6 +476,7 @@ class ReportsPage extends Component {
                   fontSize={26}
                   isPermissionPage
                   className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                  darkMode={darkMode}
                 />
               </div>
             </h2>
@@ -655,24 +598,22 @@ class ReportsPage extends Component {
                     </div>
                   </div>
                   <div>
-                    <div className="total-report-item">
-                      <Button color="info" onClick={this.showTotalTeam}>
-                        {this.state.showTotalTeam
-                          ? 'Hide Total Team Report'
-                          : 'Show Total Team Report'}
-                      </Button>
-                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                        <EditableInfoModal
-                          areaName="totalTeamReportInfoPoint"
-                          areaTitle="Total Team Report"
-                          role={userRole}
-                          fontSize={15}
-                          isPermissionPage
-                          darkMode={darkMode}
-                        />
-                      </div>
-                    </div>
-                  </div>
+                  <div className="total-report-item">
+                    <Button color="info" onClick={this.showTotalTeam}>
+                      {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
+                    </Button>
+                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                      <EditableInfoModal
+                        areaName="totalTeamReportInfoPoint"
+                       areaTitle="Total Team Report"
+                        role={userRole}
+                        fontSize={15}
+                       isPermissionPage
+                        darkMode={darkMode}
+                     />
+                   </div>
+              </div>
+              </div>
                 </div>
                 {myRole != 'Owner' && (
                   <div className="lost-time-container">
@@ -850,12 +791,12 @@ class ReportsPage extends Component {
             )}
             {!this.state.loading && this.state.showTotalProject && (
               <TotalProjectReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfiles}
-                projects={projects}
-                darkMode={darkMode}
-              />
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              userProfiles={userProfiles}
+              projects={projects}
+              darkMode={darkMode}
+            />
             )}
             {this.state.showAddTimeForm && myRole === 'Owner' && (
               <AddLostTime
