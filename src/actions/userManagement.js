@@ -85,15 +85,15 @@ export const updateUserStatus = (user, status, reactivationDate) => {
  * @param{boolean} isRehireable - the new rehireable status
  */
 export const updateRehireableStatus = (user, isRehireable) => {
-  const userProfile = { ...user };
-  userProfile.isRehireable = isRehireable
-  const requestData = { isRehireable };
-  
-  const updateProfilePromise = axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData)
   return async dispatch => {
-    updateProfilePromise.then(res => {
+    const userProfile = { ...user, isRehireable };
+    const requestData = { isRehireable };
+    try {
+      await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
       dispatch(userProfileUpdateAction(userProfile));
-    });
+    } catch (err) {
+      throw err;
+    }
   };
 };
 
