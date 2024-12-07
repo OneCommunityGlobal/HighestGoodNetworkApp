@@ -18,6 +18,10 @@ import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
 import '../../../../Header/DarkMode.css'
+import {
+  START_DATE_ERROR_MESSAGE,
+  END_DATE_ERROR_MESSAGE,
+} from '../../../../../languages/en/messages.js';
 
 function EditTaskModal(props) {
   /*
@@ -56,6 +60,8 @@ function EditTaskModal(props) {
   const [dueDate, setDueDate] = useState();
   const [dateWarning, setDateWarning] = useState(false);
   const [currentMode, setCurrentMode] = useState("");
+  const [startDateError, setStartDateError] = useState(false);
+  const [endDateError, setEndDateError] = useState(false);
 
   const res = [...(resourceItems || [])];
   const categoryOptions = [
@@ -138,25 +144,29 @@ function EditTaskModal(props) {
     }
   };
 
-  const changeDateStart = startDate => {
-    setStartedDate(startDate);
-    if (dueDate) {
-      if (startDate > dueDate) {
-        setDateWarning(true);
+  const changeDateStart = startedDate => {
+    setStartedDate(startedDate);
+    const endDateTime = dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''
+    if (endDateTime) {
+      if (startedDate > endDateTime) {
+        setStartDateError(true); 
       } else {
-        setDateWarning(false);
+        setStartDateError(false); 
       }
     }
+    setEndDateError(false);
   };
   const changeDateEnd = dueDate => {
     setDueDate(dueDate);
+    const startDateTime = startedDate ? dateFnsFormat(new Date(startedDate), FORMAT) : ''
     if (startedDate) {
-      if (dueDate < startedDate) {
-        setDateWarning(true);
+      if (dueDate !== startDateTime && dueDate < startDateTime) {
+        setEndDateError(true);
       } else {
-        setDateWarning(false);
+        setEndDateError(false);
       }
     }
+    setStartDateError(false); 
   };
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   const parseDate = (str, format, locale) => {
@@ -170,6 +180,8 @@ function EditTaskModal(props) {
   const addLink = () => {
     setLinks([...links, link]);
     setLink('');
+    setStartDateError(false);
+    setEndDateError(false);
   };
   const removeLink = index => {
     setLinks([...links.splice(0, index), ...links.splice(index + 1)]);
@@ -274,6 +286,15 @@ function EditTaskModal(props) {
     ReactTooltip.rebuild();
   }, [links]);
 
+  useEffect(() => {
+    if (!modal) {
+      setStartedDate('');
+      setDueDate('');
+      setStartDateError(false);
+      setEndDateError(false);
+    }
+  }, [modal]);
+
   return (
     <div className="text-center">
       <Modal isOpen={modal} toggle={toggle} className={darkMode ? 'dark-mode text-light' : ''}>
@@ -281,7 +302,7 @@ function EditTaskModal(props) {
         <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
           {currentMode}
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode no-hover' : ''}>
           <table
             className={`table table-bordered responsive
             ${canUpdateTask || canSuggestTask ? null : 'disable-div'} 
@@ -680,10 +701,10 @@ function EditTaskModal(props) {
                       formatDate={formatDate}
                       placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                       onDayChange={(day, mod, input) => changeDateStart(input.state.value)}
-                      value={startedDate}
+                      value={startedDate ? dateFnsFormat(new Date(startedDate), FORMAT) : ''}
                     />
                     <div className='warning text-danger'>
-                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                      {startDateError ? START_DATE_ERROR_MESSAGE : ''}
                     </div>
                   </div>,
                   editable,
@@ -701,10 +722,10 @@ function EditTaskModal(props) {
                           formatDate={formatDate}
                           placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                           onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                          
+                          value={dueDate ? dateFnsFormat(new Date(dueDate), FORMAT) : ''} 
                         />
                         <div className='warning text-danger'>
-                          {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                          {endDateError ? END_DATE_ERROR_MESSAGE : ''}
                         </div>
                       </div>,
                       editable,
@@ -718,7 +739,7 @@ function EditTaskModal(props) {
         {canUpdateTask || canSuggestTask ? (
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask} style={darkMode ? boxStyleDark : boxStyle}>
+              <Button color="primary" onClick={updateTask} disabled={startDateError || endDateError} style={darkMode ? boxStyleDark : boxStyle} >
                 Update
               </Button>
             ) : null}
