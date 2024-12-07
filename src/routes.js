@@ -42,6 +42,7 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
+import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -343,6 +344,7 @@ export default (
         <Route path="/email-subscribe" component={EmailSubscribeForm} />
         <Route path="/email-unsubscribe" component={UnsubscribeForm} />
         <Route path="/collaboration" component={Collaboration} />
+        <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
