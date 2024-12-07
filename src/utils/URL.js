@@ -213,8 +213,8 @@ export const ENDPOINTS = {
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
-  GET_ALL_JOB_FORMS : `${APIEndpoint}/jobforms/all`,
-  GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`
+  GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
+  GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
 };
 
 export const ApiEndpoint = APIEndpoint;
