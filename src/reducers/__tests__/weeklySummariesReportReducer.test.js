@@ -43,4 +43,45 @@ describe('weeklySummariesReportReducer', () => {
     };
     expect(weeklySummariesReportReducer(initialState, action)).toEqual(expectedState);
   });
+
+  it('should handle FETCH_SUMMARIES_REPORT_ERROR', () => {
+    const mockError = 'Failed to fetch summaries.';
+    const action = {
+      type: FETCH_SUMMARIES_REPORT_ERROR,
+      payload: { error: mockError },
+    };
+    const expectedState = {
+      ...initialState,
+      loading: false,
+      error: mockError,
+    };
+    expect(weeklySummariesReportReducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should handle UPDATE_SUMMARY_REPORT', () => {
+    const initialStateWithSummaries = {
+      summaries: [
+        { _id: '1', data: 'summary1' },
+        { _id: '2', data: 'summary2' },
+      ],
+      loading: false,
+      error: null,
+    };
+
+    const updatedField = { data: 'updatedSummary2' };
+    const action = {
+      type: UPDATE_SUMMARY_REPORT,
+      payload: { _id: '2', updatedField },
+    };
+
+    const expectedState = {
+      ...initialStateWithSummaries,
+      summaries: [
+        { _id: '1', data: 'summary1' },
+        { _id: '2', data: 'updatedSummary2' },
+      ],
+    };
+
+    expect(weeklySummariesReportReducer(initialStateWithSummaries, action)).toEqual(expectedState);
+  });
 });
