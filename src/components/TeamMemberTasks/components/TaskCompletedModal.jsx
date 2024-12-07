@@ -26,11 +26,23 @@ const TaskCompletedModal = React.memo(props => {
       }
       return newResource;
     });
-
+  
     const updatedTask = { ...task, resources: newResources };
+  
+    
     props.updateTask(task._id, updatedTask);
+  
+    
+    if (props.setUpdatedTasks) {
+      props.setUpdatedTasks(prevTasks =>
+        prevTasks.map(t => (t._id === task._id ? updatedTask : t))
+      );
+    }
+  
     toast.success("Task is successfully marked as done.");
   };
+  
+  
 
   const removeUserFromTask = task => {
     const newResources = task.resources.filter(item => item.userID !== props.userId);
@@ -40,10 +52,21 @@ const TaskCompletedModal = React.memo(props => {
     toast.success("User has been removed from the task successfully.");
   };
 
-  const handleClick = ()=>{
+ 
+
+  const handleClick = () => {
+    const scrollY = window.scrollY; // Save scroll position
     closeFunction();
-    props.taskModalOption === 'Checkmark' ? removeTaskFromUser(props.task) : removeUserFromTask(props.task);
-  }
+  
+    if (props.taskModalOption === 'Checkmark') {
+      removeTaskFromUser(props.task);
+    } else {
+      removeUserFromTask(props.task);
+    }
+  
+    window.scrollTo(0, scrollY); 
+  };
+  
 
   let isCheckmark = props.taskModalOption === 'Checkmark';
   let modalHeader = isCheckmark ? 'Mark as Done' : 'Remove User from Task';
