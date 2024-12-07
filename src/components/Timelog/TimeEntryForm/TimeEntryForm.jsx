@@ -307,7 +307,7 @@ const TimeEntryForm = props => {
       return;
     }
     
-    if (!formValues.isTangible) {
+    if (!edit && !formValues.isTangible) {
       setTimelogConfirmationModalVisible(true);
       setSubmitting(false);
       return;
@@ -383,7 +383,6 @@ const TimeEntryForm = props => {
     await submitTimeEntry();
   };
   
-  // When user cancels the operation
   const handleTangibleTimelogCancel = () => {
     setTimelogConfirmationModalVisible(false);
   };
