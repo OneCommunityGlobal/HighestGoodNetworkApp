@@ -394,37 +394,49 @@ const BasicInformationTab = props => {
   };
 
   const permissionLabelPermissions = getValidPermissions(permissionLabels);
-  const getCurrentUserPermissions = (permissions) => {
+  const getCurrentUserPermissions = async (permissions) => {
     const userPermissions = [];
 
-    const traversePermissions = (perms) => {
+    const traversePermissions = async (perms) => {
       for (let perm of perms) {
         /* if (perm.key && dispatch(hasPermission(perm.key)) && permissionLabelPermissions.has(perm.key) && !userPermissions.includes(perm.key)) {
           userPermissions.push(perm.key);
         } */
           if (perm.key) {
-            const hasPerm = dispatch(hasPermission(perm.key));
+            const hasPerm = await dispatch(hasPermission(perm.key));
             console.log(`Checking permission: ${perm.key}, hasPermission: ${hasPerm}`);
             if (hasPerm && permissionLabelPermissions.has(perm.key) && !userPermissions.includes(perm.key)) {
               userPermissions.push(perm.key);
             }
           }
         if (perm.subperms) {
-          traversePermissions(perm.subperms);
+          await traversePermissions(perm.subperms);
         }
       }
     };
 
-    traversePermissions(permissions);
+    await traversePermissions(permissions);
     return userPermissions;
   };
   // const currentUserPermissions = getCurrentUserPermissions(permissionLabels)
 
   useEffect(() => {
-    console.log('Fetching current user permissions');
-    const permissions = getCurrentUserPermissions(permissionLabels);
-    console.log('Fetched current user permissions:', permissions);
-    setCurrentUserPermissions(permissions);
+    let isMounted = true;
+    
+    const getPermissions = async () => {
+      console.log('Fetching current user permissions');
+      const permissions = await getCurrentUserPermissions(permissionLabels);
+      if (isMounted) {
+        console.log('Fetched current user permissions:', permissions);
+        setCurrentUserPermissions(permissions);
+      }
+    };
+
+    getPermissions();
+
+    return () => {
+      isMounted = false;
+    };
   }, [permissionLabels, dispatch, userProfile.role]);
 
   // const rolePermissions = useSelector(state => state.role.rolePermissions) || [];
@@ -497,19 +509,19 @@ const BasicInformationTab = props => {
   // difference between old role permissions and user permissions
   // permissions that were added to user (user permissions - old role permissions)
   const customAddedPermissions = useMemo(() => {
-    return currentUserPermissions.filter(permission => !oldRolePermissions.includes(permission));
+    return Array.isArray(currentUserPermissions) ? currentUserPermissions.filter(permission => !oldRolePermissions.includes(permission)) : [];
   }, [currentUserPermissions, oldRolePermissions]);
   // permissions that were removed from user (old role permissions - user permissions)
   const customRemovedPermissions = useMemo(() => {
-    return oldRolePermissions.filter(permission => !currentUserPermissions.includes(permission));
+    return Array.isArray(oldRolePermissions) ? oldRolePermissions.filter(permission => !currentUserPermissions.includes(permission)) : [];
   }, [oldRolePermissions, currentUserPermissions]);
   // permissions that were removed from user but are in new role (newRolePermissions - customRemovedPermissions)
   const newRolePermissionsToAdd = useMemo(() => {
-    return newRolePermissions.filter(permission => customRemovedPermissions.includes(permission));
+    return Array.isArray(newRolePermissions) ? newRolePermissions.filter(permission => customRemovedPermissions.includes(permission)) : [];
   }, [newRolePermissions, customRemovedPermissions]);
   // permissions that were added to user but are not in new role (newRolePermissions + customAddedPermissions)
   const newRolePermissionsToRemove = useMemo(() => {
-    return customAddedPermissions.filter(permission => !newRolePermissions.includes(permission));
+    return Array.isArray(customAddedPermissions) ? customAddedPermissions.filter(permission => !newRolePermissions.includes(permission)) : [];
   }, [customAddedPermissions, newRolePermissions]);
 
   useEffect(() => {
