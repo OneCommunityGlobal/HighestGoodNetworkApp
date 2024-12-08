@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { Alert, Button, Form, FormGroup, Input, Label } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { connect } from 'react-redux';
@@ -15,10 +15,6 @@ function CreateNewRolePopup({ toggle, roleNames, darkMode, addRole }) {
   const [errorMessage, setErrorMessage] = useState('');
   const noSymbolsRegex = /^([a-zA-Z0-9 ]+)$/;
   const dispatch = useDispatch();
-
-  useEffect(() => {
-    dispatch(getAllRoles());
-  }, [dispatch]);
 
   const handleSubmit = async e => {
     e.preventDefault();
