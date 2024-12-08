@@ -77,7 +77,7 @@ const Projects = function (props) {
       modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
       modalTitle: CONFIRM_ARCHIVE,
       hasConfirmBtn: true,
-      hasInactiveBtn: true,
+      hasInactiveBtn: projectData.isActive,
     });
   };
 
@@ -101,14 +101,12 @@ const Projects = function (props) {
 
   const onUpdateProject = async (updatedProject) => {
     await props.modifyProject(updatedProject);
-    /* refresh the page after updating the project */
-    await props.fetchAllProjects();
+
   };
 
   const confirmArchive = async () => {
     const updatedProject = { ...projectTarget, isArchived: true };
     await onUpdateProject(updatedProject);
-    await props.fetchAllProjects();
     onCloseModal();
   };
 
@@ -120,7 +118,6 @@ const Projects = function (props) {
 
   const postProject = async (name, category) => {
     await props.postNewProject(name, category);
-    refreshProjects(); // Refresh project list after adding a project
   };
 
   // Fetch autocomplete suggestions
@@ -146,6 +143,7 @@ const Projects = function (props) {
   useEffect(() => {
     fetchSuggestions();
   }, [fetchSuggestions]);
+
 
   // Handle selection of a user from suggestions
   const handleSelectSuggestion = async (user) => {
@@ -183,12 +181,15 @@ const Projects = function (props) {
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
     const projectList = projects.filter(project => {
+      // Bad code: the component should rely on global state. No reducer for isArchive
+      if (project.isArchived)
+        return false;
       if (categorySelectedForSort && showStatus) {
-        return project.category === categorySelectedForSort && project.isActive === showStatus;
+        return project.category === categorySelectedForSort && project.isActive === (showStatus === 'Active');
       } else if (categorySelectedForSort) {
         return project.category === categorySelectedForSort;
       } else if (showStatus) {
-        return project.isActive === showStatus;
+        return project.isActive === (showStatus === 'Active');
       } else {
         return true;
       }
@@ -216,9 +217,7 @@ const Projects = function (props) {
     setAllProjects(projectList);
   }
 
-  const refreshProjects = async () => {
-    await props.fetchAllProjects();
-  };
+
 
   useEffect(() => {
     props.fetchAllProjects();

@@ -6,7 +6,7 @@ import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import { toast } from 'react-toastify';  
+import { toast } from 'react-toastify';
 
 const Project = props => {
   const { darkMode, index } = props;
@@ -40,7 +40,7 @@ const Project = props => {
       setDisplayName(displayName);
     } else if (displayName !== projectName) {
       updateProject('projectName', displayName);
-    } 
+    }
   };
 
   const onUpdateProjectActive = () => {
@@ -55,17 +55,19 @@ const Project = props => {
   const onArchiveProject = () => {
     props.onClickArchiveBtn(projectData);
   }
-  
+
   useEffect(() => {
     if (firstLoad) {
       setFirstLoad(false);
     } else {
+      console.log(projectData)
       props.onUpdateProject(projectData)
     }
     if (props.projectData.category) {
       setCategory(props.projectData.category);
     }
   }, [projectData]);
+
 
   return (
     <tr className="projects__tr" id={'tr_' + props.projectId}>
@@ -119,8 +121,8 @@ const Project = props => {
       </td>
       {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
-          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
-              {isActive ? (
+      <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
+        {props.projectData.isActive ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
           </div>
