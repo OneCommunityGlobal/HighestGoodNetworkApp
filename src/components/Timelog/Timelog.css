@@ -241,3 +241,10 @@
     margin-left: 5px;
   }
 }
+
+@media only screen and (max-width: 768px) {
+  .card > .card-body {
+    padding-left: 0.5rem !important;
+    padding-right: 0.5rem !important;
+  }
+}
