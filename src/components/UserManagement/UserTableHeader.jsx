@@ -27,7 +27,7 @@ import {
  * The header row of the user table.
  */
 const UserTableHeader = React.memo(
-  ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo }) => {
+  ({ authRole, roleSearchText, darkMode, editUser, enableEditUserInfo, disableEditUserInfo, isMobile, mobileFontSize }) => {
     const dispatch = useDispatch();
     const [editFlag, setEditFlag] = useState(editUser);
     const updatedUserData = useSelector(state => state.userProfileEdit.newUserData);
@@ -61,7 +61,9 @@ const UserTableHeader = React.memo(
     };
 
     return (
-      <tr className={darkMode ? 'bg-space-cadet' : ''}>
+      <tr className={darkMode ? 'bg-space-cadet' : ''}
+          style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
+      >
         <th scope="col" id="usermanagement_active">
           {ACTIVE}
         </th>
