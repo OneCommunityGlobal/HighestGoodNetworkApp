@@ -108,11 +108,13 @@ class UserManagement extends React.PureComponent {
       prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText ||
       prevState.emailSearchText !== this.state.emailSearchText;
     const pageSizeValue = prevState.pageSize !== this.state.pageSize;
+    const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
     if (
       prevState.selectedPage !== this.state.selectedPage ||
       prevState.wildCardSearchText !== this.state.wildCardSearchText ||
       searchState ||
-      pageSizeValue
+      pageSizeValue || 
+      userProfilesChanged
     ) {
       const { darkMode } = this.props.state.theme;
       const { userProfiles } = this.props.state.allUserProfiles;
@@ -165,8 +167,8 @@ class UserManagement extends React.PureComponent {
               : ''
           }
           open={this.state.activeInactivePopupOpen}
-          setActiveInactive={this.setActiveInactive}
           onClose={this.activeInactivePopupClose}
+          setActiveInactive={this.setActiveInactive}
         />
         <SetUpFinalDayPopUp
           open={this.state.finalDayDateOpen}
@@ -457,16 +459,20 @@ class UserManagement extends React.PureComponent {
   /**
    * Callback to trigger the status change on confirmation ok click.
    */
-  setActiveInactive = isActive => {
-    this.props.updateUserStatus(
-      this.state.selectedUser,
-      isActive ? UserStatus.Active : UserStatus.InActive,
-      undefined,
-    );
-    this.setState({
-      activeInactivePopupOpen: false,
-      selectedUser: undefined,
-    });
+  setActiveInactive = isActive => {    
+    this.setState(
+      {      
+        activeInactivePopupOpen: false,      
+        selectedUser: undefined,      
+        isUpdating: true    
+      });    
+    
+      this.props.updateUserStatus(      
+        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive,      
+        undefined,    
+      ).finally(() => {      
+        this.setState({ isUpdating: false });    
+      });
   };
 
   /**
