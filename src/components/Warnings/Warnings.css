@@ -98,6 +98,12 @@
   margin: 0 0.5em;
   font-weight: bold;
   font-size: 1em;
+  resize: none; /* Prevent resizing */
+  padding: 0; /* Remove default padding */
+  text-align: center; /* Horizontal centering */
+  overflow: hidden; /* Hide any overflow */
+  line-height: 50px;
+  height: 50px;
 }
 
 .warnings__descriptions__title:disabled {
