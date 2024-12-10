@@ -32,6 +32,7 @@ const UserProfileModal = props => {
     userProfile,
     id,
     specialWarnings,
+    handleLogWarning,
   } = props;
   let blueSquare = [
     {
@@ -163,7 +164,9 @@ const UserProfileModal = props => {
     // setToggleLogWarning(false);
     setShowSpinner(true);
     setWarningType('');
-    props.handleLogWarning(warningData);
+    handleLogWarning(warningData);
+    modifyBlueSquares(id, dateStamp, summary, 'delete');
+
     setDisplayWarningModal(false);
     // setShowSpinner(false);
   };
