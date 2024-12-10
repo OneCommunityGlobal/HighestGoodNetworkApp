@@ -108,11 +108,13 @@ class UserManagement extends React.PureComponent {
       prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText ||
       prevState.emailSearchText !== this.state.emailSearchText;
     const pageSizeValue = prevState.pageSize !== this.state.pageSize;
+    const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
     if (
       prevState.selectedPage !== this.state.selectedPage ||
       prevState.wildCardSearchText !== this.state.wildCardSearchText ||
       searchState ||
-      pageSizeValue
+      pageSizeValue || 
+      userProfilesChanged
     ) {
       const { darkMode } = this.props.state.theme;
       const { userProfiles } = this.props.state.allUserProfiles;
@@ -191,23 +193,6 @@ class UserManagement extends React.PureComponent {
         />
       </>
     );
-  };
-
-  reloadTable = () => {
-    this.props.getAllUserProfile();
-    this.props.getAllTimeOffRequests();
-    const { darkMode } = this.props.state.theme;
-    const { allUserProfiles } = this.props.state.allUserProfiles;
-    const { roles: rolesPermissions } = this.props.state.role;
-    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-    this.getFilteredData(
-      allUserProfiles,
-      rolesPermissions,
-      timeOffRequests,
-      darkMode,
-      this.state.editable,
-    );
-
   };
 
   /**
@@ -474,28 +459,26 @@ class UserManagement extends React.PureComponent {
   /**
    * Callback to trigger the status change on confirmation ok click.
    */
-  setActiveInactive = isActive => {
-    const text = this.state.wildCardSearchText;
-    this.props.updateUserStatus(
-      this.state.selectedUser,
-      isActive ? UserStatus.Active : UserStatus.InActive,
-      undefined,
-    );
-    this.setState({
-      activeInactivePopupOpen: false,
-      selectedUser: undefined,
-      wildCardSearchText: text,
-      // userProfiles: [...this.props.state.allUserProfiles],
-      userProfiles: this.props.state.allUserProfiles
-    });
-    this.reloadTable(); 
+  setActiveInactive = isActive => {    
+    this.setState(
+      {      
+        activeInactivePopupOpen: false,      
+        selectedUser: undefined,      
+        isUpdating: true    
+      });    
+    
+      this.props.updateUserStatus(      
+        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive,      
+        undefined,    
+      ).finally(() => {      
+        this.setState({ isUpdating: false });    
+      });
   };
 
   /**
    * Callback to close the confirmation popup on close button click.
    */
   activeInactivePopupClose = () => {
-    this.componentDidMount();
     this.setState({
       activeInactivePopupOpen: false,
     });
