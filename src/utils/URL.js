@@ -191,6 +191,8 @@ export const ENDPOINTS = {
   BM_UPDATE_REUSABLE: `${APIEndpoint}/bm/updateReusableRecord`,
   BM_UPDATE_REUSABLE_BULK: `${APIEndpoint}/bm/updateReusableRecordBulk`,
   BM_TOOLS: `${APIEndpoint}/bm/tools`,
+  BM_TAGS: `${APIEndpoint}/bm/tags`,
+  BM_TAG_ADD: `${APIEndpoint}/bm/tags`,
   BM_TOOL_TYPES: `${APIEndpoint}/bm/invtypes/tools`,
   BM_TOOLS_PURCHASE: `${APIEndpoint}/bm/tools/purchase`,
   POST_LESSON: `${APIEndpoint}/bm/lessons/new`,
