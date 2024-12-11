@@ -7,13 +7,30 @@ import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import { toast } from 'react-toastify';  
+import { modifyProject, clearError } from '../../../actions/projects';
+import ModalTemplate from './../../common/Modal';
+import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
 
 const Project = props => {
   const { darkMode, index } = props;
   const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
-  const { projectName, category, isActive, _id: projectId } = projectData;
+  const { projectName, isActive,isArchived, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
+  const initialModalData = {
+    showModal: false,
+    modalMessage: "",
+    modalTitle: "",
+    hasConfirmBtn: false,
+    hasInactiveBtn: false,
+  };
+
+  const [modalData, setModalData] = useState(initialModalData);
+
+  const onCloseModal = () => {
+    setModalData(initialModalData);
+    props.clearError();
+  };  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
@@ -47,22 +64,44 @@ const Project = props => {
   }
 
   const onUpdateProjectCategory = (e) => {
-    updateProject('category', e.target.value);
-  }
+    setCategory(e.target.value);
+    updateProject('category', e.target.value); // Update the projectData state
+  };
 
   const onArchiveProject = () => {
-    props.onClickArchiveBtn(projectData);
+    setModalData({
+      showModal: true,
+      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
+      modalTitle: CONFIRM_ARCHIVE,
+      hasConfirmBtn: true,
+      hasInactiveBtn: isActive,
+    });
   }
   
+  const setProjectInactive = () => {
+    updateProject('isActive', !isActive);
+    onCloseModal(); 
+  }
+  const confirmArchive = () => {
+    updateProject('isArchived', !isArchived);
+    props.onProjectArchived();
+    onCloseModal(); 
+  };
+
   useEffect(() => {
-    if (firstLoad) {
-      setFirstLoad(false);
-    } else {
-      props.onUpdateProject(projectData)
-    }
+    const onUpdateProject = async () => {
+      if (firstLoad) {
+        setFirstLoad(false);
+      } else {
+        await props.modifyProject(projectData);
+      }
+    };
+
+    onUpdateProject();
   }, [projectData]);
 
   return (
+    <>
     <tr className="projects__tr" id={'tr_' + props.projectId}>
 
       <th className="projects__order--input" scope="row">
@@ -112,14 +151,10 @@ const Project = props => {
           category
         )}
       </td>
-
-
       {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
           <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
               {isActive ? (
-
-
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
           </div>
@@ -164,13 +199,24 @@ const Project = props => {
             className="btn btn-outline-danger"
             onClick={onArchiveProject}
             style={darkMode ? {} : boxStyle}
+            disabled = {isArchived}
           >
             {ARCHIVE}
           </button>
         </td>
       ) : null}
     </tr>
+      <ModalTemplate
+          isOpen={modalData.showModal}
+          closeModal={onCloseModal}
+          confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
+          setInactiveModal={modalData.hasInactiveBtn ? setProjectInactive : null}
+          modalMessage={modalData.modalMessage}
+          modalTitle={modalData.modalTitle}
+        />
+    </>
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps, { hasPermission })(Project);
+export default connect(mapStateToProps, { hasPermission, modifyProject, clearError })(Project);
+
