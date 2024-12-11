@@ -180,6 +180,10 @@ class Teams extends React.PureComponent {
           />
         ));
     }
+    else {
+      // Return an empty array when there are no teams
+      return [];
+    }
   };
 
   filteredTeamList = allTeams => {
@@ -534,6 +538,7 @@ class Teams extends React.PureComponent {
     this.setState({ sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
   };
 }
+export { Teams };
 const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
   getAllUserProfile,
