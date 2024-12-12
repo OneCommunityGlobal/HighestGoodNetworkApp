@@ -57,6 +57,7 @@ class UserManagement extends React.PureComponent {
       roleSearchText: '',
       weeklyHrsSearchText: '',
       emailSearchText: '',
+      titleSearchText: '',
       wildCardSearchText: '',
       selectedPage: props.state.userPagination.pagestats.selectedPage,
       pageSize: props.state.userPagination.pagestats.pageSize,
@@ -106,6 +107,7 @@ class UserManagement extends React.PureComponent {
       prevState.lastNameSearchText !== this.state.lastNameSearchText ||
       prevState.roleSearchText !== this.state.roleSearchText ||
       prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText ||
+      prevState.titleSearchText !== this.state.titleSearchText ||
       prevState.emailSearchText !== this.state.emailSearchText;
     const pageSizeValue = prevState.pageSize !== this.state.pageSize;
     if (
@@ -127,7 +129,6 @@ class UserManagement extends React.PureComponent {
       );
     }
   }
-
   /**
    * Returns the differenet popup components to render
    * 1. Popup to show the reactivation date selection
@@ -277,7 +278,6 @@ class UserManagement extends React.PureComponent {
       //   const stringToNumber = Number(numberToString);
       //   return stringToNumber;
       // };
-
       return (
         // Check if the user matches the search criteria
 
@@ -286,6 +286,10 @@ class UserManagement extends React.PureComponent {
         user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
         user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
         user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
+        user.jobTitle &&
+        user.jobTitle.length > 0 &&
+        user.jobTitle[0] !== ' ' &&
+        user.jobTitle[0].toLowerCase().indexOf(this.state.titleSearchText.toLowerCase()) > -1 &&
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
         // Check the isActive state only if 'all' is not selected
@@ -552,6 +556,13 @@ class UserManagement extends React.PureComponent {
     });
   };
 
+  onTitleSearch = searchText => {
+    this.setState({
+      titleSearchText: searchText.trim(),
+      selectedPage: 1,
+    });
+  };
+
   /**
    * Call back for search filter - weekly committed hours
    */
@@ -725,6 +736,7 @@ class UserManagement extends React.PureComponent {
                   onLastNameSearch={this.onLastNameSearch}
                   onRoleSearch={this.onRoleSearch}
                   onEmailSearch={this.onEmailSearch}
+                  onTitleSearch={this.onTitleSearch}
                   onWeeklyHrsSearch={this.onWeeklyHrsSearch}
                   roles={roles}
                   authRole={this.props.state.auth.user.role}

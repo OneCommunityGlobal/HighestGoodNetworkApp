@@ -17,6 +17,10 @@ const UserTableSearchHeader = React.memo(props => {
     props.onLastNameSearch(text);
   };
 
+  const onTitleSearch = text => {
+    props.onTitleSearch(text);
+  };
+
   const onRoleSearch = text => {
     props.onRoleSearch(text);
   };
@@ -62,6 +66,13 @@ const UserTableSearchHeader = React.memo(props => {
           id="hrs_search"
           style={{ maxWidth: '75px', margin: '0 auto' }}
           searchCallback={onWeeklyHrsSearch}
+        />
+      </td>
+      <td id="user_title">
+        <TextSearchBox
+          id="user_title_search"
+          searchCallback={onTitleSearch}
+          placeholder=" Search Title"
         />
       </td>
       <td id="user_pause" />
