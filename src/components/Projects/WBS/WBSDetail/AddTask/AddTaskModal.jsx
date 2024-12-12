@@ -200,27 +200,25 @@ function AddTaskModal(props) {
 
   const changeDateStart = startDate => {
     setStartedDate(startDate);
-    if (dueDate) {
-      if (startDate > dueDate) {
-        setStartDateError(true);
-      } else {
-        setStartDateError(false);
-      }
-    }
-    setEndDateError(false);
   };
 
   const changeDateEnd = dueDate => {
-    setDueDate(dueDate);
-    if (startedDate) {
-      if (dueDate < startedDate) {
-        setEndDateError(true);
-      } else {
-        setEndDateError(false);
-      }
+    if (!startedDate) {
+      const newDate = dateFnsFormat(new Date(), FORMAT);
+      setStartedDate(newDate);
     }
-    setStartDateError(false);
+    setDueDate(dueDate);
   };
+
+  useEffect(()=>{
+    if (dueDate && dueDate < startedDate) {
+      setEndDateError(true);
+      setStartDateError(true);
+    } else {
+      setEndDateError(false);
+      setStartDateError(false);
+    }
+  }, [startedDate, dueDate]);
 
   const addLink = () => {
     setLinks([...links, link]);
