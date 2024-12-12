@@ -5,7 +5,7 @@ const userProfilesInitial = {
   fetching: false,
   fetched: false,
   userProfiles: [],
-  editable: { 'first': 1, 'last': 1, 'role': 1, 'email': 1, 'weeklycommittedHours': 1 ,'startDate':1,'endDate':1},
+  editable: { 'first': 1, 'last': 1, 'role': 1, 'email': 1, 'weeklycommittedHours': 1 ,'startDate':1,'endDate':1, 'jobTitle':1},
   pagestats: { pageSize: 10, selectedPage: 1 },
   status: 100,
   updating:false,

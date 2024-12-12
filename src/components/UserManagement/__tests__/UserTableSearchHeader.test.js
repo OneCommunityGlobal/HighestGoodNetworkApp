@@ -35,7 +35,7 @@ describe('user table search header row', () => {
       expect(screen.getByRole('row')).toBeInTheDocument();
     });
     it('should render 4 text field', () => {
-      expect(screen.getAllByRole('textbox')).toHaveLength(4);
+      expect(screen.getAllByRole('textbox')).toHaveLength(5);
     });
     it('should render one dropdown box', () => {
       expect(screen.getByRole('combobox')).toBeInTheDocument();
