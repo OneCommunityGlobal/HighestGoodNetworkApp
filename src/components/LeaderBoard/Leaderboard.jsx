@@ -133,7 +133,7 @@ function LeaderBoard({
 
   useEffect(() => {
     if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
-  }, [organizationData]);
+  }, [organizationData, usersSelectedTeam]);
 
   useEffect(() => {
     //  eslint-disable-next-line
@@ -163,7 +163,7 @@ function LeaderBoard({
       },
       // prettier-ignore
       { name: '', totaltime: 0, barprogress: 0, intangibletime: 0,barcolor: '', tangibletime: 0,
-      totalintangibletime_hrs: 0, totaltangibletime_hrs: 0,  totaltime_hrs: 0, 
+      totalintangibletime_hrs: 0, totaltangibletime_hrs: 0,  totaltime_hrs: 0,
       totalweeklycommittedHours: 0, weeklycommittedHours: 0, memberCount: contUsers, _id: 2},
     );
     setStateOrganizationData(newOrganizationData);
@@ -171,7 +171,7 @@ function LeaderBoard({
 
   const renderTeamsList = async team => {
     setIsDisplayAlert(false);
-    if (!team) {
+    if (!team || team === 'Show all') {
       setIsLoadingTeams(true);
       setFilteredUserTeamIds([]);
       setStateOrganizationData(organizationData);
@@ -420,7 +420,7 @@ function LeaderBoard({
 
               {/* prettier-ignore */}
               <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
-              
+
               <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
                 {teams.length === 0 ? (
                   <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
@@ -468,9 +468,9 @@ function LeaderBoard({
                       );
                     })}
                     </div>
-                    
+
                     <h5 className="ml-4 text-center">All users</h5>
-                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`} 
+                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`}
                       onClick={() => TeamSelected('Show all')}>
                     <ul
                       className={`${darkMode ? '  text-light' : ''}`}
