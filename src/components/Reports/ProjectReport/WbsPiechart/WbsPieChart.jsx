@@ -70,21 +70,23 @@ export function WbsPieChart({
     <div className={darkMode ? "text-light" : ""}>
       <h5> Owners, Managers and Admins in {projectName} </h5>
       <div className= "pie-chart-title" >
-        <div className= { darkMode ? 'text-light' : ''}>
+        <div>
           <label className={`${darkMode ? 'text-light' : ''} pr-4`} >{isChecked ? 'Weekly Commited Hours By Active Member(Hide Piechart)' : 'Weekly Commited Hours By Member(Show Piechart)'}</label>
           <input
             type="checkbox"
+            // className="pie-chart-checkbox"
             checked={isChecked}
             onChange={handleShowPieChart}
           />
-
         </div>
-      </div>
-      {isChecked && ( <div style={{textAlign:'left', marginLeft:'35%'}}>
-          <p className="fw-bold">Total Active Members:  {activeData.length}  </p>
-          <p className="fw-bold mb-0">Total Hours Commited: { totalHours.toFixed(2)} </p>
-
+      {isChecked && ( 
+        <div style={{ textAlign: 'left', margin: 'auto' }}>
+          <div style={{ textAlign: 'center' }}>
+          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }} className="fw-bold">Total Active Members:  {activeData.length}  </p>
+          <p style={{ color: darkMode ? '#fff' : '#000', fontWeight: 'bold' }} className="fw-bold mb-0">Total Hours Commited: { totalHours.toFixed(2)} </p>
+          </div>
       </div>)}
+      </div>
       {isChecked && (<div style={{ width: '100%', height: '32rem' }}>
         <ProjectPieChart userData={totalHours > 0 ? userData : noDataPlaceholder} windowSize={windowSize.width} darkMode={darkMode}/>
       </div>)}
