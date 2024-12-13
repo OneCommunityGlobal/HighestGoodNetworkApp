@@ -301,6 +301,17 @@
   border-color: transparent transparent black transparent;
 }
 
+.Job-Email-CC-tooltip::before {
+  content: '';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-width: 8px;
+  border-style: solid;
+  border-color: transparent transparent black transparent;
+}
+
 .Blue-Square-Email-BCC-tooltip {
   visibility: hidden;
   background-color: white;
@@ -314,6 +325,29 @@
   font-size: 0.8rem;
   top: 10px;
 }
+
+.Job-Email-CC-tooltip{
+  visibility: hidden;
+  background-color: white;
+  color: black;
+  text-align: center;
+  border: 1px solid black;
+  padding: 5px;
+  border-radius: 5px;
+  position: relative;
+  z-index: 1;
+  font-size: 0.8rem;
+  top: 10px;
+}
+
+.Job-Email-CC-div{
+  height:6em;
+}
+
+.Job-Email-CC-div:hover div {
+  visibility: visible;
+}
+
 .Blue-Square-Email-BCC-div{
   height:6em;
 }
