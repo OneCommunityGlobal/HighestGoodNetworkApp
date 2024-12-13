@@ -103,6 +103,7 @@ export const ENDPOINTS = {
   CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
   EDIT_OLD_TITLE:  ()=>`${APIEndpoint}/title/update`,
   DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+  REORDER_TITLES: () => `${APIEndpoint}/title/order`,
 
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
     `${APIEndpoint}/tasknotification/${userId}/${taskId}`,

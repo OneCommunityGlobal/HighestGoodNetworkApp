@@ -35,7 +35,7 @@ export async function getAllTitle() {
   try {
     const url = ENDPOINTS.TITLES();
     const response = await axios.get(url);
-    return Promise.resolve(response);
+    return response;
   } catch (error) {
     return {
       message: error.response.data.message,
@@ -44,6 +44,7 @@ export async function getAllTitle() {
     };
   }
 }
+
 
 export async function getTitleById(titleId) {
   try {
