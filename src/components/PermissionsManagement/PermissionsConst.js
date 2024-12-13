@@ -137,6 +137,38 @@ export const permissionLabels = [
     ],
   },
   {
+    label: 'Tracking Management',
+    description: 'Permissions for managing tracking-related activities (Admin Only)',
+    subperms: [
+      {
+        label: 'View Tracking Overview',
+        key: 'viewTrackingOverview',
+        description: 'Allows user to view an overview of tracking activities for all users.',
+      },
+      {
+        label: 'Issue Tracking Warnings',
+        key: 'issueTrackingWarnings',
+        description: 'Allows user to issue warnings for tracking violations.',
+      },
+      {
+        label: 'Edit Tracking Logs',
+        key: 'editTrackingLogs',
+        description: 'Enables user to edit tracking logs submitted by users.',
+      },
+      {
+        label: 'Delete Tracking Logs',
+        key: 'deleteTrackingLogs',
+        description: 'Gives user permission to delete invalid or unnecessary tracking logs.',
+      },
+      {
+        label: 'Enable/Disable Tracking Features',
+        key: 'toggleTrackingFeatures',
+        description:
+          'Allows user to enable or disable specific tracking features for users or teams.',
+      },
+    ],
+  },
+  {
     label: 'Badge Management',
     description: 'Category for all permissions related to badge management',
     subperms: [
