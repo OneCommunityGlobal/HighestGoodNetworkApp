@@ -57,7 +57,7 @@ function QuickSetupModal(props) {
   };
 
   return (
-    <div className="container pt-3">
+    <div>
       {canAssignTitle || canEditTitle || canAddTitle ? (
         <QuickSetupCodes
           setSaved={props.setSaved}

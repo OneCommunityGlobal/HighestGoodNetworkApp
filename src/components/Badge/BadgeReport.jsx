@@ -28,6 +28,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import hasPermission from '../../utils/permissions';
@@ -281,6 +282,8 @@ function BadgeReport(props) {
     }
   };
 
+
+
   const featuredChange = (badge, index, e) => {
     let newBadges = [...sortBadges];
     const newFeaturedState = e.target.checked;
@@ -330,24 +333,36 @@ function BadgeReport(props) {
 
   const saveChanges = async () => {
     setSavingChanges(true);
-    let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
-    for (let i = 0; i < newBadgeCollection.length; i++) {
-      newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
+    try {
+      let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
+      for (let i = 0; i < newBadgeCollection.length; i++) {
+        newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
+      }
+
+      await props.changeBadgesByUserID(props.userId, newBadgeCollection);
+      await props.getUserProfile(props.userId);
+
+      props.setUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+      props.setOriginalUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+
+      // Display success message
+      toast.success('Badges successfully saved.');
+
+      props.handleSubmit();
+      // Close the modal
+      props.close();
+    } catch (error) {
+      // Handle errors and display error message
+      toast.error('Failed to save badges. Please try again.');
+    } finally {
+      setSavingChanges(false);
     }
-
-    await props.changeBadgesByUserID(props.userId, newBadgeCollection);
-    await props.getUserProfile(props.userId);
-
-    props.setUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.setOriginalUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.handleSubmit();
-    //close the modal
-    props.close();
   };
+
 
   return (
     <div>
@@ -743,6 +758,7 @@ function BadgeReport(props) {
               Yes, Delete
             </Button>
           </ModalFooter>
+          <ToastContainer />
         </Modal>
       </div>
     </div>

@@ -764,3 +764,4 @@ export default connect(mapStateToProps, {
   disableEditUserInfo,
   getAllRoles,
 })(UserManagement);
+
