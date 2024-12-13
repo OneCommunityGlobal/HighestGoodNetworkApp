@@ -7,27 +7,38 @@ import './TasksDetail.css';
 
 const ShowCollapse = (props) => {
   const [open, setOpen] = useState(false);
+
   return (
     <>
-      <div>{props.resources[0].name}</div>
-      {props.resources.slice(1).map((resource) => (
-        <Collapse in={open} key={resource._id}>
-          <div>{resource.name}</div>
-        </Collapse>
-      ))}
-      <Button onClick={() => setOpen(!open)} aria-expanded={open} size='sm'>
-        {props.resources.length} ➤
+      <div>
+        {props.resources[0].name}
+        {props.resources.length > 1 && ','}
+      </div>
+      {open && (
+        <>
+          {props.resources.slice(1).map((resource, index) => (
+            <Collapse in={open} key={resource._id}>
+              <div>
+                {resource.name}
+                {index < props.resources.length - 2 && ','}
+              </div>
+            </Collapse>
+          ))}
+        </>
+      )}
+      <Button onClick={() => setOpen(!open)} aria-expanded={open} size="sm">
+        {open ? 'Show less' : `Show more (${props.resources.length})`} ➤
       </Button>
     </>
   );
 };
 
 const formatDate = (datetime) => {
-  if(datetime){
+  if (datetime) {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(datetime).toLocaleDateString(undefined, options);
   }
-  return 'N/A'
+  return 'N/A';
 };
 
 const truncate = (str, n) => {
@@ -59,7 +70,6 @@ export const TasksDetail = (props) => {
     setFilteredTasks(tasks);
   }, [props.tasks_filter, props.priority, props.status, props.classification, props.isActive, props.isAssigned, props.users]);
 
-
   const tasksList = filteredTasks.map((task, index) => (
     <tr key={task._id} className={darkMode ? 'dark-mode-row' : ''}>
       <td>{index + 1}</td>
@@ -68,20 +78,16 @@ export const TasksDetail = (props) => {
       <td>{task.status}</td>
       <td className="tasks-detail-center-cells">
         {task.resources.length <= 2 ? (
-          task.resources.map((resource) => <div key={resource._id}>{resource.name}</div>)
+          <span>
+            {task.resources.map((resource, index) => (
+              <span key={resource._id}>
+                {resource.name}
+                {index < task.resources.length - 1 && ', '}
+              </span>
+            ))}
+          </span>
         ) : (
           <ShowCollapse resources={task.resources} />
-        )}
-      </td>
-      <td className="tasks-detail-center-cells">
-        {task.isActive ? (
-          <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
-          </div>
-        ) : (
-          <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
-          </div>
         )}
       </td>
       <td className="tasks-detail-center-cells collapse-column">
