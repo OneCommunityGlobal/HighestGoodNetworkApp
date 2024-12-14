@@ -343,14 +343,18 @@ export function Header(props) {
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
-                
+
                 {showProjectDropdown && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{PROJECTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={darkMode ? "bg-yinmn-blue" : ""}>
-                      <DropdownItem tag={Link} to="/bmdashboard/materials/add" className={fontColor}>
+                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/materials/add"
+                        className={fontColor}
+                      >
                         Add Material
                       </DropdownItem>
                       <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={fontColor}>
@@ -359,13 +363,25 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/bmdashboard/materials" className={fontColor}>
                         Material List
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/equipment/add" className={fontColor}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/add"
+                        className={fontColor}
+                      >
                         Add Equipment/Tool
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/equipment/:equipmentId" className={fontColor}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/:equipmentId"
+                        className={fontColor}
+                      >
                         Log Equipment/Tool
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/bmdashboard/tools/:equipmentId/update" className={fontColor}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/tools/:equipmentId/update"
+                        className={fontColor}
+                      >
                         Update Equipment/Tool
                       </DropdownItem>
                       <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor}>
@@ -380,7 +396,6 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
