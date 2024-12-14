@@ -217,7 +217,15 @@ function Timelog(props) {
   };
 
   useEffect(() => {
-    // eslint-disable-next-line no-undef
+    const tabMapping = {
+      '#tasks': 0,
+      '#currentWeek': 1,
+      '#lastWeek': 2,
+      '#beforeLastWeek': 3,
+      '#dateRange': 4,
+      '#weeklySummaries': 5,
+      '#badgesearned': 6,
+    };
     const tab = tabMapping[location.hash];
     if (tab !== undefined) {
       changeTab(tab);
