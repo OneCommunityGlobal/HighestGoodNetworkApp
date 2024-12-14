@@ -24,22 +24,28 @@ function SetUpFinalDayButton(props) {
   }, []);
 
   const onFinalDayClick = async () => {
-    const activeStatus = props.userProfile.isActive ? 'Active' : 'Inactive';
-    if (isSet) {
-      // updateUserFinalDayStatus(props.userProfile, activeStatus, undefined)(dispatch);
-      setIsSet(!isSet);
-      setTimeout(async () => {
-        await props.loadUserProfile();
+    try {
+      const activeStatus = props.userProfile.isActive ? 'Active' : 'Inactive';
+
+      if (isSet) {
         await updateUserFinalDayStatusIsSet(
           props.userProfile,
           activeStatus,
           undefined,
           FinalDay.NotSetFinalDay,
         )(dispatch);
+
+        setIsSet(false);
+
+        await props.loadUserProfile();
+
         toast.success("This user's final day has been deleted.");
-      }, 1000);
-    } else {
-      setFinalDayDateOpen(true);
+      } else {
+        setFinalDayDateOpen(true);
+      }
+    } catch (error) {
+      console.error('Error handling final day click:', error);
+      toast.error("An error occurred while updating the user's final day.");
     }
   };
 
@@ -48,19 +54,24 @@ function SetUpFinalDayButton(props) {
   };
 
   const deactiveUser = async finalDayDate => {
-    // await updateUserFinalDayStatus(props.userProfile, 'Active', finalDayDate)(dispatch);
-    setIsSet(true);
-    setFinalDayDateOpen(false);
-    setTimeout(async () => {
-      await props.loadUserProfile();
+    try {
       await updateUserFinalDayStatusIsSet(
         props.userProfile,
         'Active',
         finalDayDate,
         FinalDay.FinalDay,
       )(dispatch);
+
+      setIsSet(true);
+      setFinalDayDateOpen(false);
+
+      await props.loadUserProfile();
+
       toast.success("This user's final day has been set.");
-    }, 1000);
+    } catch (error) {
+      console.error('Error setting the final day:', error);
+      toast.error("An error occurred while setting the user's final day.");
+    }
   };
 
   return (
