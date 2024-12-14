@@ -7,6 +7,7 @@ import { boxStyle, boxStyleDark } from '../../styles';
 import SetUpFinalDayPopUp from './SetUpFinalDayPopUp';
 import { SET_FINAL_DAY, CANCEL } from '../../languages/en/ui';
 import { FinalDay } from '../../utils/enums';
+
 /**
  * @param {*} props
  * @param {Boolean} props.isBigBtn
@@ -17,6 +18,7 @@ function SetUpFinalDayButton(props) {
   const { darkMode } = props;
   const [isSet, setIsSet] = useState(false);
   const [finalDayDateOpen, setFinalDayDateOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -24,6 +26,7 @@ function SetUpFinalDayButton(props) {
   }, []);
 
   const onFinalDayClick = async () => {
+    setIsLoading(true); // Start loading indicator
     try {
       const activeStatus = props.userProfile.isActive ? 'Active' : 'Inactive';
 
@@ -36,9 +39,7 @@ function SetUpFinalDayButton(props) {
         )(dispatch);
 
         setIsSet(false);
-
-        await props.loadUserProfile();
-
+        await props.loadUserProfile(); // Ensure state sync
         toast.success("This user's final day has been deleted.");
       } else {
         setFinalDayDateOpen(true);
@@ -46,6 +47,8 @@ function SetUpFinalDayButton(props) {
     } catch (error) {
       console.error('Error handling final day click:', error);
       toast.error("An error occurred while updating the user's final day.");
+    } finally {
+      setIsLoading(false); // Stop loading indicator
     }
   };
 
@@ -54,6 +57,7 @@ function SetUpFinalDayButton(props) {
   };
 
   const deactiveUser = async finalDayDate => {
+    setIsLoading(true); // Start loading indicator
     try {
       await updateUserFinalDayStatusIsSet(
         props.userProfile,
@@ -64,13 +68,13 @@ function SetUpFinalDayButton(props) {
 
       setIsSet(true);
       setFinalDayDateOpen(false);
-
-      await props.loadUserProfile();
-
+      await props.loadUserProfile(); // Ensure state sync
       toast.success("This user's final day has been set.");
     } catch (error) {
       console.error('Error setting the final day:', error);
       toast.error("An error occurred while setting the user's final day.");
+    } finally {
+      setIsLoading(false); // Stop loading indicator
     }
   };
 
@@ -84,6 +88,7 @@ function SetUpFinalDayButton(props) {
       <Button
         outline={!darkMode}
         color={isSet ? 'warning' : 'success'}
+        disabled={isLoading} // Disable the button while loading
         className={`btn ${darkMode ? '' : `btn-outline-${isSet ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
@@ -92,9 +97,10 @@ function SetUpFinalDayButton(props) {
         }}
         style={darkMode ? boxStyleDark : boxStyle}
       >
-        {isSet ? CANCEL : SET_FINAL_DAY}
+        {isLoading ? 'Processing...' : isSet ? CANCEL : SET_FINAL_DAY} {/* Show loading state */}
       </Button>
     </>
   );
 }
+
 export default SetUpFinalDayButton;
