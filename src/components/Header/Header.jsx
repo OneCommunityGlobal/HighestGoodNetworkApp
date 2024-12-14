@@ -1,17 +1,37 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { getHeaderData } from '../../actions/authActions';
-import { getAllRoles } from '../../actions/role';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
 import { Link, useLocation } from 'react-router-dom';
 import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  Nav,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Card,
+} from 'reactstrap';
+import PopUpBar from 'components/PopUpBar';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import { toast } from 'react-toastify';
+import { getHeaderData } from '../../actions/authActions';
+import { getAllRoles } from '../../actions/role';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
-import { useHistory} from 'react-router-dom';
 import {
-  LOGO,
   DASHBOARD,
   TIMELOG,
   REPORTS,
@@ -26,49 +46,23 @@ import {
   VIEW_PROFILE,
   UPDATE_PASSWORD,
   LOGOUT,
-  POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
-  VOLUNTEER_SUMMARY_REPORT,
   TOTAL_ORG_SUMMARY,
 } from '../../languages/en/ui';
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Container,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Card,
-} from 'reactstrap';
 import Logout from '../Logout/Logout';
-import PopUpBar from 'components/PopUpBar';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import {
   getUnreadUserNotifications,
-  markNotificationAsRead,
   resetNotificationError,
 } from '../../actions/notificationAction';
-import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 
 export function Header(props) {
   const location = useLocation();
-  const darkMode = props.darkMode;
+  const { darkMode } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user } = props.auth;
@@ -193,6 +187,7 @@ export function Header(props) {
       }
     }
   }, [props.auth.isAuthenticated]);
+  const roles = props.role?.roles;
 
   useEffect(() => {
     if (roles.length === 0 && isAuthenticated) {
@@ -211,8 +206,6 @@ export function Header(props) {
     }
   }, [props.notification?.error]);
 
-  const roles = props.role?.roles;
-
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
   };
@@ -225,9 +218,9 @@ export function Header(props) {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
-    props.getWeeklySummaries(user.userid)
+    props.getWeeklySummaries(user.userid);
     history.push('/dashboard');
-  }
+  };
   const closeModal = () => {
     setModalVisible(false);
     const today = new Date();
@@ -256,6 +249,7 @@ export function Header(props) {
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log('User Profile not loaded.', err);
     }
   };
@@ -313,7 +307,7 @@ export function Header(props) {
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
-          style={user.role == 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
+          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
         >
           {isAuthenticated && <Timer darkMode={darkMode} />}
           {isAuthenticated && (
@@ -331,7 +325,7 @@ export function Header(props) {
                 style={{ width: '100%' }}
               >
                 {canUpdateTask && (
-                  <NavItem className='responsive-spacing'>
+                  <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/taskeditsuggestions">
                       <div className="redBackGroupHeader">
                         <span>{props.taskEditSuggestionCount}</span>
@@ -339,13 +333,13 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className='responsive-spacing'>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to="/dashboard">
                     <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-                <NavItem className='responsive-spacing'>
-                  <NavLink tag={Link} to={`/timelog`}>
+                <NavItem className="responsive-spacing">
+                  <NavLink tag={Link} to="/timelog">
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
@@ -390,7 +384,7 @@ export function Header(props) {
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
-                  <UncontrolledDropdown nav inNavbar className='responsive-spacing'>
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
@@ -416,13 +410,13 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
-                  <NavItem className='responsive-spacing'>
+                  <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/teamlocations">
                       {TEAM_LOCATIONS}
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className='responsive-spacing'>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                     <i className="fa fa-bell i-large">
                       <i className="badge badge-pill badge-danger badge-notify">
@@ -439,7 +433,7 @@ export function Header(props) {
                   canAccessPopups ||
                   canAccessSendEmails ||
                   canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar className='responsive-spacing'>
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
@@ -449,14 +443,14 @@ export function Header(props) {
                           {USER_MANAGEMENT}
                         </DropdownItem>
                       ) : (
-                        <React.Fragment></React.Fragment>
+                        `null`
                       )}
                       {canAccessBadgeManagement ? (
                         <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
                       ) : (
-                        <React.Fragment></React.Fragment>
+                        `null`
                       )}
                       {canAccessProjects && (
                         <DropdownItem tag={Link} to="/projects" className={fontColor}>
@@ -488,7 +482,7 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-                <NavItem className='responsive-spacing'>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
                       src={`${profilePic || '/pfp-default-header.png'}`}
@@ -498,7 +492,7 @@ export function Header(props) {
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav className='responsive-spacing'>
+                <UncontrolledDropdown nav className="responsive-spacing">
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">
                       {WELCOME}, {firstName}
@@ -595,5 +589,5 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
-  getWeeklySummaries
+  getWeeklySummaries,
 })(Header);

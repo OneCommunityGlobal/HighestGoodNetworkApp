@@ -4,7 +4,7 @@ import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 import AutoUpdate from 'components/AutoUpdate';
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
-import { RoutePermissions } from 'utils/routePermissions';
+import RoutePermissions from 'utils/routePermissions';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
@@ -28,6 +28,8 @@ import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
+import  { EmailSender } from './components/common/EmailSender/EmailSender';
+import Collaboration from './components/Collaboration';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -243,6 +245,13 @@ export default (
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
+        <ProtectedRoute
+          path="/sendemail"
+          exact
+          component={EmailSender}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
+        />
 
         <ProtectedRoute
           path="/totalorgsummary"
@@ -341,6 +350,7 @@ export default (
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/email-subscribe" component={EmailSubscribeForm} />
         <Route path="/email-unsubscribe" component={UnsubscribeForm} />
+        <Route path="/collaboration" component={Collaboration} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />

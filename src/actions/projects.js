@@ -48,11 +48,14 @@ export const postNewProject = (projectName, projectCategory) => {
         isActive: true,
       };
       dispatch(addNewProject({ newProject, status }));
+      await dispatch(fetchAllProjects());
       return _id;
     } catch (err) {
-      status = err.response.status;
-      error = err.response.data;
-      dispatch(addNewProject({ status, error }));
+      const errorInfo = {
+        status: err.response ? err.response.status : 500,
+        error: err.response ? err.response.data : 'Network error'
+      };
+      dispatch(setProjectsError(errorInfo)); 
       throw error;
     }
   };
