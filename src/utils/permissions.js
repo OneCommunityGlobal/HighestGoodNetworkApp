@@ -13,13 +13,25 @@ const hasPermission = (action, viewingUser = false) => {
     const userPermissions = viewingUser 
       ? state.userProfile.permissions?.frontPermissions 
       : state.auth.user.permissions?.frontPermissions;
+
+    // console.log('State:', JSON.stringify(state, null, 2));
+    // console.log('Role Permissions:', rolePermissions);
+    // console.log('User Role:', userRole);
+    // console.log('Viewing User:', viewingUser);
+
     if (userRole && rolePermissions && rolePermissions.length != 0) {
       const roleIndex = rolePermissions?.findIndex(({ roleName }) => roleName === userRole);
       let permissions = [];
       if (roleIndex !== -1) {
         permissions = rolePermissions[roleIndex].permissions;
       }
+      // console.log('Role Index:', roleIndex);
+      // console.log('Role Permissions:', permissions);
       return userPermissions?.includes(action) || permissions?.includes(action);
+      // const hasPerm = userPermissions?.includes(action) || permissions?.includes(action);
+      // console.log(`Checking action: ${action}, hasPerm: ${hasPerm}`);
+      // console.log('Viewing User:', viewingUser);
+      // return hasPerm;
     }
     return false;
   }
