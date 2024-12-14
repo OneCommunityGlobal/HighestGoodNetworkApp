@@ -1,4 +1,5 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+/* eslint-disable no-alert */
+import { useState, useEffect } from 'react';
 import { useParams, useLocation } from 'react-router-dom';
 import {
   Container,
@@ -32,6 +33,17 @@ import ReactTooltip from 'react-tooltip';
 import ActiveCell from 'components/UserManagement/ActiveCell';
 import { ProfileNavDot } from 'components/UserManagement/ProfileNavDot';
 import TeamMemberTasks from 'components/TeamMemberTasks';
+import { boxStyle, boxStyleDark } from 'styles';
+import { formatDate } from 'utils/formatDate';
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { cantUpdateDevAdminDetails } from 'utils/permissions';
+import axios from 'axios';
+import {
+  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
+  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
+  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
+} from 'utils/constants';
+import PropTypes from 'prop-types';
 import { getTimeEntriesForWeek, getTimeEntriesForPeriod } from '../../actions/timeEntries';
 import { getUserProfile, updateUserProfile, getUserTasks } from '../../actions/userProfile';
 import { getUserProjects } from '../../actions/userProjects';
@@ -45,17 +57,6 @@ import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import LoadingSkeleton from '../common/SkeletonLoading';
 import hasPermission from '../../utils/permissions';
 import WeeklySummaries from './WeeklySummaries';
-import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate } from 'utils/formatDate';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { cantUpdateDevAdminDetails } from 'utils/permissions';
-import axios from 'axios';
-import {
-  DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY,
-  DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
-  PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
-} from 'utils/constants';
-import PropTypes from 'prop-types';
 import Badge from '../Badge';
 import { ENDPOINTS } from '../../utils/URL';
 
@@ -87,7 +88,7 @@ const endOfWeek = offset => {
     .format('YYYY-MM-DD');
 };
 
-const Timelog = props => {
+function Timelog(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const location = useLocation();
 
@@ -143,7 +144,8 @@ const Timelog = props => {
     try {
       if (viewingUser) {
         return viewingUser.userId;
-      } else if (userId != null) {
+      }
+      if (userId != null) {
         return userId;
       }
       return authUser.userid;
@@ -158,26 +160,36 @@ const Timelog = props => {
 
   const defaultTab = data => {
     const userHaveTask = doesUserHaveTaskWithWBS(data);
-    //change default to time log tab(1) in the following cases:
-    const role = authUser.role;
+    // change default to time log tab(1) in the following cases:
+    const { role } = authUser;
     let tab = 0;
     /* To set the Task tab as defatult this.userTask is being watched.
     Accounts with no tasks assigned to it return an empty array.
     Accounts assigned with tasks with no wbs return and empty array.
     Accounts assigned with tasks with wbs return an array with that wbs data.
     The problem: even after unassigning tasks the array keeps the wbs data.
-    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks.*/
+    That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks. */
 
-    //if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-    role === 'Volunteer' && userHaveTask.length > 0
-      ? (tab = 0)
-      : role === 'Volunteer' && userHaveTask.length === 0
-      ? (tab = 1)
-      : null;
+    // if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
+    if (role === 'Volunteer' && userHaveTask.length > 0) {
+      tab = 0;
+    } else if (role === 'Volunteer' && userHaveTask.length === 0) {
+      tab = 1;
+    }
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
     if (!props.isDashboard) {
       tab = 1;
     }
+
+    const tabMapping = {
+      '#tasks': 0,
+      '#currentWeek': 1,
+      '#lastWeek': 2,
+      '#beforeLastWeek': 3,
+      '#dateRange': 4,
+      '#weeklySummaries': 5,
+      '#badgesearned': 6,
+    };
 
     if (location.hash) {
       const redirectToTab = tabMapping[location.hash];
@@ -188,49 +200,40 @@ const Timelog = props => {
     return tab;
   };
 
-  const tabMapping = {
-    '#tasks': 0,
-    '#currentWeek': 1,
-    '#lastWeek': 2,
-    '#beforeLastWeek': 3,
-    '#dateRange': 4,
-    '#weeklySummaries': 5,
-    '#badgesearned': 6,
+  const changeTab = tab => {
+    if (tab === 6) {
+      props.resetBadgeCount(displayUserId);
+    }
+
+    // Clear the hash to trigger the useEffect on hash change
+    if (location.hash) {
+      window.location.hash = '';
+    }
+
+    setTimeLogState({
+      ...timeLogState,
+      activeTab: tab,
+    });
   };
 
   useEffect(() => {
+    // eslint-disable-next-line no-undef
     const tab = tabMapping[location.hash];
     if (tab !== undefined) {
       changeTab(tab);
     }
   }, [location.hash]); // This effect will run whenever the hash changes
 
-  /*---------------- methods -------------- */
-  const updateTimeEntryItems = () => {
-    const allTimeEntryItems = generateAllTimeEntryItems();
-    setCurrentWeekEntries(allTimeEntryItems[0]);
-    setLastWeekEntries(allTimeEntryItems[1]);
-    setBeforeLastEntries(allTimeEntryItems[2]);
-    setPeriodEntries(allTimeEntryItems[3]);
-  };
-
-  const generateAllTimeEntryItems = () => {
-    const currentWeekEntries = generateTimeEntries(timeEntries.weeks[0], 0);
-    const lastWeekEntries = generateTimeEntries(timeEntries.weeks[1], 1);
-    const beforeLastEntries = generateTimeEntries(timeEntries.weeks[2], 2);
-    const periodEntries = generateTimeEntries(timeEntries.period, 3);
-    return [currentWeekEntries, lastWeekEntries, beforeLastEntries, periodEntries];
-  };
-
   const generateTimeEntries = (data, tab) => {
+    let temp = data;
     if (!timeLogState.projectsSelected.includes('all')) {
-      data = data.filter(
+      temp = data.filter(
         entry =>
           timeLogState.projectsSelected.includes(entry.projectId) ||
           timeLogState.projectsSelected.includes(entry.taskId),
       );
     }
-    return data.map(entry => (
+    return temp.map(entry => (
       /**
        * Need to pass the projects and tasks of the display user here by props drilling,
        * because if access in TimeEntry component, if only any of two states (userProjects and userTasks)
@@ -251,22 +254,39 @@ const Timelog = props => {
     ));
   };
 
-  const loadAsyncData = async userId => {
-    //load the timelog data
+  const generateAllTimeEntryItems = () => {
+    const cwe = generateTimeEntries(timeEntries.weeks[0], 0);
+    const lwe = generateTimeEntries(timeEntries.weeks[1], 1);
+    const ble = generateTimeEntries(timeEntries.weeks[2], 2);
+    const pe = generateTimeEntries(timeEntries.period, 3);
+    return [cwe, lwe, ble, pe];
+  };
+
+  /* ---------------- methods -------------- */
+  const updateTimeEntryItems = () => {
+    const allTimeEntryItems = generateAllTimeEntryItems();
+    setCurrentWeekEntries(allTimeEntryItems[0]);
+    setLastWeekEntries(allTimeEntryItems[1]);
+    setBeforeLastEntries(allTimeEntryItems[2]);
+    setPeriodEntries(allTimeEntryItems[3]);
+  };
+
+  const loadAsyncData = async uid => {
+    // load the timelog data
     setTimeLogState({ ...timeLogState, isTimeEntriesLoading: true });
     try {
       await Promise.all([
-        props.getUserProfile(userId),
-        props.getTimeEntriesForWeek(userId, 0),
-        props.getTimeEntriesForWeek(userId, 1),
-        props.getTimeEntriesForWeek(userId, 2),
-        props.getTimeEntriesForPeriod(userId, timeLogState.fromDate, timeLogState.toDate),
+        props.getUserProfile(uid),
+        props.getTimeEntriesForWeek(uid, 0),
+        props.getTimeEntriesForWeek(uid, 1),
+        props.getTimeEntriesForWeek(uid, 2),
+        props.getTimeEntriesForPeriod(uid, timeLogState.fromDate, timeLogState.toDate),
         props.getAllRoles(),
-        props.getUserProjects(userId),
-        props.getUserTasks(userId),
+        props.getUserProjects(uid),
+        props.getUserTasks(uid),
       ]);
 
-      const url = ENDPOINTS.TASKS_BY_USERID(userId);
+      const url = ENDPOINTS.TASKS_BY_USERID(uid);
       const res = await axios.get(url);
 
       const data = res.data.length > 0 ? res.data : [];
@@ -274,6 +294,7 @@ const Timelog = props => {
       setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
       setInitialTab(defaultTabValue);
     } catch (e) {
+      // eslint-disable-next-line no-console
       console.log(e);
     }
   };
@@ -290,8 +311,8 @@ const Timelog = props => {
     setTimeLogState({ ...timeLogState, timeEntryFormModal: !timeLogState.timeEntryFormModal });
   };
 
-  const showSummary = isAuthUser => {
-    if (isAuthUser) {
+  const showSummary = user => {
+    if (user) {
       setTimeLogState({ ...timeLogState, summary: true });
       setTimeout(() => {
         const elem = document.getElementById('weeklySum');
@@ -316,26 +337,15 @@ const Timelog = props => {
     * Tangible Time: By default, the “Tangible” box is clicked. Tangible time is any time spent working on your Projects/Tasks and counts towards your committed time for the week and also the time allocated for your task.
     * Intangible Time: Clicking the Tangible box OFF will mean you are logging “Intangible Time.” This is for time not related to your tasks OR for time you need a manager to change to “Tangible” for you because you were working away from your computer or made a mistake and are trying to manually log time. Intangible time will not be counted towards your committed time for the week or your tasks. “Intangible” time changed by a manager to “Tangible” time WILL be counted towards your committed time for the week and whatever task it is logged towards. For Blue Square purposes, changing Intangible Time to Tangible Time for any reason other than work away from your computer will count and be recorded in the system the same as a time edit. `;
 
+    const paragraphs = str.split('\n').map(item => ({
+      id: item.slice(0, 10), // Use a portion of the content as a unique identifier
+      content: item,
+    }));
+
     setTimeLogState({
       ...timeLogState,
       infoModal: !timeLogState.infoModal,
-      information: str.split('\n').map((item, i) => <p key={i}>{item}</p>),
-    });
-  };
-
-  const changeTab = tab => {
-    if (tab === 6) {
-      props.resetBadgeCount(displayUserId);
-    }
-
-    // Clear the hash to trigger the useEffect on hash change
-    if (location.hash) {
-      window.location.hash = '';
-    }
-
-    setTimeLogState({
-      ...timeLogState,
-      activeTab: tab,
+      information: paragraphs.map(({ id, content }) => <p key={id}>{content}</p>),
     });
   };
 
@@ -344,7 +354,7 @@ const Timelog = props => {
   };
 
   const handleSearch = e => {
-    //check if the toDate is before the fromDate
+    // check if the toDate is before the fromDate
     if (moment(timeLogState.fromDate).isAfter(moment(timeLogState.toDate))) {
       alert('Invalid Date Range: the From Date must be before the To Date');
     } else {
@@ -365,49 +375,45 @@ const Timelog = props => {
       timeLogState.activeTab === 5 ||
       timeLogState.activeTab === 6
     ) {
-      return <></>;
-    } else if (timeLogState.activeTab === 4) {
+      return null;
+    }
+    if (timeLogState.activeTab === 4) {
       return (
         <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
           Viewing time Entries from <b>{formatDate(timeLogState.fromDate)}</b> to{' '}
           <b>{formatDate(timeLogState.toDate)}</b>
         </p>
       );
-    } else {
-      return (
-        <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
-          Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
-          <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
-        </p>
-      );
     }
+    return (
+      <p className={`ml-1 responsive-font-size ${darkMode ? 'text-light' : ''}`}>
+        Viewing time Entries from <b>{formatDate(startOfWeek(timeLogState.activeTab - 1))}</b> to{' '}
+        <b>{formatDate(endOfWeek(timeLogState.activeTab - 1))}</b>
+      </p>
+    );
   };
 
-  const makeBarData = userId => {
-    //pass the data to summary bar
+  const makeBarData = uid => {
+    // pass the data to summary bar
     const weekEffort = calculateTotalTime(timeEntries.weeks[0], true);
     setTimeLogState({ ...timeLogState, currentWeekEffort: weekEffort });
     if (props.isDashboard) {
-      props.passSummaryBarData({ personId: userId, tangibletime: weekEffort });
+      props.passSummaryBarData({ personId: uid, tangibletime: weekEffort });
     } else {
-      setSummaryBarData({ personId: userId, tangibletime: weekEffort });
+      setSummaryBarData({ personId: uid, tangibletime: weekEffort });
     }
   };
 
   const buildOptions = () => {
-    const projectsObject = {};
-    const options = [
-      <option className="responsive-font-size" value="all" key="TimeLogDefaultProjectOrTask">
-        Select Project/Task (all)
-      </option>,
-    ];
-    displayUserProjects.forEach(project => {
+    const projectsObject = displayUserProjects.reduce((acc, project) => {
       const { projectId } = project;
-      project.WBSObject = {};
-      projectsObject[projectId] = project;
-    });
+      acc[projectId] = { ...project, WBSObject: {} };
+      return acc;
+    }, {});
+
     disPlayUserTasks.forEach(task => {
       const { projectId, wbsId, _id: taskId, wbsName, projectName } = task;
+
       if (!projectsObject[projectId]) {
         projectsObject[projectId] = {
           projectName,
@@ -432,14 +438,21 @@ const Timelog = props => {
       }
     });
 
-    for (const [projectId, project] of Object.entries(projectsObject)) {
+    const options = [
+      <option className="responsive-font-size" value="all" key="TimeLogDefaultProjectOrTask">
+        Select Project/Task (all)
+      </option>,
+    ];
+
+    Object.entries(projectsObject).forEach(([projectId, project]) => {
       const { projectName, WBSObject } = project;
       options.push(
         <option className="responsive-font-size" value={projectId} key={`TimeLog_${projectId}`}>
           {projectName}
         </option>,
       );
-      for (const [wbsId, WBS] of Object.entries(WBSObject)) {
+
+      Object.entries(WBSObject).forEach(([wbsId, WBS]) => {
         const { wbsName, taskObject } = WBS;
         options.push(
           <option
@@ -451,40 +464,38 @@ const Timelog = props => {
             {`\u2003WBS: ${wbsName}`}
           </option>,
         );
-        for (const [taskId, task] of Object.entries(taskObject)) {
+
+        Object.entries(taskObject).forEach(([taskId, task]) => {
           const { taskName } = task;
           options.push(
             <option className="responsive-font-size" value={taskId} key={`TimeLog_${taskId}`}>
               {`\u2003\u2003 ↳ ${taskName}`}
             </option>,
           );
-        }
-      }
-    }
+        });
+      });
+    });
+
     return options;
   };
 
-  const generateTimeLogItems = userId => {
-    //build the time log component
+  const generateTimeLogItems = uid => {
+    // build the time log component
     const options = buildOptions();
     setProjectOrTaskOptions(options);
     updateTimeEntryItems();
-    makeBarData(userId);
+    makeBarData(uid);
   };
-
-  const handleUpdateTask = useCallback(() => {
-    setShouldFetchData(true);
-  }, []);
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
     setViewingUser(sessionStorageData || false);
-    if (sessionStorageData && sessionStorageData.userId != authUser.userId) {
+    if (sessionStorageData && sessionStorageData.userId !== authUser.userId) {
       setDisplayUserId(sessionStorageData.userId);
     }
   };
 
-  /*---------------- useEffects -------------- */
+  /* ---------------- useEffects -------------- */
 
   // Update user ID if it changes in the URL
   useEffect(() => {
@@ -532,10 +543,20 @@ const Timelog = props => {
     };
   }, []);
 
+  const containerStyle = () => {
+    if (darkMode) {
+      if (!props.isDashboard) {
+        return { padding: '0 15px 300px 15px' };
+      }
+      return {};
+    }
+    return {};
+  };
+
   return (
     <div
       className={`container-timelog-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}
-      style={darkMode ? (!props.isDashboard ? { padding: '0 15px 300px 15px' } : {}) : {}}
+      style={containerStyle()}
     >
       {!props.isDashboard ? (
         <Container fluid>
@@ -549,14 +570,12 @@ const Timelog = props => {
         </Container>
       ) : (
         <Container style={{ textAlign: 'right', minWidth: '100%' }}>
-          {props.isDashboard ? (
-            <></>
-          ) : (
+          {!props.isDashboard && (
             <EditableInfoModal
               areaName="DashboardTimelog"
               areaTitle="Timelog"
               fontSize={30}
-              isPermissionPage={true}
+              isPermissionPage
               role={authUser.role}
               darkMode={darkMode}
             />
@@ -600,7 +619,7 @@ const Timelog = props => {
                             areaName="TasksAndTimelogInfoPoint"
                             areaTitle="Tasks and Timelogs"
                             fontSize={24}
-                            isPermissionPage={true}
+                            isPermissionPage
                             role={authUser.role} // Pass the 'role' prop to EditableInfoModal
                             darkMode={darkMode}
                           />
@@ -901,53 +920,48 @@ const Timelog = props => {
                       </Form>
                     )}
                     {timeLogState.activeTab === 0 ||
-                    timeLogState.activeTab === 5 ||
-                    timeLogState.activeTab === 6 ? (
-                      <></>
-                    ) : (
-                      <Form className="mb-2 responsive-font-size">
-                        <FormGroup>
-                          <Label
-                            htmlFor="projectSelected"
-                            className={'mr-1 ml-1 mb-1 align-top ' + (darkMode ? 'text-light' : '')}
-                          >
-                            Filter Entries by Project and Task:
-                          </Label>
-                          <Input
-                            type="select"
-                            name="projectSelected"
-                            id="projectSelected"
-                            value={timeLogState.projectsSelected}
-                            title="Ctrl + Click to select multiple projects and tasks to filter."
-                            onChange={e => {
-                              setTimeLogState({
-                                ...timeLogState,
-                                projectsSelected: Array.from(
-                                  e.target.selectedOptions,
-                                  option => option.value,
-                                ),
-                              });
-                            }}
-                            multiple
-                            className={darkMode ? 'bg-yinmn-blue text-light' : ''}
-                          >
-                            {projectOrTaskOptions}
-                          </Input>
-                        </FormGroup>
-                      </Form>
-                    )}
+                      timeLogState.activeTab === 5 ||
+                      (timeLogState.activeTab === 6 && (
+                        <Form className="mb-2 responsive-font-size">
+                          <FormGroup>
+                            <Label
+                              htmlFor="projectSelected"
+                              className={`mr-1 ml-1 mb-1 align-top ${darkMode ? 'text-light' : ''}`}
+                            >
+                              Filter Entries by Project and Task:
+                            </Label>
+                            <Input
+                              type="select"
+                              name="projectSelected"
+                              id="projectSelected"
+                              value={timeLogState.projectsSelected}
+                              title="Ctrl + Click to select multiple projects and tasks to filter."
+                              onChange={e => {
+                                setTimeLogState({
+                                  ...timeLogState,
+                                  projectsSelected: Array.from(
+                                    e.target.selectedOptions,
+                                    option => option.value,
+                                  ),
+                                });
+                              }}
+                              multiple
+                              className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+                            >
+                              {projectOrTaskOptions}
+                            </Input>
+                          </FormGroup>
+                        </Form>
+                      ))}
 
-                    {timeLogState.activeTab === 0 ||
-                    timeLogState.activeTab === 5 ||
-                    timeLogState.activeTab === 6 ? (
-                      <></>
-                    ) : (
+                    {![0, 5, 6].includes(timeLogState.activeTab) && (
                       <EffortBar
                         activeTab={timeLogState.activeTab}
                         projectsSelected={timeLogState.projectsSelected}
                         roles={roles}
                       />
                     )}
+
                     <TabPane tabId={0}>
                       <TeamMemberTasks filteredUserTeamIds={props.filteredUserTeamIds} />
                     </TabPane>
@@ -970,7 +984,7 @@ const Timelog = props => {
       )}
     </div>
   );
-};
+}
 
 Timelog.prototype = {
   userId: PropTypes.string,

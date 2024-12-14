@@ -27,7 +27,6 @@ src/components/TaskEditSuggestions/**
 src/components/TeamLocations/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
-src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/Announcements/**
