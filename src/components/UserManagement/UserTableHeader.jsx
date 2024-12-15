@@ -13,6 +13,7 @@ import {
   FIRST_NAME,
   LAST_NAME,
   ROLE,
+  JOB_TITLE,
   EMAIL,
   WKLY_COMMITTED_HRS,
   PAUSE,
@@ -195,7 +196,32 @@ const UserTableHeader = React.memo(
             })()}
           </div>
         </th>
-
+        <th scope="col" id="usermanagement_jobTitle" className="">
+          <div className="text-center">
+            <span className="m-auto">{JOB_TITLE}</span>
+            {(() => {
+              if (authRole === 'Owner') {
+                if (editFlag.jobTitle === 1) {
+                  return (
+                    <FontAwesomeIcon
+                      icon={faEdit}
+                      className="editbutton"
+                      onClick={() => enableEdit({ ...editFlag, jobTitle: 0 })}
+                    />
+                  );
+                }
+                return (
+                  <FontAwesomeIcon
+                    icon={faSave}
+                    className="editbutton"
+                    onClick={() => disableEdit({ ...editFlag, jobTitle: 1 })}
+                  />
+                );
+              }
+              return <> </>;
+            })()}
+          </div>
+        </th>
         <th scope="col" id="usermanagement_pause">
           <div className="text-center m-auto">{PAUSE}</div>
         </th>
