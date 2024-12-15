@@ -16,7 +16,7 @@ import { createNewBadge, closeAlert } from '../../actions/badgeManagement';
 import badgeTypes from './BadgeTypes';
 
 function CreateNewBadgePopup(props) {
-  const darkMode = props.darkMode;
+  const { darkMode } = props;
 
   const [badgeName, setBadgeName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -226,8 +226,8 @@ function CreateNewBadgePopup(props) {
         </UncontrolledTooltip>
         <Input type="select" name="selectType" id="badgeType" value={type} onChange={handleChange}>
           <option value="Custom">Custom</option>
-          {badgeTypes.map((element, i) => (
-            <option key={i}>{element}</option>
+          {badgeTypes.map(element => (
+            <option key={element}>{element}</option>
           ))}
         </Input>
       </FormGroup>

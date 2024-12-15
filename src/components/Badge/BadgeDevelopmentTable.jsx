@@ -239,7 +239,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="info"
-                    disabled = {!canUpdateBadges}
+                    disabled={!canUpdateBadges}
                     onClick={() => onEditButtonClick(value)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -250,7 +250,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="danger"
-                    disabled = {!canDeleteBadges}
+                    disabled={!canDeleteBadges}
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -283,13 +283,7 @@ function BadgeDevelopmentTable(props) {
         >
           <p
             className={`${
-              props.color === 'success'
-                ? darkMode
-                  ? 'text-success'
-                  : 'text-success'
-                : darkMode
-                ? 'text-danger'
-                : 'text-danger'
+              props.color === 'success' ? 'text-success' : 'text-danger'
             } font-weight-bold mb-0`}
           >
             {props.message}
