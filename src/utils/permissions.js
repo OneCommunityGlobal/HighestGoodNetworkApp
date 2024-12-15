@@ -5,11 +5,11 @@
  * @param {boolean} viewingUser indicate whether to check authUser or other user. Default to `false` 
  * @returns 
  */
-const hasPermission = (action, viewingUser = false) => {
+const hasPermission = (action, viewingUser = false, userRoleOverride = null) => {
   return (dispatch, getState) => {
     const state = getState();
     const rolePermissions = state.role.roles;
-    const userRole = viewingUser ? state.userProfile.role : state.auth.user.role;
+    const userRole = userRoleOverride || (viewingUser ? state.userProfile.role : state.auth.user.role);
     const userPermissions = viewingUser 
       ? state.userProfile.permissions?.frontPermissions 
       : state.auth.user.permissions?.frontPermissions;
