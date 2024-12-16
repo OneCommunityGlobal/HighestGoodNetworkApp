@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
-import StatisticsTab from '../StatisticsTab/StatisticsTab';
-import { VOLUNTEER_ACTIVITIES_TAB } from '../../../constants/totalOrgSummary';
 import { normalizeVolunteerActivities } from 'utils/totalOrgSummary';
+import { VOLUNTEER_ACTIVITIES_TAB } from '../../../constants/totalOrgSummary';
+import StatisticsTab from '../StatisticsTab/StatisticsTab';
 
 function VolunteerActivities(props) {
   const normalizedData = useMemo(() => normalizeVolunteerActivities(props), [props]);

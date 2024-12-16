@@ -1,7 +1,7 @@
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
+import { normalizeVolunteerStatus } from 'utils/totalOrgSummary';
 import { VOLUNTEER_STATUS_TAB } from '../../../constants/totalOrgSummary';
 import StatisticsTab from '../StatisticsTab/StatisticsTab';
-import { normalizeVolunteerStatus } from 'utils/totalOrgSummary';
 
 function VolunteerStatus({ volunteerStatus, totalHoursWorked }) {
   const normalizedData = useMemo(

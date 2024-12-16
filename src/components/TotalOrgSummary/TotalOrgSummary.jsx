@@ -1,11 +1,9 @@
 /* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
-
 import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
-
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -20,18 +18,17 @@ const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
 
 function TotalOrgSummary(props) {
-  const { darkMode, loading, error, getTotalOrgSummary, hasPermission } = props;
+  const { darkMode, loading, error } = props;
   const [volunteerStats, setVolunteerStats] = useState(null);
 
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   useEffect(() => {
     const fetchVolunteerStats = async () => {
       try {
-        const volunteerStatsResponse = await getTotalOrgSummary(startDate, endDate);
+        const volunteerStatsResponse = await props.getTotalOrgSummary(startDate, endDate);
         setVolunteerStats(volunteerStatsResponse.data);
-        await hasPermission('');
-      } catch (error) {
-        console.log(error);
+        await props.hasPermission('');
+      } catch (catchFetchError) {
         setIsVolunteerFetchingError(true);
       }
     };
