@@ -1,0 +1,108 @@
+/* COLOR CONSTANTS TO BE REMOVED - INCLUDING THEIR CLASSES */
+:root {
+  --color-active-volunteers-tab-bg: #e8e8ff;
+  --color-active-volunteers-shape-bg: #cbcbfe;
+  --color-new-volunteers-tab-bg: #f3fcff;
+  --color-new-volunteers-shape-bg: #c1effb;
+  --color-deactivated-volunteers-tab-bg: #ffe9fa;
+  --color-deactivated-volunteers-shape-bg: #fecff3;
+  --color-total-hours-worked-tab-bg: #dffddd;
+  --color-total-hours-worked-shape-bg: #baf0b6;
+  --color-tab-bg: aquamarine;
+  --color-decrease-percentage: #c82f2f;
+  --color-increase-percentage: #328d1b;
+}
+
+.statistics-tab-holder {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: var(--color-tab-bg);
+  width: 100%;
+  max-width: 300px;
+  border-radius: 1.6rem;
+  height: auto;
+  padding: 0.8rem;
+  box-sizing: border-box;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e0e0e0;
+  margin: 0.5rem;
+}
+
+.statistics-title {
+  color: #000000;
+  font-size: larger;
+  text-align: center;
+}
+
+.statistics-number-shape {
+  height: 3.6rem;
+  width: 5rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 50%;
+}
+
+.statistics-number {
+  color: #000000;
+}
+
+.statistics-percentage {
+  margin-top: 0.75rem;
+  font-size: medium;
+}
+
+.statistics-percentage-increase {
+  color: var(--color-increase-percentage);
+}
+.statistics-percentage-decrease {
+  color: var(--color-decrease-percentage);
+}
+
+.active-volunteers-tab-bg-color {
+  background-color: var(--color-active-volunteers-tab-bg);
+}
+
+.active-volunteers-shape-bg-color {
+  background-color: var(--color-active-volunteers-shape-bg);
+}
+
+.new-volunteers-tab-bg-color {
+  background-color: var(--color-new-volunteers-tab-bg);
+}
+
+.new-volunteers-shape-bg-color {
+  background-color: var(--color-new-volunteers-shape-bg);
+}
+
+.deactivated-volunteers-tab-bg-color {
+  background-color: var(--color-deactivated-volunteers-tab-bg);
+}
+
+.deactivated-volunteers-shape-bg-color {
+  background-color: var(--color-deactivated-volunteers-shape-bg);
+}
+
+.total-hours-worked-tab-bg-color {
+  background-color: var(--color-total-hours-worked-tab-bg);
+}
+
+.total-hours-worked-shape-bg-color {
+  background-color: var(--color-total-hours-worked-shape-bg);
+}
+
+@media (max-width: 768px) {
+  .statistics-tab-holder {
+    width: 48%;
+    margin: 1%;
+  }
+}
+
+@media (max-width: 480px) {
+  .statistics-tab-holder {
+    width: 100%;
+    margin: 0.5rem 0;
+  }
+}

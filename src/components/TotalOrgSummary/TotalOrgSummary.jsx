@@ -1,11 +1,9 @@
 /* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
-
 import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
-
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -13,19 +11,32 @@ import './TotalOrgSummary.css';
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
+import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
 
 function TotalOrgSummary(props) {
   const { darkMode, loading, error } = props;
+  const [volunteerStats, setVolunteerStats] = useState(null);
 
+  const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   useEffect(() => {
-    props.getTotalOrgSummary(startDate, endDate);
-    props.hasPermission('');
-  }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
+    const fetchVolunteerStats = async () => {
+      try {
+        const volunteerStatsResponse = await props.getTotalOrgSummary(startDate, endDate);
+        setVolunteerStats(volunteerStatsResponse.data);
+        await props.hasPermission('');
+      } catch (catchFetchError) {
+        setIsVolunteerFetchingError(true);
+      }
+    };
 
-  if (error) {
+    fetchVolunteerStats();
+  }, [startDate, endDate]);
+
+  if (error || isVolunteerFetchingError) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Row
@@ -52,6 +63,7 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
+
   return (
     <Container
       fluid
@@ -69,7 +81,12 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <article>
+                <VolunteerStatus
+                  volunteerStatus={volunteerStats?.volunteerNumberStats}
+                  totalHoursWorked={volunteerStats?.totalHoursWorked}
+                />
+              </article>
             </div>
           </Col>
         </Row>
@@ -78,7 +95,17 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <article>
+                <VolunteerActivities
+                  totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+                  totalActiveTeams={volunteerStats?.totalActiveTeams}
+                  completedTasks={volunteerStats?.tasksStats[1]}
+                  totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+                  volunteersCompletedAssignedHours={
+                    volunteerStats?.volunteersCompletedAssignedHours
+                  }
+                />
+              </article>
             </div>
           </Col>
         </Row>
