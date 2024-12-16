@@ -14,6 +14,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
@@ -644,6 +645,27 @@ function Index({ summary, weekIndex, allRoleInfo, auth }) {
     return targetLink;
   }, undefined);
 
+  const summarySubmissionDate = moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(weekIndex, 'week')
+    .format('YYYY-MM-DD');
+
+  const durationSinceStarted = calculateDurationBetweenDates(
+    summarySubmissionDate,
+    summary?.createdDate.split('T')[0],
+  );
+
+  const handleIconContent = duration => {
+    if (duration.months >= 5.8 && duration.months <= 6.2) {
+      return '6M';
+    }
+    if (duration.years >= 0.9) {
+      return `${Math.round(duration.years)}Y`;
+    }
+    return null;
+  };
+
   return (
     <>
       <b>Name: </b>
@@ -673,6 +695,13 @@ function Index({ summary, weekIndex, allRoleInfo, auth }) {
               info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
               auth={auth}
             />
+          )}
+          {showTrophyIcon(summarySubmissionDate, summary?.createdDate.split('T')[0]) && (
+            <i className="fa fa-trophy" style={{ marginLeft: '10px', fontSize: '25px' }}>
+              <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                {handleIconContent(durationSinceStarted)}
+              </p>
+            </i>
           )}
         </div>
       </div>
