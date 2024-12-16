@@ -151,7 +151,6 @@ const UserProfileModal = props => {
       username: `${userProfile.firstName} ${userProfile.lastName}`,
       warningText: warningData.title,
     });
-    // setToggleLogWarning(prev => !prev);
 
     if (warningData.warnings.length < 2) {
       setDisplayWarningModal(false);
@@ -166,8 +165,6 @@ const UserProfileModal = props => {
     handleLogWarning(warningData);
 
     modifyBlueSquares(id, dateStamp, summary, 'delete');
-    // setDisplayWarningModal(false);
-    // setShowSpinner(false);
   };
   function checkFields(field1, field2) {
     // console.log('f1:', field1, ' f2:', field2);
@@ -466,7 +463,7 @@ const UserProfileModal = props => {
           {type === 'image' && modalMessage}
         </ModalBody>
 
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''} style={{}}>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           {type === 'addBlueSquare' && (
             <Button
               color="danger"
@@ -483,14 +480,6 @@ const UserProfileModal = props => {
 
           {type === 'modBlueSquare' && (
             <>
-              {/* <div
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  justifyContent: 'center',
-                  alignItems: 'flex-start',
-                }} */}
-
               {specialWarnings.map(warning => (
                 <OverlayTrigger
                   key={warning.abbreviation}
@@ -543,10 +532,8 @@ const UserProfileModal = props => {
                       <span>User has received maximum warnings</span>
                     )} */}
                 </OverlayTrigger>
-                // </div>
               ))}
-              {
-                //BOTH WILL NEED TO BE ADJUSTED!
+              {/* {
                 <OverlayTrigger
                   placement="top"
                   delay={{ show: 100, hide: 100 }}
@@ -572,7 +559,7 @@ const UserProfileModal = props => {
                     Both
                   </Button>
                 </OverlayTrigger>
-              }
+              } */}
 
               {canEditInfringements && (
                 <Button
