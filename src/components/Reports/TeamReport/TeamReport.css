@@ -5,8 +5,9 @@
 }
 
 .team-report-main-info-wrapper {
-  margin-top: 24px;
-  height: 60px;
+  margin-top: 10px;
+  height:fit-content;
+  width: 100%;
 }
 
 .team-report-main-info-id {
@@ -88,4 +89,10 @@
   align-items: flex-start;
   justify-content: center;
   gap: 0.5rem;
+}
+
+.team-report-last-updated {
+  font-size: 1rem;
+  margin-top: 0;
+  margin-left: -80px;
 }
