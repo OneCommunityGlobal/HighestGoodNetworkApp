@@ -1,36 +1,45 @@
 /* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 
 import hasPermission from 'utils/permissions';
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
 
 import SkeletonLoading from '../common/SkeletonLoading';
-import StatisticsTab from './StatisticsTab/StatisticsTab';
 import '../Header/DarkMode.css';
-import {
-  VOLUNTEER_STATUS_TAB as volunteerStatusTabs,
-  VOLUNTEER_ACTIVITIES_TAB as volunteerActivitiesTab,
-} from '../../constants/totalOrgSummary';
 import './TotalOrgSummary.css';
 
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
+import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
 
 function TotalOrgSummary(props) {
-  const { darkMode, loading, error } = props;
+  const { darkMode, loading, error, getTotalOrgSummary, hasPermission } = props;
+  const [volunteerStats, setVolunteerStats] = useState(null);
 
+  const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   useEffect(() => {
-    props.getTotalOrgSummary(startDate, endDate);
-    props.hasPermission('');
-  }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
+    const fetchVolunteerStats = async () => {
+      try {
+        const volunteerStatsResponse = await getTotalOrgSummary(startDate, endDate);
+        setVolunteerStats(volunteerStatsResponse.data);
+        await hasPermission('');
+      } catch (error) {
+        console.log(error);
+        setIsVolunteerFetchingError(true);
+      }
+    };
 
-  if (error) {
+    fetchVolunteerStats();
+  }, [startDate, endDate]);
+
+  if (error || isVolunteerFetchingError) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Row
@@ -57,6 +66,7 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
+
   return (
     <Container
       fluid
@@ -74,29 +84,11 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <article
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-around',
-                  flexWrap: 'wrap',
-                  width: '100%',
-                  alignItems: 'center',
-                  marginTop: '2rem',
-                  marginBottom: '2rem',
-                }}
-              >
-                {volunteerStatusTabs.map(volunteerStatusTab => (
-                  <StatisticsTab
-                    title={volunteerStatusTab.title}
-                    number={volunteerStatusTab.number}
-                    percentageChange={volunteerStatusTab.percentageChange}
-                    type={volunteerStatusTab.type}
-                    isIncreased={volunteerStatusTab.isIncreased}
-                    tabBackgroundColor={volunteerStatusTab.tabBackgroundColor}
-                    shapeBackgroundColor={volunteerStatusTab.shapeBackgroundColor}
-                    key={volunteerStatusTab.type}
-                  />
-                ))}
+              <article>
+                <VolunteerStatus
+                  volunteerStatus={volunteerStats?.volunteerNumberStats}
+                  totalHoursWorked={volunteerStats?.totalHoursWorked}
+                />
               </article>
             </div>
           </Col>
@@ -106,28 +98,16 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <article
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-around',
-                  flexWrap: 'wrap',
-                  width: '100%',
-                  alignItems: 'center',
-                  marginTop: '2rem',
-                }}
-              >
-                {volunteerActivitiesTab.map(volunteerActivityTab => (
-                  <StatisticsTab
-                    title={volunteerActivityTab.title}
-                    number={volunteerActivityTab.number}
-                    percentageChange={volunteerActivityTab.percentageChange}
-                    type={volunteerActivityTab.type}
-                    isIncreased={volunteerActivityTab.isIncreased}
-                    tabBackgroundColor={volunteerActivityTab.tabBackgroundColor}
-                    shapeBackgroundColor={volunteerActivityTab.shapeBackgroundColor}
-                    key={volunteerActivityTab.type}
-                  />
-                ))}
+              <article>
+                <VolunteerActivities
+                  totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+                  totalActiveTeams={volunteerStats?.totalActiveTeams}
+                  completedTasks={volunteerStats?.tasksStats[1]}
+                  totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+                  volunteersCompletedAssignedHours={
+                    volunteerStats?.volunteersCompletedAssignedHours
+                  }
+                />
               </article>
             </div>
           </Col>
