@@ -518,7 +518,7 @@ function UserProfile(props) {
    * @param {String} operation 'add' | 'update' | 'delete'
    */
   const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
-    setShowModal(false);
+    // setShowModal(false);
     if (operation === 'add') {
       /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
@@ -588,6 +588,7 @@ function UserProfile(props) {
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
       }
     }
+    setShowModal(false);
   };
 
   const fetchSpecialWarnings = async () => {

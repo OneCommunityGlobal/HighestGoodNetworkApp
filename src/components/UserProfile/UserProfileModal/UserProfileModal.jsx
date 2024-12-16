@@ -161,13 +161,12 @@ const UserProfileModal = props => {
     setDisplayWarningModal(true);
   };
   const handleLogNewWarning = warningData => {
-    // setToggleLogWarning(false);
     setShowSpinner(true);
     setWarningType('');
     handleLogWarning(warningData);
-    modifyBlueSquares(id, dateStamp, summary, 'delete');
 
-    setDisplayWarningModal(false);
+    modifyBlueSquares(id, dateStamp, summary, 'delete');
+    // setDisplayWarningModal(false);
     // setShowSpinner(false);
   };
   function checkFields(field1, field2) {

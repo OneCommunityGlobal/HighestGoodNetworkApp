@@ -49,7 +49,7 @@ function WarningModal({
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
         {userProfileHeader ? (
           <ModalHeader className="modal__header--center">
-            {times + ordinal} occurance - choose an action{' '}
+            {times + ordinal} Occurance - Choose an action{' '}
           </ModalHeader>
         ) : (
           <ModalHeader>Issue Warning</ModalHeader>
@@ -63,7 +63,7 @@ function WarningModal({
             The {numberOfWarnings >= 3 ? 'blue square' : 'warning'} will be because they didn&apos;t
             meet the criteria for the following area:{' '}
             <span className="warning__body--bold">
-              {times + ordinal} {warningText}
+              {times}x {warningText}
             </span>
           </p>
           {numberOfWarnings >= 3 && (
@@ -91,8 +91,10 @@ function WarningModal({
                 display: 'flex',
                 justifyContent: 'center',
                 alignItems: 'center',
+                flexDirection: 'column',
               }}
             >
+              <p style={{ margin: 0 }}>Current Track Record</p>
               <WarningItem warnings={warning.warnings} userProfileModal={true} />
             </div>
           )}

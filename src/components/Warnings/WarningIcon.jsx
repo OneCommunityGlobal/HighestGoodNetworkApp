@@ -21,6 +21,7 @@ function WarningIcon({
   warningText,
   handleModalTriggered,
   numberOfWarnings,
+  handleWarningIconClicked,
 }) {
   // const {
   //   id,
@@ -50,7 +51,7 @@ function WarningIcon({
       return;
     }
 
-    props.handleWarningIconClicked({ id, colorAssigned, todaysDate, warningText });
+    handleWarningIconClicked({ id, colorAssigned, todaysDate, warningText });
   };
 
   const popover = (
