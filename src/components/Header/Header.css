@@ -7,11 +7,11 @@
   position: absolute;
   top: 0;
   left: 0;
-  padding: 12px; /* Add some padding for easier clicking */
+  padding: 12px; 
 }
 
 .card-content {
-  padding: 5px; /* Add padding around the card content */
+  padding: 5px; 
   padding-left: 40px;
   padding-right: 40px;
   white-space: pre-line;
@@ -22,6 +22,7 @@
 .navbar {
   z-index: 100;
   white-space: nowrap;
+  margin-bottom: 20px;
 }
 
 .timer-message-section {
@@ -93,5 +94,11 @@
 @media screen and (min-width: 1400px) and (max-width: 1700px) {
   .owner-message {
     display: none;
+  }
+}
+
+@media screen and (max-width: 769px) {
+  .responsive-spacing{
+    margin-right: 5px;
   }
 }

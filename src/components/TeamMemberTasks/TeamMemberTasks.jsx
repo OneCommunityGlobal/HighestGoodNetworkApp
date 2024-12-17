@@ -45,6 +45,7 @@ const TeamMemberTasks = React.memo(props => {
     usersWithTasks,
     usersWithTimeEntries,
     darkMode,
+    filteredUserTeamIds,
   } = props;
 
   const [showTaskNotificationModal, setTaskNotificationModal] = useState(false);
@@ -288,6 +289,13 @@ const TeamMemberTasks = React.memo(props => {
     }
   };
 
+  useEffect(() => {
+    // eslint-disable-next-line
+    renderTeamsList(
+      filteredUserTeamIds && filteredUserTeamIds.length > 0 ? filteredUserTeamIds : null,
+    );
+  }, [filteredUserTeamIds]);
+
   const renderTeamsList = async team => {
     if (!team) {
       if (usersWithTasks.length > 0) {
@@ -311,17 +319,16 @@ const TeamMemberTasks = React.memo(props => {
         }, 3000);
       }
     } else {
-      try {
-        setLoading(true);
-        const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
-        const idUsers = response.data.map(item => item._id);
-        const usersTaks = usersWithTasks.filter(item => idUsers.includes(item.personId));
-        setTeamList(usersTaks);
-        setLoading(false);
-      } catch (error) {
-        toast.error('Error fetching team members:', error);
-        setLoading(false);
+      if (selectedTeamNames.length > 0 || selectedCodes.length > 0 || selectedColors.length > 0) {
+        setSelectedTeamNames([]);
+        setSelectedCodes([]);
+        setSelectedColors([]);
       }
+
+      setLoading(true);
+      const usersTask = usersWithTasks.filter(item => filteredUserTeamIds.includes(item.personId));
+      setTeamList(usersTask);
+      setLoading(false);
     }
   };
 
@@ -335,7 +342,7 @@ const TeamMemberTasks = React.memo(props => {
 
     if (usersWithTasks.length > 0) {
       usersWithTasks.forEach(user => {
-        const teamNames = user.teams?.map(team => team.teamName) ?? [];
+        const teamNames = user.teams !== undefined ? user.teams.map(team => team.teamName) : [];
         const code = user.teamCode || 'noCodeLabel';
         const color = user.weeklySummaryOption || 'noColorLabel';
 
@@ -450,14 +457,20 @@ const TeamMemberTasks = React.memo(props => {
   };
 
   const handleSelectTeamNames = event => {
+    // eslint-disable-next-line
+    filteredUserTeamIds.length > 0 && setTeamList(usersWithTasks);
     setSelectedTeamNames(event);
   };
 
   const handleSelectCodeChange = event => {
+    // eslint-disable-next-line
+    filteredUserTeamIds.length > 0 && setTeamList(usersWithTasks);
     setSelectedCodes(event);
   };
 
   const handleSelectColorChange = event => {
+    // eslint-disable-next-line
+    filteredUserTeamIds.length > 0 && setTeamList(usersWithTasks);
     setSelectedColors(event);
   };
 
@@ -504,67 +517,14 @@ const TeamMemberTasks = React.memo(props => {
           <h1 className={darkMode ? 'text-light' : ''}>Team Member Tasks</h1>
 
           {/* Dropdown for selecting a team */}
-          {isLoading && (userRole === 'Administrator' || userRole === 'Owner') ? (
-            <>
-              <span
-                className={`d-flex justify-content-start align-items-center ${
-                  darkMode ? 'text-light' : 'text-black'
-                }`}
-              >
-                {' '}
-                Loading teams: &nbsp;
-                <Spinner color="primary"></Spinner>
-              </span>
-            </>
-          ) : !isLoading && (userRole === 'Administrator' || userRole === 'Owner') ? (
-            <section className="d-flex flex-row mr-xl-2">
-              <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className="mb-3">
-                <DropdownToggle caret>{selectedTeamName}</DropdownToggle>
-                <DropdownMenu>
-                  {teams.length === 0 ? (
-                    <DropdownItem
-                      onClick={() => toast.warning('Please, create a team to use the filter.')}
-                    >
-                      {'Please, create a team to use the filter.'}
-                    </DropdownItem>
-                  ) : (
-                    teams.map(team => (
-                      <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                        {dropdownName(team.teamName, team.teamName.length)}
-                      </DropdownItem>
-                    ))
-                  )}
-                </DropdownMenu>
-              </Dropdown>
-              &nbsp; &nbsp;
-              {teams.length === 0 ? (
-                <Link to="/teams">
-                  <Button color="success" className="fw-bold" boxstyle={boxStyle}>
-                    Create Team
-                  </Button>
-                </Link>
-              ) : (
-                <Button
-                  color="primary"
-                  onClick={handleToggleButtonClick}
-                  style={{ width: '7rem' }}
-                  className="mb-3 mb-0-md-end"
-                  boxstyle={boxStyle}
-                  disabled={loading}
-                >
-                  {loading ? <Spinner animation="border" size="sm" /> : textButton}
-                </Button>
-              )}
-            </section>
-          ) : !isLoading && userRole !== 'Administrator' && userRole !== 'Owner' ? null : null}
         </section>
         {finishLoading ? (
           <section className=" hours-btn-container flex-wrap ml-2">
-            <div className="mb-2 ">
+            <div className="hours-btn-div">
               <button
                 type="button"
                 className={
-                  ` mr-1 show-time-off-btn ${
+                  `m-1 show-time-off-btn ${
                     showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
                   }` + (darkMode ? ' box-shadow-dark' : '')
                 }
@@ -602,7 +562,8 @@ const TeamMemberTasks = React.memo(props => {
                   key={idx}
                   type="button"
                   className={
-                    `m-1 circle-border ${days} days ` + (darkMode ? 'box-shadow-dark' : '')
+                    `m-1 responsive-btn-size circle-border ${days} days ` +
+                    (darkMode ? 'box-shadow-dark' : '')
                   }
                   title={`Timelogs submitted in the past ${days} days`}
                   style={{
@@ -613,18 +574,48 @@ const TeamMemberTasks = React.memo(props => {
                   }}
                   onClick={() => selectPeriod(days)}
                 >
-                  {days} days
+                  {days} {days === '1' ? 'day' : 'days'}
                 </button>
               ))}
+              <select
+                className={`m-1 mobile-view-select circle-border ${
+                  darkMode ? 'box-shadow-dark' : ''
+                }`}
+                onChange={e => selectPeriod(e.target.value)}
+                value={selectedPeriod}
+                title={`Timelogs submitted in the past ${selectedPeriod} days`}
+                style={{
+                  color: isTimeFilterActive ? 'white' : hrsFilterBtnColorMap[selectedPeriod],
+                  backgroundColor: isTimeFilterActive
+                    ? hrsFilterBtnColorMap[selectedPeriod]
+                    : '#007BFF',
+                  border: `1px solid ${hrsFilterBtnColorMap[selectedPeriod]}`,
+                }}
+              >
+                {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
+                  <option
+                    key={idx}
+                    value={days}
+                    style={{
+                      color: color,
+                      backgroundColor:
+                        selectedPeriod === days && isTimeFilterActive ? color : 'white',
+                      border: `1px solid ${color}`,
+                    }}
+                  >
+                    {days} {days === '1' ? 'day' : 'days'}
+                  </option>
+                ))}
+              </select>
+              <EditableInfoModal
+                areaName="TeamMemberTasksTimeFilterInfoPoint"
+                areaTitle="Team Member Task Time Filter"
+                fontSize={22}
+                isPermissionPage={true}
+                role={authUser.role}
+                darkMode={darkMode}
+              />
             </div>
-            <EditableInfoModal
-              areaName="TeamMemberTasksTimeFilterInfoPoint"
-              areaTitle="Team Member Task Time Filter"
-              fontSize={22}
-              isPermissionPage={true}
-              role={authUser.role}
-              darkMode={darkMode}
-            />
           </section>
         ) : (
           <SkeletonLoading template="TimelogFilter" />

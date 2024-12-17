@@ -16,6 +16,7 @@ import { updateRole, getAllRoles } from '../../actions/role';
 import PermissionList from './PermissionList';
 import permissionLabel from './PermissionsConst';
 import hasPermission from '../../utils/permissions';
+import { roleOperationLabels } from './PermissionsConst';
 
 function RolePermissions(props) {
   const { darkMode } = props;
@@ -27,6 +28,8 @@ function RolePermissions(props) {
   const [disabled, setDisabled] = useState(true);
   const history = useHistory();
   const [showPresetModal, setShowPresetModal] = useState(false);
+  const [showRoleSaveOperationModal, setShowRoleSaveOperationModal] = useState(false);
+  const [showRoleDeleteOperationModal, setShowRoleDelteOperationModal] = useState(false);
   const userProfile = useSelector(state => state.userProfile);
 
   const isEditableRole =
@@ -82,6 +85,17 @@ function RolePermissions(props) {
       toast.success(`Preset created successfully`);
     } else {
       toast.error(`Error creating preset`);
+    }
+  };
+
+  const handleModalOpen = value => {
+    if (value === 'save') {
+      setShowRoleSaveOperationModal(true);
+    } else if (value === 'delete') {
+      setShowRoleDelteOperationModal(true);
+    } else {
+      setShowRoleSaveOperationModal(false);
+      setShowRoleDelteOperationModal(false);
     }
   };
 
@@ -177,7 +191,7 @@ function RolePermissions(props) {
                       className="fa fa-info-circle"
                       onClick={() => {
                         // eslint-disable-next-line no-undef
-                        handleModalOpen('Create New Preset');
+                        handleModalOpen('save');
                       }}
                     />
                   </div>
@@ -199,7 +213,7 @@ function RolePermissions(props) {
                       className="fa fa-info-circle mt-2"
                       onClick={() => {
                         // eslint-disable-next-line no-undef
-                        handleModalOpen('Load Presets');
+                        handleModalOpen('delete');
                       }}
                     />
                   </div>
@@ -257,6 +271,34 @@ function RolePermissions(props) {
           darkMode={darkMode}
         />
       </ul>
+      {roleOperationLabels.map(label => (
+        <Modal
+          isOpen={label.key === 'save' ? showRoleSaveOperationModal : showRoleDeleteOperationModal}
+          toggle={handleModalOpen}
+          id="#modal2-body_new-role--padding"
+          key={label.key}
+          className={darkMode ? 'text-light dark-mode' : ''}
+        >
+          <ModalHeader toggle={handleModalOpen} className={darkMode ? 'bg-space-cadet' : ''}>
+            Role Operation Info
+          </ModalHeader>
+          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{label.description}</ModalBody>
+          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <Button
+              onClick={() =>
+                label.key === 'save'
+                  ? setShowRoleSaveOperationModal(false)
+                  : setShowRoleDelteOperationModal(false)
+              }
+              color="secondary"
+              className="float-left"
+            >
+              {' '}
+              Ok{' '}
+            </Button>
+          </ModalFooter>
+        </Modal>
+      ))}
       <Modal
         className={darkMode ? 'dark-mode text-light' : ''}
         isOpen={deleteRoleModal}

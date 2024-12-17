@@ -28,6 +28,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import hasPermission from '../../utils/permissions';
@@ -54,8 +55,14 @@ function BadgeReport(props) {
     const ctx = canvas.getContext('2d');
     const baseImage = new Image();
     baseImage.crossOrigin = 'anonymous';
+
+    // Fallback image URL or blank image data URL
+    const fallbackImage =
+      'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/wcAAwAB/4H6YwAAAABJRU5ErkJggg=='; // 1x1 transparent PNG
+
     baseImage.src = url.replace('dropbox.com', 'dl.dropboxusercontent.com');
     baseImage.src = baseImage.src.replace('www.dropbox.com', 'dl.dropboxusercontent.com');
+
     baseImage.onload = function handleImageLoad() {
       canvas.width = baseImage.width;
       canvas.height = baseImage.height;
@@ -66,37 +73,50 @@ function BadgeReport(props) {
 
       canvas.remove();
     };
+
+    baseImage.onerror = function handleImageError() {
+      // Use fallback image on error
+      canvas.width = 1;
+      canvas.height = 1;
+      ctx.fillStyle = 'white';
+      ctx.fillRect(0, 0, 1, 1);
+      const uri = canvas.toDataURL('image/png');
+      callback(uri);
+
+      canvas.remove();
+    };
   }
 
   const FormatReportForPdf = (badges, callback) => {
     const bgReport = [];
     bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+  <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
       props.lastName
     }</h4></div>
-    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+  <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+
     for (let i = 0; i < badges.length; i += 1) {
       imageToUri(badges[i].badge.imageUrl, function(uri) {
         bgReport[i + 1] = `
-        <table>
-          <thead>
-            <tr>
-              <th>Badge Image</th>
-              <th>Badge Name, Count Awarded & Badge Description</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td style="width:160px">
-                <div><img height="150" width="150" src=${uri}/></div>
-              </td>
-              <td style="width:500px">
-                <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
-                <div><b>Count:</b> ${badges[i].count}</div>
-                <div><b>Description:</b> ${badges[i].badge.description}</div>
-              </td>
-            </tr>
-          </tbody>
+      <table>
+        <thead>
+          <tr>
+            <th>Badge Image</th>
+            <th>Badge Name, Count Awarded & Badge Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td style="width:160px">
+              <div><img height="150" width="150" src=${uri}/></div>
+            </td>
+            <td style="width:500px">
+              <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
+              <div><b>Count:</b> ${badges[i].count}</div>
+              <div><b>Description:</b> ${badges[i].badge.description}</div>
+            </td>
+          </tr>
+        </tbody>
       </table>
       ${
         (i + 1) % 4 === 0 && i + 1 !== badges.length
@@ -171,8 +191,8 @@ function BadgeReport(props) {
   };
 
   useEffect(() => {
-    setSortBadges(JSON.parse(JSON.stringify(props.badges)) || []);
-    let newBadges = sortBadges.slice();
+    let newBadges = JSON.parse(JSON.stringify(props.badges)) || [];
+
     newBadges.sort((a, b) => {
       if (a.badge.ranking === 0) return 1;
       if (b.badge.ranking === 0) return -1;
@@ -182,18 +202,20 @@ function BadgeReport(props) {
       if (a.badge.badgeName < b.badge.badgeName) return -1;
       return 0;
     });
-    setNumFeatured(0);
-    newBadges.forEach((badge, index) => {
-      if (badge.featured) {
-        setNumFeatured(++numFeatured);
-      }
 
-      if (typeof newBadges[index] === 'string') {
+    // Compute the total number of featured badges once
+    const featuredCount = newBadges.filter(badge => badge.featured).length;
+    setNumFeatured(featuredCount);
+
+    newBadges.forEach((badge, index) => {
+      if (typeof newBadges[index].lastModified === 'string') {
         newBadges[index].lastModified = new Date(newBadges[index].lastModified);
       }
     });
+
     setSortBadges(newBadges);
   }, [props.badges]);
+
 
   const countChange = (badge, index, newValue) => {
     let copyOfExisitingBadges = [...sortBadges];
@@ -260,22 +282,29 @@ function BadgeReport(props) {
     }
   };
 
+
+
   const featuredChange = (badge, index, e) => {
-    let newBadges = sortBadges.slice();
-    if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
-      let count = 0;
-      setNumFeatured(count);
-      newBadges[index].featured = e.target.checked;
-      newBadges.forEach((badge, index) => {
-        if (badge.featured) {
-          setNumFeatured(++count);
-        }
-      });
+    let newBadges = [...sortBadges];
+    const newFeaturedState = e.target.checked;
+
+    // Compute the total number of featured badges, including the new change
+    const totalFeatured = newBadges.reduce((count, b, i) => {
+      if (i === index) {
+        return count + (newFeaturedState ? 1 : 0);
+      }
+      return count + (b.featured ? 1 : 0);
+    }, 0);
+
+    if (totalFeatured <= 5) {
+      // Update the featured state of the badge
+      newBadges[index].featured = newFeaturedState;
+      setNumFeatured(totalFeatured);
+      setSortBadges(newBadges);
     } else {
-      e.target.checked = false;
+      // If the limit is exceeded, prevent the change and show an error
       toast.error('Unfortunately, you may only select five badges to be featured.');
     }
-    setSortBadges(newBadges);
   };
 
   const handleDeleteBadge = oldBadge => {
@@ -295,7 +324,7 @@ function BadgeReport(props) {
   const deleteBadge = () => {
     let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
     if (badgeToDelete.featured) {
-      setNumFeatured(--numFeatured);
+      setNumFeatured(prevNumFeatured => prevNumFeatured - 1);
     }
     setSortBadges(newBadges);
     setShowModal(false);
@@ -304,31 +333,46 @@ function BadgeReport(props) {
 
   const saveChanges = async () => {
     setSavingChanges(true);
-    let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
-    for (let i = 0; i < newBadgeCollection.length; i++) {
-      newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
+    try {
+      let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
+      for (let i = 0; i < newBadgeCollection.length; i++) {
+        newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
+      }
+
+      await props.changeBadgesByUserID(props.userId, newBadgeCollection);
+      await props.getUserProfile(props.userId);
+
+      props.setUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+      props.setOriginalUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+
+      // Display success message
+      toast.success('Badges successfully saved.');
+
+      props.handleSubmit();
+      // Close the modal
+      props.close();
+    } catch (error) {
+      // Handle errors and display error message
+      toast.error('Failed to save badges. Please try again.');
+    } finally {
+      setSavingChanges(false);
     }
-
-    await props.changeBadgesByUserID(props.userId, newBadgeCollection);
-    await props.getUserProfile(props.userId);
-
-    props.setUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.setOriginalUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.handleSubmit();
-    //close the modal
-    props.close();
   };
+
 
   return (
     <div>
       <div className="desktop">
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
-            <thead style={{ zIndex: '10' }}>
+            <thead
+              style={{ zIndex: '10', pointerEvents: 'none' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
+            >
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
@@ -443,7 +487,7 @@ function BadgeReport(props) {
                       <FormGroup check inline style={{ zIndex: '0' }}>
                         <Input
                           /* alternative to using the formgroup
-                          style={{ position: 'static' }} 
+                          style={{ position: 'static' }}
                           */
                           type="checkbox"
                           id={value.badge._id}
@@ -484,6 +528,7 @@ function BadgeReport(props) {
           Export All Badges to PDF
         </Button>
         <Button
+          disabled={numFeatured === 0}
           className="btn--dark-sea-green float-right"
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           onClick={pdfFeaturedDocGenerator}
@@ -515,7 +560,7 @@ function BadgeReport(props) {
       </div>
       <div className="tablet">
         <div style={{ overflow: 'auto', height: '68vh' }}>
-          <Table>
+          <Table className={darkMode ? 'text-light' : ''}>
             <thead style={{ zIndex: '10' }}>
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '93px' }}>Badge</th>
@@ -616,7 +661,7 @@ function BadgeReport(props) {
                               <FormGroup check inline style={{ zIndex: '0' }}>
                                 <Input
                                   /* alternative to using the formgroup
-                                  style={{ position: 'static' }} 
+                                  style={{ position: 'static' }}
                                   */
                                   type="checkbox"
                                   id={value.badge._id}
@@ -684,6 +729,7 @@ function BadgeReport(props) {
             <span>Export All Badges to PDF</span>
           </Button>
           <Button
+            disabled={numFeatured === 0}
             className="btn--dark-sea-green float-right"
             style={{ margin: 5 }}
             onClick={pdfFeaturedDocGenerator}
@@ -712,6 +758,7 @@ function BadgeReport(props) {
               Yes, Delete
             </Button>
           </ModalFooter>
+          <ToastContainer />
         </Modal>
       </div>
     </div>

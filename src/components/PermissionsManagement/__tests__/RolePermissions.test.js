@@ -10,6 +10,12 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { Router } from 'react-router-dom';
 import { createMemoryHistory } from 'history';
+import { ModalContext } from 'context/ModalContext';
+
+const mockModalContext = {
+  modalStatus: false,
+  updateModalStatus: jest.fn(),
+};
 
 const mockStore = configureStore([thunk]);
 let store;
@@ -64,17 +70,19 @@ const flushAllPromises = () => new Promise(setImmediate);
 
 const renderComponent = (newStore, history, newRoleName, newRoleId) => {
   return render(
-    <Router history={history}>
-      <Provider store={newStore}>
-        <RolePermissions
-          userRole={newStore.getState().userProfile.role}
-          role={newRoleName}
-          roleId={newRoleId}
-          header={`${newRoleName} Permissions:`}
-          permissions={mockAdminState.role.roles[5].permissions}
-        />
-      </Provider>
-    </Router>,
+    <ModalContext.Provider value={mockModalContext}>
+      <Router history={history}>
+        <Provider store={newStore}>
+          <RolePermissions
+            userRole={newStore.getState().userProfile.role}
+            role={newRoleName}
+            roleId={newRoleId}
+            header={`${newRoleName} Permissions:`}
+            permissions={mockAdminState.role.roles[5].permissions}
+          />
+        </Provider>
+      </Router>
+    </ModalContext.Provider>
   );
 };
 

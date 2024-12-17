@@ -1,17 +1,55 @@
-
-.pie-chart-title{
-  text-align: left;
-  margin-bottom: 24px;
-
-}
-.pie-chart-description{
+.pie-chart-title {
   display: flex;
-  justify-content: space-around;
-  alignItems: center;
-  backgroundColor: white;
+  justify-content: center;
+  align-items: center;
   overflow: auto;
-  flex-direction: column;
-  align-items: flex-start;
+  flex-direction: row;
   width: 100%;
+  margin-bottom: 16px;
+  padding: 0;
+  background-color: transparent;
+  color: white;
+  margin-top: 15px;
+}
 
+.dark-mode .pie-chart-title h4 {
+  color: white; /* White for dark mode */
+}
+
+
+.pie-chart-description {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+  flex-direction: row;
+  width: 100%;
+  margin-bottom: 16px;
+  padding: 0;
+  background-color: transparent;
+  color: white; /* Ensure description text is white */
+}
+
+.pie-chart-checkbox {
+  margin-left: 8px; 
+}
+
+.dark-mode .all-time-total-text {
+  color: white; /* Ensure the 'all-time-total-text' is white in dark mode */
+}
+
+.dark-mode .pie-chart-description {
+  background-color: transparent;
+  color: white; /* Apply white text color in dark mode */
+}
+
+/* Additional styling for general text in dark mode */
+.dark-mode label,
+.dark-mode h5,
+.dark-mode p {
+  color: white !important; /* Set all labels, headings, and paragraphs to white in dark mode */
+}
+
+.dark-mode .switchContainer {
+  color: white; /* Text in switch container in dark mode */
 }
