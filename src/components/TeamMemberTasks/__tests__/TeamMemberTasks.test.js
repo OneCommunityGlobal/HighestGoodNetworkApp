@@ -78,7 +78,7 @@ const store = mockStore({
 jest.mock('axios');
 
 describe("TeamMemberTasks component",()=>{
-  
+
   it('renders without crashing',()=>{
     axios.get.mockResolvedValue({
       status: 200,
@@ -179,7 +179,7 @@ describe("TeamMemberTasks component",()=>{
 
     const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
     const darkModeElement=container.querySelector('.container.team-member-tasks')
-    const timeOffElement=container.querySelector('.show-time-off-btn.show-time-off-btn-selected ')
+    const timeOffElement=container.querySelector('.show-time-off-btn')
     const hoursCompletedElement=container.querySelector('.team-member-tasks-subtable')
     const oneDayElement=container.querySelector('[title="Timelogs submitted in the past 1 days"]')
     const twoDayElement=container.querySelector('[title="Timelogs submitted in the past 2 days"]')
@@ -215,7 +215,7 @@ describe("TeamMemberTasks component",()=>{
 
     const {container}=render(<Provider store={testStore}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
     const darkModeElement=container.querySelector('.container.team-member-tasks')
-    const timeOffElement=container.querySelector('.show-time-off-btn.show-time-off-btn-selected ')
+    const timeOffElement=container.querySelector('.show-time-off-btn')
     const hoursCompletedElement=container.querySelector('.team-member-tasks-subtable')
     const oneDayElement=container.querySelector('[title="Timelogs submitted in the past 1 days"]')
     const twoDayElement=container.querySelector('[title="Timelogs submitted in the past 2 days"]')
@@ -238,15 +238,13 @@ describe("TeamMemberTasks component",()=>{
       data: '',
     });
     const {container}=render(<Provider store={store}><MemoryRouter><TeamMemberTasks /></MemoryRouter></Provider>)
-    const buttonElement=container.querySelector('[class="m-1 show-time-off-btn show-time-off-btn-selected "]')
-    expect(container.querySelector('[class="show-time-off-calender-svg "]')).not.toBeInTheDocument()
-    expect(container.querySelector('[class="show-time-off-icon "]')).not.toBeInTheDocument()
-    expect(container.querySelector('[class="show-time-off-calender-svg show-time-off-calender-svg-selected"]')).toBeInTheDocument()
-    expect(container.querySelector('[class="show-time-off-icon show-time-off-icon-selected"]')).toBeInTheDocument()
+    const buttonElement=container.querySelector('[class="m-1 show-time-off-btn"]')
+    expect(container.querySelector('[class="show-time-off-calender-svg"]')).toBeInTheDocument()
+    expect(container.querySelector('[class="show-time-off-icon"]')).toBeInTheDocument()
     fireEvent.click(buttonElement)
-    const iconElement=container.querySelector('[class="show-time-off-calender-svg "]')
+    const iconElement=container.querySelector('[class="show-time-off-calender-svg"]')
     expect(iconElement).toBeInTheDocument()
-    const newIconElement=container.querySelector('[class="show-time-off-icon "]')
+    const newIconElement=container.querySelector('[class="show-time-off-icon"]')
     expect(newIconElement).toBeInTheDocument()
   })
   it('check if days button works as expected',()=>{
