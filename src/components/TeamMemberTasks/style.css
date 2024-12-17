@@ -154,7 +154,7 @@
 }
 
 .right-padding-temp-fix {
-  padding-right: 0px !important;
+  padding-right: 0 !important;
 }
 
 .table-row {
@@ -178,7 +178,6 @@
   z-index: 10;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .row-content {
@@ -238,7 +237,6 @@
 }
 
 .taking-time-off-content-btn {
-  background-color: none;
   color: white;
   box-sizing: border-box;
   border: 1px solid white;
@@ -533,7 +531,6 @@
 
 @media only screen and (max-width: 530px) {
   .hours-btn-container{
-    min-width: none;
     padding: 0;
   }
   .team-selector-container{

@@ -1,12 +1,6 @@
 import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import {
-  Dropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Button,
-  Spinner,
   Table,
   Row,
   Col,
@@ -20,20 +14,17 @@ import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import './style.css';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
-import { boxStyle } from 'styles';
 import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import TimeEntry from '../Timelog/TimeEntry';
 import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
-// import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
 import { MultiSelect } from 'react-multi-select-component';
 import { fetchTeamMembersTaskSuccess } from './actions';
 
-import { Link } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
 import { FaCalendarAlt, FaClock } from 'react-icons/fa'
 
