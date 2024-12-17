@@ -25,7 +25,6 @@ src/components/SetupProfile/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamLocations/**
-src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/Timelog/**
 src/components/UserManagement/**

@@ -1,21 +1,17 @@
-import { useState ,useEffect} from 'react';
+import { useState, useEffect } from 'react';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { setUserFollowUp } from '../../actions/followUpActions';
 import { useDispatch, useSelector } from 'react-redux';
+import { setUserFollowUp } from '../../actions/followUpActions';
 import './FollowUpCheckButton.css';
 
-const FollowupCheckButton = ({ moseoverText, user, task }) => {
+function FollowupCheckButton({ moseoverText, user, task }) {
   const dispatch = useDispatch();
   const userFollowUps = useSelector(state => state.userFollowUp?.followUps[user.personId] || []);
   const userFollowUpTask = userFollowUps.filter(ele => ele.taskId === task._id);
   const isChecked = userFollowUpTask[0]?.followUpCheck || false;
   const followUpPercentageDeadline = userFollowUpTask[0]?.followUpPercentageDeadline || 0;
-  const [needFollowUp, setNeedFollowUp] = useState(false)
-
-  useEffect(()=>{
-    checkNeedFollowUp()
-  },[followUpPercentageDeadline])
+  const [needFollowUp, setNeedFollowUp] = useState(false);
 
   const handleCheckboxFollowUp = () => {
     const progressPersantage =
@@ -25,48 +21,51 @@ const FollowupCheckButton = ({ moseoverText, user, task }) => {
       followUpCheck: needFollowUp ? true : !isChecked,
       followUpPercentageDeadline: progressPersantage,
     };
-    console.log(data)
     dispatch(setUserFollowUp(user.personId, task._id, data));
   };
 
   const checkNeedFollowUp = () => {
     const taskProgressPercentage =
       Number(((task.hoursLogged / task.estimatedHours) * 100).toFixed(2)) || 0;
-    
+
     if (userFollowUpTask.length > 0) {
       const followUp = userFollowUpTask[0];
-      const followUpPercentageDeadline = Number(followUp.followUpPercentageDeadline) || 0;
+      const currentFollowUpPercentageDeadline = Number(followUp.followUpPercentageDeadline) || 0;
 
-      if (followUpPercentageDeadline < 50 && taskProgressPercentage > 50) {
-        setNeedFollowUp(true)
+      if (currentFollowUpPercentageDeadline < 50 && taskProgressPercentage > 50) {
+        setNeedFollowUp(true);
         return;
-      } else if (
-        followUpPercentageDeadline >= 50 &&
-        followUpPercentageDeadline < 75 &&
+      }
+      if (
+        currentFollowUpPercentageDeadline >= 50 &&
+        currentFollowUpPercentageDeadline < 75 &&
         taskProgressPercentage > 75
       ) {
-        setNeedFollowUp(true)
+        setNeedFollowUp(true);
         return;
-      } else if (
-        followUpPercentageDeadline >= 75 &&
-        followUpPercentageDeadline < 90 &&
+      }
+      if (
+        currentFollowUpPercentageDeadline >= 75 &&
+        currentFollowUpPercentageDeadline < 90 &&
         taskProgressPercentage > 90
       ) {
-        setNeedFollowUp(true)
-        return;
-      } else if (followUpPercentageDeadline < 90 && taskProgressPercentage > 90) {
-        setNeedFollowUp(true)
+        setNeedFollowUp(true);
         return;
       }
-    } else {
-      if (taskProgressPercentage > 50) {
-        setNeedFollowUp(true)
+      if (currentFollowUpPercentageDeadline < 90 && taskProgressPercentage > 90) {
+        setNeedFollowUp(true);
         return;
       }
+    } else if (taskProgressPercentage > 50) {
+      setNeedFollowUp(true);
+      return;
     }
-    setNeedFollowUp(false)
-    return;
+    setNeedFollowUp(false);
   };
+
+  useEffect(() => {
+    checkNeedFollowUp();
+  }, [followUpPercentageDeadline]);
 
   return (
     <>
@@ -89,6 +88,6 @@ const FollowupCheckButton = ({ moseoverText, user, task }) => {
       )}
     </>
   );
-};
+}
 
 export default FollowupCheckButton;
