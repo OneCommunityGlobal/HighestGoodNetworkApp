@@ -120,7 +120,7 @@ const TeamMemberTasks = React.memo(props => {
       taskId,
     };
     submitTasks(newTask);
-      
+
     // optimistic update while waiting for data being updated
     const newUsersWithTasks = usersWithTasks.map(userWithTasks => (
       userWithTasks.tasks.some(task => task._id === taskId)
@@ -325,7 +325,7 @@ const TeamMemberTasks = React.memo(props => {
 
     if (usersWithTasks.length > 0) {
       usersWithTasks.forEach(user => {
-        const teamNames = user.teams!==undefined?user.teams.map(team => team.teamName):[];
+        const teamNames = user.teams !== undefined ? user.teams.map(team => team.teamName) : [];
         const code = user.teamCode || 'noCodeLabel';
         const color = user.weeklySummaryOption || 'noColorLabel';
 
@@ -493,9 +493,8 @@ const TeamMemberTasks = React.memo(props => {
           {isLoading && (userRole === 'Administrator' || userRole === 'Owner') ? (
             <>
               <span
-                className={`d-flex justify-content-start align-items-center ${
-                  darkMode ? 'text-light' : 'text-black'
-                }`}
+                className={`d-flex justify-content-start align-items-center ${darkMode ? 'text-light' : 'text-black'
+                  }`}
               >
                 {' '}
                 Loading teams: &nbsp;
@@ -549,8 +548,7 @@ const TeamMemberTasks = React.memo(props => {
               <button
                 type="button"
                 className={
-                  `m-1 show-time-off-btn ${
-                    showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
+                  `m-1 show-time-off-btn ${showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
                   }` + (darkMode ? ' box-shadow-dark' : '')
                 }
                 onClick={handleshowWhoHasTimeOff}
@@ -560,16 +558,14 @@ const TeamMemberTasks = React.memo(props => {
                   width="22"
                   height="19"
                   viewBox="0 0 448 512"
-                  className={`show-time-off-calender-svg ${
-                    showWhoHasTimeOff ? 'show-time-off-calender-svg-selected' : ''
-                  }`}
+                  className={`show-time-off-calender-svg ${showWhoHasTimeOff ? 'show-time-off-calender-svg-selected' : ''
+                    }`}
                 >
                   <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
                 </svg>
                 <i
-                  className={`show-time-off-icon ${
-                    showWhoHasTimeOff ? 'show-time-off-icon-selected' : ''
-                  }`}
+                  className={`show-time-off-icon ${showWhoHasTimeOff ? 'show-time-off-icon-selected' : ''
+                    }`}
                 >
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
@@ -612,6 +608,7 @@ const TeamMemberTasks = React.memo(props => {
                     ? hrsFilterBtnColorMap[selectedPeriod]
                     : '#007BFF',
                   border: `1px solid ${hrsFilterBtnColorMap[selectedPeriod]}`,
+
                 }}
               >
                 {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
@@ -632,13 +629,13 @@ const TeamMemberTasks = React.memo(props => {
                 ))}
               </select>
               <EditableInfoModal
-              areaName="TeamMemberTasksTimeFilterInfoPoint"
-              areaTitle="Team Member Task Time Filter"
-              fontSize={22}
-              isPermissionPage={true}
-              role={authUser.role}
-              darkMode={darkMode}
-            />
+                areaName="TeamMemberTasksTimeFilterInfoPoint"
+                areaTitle="Team Member Task Time Filter"
+                fontSize={22}
+                isPermissionPage={true}
+                role={authUser.role}
+                darkMode={darkMode}
+              />
             </div>
           </section>
         ) : (
@@ -675,7 +672,7 @@ const TeamMemberTasks = React.memo(props => {
       )}
       {['Administrator', 'Owner', 'Manager', 'Mentor'].some(role => role === displayUser.role) && (
         <Row style={{ marginBottom: '10px' }}>
-          <Col lg={{ size: 4}} xs={{ size: 12}} className='ml-3'>
+          <Col lg={{ size: 4 }} xs={{ size: 12 }} className='ml-3'>
             <span className={darkMode ? "text-light responsive-font-size" : ""}>
               Select Team
             </span>
@@ -688,9 +685,9 @@ const TeamMemberTasks = React.memo(props => {
               }}
             />
           </Col>
-          <Col lg={{ size: 4}} xs={{ size: 12}} className='ml-3'>
+          <Col lg={{ size: 4 }} xs={{ size: 12 }} className='ml-3'>
             <span className={darkMode ? "text-light responsive-font-size" : ""}>
-            Select Team Code
+              Select Team Code
             </span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
@@ -703,7 +700,7 @@ const TeamMemberTasks = React.memo(props => {
           </Col>
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className='ml-3'>
             <span className={darkMode ? "text-light responsive-font-size" : ""}>
-            Select Color
+              Select Color
             </span>
             <MultiSelect
               className="multi-select-filter responsive-font-size"
@@ -721,22 +718,20 @@ const TeamMemberTasks = React.memo(props => {
           <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
               {/* Empty column header for hours completed icon */}
-              <th colSpan={1} className={`hours-completed-column ${darkMode ? "bg-space-cadet" : ""}`}/>
+              <th colSpan={1} className={`hours-completed-column ${darkMode ? "bg-space-cadet" : ""}`} />
               <th colSpan={2} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
                 <Table borderless className={`team-member-tasks-subtable ${darkMode ? "text-light" : ""}`}>
                   <thead className={darkMode ? "bg-space-cadet" : ""}>
                     <tr>
                       <th
-                        className={`team-member-tasks-headers team-member-tasks-user-name ${
-                          darkMode ? 'bg-space-cadet' : ''
-                        }`}
+                        className={`team-member-tasks-headers team-member-tasks-user-name ${darkMode ? 'bg-space-cadet' : ''
+                          }`}
                       >
                         Team Member
                       </th>
                       <th
-                        className={`team-member-tasks-headers team-clocks team-clocks-header ${
-                          darkMode ? 'bg-space-cadet' : ''
-                        }`}
+                        className={`team-member-tasks-headers team-clocks team-clocks-header ${darkMode ? 'bg-space-cadet' : ''
+                          }`}
                       >
                         <FontAwesomeIcon
                           style={{ color: darkMode ? 'lightgray' : '' }}
