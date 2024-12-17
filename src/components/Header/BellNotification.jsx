@@ -95,7 +95,7 @@ export default function BellNotification() {
         weeklycommittedHours > 0 &&
         !notificationSeen &&
         effortPercentage < 50 &&
-        hoursLeft <= 40
+        hoursLeft <= 48
       ) {
         setHasNotification(true);
       } else {
