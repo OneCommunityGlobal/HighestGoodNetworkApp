@@ -8,3 +8,14 @@
 .form-date {
   width: 30%;
 }
+
+.add-modal-dt .DayPickerInput{
+  position: relative;
+}
+
+.add-modal-dt .DayPickerInput-OverlayWrapper{
+  position: absolute;
+  bottom: 21em; 
+  left: -4.75em;
+  z-index: 9999; 
+}
