@@ -41,7 +41,8 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
-// eslint-disable-next-line import/order, import/no-unresolved
+
+// eslint-disable-next-line no-duplicate-imports
 import NotFoundPage from './components/not-found/notFoundPage';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
