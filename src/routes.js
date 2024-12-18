@@ -42,7 +42,7 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 
-// eslint-disable-next-line no-duplicate-imports
+// eslint-disable-next-line
 import NotFoundPage from './components/not-found/notFoundPage';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
