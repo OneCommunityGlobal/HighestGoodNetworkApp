@@ -394,7 +394,10 @@ const BasicInformationTab = props => {
   };
 
   const permissionLabelPermissions = getValidPermissions(permissionLabels);
+  // console.log('Permission Label Permissions:', Array.from(permissionLabelPermissions)); // Convert Set to Array and log
+
   const getCurrentUserPermissions = async (permissions) => {
+    console.log('getCurrentUserPermissions function invoked');
     const userPermissions = [];
 
     const traversePermissions = async (perms) => {
@@ -403,7 +406,7 @@ const BasicInformationTab = props => {
           userPermissions.push(perm.key);
         } */
           if (perm.key) {
-            const hasPerm = await dispatch(hasPermission(perm.key));
+            const hasPerm = await dispatch(hasPermission(perm.key, false, userProfile.role));
             console.log(`Checking permission: ${perm.key}, hasPermission: ${hasPerm}`);
             if (hasPerm && permissionLabelPermissions.has(perm.key) && !userPermissions.includes(perm.key)) {
               userPermissions.push(perm.key);
@@ -451,12 +454,34 @@ const BasicInformationTab = props => {
     console.log('Fetching presets for role:', roleName);
     const response = await dispatch(getPresetsByRole(roleName));
     const presets = response.presets || [];
-    // console.log('Fetched presets:', JSON.stringify(presets, null, 2));
+    console.log('Fetched presets:', JSON.stringify(presets, null, 2));
     const rolePresets = presets.find(preset => preset.roleName === roleName)?.permissions || [];
     // console.log('Role presets for', roleName, ':', rolePresets);
     // make sure that the permissions are in the permissionLabelPermissions array and there are no duplicates
     const uniquePermissions = new Set(rolePresets.filter(permission => permissionLabelPermissions.has(permission)));
-    return Array.from(uniquePermissions);
+    let additionalPermissions = [];
+    switch (roleName) {
+      case 'Manager':
+        additionalPermissions = [
+          'getUserProfiles', 
+          'putUserProfile', 
+          'addInfringements', 
+          'editInfringements', 
+          'deleteInfringements', 
+          'getProjectMembers'
+        ];
+        break;
+      case 'Administrator':
+        additionalPermissions = ['resolveTask', 'putRole'];
+        break;
+      // Add cases for other roles as needed
+      default:
+        additionalPermissions = [];
+    }
+    const derivedPermissions = Array.from(new Set([...uniquePermissions, ...additionalPermissions]));
+    console.log('Derived permissions for role:', roleName, derivedPermissions);
+
+    return derivedPermissions;
   };
 
   useEffect(() => {    
@@ -525,10 +550,12 @@ const BasicInformationTab = props => {
   }, [customAddedPermissions, newRolePermissions]);
 
   useEffect(() => {
+    // console.log('user profile:', userProfile);
+    // console.log('user profile:', JSON.stringify(userProfile, null, 2));
     console.log('currentUserPermissions:', currentUserPermissions);
-    console.log('oldRole:', oldRole);
-    console.log('oldRolePermissions:', oldRolePermissions);
-    console.log('newRolePermissions:', newRolePermissions);
+    // console.log('oldRole:', oldRole);
+    // console.log('oldRolePermissions:', oldRolePermissions);
+    // console.log('newRolePermissions:', newRolePermissions);
     // console.log('customAddedPermissions:', customAddedPermissions);
     // console.log('customRemovedPermissions:', customRemovedPermissions);
     // console.log('newRolePermissionsToAdd:', newRolePermissionsToAdd);
