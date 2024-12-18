@@ -765,6 +765,7 @@ const TeamMemberTasks = React.memo(props => {
                         showWhoHasTimeOff={showWhoHasTimeOff}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
+                        displayUser={displayUser}
                       />
                     );
                   } else {
