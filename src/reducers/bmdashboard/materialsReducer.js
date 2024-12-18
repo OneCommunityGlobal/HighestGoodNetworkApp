@@ -1,7 +1,7 @@
 import {
   SET_MATERIALS, POST_UPDATE_MATERIAL_START_BULK, POST_UPDATE_MATERIAL_END_BULK,
   RESET_UPDATE_MATERIAL_BULK, POST_UPDATE_MATERIAL_ERROR_BULK, POST_UPDATE_MATERIAL_START, POST_UPDATE_MATERIAL_END,
-  RESET_UPDATE_MATERIAL, POST_UPDATE_MATERIAL_ERROR
+  RESET_UPDATE_MATERIAL, POST_UPDATE_MATERIAL_ERROR, UPDATE_MATERIAL_STATUS_END, UPDATE_MATERIAL_STATUS_ERROR, UPDATE_MATERIAL_STATUS_START
 } from "constants/bmdashboard/materialsConstants"
 
 const defaultState = {
@@ -15,7 +15,12 @@ const defaultState = {
     loading: false,
     result: null,
     error: undefined
-  }
+  },
+  statusUpdate: {
+    loading: false,
+    result: null,
+    error: undefined,
+  },
 }
 
 export const materialsReducer = (materials = defaultState, action) => {
@@ -90,6 +95,23 @@ export const materialsReducer = (materials = defaultState, action) => {
         materials.updateMaterialsBulk = obj;
         return { ...materials }
       }
+      
+      case UPDATE_MATERIAL_STATUS_START: {
+        const obj = { loading: true, result: null, error: undefined };
+        materials.statusUpdate = obj;
+        return { ...materials };
+      }
+      case UPDATE_MATERIAL_STATUS_END: {
+        const obj = { result: action.payload, loading: false, error: undefined };
+        materials.statusUpdate = obj;
+        return { ...materials };
+      }
+      case UPDATE_MATERIAL_STATUS_ERROR: {
+        const obj = { result: null, loading: false, error: action.payload };
+        materials.statusUpdate = obj;
+        return { ...materials };
+      }
+
     default:
       return materials;
   }
