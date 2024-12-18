@@ -15,16 +15,16 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import moment from 'moment-timezone';
-import { isEmpty, isEqual } from 'lodash';
+import { isEmpty, isEqual, set } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import { getUserProfile } from 'actions/userProfile';
-
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
+import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
@@ -141,6 +141,7 @@ const TimeEntryForm = props => {
   const [reminder, setReminder] = useState(initialReminder);
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibility] = useState(false);
   const [isAboutModalVisible, setAboutModalVisible] = useState(false);
+  const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
@@ -233,6 +234,7 @@ const TimeEntryForm = props => {
     }));
   };
 
+
   const validateForm = isTimeModified => {
     const errorObj = {};
     const remindObj = { ...initialReminder };
@@ -293,28 +295,37 @@ const TimeEntryForm = props => {
     if (closed === true && isOpen) toggle();
   };
 
-  const handleSubmit = async event => {
-    event.preventDefault();
+  const handleSubmit = async (event) => {
+    if (event) {
+      event.preventDefault();
+    }
     setSubmitting(true);
-
+  
     if (edit && isEqual(formValues, initialFormValues)) {
       toast.info(`Nothing is changed for this time entry`);
       setSubmitting(false);
       return;
     }
+    
+    if (!edit && !formValues.isTangible) {
+      setTimelogConfirmationModalVisible(true);
+      setSubmitting(false);
+      return;
+    }
+  
+    await submitTimeEntry();
+  };
 
+  const submitTimeEntry = async () => {
     const { hours: formHours, minutes: formMinutes } = formValues;
-
+    const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
-
+  
     if (!validateForm(isTimeModified)) {
       setSubmitting(false);
       return;
     }
-
-    // Construct the timeEntry object
-    const timeEntry = { ...formValues };
-
+  
     try {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
@@ -364,7 +375,16 @@ const TimeEntryForm = props => {
     } catch (error) {
       toast.error(`An error occurred while attempting to submit your time entry. Error: ${error}`);
       setSubmitting(false);
-    }
+    };
+  };
+
+  const handleTangibleTimelogConfirm = async () => {
+    setTimelogConfirmationModalVisible(false);
+    await submitTimeEntry();
+  };
+  
+  const handleTangibleTimelogCancel = () => {
+    setTimelogConfirmationModalVisible(false);
   };
 
   const tangibleInfoModalToggle = e => {
@@ -685,6 +705,14 @@ const TimeEntryForm = props => {
         visible={reminder.openModal}
         setVisible={toggleRemainder}
         cancelChange={cancelChange}
+        darkMode={darkMode}
+      />
+      <TimeLogConfirmationModal 
+        isOpen={isTimelogConfirmationModalVisible}
+        toggleModal={handleTangibleTimelogCancel}
+        onConfirm={handleTangibleTimelogConfirm}
+        onReject={handleTangibleTimelogCancel}
+        onIntangible={handleTangibleTimelogConfirm}
         darkMode={darkMode}
       />
     </>

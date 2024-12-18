@@ -27,6 +27,8 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+import NotFoundPage from './components/NotFound/NotFoundPage';
+import  { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // BM Dashboard
@@ -42,7 +44,6 @@ import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
-import notFoundPage from './components/not-found/notFoundPage';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -111,14 +112,10 @@ export default (
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute
-          path="/timelog/:userId"
-          exact
-          render={props => {
-            const { userId } = props.match.params;
-            return <Timelog userId={userId} />;
-          }}
-        />
+        <ProtectedRoute path="/timelog/:userId" exact render ={(props) => {
+           const {userId} = props.match.params;
+            return <Timelog userId ={userId}/>
+        }} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
@@ -248,6 +245,13 @@ export default (
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
+        <ProtectedRoute
+          path="/sendemail"
+          exact
+          component={EmailSender}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
+        />
 
         <ProtectedRoute
           path="/totalorgsummary"
@@ -339,8 +343,7 @@ export default (
         />
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-        <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
-
+        {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
 
         <Route path="/login" component={Login} />
@@ -356,7 +359,7 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
-        <Route path="*" component={notFoundPage} />
+        <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
   </Switch>
