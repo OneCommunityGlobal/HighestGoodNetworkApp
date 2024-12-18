@@ -30,6 +30,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import  { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import NotFoundPage from './components/not-found/notFoundPage';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -42,7 +43,6 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
-// eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
@@ -112,10 +112,14 @@ export default (
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render ={(props) => {
-           const {userId} = props.match.params;
-            return <Timelog userId ={userId}/>
-        }} />
+        <ProtectedRoute
+          path="/timelog/:userId"
+          exact
+          render={props => {
+            const { userId } = props.match.params;
+            return <Timelog userId={userId} />;
+          }}
+        />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
         <ProtectedRoute path="/teamreport/:teamId" component={TeamReport} fallback />
