@@ -611,7 +611,7 @@ function Timer({ authUser, darkMode }) {
         </ModalFooter>
       </Modal>
       <Modal
-        className={`${fontColor} dark-mode`}
+        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
         size="md"
         isOpen={inacModal}
         toggle={() => setInacModal(!inacModal)}
