@@ -1,6 +1,6 @@
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import './notFoundPage.css';
+import '../NotFound/notFoundPage.css';
 
 function NotFoundPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
