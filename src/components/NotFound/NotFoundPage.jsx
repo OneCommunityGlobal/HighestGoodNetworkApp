@@ -14,7 +14,16 @@ function NotFoundPage() {
       style={{ backgroundColor: darkMode ? '#121212' : 'white' }}
     >
       <div className="backgroungContainer">
-        <div className="container " style={{ backgroundColor: darkMode ? '#121212' : 'white' }}>
+        <div
+          className="container "
+          style={{
+            backgroundColor: darkMode ? '#121212' : 'white',
+            marginBottom: '20px',
+            border: `1px solid ${darkMode ? 'white' : '#121212'}`,
+            borderRadius: '20px',
+            width: `${window.innerWidth < 600 ? '95%' : '100'}`,
+          }}
+        >
           <img
             src={`${darkMode ? '/imagePage404DarkMode.png' : 'imagePage404.png'}`}
             alt="404 error page illustration"
