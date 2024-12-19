@@ -1,6 +1,5 @@
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import '../NotFound/notFoundPage.css';
 
 function NotFoundPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -59,6 +58,66 @@ function NotFoundPage() {
           )}
         </div>
       </div>
+
+      <style>{`
+      * {
+        padding: 0;
+        margin: 0;
+        box-sizing: border-box;
+      }
+
+      .backgroungContainer {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+      }
+
+      .container {
+        width: 80%;
+        height: auto;
+      }
+
+      .container img {
+        max-width: 100%;
+        width: 100%;
+        height: 25rem;
+        display: block;
+        object-fit: contain;
+      }
+
+      .container p {
+        font-size: 22px;
+        position: relative;
+        top: -100px;
+        left: 20px;
+      }
+
+      @media (max-width: 600px) {
+        .container img {
+          width: 100%;
+          height: 15rem;
+          display: block;
+          object-fit: cover;
+        }
+        .container p {
+          font-size: 15px;
+          position: relative;
+          top: -20px;
+          left: 20px;
+        }
+      }
+
+      @media (max-width: 400px) {
+        .container img {
+          width: 100%;
+          height: 15rem;
+          display: block;
+          object-fit: contain;
+        }
+      }
+    `}</style>
     </section>
   );
 }
