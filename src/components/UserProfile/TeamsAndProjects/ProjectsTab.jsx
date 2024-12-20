@@ -20,6 +20,7 @@ const ProjectsTab = props => {
   const [postProjectPopupOpen, setPostProjectPopupOpen] = useState(false);
   const [renderedOn, setRenderedOn] = useState(0);
   const onSelectDeleteProject = projectId => {
+    console.log("Deleting project", projectId); 
     onDeleteProject(projectId);
   };
 
