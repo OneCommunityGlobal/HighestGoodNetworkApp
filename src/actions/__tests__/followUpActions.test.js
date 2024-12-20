@@ -42,4 +42,46 @@ describe('followUpActions', () => {
       expect(toast.error).toHaveBeenCalledWith('Error: loading follow-up data.');
     });
   });
+
+  describe('setUserFollowUp', () => {
+    it('should dispatch SET_FOLLOWUP on successful API call', async () => {
+      const userId = 1;
+      const taskId = 101;
+      const updateData = { status: 'completed' };
+      const mockResponse = { id: 101, status: 'completed' };
+
+      axios.post.mockResolvedValueOnce({ status: 200, data: mockResponse });
+
+      const dispatch = jest.fn();
+      await actions.setUserFollowUp(userId, taskId, updateData)(dispatch);
+
+      expect(axios.post).toHaveBeenCalledWith(
+        ENDPOINTS.SET_USER_FOLLOWUP(userId, taskId),
+        updateData
+      );
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.SET_FOLLOWUP,
+        payload: mockResponse,
+      });
+      expect(toast.error).not.toHaveBeenCalled();
+    });
+
+    it('should dispatch SET_FOLLOWUP_ERROR and show a toast on API failure', async () => {
+      const userId = 1;
+      const taskId = 101;
+      const updateData = { status: 'completed' };
+      const mockError = new Error('Request failed');
+
+      axios.post.mockRejectedValueOnce(mockError);
+
+      const dispatch = jest.fn();
+      await actions.setUserFollowUp(userId, taskId, updateData)(dispatch);
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: types.SET_FOLLOWUP_ERROR,
+        payload: mockError,
+      });
+      expect(toast.error).toHaveBeenCalledWith('Error: Unable to set follow-up.');
+    });
+  });
 });
