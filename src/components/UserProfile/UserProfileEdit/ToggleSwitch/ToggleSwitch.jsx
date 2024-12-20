@@ -2,7 +2,15 @@ import React from 'react';
 import style from './ToggleSwitch.module.scss';
 import TriStateToggleSwitch from './TriStateToggleSwitch';
 
-const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleClass, fontColor, darkMode }) => {
+const ToggleSwitch = ({
+  switchType,
+  state,
+  handleUserProfile,
+  fontSize,
+  toggleClass,
+  fontColor,
+  darkMode,
+}) => {
   switch (switchType) {
     case 'bluesquares':
       if (state) {
@@ -10,7 +18,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
           <div className={`blueSqare ${toggleClass ? toggleClass : ''}`}>
             <div className={style.switchSection}>
               {/* <div> Blue Squares: </div> */}
-              <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+              <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
                 public
                 <input
                   data-testid="blue-switch"
@@ -29,7 +37,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
         <div className={`blueSqare ${toggleClass ? toggleClass : ''}`}>
           <div className={style.switchSection}>
             {/* <div> Blue Squares: </div> */}
-            <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+            <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
               public
               <input
                 data-testid="blue-switch"
@@ -50,9 +58,13 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
           <div className="blueSqare">
             <div className={style.switchSection}>
               <div className="icon">
-                <i className="fa fa-envelope-o" aria-hidden="true" style={darkMode ? {color: 'white'} : {}}/>
+                <i
+                  className="fa fa-envelope-o"
+                  aria-hidden="true"
+                  style={darkMode ? { color: 'white' } : {}}
+                />
               </div>
-              <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+              <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
                 public
                 <input
                   id="emailPubliclyAccessible"
@@ -71,9 +83,13 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
         <div className="blueSqare">
           <div className={style.switchSection}>
             <div className="icon">
-              <i className="fa fa-envelope-o" aria-hidden="true" style={darkMode ? {color: 'white'} : {}}/>
+              <i
+                className="fa fa-envelope-o"
+                aria-hidden="true"
+                style={darkMode ? { color: 'white' } : {}}
+              />
             </div>
-            <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+            <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
               public
               <input
                 id="emailPubliclyAccessible"
@@ -92,11 +108,15 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
       if (state) {
         return (
           <div className="blueSqare">
-            <div className={style.switchSection}>
+            <div className={style.switchSectionProfile}>
               <div className="icon">
-                <i className="fa fa-envelope-o" aria-hidden="true" style={darkMode ? {color: 'white'} : {}}/>
+                <i
+                  className="fa fa-envelope-o"
+                  aria-hidden="true"
+                  style={darkMode ? { color: 'white' } : {}}
+                />
               </div>
-              <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+              <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
                 subscribed
                 <input
                   id="emailSubscriptionConfig"
@@ -115,9 +135,13 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
         <div className="blueSqare">
           <div className={style.switchSection}>
             <div className="icon">
-              <i className="fa fa-envelope-o" aria-hidden="true"  style={darkMode ? {color: 'white'} : {}}/>
+              <i
+                className="fa fa-envelope-o"
+                aria-hidden="true"
+                style={darkMode ? { color: 'white' } : {}}
+              />
             </div>
-            <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+            <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
               subscribed
               <input
                 id="emailSubscriptionConfig"
@@ -138,9 +162,13 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
           <div className="blueSqare">
             <div className={style.switchSection}>
               <div className="icon">
-                <i className="fa fa-phone" aria-hidden="true"  style={darkMode ? {color: 'white'} : {}}/>
+                <i
+                  className="fa fa-phone"
+                  aria-hidden="true"
+                  style={darkMode ? { color: 'white' } : {}}
+                />
               </div>
-              <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+              <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
                 public
                 <input
                   data-testid="phone-switch"
@@ -160,9 +188,13 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
         <div className="blueSqare">
           <div className={style.switchSection}>
             <div className="icon">
-              <i className="fa fa-phone" aria-hidden="true"  style={darkMode ? {color: 'white'} : {}}/>
+              <i
+                className="fa fa-phone"
+                aria-hidden="true"
+                style={darkMode ? { color: 'white' } : {}}
+              />
             </div>
-            <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+            <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
               public
               <input
                 data-testid="phone-switch"
@@ -182,7 +214,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
         return (
           <div className="blueSqare">
             <div className={style.switchSection}>
-              <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+              <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
                 visible
                 <input
                   data-testid="visibility-switch"
@@ -200,7 +232,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
       return (
         <div className="blueSqare">
           <div className={style.switchSection}>
-            <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+            <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
               visible
               <input
                 data-testid="visibility-switch"
@@ -218,23 +250,24 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
     case 'bio':
       return (
         <div className="blueSqare">
-          <div className={style.switchSection} style={{fontSize:fontSize, color: fontColor}}>
-            <div style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : ''}} className={style.switchContainer}>
-            posted
-            <TriStateToggleSwitch  
-            pos={state || 'default'} 
-            onChange={handleUserProfile}/>
-            requested
+          <div className={style.switchSection} style={{ fontSize: fontSize, color: fontColor }}>
+            <div
+              style={{ wordBreak: 'keep-all', color: darkMode ? 'white' : '' }}
+              className={style.switchContainer}
+            >
+              posted
+              <TriStateToggleSwitch pos={state || 'default'} onChange={handleUserProfile} />
+              requested
             </div>
           </div>
         </div>
       );
-      case 'active_members':
+    case 'active_members':
       if (state) {
         return (
           <div className="blueSqare">
             <div className={style.switchSection}>
-              <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+              <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
                 Active
                 <input
                   data-testid="active-switch"
@@ -252,7 +285,7 @@ const ToggleSwitch = ({ switchType, state, handleUserProfile, fontSize, toggleCl
       return (
         <div className="blueSqare">
           <div className={style.switchSection}>
-            <div className={style.switchContainer} style={darkMode ? {color: 'white'} : {}}>
+            <div className={style.switchContainer} style={darkMode ? { color: 'white' } : {}}>
               Active
               <input
                 data-testid="active-switch"
