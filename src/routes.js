@@ -10,6 +10,7 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
+import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -351,6 +352,7 @@ export default (
         <Route path="/email-subscribe" component={EmailSubscribeForm} />
         <Route path="/email-unsubscribe" component={UnsubscribeForm} />
         <Route path="/collaboration" component={Collaboration} />
+        <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
