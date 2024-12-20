@@ -29,7 +29,7 @@ const UserTeamsTable = props => {
   const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState([]);
 
   const [teamCode, setTeamCode] = useState(
-    props.userProfile ? props.userProfile.teamCode : props.teamCode,
+    props.userProfile ? props.userProfile.teamCode : props.teamCode||"",
   );
 
   const [isOpenModalTeamMember, setIsOpenModalTeamMember] = useState(false);
