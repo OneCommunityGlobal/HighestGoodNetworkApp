@@ -151,7 +151,7 @@ const Projects = function(props) {
       } else if (sortedByName === "SortingByRecentEditedMembers") {
         return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
       } else if (sortedByName === "SortingByRecentEditedInventory") {
-        return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
+        return a.inventoryModifiedDatetime < b.inventoryModifiedDatetime ? 1 : -1;
       } else {
         return 0;
       }
