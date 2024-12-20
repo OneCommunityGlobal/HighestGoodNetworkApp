@@ -98,6 +98,29 @@ class UserManagement extends React.PureComponent {
       this.state.editable,
     );
   }
+
+  updateUserProfiles(user,isToBeDeleted=false){
+    this.props.getAllTimeOffRequests();
+    const { darkMode } = this.props.state.theme;
+    const { userProfiles } = this.props.state.allUserProfiles;
+    const { roles: rolesPermissions } = this.props.state.role;
+    const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+    let updatedProfiles = userProfiles;
+    if(isToBeDeleted){
+       updatedProfiles = userProfiles.filter(item=>item._id !== user._id);
+    }else{    
+       updatedProfiles = userProfiles.map(item=>
+          item._id === user._id ? {...item,isActive:!item.isActive}:item
+        );
+    }
+    this.getFilteredData(
+      updatedProfiles,
+      rolesPermissions,
+      timeOffRequests,
+      darkMode,
+      this.state.editable,
+    );
+  }
   componentDidMount() {
     // Initiating the user profile fetch action.
     this.getRefreshedData();
@@ -476,7 +499,8 @@ class UserManagement extends React.PureComponent {
       isActive ? UserStatus.Active : UserStatus.InActive,
       undefined,
     );
-    this.getRefreshedData();
+   // this.getRefreshedData();
+    this.updateUserProfiles(this.state.selectedUser)
     this.setState({
       activeInactivePopupOpen: false,
       selectedUser: undefined,
@@ -505,11 +529,12 @@ class UserManagement extends React.PureComponent {
   /**
    * Call back to trigger the delete based on the type chosen from the popup.
    */
-  onDeleteUser = deleteType => {
+  onDeleteUser = async deleteType => {
     if (deleteType === UserDeleteType.Inactive) {
-      this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, undefined);
+      await this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, undefined);
     } else {
-      this.props.deleteUser(this.state.selectedUser, deleteType);
+      await this.props.deleteUser(this.state.selectedUser, deleteType);
+      this.updateUserProfiles(this.state.selectedUser,true);
     }
     this.setState({
       deletePopupOpen: false,
