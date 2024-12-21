@@ -1,7 +1,7 @@
 import { VOLUNTEER_STATUS } from 'constants/totalOrgSummary';
 import VolunteerStatusPieChart from './VolunteerStatusPieChart';
 
-function VolunteerStatus() {
+function VolunteerStatusChart() {
   return (
     <section>
       <h1 style={{ textAlign: 'center' }}>Volunteer Status</h1>
@@ -10,4 +10,4 @@ function VolunteerStatus() {
   );
 }
 
-export default VolunteerStatus;
+export default VolunteerStatusChart;
