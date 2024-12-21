@@ -14,6 +14,7 @@ import './TotalOrgSummary.css';
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
+import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
@@ -82,7 +83,6 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              {/* <VolunteerStatus /> */}
               <VolunteerStatus
                 volunteerNumberStats={volunteerStats?.volunteerNumberStats}
                 totalHoursWorked={volunteerStats?.totalHoursWorked}
@@ -95,7 +95,13 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerActivities
+                totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+                completedAssignedHours={volunteerStats?.completedAssignedHours}
+                totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+                tasksStats={volunteerStats?.tasksStats}
+                totalActiveTeams={volunteerStats?.totalActiveTeams}
+              />
             </div>
           </Col>
         </Row>
