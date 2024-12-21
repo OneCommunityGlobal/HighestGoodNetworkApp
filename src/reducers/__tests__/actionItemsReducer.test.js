@@ -5,7 +5,7 @@ test('should return the initial state when no action is provided', () => {
   expect(actionItemsReducer(undefined, {})).toBeNull();
 });
 
-// Test handling of GET_ACTION_ITEMS action
+// Test to handle of GET_ACTION_ITEMS action
 test('should handle GET_ACTION_ITEMS action', () => {
   const initialState = null;
   const action = {
