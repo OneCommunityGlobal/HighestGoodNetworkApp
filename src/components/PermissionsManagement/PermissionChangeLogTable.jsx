@@ -22,6 +22,13 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
     }
   };
 
+  const formatName = name => {
+    if (name.startsWith('INDIVIDUAL:')) {
+      return name.replace('INDIVIDUAL:', '').trim();
+    }
+    return name;
+  };
+
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const maxPageNumbersToShow = 5;
@@ -111,7 +118,14 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{`${formatDate(
                   log.logDateTime,
                 )} ${formattedAmPmTime(log.logDateTime)}`}</td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{log.name}</td>
+                <td
+                  className={`permission-change-log-table--cell ${bgYinmnBlue}`}
+                  style={{
+                    fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
+                  }}
+                >
+                  {formatName(log.name)}
+                </td>
                 <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                   {renderPermissions(log.permissions, log._id)}
                 </td>
