@@ -1,6 +1,6 @@
 /* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 
 import hasPermission from 'utils/permissions';
@@ -19,13 +19,6 @@ const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
 
 function TotalOrgSummary(props) {
-  // const { darkMode, loading, error } = props;
-
-  // useEffect(() => {
-  //   props.getTotalOrgSummary(startDate, endDate);
-  //   props.hasPermission('');
-  // }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
-
   const { darkMode, loading, error } = props;
   const [volunteerStats, setVolunteerStats] = useState(null);
 
