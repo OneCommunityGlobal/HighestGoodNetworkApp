@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
   faBell,
@@ -48,6 +48,7 @@ const TeamMemberTask = React.memo(
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
+
     const canSeeFollowUpCheckButton = userRole !== 'Volunteer';
 
     const totalHoursRemaining = user.tasks.reduce((total, task) => {
@@ -122,42 +123,42 @@ const TeamMemberTask = React.memo(
     };
 
     return (
-      <tr ref={ref} className={`table-row ${darkMode ? "bg-yinmn-blue" : ""}`}  key={user.personId}>
+      <tr ref={ref} className={`table-row ${darkMode ? "bg-yinmn-blue" : ""}`} key={user.personId}>
         <td className='remove-padding' colSpan={6}>
           <div className="row-content">
-            { isTimeOffContentOpen &&
-                <div className="taking-time-off-content-div">
-                  <div>
-                    <span className="taking-time-off-content-text">
-                      {onTimeOff
-                        ? `${user.name} Is Not Available this Week`
-                        : `${user.name} Is Not Available Next Week`}
-                    </span>
-                    <button
-                      type="button"
-                      className="taking-time-off-content-btn"
-                      onClick={() => {
-                        const request = onTimeOff
-                          ? { ...onTimeOff, onVacation: true, name: user.name }
-                          : { ...goingOnTimeOff, onVacation: false, name: user.name };
-                        openDetailModal(request);
-                      }}
-                    >
-                      Details ?
-                    </button>
-                  </div>
+            {isTimeOffContentOpen &&
+              <div className="taking-time-off-content-div">
+                <div>
+                  <span className="taking-time-off-content-text">
+                    {onTimeOff
+                      ? `${user.name} Is Not Available this Week`
+                      : `${user.name} Is Not Available Next Week`}
+                  </span>
                   <button
-                    className="compress-time-off-detail-button"
+                    type="button"
+                    className="taking-time-off-content-btn"
                     onClick={() => {
-                      setIsTimeOffContentOpen(false);
+                      const request = onTimeOff
+                        ? { ...onTimeOff, onVacation: true, name: user.name }
+                        : { ...goingOnTimeOff, onVacation: false, name: user.name };
+                      openDetailModal(request);
                     }}
                   >
-                    <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                    Details ?
                   </button>
                 </div>
+                <button
+                  className="compress-time-off-detail-button"
+                  onClick={() => {
+                    setIsTimeOffContentOpen(false);
+                  }}
+                >
+                  <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
+                </button>
+              </div>
             }
             <Table className="no-bottom-margin">
-              <tr className="remove-child-borders"> 
+              <tr className="remove-child-borders">
                 {/* green if member has met committed hours for the week, red if not */}
                 <td colSpan={1} className={`${darkMode ? "bg-yinmn-blue" : ""}`}>
                   <div style={{ display: 'flex', alignItems: 'center' }}>
@@ -198,7 +199,7 @@ const TeamMemberTask = React.memo(
                                 currentDate.isSameOrAfter(
                                   moment(user.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
                                 ) &&
-                                currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+                                  currentDate.isBefore(moment(user.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
                                   ? 'rgba(128, 128, 128, 0.5)'
                                   : darkMode ? "#339CFF" : undefined,
                               fontSize: '20px'
@@ -230,6 +231,13 @@ const TeamMemberTask = React.memo(
                       <tbody>
                         {user.tasks &&
                           activeTasks.slice(0, numTasksToShow).map((task, index) => {
+                            const [hoursLogged, setHoursLogged] = useState(task.hoursLogged);
+                            const [estimatedHours, setEstimatedHours] = useState(task.estimatedHours);
+
+                            useEffect(() => {
+                              setHoursLogged(task.hoursLogged);
+                              setEstimatedHours(task.estimatedHours);
+                            }, [task.hoursLogged, task.estimatedHours]);
                             return (
                               <tr key={`${task._id}${index}`} className={`task-break ${darkMode ? "bg-yinmn-blue" : ""}`}>
                                 <td data-label="Task(s)" className={`task-align  ${darkMode ? "bg-yinmn-blue text-light" : ""}`}>
@@ -246,11 +254,11 @@ const TeamMemberTask = React.memo(
                                   </div>
                                   <div className="team-member-tasks-icons">
                                     {task.taskNotifications.length > 0 &&
-                                    task.taskNotifications.some(
-                                      notification =>
-                                        notification.hasOwnProperty('userId') &&
-                                        notification.userId === user.personId,
-                                    ) ? (
+                                      task.taskNotifications.some(
+                                        notification =>
+                                          notification.hasOwnProperty('userId') &&
+                                          notification.userId === user.personId,
+                                      ) ? (
                                       <>
                                         <FontAwesomeIcon
                                           className="team-member-tasks-bell"
@@ -322,11 +330,11 @@ const TeamMemberTask = React.memo(
                                     )}
                                     <div className="team-task-progress-container">
                                       <span
-                                        data-testid={`times-${task.taskName}`} 
+                                        data-testid={`times-${task.taskName}`}
                                         className={`${darkMode ? 'text-light ' : ''} ${canSeeFollowUpCheckButton ? "team-task-progress-time" : "team-task-progress-time-volunteers"}`}
                                       >
-                                        {`${parseFloat(task.hoursLogged.toFixed(2))} of ${parseFloat(
-                                          task.estimatedHours.toFixed(2),
+                                        {`${parseFloat(hoursLogged.toFixed(2))} of ${parseFloat(
+                                          estimatedHours.toFixed(2),
                                         )}`}
                                       </span>
                                       {canSeeFollowUpCheckButton && (
@@ -341,11 +349,11 @@ const TeamMemberTask = React.memo(
                                       )}
                                       <Progress
                                         color={getProgressColor(
-                                          task.hoursLogged,
-                                          task.estimatedHours,
+                                          hoursLogged,
+                                          estimatedHours,
                                           true,
                                         )}
-                                        value={getProgressValue(task.hoursLogged, task.estimatedHours)}
+                                        value={getProgressValue(hoursLogged, estimatedHours)}
                                         className="team-task-progress-bar"
                                       />
                                     </div>
@@ -366,7 +374,7 @@ const TeamMemberTask = React.memo(
                         )}
                       </tbody>
                     </Table>
-                    { showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) &&
+                    {showWhoHasTimeOff && (onTimeOff || goingOnTimeOff) &&
                       <button
                         type="button"
                         className={`expand-time-off-detail-button ${isTimeOffContentOpen ? 'hidden' : ''}`}

@@ -118,8 +118,8 @@ const TimeEntryForm = props => {
 
   const timeEntryInitialProjectOrTaskId = edit
     ? initialProjectId +
-      (!!initialwbsId ? '/' + initialwbsId : '') +
-      (!!initialTaskId ? '/' + initialTaskId : '')
+    (!!initialwbsId ? '/' + initialwbsId : '') +
+    (!!initialTaskId ? '/' + initialTaskId : '')
     : 'defaultProject';
 
   const initialReminder = {
@@ -314,7 +314,9 @@ const TimeEntryForm = props => {
 
     // Construct the timeEntry object
     const timeEntry = { ...formValues };
-
+    console.log("In Handle submit");
+    console.log(props);
+    console.log("In Handle submit after props");
     try {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
