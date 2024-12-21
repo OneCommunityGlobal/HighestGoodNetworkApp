@@ -459,80 +459,61 @@ const BasicInformationTab = props => {
   }, [rolePermissions, immutablePermissions]); */
 
   const fetchPresetsByRole = useCallback(async (roleName) => {
-    // console.log('Fetching presets for role:', roleName);
-    const response = await dispatch(getPresetsByRole(roleName));
-    const presets = response.presets || [];
-    // console.log('Fetched presets:', JSON.stringify(presets, null, 2));
-    const rolePresets = presets.find(preset => preset.roleName === roleName)?.permissions || [];
-    // console.log('Role presets for', roleName, ':', rolePresets);
-    // make sure that the permissions are in the permissionLabelPermissions array and there are no duplicates
-    const uniquePermissions = new Set(rolePresets.filter(permission => permissionLabelPermissions.has(permission)));
-    let additionalPermissions = [];
-    switch (roleName) {
-      case 'Manager':
-        additionalPermissions = [
-          'getUserProfiles', 
-          'putUserProfile', 
-          'addInfringements', 
-          'editInfringements', 
-          'deleteInfringements', 
-          'getProjectMembers',
-          // temporary for testing
-          'putRole'
-        ];
-        break;
-      case 'Administrator':
-        additionalPermissions = ['resolveTask', 'putRole'];
-        break;
-      // Add cases for other roles as needed
-      default:
-        additionalPermissions = [];
-    }
-    const derivedPermissions = Array.from(new Set([...uniquePermissions, ...additionalPermissions]));
-    // console.log('Derived permissions for role:', roleName, derivedPermissions);
+    console.log('Fetching presets for role:', roleName);
+    try {
+      const response = await dispatch(getPresetsByRole(roleName));
+      const presets = response.presets || [];
+      console.log('Fetched presets:', JSON.stringify(presets, null, 2));
+      
+      const rolePresets = presets.find(preset => preset.roleName === roleName)?.permissions || [];
+      console.log('Role presets for', roleName, ':', rolePresets);
+      
+      // make sure that the permissions are in the permissionLabelPermissions array and there are no duplicates
+      const uniquePermissions = new Set(rolePresets.filter(permission => permissionLabelPermissions.has(permission)));
+      
+      let additionalPermissions = [];
+      switch (roleName) {
+        case 'Manager':
+          additionalPermissions = [
+            'getUserProfiles', 
+            'putUserProfile', 
+            'addInfringements', 
+            'editInfringements', 
+            'deleteInfringements', 
+            'getProjectMembers',
+            // temporary for testing
+            'putRole'
+          ];
+          break;
+        case 'Administrator':
+          additionalPermissions = ['resolveTask', 'putRole'];
+          break;
+        // Add cases for other roles as needed
+        default:
+          additionalPermissions = [];
+      }
+      const derivedPermissions = Array.from(new Set([...uniquePermissions, ...additionalPermissions]));
+      console.log('Derived permissions for role:', roleName, derivedPermissions);
 
-    return derivedPermissions;
+      return derivedPermissions;
+    } catch (error) {
+      console.error('Error fetching presets for role:', error);
+      toast.error(`Failed to fetch presets for role: ${roleName}`);
+      return [];
+    }
   }, [dispatch, permissionLabelPermissions]);
 
   useEffect(() => {    
-    /* const findOldRolePresets = (role) => {
-      for (let preset of permissionPresets) {
-        if (preset.name === role) {
-          return preset.permissions;
-        }
-      }
-      return [];
-    };
-
-    const oldRolePresets = findOldRolePresets(oldRole); */
-    /* let oldRolePresets = [];
-    for (let permission of permissionLabels) {
-      if (rolePermissions.includes(permission.key) || immutablePermissions.includes(permission.key)) {
-        oldRolePresets.push(permission.key);
-      }
-    }
-    console.log('oldRolePresets:', oldRolePresets); */
     const fetchOldRolePresets = async () => {
       const validOldRolePermissions = await fetchPresetsByRole(oldRole);
-      // console.log('Fetched old role presets:', validOldRolePermissions);
+      console.log('Fetched old role presets:', validOldRolePermissions);
       setOldRolePermissions(validOldRolePermissions);
     };
 
     fetchOldRolePresets();
-  }, [fetchPresetsByRole, oldRole, userProfile.role, permissionPresets/* , rolePermissions, immutablePermissions */, permissionLabelPermissions]);
+  }, [fetchPresetsByRole, oldRole, userProfile.role, permissionPresets, permissionLabelPermissions]);
 
   useEffect(() => {
-    /* const findNewRolePresets = (role) => {
-      for (let preset of permissionPresets) {
-        if (preset.name === role) {
-          return preset.permissions;
-        }
-      }
-      return [];
-    };
-    
-    const newRolePresets = findNewRolePresets(newRole);
-    setNewRolePermissions(newRolePresets); */
     const fetchNewRolePresets = async () => {
       const validNewRolePermissions = await fetchPresetsByRole(newRole);
       setNewRolePermissions(validNewRolePermissions);
@@ -595,13 +576,18 @@ const BasicInformationTab = props => {
 
   const handleRoleChange = async (e) => {
     const chosenRole = e.target.value;
+
+    // Fetch old role permissions before changing the role
+    const validOldRolePermissions = await fetchPresetsByRole(oldRole);
+    setOldRolePermissions(validOldRolePermissions);
+
     setNewRole(chosenRole);
 
     // Fetch new role permissions before evaluating conditions
     const validNewRolePermissions = await fetchPresetsByRole(chosenRole);
     setNewRolePermissions(validNewRolePermissions);
 
-    console.log('oldRolePermissions:', oldRolePermissions);
+    console.log('oldRolePermissions:', validOldRolePermissions);
     console.log('currentUserPermissions:', currentUserPermissions);
 
     const permissionsDifferent =
@@ -628,7 +614,11 @@ const BasicInformationTab = props => {
               frontPermissions: newRolePermissions
             }
           });
+          
           setOldRole(chosenRole);
+          const confirmedOldRolePermissions = await fetchPresetsByRole(oldRole);
+          setOldRolePermissions(confirmedOldRolePermissions);
+          
           toast.success('User role successfully updated');
         }
 
