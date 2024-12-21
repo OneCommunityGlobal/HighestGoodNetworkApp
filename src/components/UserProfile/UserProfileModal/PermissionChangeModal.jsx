@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { updateUserProfileProperty } from '../../../actions/userProfile';
 import { permissionLabels } from '../../PermissionsManagement/PermissionsConst';
@@ -16,10 +16,13 @@ function PermissionChangeModal({
   oldRolePermissions,
   newRolePermissions,
   currentUserPermissions,
+  setCurrentUserPermissions,
   permissionLabelPermissions,
   permissionPresets,
   newRolePermissionsToAdd,
-  newRolePermissionsToRemove
+  newRolePermissionsToRemove,
+  setOldRole,
+  getCurrentUserPermissions
 }) {
   // Creating a modal that pops up when someone changes a user's role
   // and the user has custom permissions that differ from the permissions
@@ -68,23 +71,39 @@ function PermissionChangeModal({
       setCheckedRemovedPermissions(initialCheckedRemovedPermissions);
       setCheckedAddedPermissions(initialCheckedAddedPermissions);
     }
-    console.log('checkedAddedPermissions:', checkedAddedPermissions);
-    console.log('checkedRemovedPermissions:', checkedRemovedPermissions);
+    // console.log('checkedAddedPermissions:', checkedAddedPermissions);
+    // console.log('checkedRemovedPermissions:', checkedRemovedPermissions);
   }, [isOpen, newRolePermissionsToAdd, newRolePermissionsToRemove]);
 
-  const togglePermission = (permission, type) => {
+  const togglePermission = useCallback((permission, type) => {
     if (type === 'added') {
-      setCheckedAddedPermissions(prevState => ({
-        ...prevState,
-        [permission]: !prevState[permission],
-      }));
+      setCheckedAddedPermissions(prevState => {
+        const newState = {
+          ...prevState,
+          [permission]: !prevState[permission],
+        };
+        console.log('Updated checkedAddedPermissions:', newState);
+        return newState;
+      });
     } else {
-      setCheckedRemovedPermissions(prevState => ({
-        ...prevState,
-        [permission]: !prevState[permission],
-      }));
+      setCheckedRemovedPermissions(prevState => {
+        const newState = {
+          ...prevState,
+          [permission]: !prevState[permission],
+        };
+        console.log('Updated checkedRemovedPermissions:', newState);
+        return newState;
+      });
     }
-  };
+  }, []);
+
+  useEffect(() => {
+    console.log('checkedAddedPermissions:', checkedAddedPermissions);
+  }, [checkedAddedPermissions]);
+
+  useEffect(() => {
+    console.log('checkedRemovedPermissions:', checkedRemovedPermissions);
+  }, [checkedRemovedPermissions]);
 
   const confirmModal = async () => {
     try {
@@ -110,9 +129,19 @@ function PermissionChangeModal({
             frontPermissions: updatedPermissions
           }
         });
+        // not sure what happened here...this line should have always been here but i just had to re-add it...
+        setOldRole(newRole);
         toast.success('User role successfully updated');
         closeModal();
       }
+
+      // Update currentUserPermissions after role change
+      /* const updatedCurrentPermissions = await getCurrentUserPermissions(permissionLabels);
+      setCurrentUserPermissions(updatedCurrentPermissions); */
+      setCurrentUserPermissions(updatedPermissions);
+      console.log('Updated permissions:', updatedPermissions);
+      console.log('Updated currentUserPermissions:', currentUserPermissions);
+
     } catch (error) {
       console.error('Error updating user role: ', error);
       toast.error('Error updating user role');
@@ -171,4 +200,4 @@ function PermissionChangeModal({
   );
 }
 
-export default PermissionChangeModal;
+export default React.memo(PermissionChangeModal);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
@@ -375,7 +375,7 @@ const BasicInformationTab = props => {
   const dispatch = useDispatch();
 
   // function to remove permissions that are not in the permissionLabels array
-  const getValidPermissions = (permissions) => {
+  const getValidPermissions = useCallback((permissions) => {
     const validPermissions = new Set();
 
     const traversePermissions = (perms) => {
@@ -391,13 +391,13 @@ const BasicInformationTab = props => {
 
     traversePermissions(permissions);
     return validPermissions;
-  };
+  }, []);
 
-  const permissionLabelPermissions = getValidPermissions(permissionLabels);
+  const permissionLabelPermissions = useMemo(() => getValidPermissions(permissionLabels), [getValidPermissions, permissionLabels]);
   // console.log('Permission Label Permissions:', Array.from(permissionLabelPermissions)); // Convert Set to Array and log
 
-  const getCurrentUserPermissions = async (permissions) => {
-    console.log('getCurrentUserPermissions function invoked');
+  const getCurrentUserPermissions = useCallback(async (permissions) => {
+    // console.log('getCurrentUserPermissions function invoked');
     const userPermissions = [];
 
     const traversePermissions = async (perms) => {
@@ -407,7 +407,7 @@ const BasicInformationTab = props => {
         } */
           if (perm.key) {
             const hasPerm = await dispatch(hasPermission(perm.key, false, userProfile.role));
-            console.log(`Checking permission: ${perm.key}, hasPermission: ${hasPerm}`);
+            // console.log(`Checking permission: ${perm.key}, hasPermission: ${hasPerm}`);
             if (hasPerm && permissionLabelPermissions.has(perm.key) && !userPermissions.includes(perm.key)) {
               userPermissions.push(perm.key);
             }
@@ -419,18 +419,26 @@ const BasicInformationTab = props => {
     };
 
     await traversePermissions(permissions);
-    return userPermissions;
-  };
+
+    // return userPermissions;
+
+    // making sure all roles can update a role for testinng purposes
+    const updatedPermissions = userPermissions.includes('putRole') ? userPermissions : [...userPermissions, 'putRole'];
+    
+    await dispatch(updateUserProfileProperty(userProfile, 'permissions.frontPermissions', updatedPermissions));
+
+    return updatedPermissions;
+  }, [dispatch, permissionLabelPermissions, userProfile.role]);
   // const currentUserPermissions = getCurrentUserPermissions(permissionLabels)
 
   useEffect(() => {
     let isMounted = true;
     
     const getPermissions = async () => {
-      console.log('Fetching current user permissions');
+      // console.log('Fetching current user permissions');
       const permissions = await getCurrentUserPermissions(permissionLabels);
       if (isMounted) {
-        console.log('Fetched current user permissions:', permissions);
+        // console.log('Fetched current user permissions:', permissions);
         setCurrentUserPermissions(permissions);
       }
     };
@@ -440,7 +448,7 @@ const BasicInformationTab = props => {
     return () => {
       isMounted = false;
     };
-  }, [permissionLabels, dispatch, userProfile.role]);
+  }, [permissionLabels, userProfile.role, getCurrentUserPermissions]);
 
   // const rolePermissions = useSelector(state => state.role.rolePermissions) || [];
   // const immutablePermissions = useSelector(state => state.role.immutablePermissions) || [];
@@ -450,11 +458,11 @@ const BasicInformationTab = props => {
     console.log('immutablePermissions:', immutablePermissions);
   }, [rolePermissions, immutablePermissions]); */
 
-  const fetchPresetsByRole = async (roleName) => {
-    console.log('Fetching presets for role:', roleName);
+  const fetchPresetsByRole = useCallback(async (roleName) => {
+    // console.log('Fetching presets for role:', roleName);
     const response = await dispatch(getPresetsByRole(roleName));
     const presets = response.presets || [];
-    console.log('Fetched presets:', JSON.stringify(presets, null, 2));
+    // console.log('Fetched presets:', JSON.stringify(presets, null, 2));
     const rolePresets = presets.find(preset => preset.roleName === roleName)?.permissions || [];
     // console.log('Role presets for', roleName, ':', rolePresets);
     // make sure that the permissions are in the permissionLabelPermissions array and there are no duplicates
@@ -468,7 +476,9 @@ const BasicInformationTab = props => {
           'addInfringements', 
           'editInfringements', 
           'deleteInfringements', 
-          'getProjectMembers'
+          'getProjectMembers',
+          // temporary for testing
+          'putRole'
         ];
         break;
       case 'Administrator':
@@ -479,10 +489,10 @@ const BasicInformationTab = props => {
         additionalPermissions = [];
     }
     const derivedPermissions = Array.from(new Set([...uniquePermissions, ...additionalPermissions]));
-    console.log('Derived permissions for role:', roleName, derivedPermissions);
+    // console.log('Derived permissions for role:', roleName, derivedPermissions);
 
     return derivedPermissions;
-  };
+  }, [dispatch, permissionLabelPermissions]);
 
   useEffect(() => {    
     /* const findOldRolePresets = (role) => {
@@ -509,7 +519,7 @@ const BasicInformationTab = props => {
     };
 
     fetchOldRolePresets();
-  }, [oldRole, userProfile.role, permissionPresets/* , rolePermissions, immutablePermissions */, dispatch, permissionLabelPermissions]);
+  }, [fetchPresetsByRole, oldRole, userProfile.role, permissionPresets/* , rolePermissions, immutablePermissions */, permissionLabelPermissions]);
 
   useEffect(() => {
     /* const findNewRolePresets = (role) => {
@@ -528,8 +538,10 @@ const BasicInformationTab = props => {
       setNewRolePermissions(validNewRolePermissions);
     };
 
-    fetchNewRolePresets();
-  }, [newRole, permissionPresets, userProfile.role]);
+    if (newRole) {
+      fetchNewRolePresets();
+    }
+  }, [fetchPresetsByRole, newRole, permissionPresets, userProfile.role]);
 
   // difference between old role permissions and user permissions
   // permissions that were added to user (user permissions - old role permissions)
@@ -553,14 +565,18 @@ const BasicInformationTab = props => {
     // console.log('user profile:', userProfile);
     // console.log('user profile:', JSON.stringify(userProfile, null, 2));
     console.log('currentUserPermissions:', currentUserPermissions);
-    // console.log('oldRole:', oldRole);
-    // console.log('oldRolePermissions:', oldRolePermissions);
-    // console.log('newRolePermissions:', newRolePermissions);
+    console.log('oldRole:', oldRole);
+    console.log('oldRolePermissions:', oldRolePermissions);
+    console.log('newRolePermissions:', newRolePermissions);
     // console.log('customAddedPermissions:', customAddedPermissions);
     // console.log('customRemovedPermissions:', customRemovedPermissions);
     // console.log('newRolePermissionsToAdd:', newRolePermissionsToAdd);
     // console.log('newRolePermissionsToRemove:', newRolePermissionsToRemove);
-    // console.log('userprofile permissions:', userProfile.permissions);
+    console.log('userprofile permissions:', userProfile.permissions);
+    /* manager: ['getUserProfiles', 'putUserProfile', 'addInfringements', 
+      'editInfringements', 'deleteInfringements', 'getProjectMembers', 
+      'postTask', 'updateTask', 'suggestTask', 'putReviewStatus', 'putTeam', 
+      'putRole'] */
 
     // Compare the arrays and log the differences
     const compareArrays = (arr1, arr2) => {
@@ -581,20 +597,27 @@ const BasicInformationTab = props => {
     const chosenRole = e.target.value;
     setNewRole(chosenRole);
 
-    // console.log('oldRolePermissions:', oldRolePermissions);
-    // console.log('currentUserPermissions:', currentUserPermissions);
+    // Fetch new role permissions before evaluating conditions
+    const validNewRolePermissions = await fetchPresetsByRole(chosenRole);
+    setNewRolePermissions(validNewRolePermissions);
+
+    console.log('oldRolePermissions:', oldRolePermissions);
+    console.log('currentUserPermissions:', currentUserPermissions);
 
     const permissionsDifferent =
       oldRolePermissions.some((permission) => !currentUserPermissions.includes(permission)) ||
       currentUserPermissions.some((permission) => !oldRolePermissions.includes(permission));
 
     // console.log('permissionsDifferent: ', permissionsDifferent);
-
+    console.log('newRolePermissionsToAdd:', newRolePermissionsToAdd);
+    console.log('newRolePermissionsToRemove:', newRolePermissionsToRemove);
+    
     if (permissionsDifferent && (newRolePermissionsToAdd.length > 0 || newRolePermissionsToRemove.length > 0)) {
       openPermissionModal();
     } else {
       try {
         const response = await dispatch(updateUserProfileProperty(userProfile, 'role', chosenRole));
+        // await dispatch(updateUserProfileProperty(userProfile, 'permissions', []));
 
         if (response === 200) {
           setUserProfile({ 
@@ -608,6 +631,14 @@ const BasicInformationTab = props => {
           setOldRole(chosenRole);
           toast.success('User role successfully updated');
         }
+
+        // Update currentUserPermissions after role change
+        /* const updatedPermissions = await getCurrentUserPermissions(permissionLabels);
+        setCurrentUserPermissions(updatedPermissions); */
+        setCurrentUserPermissions(newRolePermissions);
+        console.log('newRolePermissions:', newRolePermissions);
+        console.log('Updated currentUserPermissions:', currentUserPermissions);
+
       } catch (error) {
         console.error('Error updating role:', error);
         toast.error('Failed to update role');
@@ -766,11 +797,13 @@ const BasicInformationTab = props => {
         oldRolePermissions={oldRolePermissions}
         newRolePermissions={newRolePermissions}
         currentUserPermissions={currentUserPermissions}
+        setCurrentUserPermissions={setCurrentUserPermissions}
         permissionLabelPermissions={permissionLabelPermissions}
         permissionPresets={permissionPresets}
         newRolePermissionsToAdd={newRolePermissionsToAdd}
         newRolePermissionsToRemove={newRolePermissionsToRemove}
         setOldRole={setOldRole}
+        getCurrentUserPermissions={getCurrentUserPermissions}
       />
       <Col>
         <Label className={darkMode ? 'text-light' : ''}>Role</Label>
