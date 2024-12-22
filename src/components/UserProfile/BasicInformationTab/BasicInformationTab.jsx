@@ -422,8 +422,9 @@ const BasicInformationTab = props => {
 
     // return userPermissions;
 
-    // making sure all roles can update a role for testinng purposes
-    const updatedPermissions = userPermissions.includes('putRole') ? userPermissions : [...userPermissions, 'putRole'];
+    // making sure all roles can update a role for testing purposes
+    // Add 'putRole' and 'putUserProfile' to the permissions array if they are not already present
+    const updatedPermissions = [...new Set([...userPermissions, 'putRole', 'putUserProfile'])];
     
     await dispatch(updateUserProfileProperty(userProfile, 'permissions.frontPermissions', updatedPermissions));
 
@@ -473,6 +474,9 @@ const BasicInformationTab = props => {
       
       let additionalPermissions = [];
       switch (roleName) {
+        case 'Administrator':
+          additionalPermissions = ['resolveTask', 'putRole'];
+          break;
         case 'Manager':
           additionalPermissions = [
             'getUserProfiles', 
@@ -485,8 +489,40 @@ const BasicInformationTab = props => {
             'putRole'
           ];
           break;
-        case 'Administrator':
-          additionalPermissions = ['resolveTask', 'putRole'];
+        case 'Mentor':
+          additionalPermissions = [
+            'getUserProfiles', 
+            'putUserProfile', 
+            'addInfringements', 
+            'editInfringements', 
+            'deleteInfringements', 
+            'getProjectMembers',
+            'updateTask',
+            // temporary for testing
+            'putRole'
+          ];
+          break;
+        case 'Core Team':
+          // temporary for testing
+          additionalPermissions = ['putRole', 'putUserProfile'];
+          break;
+        case 'TestRole':
+          additionalPermissions = [
+            'seeUsersInDashboard', 
+            'editHeaderMessage', 
+            'getReports', 
+            'getWeeklySummaries', 
+            'totalValidWeeklySummaries', 
+            'highlightEligibleBios', 
+            'getVolunteerWeeklySummary',  
+            'changeUserStatus', 
+            'getProjectMembers', 
+            'putRole', 
+            'putUserProfilePermissions',
+            // temporary for testing
+            'getUserProfiles', 
+            'putUserProfile'
+          ];
           break;
         // Add cases for other roles as needed
         default:
