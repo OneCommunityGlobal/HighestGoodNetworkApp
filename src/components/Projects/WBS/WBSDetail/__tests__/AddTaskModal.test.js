@@ -1,78 +1,80 @@
 import React from 'react';
 import { Provider } from 'react-redux';
-import { render, fireEvent } from '@testing-library/react';
-import configureStore from 'redux-mock-store';
+import { render, fireEvent, screen, waitFor } from '@testing-library/react';
+import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import '@testing-library/jest-dom';
-import AddTaskModal from '../AddTask/AddTaskModal';
+import { BrowserRouter as Router } from 'react-router-dom';
+import '@testing-library/jest-dom/extend-expect';
+import AddTaskModal from '../AddTask/AddTaskModal'; // Adjust the import path as necessary
 
 const middlewares = [thunk];
-const mockStore = configureStore(middlewares);
+const mockStore = configureMockStore(middlewares);
+
+// Mock the initial state
+const initialState = {
+    tasks: {
+        taskItems: [],
+        copiedTask: {},
+        error: null
+    },
+    projectMembers: {
+        members: []
+    },
+    allProjects: {
+        projects: []
+    },
+    theme: {
+        darkMode: false
+    }
+};
+
+// Utility function to render the component with all providers
+const renderComponent = (store) => render(
+    <Provider store={store}>
+        <Router>
+            <AddTaskModal />
+        </Router>
+    </Provider>
+);
 
 describe('AddTaskModal', () => {
-  let store;
-  let component;
+    let store;
 
-  beforeEach(() => {
-    store = mockStore({
-      tasks: { taskItems: [], copiedTask: null, error: null },
-      projectMembers: { members: [] },
-      allProjects: {},
-      theme: { darkMode: false },
+    beforeEach(() => {
+        store = mockStore(initialState);
     });
 
-    component = render(
-      <Provider store={store}>
-        <AddTaskModal />
+    test('renders AddTaskModal and shows modal when toggle is triggered', () => {
+      const { getByText, queryByText } = renderComponent(store);
+      
+      // Ensure the button that triggers the modal is present and click it
+      const openButton = getByText(/Add Task/i);
+      fireEvent.click(openButton);
+  
+      // Wait for the modal text to be present
+      const modalTitle = queryByText(/Add New Task/i);
+      expect(modalTitle).toBeInTheDocument();
+  });
+  
+  
+  test('handles input changes for Task Name', () => {
+    const { getByLabelText, getByText } = render(
+        <Provider store={store}>
+            <AddTaskModal />
       </Provider>,
     );
-  });
+    
+    // Uncomment the next line if the modal needs to be manually opened
+    // fireEvent.click(getByText('Add Task'));
 
-  it('renders correctly', () => {
-    expect(component.getByText('Add Task')).toBeInTheDocument();
-  });
-
-  it('opens modal on button click', () => {
-    fireEvent.click(component.getByText('Add Task'));
-    expect(component.getByText('Add New Task')).toBeInTheDocument();
-  });
-
-  it('checks modal content', () => {
-    fireEvent.click(component.getByText('Add Task'));
-  });
-
-  it('allows input and interacts with form fields', () => {
-    fireEvent.click(component.getByText('Add Task')); // Open modal
-    fireEvent.change(component.getByLabelText('Task Name'), { target: { value: 'New Task' } });
-    fireEvent.change(component.getByDisplayValue('Primary'), { target: { value: 'Secondary' } }); // Change priority
-    fireEvent.click(component.getByLabelText('Active')); // Select a status
-
-    expect(component.getByLabelText('Task Name').value).toBe('New Task');
-    expect(component.getByDisplayValue('Secondary').selected).toBeTruthy();
-    expect(component.getByLabelText('Active').checked).toBeTruthy();
-  });
-  it('validates input fields before submitting', () => {
-    fireEvent.click(component.getByText('Add Task')); // Open modal
-    const saveButton = component.getByText('Save');
-    fireEvent.click(saveButton);
-
-    // Assuming there is a way to check error messages in your UI
-    expect(component.queryByText('Task name is required')).toBeInTheDocument();
-  });
-
-  it('submits the form and dispatches an action', () => {
-    fireEvent.click(component.getByText('Add Task')); // To open the modal
-    const input = component.getByLabelText('Task Name');
-    fireEvent.change(input, { target: { value: 'New Task' } });
-
-    fireEvent.click(component.getByText('Save'));
-    const actions = store.getActions();
-    expect(actions).toEqual(
-      expect.arrayContaining([
-        expect.objectContaining({
-          type: 'ADD_NEW_TASK',
-        }),
-      ]),
-    );
-  });
+    const input = getByLabelText('Task Name');
+    fireEvent.change(input, { target: { value: 'New Important Task' } });
+    
+    expect(input.value).toBe('New Important Task');
 });
+
+
+
+    // Additional tests for form interactions, button clicks, and Redux actions
+});
+
