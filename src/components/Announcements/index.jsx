@@ -5,6 +5,7 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import { Upload, Calendar, X } from 'lucide-react';
 import axios from 'axios';
 
 function Announcements() {
@@ -15,9 +16,17 @@ function Announcements() {
   const [headerContent, setHeaderContent] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
-  const [linkedinContent, setLinkedinContent] = useState(''); //linkedin
-  const [linkedinMedia, setLinkedinMedia] = useState(null); // linkedin
+  
+  const [linkedinContent, setLinkedinContent] = useState('');
+  const [mediaFiles, setMediaFiles] = useState([]);
+  const [previews, setPreviews] = useState([]);
+  const [scheduleDate, setScheduleDate] = useState('');
+  const [scheduleTime, setScheduleTime] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+
+
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -160,60 +169,99 @@ function Announcements() {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
-  const handleLinkedinContentChange = e => {
-    setLinkedinContent(e.target.value);
-  };
 
-  // Function to post to LinkedIn
-  const handleMediaUpload = e => {
-    const file = e.target.files[0];
-    if (!file) return;
+  // Handle media upload
+  const handleMediaUpload = (e) => {
+    const files = Array.from(e.target.files);
+    if (files.length === 0) return;
 
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setLinkedinMedia(reader.result);
-    };
-    reader.readAsDataURL(file);
-  };
+    if (mediaFiles.length + files.length > 9) {
+      toast.error('Maximum 9 media files allowed per post');
+      return;
+    }
 
-  const handlePostToLinkedIn = async () => {
-    try {
-      if (linkedinContent.trim() === '') {
-        toast.error('Error: LinkedIn post content cannot be empty.');
-        return;
+    const validFiles = files.filter((file) => {
+      const maxSize = file.type.includes('video') ? 200 * 1024 * 1024 : 5 * 1024 * 1024;
+      if (file.size > maxSize) {
+        toast.error(`File "${file.name}" exceeds size limit.`);
+        return false;
       }
-  
-      const postPayload = {
-        content: linkedinContent,
-        media: linkedinMedia || null, // Include media if present
+      return true;
+    });
+
+    validFiles.forEach((file) => {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setPreviews((prev) => [
+          ...prev,
+          {
+            id: Math.random().toString(36).substr(2, 9),
+            url: reader.result,
+            type: file.type,
+          },
+        ]);
       };
-  
-      console.log('Payload being sent:', postPayload);
-  
-      // Make the POST request to the backend
+      reader.readAsDataURL(file);
+    });
+
+    setMediaFiles((prev) => [...prev, ...validFiles]);
+  };
+
+  // Remove media file
+  const removeMedia = (index) => {
+    setMediaFiles((prev) => prev.filter((_, i) => i !== index));
+    setPreviews((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  // Handle LinkedIn post submission
+  const handlePostToLinkedIn = async () => {
+    if (!linkedinContent.trim()) {
+      toast.error('LinkedIn content cannot be empty.');
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('content', linkedinContent);
+      mediaFiles.forEach((file) => formData.append('media', file));
+
+      if (scheduleDate && scheduleTime) {
+        const scheduledDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
+        formData.append('scheduleTime', scheduledDateTime.toISOString());
+      }
+
       const response = await axios.post(
         'http://localhost:4500/api/postToLinkedIn',
-        postPayload,
-        {
-          headers: {
-            'Content-Type': 'application/json',
-          },
-        }
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       );
-  
-      // Check if the status is 201 (Created) or 200 (Success)
-      if (response.status === 201 || response.status === 200) {
-        toast.success('Post to LinkedIn successful!');
-        setLinkedinContent('');
-        setLinkedinMedia(null);
+
+      if (response.status === 200 || response.status === 201) {
+        toast.success('Posted to LinkedIn successfully!');
+        resetLinkedInForm();
       } else {
         toast.error('Failed to post to LinkedIn');
       }
     } catch (error) {
       toast.error('Failed to post to LinkedIn');
       console.error('Error posting to LinkedIn:', error.response?.data || error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  // Reset LinkedIn form
+  const resetLinkedInForm = () => {
+    setLinkedinContent('');
+    setMediaFiles([]);
+    setPreviews([]);
+    setScheduleDate('');
+    setScheduleTime('');
+  };
+
+
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
@@ -240,22 +288,102 @@ function Announcements() {
           >
             Broadcast Weekly Update
           </button>
-          {/* LinkedIn Editor Section */}
-          <div>
-            <h3>LinkedIn Post Editor</h3>
-            <textarea
-              value={linkedinContent}
-              onChange={e => setLinkedinContent(e.target.value)}
-              placeholder="Enter LinkedIn content here"
-            />
-            <input
-              type="file"
-              accept="image/*,video/*"
-              onChange={handleMediaUpload} 
-              style={{ margin: '10px 0' }}
-            />
-            <button onClick={handlePostToLinkedIn}>Post to LinkedIn</button>
+
+
+
+{/* LinkedIn Editor Section */}
+<div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
+      <div className="linkedin-post-container">
+        <h3>LinkedIn Post Editor</h3>
+        {/* LinkedIn Content Input */}
+        <textarea
+          value={linkedinContent}
+          onChange={(e) => setLinkedinContent(e.target.value)}
+          placeholder="Enter your LinkedIn post content here..."
+          rows={5}
+          className="w-full p-3 border rounded-md"
+        ></textarea>
+
+        {/* Media Upload */}
+        <div className="mt-4">
+          <label htmlFor="media-upload" className="btn btn-upload">
+            <Upload className="inline-block mr-2" /> Upload Media
+          </label>
+          <input
+            type="file"
+            id="media-upload"
+            multiple
+            accept="image/*,video/*"
+            onChange={handleMediaUpload}
+            className="hidden"
+          />
+        </div>
+
+        {/* Media Previews */}
+        {previews.length > 0 && (
+          <div className="mt-4 grid grid-cols-3 gap-4">
+            {previews.map((preview, index) => (
+              <div key={preview.id} className="relative">
+                <button
+                  className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full"
+                  onClick={() => removeMedia(index)}
+                >
+                  <X className="h-4 w-4" />
+                </button>
+                {preview.type.includes('image') ? (
+                  <img
+                    src={preview.url}
+                    alt={`Preview ${index + 1}`}
+                    className="w-full h-32 object-cover rounded-md"
+                  />
+                ) : (
+                  <video
+                    src={preview.url}
+                    controls
+                    className="w-full h-32 object-cover rounded-md"
+                  />
+                )}
+              </div>
+            ))}
           </div>
+        )}
+
+        {/* Schedule Date and Time */}
+        <div className="mt-4 flex items-center gap-2">
+          <Calendar className="h-5 w-5" />
+          <input
+            type="date"
+            value={scheduleDate}
+            onChange={(e) => setScheduleDate(e.target.value)}
+            min={new Date().toISOString().split('T')[0]}
+            className="p-2 border rounded-md"
+          />
+          <input
+            type="time"
+            value={scheduleTime}
+            onChange={(e) => setScheduleTime(e.target.value)}
+            className="p-2 border rounded-md"
+          />
+        </div>
+
+        {/* Action Buttons */}
+        <div className="mt-4 flex gap-2">
+          <button
+            onClick={handlePostToLinkedIn}
+            className="btn btn-primary"
+            disabled={isLoading}
+          >
+            {scheduleDate ? 'Schedule Post' : 'Post Now'}
+          </button>
+          <button onClick={resetLinkedInForm} className="btn btn-secondary">
+            Clear
+          </button>
+        </div>
+      </div>
+    </div>
+
+
+
         </div>
         <div
           className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
