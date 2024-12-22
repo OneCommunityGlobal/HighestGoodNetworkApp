@@ -4,6 +4,9 @@ const initialState = {
   volunteerstats: [],
   loading: false,
   error: null,
+  volunteerRolesTeamStats:{},
+  isTeamStatsLoading:false,
+  isTeamStatsError:null
 };
 
 export const totalOrgSummaryReducer = (state = initialState, action) => {
@@ -27,6 +30,26 @@ export const totalOrgSummaryReducer = (state = initialState, action) => {
         ...state,
         loading: false,
         error: action.payload.error,
+      };
+    case actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_BEGIN:
+      return {
+        ...state,
+        isTeamStatsLoading : true,
+        isTeamStatsError: null,
+      };
+
+    case actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_SUCCESS:
+      return {
+        ...state,
+        isTeamStatsLoading: false,
+        volunteerRolesTeamStats: action.payload,
+      };
+
+    case actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_ERROR:
+      return {
+        ...state,
+        isTeamStatsLoading: false,
+        isTeamStatsError: action.payload.error,
       };
 
     default:
