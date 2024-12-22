@@ -398,7 +398,9 @@ function AddTaskModal(props) {
               </div>
 
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Priority</span>
+                <label htmlFor="priority" className={`add_new_task_form-label ${fontColor}`}>
+                  Priority
+                </label>
                 <span className="add_new_task_form-input_area">
                   <select
                     id="priority"
@@ -411,9 +413,12 @@ function AddTaskModal(props) {
                   </select>
                 </span>
               </div>
+
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Resources</span>
-                <span className="add_new_task_form-input_area">
+                <label htmlFor="resource-input" className={`add_new_task_form-label ${fontColor}`}>
+                  Resources
+                </label>
+                <div className="add_new_task_form-input_area">
                   <TagsSearch
                     placeholder="Add resources"
                     members={allMembers.filter(user => user.isActive)}
@@ -421,25 +426,26 @@ function AddTaskModal(props) {
                     removeResource={removeResource}
                     resourceItems={resourceItems}
                     disableInput={false}
-                    inputTestId="resource-input" // Prop passed to TagsSearch for the input element
+                    inputTestId="resource-input"
                   />
-                </span>
+                </div>
               </div>
+
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Assigned</span>
-                <span className="add_new_task_form-input_area">
+                <label className={`add_new_task_form-label ${fontColor}`}>Assigned</label>
+                <div className="add_new_task_form-input_area">
                   <div className="flex-row d-inline align-items-center">
                     <div className="form-check form-check-inline">
                       <input
                         className="form-check-input"
                         type="radio"
-                        id="true"
+                        id="assigned-yes"
                         name="Assigned"
-                        value
-                        checked={assigned}
+                        value="true"
+                        checked={assigned === true}
                         onChange={() => setAssigned(true)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="true">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-yes">
                         Yes
                       </label>
                     </div>
@@ -447,19 +453,20 @@ function AddTaskModal(props) {
                       <input
                         className="form-check-input"
                         type="radio"
-                        id="false"
+                        id="assigned-no"
                         name="Assigned"
-                        value={false}
-                        checked={!assigned}
+                        value="false"
+                        checked={assigned === false}
                         onChange={() => setAssigned(false)}
                       />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="false">
+                      <label className={`form-check-label ${fontColor}`} htmlFor="assigned-no">
                         No
                       </label>
                     </div>
                   </div>
-                </span>
+                </div>
               </div>
+
               <div className="add_new_task_form-group">
                 <span className={`add_new_task_form-label ${fontColor}`}>Status</span>
                 <span className="add_new_task_form-input_area">
@@ -526,8 +533,8 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="add_new_task_form-group">
-                <span className={`add_new_task_form-label ${fontColor}`}>Hours</span>
-                <span className="add_new_task_form-input_area">
+                <label className={`add_new_task_form-label ${fontColor}`}>Hours</label>
+                <div className="add_new_task_form-input_area">
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="bestCaseInput"
@@ -544,11 +551,12 @@ function AddTaskModal(props) {
                       onBlur={handleBestHoursBlur}
                       id="bestCaseInput"
                       className="hours-input"
+                      aria-label="Best-case hours"
                     />
                   </div>
-                  <div className="warning">
-                    {hoursWarning ? 'The number of hours must be less than other cases' : ''}
-                  </div>
+                  {hoursWarning && (
+                    <div className="warning">The number of hours must be less than other cases</div>
+                  )}
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="worstCaseInput"
@@ -565,12 +573,14 @@ function AddTaskModal(props) {
                       onBlur={handleWorstHoursBlur}
                       id="worstCaseInput"
                       className="hours-input"
+                      aria-label="Worst-case hours"
                     />
                   </div>
-                  {/* Moved warning outside of the parent div so that the input field does not get affected , now the warnings should appear in a new line - Sucheta */}
-                  <div className="warning">
-                    {hoursWarning ? 'The number of hours must be higher than other cases' : ''}
-                  </div>
+                  {hoursWarning && (
+                    <div className="warning">
+                      The number of hours must be higher than other cases
+                    </div>
+                  )}
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="mostCaseInput"
@@ -587,13 +597,14 @@ function AddTaskModal(props) {
                       onBlur={handleMostHoursBlur}
                       id="mostCaseInput"
                       className="hours-input"
+                      aria-label="Most-case hours"
                     />
                   </div>
-                  <div className="warning">
-                    {hoursWarning
-                      ? 'The number of hours must range between best and worst cases'
-                      : ''}
-                  </div>
+                  {hoursWarning && (
+                    <div className="warning">
+                      The number of hours must range between best and worst cases
+                    </div>
+                  )}
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label
                       htmlFor="estimatedInput"
@@ -609,55 +620,66 @@ function AddTaskModal(props) {
                       onChange={handleEstimateHoursChange}
                       id="estimatedInput"
                       className="hours-input"
+                      aria-label="Estimated hours"
                     />
                   </div>
-                </span>
+                </div>
               </div>
-              <div className="d-flex border align-items-center">
-                <span className={`add_new_task_form-label ${fontColor}`}>Links</span>
+
+              <div className="add_new_task_form-group">
+                <label htmlFor="linkInput" className={`add_new_task_form-label ${fontColor}`}>
+                  Links
+                </label>
                 <span className="add_new_task_form-input_area">
                   <div className="d-flex flex-row">
                     <input
                       type="text"
-                      aria-label="Search user"
+                      id="linkInput"
+                      aria-label="Link Input"
                       placeholder="Link"
                       className="task-resouces-input"
-                      data-tip="Add a link"
                       onChange={e => setLink(e.target.value)}
                       value={link}
                     />
                     <button
-                      className="task-resouces-btn"
                       type="button"
-                      data-tip="Add Link"
+                      className="task-resouces-btn"
+                      aria-label="Add Link"
                       onClick={addLink}
                     >
-                      <i className={`fa fa-plus ${fontColor}`} aria-hidden="true" />
+                      Add Link
                     </button>
                   </div>
                   <div>
-                    {links.map((link, i) =>
-                      link.length > 1 ? (
-                        <div key={i}>
-                          <i
-                            className="fa fa-trash-o remove-link"
-                            aria-hidden="true"
-                            data-tip="delete"
-                            onClick={() => removeLink(i)}
-                          />
-                          <a href={link} className="task-link" target="_blank" rel="noreferrer">
-                            {link}
-                          </a>
-                        </div>
-                      ) : null,
-                    )}
+                    {links.map((link, i) => (
+                      <div key={i} className="link-item">
+                        <a href={link} className="task-link" target="_blank" rel="noreferrer">
+                          {link}
+                        </a>
+                        <button
+                          type="button"
+                          aria-label={`Delete link ${link}`}
+                          onClick={() => removeLink(i)}
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    ))}
                   </div>
                 </span>
               </div>
+
               <div className="d-flex border align-items-center">
-                <span className={`add_new_task_form-label ${fontColor}`}>Category</span>
+                <label htmlFor="category-select" className={`add_new_task_form-label ${fontColor}`}>
+                  Category
+                </label>
                 <span className="add_new_task_form-input_area">
-                  <select value={category} onChange={e => setCategory(e.target.value)}>
+                  <select
+                    id="category-select"
+                    value={category}
+                    onChange={e => setCategory(e.target.value)}
+                    aria-label="Category"
+                  >
                     {categoryOptions.map(cla => (
                       <option value={cla.value} key={cla.value}>
                         {cla.label}
@@ -667,8 +689,8 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div>
-                <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`}>
-                  Why this Task is Important
+                <div className={`border p-1 ${fontColor}`} aria-labelledby="why-task-label">
+                  <h4 id="why-task-label">Why this Task is Important</h4>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -681,8 +703,8 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div>
-                <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`}>
-                  Design Intent
+                <div className={`border p-1 ${fontColor}`} aria-labelledby="design-intent-label">
+                  <h4 id="design-intent-label">Design Intent</h4>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -695,8 +717,8 @@ function AddTaskModal(props) {
                 </div>
               </div>
               <div>
-                <div scope="col" colSpan="2" className={`border p-1 ${fontColor}`}>
-                  Endstate
+                <div className={`border p-1 ${fontColor}`} aria-labelledby="endstate-label">
+                  <h4 id="endstate-label">Endstate</h4>
                   <Editor
                     tinymceScriptSrc="/tinymce/tinymce.min.js"
                     licenseKey="gpl"
@@ -708,6 +730,7 @@ function AddTaskModal(props) {
                   />
                 </div>
               </div>
+
               <div className="d-flex border">
                 <span scope="col" className={`form-date p-1 ${fontColor}`}>
                   Start Date
@@ -726,16 +749,22 @@ function AddTaskModal(props) {
                 </span>
               </div>
               <div className="d-flex border align-items-center">
-                <span scope="col" className={`form-date p-1 ${fontColor}`}>
+                <label
+                  htmlFor="end-date-input"
+                  className={`form-date p-1 ${fontColor}`}
+                  scope="col"
+                >
                   End Date
-                </span>
+                </label>
                 <span scope="col" className="border-left p-1">
                   <DayPickerInput
+                    id="end-date-input" // Add id to associate the label
                     format={FORMAT}
                     formatDate={formatDate}
                     placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                     onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
                     value={dueDate}
+                    inputProps={{ 'aria-label': 'End Date' }} // Add aria-label for accessibility
                   />
                   <div className="warning">{endDateError ? END_DATE_ERROR_MESSAGE : ''}</div>
                 </span>
