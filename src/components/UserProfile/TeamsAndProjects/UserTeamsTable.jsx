@@ -216,6 +216,7 @@ const UserTeamsTable = props => {
           <Col md="12" style={{ padding: '0' }}>
             {canAssignTeamToUsers ? (
               props.disabled ? (
+
                 <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
                   Assign Team
                 </Button>
@@ -232,10 +233,20 @@ const UserTeamsTable = props => {
                     Assign Team
                   </Button>
                   <Tooltip
-                    placement="top" // Adjust the placement as needed
+                    placement="top"
+                    modifiers={[
+                      {
+                        name: 'flip',
+                        options: {
+                          enabled: false,
+                        },
+                      },
+
+                    ]}
                     isOpen={teamCodeExplainTooltip}
                     target="teamCodeAssign"
                     toggle={toggleTeamCodeExplainTooltip}
+                    fallbackPlacement={['top', 'bottom', 'left', 'right']}
                   >
                     This team code should only be used by admin/owner, and has nothing to do with
                     the team data model.
