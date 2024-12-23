@@ -217,7 +217,7 @@ const UserTeamsTable = props => {
             {canAssignTeamToUsers ? (
               props.disabled ? (
 
-                <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
+                <Button id="teamCodeAssign" className="btn-addteam" color="primary" style={boxStyle} disabled>
                   Assign Team
                 </Button>
               ) : (
