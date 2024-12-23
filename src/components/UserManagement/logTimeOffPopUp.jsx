@@ -19,9 +19,9 @@ import {
   Form,
   Alert,
 } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css';
 import DatePicker from 'react-datepicker';
+import { boxStyle, boxStyleDark } from '../../styles';
+import '../Header/DarkMode.css';
 import 'react-datepicker/dist/react-datepicker.css';
 import {
   addTimeOffRequestThunk,

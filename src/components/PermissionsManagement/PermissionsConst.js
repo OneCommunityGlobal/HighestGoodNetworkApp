@@ -257,6 +257,12 @@ export const permissionLabels = [
                   'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
               },
               {
+                label: 'Unassign Team Members from Tasks',
+                key: 'removeUserFromTask',
+                description:
+                  'Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X.',
+              },
+              {
                 label: 'Interact with Task "Ready for Review"',
                 key: 'putReviewStatus',
                 description:
