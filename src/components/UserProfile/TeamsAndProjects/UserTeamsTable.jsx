@@ -1,5 +1,5 @@
 import { React, useState, useEffect, useRef } from 'react';
-import { Button, Col, Tooltip, Input } from 'reactstrap';
+import { Button, Col, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
@@ -16,9 +16,6 @@ import { toast } from 'react-toastify';
 const UserTeamsTable = props => {
   const { darkMode } = props;
 
-  const [tooltipOpen, setTooltip] = useState(false);
-
-  const [teamCodeExplainTooltip, setTeamCodeExplainTooltip] = useState(false);
 
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -45,7 +42,7 @@ const UserTeamsTable = props => {
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
-  const toggleTooltip = () => setTooltip(!tooltipOpen);
+
 
   useEffect(() => {
     if (props.userProfile?.teamCode) {
@@ -105,7 +102,6 @@ const UserTeamsTable = props => {
     opacity: !props.canEditTeamCode ? 0.6 : 0.9,
   };
 
-  const toggleTeamCodeExplainTooltip = () => setTeamCodeExplainTooltip(!teamCodeExplainTooltip);
 
   const fetchTeamSelected = async (teamId, teamName, isUpdate) => {
     const urlTeamData = ENDPOINTS.TEAM_BY_ID(teamId);
@@ -232,25 +228,6 @@ const UserTeamsTable = props => {
                   >
                     Assign Team
                   </Button>
-                  <Tooltip
-                    placement="top"
-                    modifiers={[
-                      {
-                        name: 'flip',
-                        options: {
-                          enabled: false,
-                        },
-                      },
-
-                    ]}
-                    isOpen={teamCodeExplainTooltip}
-                    target="teamCodeAssign"
-                    toggle={toggleTeamCodeExplainTooltip}
-                    fallbackPlacement={['top', 'bottom', 'left', 'right']}
-                  >
-                    This team code should only be used by admin/owner, and has nothing to do with
-                    the team data model.
-                  </Tooltip>
                 </>
               )
             ) : (
