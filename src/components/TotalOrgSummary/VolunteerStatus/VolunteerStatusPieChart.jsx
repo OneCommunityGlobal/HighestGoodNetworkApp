@@ -14,7 +14,7 @@ function VolunteerStatusPieChart(props) {
     datasets: [
       {
         data: volunteerData.map(item => item.value),
-        backgroundColor: ['#5355C9', '#3EA0CB', '#EC4899'],
+        backgroundColor: ['#e8e8ff', '#f3fcff', '#ffe9fa'],
         borderWidth: 1,
       },
     ],
@@ -26,11 +26,14 @@ function VolunteerStatusPieChart(props) {
         color: '#fff',
         font: {
           size: 16,
+          weight: 'bolder',
         },
         formatter: value => {
-          const percentage = ((value / totalVolunteers) * 100).toFixed(2);
-          return `${value}\n(${percentage}%)`;
+          const percentage = ((value / totalVolunteers) * 100).toFixed(0);
+          return `${value}\n${percentage}%`;
         },
+        align: 'center',
+        anchor: 'center',
       },
       legend: {
         display: false,
@@ -53,6 +56,7 @@ function VolunteerStatusPieChart(props) {
           <h2 className="volunteer-status-heading">TOTAL VOLUNTEERS</h2>
           <p className="volunteer-count">{totalVolunteers}</p>
           <p
+            className="percentage-change"
             style={{ color: percentageChangeColor }}
             aria-label={`Percentage change: ${percentageChange}% week over week`}
           >

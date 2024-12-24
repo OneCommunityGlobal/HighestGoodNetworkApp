@@ -19,8 +19,8 @@ function VolunteerStatusChart({ volunteerNumberStats }) {
       percentageChange: totalVolunteers.comparisonPercentage || 0,
       data: [
         { label: 'Active', value: activeVolunteers.count },
-        { label: 'Deactivated', value: deactivatedVolunteers.count },
         { label: 'New', value: newVolunteers.count },
+        { label: 'Deactivated This Week', value: deactivatedVolunteers.count },
       ],
     };
   }, [volunteerNumberStats]);
@@ -31,7 +31,7 @@ function VolunteerStatusChart({ volunteerNumberStats }) {
 
   return (
     <section>
-      <h3 style={{ textAlign: 'center' }}>Volunteer Status</h3>
+      <h3 style={{ textAlign: 'center', color: 'black' }}>Volunteer Status</h3>
       <VolunteerStatusPieChart data={chartData} />
     </section>
   );

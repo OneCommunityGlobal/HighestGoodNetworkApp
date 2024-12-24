@@ -12,6 +12,7 @@ function BlueSquareStats({ blueSquareStats }) {
     missingHours,
     missingSummary,
     missingHoursAndSummary,
+    vacationTime,
     other,
   } = blueSquareStats;
 
@@ -19,6 +20,7 @@ function BlueSquareStats({ blueSquareStats }) {
     { label: 'Missing Hours', value: missingHours.count },
     { label: 'Missing Summary', value: missingSummary.count },
     { label: 'Missing Both Hours & Summary', value: missingHoursAndSummary.count },
+    { label: 'Vacation Time', value: vacationTime.count },
     { label: 'Other', value: other.count },
   ];
 

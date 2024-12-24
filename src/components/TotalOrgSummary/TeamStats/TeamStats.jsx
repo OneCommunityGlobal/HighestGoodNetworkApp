@@ -2,11 +2,15 @@ import { useState, useEffect } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import TeamStatsBarChart from './TeamStatsBarChart';
+import './TeamStats.css';
 
-const activeMembersMinimum = 4;
 const endDate = '2023-12-02';
+const activeMembersMinimumDropDownOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30];
 
 function TeamStats({ usersInTeamStats }) {
+  const [activeMembersMinimum, setActiveMembersMinimum] = useState(
+    activeMembersMinimumDropDownOptions[0],
+  );
   const [teamsWithActiveMembers, setTeamsWithActiveMembers] = useState(null);
   const [teamsStatsFetchingError, setTeamsStatsFetchingError] = useState(null);
   useEffect(() => {
@@ -23,7 +27,7 @@ function TeamStats({ usersInTeamStats }) {
     };
 
     fetchTeamsData();
-  }, []);
+  }, [activeMembersMinimum]);
 
   if (!usersInTeamStats) {
     return <div>Team stats data is not available</div>;
@@ -50,6 +54,13 @@ function TeamStats({ usersInTeamStats }) {
     },
   ];
 
+  function handleActiveMembersMinimumChange(event) {
+    const selectedActiveMembersMinimum = event.target.value;
+    if (!selectedActiveMembersMinimum) return;
+
+    setActiveMembersMinimum(selectedActiveMembersMinimum);
+  }
+
   return (
     <div>
       <TeamStatsBarChart data={data} yAxisLabel="name" />
@@ -57,7 +68,24 @@ function TeamStats({ usersInTeamStats }) {
         <div className="team-stats-active-members">
           <div className="team-stats-bar-chart-summary">
             <span>
-              {teamsWithActiveMembers.count} teams with {activeMembersMinimum}+ active members
+              {`${teamsWithActiveMembers.count} ${
+                teamsWithActiveMembers.count === 1 ? 'team' : 'teams'
+              } with`}
+              <select
+                onChange={handleActiveMembersMinimumChange}
+                value={activeMembersMinimum}
+                className="team-stats-active-members-dropdown"
+              >
+                {activeMembersMinimumDropDownOptions.map(activeMembersMinimumOption => (
+                  <option
+                    key={`${activeMembersMinimumOption}-dropdown`}
+                    value={activeMembersMinimumOption}
+                  >
+                    {activeMembersMinimumOption}
+                  </option>
+                ))}
+              </select>
+              + active members
             </span>
           </div>
         </div>

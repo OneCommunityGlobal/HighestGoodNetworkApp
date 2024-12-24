@@ -14,16 +14,6 @@
   font-weight: bolder;
 }
 
-.team-stats-bar-chart-summary {
-  border: 1px solid lightgray;
-  border-radius: 5px;
-  display: grid;
-  place-content: center;
-  place-items: center;
-  width: fit-content;
-  padding: 0.6rem;
-}
-
 .team-stats-bar-chart-summary span {
   font-weight: 700;
 }
