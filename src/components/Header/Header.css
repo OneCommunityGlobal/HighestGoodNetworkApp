@@ -22,7 +22,7 @@
 .navbar {
   z-index: 100;
   white-space: nowrap;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
 .timer-message-section {
