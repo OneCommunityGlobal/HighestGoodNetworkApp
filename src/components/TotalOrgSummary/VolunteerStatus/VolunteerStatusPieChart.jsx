@@ -14,7 +14,7 @@ function VolunteerStatusPieChart(props) {
     datasets: [
       {
         data: volunteerData.map(item => item.value),
-        backgroundColor: ['#E8E8FF', '#C1EFFB', '#FFE9FA'],
+        backgroundColor: ['#5355C9', '#3EA0CB', '#EC4899'],
         borderWidth: 1,
       },
     ],
@@ -30,7 +30,7 @@ function VolunteerStatusPieChart(props) {
         },
         formatter: value => {
           const percentage = ((value / totalVolunteers) * 100).toFixed(0);
-          return `${value}\n${percentage}%`;
+          return `${value}\n(${percentage}%)`;
         },
         align: 'center',
         anchor: 'center',
