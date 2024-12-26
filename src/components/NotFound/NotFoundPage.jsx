@@ -11,7 +11,7 @@ function NotFoundPage() {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
-    <div className={`not-found-container ${darkMode ? 'dark-mode' : ''}`}>
+    <div className={`not-found-container ${darkMode ? 'dark-mode bg-black' : ''}`}>
       <img
         className="not-found-image"
         src={darkMode ? NotFoundDarkImage : NotFoundImage}
@@ -20,7 +20,12 @@ function NotFoundPage() {
       <div className="not-found-text">
         <h1>PAGE NOT FOUND</h1>
         <p>The rabbits have been nibbling the cables again...</p>
-        <p>Maybe this will help <Link to="/" className="back-home-link">Home</Link></p>
+        <p>
+          Maybe this will help{' '}
+          <Link to="/" className="back-home-link">
+            Home
+          </Link>
+        </p>
       </div>
     </div>
   );
