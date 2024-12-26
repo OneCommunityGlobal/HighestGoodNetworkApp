@@ -76,4 +76,4 @@ export const VOLUNTEER_ACTIVITIES_TAB = [
   },
 ];
 
-export const BLUE_SQUARE_STATS_COLORS = ['#3EA0CB', '#1B6DDF', '#6528F7', '#FF62EB', 'F59E0B'];
+export const BLUE_SQUARE_STATS_COLORS = ['#2CCCF8', '#3D91DC', '#4C4AF5', '#FF62EB', '#F59E0B'];

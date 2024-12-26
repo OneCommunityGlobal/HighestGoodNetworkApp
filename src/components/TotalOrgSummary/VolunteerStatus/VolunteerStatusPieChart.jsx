@@ -14,7 +14,7 @@ function VolunteerStatusPieChart(props) {
     datasets: [
       {
         data: volunteerData.map(item => item.value),
-        backgroundColor: ['#5355C9', '#3EA0CB', '#EC4899'],
+        backgroundColor: ['#4C4AF5', '#2CCCF8', '#FF00C3'],
         borderWidth: 1,
       },
     ],
