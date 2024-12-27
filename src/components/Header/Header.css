@@ -1,4 +1,5 @@
-/* General Styling */
+
+ /* 
 .header-wrapper {
   height: fit-content;
   width: 100%;
@@ -8,10 +9,10 @@
   position: absolute;
   top: 0;
   left: 0;
-  padding: 12px; /* Add some padding for easier clicking */
+  padding: 12px; 
 }
 
-/* Timer Message Section */
+   
 .timer-message-section {
   display: flex;
   align-items: center;
@@ -24,8 +25,8 @@
 
 .owner-message {
   margin-right: 1rem;
-  white-space: nowrap; /* Prevent text from wrapping */
-  flex-shrink: 0; /* Prevent shrinking */
+  white-space: nowrap; 
+  flex-shrink: 0; 
   
 }
 
@@ -39,7 +40,7 @@
   display: flex;
   align-items: center;
   gap: 1rem;
-  flex-wrap: wrap; /* Allow wrapping of nav items */
+  flex-wrap: wrap; 
   overflow: visible;
 }
 
@@ -51,7 +52,7 @@
   background-color: #2f4157 !important;
 }
 
-/* Media Queries for Responsiveness */
+   
 @media (max-width: 1400px) {
   .nav-links {
     flex-direction: column;
@@ -97,3 +98,72 @@
     flex-wrap: wrap;
   }
 }
+
+*/
+
+
+.header-wrapper {
+  width: 100%;
+  padding: 0 1rem;
+}
+
+.navbar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 10;
+}
+
+.left-section,
+.center-section,
+.right-section {
+  display: flex;
+  align-items: center;
+}
+
+.center-section {
+  flex-grow: 1;
+  justify-content: center;
+  text-align: center;
+}
+
+
+@media (max-width: 1005px) {
+  .center-section {
+    display: none;
+  }
+
+  .nav-links {
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    flex-wrap: wrap;
+    display: flex;
+    overflow: visible;
+  }
+
+  .navbar-toggler {
+    border: none;
+  }
+
+  .navbar-collapse {
+    background-color: #343a40; 
+    padding: 10px;
+  }
+}
+
+.responsive-spacing {
+  margin: 0.5rem 0;
+}
+
+.dashboard-text-link {
+  color: #fff;
+  text-decoration: none;
+}
+
+
+
+
+
+

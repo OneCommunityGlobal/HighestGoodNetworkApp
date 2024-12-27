@@ -73,7 +73,12 @@ export function Header(props) {
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user } = props.auth;
   const [firstName, setFirstName] = useState(props.auth.firstName);
-  const [profilePic, setProfilePic] = useState(props.auth.profilePic);
+  /*const [profilePic, setProfilePic] = useState(props.auth.profilePic);*/
+
+  const [profilePic, setProfilePic] = useState(
+    props.auth.profilePic || "/pfp-default-header.png"
+  );
+
   const [displayUserId, setDisplayUserId] = useState(user.userid);
   const [popup, setPopup] = useState(false);
   const [isAuthUser, setIsAuthUser] = useState(true);
@@ -166,7 +171,8 @@ export function Header(props) {
       } else {
         setDisplayUserId(user.userid);
         setFirstName(props.auth.firstName);
-        setProfilePic(props.auth.profilePic);
+        //setProfilePic(props.auth.profilePic);
+        setProfilePic(props.auth.profilePic || "/pfp-default-header.png");
         setIsAuthUser(true);
       }
     };
@@ -183,6 +189,10 @@ export function Header(props) {
     };
   }, [user.userid, props.auth.firstName]);
 
+  useEffect(() => {
+    console.log("Current Profile Pic:", profilePic);
+  }, [profilePic]);
+
   // useEffect(() => {
   //   const handleResize = () => {
   //     console.log('Window size: ', window.innerWidth);
@@ -196,6 +206,15 @@ export function Header(props) {
   //     window.removeEventListener('resize', handleResize);
   //   };
   // }, []); // Empty dependency array means this effect will only run once, similar to componentDidMount
+
+  // added GM
+  useEffect(() => {
+    const handleResize = () => {
+      console.log(`Window width: ${window.innerWidth}`);
+    };
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
   
   useEffect(() => {
     if (props.auth.isAuthenticated) {
@@ -225,9 +244,11 @@ export function Header(props) {
 
   const roles = props.role?.roles;
 
-  const toggle = () => {
+  /*const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
-  };
+  };*/
+
+  const toggle = () => setIsOpen(!isOpen);
 
   const openModal = () => {
     setLogoutPopup(true);
@@ -314,32 +335,30 @@ export function Header(props) {
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
   if (location.pathname === '/login') return null;
-
+  
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
-        <div
-          className="timer-message-section"
-          style={user.role == 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
-        >
-          {isAuthenticated && <Timer darkMode={darkMode} />}
-          {isAuthenticated && (
-            <div className="owner-message">
-              <OwnerMessage />
-            </div>
-          )}
-        </div>
-        <NavbarToggler onClick={toggle} />
-        {isAuthenticated && (
-          <Collapse isOpen={isOpen} navbar>
-            <Nav className="ml-auto nav-links d-flex" navbar>
-              <div
-                className="d-flex justify-content-center align-items-center"
-                style={{ width: '100%' }}
-              >
+        <div className="d-flex justify-content-between align-items-center w-100">
+          {/* Left Section: Timer */}
+          <div className="left-section d-flex align-items-center">
+            {isAuthenticated && <Timer darkMode={darkMode} />}
+          </div>
+
+          {/* Center Section: Owner Message */}
+          <div className="center-section text-center">
+            {isAuthenticated && <OwnerMessage />}
+          </div>
+
+          {/* Right Section */}
+          <div className="right-section">
+            <NavbarToggler onClick={toggle} />
+            <Collapse isOpen={isOpen} navbar>
+              <Nav className="ml-auto nav-links d-flex" navbar>
+                {/* Task Edit Suggestions */}
                 {canUpdateTask && (
-                  <NavItem className='responsive-spacing'>
+                  <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/taskeditsuggestions">
                       <div className="redBackGroupHeader">
                         <span>{props.taskEditSuggestionCount}</span>
@@ -347,26 +366,27 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className='responsive-spacing'>
+                {/* Dashboard */}
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to="/dashboard">
-                    <span className="dashboard-text-link">{DASHBOARD}</span>
+                    <span>{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-                <NavItem className='responsive-spacing'>
-                  <NavLink tag={Link} to={`/timelog`}>
-                    <span className="dashboard-text-link">{TIMELOG}</span>
+                {/* Timelog */}
+                <NavItem className="responsive-spacing">
+                  <NavLink tag={Link} to="/timelog">
+                    <span>{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
-              </div>
-              <div className="d-flex align-items-center justify-content-center">
-                {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
-                  <UncontrolledDropdown nav inNavbar className='responsive-spacing'>
+                {/* Reports Dropdown */}
+                {(canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary) ? (
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                    <DropdownMenu className={darkMode ? "bg-yinmn-blue" : ""}>
                       {canGetReports && (
-                        <DropdownItem tag={Link} to="/reports" className={`${fontColor}`}>
+                        <DropdownItem tag={Link} to="/reports" className={fontColor}>
                           {REPORTS}
                         </DropdownItem>
                       )}
@@ -386,13 +406,14 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
-                  <NavItem className='responsive-spacing'>
+                  <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/teamlocations">
                       {TEAM_LOCATIONS}
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem className='responsive-spacing'>
+                {/* Notifications */}
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                     <i className="fa fa-bell i-large">
                       <i className="badge badge-pill badge-danger badge-notify">
@@ -402,93 +423,32 @@ export function Header(props) {
                     </i>
                   </NavLink>
                 </NavItem>
-                {(canAccessUserManagement ||
-                  canAccessBadgeManagement ||
-                  canAccessProjects ||
-                  canAccessTeams ||
-                  canAccessPopups ||
-                  canAccessSendEmails ||
-                  canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar className='responsive-spacing'>
-                    <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
-                    </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {canAccessUserManagement ? (
-                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
-                          {USER_MANAGEMENT}
-                        </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
-                      {canAccessBadgeManagement ? (
-                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
-                          {BADGE_MANAGEMENT}
-                        </DropdownItem>
-                      ) : (
-                        <React.Fragment></React.Fragment>
-                      )}
-                      {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
-                          {PROJECTS}
-                        </DropdownItem>
-                      )}
-                      {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
-                          {TEAMS}
-                        </DropdownItem>
-                      )}
-                      {canAccessSendEmails && (
-                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
-                          {SEND_EMAILS}
-                        </DropdownItem>
-                      )}
-                      {canAccessPermissionsManagement && (
-                        <>
-                          <DropdownItem divider />
-                          <DropdownItem
-                            tag={Link}
-                            to="/permissionsmanagement"
-                            className={fontColor}
-                          >
-                            {PERMISSIONS_MANAGEMENT}
-                          </DropdownItem>
-                        </>
-                      )}
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                )}
-                <NavItem className='responsive-spacing'>
+                {/* Profile */}
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
-                      src={`${profilePic || '/pfp-default-header.png'}`}
-                      alt=""
-                      style={{ maxWidth: '60px', maxHeight: '60px' }}
+                      src={profilePic}
+                      alt="profile"
+                      style={{ maxWidth: "60px", maxHeight: "60px" }}
                       className="dashboardimg"
+                      onError={(e) => (e.target.src = "/pfp-default-header.png")} 
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav className='responsive-spacing'>
+                {/* Welcome Dropdown */}
+                <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">
                       {WELCOME}, {firstName}
                     </span>
                   </DropdownToggle>
-                  <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                    <DropdownItem header className={darkMode ? 'text-custom-grey' : ''}>
-                      Hello {firstName}
-                    </DropdownItem>
-                    <DropdownItem divider />
-                    <DropdownItem
-                      tag={Link}
-                      to={`/userprofile/${displayUserId}`}
-                      className={fontColor}
-                    >
+                  <DropdownMenu className={darkMode ? "bg-yinmn-blue" : ""}>
+                    <DropdownItem tag={Link} to={`/userprofile/${displayUserId}`} className={fontColor}>
                       {VIEW_PROFILE}
                     </DropdownItem>
                     {!cantUpdateDevAdminDetails(
                       props.userProfile.email,
-                      props.userProfile.email,
+                      props.userProfile.email
                     ) && (
                       <DropdownItem
                         tag={Link}
@@ -507,49 +467,53 @@ export function Header(props) {
                     </DropdownItem>
                   </DropdownMenu>
                 </UncontrolledDropdown>
-              </div>
-            </Nav>
-          </Collapse>
-        )}
-      </Navbar>
-      {!isAuthUser && (
-        <PopUpBar
-          onClickClose={() => setPopup(prevPopup => !prevPopup)}
-          viewingUser={JSON.parse(window.sessionStorage.getItem('viewingUser'))}
-        />
-      )}
-      <div>
-        <Modal isOpen={popup} className={darkMode ? 'text-light' : ''}>
-          <ModalHeader className={darkMode ? 'bg-space-cadet' : ''}>
-            Return to your Dashboard
-          </ModalHeader>
-          <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <p>Are you sure you wish to return to your own dashboard?</p>
-          </ModalBody>
-          <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-            <Button variant="primary" onClick={removeViewingUser}>
-              Ok
-            </Button>{' '}
-            <Button variant="secondary" onClick={() => setPopup(prevPopup => !prevPopup)}>
-              Cancel
-            </Button>
-          </ModalFooter>
-        </Modal>
-      </div>
-      {props.auth.isAuthenticated && isModalVisible && (
-        <Card color="primary">
-          <div className="close-button">
-            <Button close onClick={closeModal} />
+                
+              </Nav>
+            </Collapse>
           </div>
-          <div className="card-content">{modalContent}</div>
-        </Card>
-      )}
-      {/* Only render one unread message at a time */}
-      {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
-        <NotificationCard notification={unreadNotifications[0]} />
-      ) : null}
-    </div>
-  );
+        </div>
+      </Navbar>
+  {!isAuthUser && (
+    <PopUpBar
+      onClickClose={() => setPopup((prevPopup) => !prevPopup)}
+      viewingUser={JSON.parse(window.sessionStorage.getItem("viewingUser"))}
+    />
+  )}
+  <div>
+    <Modal isOpen={popup} className={darkMode ? "text-light" : ""}>
+      <ModalHeader className={darkMode ? "bg-space-cadet" : ""}>
+        Return to your Dashboard
+      </ModalHeader>
+      <ModalBody className={darkMode ? "bg-yinmn-blue" : ""}>
+        <p>Are you sure you wish to return to your own dashboard?</p>
+      </ModalBody>
+      <ModalFooter className={darkMode ? "bg-yinmn-blue" : ""}>
+        <Button variant="primary" onClick={removeViewingUser}>
+          Ok
+        </Button>{" "}
+        <Button variant="secondary" onClick={() => setPopup((prevPopup) => !prevPopup)}>
+          Cancel
+        </Button>
+      </ModalFooter>
+    </Modal>
+  </div>
+  {props.auth.isAuthenticated && isModalVisible && (
+    <Card color="primary">
+      <div className="close-button">
+        <Button close onClick={closeModal} />
+      </div>
+      <div className="card-content">{modalContent}</div>
+    </Card>
+  )}
+  {/* Only render one unread message at a time */}
+  {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
+    <NotificationCard notification={unreadNotifications[0]} />
+  ) : null}
+</div>
+
+
+
+  ); 
 }
 
 const mapStateToProps = state => ({
