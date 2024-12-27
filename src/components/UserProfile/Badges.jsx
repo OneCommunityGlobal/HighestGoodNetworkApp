@@ -85,7 +85,7 @@ export const Badges = (props) => {
     if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
       return acc + 1;
     }
-    return acc + Math.round(Number(badge.count));
+    return acc + Math.round(Number(badge?.count));
   }, 0);
 
   const subject = props.isUserSelf ? 'You have' : 'This person has';
