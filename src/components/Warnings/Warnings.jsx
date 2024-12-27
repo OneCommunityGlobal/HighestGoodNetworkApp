@@ -55,7 +55,6 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   };
 
   const handleShowWarningModal = ({ id, deleteWarning, warningDetails }) => {
-    //when clicking for delete need to apss teh data here
     const numberOfWarnings = usersWarnings.find(
       warning => warning.title === warningDetails.warningText,
     )?.warnings.length;

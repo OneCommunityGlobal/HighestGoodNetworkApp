@@ -42,6 +42,9 @@
   display: flex;
 }
 
+.warning__modal__track__record {
+  margin: 0;
+}
 .warning-modal-footer {
   /* display: grid !important; */
   display: flex !important;

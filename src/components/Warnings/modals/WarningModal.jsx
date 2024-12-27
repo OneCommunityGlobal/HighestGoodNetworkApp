@@ -3,6 +3,7 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 import WarningItem from '../WarningItem';
 import getOrdinal from '../../../utils/getOrdinal';
 import '../Warnings.css';
+
 function WarningModal({
   setToggleModal,
   visible,
@@ -92,8 +93,8 @@ function WarningModal({
                 flexDirection: 'column',
               }}
             >
-              <p style={{ margin: 0 }}>Current Track Record</p>
-              <WarningItem warnings={warning.warnings} userProfileModal={true} />
+              <p className="warning__modal__track__record">Current Track Record</p>
+              <WarningItem warnings={warning.warnings} userProfileModal />
             </div>
           )}
         </ModalBody>
