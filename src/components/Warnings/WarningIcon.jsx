@@ -19,7 +19,7 @@ function WarningIcon({
   color,
   date: dateAssigned,
   warningText,
-  handleModalTriggered,
+  handleShowWarningModal,
   numberOfWarnings,
   handleWarningIconClicked,
 }) {
@@ -43,11 +43,11 @@ function WarningIcon({
     const warningDetails = { todaysDate, id, colorAssigned, warningText };
 
     if (color === 'blue' || color === 'red' || color === 'yellow') {
-      handleModalTriggered({ id, deleteWarning: true });
+      handleShowWarningModal({ id, deleteWarning: true, warningDetails });
       return;
     }
     if (numberOfWarnings >= 2) {
-      handleModalTriggered({ id, deleteWarning: false, displayModal: true, warningDetails });
+      handleShowWarningModal({ id, deleteWarning: false, displayModal: true, warningDetails });
       return;
     }
 

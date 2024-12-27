@@ -10,49 +10,17 @@ function WarningItem({
   warningText,
   handlePostWarningDetails,
   warnings,
-  username,
-  handleDeleteWarning,
-  submitWarning,
   userProfileModal,
+  handleShowWarningModal,
 }) {
-  const [toggleModal, setToggleModal] = useState(false);
-  const [warning, setWarning] = useState(null);
-  const [deleteWarning, setDeleteWarning] = useState(false);
-  const [warningId, setWarningId] = useState(null);
-
-  const handleIssueWarning = warningDetails => {
-    submitWarning({ ...warningDetails });
-  };
-  const handleModalTriggered = ({ id, deleteWarning, warningDetails }) => {
-    setDeleteWarning(deleteWarning);
-    setWarning({ ...warningDetails, username });
-    setWarningId(id);
-    setToggleModal(prev => !prev);
-  };
-  const deleteWarningTriggered = () => {
-    handleDeleteWarning(warningId);
-  };
-
   return (
     <div className="warning-item-container">
-      {warning && (
-        <WarningModal
-          visible={toggleModal}
-          setToggleModal={setToggleModal}
-          deleteWarning={deleteWarning}
-          deleteWarningTriggered={deleteWarningTriggered}
-          warning={warning}
-          numberOfWarnings={warnings.length}
-          handleIssueWarning={handleIssueWarning}
-        />
-      )}
-
       <div className="warning-wrapper">
         <WarningIcons
           warnings={warnings}
           warningText={warningText}
           handleWarningIconClicked={handlePostWarningDetails}
-          handleModalTriggered={handleModalTriggered}
+          handleShowWarningModal={handleShowWarningModal}
           numberOfWarnings={warnings.length}
           userProfileModal={userProfileModal}
         />

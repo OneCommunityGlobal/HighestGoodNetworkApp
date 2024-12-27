@@ -8,13 +8,11 @@ function WarningModal({
   visible,
   warning,
   handleIssueWarning,
-  deleteWarningTriggered,
-  deleteWarning,
-  numberOfWarnings,
+  handleDeleteWarning,
   userProfileHeader,
   userProfileModal,
 }) {
-  const { warningText, username } = warning || {};
+  const { id: warningId, numberOfWarnings, warningText, username, deleteWarning } = warning || {};
 
   const [times, ordinal] = getOrdinal(numberOfWarnings + 1);
   if (deleteWarning) {
@@ -32,7 +30,7 @@ function WarningModal({
 
           <Button
             onClick={() => {
-              deleteWarningTriggered();
+              handleDeleteWarning(warningId);
               setToggleModal(false);
             }}
             color="primary"
