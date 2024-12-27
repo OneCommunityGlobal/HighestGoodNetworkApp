@@ -480,7 +480,7 @@ const UserProfileModal = props => {
 
           {type === 'modBlueSquare' && (
             <>
-              {specialWarnings.map(warning => (
+              {specialWarnings?.map(warning => (
                 <OverlayTrigger
                   key={warning.abbreviation}
                   placement="top"
