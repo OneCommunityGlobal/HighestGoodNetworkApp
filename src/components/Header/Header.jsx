@@ -207,7 +207,7 @@ export function Header(props) {
   //   };
   // }, []); // Empty dependency array means this effect will only run once, similar to componentDidMount
 
-  // added GM
+  
   useEffect(() => {
     const handleResize = () => {
       console.log(`Window width: ${window.innerWidth}`);
