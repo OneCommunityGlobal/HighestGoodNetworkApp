@@ -473,6 +473,8 @@ const BasicInformationTab = props => {
       const uniquePermissions = new Set(rolePresets.filter(permission => permissionLabelPermissions.has(permission)));
       
       let additionalPermissions = [];
+      let permissionsToRemove = [];
+
       switch (roleName) {
         case 'Administrator':
           additionalPermissions = ['resolveTask', 'putRole'];
@@ -498,13 +500,26 @@ const BasicInformationTab = props => {
             'deleteInfringements', 
             'getProjectMembers',
             'updateTask',
+            'postTask',
+            'putTeam',
             // temporary for testing
             'putRole'
           ];
           break;
         case 'Core Team':
-          // temporary for testing
-          additionalPermissions = ['putRole', 'putUserProfile'];
+          additionalPermissions = [
+            // 'addInfringements', 
+            // 'editInfringements', 
+            // 'deleteInfringements', 
+            // 'postTask', 
+            // 'updateTask', 
+            // 'suggestTask', 
+            // 'putReviewStatus', 
+            // 'putTeam',
+            // temporary for testing
+            'putRole', 
+            'putUserProfile'
+          ];
           break;
         case 'TestRole':
           additionalPermissions = [
@@ -519,16 +534,69 @@ const BasicInformationTab = props => {
             'getProjectMembers', 
             'putRole', 
             'putUserProfilePermissions',
+            'addInfringements', 
+            'editInfringements', 
+            'deleteInfringements', 
+            'getProjectMembers', 
+            'postTask', 
+            'updateTask', 
+            'suggestTask', 
+            'putReviewStatus', 
+            'putTeam',
             // temporary for testing
             'getUserProfiles', 
             'putUserProfile'
+          ];
+          break;
+        case 'usethistotest':
+          additionalPermissions = [ 
+            'totalValidWeeklySummaries', 
+            'highlightEligibleBios', 
+            'postUserProfile',
+            'updateBadges', 
+            'deleteBadges',
+            // temporary for testing
+            'putUserProfile',
+            'putRole',
+          ];
+          break;
+        case 'Creator':
+          // temporary for testing
+          additionalPermissions = ['putRole', 'putUserProfile'];
+          permissionsToRemove = [
+            'postUserProfile', 
+            'deleteInfringements', 
+            'createBadges', 
+            'getProjectMembers', 
+            'editHeaderMessage', 
+            'highlightEligibleBios'
+          ];
+          break;
+        case 'Assistant Manager':
+          additionalPermissions = [ 
+            // 'seeUsersInDashboard', 
+            // 'getReports',
+            // temporary for testing
+            'putUserProfile',
+            'putRole',
+          ];
+          break;
+        case 'Volunteer':
+          additionalPermissions = [ 
+            // 'putReviewStatus',
+            // temporary for testing
+            'putUserProfile',
+            'putRole',
           ];
           break;
         // Add cases for other roles as needed
         default:
           additionalPermissions = [];
       }
-      const derivedPermissions = Array.from(new Set([...uniquePermissions, ...additionalPermissions]));
+      const derivedPermissions = roleName === 'Creator'
+        ? Array.from(new Set([...uniquePermissions, ...additionalPermissions]))
+          .filter(permission => !permissionsToRemove.includes(permission))
+        : Array.from(new Set([...uniquePermissions, ...additionalPermissions]));
       console.log('Derived permissions for role:', roleName, derivedPermissions);
 
       return derivedPermissions;
