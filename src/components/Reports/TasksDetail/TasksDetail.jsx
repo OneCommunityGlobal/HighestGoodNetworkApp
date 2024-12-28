@@ -23,7 +23,7 @@ const ShowCollapse = (props) => {
 };
 
 const formatDate = (datetime) => {
-  if(datetime){
+  if (datetime) {
     const options = { year: 'numeric', month: 'short', day: 'numeric' };
     return new Date(datetime).toLocaleDateString(undefined, options);
   }
@@ -64,7 +64,7 @@ export const TasksDetail = (props) => {
     <tr key={task._id} className={darkMode ? 'dark-mode-row' : ''}>
       <td>{index + 1}</td>
       <td className="tasks-detail-task-name">{truncate(task.taskName, 20)}</td>
-      <td className="collapse-column">{task.priority}</td>
+      <td className="tasks-detail-center-cells">{task.priority}</td>
       <td>{task.status}</td>
       <td className="tasks-detail-center-cells">
         {task.resources.length <= 2 ? (
@@ -84,13 +84,13 @@ export const TasksDetail = (props) => {
           </div>
         )}
       </td>
-      <td className="tasks-detail-center-cells collapse-column">
+      <td className="tasks-detail-center-cells">
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
       </td>
-      <td className="tasks-detail-center-cells collapse-column">{task.classification}</td>
+      <td className="tasks-detail-center-cells">{task.classification}</td>
       <td className="tasks-detail-center-cells">{task.estimatedHours.toFixed(2)}</td>
-      <td className="collapse-column">{formatDate(task.startedDatetime)}</td>
-      <td className="collapse-column">{formatDate(task.dueDatetime)}</td>
+      <td className="tasks-detail-center-cells">{formatDate(task.startedDatetime)}</td>
+      <td className="tasks-detail-center-cells">{formatDate(task.dueDatetime)}</td>
       <td>
         {props.toggleEditTasks && (
           <EditTaskModal
@@ -117,15 +117,15 @@ export const TasksDetail = (props) => {
           <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
             <th>#</th>
             <th>Task</th>
-            <th className="collapse-column">Priority</th>
+            <th className="tasks-detail-center-cells">Priority</th>
             <th>Status</th>
             <th className="tasks-detail-center-cells">Resources</th>
             <th className="tasks-detail-center-cells">Active</th>
-            <th className="tasks-detail-center-cells collapse-column">Assign</th>
-            <th className="tasks-detail-center-cells collapse-column">Class</th>
+            <th className="tasks-detail-center-cells">Assign</th>
+            <th className="tasks-detail-center-cells">Class</th>
             <th className="tasks-detail-center-cells">Estimated Hours</th>
-            <th className="collapse-column">Start Date</th>
-            <th className="collapse-column">End Date</th>
+            <th className="tasks-detail-center-cells">Start Date</th>
+            <th className="tasks-detail-center-cells">End Date</th>
             <th>Actions</th>
           </tr>
         </thead>

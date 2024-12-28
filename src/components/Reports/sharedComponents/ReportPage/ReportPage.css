@@ -39,6 +39,7 @@
   background-color: white;
   border-radius: 20px;
   box-shadow: 0 0 12px #eae1f6;
+  width: 100%;
 }
 
 @media (max-width: 1300px) {
@@ -70,7 +71,6 @@
     background-color: white;
     border-radius: 20px;
     box-shadow: 0 0 12px #eae1f6;
-    width: 100%;
   }
 }
 
