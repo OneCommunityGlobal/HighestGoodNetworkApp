@@ -4,12 +4,12 @@
   margin-top: 2em;
 }
 
-.bm-dashboard__button.btn.btn-secondary {
+.cp-dashboard__button.btn.btn-secondary {
   background-color: #2e5061;
 }
 
 @media (min-width: 650px) {
-  .bm-dashboard__button.btn.btn-secondary {
+  .cp-dashboard__button.btn.btn-secondary {
     padding-left: 0;
     padding-right: 0;
     max-height: 38px;
@@ -80,14 +80,14 @@
   white-space: nowrap;
 }
 
-.bm-error-page {
+.cp-error-page {
   width: 100%;
   max-width: 1536px;
   margin: 1rem auto;
   padding: 0 1rem;
 }
 
-.bm-error-page section {
+.cp-error-page section {
   margin-top: 2rem;
 }
 
