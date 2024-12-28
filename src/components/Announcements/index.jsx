@@ -171,41 +171,71 @@ function Announcements() {
 
 
   // Handle media upload
-  const handleMediaUpload = (e) => {
-    const files = Array.from(e.target.files);
-    if (files.length === 0) return;
+const handleMediaUpload = (e) => {
+  const files = Array.from(e.target.files);
+  if (files.length === 0) return;
 
-    if (mediaFiles.length + files.length > 9) {
-      toast.error('Maximum 9 media files allowed per post');
-      return;
+  // LinkedIn limits
+  const MAX_IMAGES = 9;
+  const MAX_VIDEOS = 1;
+  const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
+  const MAX_VIDEO_SIZE = 200 * 1024 * 1024; // 200MB
+
+  const existingVideos = mediaFiles.filter(file => file.type.includes('video')).length;
+  const existingImages = mediaFiles.filter(file => file.type.includes('image')).length;
+  const newVideos = files.filter(file => file.type.includes('video')).length;
+  const newImages = files.filter(file => file.type.includes('image')).length;
+
+  // Validate video limit
+  if (existingVideos + newVideos > MAX_VIDEOS) {
+    toast.error('Only one video file is allowed per post');
+    return;
+  }
+
+  // Validate image limit
+  if (existingImages + newImages > MAX_IMAGES) {
+    toast.error('Maximum 9 images allowed per post');
+    return;
+  }
+
+  // Validate mixed content
+  if (newVideos > 0 && (existingImages > 0 || newImages > 0)) {
+    toast.error('Cannot mix videos and images in the same post');
+    return;
+  }
+  if (existingVideos > 0 && (newImages > 0)) {
+    toast.error('Cannot mix videos and images in the same post');
+    return;
+  }
+
+  // Validate file sizes
+  const validFiles = files.filter((file) => {
+    const maxSize = file.type.includes('video') ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;
+    if (file.size > maxSize) {
+      toast.error(`File "${file.name}" exceeds size limit`);
+      return false;
     }
+    return true;
+  });
 
-    const validFiles = files.filter((file) => {
-      const maxSize = file.type.includes('video') ? 200 * 1024 * 1024 : 5 * 1024 * 1024;
-      if (file.size > maxSize) {
-        toast.error(`File "${file.name}" exceeds size limit.`);
-        return false;
-      }
-      return true;
-    });
+  // Generate previews for valid files
+  validFiles.forEach((file) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setPreviews((prev) => [
+        ...prev,
+        {
+          id: Math.random().toString(36).substr(2, 9),
+          url: reader.result,
+          type: file.type,
+        },
+      ]);
+    };
+    reader.readAsDataURL(file);
+  });
 
-    validFiles.forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        setPreviews((prev) => [
-          ...prev,
-          {
-            id: Math.random().toString(36).substr(2, 9),
-            url: reader.result,
-            type: file.type,
-          },
-        ]);
-      };
-      reader.readAsDataURL(file);
-    });
-
-    setMediaFiles((prev) => [...prev, ...validFiles]);
-  };
+  setMediaFiles((prev) => [...prev, ...validFiles]);
+};
 
   // Remove media file
   const removeMedia = (index) => {
@@ -213,45 +243,115 @@ function Announcements() {
     setPreviews((prev) => prev.filter((_, i) => i !== index));
   };
 
-  // Handle LinkedIn post submission
   const handlePostToLinkedIn = async () => {
     if (!linkedinContent.trim()) {
-      toast.error('LinkedIn content cannot be empty.');
+      toast.error('Post content cannot be empty');
       return;
     }
-
+  
+    // Validate schedule time if set
+    if (scheduleDate && scheduleTime) {
+      const scheduledDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
+      const now = new Date();
+      
+      // Check if date is valid
+      if (isNaN(scheduledDateTime.getTime())) {
+        toast.error('Invalid schedule time');
+        return;
+      }
+  
+      // Check if time is in the future
+      if (scheduledDateTime <= now) {
+        toast.error('Schedule time must be in the future');
+        return;
+      }
+  
+      // Check if time is at least 5 minutes in the future
+      const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
+      if (scheduledDateTime < fiveMinutesFromNow) {
+        toast.error('Schedule time must be at least 5 minutes in the future');
+        return;
+      }
+    }
+  
     setIsLoading(true);
-
+  
     try {
       const formData = new FormData();
-      formData.append('content', linkedinContent);
-      mediaFiles.forEach((file) => formData.append('media', file));
-
+      
+      // Add the content
+      formData.append('content', linkedinContent.trim());
+  
+      // Add schedule time if set
       if (scheduleDate && scheduleTime) {
         const scheduledDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
         formData.append('scheduleTime', scheduledDateTime.toISOString());
       }
-
+  
+      // Add media files
+      mediaFiles.forEach((file) => {
+        console.log('Adding file:', file.name);
+        formData.append('media', file);
+      });
+  
+      // Log the request data
+      console.log('Sending post request:', {
+        content: linkedinContent.trim(),
+        scheduleTime: scheduleDate && scheduleTime ? `${scheduleDate}T${scheduleTime}` : 'immediate',
+        files: mediaFiles.map(f => f.name)
+      });
+  
       const response = await axios.post(
         'http://localhost:4500/api/postToLinkedIn',
         formData,
-        { headers: { 'Content-Type': 'multipart/form-data' } }
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity
+        }
       );
-
-      if (response.status === 200 || response.status === 201) {
-        toast.success('Posted to LinkedIn successfully!');
+  
+      if (response.data.success) {
+        toast.success(response.data.message);
         resetLinkedInForm();
+        
+        if (response.data.scheduledTime) {
+          console.log('Post scheduled for:', new Date(response.data.scheduledTime).toLocaleString());
+        }
       } else {
-        toast.error('Failed to post to LinkedIn');
+        throw new Error(response.data.message || 'Failed to post to LinkedIn');
       }
     } catch (error) {
-      toast.error('Failed to post to LinkedIn');
-      console.error('Error posting to LinkedIn:', error.response?.data || error.message);
+      console.error('LinkedIn post error:', {
+        message: error.message,
+        response: error.response?.data,
+        status: error.response?.status
+      });
+      
+      let errorMessage = 'Failed to post to LinkedIn';
+      if (error.response?.data?.message) {
+        errorMessage = error.response.data.message;
+      }
+      
+      toast.error(errorMessage);
     } finally {
       setIsLoading(false);
     }
   };
-
+  
+  // Add a helper function to determine if scheduled time is valid
+  const isScheduleTimeValid = () => {
+    if (!scheduleDate || !scheduleTime) return true; // No schedule set is valid
+    
+    const scheduledDateTime = new Date(`${scheduleDate}T${scheduleTime}`);
+    const now = new Date();
+    const fiveMinutesFromNow = new Date(now.getTime() + 5 * 60 * 1000);
+    
+    return scheduledDateTime > fiveMinutesFromNow;
+  };
+  
   // Reset LinkedIn form
   const resetLinkedInForm = () => {
     setLinkedinContent('');
@@ -292,95 +392,153 @@ function Announcements() {
 
 
 {/* LinkedIn Editor Section */}
-<div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
-      <div className="linkedin-post-container">
-        <h3>LinkedIn Post Editor</h3>
-        {/* LinkedIn Content Input */}
-        <textarea
-          value={linkedinContent}
-          onChange={(e) => setLinkedinContent(e.target.value)}
-          placeholder="Enter your LinkedIn post content here..."
-          rows={5}
-          className="w-full p-3 border rounded-md"
-        ></textarea>
+<div className={`${darkMode ? 'bg-oxford-blue text-light' : ''}`} style={{ minHeight: '100%' }}>
+  <div className="linkedin-post-container">
+    <h3 className={`text-lg font-bold mb-4 ${darkMode ? 'text-white' : 'text-gray-900'}`}>
+      LinkedIn Post Editor
+    </h3>
+    
+    {/* LinkedIn Content Input */}
+    <textarea
+      value={linkedinContent}
+      onChange={(e) => setLinkedinContent(e.target.value)}
+      placeholder="Enter your LinkedIn post content here..."
+      rows={5}
+      className={`w-full p-3 border rounded-md resize-none ${
+        darkMode 
+          ? 'bg-gray-700 text-white border-gray-600 placeholder-gray-400' 
+          : 'bg-white border-gray-300 placeholder-gray-500'
+      }`}
+    />
 
-        {/* Media Upload */}
-        <div className="mt-4">
-          <label htmlFor="media-upload" className="btn btn-upload">
-            <Upload className="inline-block mr-2" /> Upload Media
-          </label>
-          <input
-            type="file"
-            id="media-upload"
-            multiple
-            accept="image/*,video/*"
-            onChange={handleMediaUpload}
-            className="hidden"
-          />
-        </div>
-
-        {/* Media Previews */}
-        {previews.length > 0 && (
-          <div className="mt-4 grid grid-cols-3 gap-4">
-            {previews.map((preview, index) => (
-              <div key={preview.id} className="relative">
-                <button
-                  className="absolute top-1 right-1 bg-red-500 text-white p-1 rounded-full"
-                  onClick={() => removeMedia(index)}
-                >
-                  <X className="h-4 w-4" />
-                </button>
-                {preview.type.includes('image') ? (
-                  <img
-                    src={preview.url}
-                    alt={`Preview ${index + 1}`}
-                    className="w-full h-32 object-cover rounded-md"
-                  />
-                ) : (
-                  <video
-                    src={preview.url}
-                    controls
-                    className="w-full h-32 object-cover rounded-md"
-                  />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* Schedule Date and Time */}
-        <div className="mt-4 flex items-center gap-2">
-          <Calendar className="h-5 w-5" />
-          <input
-            type="date"
-            value={scheduleDate}
-            onChange={(e) => setScheduleDate(e.target.value)}
-            min={new Date().toISOString().split('T')[0]}
-            className="p-2 border rounded-md"
-          />
-          <input
-            type="time"
-            value={scheduleTime}
-            onChange={(e) => setScheduleTime(e.target.value)}
-            className="p-2 border rounded-md"
-          />
-        </div>
-
-        {/* Action Buttons */}
-        <div className="mt-4 flex gap-2">
-          <button
-            onClick={handlePostToLinkedIn}
-            className="btn btn-primary"
-            disabled={isLoading}
-          >
-            {scheduleDate ? 'Schedule Post' : 'Post Now'}
-          </button>
-          <button onClick={resetLinkedInForm} className="btn btn-secondary">
-            Clear
-          </button>
-        </div>
-      </div>
+    {/* Media Upload */}
+    <div className="mt-4">
+      <label 
+        htmlFor="media-upload" 
+        className={`send-button inline-flex items-center cursor-pointer ${
+          darkMode ? 'text-white' : ''
+        }`}
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        <Upload className="w-5 h-5 mr-2" />
+        Upload Media
+        <input
+          type="file"
+          id="media-upload"
+          multiple
+          accept="image/*,video/*"
+          onChange={handleMediaUpload}
+          className="hidden"
+        />
+      </label>
+      <span className={`ml-4 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+        Up to 9 images or 1 video
+      </span>
     </div>
+
+    {/* Media Previews */}
+    {previews.length > 0 && (
+      <div className="mt-4 grid grid-cols-3 gap-4">
+        {previews.map((preview, index) => (
+          <div key={preview.id} className="relative">
+            <button
+              className="absolute top-2 right-2 bg-red-500 text-white p-1 rounded-full hover:bg-red-600 transition-colors"
+              onClick={() => removeMedia(index)}
+            >
+              <X className="w-4 h-4" />
+            </button>
+            {preview.type.includes('image') ? (
+              <img
+                src={preview.url}
+                alt={`Preview ${index + 1}`}
+                className="w-full h-32 object-cover rounded-md"
+              />
+            ) : (
+              <video
+                src={preview.url}
+                controls
+                className="w-full h-32 object-cover rounded-md"
+              />
+            )}
+          </div>
+        ))}
+      </div>
+    )}
+
+    {/* Schedule Date and Time */}
+    <div className="mt-4 flex items-center gap-2">
+      <Calendar className={`h-5 w-5 ${darkMode ? 'text-gray-300' : 'text-gray-600'}`} />
+      <input
+        type="date"
+        value={scheduleDate}
+        onChange={(e) => {
+          setScheduleDate(e.target.value);
+          // If date is set but no time, set default time to current time + 5 minutes
+          if (e.target.value && !scheduleTime) {
+            const date = new Date();
+            date.setMinutes(date.getMinutes() + 5);
+            const defaultTime = date.toTimeString().slice(0, 5);
+            setScheduleTime(defaultTime);
+          }
+        }}
+        min={new Date().toISOString().split('T')[0]}
+        className={`p-2 border rounded-md ${
+          darkMode 
+            ? 'bg-gray-700 text-white border-gray-600' 
+            : 'bg-white border-gray-300'
+        }`}
+      />
+      <input
+        type="time"
+        value={scheduleTime}
+        onChange={(e) => setScheduleTime(e.target.value)}
+        className={`p-2 border rounded-md ${
+          darkMode 
+            ? 'bg-gray-700 text-white border-gray-600' 
+            : 'bg-white border-gray-300'
+        }`}
+      />
+      {scheduleDate && scheduleTime && (
+        <button
+          onClick={() => {
+            setScheduleDate('');
+            setScheduleTime('');
+          }}
+          className="text-red-500 hover:text-red-700 transition-colors"
+        >
+          <X className="h-5 w-5" />
+        </button>
+      )}
+    </div>
+
+    {/* Scheduled Time Display */}
+    {scheduleDate && scheduleTime && (
+      <div className={`mt-2 text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+        Scheduled for: {new Date(`${scheduleDate}T${scheduleTime}`).toLocaleString()}
+      </div>
+    )}
+
+    {/* Action Buttons */}
+    <div className="mt-6 flex gap-4">
+      <button
+        onClick={handlePostToLinkedIn}
+        disabled={isLoading || (scheduleDate && scheduleTime && !isScheduleTimeValid())}
+        className="send-button"
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        {isLoading && <Loader className="w-4 h-4 mr-2 animate-spin" />}
+        {scheduleDate && scheduleTime ? 'Schedule Post' : 'Post Now'}
+      </button>
+      <button
+        onClick={resetLinkedInForm}
+        className="send-button"
+        style={darkMode ? boxStyleDark : boxStyle}
+      >
+        Clear
+      </button>
+    </div>
+  </div>
+</div>
 
 
 
