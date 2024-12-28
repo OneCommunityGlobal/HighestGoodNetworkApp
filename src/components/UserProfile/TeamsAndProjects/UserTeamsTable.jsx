@@ -1,5 +1,5 @@
 import { React, useState, useEffect, useRef } from 'react';
-import { Button, Col, Tooltip, Input } from 'reactstrap';
+import { Button, Col, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
@@ -16,9 +16,6 @@ import { toast } from 'react-toastify';
 const UserTeamsTable = props => {
   const { darkMode } = props;
 
-  const [tooltipOpen, setTooltip] = useState(false);
-
-  const [teamCodeExplainTooltip, setTeamCodeExplainTooltip] = useState(false);
 
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -45,7 +42,7 @@ const UserTeamsTable = props => {
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
-  const toggleTooltip = () => setTooltip(!tooltipOpen);
+
 
   useEffect(() => {
     if (props.userProfile?.teamCode) {
@@ -105,7 +102,6 @@ const UserTeamsTable = props => {
     opacity: !props.canEditTeamCode ? 0.6 : 0.9,
   };
 
-  const toggleTeamCodeExplainTooltip = () => setTeamCodeExplainTooltip(!teamCodeExplainTooltip);
 
   const fetchTeamSelected = async (teamId, teamName, isUpdate) => {
     const urlTeamData = ENDPOINTS.TEAM_BY_ID(teamId);
@@ -216,19 +212,23 @@ const UserTeamsTable = props => {
           <Col md="12" style={{ padding: '0' }}>
             {canAssignTeamToUsers ? (
               props.disabled ? (
-                <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
+
+                <Button id="teamCodeAssign" className="btn-addteam" color="primary" style={boxStyle} disabled>
                   Assign Team
                 </Button>
               ) : (
-                <Button
-                  className="btn-addteam"
-                  color="primary"
-                  onClick={() => {
-                    props.onButtonClick();
-                  }}
-                >
-                  Assign Team
-                </Button>
+                <>
+                  <Button
+                    id="teamCodeAssign"
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                  >
+                    Assign Team
+                  </Button>
+                </>
               )
             ) : (
               <></>

@@ -41,6 +41,7 @@ import SaveButton from './UserProfileEdit/SaveButton';
 import UserLinkLayout from './UserLinkLayout';
 import TabToolTips from './ToolTips/TabToolTips';
 import BasicToolTips from './ToolTips/BasicTabTips';
+import TeamsTabTips from './ToolTips/TeamsTabTips';
 import ResetPasswordButton from '../UserManagement/ResetPasswordButton';
 import Badges from './Badges';
 import { getAllTeamCode } from '../../actions/allTeamsAction';
@@ -175,9 +176,9 @@ function UserProfile(props) {
 
   useEffect(() => {
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile,  projects });
+    setUserProfile({ ...userProfile, projects });
     setOriginalUserProfile({ ...originalUserProfile, projects });
-  }, [ projects]);
+  }, [projects]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -550,9 +551,9 @@ function UserProfile(props) {
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
         await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id))
-        .catch(error => {
-          toast.error('Failed to delete Blue Square!');
-        });
+          .catch(error => {
+            toast.error('Failed to delete Blue Square!');
+          });
         toast.success('Blue Square Deleted!');
         setUserProfile({ ...userProfile, infringements: newInfringements });
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
@@ -672,12 +673,12 @@ function UserProfile(props) {
       ...userProfile,
       isRehireable: pendingRehireableStatus,
     };
-    try{
+    try {
       await dispatch(updateRehireableStatus(updatedUserProfile, pendingRehireableStatus));
       setIsRehireable(pendingRehireableStatus);
       setUserProfile(updatedUserProfile);
       setOriginalUserProfile(updatedUserProfile);
-    }catch(error){
+    } catch (error) {
       toast.error('Unable change rehireable status');
     }
   };
@@ -782,8 +783,8 @@ function UserProfile(props) {
   const canEditUserProfile = targetIsDevAdminUneditable
     ? false
     : userProfile.role === 'Owner'
-    ? canAddDeleteEditOwners
-    : canPutUserProfile;
+      ? canAddDeleteEditOwners
+      : canPutUserProfile;
 
   const canEdit = canEditUserProfile || isUserSelf;
 
@@ -818,7 +819,7 @@ function UserProfile(props) {
     // console.log("userProfile:createdDate, startDate", createdDate, startDate === '' ? "EMPTY" : startDate);
     return startDate === '' ? false : (createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate);
   };
-  
+
   const endDateValidation = (startDate, endDate) => {
     // console.log("userProfile:startDate, endDate", startDate === '' ? "EMPTY" : startDate, endDate === '' ? "EMPTY" : endDate );
     return endDate ? (startDate <= endDate) : true;
@@ -853,6 +854,7 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
+      <TeamsTabTips />
       <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
         style={{
@@ -890,21 +892,21 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-              <QuickSetupModal
-                setSaved={setSaved}
-                handleSubmit={handleSubmit}
-                setUserProfile={setUserProfile}
-                userProfile={userProfile}
-                userTeams={teams || []}
-                teamsData={props?.allTeams?.allTeamsData || []}
-                projectsData={props?.allProjects?.projects || []}
-              />
+            <QuickSetupModal
+              setSaved={setSaved}
+              handleSubmit={handleSubmit}
+              setUserProfile={setUserProfile}
+              userProfile={userProfile}
+              userTeams={teams || []}
+              teamsData={props?.allTeams?.allTeamsData || []}
+              projectsData={props?.allProjects?.projects || []}
+            />
 
           </Col>
           <Col md="8">
             {!isProfileEqual ||
-            !isTasksEqual ||
-            !isProjectsEqual ? (
+              !isTasksEqual ||
+              !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
@@ -1072,7 +1074,7 @@ function UserProfile(props) {
                 canEdit={canEdit || canManageAdminLinks}
                 darkMode={darkMode}
               />
-               <BlueSquareLayout
+              <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
@@ -1215,7 +1217,7 @@ function UserProfile(props) {
                     !formValid.lastName ||
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                      
+
                   }
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
@@ -1277,8 +1279,8 @@ function UserProfile(props) {
                     if (targetIsDevAdminUneditable) {
                       alert(
                         'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                          'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                          'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                        'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                        'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                       );
                       return `#`;
                     }
@@ -1318,9 +1320,8 @@ function UserProfile(props) {
                         setTasks(originalTasks);
                         setProjects(resetProjects);
                       }}
-                      className={`btn mr-1 btn-bottom ${
-                        darkMode ? 'btn-danger' : 'btn-outline-danger '
-                      }`}
+                      className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                        }`}
                       style={darkMode ? boxStyleDark : boxStyle}
                     >
                       Cancel
@@ -1352,9 +1353,8 @@ function UserProfile(props) {
                   Confirm Status Change
                 </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  {`Are you sure you want to change the user status to ${
-                    pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'
-                  }?`}
+                  {`Are you sure you want to change the user status to ${pendingRehireableStatus ? 'Rehireable' : 'Unrehireable'
+                    }?`}
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Button color="primary" onClick={handleConfirmChange}>
@@ -1409,8 +1409,8 @@ function UserProfile(props) {
                             if (targetIsDevAdminUneditable) {
                               alert(
                                 'STOP! YOU SHOULDN’T BE TRYING TO CHANGE THIS PASSWORD. ' +
-                                  'You shouldn’t even be using this account except to create your own accounts to use. ' +
-                                  'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
+                                'You shouldn’t even be using this account except to create your own accounts to use. ' +
+                                'Please re-read the Local Setup Doc to understand why and what you should be doing instead of what you are trying to do now.',
                               );
                               return `#`;
                             }
@@ -1436,7 +1436,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1448,9 +1448,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1513,7 +1512,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1525,9 +1524,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1580,7 +1578,7 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual  && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     canEditTeamCode={canEditTeamCode}
                     setUserProfile={setUserProfile}
@@ -1619,9 +1617,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1704,9 +1701,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
@@ -1764,7 +1760,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1776,9 +1772,8 @@ function UserProfile(props) {
                               setTasks(originalTasks);
                               setProjects(resetProjects);
                             }}
-                            className={`btn mr-1 btn-bottom ${
-                              darkMode ? 'btn-danger' : 'btn-outline-danger '
-                            }`}
+                            className={`btn mr-1 btn-bottom ${darkMode ? 'btn-danger' : 'btn-outline-danger '
+                              }`}
                             style={darkMode ? boxStyleDark : boxStyle}
                           >
                             X
