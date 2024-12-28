@@ -5,16 +5,16 @@ function TimeLogConfirmationModal({ isOpen, toggleModal, onConfirm, onReject, on
     const [userChoice, setUserChoice] = useState('');
 
     const handleUserAction = (choice) => {
-        setUserChoice(choice);
+        setUserChoice(choice); 
         toggleModal();
 
         // Call corresponding action based on user's choice
         if (choice === 'confirmed') {
-            onConfirm(); // Process if confirmed
+            onConfirm(); 
         } else if (choice === 'rejected') {
-            onReject(); // Handle rejection
+            onReject();
         } else if (choice === 'intangible') {
-            onIntangible(); // Handle intangible time
+            onIntangible();
         }
     };
 
@@ -31,7 +31,7 @@ function TimeLogConfirmationModal({ isOpen, toggleModal, onConfirm, onReject, on
                 <Button color="danger" onClick={() => handleUserAction('rejected')} style={{ flex: 1, marginRight: '10px' }}>
                     Oops, didn’t do that! Take me back.
                 </Button>
-                <Button color="info" onClick={() => handleUserAction('intangible')} style={{ flex: 1 }}>
+                <Button color="info" onClick={() => handleUserAction('intangible')} style={{ flex: 1, marginRight: '10px' }}>
                     Time is meant as Intangible. Please proceed.
                 </Button>
             </ModalFooter>
