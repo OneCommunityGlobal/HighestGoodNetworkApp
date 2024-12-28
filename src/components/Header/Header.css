@@ -20,9 +20,11 @@
 }
 
 .navbar {
-  z-index: 100;
+  z-index: 1050;
+  /* z-index: 100; */
   white-space: nowrap;
   margin-bottom: 20px;
+  overflow: visible;
 }
 
 .timer-message-section {
@@ -58,6 +60,19 @@
   display: flex;
   align-items: center;
 }
+
+.dropdown-menu {
+  max-height: none; 
+  overflow-y: auto; 
+}
+
+
+.nav-item .dropdown-menu {
+  position: absolute; 
+  transform: translate3d(0, 0, 0); 
+}
+
+
 
 .dropdown-item-hover:hover{
   background-color: #2f4157 !important;
@@ -101,4 +116,11 @@
   .responsive-spacing{
     margin-right: 5px;
   }
+
+  .dropdown-menu {
+    max-height: 50vh; 
+    overflow-y: auto; 
+  }
 }
+
+
