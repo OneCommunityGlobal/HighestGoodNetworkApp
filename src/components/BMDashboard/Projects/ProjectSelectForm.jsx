@@ -5,7 +5,7 @@ import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
 import ErrorAlert from '../ErrorAlert';
 
 function ProjectSelectForm() {
-  const projects = useSelector(state => state.bmProjects);
+  const projects = useSelector(state => state.bmProjects) || [];
   const history = useHistory();
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [error, setError] = useState(false);
