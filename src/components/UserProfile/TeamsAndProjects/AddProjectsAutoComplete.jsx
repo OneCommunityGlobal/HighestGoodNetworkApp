@@ -21,7 +21,7 @@ const AddProjectsAutoComplete = React.memo(props => {
       <Input
         type="text"
         value={props.searchText}
-        autoFocus={true}
+        autoFocus
         onChange={e => {
           props.onInputChange(e.target.value);
           toggle(true);
@@ -40,7 +40,7 @@ const AddProjectsAutoComplete = React.memo(props => {
           {props.projectsData
             .filter(project => {
               if (
-                //prettier-ignore
+                // prettier-ignore
                 props.formatText(project.projectName).indexOf(props.formatText(props.searchText)) >-1
               ) {
                 return project;

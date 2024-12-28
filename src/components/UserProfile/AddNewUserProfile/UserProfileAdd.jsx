@@ -15,21 +15,10 @@ import {
 } from 'reactstrap';
 import CommonInput from 'components/common/Input';
 import DuplicateNamePopup from 'components/UserManagement/DuplicateNamePopup';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import './UserProfileAdd.scss';
-import { createUser } from '../../../services/userProfileService';
 import { toast } from 'react-toastify';
-import TeamsTab from '../TeamsAndProjects/TeamsTab';
-import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import { connect } from 'react-redux';
 import { get } from 'lodash';
-import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
-import {
-  getAllUserTeams,
-  updateTeam,
-  deleteTeamMember,
-  addTeamMember,
-} from '../../../actions/allTeamsAction';
 
 import { fetchAllProjects } from 'actions/projects';
 
@@ -44,6 +33,17 @@ import 'react-datepicker/dist/react-datepicker.css';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
+import {
+  getAllUserTeams,
+  updateTeam,
+  deleteTeamMember,
+  addTeamMember,
+} from '../../../actions/allTeamsAction';
+import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
+import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
+import TeamsTab from '../TeamsAndProjects/TeamsTab';
+import { createUser } from '../../../services/userProfileService';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
@@ -123,28 +123,27 @@ class UserProfileAdd extends Component {
   componentDidMount() {
     this.state.showphone = true;
     this.onCreateNewUser();
-    this.fetchTeamCodeAllUsers(); 
+    this.fetchTeamCodeAllUsers();
   }
 
   // Replace fetchTeamCodeAllUsers with a method that dispatches getAllTeamCode
-  fetchTeamCodeAllUsers = async() => {
+  fetchTeamCodeAllUsers = async () => {
     const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
     try {
-      this.setState({isLoading:true})
-     
+      this.setState({ isLoading: true });
+
       const response = await axios.get(url);
       const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
       const stringNoRepeat = stringWithValue
         .map(item => item)
         .filter((item, index, array) => array.indexOf(item) === index);
-      this.setState({inputAutoComplete:stringNoRepeat})
-      
-      this.setState({inputAutoStatus:response.status})
-      this.setState({isLoading:false})
-      
+      this.setState({ inputAutoComplete: stringNoRepeat });
+
+      this.setState({ inputAutoStatus: response.status });
+      this.setState({ isLoading: false });
     } catch (error) {
       console.log(error);
-      this.setState({isLoading:false})
+      this.setState({ isLoading: false });
       toast.error(`It was not possible to retrieve the team codes. 
       Please try again by clicking the icon inside the input auto complete.`);
     }
@@ -163,7 +162,7 @@ class UserProfileAdd extends Component {
       jobTitle,
     } = this.state.userProfile;
 
-    const darkMode = this.props.darkMode;
+    const { darkMode } = this.props;
 
     const fontColor = darkMode ? 'text-light' : '';
     const fontWeight = darkMode ? 'font-weight-bold' : '';
@@ -185,7 +184,9 @@ class UserProfileAdd extends Component {
               <Form>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor} >Name <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>
+                      Name <span style={{ color: 'red' }}>*</span>{' '}
+                    </Label>
                   </Col>
                   <Col md="3">
                     <FormGroup>
@@ -194,15 +195,15 @@ class UserProfileAdd extends Component {
                         name="firstName"
                         id="firstName"
                         value={firstName}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="First Name"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
                       />
-                       {this.state.formSubmitted && this.state.formErrors.firstName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.firstName}
-    </FormFeedback>
-  )}
+                      {this.state.formSubmitted && this.state.formErrors.firstName && (
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.firstName}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -212,21 +213,23 @@ class UserProfileAdd extends Component {
                         name="lastName"
                         id="lastName"
                         value={lastName}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Last Name"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.lastName)}
                       />
                       {this.state.formSubmitted && this.state.formErrors.lastName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.lastName}
-    </FormFeedback>
-  )}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.lastName}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Job Title <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>
+                      Job Title <span style={{ color: 'red' }}>*</span>{' '}
+                    </Label>
                   </Col>
                   <Col md={{ size: 6 }}>
                     <FormGroup>
@@ -235,20 +238,23 @@ class UserProfileAdd extends Component {
                         name="jobTitle"
                         id="jobTitle"
                         value={jobTitle}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Job Title"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
                       />
                       {this.state.formSubmitted && this.state.formErrors.jobTitle && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.jobTitle}
-    </FormFeedback>)}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.jobTitle}
+                        </FormFeedback>
+                      )}
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Email <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>
+                      Email <span style={{ color: 'red' }}>*</span>{' '}
+                    </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -257,14 +263,15 @@ class UserProfileAdd extends Component {
                         name="email"
                         id="email"
                         value={email}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Email"
                         invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
                       />
                       {this.state.formSubmitted && this.state.formErrors.email && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.email}
-    </FormFeedback>)}
+                        <FormFeedback className={fontWeight}>
+                          {this.state.formErrors.email}
+                        </FormFeedback>
+                      )}
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -275,7 +282,9 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Phone <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>
+                      Phone <span style={{ color: 'red' }}>*</span>{' '}
+                    </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -301,7 +310,9 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Weekly Committed Hours <span style={{ color: 'red' }}>*</span></Label>
+                    <Label className={fontColor}>
+                      Weekly Committed Hours <span style={{ color: 'red' }}>*</span>
+                    </Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -312,13 +323,13 @@ class UserProfileAdd extends Component {
                         max={168}
                         id="weeklyCommittedHours"
                         value={this.state.userProfile.weeklyCommittedHours}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         onKeyDown={event => {
                           if (event.key === 'Backspace' || event.key === 'Delete') {
                             this.setState({
                               userProfile: {
                                 ...this.state.userProfile,
-                                [event.target.id]: "",
+                                [event.target.id]: '',
                               },
                               formValid: {
                                 ...this.state.formValid,
@@ -338,7 +349,9 @@ class UserProfileAdd extends Component {
                             : !this.state.formValid.weeklyCommittedHours
                         }
                       />
-                      <FormFeedback className={fontWeight}>{this.state.formErrors.weeklyCommittedHours}</FormFeedback>
+                      <FormFeedback className={fontWeight}>
+                        {this.state.formErrors.weeklyCommittedHours}
+                      </FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
@@ -353,7 +366,7 @@ class UserProfileAdd extends Component {
                         name="role"
                         id="role"
                         defaultValue="Volunteer"
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                       >
                         {this.props.role.roles.map(({ roleName }, index) => {
                           if (roleName === 'Owner') return;
@@ -381,11 +394,13 @@ class UserProfileAdd extends Component {
                             name="actualEmail"
                             id="actualEmail"
                             value={actualEmail}
-                            onChange={(e) => this.handleUserProfile(e)}
+                            onChange={e => this.handleUserProfile(e)}
                             placeholder="Actual Email"
                             invalid={!!this.state.formErrors.actualEmail}
                           />
-                          <FormFeedback className={fontWeight}>{this.state.formErrors.actualEmail}</FormFeedback>
+                          <FormFeedback className={fontWeight}>
+                            {this.state.formErrors.actualEmail}
+                          </FormFeedback>
                         </FormGroup>
                       </Col>
                     </Row>
@@ -400,9 +415,13 @@ class UserProfileAdd extends Component {
                             name="actualPassword"
                             id="actualPassword"
                             value={actualPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
+                            onChange={e => this.handleUserProfile(e)}
                             placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
+                            invalid={
+                              this.state.formErrors.actualPassword
+                                ? this.state.formErrors.actualPassword
+                                : ''
+                            }
                             className="d-flex justify-start items-start"
                           />
                         </FormGroup>
@@ -419,9 +438,13 @@ class UserProfileAdd extends Component {
                             name="actualConfirmedPassword"
                             id="actualConfirmedPassword"
                             value={actualConfirmedPassword}
-                            onChange={(e) => this.handleUserProfile(e)}
+                            onChange={e => this.handleUserProfile(e)}
                             placeholder="Confirm Actual Password"
-                            invalid={actualPassword !== actualConfirmedPassword ? "Passwords do not match" : ""}
+                            invalid={
+                              actualPassword !== actualConfirmedPassword
+                                ? 'Passwords do not match'
+                                : ''
+                            }
                             className="d-flex justify-start items-start"
                           />
                         </FormGroup>
@@ -431,7 +454,9 @@ class UserProfileAdd extends Component {
                 )}
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>Weekly Summary Options</Label>
+                    <Label className={`weeklySummaryOptionsLabel ${fontColor}`}>
+                      Weekly Summary Options
+                    </Label>
                   </Col>
                   <Col md="6">
                     <WeeklySummaryOptions handleUserProfile={this.handleUserProfile} />
@@ -448,7 +473,7 @@ class UserProfileAdd extends Component {
                         name="collaborationPreference"
                         id="collaborationPreference"
                         value={this.state.userProfile.collaborationPreference}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Skype, Zoom, etc."
                       />
                     </FormGroup>
@@ -465,7 +490,7 @@ class UserProfileAdd extends Component {
                         name="googleDoc"
                         id="googleDoc"
                         value={this.state.userProfile.googleDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="Google Doc"
                       />
                     </FormGroup>
@@ -482,7 +507,7 @@ class UserProfileAdd extends Component {
                         name="dropboxDoc"
                         id="dropboxDoc"
                         value={this.state.userProfile.dropboxDoc}
-                        onChange={(e) => this.handleUserProfile(e)}
+                        onChange={e => this.handleUserProfile(e)}
                         placeholder="DropBox Folder"
                       />
                     </FormGroup>
@@ -521,8 +546,8 @@ class UserProfileAdd extends Component {
                     <FormGroup>
                       <TimeZoneDropDown
                         filter={this.state.timeZoneFilter}
-                        onChange={(e) => this.handleUserProfile(e)}
-                        selected={'America/Los_Angeles'}
+                        onChange={e => this.handleUserProfile(e)}
+                        selected="America/Los_Angeles"
                         id="timeZone"
                       />
                     </FormGroup>
@@ -564,7 +589,7 @@ class UserProfileAdd extends Component {
                     projectsData={this.props ? this.props.allProjects.projects : []}
                     onAssignProject={this.onAssignProject}
                     onDeleteProject={this.onDeleteProject}
-                    isUserAdmin={true}
+                    isUserAdmin
                     role={this.props.auth.user.role}
                     edit
                     darkMode={darkMode}
@@ -577,10 +602,10 @@ class UserProfileAdd extends Component {
                     onAssignTeam={this.onAssignTeam}
                     onAssignTeamCode={this.onAssignTeamCode}
                     onDeleteTeam={this.onDeleteTeam}
-                    isUserAdmin={true}
+                    isUserAdmin
                     role={this.props.auth.user.role}
                     teamCode={this.state.teamCode}
-                    canEditTeamCode={true}
+                    canEditTeamCode
                     codeValid={this.state.codeValid}
                     setCodeValid={this.setCodeValid}
                     edit
@@ -643,7 +668,7 @@ class UserProfileAdd extends Component {
     const teams = [...this.state.teams];
     teams.push(assignedTeam);
     this.setState({
-      teams: teams,
+      teams,
     });
   };
 
@@ -652,7 +677,7 @@ class UserProfileAdd extends Component {
     projects.push(assignedProject);
 
     this.setState({
-      projects: projects,
+      projects,
     });
   };
 
@@ -666,7 +691,7 @@ class UserProfileAdd extends Component {
     this.setState({ projects: initialUserProject });
   };
 
-  // Function to call TimeZoneService with location 
+  // Function to call TimeZoneService with location
   onClickGetTimeZone = () => {
     const location = this.state.userProfile.location.userProvided;
 
@@ -675,45 +700,49 @@ class UserProfileAdd extends Component {
       return;
     }
 
-    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if(res.status === 200) {
-        const { timezone, currentLocation } = res.data;
-        this.setState({
-          ...this.state,
-          timeZoneFilter: timezone,
-          userProfile: {
-            ...this.state.userProfile,
-            location: currentLocation,
-            timeZone: timezone,
-          },
-        });
-      }
-    }).catch(err => {
-      toast.error(`An error occurred : ${err.response.data}`);
-    });
+    axios
+      .get(ENDPOINTS.TIMEZONE_LOCATION(location))
+      .then(res => {
+        if (res.status === 200) {
+          const { timezone, currentLocation } = res.data;
+          this.setState({
+            ...this.state,
+            timeZoneFilter: timezone,
+            userProfile: {
+              ...this.state.userProfile,
+              location: currentLocation,
+              timeZone: timezone,
+            },
+          });
+        }
+      })
+      .catch(err => {
+        toast.error(`An error occurred : ${err.response.data}`);
+      });
   };
 
   fieldsAreValid = () => {
     const firstLength = this.state.userProfile.firstName !== '';
     const lastLength = this.state.userProfile.lastName !== '';
     const phone = this.state.userProfile.phoneNumber;
-    
+
     if (phone === null) {
       toast.error('Phone Number is required');
       return false;
-    } else if (this.state.teamCode && !this.state.codeValid) {
+    }
+    if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
       return false;
-    } else if (firstLength && lastLength && phone.length >= 9) {
-      return true;
-    } else {
-      toast.error('Please fill all the required fields');
-      return false;
     }
+    if (firstLength && lastLength && phone.length >= 9) {
+      return true;
+    }
+    toast.error('Please fill all the required fields');
+    return false;
   };
 
   checkIfDuplicate = (firstName, lastName) => {
-    let { userProfiles } = this.state.userProfiles;
+    const { userProfiles } = this.state.userProfiles;
 
     const duplicates = userProfiles.filter(user => {
       return (
@@ -723,11 +752,11 @@ class UserProfileAdd extends Component {
     });
 
     if (duplicates.length > 0) return true;
-    else return false;
+    return false;
   };
 
   createUserProfile = allowsDuplicateName => {
-    let that = this;
+    const that = this;
     const {
       firstName,
       email,
@@ -746,34 +775,34 @@ class UserProfileAdd extends Component {
       actualEmail,
       actualPassword,
       startDate,
-      actualConfirmedPassword
+      actualConfirmedPassword,
     } = that.state.userProfile;
 
     const userData = {
       password: process.env.REACT_APP_DEF_PWD,
-      role: role,
-      firstName: firstName,
-      lastName: lastName,
-      jobTitle: jobTitle,
-      phoneNumber: phoneNumber,
+      role,
+      firstName,
+      lastName,
+      jobTitle,
+      phoneNumber,
       bio: '',
       weeklycommittedHours: that.state.userProfile.weeklyCommittedHours,
-      weeklySummaryOption: weeklySummaryOption,
+      weeklySummaryOption,
       personalLinks: [],
       adminLinks: [],
       teams: this.state.teams,
       projects: this.state.projects,
-      email: email,
-      privacySettings: privacySettings,
-      collaborationPreference: collaborationPreference,
-      timeZone: timeZone,
-      location: location,
-      allowsDuplicateName: allowsDuplicateName,
-      createdDate: createdDate,
+      email,
+      privacySettings,
+      collaborationPreference,
+      timeZone,
+      location,
+      allowsDuplicateName,
+      createdDate,
       teamCode: this.state.teamCode,
-      actualEmail: actualEmail,
-      actualPassword: actualPassword,
-      startDate: startDate,
+      actualEmail,
+      actualPassword,
+      startDate,
     };
 
     this.setState({ formSubmitted: true });
@@ -1096,10 +1125,10 @@ class UserProfileAdd extends Component {
       case 'weeklyCommittedHours':
         let val = Number(event.target.value);
         if (val > 168) {
-          val = 168
+          val = 168;
         } else if (val < 0) {
-          val = 0
-        } 
+          val = 0;
+        }
         this.setState({
           userProfile: {
             ...userProfile,
@@ -1221,7 +1250,8 @@ class UserProfileAdd extends Component {
           },
           formErrors: {
             ...formErrors,
-            actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
+            actualConfirmedPassword:
+              event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
           },
         });
         break;
@@ -1241,7 +1271,6 @@ const mapStateToProps = state => ({
   role: state.role,
   state,
 });
-
 
 export default connect(mapStateToProps, {
   getUserProfile,

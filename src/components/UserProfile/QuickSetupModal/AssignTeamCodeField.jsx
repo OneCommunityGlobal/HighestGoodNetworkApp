@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 
-
 const AssignTeamCodeField = React.memo(props => {
-  const [searchText, onInputChange] = useState(()=>{
-    if(props.editMode){
-      return props.value
-    }else{
-      return ''
+  const [searchText, onInputChange] = useState(() => {
+    if (props.editMode) {
+      return props.value;
     }
+    return '';
   });
   const [isOpen, toggle] = useState(false);
   useEffect(() => {
@@ -29,7 +27,7 @@ const AssignTeamCodeField = React.memo(props => {
       <Input
         type="text"
         value={searchText}
-        autoFocus={true}
+        autoFocus
         onChange={e => {
           onInputChange(e.target.value);
           toggle(true);
@@ -45,13 +43,13 @@ const AssignTeamCodeField = React.memo(props => {
           style={{ marginTop: '0px', width: '100%' }}
         >
           {[...props.teamCodeData]
-                      .filter(teamCode => {
+            .filter(teamCode => {
               if (teamCode.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
                 return teamCode;
               }
             })
             .slice(0, 10)
-            .map((item,index) => (
+            .map((item, index) => (
               <div
                 className="project-auto-complete"
                 key={index}
@@ -64,8 +62,7 @@ const AssignTeamCodeField = React.memo(props => {
                 {item}
               </div>
             ))}
-              </div>
-
+        </div>
       ) : null}
     </Dropdown>
   );

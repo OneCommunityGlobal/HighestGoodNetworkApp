@@ -9,7 +9,7 @@ import timeZoneMap from 'constants/timeZones';
  * @param {string} [props.name=timeZone] 'name' HTML property of component
  * @param {string} [props.selected=] Name of the time zone selected by default
  */
-const TimeZoneDropDown = props => {
+function TimeZoneDropDown(props) {
   const id = props.id || 'timeZone';
 
   useEffect(() => {
@@ -40,7 +40,11 @@ const TimeZoneDropDown = props => {
           timeZoneString.toLocaleLowerCase().includes(props.filter.toLocaleLowerCase())
         ) {
           return (
-            <option data-testid="time_zone_option" value={timeZoneName} key={`timeZone-${timeZoneName}`}>
+            <option
+              data-testid="time_zone_option"
+              value={timeZoneName}
+              key={`timeZone-${timeZoneName}`}
+            >
               {timeZoneString}
             </option>
           );
@@ -48,6 +52,6 @@ const TimeZoneDropDown = props => {
       })}
     </select>
   );
-};
+}
 
 export default TimeZoneDropDown;

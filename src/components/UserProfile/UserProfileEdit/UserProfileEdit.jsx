@@ -20,6 +20,7 @@ import Image from 'react-bootstrap/Image';
 import { Link } from 'react-router-dom';
 
 import classnames from 'classnames';
+import { connect } from 'react-redux';
 import Loading from '../../common/Loading';
 import BlueSquare from '../BlueSquares';
 import UserProfileModal from '../UserProfileModal';
@@ -32,7 +33,6 @@ import LinkModButton from './LinkModButton';
 import ProjectsTab from '../TeamsAndProjects/ProjectsTab';
 import TeamsTab from '../TeamsAndProjects/TeamsTab';
 import hasPermission from '../../../utils/permissions';
-import { connect } from 'react-redux';
 
 const styleProfile = {};
 class UserProfileEdit extends Component {
@@ -91,7 +91,7 @@ class UserProfileEdit extends Component {
   };
 
   onDeleteTeam = deletedTeamId => {
-    const _userProfile = Object.assign({}, this.state.userProfile);
+    const _userProfile = { ...this.state.userProfile };
     const filteredTeam = _userProfile.teams.filter(team => team._id !== deletedTeamId);
     _userProfile.teams = filteredTeam;
 
@@ -106,7 +106,7 @@ class UserProfileEdit extends Component {
   };
 
   onDeleteProject = deletedProjectId => {
-    const _userProfile = Object.assign({}, this.state.userProfile);
+    const _userProfile = { ...this.state.userProfile };
     const filteredProject = _userProfile.projects.filter(
       project => project._id !== deletedProjectId,
     );
@@ -123,7 +123,7 @@ class UserProfileEdit extends Component {
   };
 
   onAssignTeam = assignedTeam => {
-    const _userProfile = Object.assign({}, this.state.userProfile);
+    const _userProfile = { ...this.state.userProfile };
     if (_userProfile.teams) {
       _userProfile.teams.push(assignedTeam);
     } else {
@@ -141,7 +141,7 @@ class UserProfileEdit extends Component {
   };
 
   onAssignProject = assignedProject => {
-    const _userProfile = Object.assign({}, this.state.userProfile);
+    const _userProfile = { ...this.state.userProfile };
     if (_userProfile.projects) {
       _userProfile.projects.push(assignedProject);
     } else {
@@ -824,55 +824,54 @@ class UserProfileEdit extends Component {
                         </Col>
                       </Row>
                       <Row>
-  <Col md="6">
-    <Label>Current Password</Label>
-  </Col>
-  <Col md="6">
-    <FormGroup>
-      <Input
-        type="password"
-        name="currentPassword"
-        id="currentPassword"
-        placeholder="Enter Current Password"
-        onChange={this.handleUserProfile}
-      />
-    </FormGroup>
-  </Col>
-</Row>
-<Row>
-  <Col md="6">
-    <Label>New Password</Label>
-  </Col>
-  <Col md="6">
-    <FormGroup>
-      <Input
-        type="password"
-        name="newPassword"
-        id="newPassword"
-        placeholder="Enter New Password"
-        onChange={this.handleUserProfile}
-      />
-    </FormGroup>
-  </Col>
-</Row>
-<Row>
-  <Col md="6">
-    <Label>Confirm New Password</Label>
-  </Col>
-  <Col md="6">
-    <FormGroup>
-      <Input
-        type="password"
-        name="confirmPassword"
-        id="confirmPassword"
-        placeholder="Confirm New Password"
-        onChange={this.handleUserProfile}
-      />
-    </FormGroup>
-  </Col>
-</Row>
+                        <Col md="6">
+                          <Label>Current Password</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <Input
+                              type="password"
+                              name="currentPassword"
+                              id="currentPassword"
+                              placeholder="Enter Current Password"
+                              onChange={this.handleUserProfile}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="6">
+                          <Label>New Password</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <Input
+                              type="password"
+                              name="newPassword"
+                              id="newPassword"
+                              placeholder="Enter New Password"
+                              onChange={this.handleUserProfile}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col md="6">
+                          <Label>Confirm New Password</Label>
+                        </Col>
+                        <Col md="6">
+                          <FormGroup>
+                            <Input
+                              type="password"
+                              name="confirmPassword"
+                              id="confirmPassword"
+                              placeholder="Confirm New Password"
+                              onChange={this.handleUserProfile}
+                            />
+                          </FormGroup>
+                        </Col>
+                      </Row>
 
-                      
                       <Row>
                         <Col md="6">
                           <Label>Phone</Label>
@@ -938,7 +937,7 @@ class UserProfileEdit extends Component {
                         <Label>Account Created Date</Label>
                       </Col>
                       <Col md="6">
-                      <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
+                        <p>{moment(userProfile.createdDate).format('YYYY-MM-DD')}</p>
                       </Col>
                     </Row>
                     <Row>
@@ -962,7 +961,7 @@ class UserProfileEdit extends Component {
                           value={userProfile.weeklyCommittedHours}
                           onChange={this.handleUserProfile}
                           placeholder="weeklyCommittedHours"
-                          invalid={/*!canPutUserProfile*/ true}
+                          invalid
                         />
                       </Col>
                     </Row>

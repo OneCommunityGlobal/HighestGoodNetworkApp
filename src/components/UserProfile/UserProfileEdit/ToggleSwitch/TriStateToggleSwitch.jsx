@@ -38,11 +38,11 @@ function TriStateToggleSwitch({ pos, onChange }) {
   return (
     <div className={`toggle-switch bg-${bgColor}`}>
       <div className="knob-area">
-        <div onClick={() => handleClick('posted')}></div>
-        <div onClick={() => handleClick('default')}></div>
-        <div onClick={() => handleClick('requested')}></div>
+        <div onClick={() => handleClick('posted')} />
+        <div onClick={() => handleClick('default')} />
+        <div onClick={() => handleClick('requested')} />
       </div>
-      <div className={`knob ${position}`}></div>
+      <div className={`knob ${position}`} />
     </div>
   );
 }

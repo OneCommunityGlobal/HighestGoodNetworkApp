@@ -17,7 +17,7 @@ const AddTeamsAutoComplete = React.memo(props => {
       <Input
         type="text"
         value={props.searchText}
-        autoFocus={true}
+        autoFocus
         onChange={e => {
           props.setSearchText(e.target.value);
           toggle(true);
@@ -37,7 +37,6 @@ const AddTeamsAutoComplete = React.memo(props => {
                 .filter(team => {
                   if (team.teamName.toLowerCase().indexOf(props.searchText.toLowerCase()) > -1)
                     return team;
-                  else return;
                 })
                 .slice(0, 10)
                 .map(item => (
@@ -49,7 +48,7 @@ const AddTeamsAutoComplete = React.memo(props => {
                       props.setInputs(inputs => ({
                         ...inputs,
                         teamId: item._id,
-                      }))
+                      }));
                       toggle(false);
                     }}
                   >

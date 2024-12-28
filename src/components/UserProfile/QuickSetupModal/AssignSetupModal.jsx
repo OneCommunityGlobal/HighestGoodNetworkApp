@@ -1,12 +1,20 @@
 import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Label, Input } from 'reactstrap';
-import hasPermission from '../../../utils/permissions';
 import { deleteTitleById } from 'actions/title';
 import { useSelector } from 'react-redux';
+import hasPermission from '../../../utils/permissions';
 import '../../Header/DarkMode.css';
 
-function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfile, setTitleOnSet, refreshModalTitles}) {
-  const darkMode = useSelector(state => state.theme.darkMode)
+function AssignSetUpModal({
+  isOpen,
+  setIsOpen,
+  title,
+  userProfile,
+  setUserProfile,
+  setTitleOnSet,
+  refreshModalTitles,
+}) {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [validation, setValid] = useState({
     volunteerAgree: false,
   });
@@ -16,7 +24,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
     checkbox: 'Need to be confirmed',
   });
   const [isGoogleDocValid, setIsGoogleDocValid] = useState(true);
-  const [mediaFolder, setMediaFolder] = useState("")
+  const [mediaFolder, setMediaFolder] = useState('');
 
   const checkboxOnClick = () => {
     // eslint-disable-next-line no-unused-expressions
@@ -52,16 +60,16 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
 
       // Ensure adminLinks is not undefined or null
       const updatedAdminLinks = (userProfile.adminLinks || []).map(obj => {
-        if (obj.Name === "Media Folder") obj.Link = mediaFolder || '';
-        if (obj.Name === "Google Doc") obj.Link = googleDoc || '';
+        if (obj.Name === 'Media Folder') obj.Link = mediaFolder || '';
+        if (obj.Name === 'Google Doc') obj.Link = googleDoc || '';
         return obj;
       });
 
-      if (!updatedAdminLinks.find(obj => obj.Name === "Media Folder")) {
-        updatedAdminLinks.push({ Name: "Media Folder", Link: mediaFolder || '' });
+      if (!updatedAdminLinks.find(obj => obj.Name === 'Media Folder')) {
+        updatedAdminLinks.push({ Name: 'Media Folder', Link: mediaFolder || '' });
       }
-      if (!updatedAdminLinks.find(obj => obj.Name === "Google Doc")) {
-        updatedAdminLinks.push({ Name: "Google Doc", Link: googleDoc || '' });
+      if (!updatedAdminLinks.find(obj => obj.Name === 'Google Doc')) {
+        updatedAdminLinks.push({ Name: 'Google Doc', Link: googleDoc || '' });
       }
 
       const data = {
@@ -76,7 +84,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       if (userProfile.teams.includes(title?.teamAssiged)) data.teams.pop();
       if (userProfile.projects.includes(title.projectAssigned)) data.projects.pop();
 
-      if (hasPermission("manageAdminLinks")) {
+      if (hasPermission('manageAdminLinks')) {
         setUserProfile(prev => ({ ...prev, ...data }));
       }
 
@@ -85,7 +93,6 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
       setIsOpen(false);
     }
   };
-
 
   // close the modal
   const setNoOnClick = () => {
@@ -113,28 +120,28 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
     }
   };
 
-    // UseEffect to get the media folder when userProfile or isOpen changes
-    useEffect(() => {
-      if (isOpen && userProfile) {
-        getMediaFolder(userProfile);
-      }
-    }, [isOpen, userProfile]);
+  // UseEffect to get the media folder when userProfile or isOpen changes
+  useEffect(() => {
+    if (isOpen && userProfile) {
+      getMediaFolder(userProfile);
+    }
+  }, [isOpen, userProfile]);
 
-    // Gets the media Folder url from the mediaUrl
-    const getMediaFolder = (userProfile) => {
-      const currMediaFile = userProfile.adminLinks?.find(obj => obj.Name === "Media Folder");
-      
-      if (currMediaFile && currMediaFile.Link) {
-        setMediaFolder(currMediaFile.Link);
-      } else if (userProfile.mediaUrl) {
-        setMediaFolder(userProfile.mediaUrl);
-      } else if(title && title.mediaFolder) {
-        setMediaFolder(title.mediaFolder);
-      } else {
-        // setMediaFolder("No media folder available");
-        setMediaFolder(null);
-      }
-    };
+  // Gets the media Folder url from the mediaUrl
+  const getMediaFolder = userProfile => {
+    const currMediaFile = userProfile.adminLinks?.find(obj => obj.Name === 'Media Folder');
+
+    if (currMediaFile && currMediaFile.Link) {
+      setMediaFolder(currMediaFile.Link);
+    } else if (userProfile.mediaUrl) {
+      setMediaFolder(userProfile.mediaUrl);
+    } else if (title && title.mediaFolder) {
+      setMediaFolder(title.mediaFolder);
+    } else {
+      // setMediaFolder("No media folder available");
+      setMediaFolder(null);
+    }
+  };
 
   const fontColor = darkMode ? 'text-light' : '';
 
@@ -152,8 +159,10 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           <Label className={fontColor}>
             <h6>Google Doc: </h6>
           </Label>
-          <Input type="text" onChange={e => setGoogleDoc(e.target.value)}></Input>
-          {!isGoogleDocValid || googleDoc === ""?  <p className="text-danger">{warning.googleDoc}</p> : null}
+          <Input type="text" onChange={e => setGoogleDoc(e.target.value)} />
+          {!isGoogleDocValid || googleDoc === '' ? (
+            <p className="text-danger">{warning.googleDoc}</p>
+          ) : null}
 
           <h6>Team Code: {title?.teamCode}</h6>
           <h6>Project Assignment: {title?.projectAssigned?.projectName}</h6>

@@ -5,8 +5,9 @@ import { useDispatch } from 'react-redux';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import '../../Header/DarkMode.css';
-import { postNewTeam, getAllUserTeams } from '../../../../src/actions/allTeamsAction';
 import axios from 'axios';
+import { postNewTeam, getAllUserTeams } from '../../../actions/allTeamsAction';
+
 const AddTeamPopup = React.memo(props => {
   const { darkMode } = props;
 
@@ -36,8 +37,9 @@ const AddTeamPopup = React.memo(props => {
     );
     if (result.length > 0) {
       if (arrayOrObj) return result[0];
-      else return result;
-    } else return undefined;
+      return result;
+    }
+    return undefined;
   };
 
   const IfTheUserNotSelectedSuggestionAutoComplete = () => {
@@ -62,12 +64,12 @@ const AddTeamPopup = React.memo(props => {
     const some = !props.userTeamsById.some(x => x._id === idToCheck);
 
     if ((result || selectedTeam) && some) {
-      props.onSelectAssignTeam(result ? result : selectedTeam);
+      props.onSelectAssignTeam(result || selectedTeam);
 
       setSearchText('');
 
       selectedTeam && (onSelectTeam(undefined), onValidation(false));
-      closePopup() // automatically closes the popup after team assigned
+      closePopup(); // automatically closes the popup after team assigned
     } else
       toast.error(
         'Your user has been found in this team. Please select another team to add your user.',
@@ -81,7 +83,7 @@ const AddTeamPopup = React.memo(props => {
 
   const onCreateTeam = async () => {
     if (searchText !== '') {
-      const CancelToken = axios.CancelToken;
+      const { CancelToken } = axios;
       const source = CancelToken.source();
       const timeout = setTimeout(() => axiosResponseExceededTimeout(source), 20000);
 

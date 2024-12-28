@@ -1,19 +1,19 @@
 import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Tooltip, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
+import { boxStyle, boxStyleDark } from 'styles';
+import { connect } from 'react-redux';
+import axios from 'axios';
+import { toast } from 'react-toastify';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
-import { boxStyle, boxStyleDark } from 'styles';
-import { connect } from 'react-redux';
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
-import './../../Teams/Team.css';
+import '../../Teams/Team.css';
 import { TeamMember } from './TeamMember';
-import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL.js';
-import { toast } from 'react-toastify';
 
-const UserTeamsTable = props => {
+function UserTeamsTable(props) {
   const { darkMode } = props;
 
   const [tooltipOpen, setTooltip] = useState(false);
@@ -23,8 +23,6 @@ const UserTeamsTable = props => {
   const [showDropdown, setShowDropdown] = useState(false);
 
   const [autoComplete, setAutoComplete] = useState(false);
-
-
 
   const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState([]);
 
@@ -90,7 +88,6 @@ const UserTeamsTable = props => {
       .replace(/\s+/g, '');
   };
 
-
   const styleDefault = {
     cursor: !props.canEditTeamCode ? 'not-allowed' : 'pointer',
     opacity: !props.canEditTeamCode ? 0.6 : 0.9,
@@ -131,7 +128,6 @@ const UserTeamsTable = props => {
   };
 
   return (
-
     <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
       <TeamMember
         isOpenModalTeamMember={isOpenModalTeamMember}
@@ -165,7 +161,6 @@ const UserTeamsTable = props => {
               }}
             >
               <ToggleSwitch
-
                 switchType="visible"
                 state={props.isVisible}
                 handleUserProfile={props.onUserVisibilitySwitch}
@@ -198,7 +193,7 @@ const UserTeamsTable = props => {
               disabled={!props.canEditTeamCode}
             />
           </Col>
-          <div className="row" style={{ display: 'flex', flexDirection: 'column' }} >
+          <div className="row" style={{ display: 'flex', flexDirection: 'column' }}>
             <AutoCompleteTeamCode
               refDropdown={refDropdown}
               showDropdown={showDropdown}
@@ -247,7 +242,7 @@ const UserTeamsTable = props => {
                   <>
                     <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
                     <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
-                      { }
+                      {}
                     </th>
                   </>
                 ) : null}
@@ -305,8 +300,7 @@ const UserTeamsTable = props => {
         </table>
       </div>
     </div>
-
   );
-};
+}
 
 export default connect(null, { hasPermission })(UserTeamsTable);

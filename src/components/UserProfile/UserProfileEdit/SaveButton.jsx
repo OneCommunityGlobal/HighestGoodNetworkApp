@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
-import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
 import { boxStyle, boxStyleDark } from 'styles';
+import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
 
 /**
  *
@@ -18,7 +18,8 @@ const getRandomMessage = () => {
   return messages[Math.floor(Math.random() * messages.length)];
 };
 
-const invalidCodemessage = 'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab';
+const invalidCodemessage =
+  'Nice save! It seems you do not have a valid team code. It would be a lot cooler if you did. You can add one in the teams tab';
 const validTeamCodeRegex = /^.{5,7}$/;
 const stillSavingMessage = 'Saving, will take just a second...';
 
@@ -30,11 +31,11 @@ const stillSavingMessage = 'Saving, will take just a second...';
  * @param {func} props.setSaved
  * @returns
  */
-const SaveButton = props => {
-  const {handleSubmit, disabled, userProfile, setSaved, darkMode} = props;
+function SaveButton(props) {
+  const { handleSubmit, disabled, userProfile, setSaved, darkMode } = props;
   const [modal, setModal] = useState(false);
   const [randomMessage, setRandomMessage] = useState(getRandomMessage());
-  const [isLoading,setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [isErr, setIsErr] = useState(false);
 
   const handleSave = async () => {
@@ -57,20 +58,19 @@ const SaveButton = props => {
     setModal(false);
   };
 
-  const getMessage = (type) => {
+  const getMessage = type => {
     if (type == 'message') {
       if (!isErr) {
         return isLoading ? stillSavingMessage : randomMessage;
       }
-  
-      return 'Sorry an error occured while trying to save. Please try again another time.';
-    } else {
-      if (!isErr){
-        return isLoading ? 'Saving...' : 'Success!';
-      }
 
-      return 'Error occured';
+      return 'Sorry an error occured while trying to save. Please try again another time.';
     }
+    if (!isErr) {
+      return isLoading ? 'Saving...' : 'Success!';
+    }
+
+    return 'Error occured';
   };
 
   useEffect(() => {
@@ -78,15 +78,14 @@ const SaveButton = props => {
       const regexTest = validTeamCodeRegex.test(userProfile.teamCode);
       if (!regexTest) {
         setRandomMessage(invalidCodemessage);
-      }
-      else {
+      } else {
         setRandomMessage(getRandomMessage());
       }
     }
   }, [modal]);
 
   return (
-    <React.Fragment>
+    <>
       <EditConfirmModal
         isOpen={modal}
         closeModal={closeModal}
@@ -97,20 +96,20 @@ const SaveButton = props => {
         darkMode={darkMode}
       />
       <Button
-        {...(darkMode ? { outline: false } : {outline: true})}
+        {...(darkMode ? { outline: false } : { outline: true })}
         color={darkMode ? 'light' : 'primary'}
         // to={`/userprofile/${this.state.userProfile._id}`}
-        //the line below caused the mouse over issue, so I commented it out
-        //className='btn btn-outline-primary mr-1 bg-white'
+        // the line below caused the mouse over issue, so I commented it out
+        // className='btn btn-outline-primary mr-1 bg-white'
         onClick={handleSave}
         disabled={disabled}
-        className='mr-1'
+        className="mr-1"
         style={darkMode ? boxStyleDark : boxStyle}
       >
         Save Changes
       </Button>
-    </React.Fragment>
+    </>
   );
-};
+}
 
 export default SaveButton;

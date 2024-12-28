@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import AddTeamPopup from './AddTeamPopup';
-import UserTeamsTable from './UserTeamsTable';
 import { addTeamMember, deleteTeamMember } from 'actions/allTeamsAction';
 import { toast } from 'react-toastify';
-const TeamsTab = props => {
+import AddTeamPopup from './AddTeamPopup';
+import UserTeamsTable from './UserTeamsTable';
+
+function TeamsTab(props) {
   const {
     teamsData,
     userTeams,
@@ -49,8 +50,8 @@ const TeamsTab = props => {
   const onAddTeamPopupClose = () => {
     setaddTeamPopupOpen(false);
   };
-  
-  const onSelectDeleteTeam =  teamId => {
+
+  const onSelectDeleteTeam = teamId => {
     try {
       if (userProfile._id) {
         deleteTeamMember(teamId, userProfile._id);
@@ -62,9 +63,8 @@ const TeamsTab = props => {
       toast.error('Failed to delete team');
     }
   };
-  
 
-  const onSelectAssignTeam =  team => {
+  const onSelectAssignTeam = team => {
     try {
       if (userProfile?._id) {
         addTeamMember(team._id, userProfile._id, userProfile.firstName, userProfile.lastName);
@@ -78,7 +78,7 @@ const TeamsTab = props => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <AddTeamPopup
         open={addTeamPopupOpen}
         onClose={onAddTeamPopupClose}
@@ -112,7 +112,7 @@ const TeamsTab = props => {
         fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
         darkMode={darkMode}
       />
-    </React.Fragment>
+    </>
   );
-};
+}
 export default TeamsTab;

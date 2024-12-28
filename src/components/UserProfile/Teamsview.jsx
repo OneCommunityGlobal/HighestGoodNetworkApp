@@ -14,13 +14,15 @@ import {
 import PropTypes from 'prop-types';
 import TeamsModal from './AddNewTeamModal';
 
-const Teamdataheader = () => (
-  <tr>
-    <th>Name</th>
-  </tr>
-);
+function Teamdataheader() {
+  return (
+    <tr>
+      <th>Name</th>
+    </tr>
+  );
+}
 
-const Teamtabledata = ({ teammembers, edit, handleTeam }) => {
+function Teamtabledata({ teammembers, edit, handleTeam }) {
   const handleDelete = e => {
     const id = e.target.getAttribute('data-item');
     handleTeam('delete', id);
@@ -43,7 +45,7 @@ const Teamtabledata = ({ teammembers, edit, handleTeam }) => {
       </td>
     </tr>
   );
-};
+}
 Teamtabledata.propTypes = {
   teammembers: PropTypes.shape({
     _id: PropTypes.string.isRequired,
@@ -76,7 +78,7 @@ const Teams = React.memo(props => {
     setAddNewTeamModal(!addNewTeamModal);
   };
   return (
-    <React.Fragment>
+    <>
       <TeamsModal
         isOpen={addNewTeamModal}
         toggle={onAddNewTeam}
@@ -107,7 +109,7 @@ const Teams = React.memo(props => {
           ))}
         </tbody>
       </Table>
-    </React.Fragment>
+    </>
   );
 });
 

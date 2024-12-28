@@ -108,7 +108,7 @@ const AddProjectPopup = React.memo(props => {
       await axios.post(urlCreateProject, newProject);
       const url = ENDPOINTS.PROJECTS;
       const res = await axios.get(url);
-      const status = res.status;
+      const { status } = res;
       const projects = res.data;
       if (status === 200) {
         const findNewProject = projects.filter((item, i) => i === 0)[0];

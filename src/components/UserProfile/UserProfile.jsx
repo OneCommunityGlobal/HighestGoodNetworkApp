@@ -175,18 +175,15 @@ function UserProfile(props) {
 
   useEffect(() => {
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile,  projects });
+    setUserProfile({ ...userProfile, projects });
     setOriginalUserProfile({ ...originalUserProfile, projects });
-  }, [ projects]);
+  }, [projects]);
 
   useEffect(() => {
     setShowLoading(true);
     loadUserProfile();
     loadUserTasks();
   }, [props?.match?.params?.userId]);
-
-
-
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -299,13 +296,14 @@ function UserProfile(props) {
 
       const startDate = newUserProfile?.startDate.split('T')[0];
       // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
-      const createdDate = newUserProfile?.createdDate ? newUserProfile.createdDate.split('T')[0] : null;
-
+      const createdDate = newUserProfile?.createdDate
+        ? newUserProfile.createdDate.split('T')[0]
+        : null;
 
       if (startDate && createdDate && new Date(startDate) < new Date(createdDate)) {
         newUserProfile.startDate = createdDate;
       }
-      //if start date is earlier than createdDate, update it to createdDate
+      // if start date is earlier than createdDate, update it to createdDate
       newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
       newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
       setTeams(newUserProfile.teams);
@@ -317,18 +315,20 @@ function UserProfile(props) {
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         // startDate: newUserProfile?.startDate.split('T')[0],
-        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
-        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
+        ...(newUserProfile?.endDate &&
+          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
       });
       setOriginalUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         // startDate: newUserProfile?.startDate.split('T')[0],
-        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
-        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
+        ...(newUserProfile?.endDate &&
+          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
       });
       setUserStartDate(startDate);
       checkIsProjectsEqual();
@@ -500,8 +500,7 @@ function UserProfile(props) {
           console.log('WARNING: Empty Date');
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
-      }
-      else {
+      } else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
@@ -536,12 +535,14 @@ function UserProfile(props) {
       if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
-      await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
-        dateStamp,
-        summary,
-      }).catch(error => {
-        toast.error('Failed to update Blue Square!');
-      });
+      await axios
+        .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+          dateStamp,
+          summary,
+        })
+        .catch(error => {
+          toast.error('Failed to update Blue Square!');
+        });
       toast.success('Blue Square Updated!');
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
@@ -549,8 +550,7 @@ function UserProfile(props) {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id))
-        .catch(error => {
+        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
           toast.error('Failed to delete Blue Square!');
         });
         toast.success('Blue Square Deleted!');
@@ -638,7 +638,7 @@ function UserProfile(props) {
     }
     const newUserProfile = {
       ...userProfile,
-      isActive: isActive,
+      isActive,
       endDate: endDate || undefined,
     };
 
@@ -672,12 +672,12 @@ function UserProfile(props) {
       ...userProfile,
       isRehireable: pendingRehireableStatus,
     };
-    try{
+    try {
       await dispatch(updateRehireableStatus(updatedUserProfile, pendingRehireableStatus));
       setIsRehireable(pendingRehireableStatus);
       setUserProfile(updatedUserProfile);
       setOriginalUserProfile(updatedUserProfile);
-    }catch(error){
+    } catch (error) {
       toast.error('Unable change rehireable status');
     }
   };
@@ -816,13 +816,15 @@ function UserProfile(props) {
 
   const startDateValidation = (createdDate, startDate) => {
     // console.log("userProfile:createdDate, startDate", createdDate, startDate === '' ? "EMPTY" : startDate);
-    return startDate === '' ? false : (createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate);
+    return startDate === ''
+      ? false
+      : createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate;
   };
-  
+
   const endDateValidation = (startDate, endDate) => {
     // console.log("userProfile:startDate, endDate", startDate === '' ? "EMPTY" : startDate, endDate === '' ? "EMPTY" : endDate );
-    return endDate ? (startDate <= endDate) : true;
-  }
+    return endDate ? startDate <= endDate : true;
+  };
 
   const isStartDateValid = startDateValidation(userProfile.createdDate, userProfile.startDate);
   const isEndDateValid = endDateValidation(userProfile.startDate, userProfile.endDate);
@@ -890,21 +892,18 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-              <QuickSetupModal
-                setSaved={setSaved}
-                handleSubmit={handleSubmit}
-                setUserProfile={setUserProfile}
-                userProfile={userProfile}
-                userTeams={teams || []}
-                teamsData={props?.allTeams?.allTeamsData || []}
-                projectsData={props?.allProjects?.projects || []}
-              />
-
+            <QuickSetupModal
+              setSaved={setSaved}
+              handleSubmit={handleSubmit}
+              setUserProfile={setUserProfile}
+              userProfile={userProfile}
+              userTeams={teams || []}
+              teamsData={props?.allTeams?.allTeamsData || []}
+              projectsData={props?.allProjects?.projects || []}
+            />
           </Col>
           <Col md="8">
-            {!isProfileEqual ||
-            !isTasksEqual ||
-            !isProjectsEqual ? (
+            {!isProfileEqual || !isTasksEqual || !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
@@ -1072,7 +1071,7 @@ function UserProfile(props) {
                 canEdit={canEdit || canManageAdminLinks}
                 darkMode={darkMode}
               />
-               <BlueSquareLayout
+              <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}
@@ -1215,7 +1214,6 @@ function UserProfile(props) {
                     !formValid.lastName ||
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                      
                   }
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
@@ -1267,7 +1265,7 @@ function UserProfile(props) {
                   className="mr-1 btn-bottom"
                   user={userProfile}
                   authEmail={authEmail}
-                  canResetPassword={true}
+                  canResetPassword
                 />
               )}
               {isUserSelf && (activeTab === '1' || canPutUserProfile) && (
@@ -1397,7 +1395,7 @@ function UserProfile(props) {
                           className="mr-1 btn-bottom"
                           user={userProfile}
                           authEmail={authEmail}
-                          canResetPassword={true}
+                          canResetPassword
                         />
                       )}
                       {isUserSelf && (activeTab == '1' || canPutUserProfile) && (
@@ -1436,7 +1434,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1513,7 +1511,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1580,7 +1578,7 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual  && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     canEditTeamCode={canEditTeamCode}
                     setUserProfile={setUserProfile}
@@ -1764,7 +1762,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}

@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import EditLinkModal from '../UserProfileModal/EditLinkModal';
 import './UserProfileEdit.scss';
 
-const LinkModButton = props => {
+function LinkModButton(props) {
   const { updateLink, userProfile, setChanged, handleSubmit, color } = props;
   const [modal, setModal] = useState(false);
   const toggleModal = () => {
     setModal(!modal);
   };
   return (
-    <React.Fragment>
+    <>
       <EditLinkModal
         updateLink={updateLink}
         isOpen={modal}
@@ -22,7 +22,7 @@ const LinkModButton = props => {
       <span
         style={{
           textDecoration: 'underline',
-          color: color ? color : 'grey',
+          color: color || 'grey',
           fontSize: '11pt',
           fontWeight: 600,
         }}
@@ -34,9 +34,9 @@ const LinkModButton = props => {
       >
         Edit
       </span>
-    </React.Fragment>
+    </>
   );
-};
+}
 
 LinkModButton.propTypes = {};
 

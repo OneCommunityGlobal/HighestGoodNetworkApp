@@ -4,15 +4,13 @@ import { Dropdown, Input } from 'reactstrap';
 
 const AssignTeamField = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
-  const [searchText,setSearchText]=useState(()=>{
-    if(props.editMode){
-      return (props.value==undefined?"":props.value.teamName)
-    }else{
-      return props.searchText
+  const [searchText, setSearchText] = useState(() => {
+    if (props.editMode) {
+      return props.value == undefined ? '' : props.value.teamName;
     }
-  })
- 
- 
+    return props.searchText;
+  });
+
   React.useEffect(() => {
     if (props.selectedTeam && props.selectedTeam.teamName !== searchText) {
       props.onSelectTeam(undefined);
@@ -28,7 +26,7 @@ const AssignTeamField = React.memo(props => {
   if (sTeam) {
     // console.log('sTeam', sTeam);
   }
-  
+
   return (
     <Dropdown
       isOpen={isOpen}
@@ -40,7 +38,7 @@ const AssignTeamField = React.memo(props => {
       <Input
         type="text"
         value={searchText}
-        autoFocus={true}
+        autoFocus
         onChange={e => {
           setSearchText(e.target.value);
           toggle(true);
@@ -62,7 +60,7 @@ const AssignTeamField = React.memo(props => {
               }
             })
             .slice(0, 10)
-            .map((item,index) => (
+            .map((item, index) => (
               <div
                 key={index}
                 className="team-auto-complete"

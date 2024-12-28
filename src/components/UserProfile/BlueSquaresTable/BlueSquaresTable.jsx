@@ -1,9 +1,16 @@
+import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import BlueSquare from '../BlueSquares/BlueSquare';
-import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import './BlueSquaresTable.css';
 
-const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile , handleBlueSquare, darkMode}) => {
+function BlueSquaresTable({
+  userProfile,
+  canEdit,
+  isPrivate,
+  handleUserProfile,
+  handleBlueSquare,
+  darkMode,
+}) {
   return (
     <div className="user-profile-blue-square-section">
       <div className={`user-profile-blue-square-div-header ${darkMode ? 'bg-space-cadet' : ''}`}>
@@ -31,14 +38,22 @@ const BlueSquaresTable = ({ userProfile ,canEdit, isPrivate , handleUserProfile 
         )}
       </div>
       {canEdit ? (
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode}/>
+        <BlueSquare
+          blueSquares={userProfile?.infringements}
+          handleBlueSquare={handleBlueSquare}
+          darkMode={darkMode}
+        />
       ) : !isPrivate ? (
         <div className="pl-1">Blue Square Info is Private</div>
       ) : (
-        <BlueSquare blueSquares={userProfile?.infringements} handleBlueSquare={handleBlueSquare} darkMode={darkMode}/>
+        <BlueSquare
+          blueSquares={userProfile?.infringements}
+          handleBlueSquare={handleBlueSquare}
+          darkMode={darkMode}
+        />
       )}
     </div>
   );
-};
+}
 
 export default BlueSquaresTable;

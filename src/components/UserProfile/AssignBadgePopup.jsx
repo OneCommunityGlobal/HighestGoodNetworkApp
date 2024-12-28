@@ -2,15 +2,19 @@ import { useState, useEffect } from 'react';
 import { Table, Button, UncontrolledTooltip } from 'reactstrap';
 import { connect } from 'react-redux';
 import axios from 'axios';
-import AssignTableRow from '../Badge/AssignTableRow';
-import { assignBadgesByUserID, clearNameAndSelected, addSelectBadge } from '../../actions/badgeManagement';
-import { ENDPOINTS } from '../../utils/URL';
-import { boxStyle, boxStyleDark } from '../../styles';
 import { toast } from 'react-toastify';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
+import AssignTableRow from '../Badge/AssignTableRow';
+import {
+  assignBadgesByUserID,
+  clearNameAndSelected,
+  addSelectBadge,
+} from '../../actions/badgeManagement';
+import { ENDPOINTS } from '../../utils/URL';
+import { boxStyle, boxStyleDark } from '../../styles';
 
 function AssignBadgePopup(props) {
-  const {darkMode} = props;
+  const { darkMode } = props;
   const [searchedName, setSearchedName] = useState('');
   const [badgeList, setBadgeList] = useState([]);
   // Added state to disable confirm button while updating.
@@ -22,7 +26,7 @@ function AssignBadgePopup(props) {
 
   // Update: Added toast message effect for success and error. Added restriction: Jae's badges only editable by Jae or Owner
   const assignBadges = async () => {
-    if(props.isRecordBelongsToJaeAndUneditable){
+    if (props.isRecordBelongsToJaeAndUneditable) {
       alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
       return;
     }
@@ -36,7 +40,7 @@ function AssignBadgePopup(props) {
       });
       toast.success('Badge update successfully');
     } catch (e) {
-      //TODO: Proper error handling.
+      // TODO: Proper error handling.
       toast.error('Badge update failed');
     }
     setConfirmButtonDisable(false);
@@ -56,7 +60,7 @@ function AssignBadgePopup(props) {
   };
 
   const filterBadges = allBadges => {
-    let filteredList = allBadges.filter(badge => {
+    const filteredList = allBadges.filter(badge => {
       if (badge.badgeName.toLowerCase().indexOf(searchedName.toLowerCase()) > -1) {
         return badge;
       }
@@ -64,19 +68,19 @@ function AssignBadgePopup(props) {
     return filteredList;
   };
 
-  let filteredBadges = filterBadges(badgeList);
+  const filteredBadges = filterBadges(badgeList);
 
   const addExistBadges = () => {
     if (props.userProfile && props.userProfile.badgeCollection) {
-      const existBadges = props.userProfile.badgeCollection.map(badge => `assign-badge-${badge.badge._id}`);
+      const existBadges = props.userProfile.badgeCollection.map(
+        badge => `assign-badge-${badge.badge._id}`,
+      );
       return existBadges;
     }
     return [];
   };
 
-  let existBadges = addExistBadges();
-
-
+  const existBadges = addExistBadges();
 
   return (
     <div data-testid="test-assignbadgepopup">
@@ -125,12 +129,12 @@ function AssignBadgePopup(props) {
       </div>
       <Button
         className="btn--dark-sea-green float-right"
-        style={darkMode ? {...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
+        style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
         onClick={assignBadges}
         disabled={shouldConfirmButtonDisable}
         data-testid="test-button"
       >
-        {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'} 
+        {!shouldConfirmButtonDisable ? 'Confirm' : 'Updating...'}
       </Button>
     </div>
   );

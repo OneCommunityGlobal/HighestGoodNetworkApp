@@ -1,5 +1,6 @@
 import { connect } from 'react-redux';
 import { get } from 'lodash';
+import { fetchAllProjects } from 'actions/projects';
 import { getUserProfile, clearUserProfile } from '../../../actions/userProfile';
 
 import {
@@ -8,8 +9,6 @@ import {
   deleteTeamMember,
   addTeamMember,
 } from '../../../actions/allTeamsAction';
-
-import { fetchAllProjects } from 'actions/projects';
 
 import AddUserProfile from './UserProfileAdd';
 

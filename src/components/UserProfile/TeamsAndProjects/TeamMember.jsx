@@ -1,13 +1,13 @@
 import React from 'react';
-import TeamMembersPopup from './../../Teams/TeamMembersPopup.jsx';
+import { useSelector, connect } from 'react-redux';
+import TeamMembersPopup from '../../Teams/TeamMembersPopup.jsx';
 import {
   deleteTeamMember,
   addTeamMember,
   updateTeamMemeberVisibility,
 } from '../../../actions/allTeamsAction.js';
-import { useSelector, connect } from 'react-redux';
 
-export const TeamMember = props => {
+export function TeamMember(props) {
   const { isOpenModalTeamMember, setIsOpenModalTeamMember, members, fetchTeamSelected } = props;
 
   const toggle = () => setIsOpenModalTeamMember(!isOpenModalTeamMember);
@@ -50,7 +50,7 @@ export const TeamMember = props => {
       )}
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {

@@ -92,7 +92,7 @@ function AddNewTitleModal({
     existTeamCodes = new Set(teamsData?.allTeamCode?.distinctTeamCodes);
     existTeamName = new Set(names);
   }
-  
+
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
   const [selectedTeamCode, onSelectTeamCode] = useState(undefined);
@@ -297,11 +297,12 @@ function AddNewTitleModal({
               }}
               placeholder="Enter a valid URL"
             />
-            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) && titleData.mediaFolder !== '' && (
-              <small style={{ color: 'red', marginTop: '5px', display: 'block' }}>
-                Please enter a valid URL that starts with http:// or https://
-              </small>
-            )}
+            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) &&
+              titleData.mediaFolder !== '' && (
+                <small style={{ color: 'red', marginTop: '5px', display: 'block' }}>
+                  Please enter a valid URL that starts with http:// or https://
+                </small>
+              )}
             <Label className={fontColor}>
               Team Code<span className="qsm-modal-required">*</span>:
             </Label>
@@ -355,10 +356,12 @@ function AddNewTitleModal({
       </ModalBody>
 
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button 
-          color="primary" 
+        <Button
+          color="primary"
           onClick={() => confirmOnClick()}
-          disabled={!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) || titleData.mediaFolder === ''}
+          disabled={
+            !/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) || titleData.mediaFolder === ''
+          }
         >
           Confirm
         </Button>

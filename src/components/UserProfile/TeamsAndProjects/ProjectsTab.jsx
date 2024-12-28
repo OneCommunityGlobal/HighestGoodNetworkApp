@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import AddProjectPopup from './AddProjectPopup';
 import UserProjectsTable from './UserProjectsTable';
 
-const ProjectsTab = props => {
+function ProjectsTab(props) {
   const {
     projectsData,
     userProjects,
@@ -26,7 +26,7 @@ const ProjectsTab = props => {
   const onSelectAssignProject = project => {
     onAssignProject(project);
     setRenderedOn(Date.now());
-    //setPostProjectPopupOpen(false);
+    // setPostProjectPopupOpen(false);
   };
 
   const onAddProjectPopupShow = () => {
@@ -38,7 +38,7 @@ const ProjectsTab = props => {
   };
 
   return (
-    <React.Fragment>
+    <>
       <AddProjectPopup
         open={postProjectPopupOpen}
         onClose={onAddProjectPopupClose}
@@ -61,8 +61,8 @@ const ProjectsTab = props => {
         disabled={disabled}
         darkMode={darkMode}
       />
-    </React.Fragment>
+    </>
   );
-};
+}
 
 export default ProjectsTab;

@@ -5,26 +5,34 @@ import PropTypes from 'prop-types';
 import { boxStyle, boxStyleDark } from 'styles';
 import { useSelector } from 'react-redux';
 
-const EditConfirmModal = props => {
+function EditConfirmModal(props) {
   const { isOpen, closeModal, modalTitle, modalMessage, userProfile, disabled, darkMode } = props;
   const history = useHistory();
   const toggle = () => {
     closeModal();
   };
   return (
-    <React.Fragment>
-      <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
-        <ModalHeader toggle={disabled ? () => false : closeModal} className={darkMode ? 'bg-space-cadet' : ''}>{modalTitle}</ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalMessage}</ModalBody>
-        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button color="primary" onClick={toggle} style={darkMode ? boxStyleDark : boxStyle} disabled={disabled}>
-            Close
-          </Button>
-        </ModalFooter>
-      </Modal>
-    </React.Fragment>
+    <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader
+        toggle={disabled ? () => false : closeModal}
+        className={darkMode ? 'bg-space-cadet' : ''}
+      >
+        {modalTitle}
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>{modalMessage}</ModalBody>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button
+          color="primary"
+          onClick={toggle}
+          style={darkMode ? boxStyleDark : boxStyle}
+          disabled={disabled}
+        >
+          Close
+        </Button>
+      </ModalFooter>
+    </Modal>
   );
-};
+}
 
 EditConfirmModal.propTypes = {
   closeModal: PropTypes.func.isRequired,

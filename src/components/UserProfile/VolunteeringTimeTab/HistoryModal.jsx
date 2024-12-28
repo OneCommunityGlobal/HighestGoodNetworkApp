@@ -2,13 +2,15 @@ import React from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, ModalBody, ModalHeader, ModalFooter, Button, Table } from 'reactstrap';
 
-const HistoryModal = ({ isOpen, toggle, userName, userHistory }) => {
+function HistoryModal({ isOpen, toggle, userName, userHistory }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
     <div>
       <Modal isOpen={isOpen} toggle={toggle} className={darkMode ? 'text-light dark-mode' : ''}>
-        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>Past Promised Hours</ModalHeader>
+        <ModalHeader toggle={toggle} className={darkMode ? 'bg-space-cadet' : ''}>
+          Past Promised Hours
+        </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {!userHistory || userHistory?.length <= 1 ? (
             <p>{userName} has never made any changes to the promised hours.</p>
@@ -44,6 +46,6 @@ const HistoryModal = ({ isOpen, toggle, userName, userHistory }) => {
       </Modal>
     </div>
   );
-};
+}
 
 export default HistoryModal;
