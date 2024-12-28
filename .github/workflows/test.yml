@@ -2,8 +2,6 @@ name: Test React App
 
 on:
   push:
-    branches:
-      - main
   pull_request:
 
 jobs:
