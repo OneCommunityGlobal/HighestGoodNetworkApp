@@ -27,6 +27,8 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+import NotFoundPage from './components/NotFound/NotFoundPage';
+import  { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // BM Dashboard
@@ -243,6 +245,13 @@ export default (
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
+        <ProtectedRoute
+          path="/sendemail"
+          exact
+          component={EmailSender}
+          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
+          routePermissions={RoutePermissions.projects}
+        />
 
         <ProtectedRoute
           path="/totalorgsummary"
@@ -334,8 +343,7 @@ export default (
         />
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-        <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
-
+        {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
         {/* ----- END BM Dashboard Routing ----- */}
 
         <Route path="/login" component={Login} />
@@ -351,6 +359,7 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
+        <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
   </Switch>
