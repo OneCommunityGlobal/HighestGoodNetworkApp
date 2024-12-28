@@ -81,4 +81,36 @@ describe('Role Actions', () => {
       expect(response).toEqual(mockError.response);
     });
   });
+
+  describe('updateRole', () => {
+    it('should dispatch UPDATE_ROLE with updated role data', async () => {
+      const dispatch = jest.fn();
+      const roleId = 1;
+      const updatedRole = { name: 'Super Admin' };
+      const mockResponse = { data: { id: 1, name: 'Super Admin' } };
+      axios.patch.mockResolvedValueOnce(mockResponse);
+
+      const response = await actions.updateRole(roleId, updatedRole)(dispatch);
+
+      expect(axios.patch).toHaveBeenCalledWith(
+        ENDPOINTS.ROLES_BY_ID(roleId),
+        updatedRole
+      );
+      expect(dispatch).toHaveBeenCalledWith(actions.modifyRole(updatedRole));
+      expect(response).toBe(0);
+    });
+
+    it('should dispatch FETCH_ROLES_ERROR on failure', async () => {
+      const dispatch = jest.fn();
+      const roleId = 1;
+      const updatedRole = { name: 'Super Admin' };
+      const mockError = new Error('Failed to update');
+      axios.patch.mockRejectedValueOnce(mockError);
+
+      const response = await actions.updateRole(roleId, updatedRole)(dispatch);
+
+      expect(dispatch).toHaveBeenCalledWith(actions.setRoleError());
+      expect(response).toBe(1);
+    });
+  });
 });
