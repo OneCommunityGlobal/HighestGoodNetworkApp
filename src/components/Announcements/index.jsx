@@ -246,7 +246,7 @@ function Announcements({ title, email }) {
 
         </div>
       </div>
-      <div className="email-update-container">
+      <div className="social-media-container">
         <div classname="social-media">
           {title ? (
             <h3> {title} </h3>
@@ -258,7 +258,7 @@ function Announcements({ title, email }) {
               ""
             ) : (
               <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
-                Click on below Social Media to Post
+                Click on below social media to post
               </label>
             )
           }

@@ -63,6 +63,13 @@ button.send-button:hover {
   align-items: flex-start;
 }
 
+.social-media-container {
+  padding: 70px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
 .social-media {
   flex: 1;
   /* Editor takes up remaining space */
