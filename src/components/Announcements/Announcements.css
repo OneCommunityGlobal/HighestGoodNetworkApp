@@ -14,16 +14,19 @@ label {
 }
 
 .text-light {
-  color: #fff; /* White text for dark mode */
+  color: #fff;
+  /* White text for dark mode */
 }
 
 .text-dark {
-  color: #333; /* Default dark text for light mode */
+  color: #333;
+  /* Default dark text for light mode */
 }
 
 .input-text-for-announcement,
 textarea {
-  margin-top: 5px;   /* Space above input fields */
+  margin-top: 5px;
+  /* Space above input fields */
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -35,6 +38,7 @@ textarea {
 }
 
 button.send-button {
+  display: block;
   background-color: #4285f4;
   color: white;
   border: none;
@@ -57,6 +61,13 @@ button.send-button:hover {
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
+}
+
+.social-media {
+  flex: 1;
+  /* Editor takes up remaining space */
+  margin-right: 20px;
+  /* Add some spacing between editor and email inputs */
 }
 
 .editor {
