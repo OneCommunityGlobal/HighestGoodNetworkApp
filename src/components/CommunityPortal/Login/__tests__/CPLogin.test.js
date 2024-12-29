@@ -61,7 +61,7 @@ describe('CPLogin component', () => {
   });
   it('check if login elements get displayed when isAuthenticated is true', () => {
     renderComponent(store);
-    expect(screen.getByText('Log In To Building Management Dashboard')).toBeInTheDocument();
+    expect(screen.getByText('Log In To Community Portal')).toBeInTheDocument();
   });
   it('check if login elements does not get displayed when isAuthenticated is false', () => {
     const testStore = mockStore({
@@ -81,13 +81,13 @@ describe('CPLogin component', () => {
       },
     });
     renderComponent(testStore);
-    expect(screen.queryByText('Log In To Building Management Dashboard')).not.toBeInTheDocument();
+    expect(screen.queryByText('Log In To Community Portal')).not.toBeInTheDocument();
   });
   it('check if Enter your current user credentials to access the Building Management Dashboard header displays as expected', () => {
     renderComponent(store);
     expect(
       screen.getByText(
-        'Enter your current user credentials to access the Building Management Dashboard',
+        'Enter your current user credentials to access the Community Portal Dashboard',
       ),
     ).toBeInTheDocument();
   });
@@ -157,7 +157,7 @@ describe('CPLogin component', () => {
     expect(emailElement).not.toBeInvalid();
     expect(passwordElement).not.toBeInvalid();
     await waitFor(() => {
-      expect(history.push).toHaveBeenCalledWith('/bmdashboard');
+      expect(history.push).toHaveBeenCalledWith('/communityportal');
     });
   });
   it("check if statusText in response is not 'OK' and status is 422 and displays validation error", async () => {
