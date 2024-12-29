@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import CreateNewBadgePopup from '../CreateNewBadgePopup';
 import thunk from 'redux-thunk';
@@ -11,16 +11,17 @@ const mockStore = configureMockStore(middlewares);
 describe('CreateNewBadgePopup component', () => {
   let store;
   let createNewBadgeMock;
+  let toggleMock;
 
   beforeEach(() => {
+    createNewBadgeMock = jest.fn().mockResolvedValue();
+    toggleMock = jest.fn();
+
     store = mockStore({
       allProjects: { projects: [] },
       badge: { message: '', alertVisible: false, color: '' },
       theme: { darkMode: false },
     });
-
-    createNewBadgeMock = jest.fn().mockResolvedValue();
-    store.dispatch = createNewBadgeMock;
   });
 
   it('renders all key elements correctly', () => {
@@ -86,36 +87,40 @@ describe('CreateNewBadgePopup component', () => {
     expect(createButton).toBeEnabled();
   });
 
-  it('calls createNewBadge with the correct data on form submission', () => {
+  it('calls createNewBadge with the correct data on form submission', async () => {
     render(
       <Provider store={store}>
-        <CreateNewBadgePopup />
+        <CreateNewBadgePopup createNewBadge={createNewBadgeMock} toggle={toggleMock} />
       </Provider>
     );
     const badgeNameInput = screen.getByLabelText('Name');
     const imageUrlInput = screen.getByLabelText('Image URL');
     const descriptionInput = screen.getByLabelText('Description');
     const rankingInput = screen.getByLabelText('Ranking');
-
+  
     fireEvent.change(badgeNameInput, { target: { value: 'Test Badge' } });
     fireEvent.change(imageUrlInput, { target: { value: 'https://example.com/image.jpg' } });
     fireEvent.change(descriptionInput, { target: { value: 'Test badge description' } });
     fireEvent.change(rankingInput, { target: { value: '5' } });
-
+  
     fireEvent.click(screen.getByText('Create'));
-
-    expect(createNewBadgeMock).toHaveBeenCalledWith({
-      badgeName: 'Test Badge',
-      imageUrl: 'https://example.com/image.jpg',
-      description: 'Test badge description',
-      ranking: 5,
-      type: 'Custom',
-      category: 'Unspecified',
-      totalHrs: 0,
-      weeks: 0,
-      months: 0,
-      multiple: 0,
-      people: 0,
+  
+    await waitFor(() => {
+      expect(createNewBadgeMock).toHaveBeenCalledWith({
+        badgeName: 'Test Badge',
+        imageUrl: 'https://example.com/image.jpg',
+        description: 'Test badge description',
+        ranking: 5,
+        type: 'Custom',
+        category: 'Unspecified',
+        totalHrs: 0,
+        weeks: 0,
+        months: 0,
+        multiple: 0,
+        people: 0,
+      });
     });
+  
+    expect(toggleMock).toHaveBeenCalled();
   });
 });
