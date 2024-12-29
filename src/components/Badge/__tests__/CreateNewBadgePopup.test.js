@@ -10,6 +10,7 @@ const mockStore = configureMockStore(middlewares);
 
 describe('CreateNewBadgePopup component', () => {
   let store;
+  let createNewBadgeMock;
 
   beforeEach(() => {
     store = mockStore({
@@ -17,69 +18,104 @@ describe('CreateNewBadgePopup component', () => {
       badge: { message: '', alertVisible: false, color: '' },
       theme: { darkMode: false },
     });
+
+    createNewBadgeMock = jest.fn().mockResolvedValue();
+    store.dispatch = createNewBadgeMock;
   });
 
-  it('renders without crashing', () => {
+  it('renders all key elements correctly', () => {
     render(
       <Provider store={store}>
         <CreateNewBadgePopup />
       </Provider>
     );
+    expect(screen.getByLabelText('Name')).toBeInTheDocument();
+    expect(screen.getByLabelText('Image URL')).toBeInTheDocument();
+    expect(screen.getByLabelText('Description')).toBeInTheDocument();
+    expect(screen.getByLabelText('Type')).toBeInTheDocument();
+    expect(screen.getByLabelText('Ranking')).toBeInTheDocument();
     expect(screen.getByText('Create')).toBeInTheDocument();
   });
 
-  it('updates state when badge name input changes', () => {
-    render(
-      <Provider store={store}>
-        <CreateNewBadgePopup />
-      </Provider>
-    );
-    const badgeNameInput = screen.getByLabelText('Name');
-    fireEvent.change(badgeNameInput, { target: { value: 'Test Badge' } });
-    expect(badgeNameInput.value).toBe('Test Badge');
-  });
-
-  it('updates state when image URL input changes', () => {
-    render(
-      <Provider store={store}>
-        <CreateNewBadgePopup />
-      </Provider>
-    );
-    const imageUrlInput = screen.getByLabelText('Image URL');
-    fireEvent.change(imageUrlInput, { target: { value: 'https://example.com/image.jpg' } });
-    expect(imageUrlInput.value).toBe('https://example.com/image.jpg');
-  });
-
-  it('updates state when description input changes', () => {
-    render(
-      <Provider store={store}>
-        <CreateNewBadgePopup />
-      </Provider>
-    );
-    const descriptionInput = screen.getByLabelText('Description');
-    fireEvent.change(descriptionInput, { target: { value: 'Test badge description' } });
-    expect(descriptionInput.value).toBe('Test badge description');
-  });
-
-  it('updates state when ranking input changes', () => {
-    render(
-      <Provider store={store}>
-        <CreateNewBadgePopup />
-      </Provider>
-    );
-    const rankingInput = screen.getByLabelText('Ranking');
-    fireEvent.change(rankingInput, { target: { value: '5' } });
-    expect(rankingInput.value).toBe('5');
-  });
-
-  it('updates state when badge type select changes', () => {
+  it('displays conditional fields based on selected badge type', () => {
     render(
       <Provider store={store}>
         <CreateNewBadgePopup />
       </Provider>
     );
     const badgeTypeSelect = screen.getByLabelText('Type');
+
     fireEvent.change(badgeTypeSelect, { target: { value: 'No Infringement Streak' } });
-    expect(badgeTypeSelect.value).toBe('No Infringement Streak');
+    expect(screen.getByLabelText('Months')).toBeInTheDocument();
+
+    fireEvent.change(badgeTypeSelect, { target: { value: 'Minimum Hours Multiple' } });
+    expect(screen.getByLabelText('Multiple')).toBeInTheDocument();
+
+    fireEvent.change(badgeTypeSelect, { target: { value: 'X Hours for X Week Streak' } });
+    expect(screen.getByLabelText('Hours')).toBeInTheDocument();
+    expect(screen.getByLabelText('Weeks')).toBeInTheDocument();
+
+    fireEvent.change(badgeTypeSelect, { target: { value: 'Lead a team of X+' } });
+    expect(screen.getByLabelText('People')).toBeInTheDocument();
+
+    fireEvent.change(badgeTypeSelect, { target: { value: 'Total Hrs in Category' } });
+    expect(screen.getByLabelText('Hours')).toBeInTheDocument();
+    expect(screen.getByLabelText('Category')).toBeInTheDocument();
+  });
+
+  it('enables/disables the "Create" button based on input validity', () => {
+    render(
+      <Provider store={store}>
+        <CreateNewBadgePopup />
+      </Provider>
+    );
+    const createButton = screen.getByText('Create');
+
+    expect(createButton).toBeDisabled();
+
+    const badgeNameInput = screen.getByLabelText('Name');
+    const imageUrlInput = screen.getByLabelText('Image URL');
+    const descriptionInput = screen.getByLabelText('Description');
+    const rankingInput = screen.getByLabelText('Ranking');
+
+    fireEvent.change(badgeNameInput, { target: { value: 'Test Badge' } });
+    fireEvent.change(imageUrlInput, { target: { value: 'https://example.com/image.jpg' } });
+    fireEvent.change(descriptionInput, { target: { value: 'Test badge description' } });
+    fireEvent.change(rankingInput, { target: { value: '5' } });
+
+    expect(createButton).toBeEnabled();
+  });
+
+  it('calls createNewBadge with the correct data on form submission', () => {
+    render(
+      <Provider store={store}>
+        <CreateNewBadgePopup />
+      </Provider>
+    );
+    const badgeNameInput = screen.getByLabelText('Name');
+    const imageUrlInput = screen.getByLabelText('Image URL');
+    const descriptionInput = screen.getByLabelText('Description');
+    const rankingInput = screen.getByLabelText('Ranking');
+
+    fireEvent.change(badgeNameInput, { target: { value: 'Test Badge' } });
+    fireEvent.change(imageUrlInput, { target: { value: 'https://example.com/image.jpg' } });
+    fireEvent.change(descriptionInput, { target: { value: 'Test badge description' } });
+    fireEvent.change(rankingInput, { target: { value: '5' } });
+
+    fireEvent.click(screen.getByText('Create'));
+
+    expect(createNewBadgeMock).toHaveBeenCalledWith({
+      badgeName: 'Test Badge',
+      imageUrl: 'https://example.com/image.jpg',
+      description: 'Test badge description',
+      ranking: 5,
+      type: 'Custom',
+      category: 'Unspecified',
+      totalHrs: 0,
+      weeks: 0,
+      months: 0,
+      multiple: 0,
+      people: 0,
+    });
   });
 });
