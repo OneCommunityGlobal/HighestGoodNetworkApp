@@ -75,7 +75,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       email,
     };
 
-    const data = {
+    const warningData = {
       userId: personId,
       iconId: id,
       color,
@@ -84,7 +84,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       monitorData,
     };
 
-    dispatch(postWarningByUserId(data)).then(res => {
+    dispatch(postWarningByUserId(warningData)).then(res => {
       if (res.error) {
         setError(res);
         setUsersWarnings([]);
