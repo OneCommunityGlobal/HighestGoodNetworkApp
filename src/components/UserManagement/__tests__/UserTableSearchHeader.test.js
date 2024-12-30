@@ -7,12 +7,14 @@ describe('user table search header row', () => {
   let onFirstNameSearch;
   let onLastNameSearch;
   let onRoleSearch;
+  let onTitleSearch;
   let onEmailSearch;
   let onWeeklyHrsSearch;
   beforeEach(() => {
     onFirstNameSearch = jest.fn();
     onLastNameSearch = jest.fn();
     onRoleSearch = jest.fn();
+    onTitleSearch = jest.fn();
     onEmailSearch = jest.fn();
     onWeeklyHrsSearch = jest.fn();
     render(
@@ -22,6 +24,7 @@ describe('user table search header row', () => {
             onFirstNameSearch={onFirstNameSearch}
             onLastNameSearch={onLastNameSearch}
             onRoleSearch={onRoleSearch}
+            onTitleSearch={onTitleSearch}
             onEmailSearch={onEmailSearch}
             onWeeklyHrsSearch={onWeeklyHrsSearch}
             roles={['1', '2', '3', '4', 'Volunteer', 'Owner', 'Manager']}
@@ -35,7 +38,7 @@ describe('user table search header row', () => {
       expect(screen.getByRole('row')).toBeInTheDocument();
     });
     it('should render 4 text field', () => {
-      expect(screen.getAllByRole('textbox')).toHaveLength(4);
+      expect(screen.getAllByRole('textbox')).toHaveLength(5);
     });
     it('should render one dropdown box', () => {
       expect(screen.getByRole('combobox')).toBeInTheDocument();
@@ -69,6 +72,10 @@ describe('user table search header row', () => {
       userEvent.selectOptions(screen.getByRole('combobox'), 'Manager');
       expect(onRoleSearch).toHaveBeenCalled();
       expect(onRoleSearch).toHaveBeenCalledWith('Manager');
+    });
+    it('should fire Title search once the user type something in the title search box', async () => {
+      await userEvent.type(screen.getAllByRole('textbox')[2], 'test', { allAtOnce: false });
+      expect(onTitleSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire Email search once the user type something in the email search box', async () => {
       await userEvent.type(screen.getAllByRole('textbox')[2], 'test', { allAtOnce: false });
