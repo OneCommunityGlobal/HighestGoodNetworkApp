@@ -78,21 +78,21 @@ describe('user table search header row', () => {
       expect(onTitleSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire Email search once the user type something in the email search box', async () => {
-      await userEvent.type(screen.getAllByRole('textbox')[2], 'test', { allAtOnce: false });
+      await userEvent.type(screen.getAllByRole('textbox')[3], 'test', { allAtOnce: false });
       expect(onEmailSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire Email search once the user type something in the email search box', async () => {
-      await userEvent.type(screen.getAllByRole('textbox')[2], 'Jhon.wick@email.com', {
+      await userEvent.type(screen.getAllByRole('textbox')[3], 'Jhon.wick@email.com', {
         allAtOnce: true,
       });
       expect(onEmailSearch).toHaveBeenCalled();
     });
     it('should fire onWeeklyHrsSearch once the user type something in the weeklycommitted hrs search box', async () => {
-      await userEvent.type(screen.getAllByRole('textbox')[3], 'test', { allAtOnce: false });
+      await userEvent.type(screen.getAllByRole('textbox')[4], 'test', { allAtOnce: false });
       expect(onWeeklyHrsSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire onWeeklyHrsSearch once the user type something in the weeklycommitted hrs search box', async () => {
-      await userEvent.type(screen.getAllByRole('textbox')[3], '15', { allAtOnce: true });
+      await userEvent.type(screen.getAllByRole('textbox')[4], '15', { allAtOnce: true });
       expect(onWeeklyHrsSearch).toHaveBeenCalled();
     });
   });
