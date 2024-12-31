@@ -67,11 +67,12 @@ import {
 } from 'utils/constants';
 
 import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
+import ProfileImageModal from './UserProfileModal/suggestedProfileModal';
+import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
-
   /* Constant values */
   const initialFormValid = {
     firstName: true,
@@ -115,6 +116,27 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  // Function to toggle the modal
+  const toggleModal = () => setIsModalOpen(!isModalOpen);
+  const [isRemoveModalOpen, setIsRemoveModalOpen] = useState(false);
+  const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
+
+
+  const updateRemovedImage = async () =>{
+    try {
+      let response=await axios.put(ENDPOINTS.USERS_REMOVE_PROFILE_IMAGE,{'user_id':userProfile._id})
+      await loadUserProfile()
+      toast.success("Profile Image Removed")
+    } catch (error) {
+      console.log(error)
+      toast.error("Failed to remove profile Image.")
+    }
+  }
+  const confirmRemoveImage = async () => {
+    updateRemovedImage()
+    toggleRemoveModal();  // Close the remove confirmation modal
+  };
 
   const userProfileRef = useRef();
 
@@ -257,7 +279,6 @@ function UserProfile(props) {
       console.error('Error fetching team users:', error);
     }
   };
-
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;
     axios
@@ -392,7 +413,7 @@ function UserProfile(props) {
   const onAssignProject = assignedProject => {
     setProjects(prevProjects => [...prevProjects, assignedProject]);
   };
-
+  
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
@@ -478,7 +499,7 @@ function UserProfile(props) {
       setModalTitle('Save & Refresh');
       setModalMessage('');
     }
-  };
+  }
 
   /**
    * Modifies the userProfile's infringements using a predefined operation
@@ -774,7 +795,6 @@ function UserProfile(props) {
   }
 
   const { firstName, lastName, profilePic, jobTitle = '' } = userProfile;
-
   const { userId: targetUserId } = props.match ? props.match.params : { userId: undefined };
 
   /**  Login User's email */
@@ -890,7 +910,7 @@ function UserProfile(props) {
           <Col md="4" id="profileContainer">
             <div className="profile-img">
               <Image
-                src={profilePic || '/pfp-default.png'}
+                src={profilePic!==undefined?profilePic : '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
@@ -913,7 +933,31 @@ function UserProfile(props) {
                   />
                 </div>
               ) : null}
+              
             </div>
+            <div 
+            style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+              {(userProfile?.profilePic!==undefined)?
+                <Button color="danger" onClick={toggleRemoveModal} className="remove-button">
+                  Remove Image</Button>:<></>}
+              {((userProfile?.profilePic==undefined || 
+                userProfile?.profilePic==null || 
+                userProfile?.profilePic=="")&& 
+                (userProfile?.suggestedProfilePics!==undefined &&
+                  userProfile?.suggestedProfilePics!==null && 
+                  userProfile?.suggestedProfilePics.length!==0
+                ))?
+                <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
+                :null}
+                </div>
+
+                {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>}
+                <ConfirmRemoveModal
+                  isOpen={isRemoveModalOpen}
+                  toggleModal={toggleRemoveModal}
+                  confirmRemove={confirmRemoveImage}
+                />
+              
               <QuickSetupModal
                 setSaved={setSaved}
                 handleSubmit={handleSubmit}
