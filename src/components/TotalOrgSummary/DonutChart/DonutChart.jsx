@@ -60,11 +60,11 @@ function DonutChart(props) {
       </div>
       <div className="donut-labels">
         {data.map((item, index) => (
-          <div
-            key={item.label}
-            className="donut-label"
-            style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
-          >
+          <div key={item.label} className="donut-label">
+            <span
+              className="donut-color"
+              style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
+            />
             {item.label}
           </div>
         ))}

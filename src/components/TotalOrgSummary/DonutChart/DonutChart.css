@@ -38,8 +38,7 @@
 
 .donut-labels {
   display: flex;
-  flex-direction: row;
-  flex-wrap: wrap;
+  flex-direction: column;
   justify-content: center;
   margin-top: 1.8rem;
   width: 100%;
@@ -48,7 +47,12 @@
 .donut-label {
   display: flex;
   align-items: center;
-  margin: 0.5rem;
-  flex: 1 1 auto;
-  min-width: 150px;
+  margin: 0 20px;
+}
+
+.donut-color {
+  display: inline-block;
+  min-width: 1rem;
+  min-height: 1rem;
+  margin-right: 1rem;
 }
