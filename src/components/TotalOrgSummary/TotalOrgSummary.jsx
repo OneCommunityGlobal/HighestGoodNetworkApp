@@ -1,6 +1,6 @@
 /* eslint-disable react/forbid-prop-types */
 import { connect } from 'react-redux';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 
 import hasPermission from 'utils/permissions';
@@ -13,19 +13,35 @@ import './TotalOrgSummary.css';
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
+import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
+import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
+import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
+import TeamStats from './TeamStats/TeamStats';
 
 const startDate = '2016-01-01';
 const endDate = new Date().toISOString().split('T')[0];
 
 function TotalOrgSummary(props) {
   const { darkMode, loading, error } = props;
+  const [volunteerStats, setVolunteerStats] = useState(null);
 
+  const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   useEffect(() => {
-    props.getTotalOrgSummary(startDate, endDate);
-    props.hasPermission('');
-  }, [startDate, endDate, getTotalOrgSummary, hasPermission]);
+    const fetchVolunteerStats = async () => {
+      try {
+        const volunteerStatsResponse = await props.getTotalOrgSummary(startDate, endDate);
+        setVolunteerStats(volunteerStatsResponse.data);
+        await props.hasPermission('');
+      } catch (catchFetchError) {
+        setIsVolunteerFetchingError(true);
+      }
+    };
 
-  if (error) {
+    fetchVolunteerStats();
+  }, [startDate, endDate]);
+
+  if (error || isVolunteerFetchingError) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Row
@@ -52,6 +68,7 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
+
   return (
     <Container
       fluid
@@ -69,7 +86,10 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerStatus
+                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                totalHoursWorked={volunteerStats?.totalHoursWorked}
+              />
             </div>
           </Col>
         </Row>
@@ -78,7 +98,13 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerActivities
+                totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+                completedAssignedHours={volunteerStats?.completedAssignedHours}
+                totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+                tasksStats={volunteerStats?.tasksStats}
+                totalActiveTeams={volunteerStats?.totalActiveTeams}
+              />
             </div>
           </Col>
         </Row>
@@ -92,7 +118,8 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              {/* <VolunteerHoursDistribution /> */}
+              <VolunteerStatusChart volunteerNumberStats={volunteerStats?.volunteerNumberStats} />
             </div>
           </Col>
         </Row>
@@ -148,12 +175,12 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <TeamStats usersInTeamStats={volunteerStats?.usersInTeamStats} />
             </div>
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <BlueSquareStats blueSquareStats={volunteerStats?.blueSquareStats} />
             </div>
           </Col>
         </Row>
