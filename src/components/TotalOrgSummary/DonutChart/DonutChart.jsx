@@ -46,28 +46,30 @@ function DonutChart(props) {
 
   return (
     <div className="donut-container">
-      <div className="donut-chart">
-        <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
-        <div className="donut-center">
-          <h5 className="donut-heading">{title}</h5>
-          <h4 className="donut-count">{totalCount}</h4>
-          <h6 style={{ color: percentageChangeColor }}>
-            {percentageChange >= 0
-              ? `+${percentageChange}% WEEK OVER WEEK`
-              : `${percentageChange}% WEEK OVER WEEK`}
-          </h6>
-        </div>
-      </div>
-      <div className="donut-labels">
-        {data.map((item, index) => (
-          <div key={item.label} className="donut-label">
-            <span
-              className="donut-color"
-              style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
-            />
-            {item.label}
+      <div className="donut-scrollable">
+        <div className="donut-chart">
+          <Doughnut data={chartData} options={options} plugins={[ChartDataLabels]} />
+          <div className="donut-center">
+            <h5 className="donut-heading">{title}</h5>
+            <h4 className="donut-count">{totalCount}</h4>
+            <h6 style={{ color: percentageChangeColor }}>
+              {percentageChange >= 0
+                ? `+${percentageChange}% WEEK OVER WEEK`
+                : `${percentageChange}% WEEK OVER WEEK`}
+            </h6>
           </div>
-        ))}
+        </div>
+        <div className="donut-labels">
+          {data.map((item, index) => (
+            <div key={item.label} className="donut-label">
+              <span
+                className="donut-color"
+                style={{ backgroundColor: chartData.datasets[0].backgroundColor[index] }}
+              />
+              {item.label}
+            </div>
+          ))}
+        </div>
       </div>
     </div>
   );

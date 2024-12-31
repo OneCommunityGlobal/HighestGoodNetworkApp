@@ -1,10 +1,15 @@
 .donut-container {
   display: grid;
-  grid-template-columns: 3fr 2fr;
   align-items: center;
   justify-content: center;
   width: 100%;
   padding: 0.6rem;
+}
+
+.donut-scrollable {
+  display: grid;
+  grid-template-columns: 3fr 2fr;
+  width: 100%;
 }
 
 .donut-chart {
@@ -57,4 +62,11 @@
   min-width: 1rem;
   min-height: 1rem;
   margin-right: 1rem;
+}
+
+@media (max-width: 615px) {
+  .donut-container {
+    overflow-x: scroll;
+    justify-content: start;
+  }
 }
