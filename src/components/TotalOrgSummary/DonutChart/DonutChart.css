@@ -1,5 +1,6 @@
 .donut-container {
-  display: flex;
+  display: grid;
+  grid-template-columns: 3fr 2fr;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -11,6 +12,7 @@
   width: 100%;
   max-width: 21.25rem;
   height: 21.25rem;
+  margin-left: auto;
 }
 
 .donut-center {
@@ -47,7 +49,7 @@
 .donut-label {
   display: flex;
   align-items: center;
-  margin: 0 20px;
+  margin-left: 20px;
 }
 
 .donut-color {
