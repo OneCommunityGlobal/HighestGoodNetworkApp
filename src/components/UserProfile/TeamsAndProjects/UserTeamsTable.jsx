@@ -1,12 +1,17 @@
 import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Tooltip, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
+import Switch from './Switch';
+import './TeamsAndProjects.css';
+import './UserTeamsTable.css';
+
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+
 import './../../Teams/Team.css';
 import { TeamMember } from './TeamMember';
 import axios from 'axios';
@@ -131,7 +136,6 @@ const UserTeamsTable = props => {
   };
 
   return (
-
     <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
       <TeamMember
         isOpenModalTeamMember={isOpenModalTeamMember}
