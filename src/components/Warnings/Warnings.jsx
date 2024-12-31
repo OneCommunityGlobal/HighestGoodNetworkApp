@@ -8,7 +8,7 @@ import {
 } from '../../actions/warnings';
 import WarningTrackerModal from './modals/WarningTrackerModal';
 
-import WarningItem from './WarningItem';
+import WarningIcons from './WarningIcons';
 import './Warnings.css';
 import WarningModal from './modals/WarningModal';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
@@ -90,6 +90,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
         setUsersWarnings([]);
         return;
       }
+
       setUsersWarnings(res);
     });
   };
@@ -97,15 +98,18 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   const warnings = !toggle
     ? null
     : usersWarnings.map(warning => (
-        <WarningItem
-          key={warning.title}
-          warnings={warning.warnings}
-          warningText={warning.title}
-          handlePostWarningDetails={handlePostWarningDetails}
-          username={username}
-          submitWarning={handlePostWarningDetails}
-          handleShowWarningModal={handleShowWarningModal}
-        />
+        <div className="warning-item-container" key={warning.title}>
+          <div className="warning-wrapper">
+            <WarningIcons
+              warnings={warning.warnings}
+              warningText={warning.title}
+              handleWarningIconClicked={handlePostWarningDetails}
+              handleShowWarningModal={handleShowWarningModal}
+              numberOfWarnings={warning.warnings.length}
+            />
+            <p className="warning-text"> {warning.title}</p>
+          </div>
+        </div>
       ));
 
   return (

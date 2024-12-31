@@ -1,6 +1,6 @@
 /* eslint-disable no-alert */
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
-import WarningItem from '../WarningItem';
+import WarningIcons from '../WarningIcons';
 import getOrdinal from '../../../utils/getOrdinal';
 import '../Warnings.css';
 
@@ -94,7 +94,7 @@ function WarningModal({
               }}
             >
               <p className="warning__modal__track__record">Current Track Record</p>
-              <WarningItem warnings={warning.warnings} userProfileModal />
+              <WarningIcons warnings={warning.warnings} userProfileModal />
             </div>
           )}
         </ModalBody>
