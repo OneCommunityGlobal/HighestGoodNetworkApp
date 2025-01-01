@@ -1,5 +1,5 @@
 import httpService from '../services/httpService';
-import { ApiEndpoint } from '../utils/URL';
+import { ApiEndpoint, ENDPOINTS } from '../utils/URL';
 import * as actionTypes from '../constants/notification';
 import axios from 'axios';
 
@@ -106,7 +106,6 @@ export function markNotificationAsRead(notificationId) {
     }
   };
 }
-
 
 /**
  * Reset error state in redux store for the notification component.

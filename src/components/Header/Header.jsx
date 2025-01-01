@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
@@ -24,9 +24,12 @@ import {
   Button,
   Card,
 } from 'reactstrap';
+import DOMPurify from 'dompurify';
+import parse from 'html-react-parser';
 import PopUpBar from 'components/PopUpBar';
 import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import { toast } from 'react-toastify';
+import { boxStyle, boxStyleDark } from 'styles';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
 import Timer from '../Timer/Timer';
@@ -49,6 +52,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
+  SCHEDULE_MEETINGS,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import './Header.css';
@@ -57,6 +61,10 @@ import {
   getUnreadUserNotifications,
   resetNotificationError,
 } from '../../actions/notificationAction';
+import {
+  getUnreadMeetingNotification,
+  markMeetingNotificationAsRead,
+} from '../../actions/meetingNotificationAction';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 
@@ -131,6 +139,9 @@ export function Header(props) {
     props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
   // SendEmails
   const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
+  // ScheduleMeetings
+  const canAccessScheduleMeetings = props.hasPermission('scheduleMeetings', !isAuthUser);
+  // console.log("canAccessScheduleMeetings", canAccessScheduleMeetings);
   // Permissions
   const canAccessPermissionsManagement =
     props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
@@ -145,9 +156,18 @@ export function Header(props) {
   const [hasProfileLoaded, setHasProfileLoaded] = useState(false);
   const dismissalKey = `lastDismissed_${userId}`;
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
-  const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
+  const [meetingModalOpen, setMeetingModalOpen] = useState(false);
+  const [meetingModalMessage, setMeetingModalMessage] = useState('');
+
+  // const unreadNotifications = props.unreadNotifications; // List of unread notifications
+  const { allUserProfiles, unreadNotifications, unreadMeetingNotifications } = props;
+  // get the meeting notifications for the current user
+  const userUnreadMeetings = unreadMeetingNotifications.filter(
+    meeting => meeting.recipient === userId,
+  );
   const dispatch = useDispatch();
   const history = useHistory();
+  const MeetingNotificationAudioRef = useRef(null);
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
 
@@ -196,6 +216,7 @@ export function Header(props) {
     // Fetch unread notification
     if (isAuthenticated && userId) {
       dispatch(getUnreadUserNotifications(userId));
+      dispatch(getUnreadMeetingNotification());
     }
   }, []);
 
@@ -205,6 +226,41 @@ export function Header(props) {
       dispatch(resetNotificationError());
     }
   }, [props.notification?.error]);
+
+  // display the notification and enable the bell ring when there are unread meeting notifications
+  useEffect(() => {
+    if (userUnreadMeetings.length > 0) {
+      const currMeeting = userUnreadMeetings[0];
+      const organizerProfile = allUserProfiles.filter(
+        userprofile => userprofile._id === currMeeting.sender,
+      )[0];
+      if (!meetingModalOpen) {
+        setMeetingModalOpen(true);
+        setMeetingModalMessage(`Reminder: You have an upcoming meeting! Please check the details and be prepared.<br>
+          Time: ${new Date(currMeeting.dateTime).toLocaleString()},<br>
+          Organizer: ${organizerProfile.firstName} ${organizerProfile.lastName}<br>
+          ${currMeeting.notes ? `Notes: ${currMeeting.notes}<br>` : ''}
+        `);
+      }
+      MeetingNotificationAudioRef.current?.play();
+    } else {
+      if (meetingModalOpen) {
+        setMeetingModalOpen(false);
+        setMeetingModalMessage('');
+      }
+      if (MeetingNotificationAudioRef.current) {
+        MeetingNotificationAudioRef.current.pause();
+        MeetingNotificationAudioRef.current.currentTime = 0;
+      }
+    }
+  }, [userUnreadMeetings]);
+
+  const handleMeetingRead = () => {
+    setMeetingModalOpen(!meetingModalOpen);
+    if (userUnreadMeetings?.length > 0) {
+      dispatch(markMeetingNotificationAsRead(userUnreadMeetings[0]));
+    }
+  };
 
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
@@ -447,6 +503,7 @@ export function Header(props) {
                   canAccessTeams ||
                   canAccessPopups ||
                   canAccessSendEmails ||
+                  canAccessScheduleMeetings ||
                   canAccessPermissionsManagement) && (
                   <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
@@ -480,6 +537,11 @@ export function Header(props) {
                       {canAccessSendEmails && (
                         <DropdownItem tag={Link} to="/announcements" className={fontColor}>
                           {SEND_EMAILS}
+                        </DropdownItem>
+                      )}
+                      {canAccessScheduleMeetings && (
+                        <DropdownItem tag={Link} to="/schedulemeetings" className={fontColor}>
+                          {SCHEDULE_MEETINGS}
                         </DropdownItem>
                       )}
                       {canAccessPermissionsManagement && (
@@ -585,8 +647,43 @@ export function Header(props) {
       )}
       {/* Only render one unread message at a time */}
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
-        <NotificationCard notification={unreadNotifications[0]} />
+        <NotificationCard
+          key={unreadNotifications[0]._id || 'default-key'}
+          notification={unreadNotifications[0]}
+        />
       ) : null}
+      <audio
+        ref={MeetingNotificationAudioRef}
+        key="meetingNotificationAudio"
+        // loop
+        preload="auto"
+        src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
+      >
+        <track kind="captions" />
+      </audio>
+      <Modal
+        isOpen={meetingModalOpen}
+        toggle={handleMeetingRead}
+        className={darkMode ? 'text-light' : ''}
+      >
+        <ModalHeader toggle={handleMeetingRead} className={darkMode ? 'bg-space-cadet' : ''}>
+          Meeting Notification
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <div style={{ lineHeight: '2' }}>
+            <p>{parse(DOMPurify.sanitize(meetingModalMessage))}</p>
+          </div>
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-space-cadet' : ''}>
+          <Button
+            color="primary"
+            onClick={handleMeetingRead}
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Close
+          </Button>
+        </ModalFooter>
+      </Modal>
     </div>
   );
 }
@@ -597,6 +694,9 @@ const mapStateToProps = state => ({
   taskEditSuggestionCount: state.taskEditSuggestions.count,
   role: state.role,
   notification: state.notification,
+  unreadNotifications: state.notification.unreadNotifications,
+  unreadMeetingNotifications: state.meetingNotification.unreadMeetingNotifications,
+  allUserProfiles: state.allUserProfiles.userProfiles,
   darkMode: state.theme.darkMode,
 });
 
