@@ -1,3 +1,4 @@
+/* eslint-disable no-undef */
 import { useState, useEffect, useMemo } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
@@ -114,6 +115,20 @@ export function Header(props) {
     props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
+
+  // Projects Dropdown
+  const projectPaths = [
+    '/bmdashboard/materials/add',
+    '/bmdashboard/logMaterial',
+    '/bmdashboard/materials',
+    '/bmdashboard/equipment/add',
+    '/bmdashboard/equipment',
+    '/bmdashboard/equipment/:equipmentId',
+    '/bmdashboard/tools/:equipmentId/update',
+    '/bmdashboard/Issue',
+    '/bmdashboard/lessonform/',
+  ];
+
   // Tasks
   const canUpdateTask = props.hasPermission(
     'updateTask',
@@ -293,8 +308,14 @@ export function Header(props) {
     }
   }, [lastDismissed, userId, userDashboardProfile]);
 
+  // useEffect(() => {
+  //   setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+  // }, [location.pathname]);
   useEffect(() => {
-    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+    const pathMatches = projectPaths.some(
+      path => location.pathname === path || location.pathname.startsWith(path),
+    );
+    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/') || pathMatches);
   }, [location.pathname]);
 
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
