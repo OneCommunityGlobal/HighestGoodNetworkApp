@@ -275,6 +275,7 @@ class UserManagement extends React.PureComponent {
   
       const firstName = user.firstName.toLowerCase();
       const lastName = user.lastName.toLowerCase();
+      const email = user.email ? user.email.toLowerCase() : '';
   
       const trimmedFirstNameSearch = firstNameSearch.trim();
       const trimmedLastNameSearch = lastNameSearch.trim();
@@ -300,13 +301,15 @@ class UserManagement extends React.PureComponent {
       const wildcardMatches = wildCardSearch
       ? wildCardSearch.includes(" ") 
         ? (firstName + " " + lastName).startsWith(wildCardSearch.trim()) ||
-          (firstName + " " + lastName) === wildCardSearch.trim()            
+          (firstName + " " + lastName) === wildCardSearch.trim() ||
+          email === wildCardSearch.trim()
         : firstName.startsWith(wildCardSearch) || 
           lastName.startsWith(wildCardSearch) || 
           firstName.includes(wildCardSearch) ||   
-          lastName.includes(wildCardSearch)
+          lastName.includes(wildCardSearch)||
+          email.includes(wildCardSearch)
       : true;
-  
+
       const nameMatches = firstNameMatches && lastNameMatches&& wildcardMatches;
   
       return (
@@ -323,9 +326,7 @@ class UserManagement extends React.PureComponent {
       );
     });
   };
-  
 
-  
   /**
    * 
    * reload user list and close user creation popup
