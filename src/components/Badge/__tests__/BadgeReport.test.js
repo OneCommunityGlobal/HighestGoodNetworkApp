@@ -49,8 +49,11 @@ describe('BadgeReport Component', () => {
 
     //headers only in desktop view
     expect(screen.getByText('Earned Dates')).toBeInTheDocument();
-    expect(screen.getByText('Count')).toBeInTheDocument();
-    expect(screen.getByText('Featured')).toBeInTheDocument();
+    const countHeaders = screen.getAllByText('Count');
+    expect(countHeaders).toHaveLength(2);
+    const featuredHeaders = screen.getAllByText('Featured');
+    expect(featuredHeaders).toHaveLength(2);
+
   });
 
   test('renders all mobile view specific fields properly', () => {
@@ -60,7 +63,8 @@ describe('BadgeReport Component', () => {
     expect(optionsField).toBeInTheDocument();
 
     optionsField.click();
-    expect(screen.getByText('Count:')).toBeInTheDocument();
+    const countText = screen.getAllByText('Count:');
+    expect(countText).toHaveLength(1);
     expect(screen.getByText('Featured:')).toBeInTheDocument();
   });
 
