@@ -22,7 +22,9 @@
 .warning-icons {
   display: flex;
 }
-
+.warning-icons--disabled {
+  cursor: not-allowed;
+}
 .warning-text {
   text-align: center;
   font-size: 1em;
@@ -40,6 +42,9 @@
   display: flex;
 }
 
+.warning__modal__track__record {
+  margin: 0;
+}
 .warning-modal-footer {
   /* display: grid !important; */
   display: flex !important;
@@ -92,10 +97,16 @@
   text-transform: capitalize;
   border: none;
   background: none;
-  width: 300px;
+  width: 350px;
   margin: 0 0.5em;
   font-weight: bold;
   font-size: 1em;
+  resize: none; /* Prevent resizing */
+  padding: 0; /* Remove default padding */
+  text-align: center; /* Horizontal centering */
+  overflow: hidden; /* Hide any overflow */
+  line-height: 50px;
+  height: 50px;
 }
 
 .warnings__descriptions__title:disabled {
@@ -169,8 +180,30 @@
   margin-top: 0.5em;
   text-align: center;
 }
+.modal__header--center {
+  text-align: center;
+  justify-content: center !important;
+  align-items: center;
+}
 
 .modal__warning__deletion {
   font-weight: bold;
   font-size: 1.3rem;
+}
+.modal__warning__users--bold {
+  font-weight: bold;
+}
+.modal__footer--centered {
+  display: flex;
+  justify-content: center;
+}
+input[type='text'] {
+  word-wrap: break-word;
+  word-break: break-all;
+}
+
+.warning__modal__userprofile {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
