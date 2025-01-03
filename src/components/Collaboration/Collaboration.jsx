@@ -14,6 +14,7 @@ class Collaboration extends Component {
       jobAds: [],
       totalPages: 0,
       categories: [],
+      summaries: null, // Add this line
     };
   }
 
@@ -51,7 +52,6 @@ class Collaboration extends Component {
   fetchCategories = async () => {
     try {
       const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
-
       if (!response.ok) {
         throw new Error(`Failed to fetch categories: ${response.statusText}`);
       }
@@ -85,6 +85,24 @@ class Collaboration extends Component {
     this.setState({ currentPage: pageNumber }, this.fetchJobAds);
   };
 
+  handleShowSummaries = async () => {
+    const { searchTerm } = this.state;
+    try {
+      const response = await fetch(`${ApiEndpoint}/jobs/summaries?search=${searchTerm}`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch summaries: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      this.setState({ summaries: data }); // Update state with summaries
+    } catch (error) {
+      toast.error('Error fetching summaries');
+    }
+  };
+
   render() {
     const {
       searchTerm,
@@ -93,7 +111,79 @@ class Collaboration extends Component {
       jobAds,
       totalPages,
       categories,
+      summaries, // Add this line
     } = this.state;
+
+    if (summaries) {
+      return (
+        <div className="job-landing">
+          <div className="header">
+            <a
+              href="https://www.onecommunityglobal.org/collaboration/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img src={OneCommunityImage} alt="One Community Logo" />
+            </a>
+          </div>
+          <div className="container">
+            <nav className="navbar">
+              <div className="navbar-left">
+                <form className="search-form">
+                  <input
+                    type="text"
+                    placeholder="Search by title..."
+                    value={searchTerm}
+                    onChange={this.handleSearch}
+                  />
+                  <button className="search-button" type="submit" onClick={this.handleSubmit}>
+                    Go
+                  </button>
+                  <button
+                    className="show-summaries"
+                    type="button"
+                    onClick={this.handleShowSummaries}
+                  >
+                    Show Summaries
+                  </button>
+                </form>
+              </div>
+
+              <div className="navbar-right">
+                <select
+                  value={selectedCategory}
+                  onChange={event => this.handleCategoryChange(event)}
+                >
+                  <option value="">Select from Categories</option>
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </nav>
+
+            <div className="summaries-list">
+              <h1>Summaries</h1>
+              {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
+                summaries.jobs.map(summary => (
+                  <div key={summary._id} className="summary-item">
+                    <h3>
+                      <a href={summary.jobDetailsLink}>{summary.title}</a>
+                    </h3>
+                    <p>{summary.description}</p>
+                    <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No summaries found.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="job-landing">
@@ -118,6 +208,9 @@ class Collaboration extends Component {
                 />
                 <button className="search" type="submit" onClick={this.handleSubmit}>
                   Go
+                </button>
+                <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
+                  Show Summaries
                 </button>
               </form>
             </div>
