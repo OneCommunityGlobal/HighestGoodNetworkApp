@@ -44,6 +44,8 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import notFoundPage from './components/not-found/notFoundPage';
 
+import RequestResources from './components/SocialArchitecture/RequestResources';
+
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
 const MaterialListView = lazy(() => import('./components/BMDashboard/MaterialList'));
@@ -134,7 +136,7 @@ export default (
           component={Inventory}
           routePermissions={RoutePermissions.inventoryProjectWbs}
         />
-
+        
         <ProtectedRoute
           path="/weeklysummariesreport"
           exact
@@ -202,6 +204,15 @@ export default (
           fallback
           routePermissions={RoutePermissions.workBreakdownStructure}
         />
+
+        <ProtectedRoute
+          path="/communityportal/resources/add"
+          exact
+          component={RequestResources}
+          routePermissions={RoutePermissions.resourcesAdd}
+        />
+
+
         <ProtectedRoute
           path="/usermanagement"
           exact
