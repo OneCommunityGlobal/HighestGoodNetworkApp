@@ -1,4 +1,4 @@
-/* Main Container */
+
 .request-resource-container {
   max-width: 800px;
   margin: 0 auto;
@@ -125,3 +125,4 @@ textarea {
 .submit-button:hover {
   background-color: #0056b3;
 }
+/*  */
