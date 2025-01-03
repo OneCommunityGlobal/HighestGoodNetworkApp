@@ -3,6 +3,7 @@
  * Stores all variables that display texts on the UI
  ******************************************************************************* */
 export const ACTIVE = 'Active';
+export const TITLE = 'Title'
 export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
 export const BM_DASHBOARD = 'BM Dashboard';
