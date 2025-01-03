@@ -28,6 +28,7 @@ import moment from 'moment';
 import 'moment-timezone';
 import { connect } from 'react-redux';
 import { toast } from 'react-toastify';
+import { ToastContainer } from 'react-toastify';
 import { boxStyle, boxStyleDark } from 'styles';
 import { formatDate } from 'utils/formatDate';
 import hasPermission from '../../utils/permissions';
@@ -190,8 +191,8 @@ function BadgeReport(props) {
   };
 
   useEffect(() => {
-    setSortBadges(JSON.parse(JSON.stringify(props.badges)) || []);
-    let newBadges = sortBadges.slice();
+    let newBadges = JSON.parse(JSON.stringify(props.badges)) || [];
+
     newBadges.sort((a, b) => {
       if (a.badge.ranking === 0) return 1;
       if (b.badge.ranking === 0) return -1;
@@ -201,18 +202,20 @@ function BadgeReport(props) {
       if (a.badge.badgeName < b.badge.badgeName) return -1;
       return 0;
     });
-    setNumFeatured(0);
-    newBadges.forEach((badge, index) => {
-      if (badge.featured) {
-        setNumFeatured(++numFeatured);
-      }
 
-      if (typeof newBadges[index] === 'string') {
+    // Compute the total number of featured badges once
+    const featuredCount = newBadges.filter(badge => badge.featured).length;
+    setNumFeatured(featuredCount);
+
+    newBadges.forEach((badge, index) => {
+      if (typeof newBadges[index].lastModified === 'string') {
         newBadges[index].lastModified = new Date(newBadges[index].lastModified);
       }
     });
+
     setSortBadges(newBadges);
   }, [props.badges]);
+
 
   const countChange = (badge, index, newValue) => {
     let copyOfExisitingBadges = [...sortBadges];
@@ -279,22 +282,29 @@ function BadgeReport(props) {
     }
   };
 
+
+
   const featuredChange = (badge, index, e) => {
-    let newBadges = sortBadges.slice();
-    if ((e.target.checked && numFeatured < 5) || !e.target.checked) {
-      let count = 0;
-      setNumFeatured(count);
-      newBadges[index].featured = e.target.checked;
-      newBadges.forEach((badge, index) => {
-        if (badge.featured) {
-          setNumFeatured(++count);
-        }
-      });
+    let newBadges = [...sortBadges];
+    const newFeaturedState = e.target.checked;
+
+    // Compute the total number of featured badges, including the new change
+    const totalFeatured = newBadges.reduce((count, b, i) => {
+      if (i === index) {
+        return count + (newFeaturedState ? 1 : 0);
+      }
+      return count + (b.featured ? 1 : 0);
+    }, 0);
+
+    if (totalFeatured <= 5) {
+      // Update the featured state of the badge
+      newBadges[index].featured = newFeaturedState;
+      setNumFeatured(totalFeatured);
+      setSortBadges(newBadges);
     } else {
-      e.target.checked = false;
+      // If the limit is exceeded, prevent the change and show an error
       toast.error('Unfortunately, you may only select five badges to be featured.');
     }
-    setSortBadges(newBadges);
   };
 
   const handleDeleteBadge = oldBadge => {
@@ -314,40 +324,58 @@ function BadgeReport(props) {
   const deleteBadge = () => {
     let newBadges = sortBadges.filter(badge => badge._id !== badgeToDelete._id);
     if (badgeToDelete.featured) {
-      setNumFeatured(--numFeatured);
+      setNumFeatured(prevNumFeatured => prevNumFeatured - 1);
     }
     setSortBadges(newBadges);
+    toast.success('Badges deleted successfully.');
+    saveChanges(newBadges, true);
     setShowModal(false);
     setBadgeToDelete([]);
   };
 
-  const saveChanges = async () => {
+  const saveChanges = async (sortBadges, openModal) => {
     setSavingChanges(true);
-    let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
-    for (let i = 0; i < newBadgeCollection.length; i++) {
-      newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
+    try {
+      let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
+      for (let i = 0; i < newBadgeCollection.length; i++) {
+        newBadgeCollection[i].badge = newBadgeCollection[i].badge._id;
+      }
+
+      await props.changeBadgesByUserID(props.userId, newBadgeCollection);
+      await props.getUserProfile(props.userId);
+
+      props.setUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+      props.setOriginalUserProfile(prevProfile => {
+        return { ...prevProfile, badgeCollection: sortBadges };
+      });
+
+      // Display success message
+      toast.success('Badges successfully saved.');
+
+      props.handleSubmit();
+      // Close the modal
+      if(!openModal)
+        props.close();
+    } catch (error) {
+      // Handle errors and display error message
+      toast.error('Failed to save badges. Please try again.');
+    } finally {
+      setSavingChanges(false);
     }
-
-    await props.changeBadgesByUserID(props.userId, newBadgeCollection);
-    await props.getUserProfile(props.userId);
-
-    props.setUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.setOriginalUserProfile(prevProfile => {
-      return { ...prevProfile, badgeCollection: sortBadges };
-    });
-    props.handleSubmit();
-    //close the modal
-    props.close();
   };
+
 
   return (
     <div>
       <div className="desktop">
         <div style={{ overflowY: 'auto', height: '75vh' }}>
           <Table className={darkMode ? 'text-light' : ''}>
-            <thead style={{ zIndex: '10' }}>
+            <thead
+              style={{ zIndex: '10', pointerEvents: 'none' }}
+              className={darkMode ? 'bg-space-cadet' : ''}
+            >
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
@@ -462,7 +490,7 @@ function BadgeReport(props) {
                       <FormGroup check inline style={{ zIndex: '0' }}>
                         <Input
                           /* alternative to using the formgroup
-                          style={{ position: 'static' }} 
+                          style={{ position: 'static' }}
                           */
                           type="checkbox"
                           id={value.badge._id}
@@ -490,7 +518,7 @@ function BadgeReport(props) {
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           disabled={savingChanges}
           onClick={e => {
-            saveChanges();
+            saveChanges(sortBadges,false);
           }}
         >
           Save Changes
@@ -513,11 +541,6 @@ function BadgeReport(props) {
         <Modal isOpen={showModal} className={darkMode ? 'text-light' : ''}>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
-            <br />
-            <p>
-              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
-              until you click the &quot;Save Changes&quot; button below.
-            </p>
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button onClick={() => handleCancel()} style={darkMode ? boxStyleDark : boxStyle}>
@@ -636,7 +659,7 @@ function BadgeReport(props) {
                               <FormGroup check inline style={{ zIndex: '0' }}>
                                 <Input
                                   /* alternative to using the formgroup
-                                  style={{ position: 'static' }} 
+                                  style={{ position: 'static' }}
                                   */
                                   type="checkbox"
                                   id={value.badge._id}
@@ -691,7 +714,7 @@ function BadgeReport(props) {
               if (props.isRecordBelongsToJaeAndUneditable) {
                 alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
               }
-              saveChanges();
+              saveChanges(sortBadges,false);
             }}
           >
             <span>Save Changes</span>
@@ -715,11 +738,8 @@ function BadgeReport(props) {
         <Modal isOpen={showModal} className={darkMode ? 'text-light dark-mode' : ''}>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
-            <br />
-            <p>
-              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
-              until you click the &quot;Save Changes&quot; button below.
-            </p>
+            
+            
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button onClick={() => handleCancel()} style={darkMode ? boxStyleDark : boxStyle}>
@@ -733,6 +753,7 @@ function BadgeReport(props) {
               Yes, Delete
             </Button>
           </ModalFooter>
+          <ToastContainer />
         </Modal>
       </div>
     </div>

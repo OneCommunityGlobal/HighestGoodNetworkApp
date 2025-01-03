@@ -30,7 +30,7 @@ function QuickSetupCodes({
             }}
             value={title.titleName}
           >
-            {title?.shortName}
+            {title?.titleCode ? title.titleCode : title?.titleName?.substring(0, 5)}
             <div className="title">
               <span className="setup-title-name">{title?.titleName}</span>
             </div>

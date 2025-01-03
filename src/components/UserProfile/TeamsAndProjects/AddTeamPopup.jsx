@@ -64,7 +64,6 @@ const AddTeamPopup = React.memo(props => {
     if ((result || selectedTeam) && some) {
       props.onSelectAssignTeam(result ? result : selectedTeam);
 
-      toast.success('Team assigned successfully '); // toast notification
       setSearchText('');
 
       selectedTeam && (onSelectTeam(undefined), onValidation(false));
