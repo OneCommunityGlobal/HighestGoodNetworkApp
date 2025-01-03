@@ -1,0 +1,86 @@
+.icon-add-person {
+    padding: 50px;
+    justify-content: center;
+    text-align: center;
+
+}
+
+.title-member{
+    color:#f49441;
+}
+
+.container {
+    background-color: white;
+    border-radius:10%;
+    padding-bottom:50px;
+}
+
+.name-container {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    justify-content: center;
+}
+
+.name-container label {
+    display: block;
+    margin-bottom: 5px;
+    padding: 0 15px;
+}
+
+.name-container input {
+    margin: 0 15px;
+    display: block;
+    padding: 10px;
+}
+
+.name-container-p {
+    display: flex;
+    justify-content: center;
+    text-align: center;
+}
+
+.role-container {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    justify-content: center;
+}
+
+.role-input {
+    display:flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.role-input label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#role-options {
+    margin: 0 50px;
+}
+
+.team-container {
+    display: flex;
+    flex-direction: row;
+    text-align: center;
+    justify-content: center;
+}
+
+
+.team-input {
+    display:flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.team-input label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+#team-options {
+    margin: 0 50px;
+}
