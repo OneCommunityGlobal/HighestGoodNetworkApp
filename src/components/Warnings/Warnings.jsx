@@ -154,7 +154,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
           />
         )}
 
-        <div className="warning-wrapper"> {warnings}</div>
+        <div className="warning-wrapper">{warnings}</div>
         <div className="error-container">
           {error && (
             <Alert key="warning" variant="warning">

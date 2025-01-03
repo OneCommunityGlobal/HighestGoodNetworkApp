@@ -69,7 +69,7 @@ const UserProfileModal = props => {
   const [addButton, setAddButton] = useState(true);
   const [summaryFieldView, setSummaryFieldView] = useState(true);
   const [displayWarningModal, setDisplayWarningModal] = useState(false);
-
+  const [displayBothModal, setDisplayBothModal] = useState(false);
   const [showSpinner, setShowSpinner] = useState(false);
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
@@ -146,6 +146,17 @@ const UserProfileModal = props => {
   };
 
   const handleToggleLogWarning = warningData => {
+    console.log('specialWarnings:', specialWarnings);
+    if (warningData === 'both') {
+      setDisplayBothModal(true);
+      setWarningType({
+        specialWarnings,
+        username: `${userProfile.firstName} ${userProfile.lastName}`,
+        warningText: `${specialWarnings[0].title} and ${specialWarnings[1].title}`,
+      });
+      // setWarningType({...specialWarnings[0], warnings: specialWarnings});
+      return;
+    }
     setWarningType({
       ...warningData,
       username: `${userProfile.firstName} ${userProfile.lastName}`,
@@ -186,6 +197,18 @@ const UserProfileModal = props => {
 
   return (
     <>
+      {displayBothModal && (
+        <WarningModal
+          issueBothWarnings={true}
+          warning={warningType}
+          setToggleModal={() => setDisplayBothModal(false)}
+          userProfileHeader={true}
+          userProfileModal={true}
+          handleIssueWarning={handleLogNewWarning}
+          visible={displayBothModal}
+          userProfileModal={true}
+        />
+      )}
       {displayWarningModal && (
         <WarningModal
           numberOfWarnings={warningType.warnings.length}
@@ -513,27 +536,9 @@ const UserProfileModal = props => {
                   >
                     {warning.abbreviation}
                   </Button>
-
-                  {/* 
-                    place holder for the warning button
-                    incase i want to hide it if the user has reached the max warnings
-                    {warning.warnings < 8 ? (
-                      <Button
-                        color="warning"
-                        onClick={e => {
-                          handleToggleLogWarning(warning);
-                        }}
-                        name={warning.abbreviation}
-                        style={boxStyling}
-                      >
-                        {warning.abbreviation}
-                      </Button>
-                    ) : (
-                      <span>User has received maximum warnings</span>
-                    )} */}
                 </OverlayTrigger>
               ))}
-              {/* {
+              {
                 <OverlayTrigger
                   placement="top"
                   delay={{ show: 100, hide: 100 }}
@@ -559,7 +564,7 @@ const UserProfileModal = props => {
                     Both
                   </Button>
                 </OverlayTrigger>
-              } */}
+              }
 
               {canEditInfringements && (
                 <Button
