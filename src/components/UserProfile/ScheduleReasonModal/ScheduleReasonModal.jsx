@@ -22,6 +22,7 @@ const ScheduleReasonModal = ({
   canManageTimeOffRequests,
   checkIfUserCanScheduleTimeOff,
   darkMode,
+  isCurrWeek
 }) => {
   const dispatch = useDispatch();
   const allRequests = useSelector(state => state.timeOffRequests.requests);
@@ -30,8 +31,13 @@ const ScheduleReasonModal = ({
     .isoWeekday(7)
     .startOf('day');
   const nextSunday = new Date(nextSundayStr.year(), nextSundayStr.month(), nextSundayStr.date());
+  
+  const currSundayStr = moment()
+    .startOf('week');
+  const currSunday = new Date(currSundayStr.year(), currSundayStr.month(), currSundayStr.date());
+  
   const initialRequestData = {
-    dateOfLeave: nextSunday,
+    dateOfLeave: isCurrWeek ? currSunday : nextSunday,
     numberOfWeeks: 1,
     reasonForLeave: '',
   };

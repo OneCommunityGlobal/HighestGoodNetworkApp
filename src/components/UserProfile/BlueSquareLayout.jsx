@@ -26,9 +26,23 @@ const BlueSquareLayout = ({
 
   const { privacySettings } = userProfile;
   const [show, setShow] = useState(false);
+  const [showStartWeek, setShowStartWeek] = useState(false);
+  const [isCurrWeek, setIsCurrWeek] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [showEmailBCCModal, setShowEmailBCCModal] = useState(false);
   const hasBlueSquareEmailBCCRolePermission = user.role === 'Owner';
+
+  const handleStartWeek = () =>{
+    setShowStartWeek(true);
+  }
+
+  const handleCloseStartWeek = (paramObj) =>{
+    setShowStartWeek(false);
+    if(paramObj){
+      setIsCurrWeek(!!isCurrWeek);
+      setShow(true);
+    }
+  }
 
   const handleOpen = () => {
     setShow(true);
@@ -63,7 +77,6 @@ const BlueSquareLayout = ({
     return true;
   };
 
-  // ===============================================================
   if (canEdit) {
     return (
       <div data-testid="blueSqaure-field" className="user-profile-blue-square-time-off-section">
@@ -113,7 +126,7 @@ const BlueSquareLayout = ({
             <>
               <Button
                 variant="primary"
-                onClick={handleOpen}
+                onClick={handleStartWeek}
                 className="w-100"
                 size="md"
                 style={darkMode ? boxStyleDark : boxStyle}
@@ -157,6 +170,35 @@ const BlueSquareLayout = ({
             darkMode={darkMode}
           />
         </Modal>
+        {showStartWeek && (<Modal show={showStartWeek} onHide={handleCloseStartWeek} className={darkMode ? 'text-light dark-mode' : ''}>
+          <Modal.Header closeButton>
+            Week for scheduling Blue Square
+          </Modal.Header>
+          <Modal.Body>
+            You are about to schedule time off starting next week. Please confirm this is what you want to do.
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+                variant="primary"
+                onClick={()=>{handleCloseStartWeek({isCurrWeek: 0, isOpenScheduler: true })}}
+                className="w-100"
+                size="md"
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Yes, NEXT WEEK is when I want my time off to start! 
+            </Button>
+            <Button
+                variant="primary"
+                onClick={()=>{handleCloseStartWeek({isCurrWeek: 1, isOpenScheduler: true })}}
+                className="w-100"
+                size="md"
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                No, I meant to start my time off THIS WEEK.
+                Please adjust this request to start this week instead. 
+            </Button>
+          </Modal.Footer>
+        </Modal>)}
         {show && (
           <Modal show={show} onHide={handleClose} className={darkMode ? 'text-light dark-mode' : ''}>
             <ScheduleReasonModal
@@ -167,6 +209,7 @@ const BlueSquareLayout = ({
               canManageTimeOffRequests={canManageTimeOffRequests}
               checkIfUserCanScheduleTimeOff={checkIfUserCanScheduleTimeOff}
               darkMode={darkMode}
+              isCurrWeek={isCurrWeek}
             />
           </Modal>
         )}
