@@ -81,6 +81,7 @@ const localReducers = {
   notification: notificationReducer,
   userFollowUp: followUpReducer,
   userProjectsByUserNameReducer: userProjectsByUserNameReducer,
+  teamCodes: teamCodesReducer,
   blueSquareEmailAssignment: BlueSquareEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
