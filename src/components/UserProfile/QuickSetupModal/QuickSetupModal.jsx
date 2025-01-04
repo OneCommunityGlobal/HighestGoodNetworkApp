@@ -14,6 +14,7 @@ import '../../Header/DarkMode.css';
 function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const canEditTitle = props.hasPermission('editTitle');
+  console.log('canEditTitle', canEditTitle);
   const canAddTitle = props.hasPermission('addNewTitle');
   const canAssignTitle = props.hasPermission('assignTitle');
   const [showAddTitle, setShowAddTitle] = useState(false);
