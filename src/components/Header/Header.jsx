@@ -414,6 +414,9 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
                         Lesson
                       </DropdownItem>
+                      <DropdownItem tag={Link} to="/" className={fontColor}>
+                        Main Dashboard
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
