@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { useState, useEffect } from 'react';
 import {
   Button,
   Modal,
@@ -12,12 +11,10 @@ import {
   Input,
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
-import { useSelector } from 'react-redux';
 import { addTitle, editTitle } from '../../../actions/title';
 import AssignProjectField from './AssignProjectField';
 import AssignTeamField from './AssignTeamField';
 import AssignTeamCodeField from './AssignTeamCodeField';
-import '../../Header/DarkMode.css';
 import '../../Header/DarkMode.css';
 
 function AddNewTitleModal({
@@ -38,7 +35,6 @@ function AddNewTitleModal({
     if (editMode && Object.keys(title).length !== 0) {
       return {
         id: title._id,
-        id: title._id,
         titleName: title.titleName,
         titleCode: title.titleCode,
         mediaFolder: title.mediaFolder,
@@ -55,8 +51,6 @@ function AddNewTitleModal({
       projectAssigned: '',
       teamAssiged: {},
     };
-      teamAssiged: {},
-    };
   });
 
   const [isValidTeamCode, setIsValidTeamCode] = useState(true);
@@ -65,7 +59,6 @@ function AddNewTitleModal({
     if (editMode && Object.keys(title).length !== 0) {
       setTitleData({
         id: title._id,
-        id: title._id,
         titleName: title.titleName,
         titleCode: title.titleCode || title.titleName.slice(0, 5),
         mediaFolder: title.mediaFolder,
@@ -73,15 +66,25 @@ function AddNewTitleModal({
         projectAssigned: title.projectAssigned,
         teamAssiged: title.teamAssiged,
       });
-    } else
+    } else {
       setTitleData({
         titleName: '',
+        titleCode: '',
         mediaFolder: '',
         teamCode: '',
         projectAssigned: '',
         teamAssiged: {},
       });
-  }, [title]);
+    }
+  }, [editMode, title]);
+
+  useEffect(() => {
+    const titleCode = titleData.titleName.slice(0, 5);
+    setTitleData(prev => ({
+      ...prev,
+      titleCode,
+    }));
+  }, [titleData.titleName]);
 
   useEffect(() => {
     setIsValidTeamCode(
@@ -89,6 +92,7 @@ function AddNewTitleModal({
     );
   }, [titleData.teamCode, teamCodes]);
 
+  let existTeamCodes = new Set();
   let existTeamName = new Set();
 
   if (teamsData?.allTeams) {
@@ -96,7 +100,7 @@ function AddNewTitleModal({
     const names = teamsData.allTeams.map(team => team.teamName);
     // Use allTeamCode rather than allTeams since team code is not related to records in the Team table.
     // It is all distinct team codes from the UserProfile teamCode field.
-    // existTeamCodes = new Set(teamsData?.allTeamCode?.distinctTeamCodes);
+    existTeamCodes = new Set(teamsData?.allTeamCode?.distinctTeamCodes);
     existTeamName = new Set(names);
   }
 
@@ -105,10 +109,9 @@ function AddNewTitleModal({
   const [selectedTeamCode, onSelectTeamCode] = useState(undefined);
   const [isValidProject, onValidation] = useState(false);
   const [searchText, setSearchText] = useState(''); // For addTeamAutoComplete
-
+  
   const selectProject = project => {
     onSelectProject(project);
-    setTitleData({
     setTitleData({
       ...titleData,
       projectAssigned: {
@@ -117,28 +120,20 @@ function AddNewTitleModal({
         category: project.category,
       },
     });
-    });
     onValidation(true);
   };
 
   const selectTeamCode = teamCode => {
     onSelectTeamCode(teamCode);
     setTitleData({
-    setTitleData({
       ...titleData,
-      teamCode,
-    });
-  };
       teamCode,
     });
   };
 
   const cleanProjectAssign = () => {
     setTitleData({
-    setTitleData({
       ...titleData,
-      projectAssigned: '',
-    });
       projectAssigned: '',
     });
   };
@@ -157,10 +152,7 @@ function AddNewTitleModal({
 
   const cleanTeamCodeAssign = () => {
     setTitleData({
-    setTitleData({
       ...titleData,
-      teamCode: '',
-    });
       teamCode: '',
     });
   };
@@ -174,41 +166,24 @@ function AddNewTitleModal({
 
   const undoTeamAssigned = () => {
     setTitleData({
-    setTitleData({
       ...titleData,
       teamAssiged: {
         teamName: searchText,
         _id: 'N/A',
-        _id: 'N/A',
       },
-    });
     });
   };
 
   // confirm and save
   const confirmOnClick = () => {
-  const confirmOnClick = () => {
     const isValidTeamName = onTeamNameValidation(titleData.teamAssiged);
 
     if (!isValidTeamName) {
       return;
-      return;
     }
+
     if (editMode) {
       editTitle(titleData)
-        .then(resp => {
-          if (resp.status !== 200) {
-            setWarningMessage({ title: 'Error', content: resp.message });
-            setShowMessage(true);
-          } else {
-            setIsOpen(false);
-            refreshModalTitles();
-          }
-        })
-        .catch(e => {
-          console.log(e);
-        });
-    } else {
         .then(resp => {
           if (resp.status !== 200) {
             setWarningMessage({ title: 'Error', content: resp.message });
@@ -235,25 +210,32 @@ function AddNewTitleModal({
         .catch(e => {
           console.log(e);
         });
-        .then(resp => {
-          if (resp.status !== 200) {
-            setWarningMessage({ title: 'Error', content: resp.message });
-            setShowMessage(true);
-          } else {
-            setIsOpen(false);
-            refreshModalTitles();
-          }
-        })
-        .catch(e => {
-          console.log(e);
-        });
     }
+  };
+
+  const onTeamCodeValidation = teamCode => {
+    const format1 = /^[A-Za-z]-[A-Za-z]{3}$/;
+    const format2 = /^[A-Z]{5}$/;
+    // Check if the input value matches either of the formats
+    const isValidFormat = format1.test(teamCode) || format2.test(teamCode);
+    if (!isValidFormat) {
+      setWarningMessage({ title: 'Error', content: 'Invalid Team Code Format' });
+      setShowMessage(true);
+      setTitleData({ ...titleData, teamCode: '' });
+      return;
+    }
+    if (!existTeamCodes.has(teamCode)) {
+      setWarningMessage({ title: 'Error', content: 'Team Code Not Exists' });
+      setShowMessage(true);
+      setTitleData({ ...titleData, teamCode: '' });
+      return;
+    }
+    setShowMessage(false);
   };
 
   const onTeamNameValidation = teamName => {
     if (teamName && teamName !== '') {
       if (!existTeamName.has(teamName.teamName)) {
-        setWarningMessage({ title: 'Error', content: 'Team Name Not Exists' });
         setWarningMessage({ title: 'Error', content: 'Team Name Not Exists' });
         setShowMessage(true);
         return false;
@@ -262,25 +244,10 @@ function AddNewTitleModal({
     setShowMessage(false);
     return true;
   };
-  };
 
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
-    <Modal
-      isOpen={isOpen}
-      toggle={() => setIsOpen(false)}
-      className={darkMode ? 'text-light dark-mode' : ''}
-    >
-      {editMode ? (
-        <ModalHeader toggle={() => setIsOpen(false)} className={darkMode ? 'bg-space-cadet' : ''}>
-          Edit Title
-        </ModalHeader>
-      ) : (
-        <ModalHeader toggle={() => setIsOpen(false)} className={darkMode ? 'bg-space-cadet' : ''}>
-          Add A New Title
-        </ModalHeader>
-      )}
     <Modal
       isOpen={isOpen}
       toggle={() => setIsOpen(false)}
@@ -301,9 +268,6 @@ function AddNewTitleModal({
             <Label className={fontColor}>
               Title Name<span className="qsm-modal-required">*</span>:{' '}
             </Label>
-            <Label className={fontColor}>
-              Title Name<span className="qsm-modal-required">*</span>:{' '}
-            </Label>
             <Input
               type="text"
               name="text"
@@ -314,10 +278,20 @@ function AddNewTitleModal({
                 setTitleData({ ...titleData, titleName: e.target.value });
               }}
             />
-
             <Label className={fontColor}>
-              Media Folder<span className="qsm-modal-required">*</span>:{' '}
+              Title Code<span className="qsm-modal-required">*</span>:{' '}
             </Label>
+            <Input
+              type="text"
+              name="text"
+              id="titleCode"
+              value={titleData.titleCode}
+              onChange={e => {
+                e.persist();
+                setTitleData({ ...titleData, titleCode: e.target.value });
+              }}
+              maxLength={5}
+            />
             <Label className={fontColor}>
               Media Folder<span className="qsm-modal-required">*</span>:{' '}
             </Label>
@@ -327,23 +301,19 @@ function AddNewTitleModal({
               id="mediafolder"
               value={titleData.mediaFolder}
               onChange={e => {
-                e.persist();
-                setTitleData({ ...titleData, mediaFolder: e.target.value });
+                const inputValue = e.target.value;
+                setTitleData({ ...titleData, mediaFolder: inputValue });
               }}
+              placeholder="Enter a valid URL"
             />
+            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) && titleData.mediaFolder !== '' && (
+              <small style={{ color: 'red', marginTop: '5px', display: 'block' }}>
+                Please enter a valid URL that starts with http:// or https://
+              </small>
+            )}
             <Label className={fontColor}>
               Team Code<span className="qsm-modal-required">*</span>:
             </Label>
-            {/* <Input
-              type="text"
-              placeholder="X-XXX OR XXXXX"
-              onChange={e => {
-                e.persist();
-                setTitleData(prev => ({ ...prev, teamCode: e.target.value }));
-              }}
-              onBlur={(e) => onTeamCodeValidation(e.target.value)}
-            /> */}
-
             <AssignTeamCodeField
               teamCodeData={teamCodes}
               onDropDownSelect={selectTeamCode}
@@ -354,10 +324,6 @@ function AddNewTitleModal({
               value={titleData.teamCode}
               isError={!isValidTeamCode}
             />
-
-            <Label className={fontColor}>
-              Project Assignment<span className="qsm-modal-required">*</span>:
-            </Label>
             <Label className={fontColor}>
               Project Assignment<span className="qsm-modal-required">*</span>:
             </Label>
@@ -386,12 +352,13 @@ function AddNewTitleModal({
           </FormGroup>
         </Form>
       </ModalBody>
-
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button 
-          color="primary" 
+        <Button
+          color="primary"
           onClick={() => confirmOnClick()}
-          disabled={!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) || titleData.mediaFolder === ''}
+          disabled={
+            !/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) || titleData.mediaFolder === ''
+          }
         >
           Confirm
         </Button>
@@ -404,4 +371,3 @@ function AddNewTitleModal({
 }
 
 export default AddNewTitleModal;
-
