@@ -95,6 +95,9 @@ const Project = props => {
       } else {
         await props.modifyProject(projectData);
       }
+      if (props.projectData.category) {
+        setCategory(props.projectData.category);
+      }
     };
 
     onUpdateProject();
