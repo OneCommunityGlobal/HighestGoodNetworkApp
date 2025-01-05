@@ -27,6 +27,11 @@ function PermissionListItem(props) {
   const hasThisPermission =
     rolePermissions.includes(permission) || immutablePermissions.includes(permission);
 
+  // console.log('PermissionListItem rolePermissions:', rolePermissions);
+  // console.log('PermissionListItem immutablePermissions:', immutablePermissions);
+  // console.log('PermissionListItem permission:', permission);
+  // console.log('PermissionListItem subperms:', subperms);
+
   const handleModalOpen = () => {
     setContent(description);
     setinfoRoleModal(true);
@@ -170,7 +175,10 @@ function PermissionListItem(props) {
               onClick={() => {
                 togglePermission(permission);
               }}
-              disabled={immutablePermissions.includes(permission)}
+              // temporarily allow delete button to not be disabled for testing permission change modal
+              disabled={
+                immutablePermissions.includes(permission) && !rolePermissions.includes(permission)
+              }
               style={darkMode ? boxStyleDark : boxStyle}
             >
               {hasThisPermission ? 'Delete' : 'Add'}
