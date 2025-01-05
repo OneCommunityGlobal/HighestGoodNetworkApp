@@ -4,17 +4,20 @@ import { Provider } from 'react-redux';
 import CreateNewBadgePopup from '../CreateNewBadgePopup';
 import thunk from 'redux-thunk';
 import configureMockStore from 'redux-mock-store';
+import { createNewBadge } from '../../../actions/badgeManagement';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
+jest.mock('../../../actions/badgeManagement', () => ({
+  createNewBadge: jest.fn().mockResolvedValue({fuckyou: 'fuckyou'}),
+}));
 
 describe('CreateNewBadgePopup component', () => {
   let store;
-  let createNewBadgeMock;
   let toggleMock;
 
   beforeEach(() => {
-    createNewBadgeMock = jest.fn().mockResolvedValue();
+    createNewBadge.mockResolvedValue({fuckyou: 'fuckyou'});
     toggleMock = jest.fn();
 
     store = mockStore({
@@ -22,6 +25,8 @@ describe('CreateNewBadgePopup component', () => {
       badge: { message: '', alertVisible: false, color: '' },
       theme: { darkMode: false },
     });
+
+    store.dispatch = jest.fn();
   });
 
   it('renders all key elements correctly', () => {
@@ -90,7 +95,7 @@ describe('CreateNewBadgePopup component', () => {
   it('calls createNewBadge with the correct data on form submission', async () => {
     render(
       <Provider store={store}>
-        <CreateNewBadgePopup createNewBadge={createNewBadgeMock} toggle={toggleMock} />
+        <CreateNewBadgePopup toggle={toggleMock} />
       </Provider>
     );
     const badgeNameInput = screen.getByLabelText('Name');
