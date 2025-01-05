@@ -292,16 +292,10 @@ function AddNewTitleModal({
               id="mediafolder"
               value={titleData.mediaFolder}
               onChange={e => {
-                const inputValue = e.target.value;
-                setTitleData({ ...titleData, mediaFolder: inputValue });
+                e.persist();
+                setTitleData({ ...titleData, mediaFolder: e.target.value });
               }}
-              placeholder="Enter a valid URL"
             />
-            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) && titleData.mediaFolder !== '' && (
-              <small style={{ color: 'red', marginTop: '5px', display: 'block' }}>
-                Please enter a valid URL that starts with http:// or https://
-              </small>
-            )}
             <Label className={fontColor}>
               Team Code<span className="qsm-modal-required">*</span>:
             </Label>
@@ -355,11 +349,7 @@ function AddNewTitleModal({
       </ModalBody>
 
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button 
-          color="primary" 
-          onClick={() => confirmOnClick()}
-          disabled={!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) || titleData.mediaFolder === ''}
-        >
+        <Button color="primary" onClick={() => confirmOnClick()}>
           Confirm
         </Button>
         <Button color="secondary" onClick={() => setIsOpen(false)}>

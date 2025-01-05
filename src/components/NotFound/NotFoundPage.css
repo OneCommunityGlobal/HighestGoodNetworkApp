@@ -11,8 +11,8 @@
   align-items: center;
   height: 100vh;
   text-align: center;
-  color: #333;
-  background-color: #fff;
+  color: #333; 
+  background-color: #fff; 
 }
 
 .not-found-image {
@@ -47,16 +47,12 @@
 }
 
 .dark-mode {
-  color: #f1f1f1;
-
-  .not-found-image {
-    height: 38%;
+  color: #f1f1f1; 
+  background-color: #121212;
+  .not-found-image{
+    height:38%;
     width: auto;
   }
-}
-
-.bg-black {
-  background-color: #121212;
 }
 
 @media (max-width: 768px) {

@@ -90,7 +90,7 @@
   cursor: pointer;
 }
 
-.tasks-table-edit-tasks-button{
+.tasks-table-edit-tasks-button {
   display: block;
   background-color: white;
   border: 2px solid #007bff;
@@ -116,4 +116,60 @@
 .tasks-table-edit-tasks-button:active {
   border-color: #5750db;
   outline-color: #5750db;
+}
+
+/* Header styling */
+.tasks-table-header {
+  text-align: left;
+  margin-bottom: 24px;
+}
+
+/* Filter wrapper styling */
+.tasks-table-filters-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Filter container styling */
+.tasks-table-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  /* Space between items */
+  margin-bottom: 16px;
+}
+
+/* Filter item styling */
+.tasks-table-filter-item {
+  flex: 1 1 calc(50% - 16px);
+  /* Two columns in larger view */
+  min-width: 150px;
+  /* Ensures enough space for input */
+  margin: 8px 0;
+}
+
+/* Media query for smaller screens */
+@media (max-width: 540px) {
+  .tasks-table-filters {
+    flex-direction: column;
+    /* Stack filters vertically */
+  }
+
+  .tasks-table-filter-item {
+    flex: 1 1 100%;
+    /* Full width for each filter */
+  }
+
+  .tasks-table-clear-filter-button,
+  .tasks-table-edit-tasks-button {
+    width: 100%;
+    /* Full width for buttons */
+    margin: 8px 0;
+    /* Space between buttons */
+  }
+}
+
+.tasks-detail-table-wrapper {
+  overflow-x: auto;
+  /* Horizontal scrolling wrapper */
 }

@@ -267,15 +267,12 @@ class UserManagement extends React.PureComponent {
   }
   
   filteredUserList = userProfiles => {
-    const wildCardSearch = this.state.wildCardSearchText.trim().toLowerCase();
-    
     return userProfiles.filter(user => {
       const firstNameSearch = this.state.firstNameSearchText || '';
       const lastNameSearch = this.state.lastNameSearchText || '';
   
       const firstName = user.firstName.toLowerCase();
       const lastName = user.lastName.toLowerCase();
-      const email = user.email ? user.email.toLowerCase() : '';
   
       const trimmedFirstNameSearch = firstNameSearch.trim();
       const trimmedLastNameSearch = lastNameSearch.trim();
@@ -296,21 +293,9 @@ class UserManagement extends React.PureComponent {
             ? lastName === trimmedLastNameSearch.toLowerCase() 
             : lastName.includes(trimmedLastNameSearch.toLowerCase()))
         : true;
-
-
-      const wildcardMatches = wildCardSearch
-      ? wildCardSearch.includes(" ") 
-        ? (firstName + " " + lastName).startsWith(wildCardSearch.trim()) ||
-          (firstName + " " + lastName) === wildCardSearch.trim() ||
-          email === wildCardSearch.trim()
-        : firstName.startsWith(wildCardSearch) || 
-          lastName.startsWith(wildCardSearch) || 
-          firstName.includes(wildCardSearch) ||   
-          lastName.includes(wildCardSearch)||
-          email.includes(wildCardSearch)
-      : true;
-
-      const nameMatches = firstNameMatches && lastNameMatches&& wildcardMatches;
+  
+  
+      const nameMatches = firstNameMatches && lastNameMatches;
   
       return (
         nameMatches &&
@@ -326,7 +311,9 @@ class UserManagement extends React.PureComponent {
       );
     });
   };
+  
 
+  
   /**
    * 
    * reload user list and close user creation popup
@@ -607,24 +594,12 @@ class UserManagement extends React.PureComponent {
   /**
    * callback for search
    */
-
   onWildCardSearch = searchText => {
-    this.setState(
-      {
-        wildCardSearchText: searchText,
-        selectedPage: 1,
-      },
-      () => {
-        const { userProfiles } = this.props.state.allUserProfiles;
-        const { roles: rolesPermissions } = this.props.state.role;
-        const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-        const darkMode = this.props.state.theme.darkMode;
-  
-        this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode);
-      }
-    );
+    this.setState({
+      wildCardSearchText: searchText,
+      selectedPage: 1,
+    });
   };
-  
 
  
 

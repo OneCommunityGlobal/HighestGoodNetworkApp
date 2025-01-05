@@ -46,7 +46,7 @@ import Badges from './Badges';
 import { getAllTeamCode } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
+import { updateUserStatus, updateRehireableStatus } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
@@ -112,7 +112,6 @@ function UserProfile(props) {
   const [saved, setSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
-  const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
 
@@ -290,6 +289,7 @@ function UserProfile(props) {
       const newUserProfile = response.data;
       // Assuming newUserProfile contains isRehireable attribute
       setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
+
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       const teamId = newUserProfile?.teams[0]?._id;
@@ -658,7 +658,7 @@ function UserProfile(props) {
 
   const activeInactivePopupClose = () => {
     setActiveInactivePopupOpen(false);
-  };  
+  };
 
   const handleRehireableChange = () => {
     const newRehireableStatus = !isRehireable;
@@ -744,24 +744,11 @@ function UserProfile(props) {
   };
 
   const onUserVisibilitySwitch = () => {
-    setShowToggleVisibilityModal(true);
-  }
-
-  const handleVisibilityChange = () => {
-    setShowToggleVisibilityModal(false);
-    const visibility = !userProfile.isVisible;
-    const newUserProfile = {
+    setUserProfile({
       ...userProfile,
-      isVisible: visibility
-    };
-    toggleVisibility(newUserProfile, visibility);
-    setUserProfile(newUserProfile);
-    setOriginalUserProfile(newUserProfile);
+      isVisible: !userProfile.isVisible ?? true,
+    });
   };
-
-  const handleCloseConfirmVisibilityModal = () =>{
-    setShowToggleVisibilityModal(false)
-  } 
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
@@ -790,7 +777,6 @@ function UserProfile(props) {
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');
   const canSeeQSC = props.hasPermission('seeQSC');
-  const canEditVisibility = props.hasPermission('toggleInvisibility');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -865,16 +851,6 @@ function UserProfile(props) {
           role={requestorRole}
         />
       )}
-      <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
-        <ModalHeader toggle={handleCloseConfirmVisibilityModal}>Confirm Visibility Change</ModalHeader>
-        <ModalBody>
-          {`Are you sure you want to change the user visibility to ${userProfile.isVisible ? 'Invisible' : 'Visible'}?`}
-        </ModalBody>
-        <ModalFooter>
-          <Button color="primary" onClick={handleVisibilityChange}>Confirm</Button>{' '}
-          <Button color="secondary" onClick={handleCloseConfirmVisibilityModal}>Cancel</Button>
-        </ModalFooter>
-      </Modal>
       <TabToolTips />
       <BasicToolTips />
       <Container
@@ -1232,7 +1208,7 @@ function UserProfile(props) {
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEditVisibility}
+                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
@@ -1598,7 +1574,7 @@ function UserProfile(props) {
                     role={requestorRole}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
-                    canEditVisibility={canEditVisibility}
+                    canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
                     handleSubmit={handleSubmit}
                     disabled={
                       !formValid.firstName ||

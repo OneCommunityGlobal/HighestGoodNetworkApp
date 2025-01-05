@@ -3,11 +3,9 @@
 /* eslint-disable camelcase */
 /* eslint-disable import/prefer-default-export */
 import { useState, useEffect, useRef } from 'react';
-import { useSelector } from 'react-redux';
 import '../../Teams/Team.css';
 import 'react-datepicker/dist/react-datepicker.css';
 // eslint-disable-next-line import/order
-import { getTasksTableData } from './selectors';
 import './TasksTable.css';
 import Select from 'react-select';
 import { Checkbox } from 'components/common/Checkbox';
@@ -103,7 +101,7 @@ export function TasksTable({ darkMode, tasks }) {
           />
           <TextSearchBox
             placeholder="Estimated hours"
-            className="tasks-table-text-search-box"
+            className="tasks-table-text-search-box tasks-table-filter-item"
             searchCallback={() => { }}
           />
           <Checkbox
@@ -139,20 +137,22 @@ export function TasksTable({ darkMode, tasks }) {
             Clear filters
           </button>
         </div>
-        
+
       </div>
 
-      <TasksDetail
-        tasks_filter={tasks}
-        toggleEditTasks={toggleEditTasks}
-        darkMode={darkMode}
-        isAssigned={isAssigned}
-        isActive={isActive}
-        priority={filters.priority}
-        status={filters.status}
-        classification={filters.classification}
-        users={filters.users}
-      />
+      <div className="tasks-detail-table-wrapper">
+        <TasksDetail
+          tasks_filter={tasks}
+          toggleEditTasks={toggleEditTasks}
+          darkMode={darkMode}
+          isAssigned={isAssigned}
+          isActive={isActive}
+          priority={filters.priority}
+          status={filters.status}
+          classification={filters.classification}
+          users={filters.users}
+        />
+      </div>
     </div>
   );
 }

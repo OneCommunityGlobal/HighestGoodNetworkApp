@@ -587,7 +587,7 @@ function Timer({ authUser, darkMode }) {
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
         centered
         size="md"
-        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+        className={`${fontColor} dark-mode`}
       >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet' : ''}
@@ -639,7 +639,7 @@ function Timer({ authUser, darkMode }) {
         </ModalFooter>
       </Modal>
       <Modal
-        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
+        className={`${fontColor} dark-mode`}
         isOpen={timeIsOverModalOpen}
         toggle={toggleTimeIsOver}
         centered
