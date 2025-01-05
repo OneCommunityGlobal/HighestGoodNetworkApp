@@ -140,17 +140,19 @@ export function TasksTable({ darkMode, tasks }) {
 
       </div>
 
-      <TasksDetail
-        tasks_filter={tasks}
-        toggleEditTasks={toggleEditTasks}
-        darkMode={darkMode}
-        isAssigned={isAssigned}
-        isActive={isActive}
-        priority={filters.priority}
-        status={filters.status}
-        classification={filters.classification}
-        users={filters.users}
-      />
+      <div className="tasks-detail-table-wrapper">
+        <TasksDetail
+          tasks_filter={tasks}
+          toggleEditTasks={toggleEditTasks}
+          darkMode={darkMode}
+          isAssigned={isAssigned}
+          isActive={isActive}
+          priority={filters.priority}
+          status={filters.status}
+          classification={filters.classification}
+          users={filters.users}
+        />
+      </div>
     </div>
   );
 }
