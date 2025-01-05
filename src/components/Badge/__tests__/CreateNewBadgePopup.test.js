@@ -9,7 +9,7 @@ import { createNewBadge } from '../../../actions/badgeManagement';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 jest.mock('../../../actions/badgeManagement', () => ({
-  createNewBadge: jest.fn().mockResolvedValue({fuckyou: 'fuckyou'}),
+  createNewBadge: jest.fn().mockResolvedValue({}),
 }));
 
 describe('CreateNewBadgePopup component', () => {
