@@ -24,7 +24,6 @@ function EditBadgePopup(props) {
   // eslint-disable-next-line
   const { darkMode } = props;
 
-  const [badgeValues, setBadgeValues] = useState('');
   const [badgeId, setBadgeId] = useState('');
   const [badgeName, setBadgeName] = useState('');
   const [imageUrl, setImageUrl] = useState('');
@@ -79,7 +78,6 @@ function EditBadgePopup(props) {
   };
 
   useEffect(() => {
-    setBadgeValues(props.badgeValues);
     setBadgeId(props.badgeValues ? props.badgeValues._id : null);
     setBadgeName(props.badgeValues ? props.badgeValues.badgeName : '');
     setImageUrl(props.badgeValues ? props.badgeValues.imageUrl : '');
@@ -260,8 +258,8 @@ function EditBadgePopup(props) {
               onChange={handleChange}
             >
               <option value="Custom">Custom</option>
-              {badgeTypes.map((element, i) => (
-                <option key={i}>{element}</option>
+              {badgeTypes.map(element => (
+                <option key={element}>{element}</option>
               ))}
             </Input>
           </FormGroup>

@@ -141,9 +141,10 @@ const UserTeamsTable = props => {
       />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {props.canEditVisibility && (
-          <>
+          <div className="row">
             <Col
-              md="12"
+              md="7"
+              xs="12"
               style={{
                 backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 border: '1px solid #ced4da',
@@ -153,17 +154,25 @@ const UserTeamsTable = props => {
               <span className="teams-span">Visibility</span>
             </Col>
             <Col
-              md="12"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              md="5"
+              xs="12"
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                backgroundColor: darkMode ? '#1C2541' : '#ffffff',
+                border: darkMode ? '0px' : '1px solid #ced4da',
+                marginBottom: '10px',
+              }}
             >
               <ToggleSwitch
+
                 switchType="visible"
                 state={props.isVisible}
                 handleUserProfile={props.onUserVisibilitySwitch}
                 darkMode={darkMode}
               />
             </Col>
-          </>
+          </div>
         )}
         <div className="row">
           <Col

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -63,7 +63,6 @@ function AssignBadge(props) {
       }
       setError(null);
     } catch (err) {
-      console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);
       // Also clear selection on error
@@ -114,6 +113,7 @@ function AssignBadge(props) {
     <Form
       className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
       style={{ padding: 20 }}
+      onSubmit={(e) => e.preventDefault()}
     >
       <div className="row align-items-center mb-3">
         <Label

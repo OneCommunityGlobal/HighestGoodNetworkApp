@@ -13,6 +13,7 @@ export const ENDPOINTS = {
     `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
   USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
   USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
+  USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
@@ -71,6 +72,14 @@ export const ENDPOINTS = {
   WEEKLY_SUMMARIES_REPORT: () => `${APIEndpoint}/reports/weeklysummaries`,
   SAVE_SUMMARY_RECEPIENTS: userid => `${APIEndpoint}/reports/recepients/${userid}`,
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
+  GET_CURRENT_WARNINGS: () => `${APIEndpoint}/currentWarnings`,
+  POST_NEW_WARNING: () => `${APIEndpoint}/currentWarnings`,
+  UPDATE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
+  DELETE_WARNING_DESCRIPTION: warningId => `${APIEndpoint}/currentWarnings/${warningId}`,
+  EDIT_WARNING_DESCRIPTION: () => `${APIEndpoint}/currentWarnings/edit`,
+  GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
+  DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate) =>
@@ -81,10 +90,6 @@ export const ENDPOINTS = {
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
   POPUP_EDITOR_BACKUP_BY_ID: id => `${APIEndpoint}/backup/popupeditor/${id}`,
-
-  GET_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
-  POST_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
-  DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
 
   TEAM_MEMBERS: teamId => `${APIEndpoint}/team/${teamId}/users`,
   TEAM_BY_ID: teamId => `${APIEndpoint}/team/${teamId}`,
