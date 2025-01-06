@@ -81,6 +81,29 @@ class Collaboration extends Component {
     );
   };
 
+  handleResetFilters = async () => {
+    try {
+      const response = await fetch(`${ApiEndpoint}/jobs/reset-filters`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to reset filters: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      this.setState({
+        searchTerm: '',
+        selectedCategory: '',
+        currentPage: 1,
+        jobAds: data.jobs,
+        totalPages: data.pagination.totalPages,
+      });
+    } catch (error) {
+      toast.error('Error resetting filters');
+    }
+  };
+
   setPage = pageNumber => {
     this.setState({ currentPage: pageNumber }, this.fetchJobAds);
   };
@@ -138,6 +161,9 @@ class Collaboration extends Component {
                   />
                   <button className="search-button" type="submit" onClick={this.handleSubmit}>
                     Go
+                  </button>
+                  <button type="button" onClick={this.handleResetFilters}>
+                    Reset
                   </button>
                   <button
                     className="show-summaries"
@@ -206,8 +232,11 @@ class Collaboration extends Component {
                   value={searchTerm}
                   onChange={this.handleSearch}
                 />
-                <button className="search" type="submit" onClick={this.handleSubmit}>
+                <button className="search-button" type="submit" onClick={this.handleSubmit}>
                   Go
+                </button>
+                <button type="button" onClick={this.handleResetFilters}>
+                  Reset
                 </button>
                 <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
                   Show Summaries
