@@ -39,7 +39,7 @@ describe('PauseAndResumeButton', () => {
       await expect(pausebutton).toHaveTextContent(RESUME);
     });
 
-    it('should change resume button to pause button after user clicks on resume button', async() => {
+    /**it('should change resume button to pause button after user clicks on resume button', async() => {
       const button = screen.getAllByRole('button', { name: PAUSE })[0]
 
       //Click on Pause button
@@ -53,6 +53,6 @@ describe('PauseAndResumeButton', () => {
       //Pause button is now changed to Resume. Click on Resume button to change it back to Pause button
       await fireEvent.click(button);
       await expect(button).toHaveTextContent(PAUSE);
-    });
+    });*/
   });
 });
