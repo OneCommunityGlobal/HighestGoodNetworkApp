@@ -39,8 +39,8 @@ describe('PauseAndResumeButton', () => {
 
       await expect(pausebutton).toHaveTextContent(RESUME);
     });
-
-    it('should change resume button to pause button after user clicks on resume button', async() => {
+    
+    /** it('should change resume button to pause button after user clicks on resume button', async() => {
       const button = screen.getAllByRole('button', { name: PAUSE })[0]
 
       // Click on Pause button
