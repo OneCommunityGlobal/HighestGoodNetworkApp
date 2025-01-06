@@ -6,7 +6,7 @@ const UserLinks = ({ links = [] }) => {
   const darkMode = useSelector(state => state.theme.darkMode)
   return (
   <>
-    <div className="linkContainer" data-testid="testLinkContainer">
+    <div className="linkContainer mb-3" data-testid="testLinkContainer">
       {links.map((item, index) => {
         if (item.Link.includes('http')) {
           // Render external link if it's not an empty string

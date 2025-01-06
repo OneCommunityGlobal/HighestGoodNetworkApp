@@ -1,16 +1,37 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 // import { getUserProfile } from '../../actions/userProfile'
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import { getWeeklySummaries } from 'actions/weeklySummaries';
+import { Link, useLocation } from 'react-router-dom';
+import { connect, useDispatch } from 'react-redux';
+import { useHistory } from 'react-router-dom';
+import {
+  Collapse,
+  Navbar,
+  NavbarToggler,
+  Nav,
+  NavItem,
+  NavLink,
+  UncontrolledDropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Button,
+  Card,
+} from 'reactstrap';
+import PopUpBar from 'components/PopUpBar';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
+import { toast } from 'react-toastify';
 import { getHeaderData } from '../../actions/authActions';
 import { getAllRoles } from '../../actions/role';
-import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
 import Timer from '../Timer/Timer';
 import OwnerMessage from '../OwnerMessage/OwnerMessage';
 import {
-  LOGO,
   DASHBOARD,
   TIMELOG,
   REPORTS,
@@ -25,48 +46,23 @@ import {
   VIEW_PROFILE,
   UPDATE_PASSWORD,
   LOGOUT,
-  POPUP_MANAGEMENT,
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
-  VOLUNTEER_SUMMARY_REPORT,
   TOTAL_ORG_SUMMARY,
 } from '../../languages/en/ui';
-import {
-  Collapse,
-  Navbar,
-  NavbarToggler,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink,
-  UncontrolledDropdown,
-  DropdownToggle,
-  DropdownMenu,
-  DropdownItem,
-  Container,
-  Modal,
-  ModalHeader,
-  ModalBody,
-  ModalFooter,
-  Button,
-  Card,
-} from 'reactstrap';
 import Logout from '../Logout/Logout';
-import PopUpBar from 'components/PopUpBar';
 import './Header.css';
 import hasPermission, { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 import {
   getUnreadUserNotifications,
-  markNotificationAsRead,
   resetNotificationError,
 } from '../../actions/notificationAction';
-import { toast } from 'react-toastify';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
 
 export function Header(props) {
-  const darkMode = props.darkMode;
+  const location = useLocation();
+  const { darkMode } = props;
   const [isOpen, setIsOpen] = useState(false);
   const [logoutPopup, setLogoutPopup] = useState(false);
   const { isAuthenticated, user } = props.auth;
@@ -78,50 +74,69 @@ export function Header(props) {
 
   const ALLOWED_ROLES_TO_INTERACT = useMemo(() => ['Owner', 'Administrator'], []);
   const canInteractWithViewingUser = useMemo(
-    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role), [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role])
+    () => ALLOWED_ROLES_TO_INTERACT.includes(props.auth.user.role),
+    [ALLOWED_ROLES_TO_INTERACT, props.auth.user.role],
+  );
 
   // Reports
-  const canGetReports = props.hasPermission('getReports', !isAuthUser && canInteractWithViewingUser);
-  const canGetWeeklySummaries = props.hasPermission('getWeeklySummaries', !isAuthUser && canInteractWithViewingUser);
+  const canGetReports = props.hasPermission(
+    'getReports',
+    !isAuthUser && canInteractWithViewingUser,
+  );
+  const canGetWeeklySummaries = props.hasPermission(
+    'getWeeklySummaries',
+    !isAuthUser && canInteractWithViewingUser,
+  );
   const canGetWeeklyVolunteerSummary = props.hasPermission('getWeeklySummaries');
-  // const canGetWeeklyVolunteerSummary = props.hasPermission('weeklyVolunteerSummary');
+
   // Users
-  const canAccessUserManagement = props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
+  const canAccessUserManagement =
+    props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
 
   // Badges
-  const canAccessBadgeManagement = props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
+  const canAccessBadgeManagement =
+    props.hasPermission('seeBadges', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('createBadges', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('updateBadges', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteBadges', !isAuthUser && canInteractWithViewingUser);
   // Projects
-  const canAccessProjects = props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
+  const canAccessProjects =
+    props.hasPermission('postProject', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteProject', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putProject', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('getProjectMembers', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('assignProjectToUsers', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('postWbs', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteWbs', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('postTask', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteTask', !isAuthUser && canInteractWithViewingUser);
   // Tasks
-  const canUpdateTask = props.hasPermission('updateTask', !isAuthUser && canInteractWithViewingUser);
+  const canUpdateTask = props.hasPermission(
+    'updateTask',
+    !isAuthUser && canInteractWithViewingUser,
+  );
   // Teams
-  const canAccessTeams = props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
+  const canAccessTeams =
+    props.hasPermission('postTeam', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putTeam', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteTeam', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('assignTeamToUsers', !isAuthUser && canInteractWithViewingUser);
   // Popups
-  const canAccessPopups = props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+  const canAccessPopups =
+    props.hasPermission('createPopup', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('updatePopup', !isAuthUser && canInteractWithViewingUser);
+  // SendEmails
+  const canAccessSendEmails = props.hasPermission('sendEmails', !isAuthUser);
   // Permissions
-  const canAccessPermissionsManagement = props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser)
-    || props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser)
+  const canAccessPermissionsManagement =
+    props.hasPermission('postRole', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putRole', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('deleteRole', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('putUserProfilePermissions', !isAuthUser && canInteractWithViewingUser);
 
   const userId = user.userid;
   const [isModalVisible, setModalVisible] = useState(false);
@@ -132,6 +147,7 @@ export function Header(props) {
   const [lastDismissed, setLastDismissed] = useState(localStorage.getItem(dismissalKey));
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
+  const history = useHistory();
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -169,6 +185,7 @@ export function Header(props) {
       }
     }
   }, [props.auth.isAuthenticated]);
+  const roles = props.role?.roles;
 
   useEffect(() => {
     if (roles.length === 0 && isAuthenticated) {
@@ -187,8 +204,6 @@ export function Header(props) {
     }
   }, [props.notification?.error]);
 
-  const roles = props.role?.roles;
-
   const toggle = () => {
     setIsOpen(prevIsOpen => !prevIsOpen);
   };
@@ -201,8 +216,9 @@ export function Header(props) {
     setPopup(false);
     sessionStorage.removeItem('viewingUser');
     window.dispatchEvent(new Event('storage'));
-    props.getWeeklySummaries(user.userid)
-  }
+    props.getWeeklySummaries(user.userid);
+    history.push('/dashboard');
+  };
   const closeModal = () => {
     setModalVisible(false);
     const today = new Date();
@@ -231,6 +247,7 @@ export function Header(props) {
       setUserDashboardProfile(newUserProfile);
       setHasProfileLoaded(true); // Set flag to true after loading the profile
     } catch (err) {
+      // eslint-disable-next-line no-console
       console.log('User Profile not loaded.', err);
     }
   };
@@ -276,13 +293,15 @@ export function Header(props) {
 
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
+  if (location.pathname === '/login') return null;
+
   return (
     <div className="header-wrapper">
       <Navbar className="py-3 navbar" color="dark" dark expand="md">
         {logoutPopup && <Logout open={logoutPopup} setLogoutPopup={setLogoutPopup} />}
         <div
           className="timer-message-section"
-          style={user.role == 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
+          style={user.role === 'Owner' ? { marginRight: '0.5rem' } : { marginRight: '1rem' }}
         >
           {isAuthenticated && <Timer darkMode={darkMode} />}
           {isAuthenticated && (
@@ -300,7 +319,7 @@ export function Header(props) {
                 style={{ width: '100%' }}
               >
                 {canUpdateTask && (
-                  <NavItem>
+                  <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/taskeditsuggestions">
                       <div className="redBackGroupHeader">
                         <span>{props.taskEditSuggestionCount}</span>
@@ -308,20 +327,20 @@ export function Header(props) {
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to="/dashboard">
                     <span className="dashboard-text-link">{DASHBOARD}</span>
                   </NavLink>
                 </NavItem>
-                <NavItem>
-                  <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
+                <NavItem className="responsive-spacing">
+                  <NavLink tag={Link} to="/timelog">
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
-                  <UncontrolledDropdown nav inNavbar>
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{REPORTS}</span>
                     </DropdownToggle>
@@ -337,7 +356,7 @@ export function Header(props) {
                         </DropdownItem>
                       )}
                       {canGetWeeklyVolunteerSummary && (
-                        <DropdownItem tag={Link} to="/totalorgsummary">
+                        <DropdownItem tag={Link} to="/totalorgsummary" className={fontColor}>
                           {TOTAL_ORG_SUMMARY}
                         </DropdownItem>
                       )}
@@ -347,13 +366,13 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
-                  <NavItem>
+                  <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/teamlocations">
                       {TEAM_LOCATIONS}
                     </NavLink>
                   </NavItem>
                 )}
-                <NavItem>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/timelog/${displayUserId}`}>
                     <i className="fa fa-bell i-large">
                       <i className="badge badge-pill badge-danger badge-notify">
@@ -368,8 +387,9 @@ export function Header(props) {
                   canAccessProjects ||
                   canAccessTeams ||
                   canAccessPopups ||
+                  canAccessSendEmails ||
                   canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar>
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
                     <DropdownToggle nav caret>
                       <span className="dashboard-text-link">{OTHER_LINKS}</span>
                     </DropdownToggle>
@@ -379,14 +399,14 @@ export function Header(props) {
                           {USER_MANAGEMENT}
                         </DropdownItem>
                       ) : (
-                        <React.Fragment></React.Fragment>
+                        `null`
                       )}
                       {canAccessBadgeManagement ? (
                         <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
                           {BADGE_MANAGEMENT}
                         </DropdownItem>
                       ) : (
-                        <React.Fragment></React.Fragment>
+                        `null`
                       )}
                       {canAccessProjects && (
                         <DropdownItem tag={Link} to="/projects" className={fontColor}>
@@ -398,7 +418,7 @@ export function Header(props) {
                           {TEAMS}
                         </DropdownItem>
                       )}
-                      {canAccessPermissionsManagement && (
+                      {canAccessSendEmails && (
                         <DropdownItem tag={Link} to="/announcements" className={fontColor}>
                           {SEND_EMAILS}
                         </DropdownItem>
@@ -418,7 +438,7 @@ export function Header(props) {
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}
-                <NavItem>
+                <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
                       src={`${profilePic || '/pfp-default-header.png'}`}
@@ -428,7 +448,7 @@ export function Header(props) {
                     />
                   </NavLink>
                 </NavItem>
-                <UncontrolledDropdown nav>
+                <UncontrolledDropdown nav className="responsive-spacing">
                   <DropdownToggle nav caret>
                     <span className="dashboard-text-link">
                       {WELCOME}, {firstName}
@@ -525,5 +545,5 @@ export default connect(mapStateToProps, {
   getHeaderData,
   getAllRoles,
   hasPermission,
-  getWeeklySummaries
+  getWeeklySummaries,
 })(Header);
