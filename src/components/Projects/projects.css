@@ -94,6 +94,52 @@ thead {
   padding-left: 20px;
 }
 
+.search-project-person {
+  position: relative;
+  width: 100%;
+}
+
+.suggestions-list {
+  position: absolute;
+  background-color: white;
+  border: 1px solid #ccc;
+  width: 100%;
+  z-index: 1000;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.suggestion-item {
+  padding: 8px;
+  cursor: pointer;
+}
+
+.suggestion-item:hover {
+  background-color: #f0f0f0;
+}
+
+.suggestion-button {
+  display: block;
+  width: 100%; 
+  padding: 10px; 
+  text-align: left; 
+  background: none; 
+  border: none; 
+  cursor: pointer; 
+}
+
+.suggestion-button:hover {
+  background-color: #f0f0f0;
+}
+
 tr:hover {
   background: #e9f6ff;
+}
+
+@media (max-width: 375px) {
+  #new_project .form-control {
+    flex: 1 1 auto;
+    width: 50%;
+  }
 }

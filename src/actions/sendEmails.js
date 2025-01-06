@@ -14,7 +14,7 @@ export const sendEmail = (to, subject, html) => {
 
       // Display a success toast
       toast.success('Email successfully sent', {
-        position: 'top-center', // You can adjust the position as needed
+        position: 'top-right', // You can adjust the position as needed
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     } catch (error) {
@@ -22,7 +22,7 @@ export const sendEmail = (to, subject, html) => {
 
       // Display an error toast
       toast.error('Error sending email', {
-        position: 'top-center', // You can adjust the position as needed
+        position: 'top-right', // You can adjust the position as needed
         autoClose: 3000, // Close the toast after 3 seconds (adjust as needed)
       });
     }
