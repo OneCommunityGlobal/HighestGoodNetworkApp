@@ -286,7 +286,6 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              {/* <VolunteerHoursDistribution /> */}
               <VolunteerStatusChart volunteerNumberStats={volunteerStats?.volunteerNumberStats} />
             </div>
           </Col>

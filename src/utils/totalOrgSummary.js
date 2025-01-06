@@ -23,14 +23,12 @@ export const normalizeVolunteerStats = (volunteerNumberStats, totalHoursWorked) 
   ];
 };
 
-
-
 export const normalizeVolunteerActivities = (
   totalSummariesSubmitted,
   completedAssignedHours,
   totalBadgesAwarded,
   tasksStats,
-  totalActiveTeams
+  totalActiveTeams,
 ) => {
   const normalizeData = (data, key) => {
     if (!data) {
