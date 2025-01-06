@@ -10,11 +10,12 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
 
-  MODIFY_BLUE_SQUARE: (userId, blueSquareId) => `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-  USERS_ALLTEAMCODE_CHANGE : `${APIEndpoint}/AllTeamCodeChanges`,
+  MODIFY_BLUE_SQUARE: (userId, blueSquareId) =>
+    `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
+  USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
   USERS_REMOVE_PROFILE_IMAGE: `${APIEndpoint}/userProfile/profileImage/remove`,
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
-  USER_PROFILE_BASIC_INFO : `${APIEndpoint}/userProfile/basicInfo`,
+  USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
