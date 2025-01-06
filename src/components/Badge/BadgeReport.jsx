@@ -327,11 +327,13 @@ function BadgeReport(props) {
       setNumFeatured(prevNumFeatured => prevNumFeatured - 1);
     }
     setSortBadges(newBadges);
+    toast.success('Badges deleted successfully.');
+    saveChanges(newBadges, true);
     setShowModal(false);
     setBadgeToDelete([]);
   };
 
-  const saveChanges = async () => {
+  const saveChanges = async (sortBadges, openModal) => {
     setSavingChanges(true);
     try {
       let newBadgeCollection = JSON.parse(JSON.stringify(sortBadges));
@@ -354,7 +356,8 @@ function BadgeReport(props) {
 
       props.handleSubmit();
       // Close the modal
-      props.close();
+      if(!openModal)
+        props.close();
     } catch (error) {
       // Handle errors and display error message
       toast.error('Failed to save badges. Please try again.');
@@ -515,7 +518,7 @@ function BadgeReport(props) {
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           disabled={savingChanges}
           onClick={e => {
-            saveChanges();
+            saveChanges(sortBadges,false);
           }}
         >
           Save Changes
@@ -538,11 +541,6 @@ function BadgeReport(props) {
         <Modal isOpen={showModal} className={darkMode ? 'text-light' : ''}>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
-            <br />
-            <p>
-              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
-              until you click the &quot;Save Changes&quot; button below.
-            </p>
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button onClick={() => handleCancel()} style={darkMode ? boxStyleDark : boxStyle}>
@@ -716,7 +714,7 @@ function BadgeReport(props) {
               if (props.isRecordBelongsToJaeAndUneditable) {
                 alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
               }
-              saveChanges();
+              saveChanges(sortBadges,false);
             }}
           >
             <span>Save Changes</span>
@@ -740,11 +738,8 @@ function BadgeReport(props) {
         <Modal isOpen={showModal} className={darkMode ? 'text-light dark-mode' : ''}>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
-            <br />
-            <p>
-              Note: Even if you click &quot;Yes, Delete&quot;, this won&apos;t be fully deleted
-              until you click the &quot;Save Changes&quot; button below.
-            </p>
+            
+            
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button onClick={() => handleCancel()} style={darkMode ? boxStyleDark : boxStyle}>
