@@ -20,6 +20,7 @@ import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
+import hasPermission from '../../utils/permissions';
 import './Badge.css';
 
 function BadgeDevelopmentTable(props) {
@@ -312,6 +313,7 @@ const onRankSort = () => {
                   <Button
                     outline
                     color="info"
+                    disabled = {!canUpdateBadges}
                     onClick={() => onEditButtonClick(value)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -322,6 +324,7 @@ const onRankSort = () => {
                   <Button
                     outline
                     color="danger"
+                    disabled = {!canDeleteBadges}
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -348,12 +351,28 @@ const onRankSort = () => {
         className={darkMode ? 'text-light' : ''}
       >
         <ModalBody
-          className={`badge-message-background-${props.color} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+          className={`${darkMode ? 'bg-yinmn-blue' : `badge-message-background-${props.color}`} ${
+            props.color === 'success' ? 'border-success' : 'border-danger'
+          } border`}
         >
-          <p className={`badge-message-text-${props.color}`}>{props.message}</p>
+          <p
+            className={`${
+              props.color === 'success'
+                ? darkMode
+                  ? 'text-success'
+                  : 'text-success'
+                : darkMode
+                ? 'text-danger'
+                : 'text-danger'
+            } font-weight-bold mb-0`}
+          >
+            {props.message}
+          </p>
         </ModalBody>
         <ModalFooter
-          className={`badge-message-background-${props.color} ${darkMode ? 'bg-space-cadet' : ''}`}
+          className={`${darkMode ? 'bg-space-cadet' : `badge-message-background-${props.color}`} ${
+            props.color === 'success' ? 'border-success' : 'border-danger'
+          } border-top-0`}
         >
           <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK
@@ -375,6 +394,7 @@ const mapDispatchToProps = dispatch => ({
   deleteBadge: badgeId => dispatch(deleteBadge(badgeId)),
   updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
   closeAlert: () => dispatch(closeAlert()),
+  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeDevelopmentTable);
