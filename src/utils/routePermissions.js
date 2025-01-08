@@ -4,7 +4,13 @@ const RoutePermissions = {
   reports: ['getReports'],
   weeklySummariesReport: ['getWeeklySummaries'],
   weeklyVolunteerSummary: ['getWeeklyVolunteerSummary'],
-  userManagement: ['getUserProfiles', 'postUserProfile', 'deleteUserProfile', 'changeUserStatus', 'pauseResumeUser'],
+  userManagement: [
+    'getUserProfiles',
+    'postUserProfile',
+    'deleteUserProfile',
+    'changeUserStatus',
+    'pauseResumeUser',
+  ],
   badgeManagement: ['seeBadges', 'createBadges', 'updateBadges', 'deleteBadges', 'assignBadges'],
   projects: [
     'postProject',
