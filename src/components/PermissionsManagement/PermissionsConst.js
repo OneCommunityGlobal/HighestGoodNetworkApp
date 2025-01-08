@@ -1,3 +1,5 @@
+import { label } from "joi/lib/types/lazy";
+
 // recursive function that returns the permission keys given an array of permission objects (from permissionLabels below)
 const getAllSubpermissionKeys = permissions => {
   const keys = [];
@@ -139,6 +141,11 @@ export const permissionLabels = [
         label: 'Change Rehireable Status',
         key: 'changeUserRehireableStatus',
         description: 'Gives the user permission to change the user status of rehireable or not.',
+      },
+      {
+        label: 'Pause / Resume User',
+        key: 'pauseResumeUser',
+        description: 'Gives the user permission to pause or resume any user.',
       },
     ],
   },
