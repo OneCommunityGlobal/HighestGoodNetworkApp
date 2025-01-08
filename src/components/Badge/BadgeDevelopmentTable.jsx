@@ -26,6 +26,9 @@ import './Badge.css';
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
 
+  const canUpdateBadges = hasPermission('update:badges');
+  const canDeleteBadges = hasPermission('delete:badges');
+
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
   const [type, setType] = useState('');

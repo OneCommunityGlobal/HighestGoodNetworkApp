@@ -38,7 +38,6 @@ const Project = props => {
   const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
   const canEditCategoryAndStatus = props.hasPermission('editProject');
 
-
    const updateProject = ({ updatedProject, status }) => async dispatch => {
     try {
       dispatch(updateProject({ updatedProject, status }));
