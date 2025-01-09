@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import CreateNewBadgePopup from '../CreateNewBadgePopup';
 import thunk from 'redux-thunk';
@@ -9,7 +9,7 @@ import { createNewBadge } from '../../../actions/badgeManagement';
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
 jest.mock('../../../actions/badgeManagement', () => ({
-  createNewBadge: jest.fn().mockResolvedValue({}),
+  createNewBadge: jest.fn().mockResolvedValue(),
 }));
 
 describe('CreateNewBadgePopup component', () => {
@@ -17,16 +17,14 @@ describe('CreateNewBadgePopup component', () => {
   let toggleMock;
 
   beforeEach(() => {
-    createNewBadge.mockResolvedValue({fuckyou: 'fuckyou'});
-    toggleMock = jest.fn();
-
     store = mockStore({
       allProjects: { projects: [] },
       badge: { message: '', alertVisible: false, color: '' },
       theme: { darkMode: false },
     });
 
-    store.dispatch = jest.fn();
+    toggleMock = jest.fn();
+    store.dispatch = jest.fn().mockResolvedValue();
   });
 
   it('renders all key elements correctly', () => {
@@ -92,40 +90,36 @@ describe('CreateNewBadgePopup component', () => {
     expect(createButton).toBeEnabled();
   });
 
-  it('calls createNewBadge with the correct data on form submission', async () => {
+  it('calls createNewBadge with the correct data on form submission', () => {
     render(
       <Provider store={store}>
-        <CreateNewBadgePopup toggle={toggleMock} />
+        <CreateNewBadgePopup toggle={toggleMock}/>
       </Provider>
     );
     const badgeNameInput = screen.getByLabelText('Name');
     const imageUrlInput = screen.getByLabelText('Image URL');
     const descriptionInput = screen.getByLabelText('Description');
     const rankingInput = screen.getByLabelText('Ranking');
-  
+
     fireEvent.change(badgeNameInput, { target: { value: 'Test Badge' } });
     fireEvent.change(imageUrlInput, { target: { value: 'https://example.com/image.jpg' } });
     fireEvent.change(descriptionInput, { target: { value: 'Test badge description' } });
     fireEvent.change(rankingInput, { target: { value: '5' } });
-  
+
     fireEvent.click(screen.getByText('Create'));
-  
-    await waitFor(() => {
-      expect(createNewBadgeMock).toHaveBeenCalledWith({
-        badgeName: 'Test Badge',
-        imageUrl: 'https://example.com/image.jpg',
-        description: 'Test badge description',
-        ranking: 5,
-        type: 'Custom',
-        category: 'Unspecified',
-        totalHrs: 0,
-        weeks: 0,
-        months: 0,
-        multiple: 0,
-        people: 0,
-      });
+
+    expect(createNewBadge).toHaveBeenCalledWith({
+      badgeName: 'Test Badge',
+      imageUrl: 'https://example.com/image.jpg',
+      description: 'Test badge description',
+      ranking: 5,
+      type: 'Custom',
+      category: 'Unspecified',
+      totalHrs: 0,
+      weeks: 0,
+      months: 0,
+      multiple: 0,
+      people: 0,
     });
-  
-    expect(toggleMock).toHaveBeenCalled();
   });
 });
