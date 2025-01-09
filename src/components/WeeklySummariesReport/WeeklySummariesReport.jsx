@@ -88,7 +88,11 @@ export class WeeklySummariesReport extends Component {
       replaceCodeError: null,
       replaceCodeLoading: false,
       // weeklyRecipientAuthPass: '',
-      nameSpecialColorMap: {},
+      selectedSpecialColorsMap: {
+        purple: [],
+        green: [],
+        navy: [],
+      },
       selectedSpecialColors: {
         purple: false,
         green: false,
@@ -395,6 +399,8 @@ export class WeeklySummariesReport extends Component {
       selectedBioStatus,
       tableData,
       COLORS,
+      selectedSpecialColorsMap,
+      selectedSpecialColors,
     } = this.state;
     const chartData = [];
     let temptotal = 0;
@@ -403,9 +409,11 @@ export class WeeklySummariesReport extends Component {
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
 
-    const selectedSpecialColorsArray = Object.entries(this.state.selectedSpecialColors)
-      .filter(([, isSelected]) => isSelected)
-      .map(([color]) => color);
+    const selectedUserIds = new Set(
+      Object.entries(selectedSpecialColors)
+        .filter(([, isSelected]) => isSelected) // Include only active colors
+        .flatMap(([color]) => selectedSpecialColorsMap[color]), // Get users for active colors
+    );
 
     const temp = summaries.filter(summary => {
       const { activeTab } = this.state;
@@ -422,15 +430,12 @@ export class WeeklySummariesReport extends Component {
           hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
-      const matchesSpecialColor =
-        selectedSpecialColorsArray.length === 0 ||
-        selectedSpecialColorsArray.includes(summary.weeklySummaryOption);
-
+      const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
-        matchesSpecialColor &&
+        matchesSelectedUsers &&
         isOverHours &&
         isBio
       );
@@ -550,7 +555,7 @@ export class WeeklySummariesReport extends Component {
   handleSpecialColorToggleChange = event => {
     const { id, checked } = event.target;
     const color = id.split('-')[0];
-    // console.log(id, color);
+
     this.setState(
       prevState => ({
         selectedSpecialColors: {
@@ -558,23 +563,23 @@ export class WeeklySummariesReport extends Component {
           [color]: checked,
         },
       }),
-      () => this.filterWeeklySummaries(),
+      this.filterWeeklySummaries,
     );
   };
 
-  handleSpecialColorDotClick = (summaryId, color) => {
-    // console.log(summaryId,color);
-    this.setState(
-      prevState => ({
-        nameSpecialColorMap: {
-          ...prevState.nameSpecialColorMap,
-          [summaryId]: color,
-        },
-      }),
-      () => {
-        this.filterWeeklySummaries();
-      },
-    );
+  handleSpecialColorDotClick = (userId, color) => {
+    this.setState(prevState => {
+      const updatedMap = { ...prevState.selectedSpecialColorsMap };
+      // Remove user from all color lists
+      Object.keys(updatedMap).forEach(col => {
+        updatedMap[col] = updatedMap[col].filter(id => id !== userId);
+      });
+      // Add user to the selected color list
+      if (color) {
+        updatedMap[color].push(userId);
+      }
+      return { selectedSpecialColorsMap: updatedMap };
+    });
   };
 
   handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
@@ -902,10 +907,10 @@ export class WeeklySummariesReport extends Component {
                     <input
                       type="checkbox"
                       className="switch-toggle"
-                      id="blue-toggle"
+                      id="navy-toggle"
                       onChange={this.handleSpecialColorToggleChange}
                     />
-                    <label className="switch-toggle-label" htmlFor="blue-toggle">
+                    <label className="switch-toggle-label" htmlFor="navy-toggle">
                       <span className="switch-toggle-inner" />
                       <span className="switch-toggle-switch" />
                     </label>
@@ -1064,7 +1069,7 @@ export class WeeklySummariesReport extends Component {
                         darkMode={darkMode}
                         handleTeamCodeChange={this.handleTeamCodeChange}
                         handleSpecialColorDotClick={this.handleSpecialColorDotClick}
-                        nameSpecialColorMap={this.state.nameSpecialColorMap}
+                        selectedSpecialColorsMap={this.state.selectedSpecialColorsMap}
                       />
                     </Col>
                   </Row>

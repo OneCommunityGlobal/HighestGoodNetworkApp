@@ -69,7 +69,7 @@ function FormattedReport({
   darkMode,
   handleTeamCodeChange,
   handleSpecialColorDotClick,
-  nameSpecialColorMap,
+  selectedSpecialColorsMap,
 }) {
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
@@ -96,7 +96,7 @@ function FormattedReport({
             handleTeamCodeChange={handleTeamCodeChange}
             auth={auth}
             handleSpecialColorDotClick={handleSpecialColorDotClick}
-            nameSpecialColorMap={nameSpecialColorMap}
+            selectedSpecialColorsMap={selectedSpecialColorsMap}
           />
         ))}
       </ListGroup>
@@ -212,7 +212,7 @@ function ReportDetails({
   handleTeamCodeChange,
   auth,
   handleSpecialColorDotClick,
-  nameSpecialColorMap,
+  selectedSpecialColorsMap,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -239,7 +239,7 @@ function ReportDetails({
             allRoleInfo={allRoleInfo}
             auth={auth}
             handleSpecialColorDotClick={handleSpecialColorDotClick}
-            nameSpecialColorMap={nameSpecialColorMap}
+            selectedSpecialColorsMap={selectedSpecialColorsMap}
           />
         </ListGroupItem>
         <Row className="flex-nowrap">
@@ -651,7 +651,7 @@ function Index({
   allRoleInfo,
   auth,
   handleSpecialColorDotClick,
-  nameSpecialColorMap,
+  selectedSpecialColorsMap,
 }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
@@ -709,10 +709,11 @@ function Index({
               height: '15px',
               margin: '0 5px',
               borderRadius: '50%',
-              backgroundColor: color,
-              border: '1px solid grey',
+              backgroundColor: selectedSpecialColorsMap[color].includes(summary._id)
+                ? color
+                : 'transparent',
+              border: `3px solid ${color}`,
               cursor: 'pointer',
-              opacity: nameSpecialColorMap[summary._id] === color ? 1 : 0.5,
             }}
           />
         ))}
