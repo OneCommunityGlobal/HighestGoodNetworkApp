@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditConfirmModal from '../UserProfileModal/EditConfirmModal';
@@ -59,7 +59,7 @@ function SaveButton(props) {
   };
 
   const getMessage = type => {
-    if (type == 'message') {
+    if (type === 'message') {
       if (!isErr) {
         return isLoading ? stillSavingMessage : randomMessage;
       }
@@ -96,11 +96,8 @@ function SaveButton(props) {
         darkMode={darkMode}
       />
       <Button
-        {...(darkMode ? { outline: false } : { outline: true })}
+        outline={!darkMode} // Explicitly set the outline prop
         color={darkMode ? 'light' : 'primary'}
-        // to={`/userprofile/${this.state.userProfile._id}`}
-        // the line below caused the mouse over issue, so I commented it out
-        // className='btn btn-outline-primary mr-1 bg-white'
         onClick={handleSave}
         disabled={disabled}
         className="mr-1"

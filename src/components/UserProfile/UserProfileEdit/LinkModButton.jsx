@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import EditLinkModal from '../UserProfileModal/EditLinkModal';
 import './UserProfileEdit.scss';
 
@@ -28,9 +28,14 @@ function LinkModButton(props) {
         }}
         data-testid="edit-link"
         role="button"
-        type="button"
+        tabIndex="0" // Makes the element focusable
         onClick={toggleModal}
-        href="#"
+        onKeyDown={e => {
+          if (e.key === 'Enter' || e.key === ' ') {
+            e.preventDefault(); // Prevents default space scroll behavior
+            toggleModal();
+          }
+        }}
       >
         Edit
       </span>

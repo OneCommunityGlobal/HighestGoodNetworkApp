@@ -1,18 +1,15 @@
+/* eslint-disable no-console */
 import React, { useState, useEffect } from 'react';
 import { Row, Label, Input, Col, Button, FormGroup, FormFeedback } from 'reactstrap';
 import moment from 'moment-timezone';
 import { capitalize } from 'lodash';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
-import {
-  formatDate,
-  formatDateYYYYMMDD,
-  formatDateMMDDYYYY,
-  CREATED_DATE_CRITERIA,
-} from 'utils/formatDate';
+import { formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from 'utils/formatDate';
+import { Alert } from 'reactstrap';
+import HistoryModal from './HistoryModal';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
@@ -155,40 +152,62 @@ function WeeklyCommittedHours(props) {
   // Otherwise it will not update in the backend.
 
   const { darkMode } = props;
+  const [alert, setAlert] = useState({ message: '', color: '', visible: false });
 
   if (!props.canEdit) {
     return <p className={darkMode ? 'text-azure' : ''}>{props.userProfile.weeklycommittedHours}</p>;
   }
   const handleChange = e => {
-    // Max: 168 hrs  Min: 0 hr
-    // Convert value from string into easy number
-    const value = parseInt(e.target.value);
+    const value = parseInt(e.target.value, 10);
+
     if (value > MAXIMUM_WEEK_HOURS) {
-      // Check if Value is greater than maximum hours and set it to maximum hours if needed
-      alert(`You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`);
-      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MAXIMUM_WEEK_HOURS });
+      setAlert({
+        message: `You can't commit more than ${MAXIMUM_WEEK_HOURS} hours per week.`,
+        color: 'danger', // Use color mapping defined in your project
+        visible: true,
+      });
+      props.setUserProfile({
+        ...props.userProfile,
+        weeklycommittedHours: MAXIMUM_WEEK_HOURS,
+      });
     } else if (value < MINIMUM_WEEK_HOURS) {
-      // Check if value is less than minimum hours and set it to minimum hours if needed
-      alert(`You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`);
-      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: MINIMUM_WEEK_HOURS });
+      setAlert({
+        message: `You can't commit less than ${MINIMUM_WEEK_HOURS} hours per week.`,
+        color: 'warning',
+        visible: true,
+      });
+      props.setUserProfile({
+        ...props.userProfile,
+        weeklycommittedHours: MINIMUM_WEEK_HOURS,
+      });
     } else {
-      // update weekly hours whatever numbers in the input
-      props.setUserProfile({ ...props.userProfile, weeklycommittedHours: value });
+      setAlert({ ...alert, visible: false }); // Hide alert if input is valid
+      props.setUserProfile({
+        ...props.userProfile,
+        weeklycommittedHours: value,
+      });
     }
   };
 
   return (
-    <Input
-      type="number"
-      min={MINIMUM_WEEK_HOURS - 1}
-      max={MAXIMUM_WEEK_HOURS + 1}
-      name="weeklycommittedHours"
-      id="weeklycommittedHours"
-      data-testid="weeklycommittedHours"
-      value={props.userProfile.weeklycommittedHours}
-      onChange={e => handleChange(e)}
-      placeholder="Weekly Committed Hours"
-    />
+    <>
+      {alert.visible && (
+        <Alert color={alert.color} toggle={() => setAlert({ ...alert, visible: false })}>
+          {alert.message}
+        </Alert>
+      )}
+      <Input
+        type="number"
+        min={MINIMUM_WEEK_HOURS - 1}
+        max={MAXIMUM_WEEK_HOURS + 1}
+        name="weeklycommittedHours"
+        id="weeklycommittedHours"
+        data-testid="weeklycommittedHours"
+        value={props.userProfile.weeklycommittedHours}
+        onChange={e => handleChange(e)}
+        placeholder="Weekly Committed Hours"
+      />
+    </>
   );
 }
 
@@ -261,7 +280,7 @@ function ViewTab(props) {
   } = props;
   const [totalTangibleHoursThisWeek, setTotalTangibleHoursThisWeek] = useState(0);
   const [totalTangibleHours, setTotalTangibleHours] = useState(0);
-  const { hoursByCategory, totalIntangibleHrs } = userProfile;
+  const { hoursByCategory } = userProfile;
   const [historyModal, setHistoryModal] = useState(false);
   const [startDateAlert, setStartDateAlert] = useState('');
   const [endDateAlert, setEndDateAlert] = useState('');
@@ -277,15 +296,11 @@ function ViewTab(props) {
     props.onEndDate(endDate);
   };
 
-  useEffect(() => {
-    sumOfCategoryHours();
-  }, [hoursByCategory]);
-
   const calculateTotalHrsForPeriod = timeEntries => {
     const hours = { totalTangibleHrs: 0, totalIntangibleHrs: 0 };
     if (timeEntries.length < 1) return hours;
 
-    for (let i = 0; i < timeEntries.length; i++) {
+    for (let i = 0; i < timeEntries.length; i += 1) {
       const timeEntry = timeEntries[i];
       if (timeEntry.isTangible) {
         hours.totalTangibleHrs += parseFloat(timeEntry.hours) + parseFloat(timeEntry.minutes) / 60;
@@ -302,6 +317,10 @@ function ViewTab(props) {
     const hours = Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0);
     setTotalTangibleHours(hours.toFixed(2));
   };
+
+  useEffect(() => {
+    sumOfCategoryHours();
+  }, [hoursByCategory]);
 
   const toggleHistoryModal = () => {
     setHistoryModal(!historyModal);
@@ -335,8 +354,7 @@ function ViewTab(props) {
 
     axios
       .get(ENDPOINTS.TIME_ENTRIES_PERIOD(userProfile._id, createdDate, today))
-      .then(res => {
-        const timeEntries = res.data;
+      .then(() => {
         sumOfCategoryHours();
       })
       .catch(err => {

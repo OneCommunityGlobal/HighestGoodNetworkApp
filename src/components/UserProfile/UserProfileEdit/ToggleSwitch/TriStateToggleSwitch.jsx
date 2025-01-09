@@ -1,20 +1,20 @@
 import './TriStateToggleSwitch.css';
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 
 function TriStateToggleSwitch({ pos, onChange }) {
   const [position, setPosition] = useState(pos);
   const [bgColor, setBgColor] = useState('');
 
-  const handleClick = pos => {
-    setPosition(pos);
+  const handleClick = p => {
+    setPosition(p);
 
     if (onChange) {
-      onChange(pos);
+      onChange(p);
     }
 
-    if (pos === 'posted') {
+    if (p === 'posted') {
       setBgColor('blue');
-    } else if (pos === 'default') {
+    } else if (p === 'default') {
       setBgColor('darkgray');
     } else {
       setBgColor('green');

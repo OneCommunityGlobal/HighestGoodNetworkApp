@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import {
   Button,
   Modal,
@@ -10,11 +10,11 @@ import {
   Card,
 } from 'reactstrap';
 import PropTypes from 'prop-types';
-import hasPermission from '../../../utils/permissions';
 import './EditLinkModal.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect, useSelector } from 'react-redux';
 import { isValidGoogleDocsUrl, isValidMediaUrl } from 'utils/checkValidURL';
+import hasPermission from '../../../utils/permissions';
 
 function EditLinkModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -89,22 +89,7 @@ function EditLinkModal(props) {
     }
   };
 
-  const addNewLink = (links, setLinks, newLink, clearInput) => {
-    if (
-      isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink) ||
-      !isValidUrl(newLink.Link)
-    ) {
-      setIsValidLink(false);
-    } else {
-      const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
-      setLinks(newLinks);
-      setIsChanged(true);
-      setIsValidLink(true);
-      clearInput();
-    }
-  };
-
-  const removeLink = (links, setLinks, { name, link }) => {
+  const removeLink = (links, setLinks, { name }) => {
     const newLinks = links.filter(link => {
       return link.Name !== name;
     });
@@ -139,8 +124,22 @@ function EditLinkModal(props) {
       const pattern = /^(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
       return pattern.test(url);
     } catch (err) {
-      console.log(err);
       return false;
+    }
+  };
+
+  const addNewLink = (links, setLinks, newLink, clearInput) => {
+    if (
+      isDuplicateLink([googleLink, mediaFolderLink, ...links], newLink) ||
+      !isValidUrl(newLink.Link)
+    ) {
+      setIsValidLink(false);
+    } else {
+      const newLinks = [...links, { Name: newLink.Name, Link: newLink.Link }];
+      setLinks(newLinks);
+      setIsChanged(true);
+      setIsValidLink(true);
+      clearInput();
     }
   };
 
@@ -228,7 +227,7 @@ function EditLinkModal(props) {
                   {adminLinks?.map((link, index) => {
                     return (
                       <div
-                        key={index}
+                        key={link}
                         style={{ display: 'flex', margin: '5px' }}
                         className="link-fields"
                       >
@@ -317,7 +316,7 @@ function EditLinkModal(props) {
               <div>
                 {personalLinks.map((link, index) => (
                   <div
-                    key={index}
+                    key={link}
                     style={{ display: 'flex', margin: '5px' }}
                     className="link-fields"
                   >
@@ -461,6 +460,7 @@ EditLinkModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
   closeModal: PropTypes.func.isRequired,
   updateLink: PropTypes.func.isRequired,
+  // eslint-disable-next-line react/forbid-prop-types
   userProfile: PropTypes.object.isRequired,
 };
 

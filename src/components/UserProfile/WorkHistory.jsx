@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { Card, Row, CardTitle, CardText, Col, Badge } from 'reactstrap';
 
 function WorkHistory() {

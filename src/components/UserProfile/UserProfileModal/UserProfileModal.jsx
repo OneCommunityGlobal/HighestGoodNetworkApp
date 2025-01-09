@@ -1,4 +1,4 @@
-import React, { useState, useReducer } from 'react';
+import { useState, useReducer } from 'react';
 import {
   Button,
   Modal,
@@ -39,7 +39,7 @@ function UserProfileModal(props) {
 
   if (type !== 'message' && type !== 'addBlueSquare') {
     if (id.length > 0) {
-      blueSquare = userProfile.infringements?.filter(blueSquare => blueSquare._id === id);
+      blueSquare = userProfile.infringements?.filter(bs => bs._id === id);
     }
   }
 
@@ -62,60 +62,65 @@ function UserProfileModal(props) {
   const [summaryFieldView, setSummaryFieldView] = useState(true);
 
   const [personalLinks, dispatchPersonalLinks] = useReducer(
-    (personalLinks, { type, value, passedIndex }) => {
-      switch (type) {
+    (state, { type: actionType, value, passedIndex }) => {
+      switch (actionType) {
         case 'add':
-          return [...personalLinks, value];
+          return [...state, value];
         case 'remove':
-          return personalLinks.filter((_, index) => index !== passedIndex);
+          return state.filter((_, index) => index !== passedIndex);
         case 'updateName':
-          return personalLinks.filter((_, index) => {
-            if (index === passedIndex) {
-              _.Name = value;
-            }
-            return _;
-          });
+          return state.map((link, index) =>
+            index === passedIndex ? { ...link, Name: value } : link,
+          );
         case 'updateLink':
-          return personalLinks.filter((_, index) => {
-            if (index === passedIndex) {
-              _.Link = value;
-            }
-            return _;
-          });
+          return state.map((link, index) =>
+            index === passedIndex ? { ...link, Link: value } : link,
+          );
         default:
-          return personalLinks;
+          return state;
       }
     },
     userProfile.personalLinks,
   );
 
   const [adminLinks, dispatchAdminLinks] = useReducer(
-    (adminLinks, { type, value, passedIndex }) => {
-      switch (type) {
+    (state, { type: actionType, value, passedIndex }) => {
+      switch (actionType) {
         case 'add':
-          return [...adminLinks, value];
+          return [...state, value];
         case 'remove':
-          return adminLinks.filter((_, index) => index !== passedIndex);
+          return state.filter((_, index) => index !== passedIndex);
         case 'updateName':
-          return adminLinks.filter((_, index) => {
-            if (index === passedIndex) {
-              _.Name = value;
-            }
-            return _;
-          });
+          return state.map((link, index) =>
+            index === passedIndex ? { ...link, Name: value } : link,
+          );
         case 'updateLink':
-          return adminLinks.filter((_, index) => {
-            if (index === passedIndex) {
-              _.Link = value;
-            }
-            return _;
-          });
+          return state.map((link, index) =>
+            index === passedIndex ? { ...link, Link: value } : link,
+          );
         default:
-          return adminLinks;
+          return state;
       }
     },
     userProfile.adminLinks,
   );
+
+  function checkFields(field1, field2) {
+    // console.log('f1:', field1, ' f2:', field2);
+
+    if (field1 != null && field2 != null) {
+      setAddButton(false);
+    } else {
+      setAddButton(true);
+    }
+  }
+
+  const adjustTextareaHeight = textarea => {
+    // eslint-disable-next-line no-param-reassign
+    textarea.style.height = 'auto';
+    // eslint-disable-next-line no-param-reassign
+    textarea.style.height = `${textarea.scrollHeight}px`;
+  };
 
   const handleChange = event => {
     event.preventDefault();
@@ -133,21 +138,6 @@ function UserProfileModal(props) {
       setSummaryFieldView(false);
       checkFields(dateStamp, summary);
     }
-  };
-
-  function checkFields(field1, field2) {
-    // console.log('f1:', field1, ' f2:', field2);
-
-    if (field1 != null && field2 != null) {
-      setAddButton(false);
-    } else {
-      setAddButton(true);
-    }
-  }
-
-  const adjustTextareaHeight = textarea => {
-    textarea.style.height = 'auto';
-    textarea.style.height = `${textarea.scrollHeight}px`;
   };
 
   const boxStyling = darkMode ? boxStyleDark : boxStyle;
@@ -173,7 +163,7 @@ function UserProfileModal(props) {
                       <div className="customTitle">Link URL</div>
                     </div>
                     {adminLinks.map((link, index) => (
-                      <div key={index} style={{ display: 'flex', margin: '5px' }}>
+                      <div key={link} style={{ display: 'flex', margin: '5px' }}>
                         <input
                           className="customInput"
                           value={link.Name}
@@ -197,6 +187,7 @@ function UserProfileModal(props) {
                           }
                         />
                         <button
+                          type="button"
                           className="closeButton"
                           color="danger"
                           onClick={() => dispatchAdminLinks({ type: 'remove', passedIndex: index })}
@@ -224,6 +215,7 @@ function UserProfileModal(props) {
                         onChange={e => setAdminLinkURL(e.target.value.trim())}
                       />
                       <button
+                        type="button"
                         className="addButton"
                         onClick={() =>
                           dispatchAdminLinks({
@@ -250,7 +242,7 @@ function UserProfileModal(props) {
                     <div className="customTitle">Link URL</div>
                   </div>
                   {personalLinks.map((link, index) => (
-                    <div key={index} style={{ display: 'flex', margin: '5px' }}>
+                    <div key={link} style={{ display: 'flex', margin: '5px' }}>
                       <input
                         className="customInput"
                         value={link.Name}
@@ -274,6 +266,7 @@ function UserProfileModal(props) {
                         }
                       />
                       <button
+                        type="button"
                         className="closeButton"
                         color="danger"
                         onClick={() =>
@@ -303,6 +296,7 @@ function UserProfileModal(props) {
                       onChange={e => setLinkURL(e.target.value.trim())}
                     />
                     <button
+                      type="button"
                       className="addButton"
                       onClick={() =>
                         dispatchPersonalLinks({

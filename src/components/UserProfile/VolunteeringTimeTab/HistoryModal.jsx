@@ -1,4 +1,3 @@
-import React from 'react';
 import { useSelector } from 'react-redux';
 import { Modal, ModalBody, ModalHeader, ModalFooter, Button, Table } from 'reactstrap';
 
