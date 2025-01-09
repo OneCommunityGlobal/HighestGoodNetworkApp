@@ -176,7 +176,7 @@
   background-color: green;
 }
 
-#blue-toggle + .switch-toggle-label .switch-toggle-switch {
+#navy-toggle + .switch-toggle-label .switch-toggle-switch {
   background-color: navy;
 }
 
@@ -188,7 +188,7 @@
   background-color: rgba(55, 223, 55); 
 }
 
-#blue-toggle:checked + .switch-toggle-label .switch-toggle-inner:before {
+#navy-toggle:checked + .switch-toggle-label .switch-toggle-inner:before {
   background-color: rgb(83, 83, 223);
 }
 
