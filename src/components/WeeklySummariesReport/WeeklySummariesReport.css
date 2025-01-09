@@ -167,6 +167,31 @@
   color: red;
 }
 
+/* Colored knobs for each toggle */
+#purple-toggle + .switch-toggle-label .switch-toggle-switch {
+  background-color: purple;
+}
+
+#green-toggle + .switch-toggle-label .switch-toggle-switch {
+  background-color: green;
+}
+
+#blue-toggle + .switch-toggle-label .switch-toggle-switch {
+  background-color: navy;
+}
+
+#purple-toggle:checked + .switch-toggle-label .switch-toggle-inner:before {
+  background-color: rgba(223, 57, 231);
+}
+
+#green-toggle:checked + .switch-toggle-label .switch-toggle-inner:before {
+  background-color: rgba(55, 223, 55); 
+}
+
+#blue-toggle:checked + .switch-toggle-label .switch-toggle-inner:before {
+  background-color: rgb(83, 83, 223);
+}
+
 @media screen and (max-width: 544px) {
   .responsive-font-size {
     font-size: 0.75rem !important;
