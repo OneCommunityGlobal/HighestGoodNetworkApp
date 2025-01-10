@@ -1,12 +1,17 @@
 import { React, useState, useEffect, useRef } from 'react';
 import { Button, Col, Tooltip, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
+import Switch from './Switch';
+import './TeamsAndProjects.css';
+import './UserTeamsTable.css';
+
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
+
 import './../../Teams/Team.css';
 import { TeamMember } from './TeamMember';
 import axios from 'axios';
@@ -131,7 +136,6 @@ const UserTeamsTable = props => {
   };
 
   return (
-
     <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
       <TeamMember
         isOpenModalTeamMember={isOpenModalTeamMember}
@@ -141,9 +145,10 @@ const UserTeamsTable = props => {
       />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {props.canEditVisibility && (
-          <>
+          <div className="row">
             <Col
-              md="12"
+              md="7"
+              xs="12"
               style={{
                 backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 border: '1px solid #ced4da',
@@ -153,17 +158,25 @@ const UserTeamsTable = props => {
               <span className="teams-span">Visibility</span>
             </Col>
             <Col
-              md="12"
-              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
+              md="5"
+              xs="12"
+              style={{
+                display: 'flex',
+                justifyContent: 'center',
+                backgroundColor: darkMode ? '#1C2541' : '#ffffff',
+                border: darkMode ? '0px' : '1px solid #ced4da',
+                marginBottom: '10px',
+              }}
             >
               <ToggleSwitch
+
                 switchType="visible"
                 state={props.isVisible}
                 handleUserProfile={props.onUserVisibilitySwitch}
                 darkMode={darkMode}
               />
             </Col>
-          </>
+          </div>
         )}
         <div className="row">
           <Col

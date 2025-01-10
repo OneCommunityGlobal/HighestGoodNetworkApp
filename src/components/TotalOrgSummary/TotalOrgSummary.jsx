@@ -24,6 +24,7 @@ import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
+import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
 
@@ -314,12 +315,19 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <h4 className="text-center">Volunteer Trends by time</h4>
+              <span className="text-center"> Work in progres...</span>
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <AnniversaryCelebrated
+                fromDate={fromDate}
+                toDate={toDate}
+                fromOverDate={fromOverDate}
+                toOverDate={toOverDate}
+                darkMode={darkMode}
+              />
             </div>
           </Col>
         </Row>

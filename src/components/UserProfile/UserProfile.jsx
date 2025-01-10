@@ -46,7 +46,7 @@ import Badges from './Badges';
 import { getAllTeamCode } from '../../actions/allTeamsAction';
 import TimeEntryEditHistory from './TimeEntryEditHistory';
 import ActiveInactiveConfirmationPopup from '../UserManagement/ActiveInactiveConfirmationPopup';
-import { updateUserStatus, updateRehireableStatus } from '../../actions/userManagement';
+import { updateUserStatus, updateRehireableStatus, toggleVisibility } from '../../actions/userManagement';
 import { UserStatus } from '../../utils/enums';
 import BlueSquareLayout from './BlueSquareLayout';
 import TeamWeeklySummaries from './TeamWeeklySummaries/TeamWeeklySummaries';
@@ -88,9 +88,8 @@ function UserProfile(props) {
   const [userProfile, setUserProfile] = useState(undefined);
   const [originalUserProfile, setOriginalUserProfile] = useState(undefined);
   const [originalTasks, setOriginalTasks] = useState([]);
-  const [isTeamsEqual, setIsTeamsEqual] = useState(true);
+
   const [teams, setTeams] = useState([]);
-  const [originalTeams, setOriginalTeams] = useState([]);
   const [isProjectsEqual, setIsProjectsEqual] = useState(true);
   const [projects, setProjects] = useState([]);
   const [originalProjects, setOriginalProjects] = useState([]);
@@ -111,9 +110,9 @@ function UserProfile(props) {
   const [summaryName, setSummaryName] = useState('');
   const [showSummary, setShowSummary] = useState(false);
   const [saved, setSaved] = useState(false);
-  const [isTeamSaved, setIsTeamSaved] = useState(false);
   const [summaryIntro, setSummaryIntro] = useState('');
   const [showConfirmDialog, setShowConfirmDialog] = useState(false);
+  const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
 
@@ -176,11 +175,10 @@ function UserProfile(props) {
   });
 
   useEffect(() => {
-    checkIsTeamsEqual();
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile, teams, projects });
-    setOriginalUserProfile({ ...originalUserProfile, teams, projects });
-  }, [teams, projects]);
+    setUserProfile({ ...userProfile,  projects });
+    setOriginalUserProfile({ ...originalUserProfile, projects });
+  }, [ projects]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -188,39 +186,8 @@ function UserProfile(props) {
     loadUserTasks();
   }, [props?.match?.params?.userId]);
 
-  const checkIsTeamsEqual = () => {
-    setOriginalTeams(teams);
-    const originalTeamProperties = [];
-    originalTeams?.forEach(team => {
-      if (!team) return;
-      for (const [key, value] of Object.entries(team)) {
-        if (key == 'teamName') {
-          originalTeamProperties.push({ [key]: value });
-        }
-      }
-    });
 
-    const teamsProperties = [];
-    teams?.forEach(team => {
-      if (!team) return;
-      for (const [key, value] of Object.entries(team)) {
-        if (key == 'teamName') {
-          teamsProperties.push({ [key]: value });
-        }
-      }
-    });
 
-    const originalTeamsBeingDisplayed = teamsProperties.filter(
-      item =>
-        JSON.stringify(item) ===
-        JSON.stringify(originalTeamProperties.filter(elem => elem.teamName === item.teamName)[0]),
-    );
-
-    const compare =
-      originalTeamsBeingDisplayed?.length === originalTeams?.length &&
-      originalTeamsBeingDisplayed?.length === teamsProperties?.length;
-    setIsTeamsEqual(compare);
-  };
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -323,7 +290,6 @@ function UserProfile(props) {
       const newUserProfile = response.data;
       // Assuming newUserProfile contains isRehireable attribute
       setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
-
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       const teamId = newUserProfile?.teams[0]?._id;
@@ -343,7 +309,6 @@ function UserProfile(props) {
       newUserProfile.teams = newUserProfile.teams.filter(team => team !== null);
       newUserProfile.projects = newUserProfile.projects.filter(project => project !== null);
       setTeams(newUserProfile.teams);
-      setOriginalTeams(newUserProfile.teams);
       setProjects(newUserProfile.projects);
       setOriginalProjects(newUserProfile.projects);
       setResetProjects(newUserProfile.projects);
@@ -367,7 +332,6 @@ function UserProfile(props) {
       });
       setUserStartDate(startDate);
       checkIsProjectsEqual();
-      // isTeamSaved(true);
       setShowLoading(false);
     } catch (err) {
       setShowLoading(false);
@@ -694,7 +658,7 @@ function UserProfile(props) {
 
   const activeInactivePopupClose = () => {
     setActiveInactivePopupOpen(false);
-  };
+  };  
 
   const handleRehireableChange = () => {
     const newRehireableStatus = !isRehireable;
@@ -702,16 +666,20 @@ function UserProfile(props) {
     setShowConfirmDialog(true);
   };
 
-  const handleConfirmChange = () => {
+  const handleConfirmChange = async () => {
     setShowConfirmDialog(false);
     const updatedUserProfile = {
       ...userProfile,
       isRehireable: pendingRehireableStatus,
     };
-    updateRehireableStatus(updatedUserProfile, pendingRehireableStatus);
-    setIsRehireable(pendingRehireableStatus);
-    setUserProfile(updatedUserProfile);
-    setOriginalUserProfile(updatedUserProfile);
+    try{
+      await dispatch(updateRehireableStatus(updatedUserProfile, pendingRehireableStatus));
+      setIsRehireable(pendingRehireableStatus);
+      setUserProfile(updatedUserProfile);
+      setOriginalUserProfile(updatedUserProfile);
+    }catch(error){
+      toast.error('Unable change rehireable status');
+    }
   };
 
   const handleCancelChange = () => {
@@ -776,11 +744,24 @@ function UserProfile(props) {
   };
 
   const onUserVisibilitySwitch = () => {
-    setUserProfile({
+    setShowToggleVisibilityModal(true);
+  }
+
+  const handleVisibilityChange = () => {
+    setShowToggleVisibilityModal(false);
+    const visibility = !userProfile.isVisible;
+    const newUserProfile = {
       ...userProfile,
-      isVisible: !userProfile.isVisible ?? true,
-    });
+      isVisible: visibility
+    };
+    toggleVisibility(newUserProfile, visibility);
+    setUserProfile(newUserProfile);
+    setOriginalUserProfile(newUserProfile);
   };
+
+  const handleCloseConfirmVisibilityModal = () =>{
+    setShowToggleVisibilityModal(false)
+  } 
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
@@ -809,6 +790,7 @@ function UserProfile(props) {
   const canUpdateSummaryRequirements = props.hasPermission('updateSummaryRequirements');
   const canManageAdminLinks = props.hasPermission('manageAdminLinks');
   const canSeeQSC = props.hasPermission('seeQSC');
+  const canEditVisibility = props.hasPermission('toggleInvisibility');
   const targetIsDevAdminUneditable = cantUpdateDevAdminDetails(userProfile.email, authEmail);
 
   const canEditUserProfile = targetIsDevAdminUneditable
@@ -883,6 +865,16 @@ function UserProfile(props) {
           role={requestorRole}
         />
       )}
+      <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
+        <ModalHeader toggle={handleCloseConfirmVisibilityModal}>Confirm Visibility Change</ModalHeader>
+        <ModalBody>
+          {`Are you sure you want to change the user visibility to ${userProfile.isVisible ? 'Invisible' : 'Visible'}?`}
+        </ModalBody>
+        <ModalFooter>
+          <Button color="primary" onClick={handleVisibilityChange}>Confirm</Button>{' '}
+          <Button color="secondary" onClick={handleCloseConfirmVisibilityModal}>Cancel</Button>
+        </ModalFooter>
+      </Modal>
       <TabToolTips />
       <BasicToolTips />
       <Container
@@ -936,7 +928,6 @@ function UserProfile(props) {
           <Col md="8">
             {!isProfileEqual ||
             !isTasksEqual ||
-            (!isTeamsEqual && !isTeamSaved) ||
             !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
@@ -1241,14 +1232,14 @@ function UserProfile(props) {
                   role={requestorRole}
                   onUserVisibilitySwitch={onUserVisibilitySwitch}
                   isVisible={userProfile.isVisible}
-                  canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
+                  canEditVisibility={canEditVisibility}
                   handleSubmit={handleSubmit}
                   disabled={
                     !formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    (!(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) &&
-                      !isTeamSaved)
+                    !(isProfileEqual && isTasksEqual && isProjectsEqual)
+                      
                   }
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
@@ -1260,7 +1251,6 @@ function UserProfile(props) {
                   inputAutoStatus={inputAutoStatus}
                   isLoading={isLoading}
                   fetchTeamCodeAllUsers={() => fetchTeamCodeAllUsers()}
-                  isTeamSaved={isSaved => setIsTeamSaved(isSaved)}
                   darkMode={darkMode}
                 />
               </TabPane>
@@ -1280,7 +1270,7 @@ function UserProfile(props) {
                     !formValid.firstName ||
                     !formValid.lastName ||
                     !formValid.email ||
-                    !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                    !(isProfileEqual && isTasksEqual && isProjectsEqual)
                   }
                   darkMode={darkMode}
                 />
@@ -1338,9 +1328,8 @@ function UserProfile(props) {
                       !formValid.lastName ||
                       !formValid.email ||
                       !codeValid ||
-                      (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
-                      !(isStartDateValid && isEndDateValid) ||
-                      isTeamSaved
+                      (userStartDate > userEndDate && userEndDate !== '') ||
+                      (isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     userProfile={userProfile}
                     setSaved={() => setSaved(true)}
@@ -1351,7 +1340,6 @@ function UserProfile(props) {
                       onClick={() => {
                         setUserProfile(originalUserProfile);
                         setTasks(originalTasks);
-                        setTeams(originalTeams);
                         setProjects(resetProjects);
                       }}
                       className={`btn mr-1 btn-bottom ${
@@ -1472,7 +1460,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1549,8 +1537,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual) ||
-                              !(isStartDateValid && isEndDateValid)
+                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1611,13 +1598,13 @@ function UserProfile(props) {
                     role={requestorRole}
                     onUserVisibilitySwitch={onUserVisibilitySwitch}
                     isVisible={userProfile.isVisible}
-                    canEditVisibility={canEdit && !['Volunteer', 'Mentor'].includes(requestorRole)}
+                    canEditVisibility={canEditVisibility}
                     handleSubmit={handleSubmit}
                     disabled={
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual  && isProjectsEqual)
                     }
                     canEditTeamCode={canEditTeamCode}
                     setUserProfile={setUserProfile}
@@ -1644,7 +1631,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1711,7 +1698,7 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     darkMode={darkMode}
                   />
@@ -1729,7 +1716,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1801,7 +1788,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual && isTeamsEqual && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
