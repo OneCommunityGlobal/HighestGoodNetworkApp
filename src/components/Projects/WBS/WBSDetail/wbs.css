@@ -3,12 +3,6 @@
   width: calc(100% - 40px);
 }
 
-/*
-.container {
-  overflow: auto;
-}
-*/
-
 .level-space-1 {
   margin-left: 0px;
 }
@@ -265,7 +259,7 @@
 }
 
 .tasks-detail-task-name { /* task column height and width changes*/
-  width: 35%;
+  width: 35%; 
   height: auto; 
 }
 .tasks-detail-actions {  /* action column width reduced */
@@ -276,3 +270,4 @@
     margin-bottom: 10px;
   }
 }
+

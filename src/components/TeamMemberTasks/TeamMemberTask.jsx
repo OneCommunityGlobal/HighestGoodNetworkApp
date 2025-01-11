@@ -43,6 +43,7 @@ const TeamMemberTask = React.memo(
     showWhoHasTimeOff,
     onTimeOff,
     goingOnTimeOff,
+    displayUser,
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
@@ -225,6 +226,15 @@ const TeamMemberTask = React.memo(
                             }}
                           >{`${user.name}`}</Link>
 
+                          {user.role !== 'Volunteer' && (
+                            <div
+                              className="user-role"
+                              style={{ fontSize: '14px', color: darkMode ? 'lightgray' : 'gray' }}
+                            >
+                              {user.role}
+                            </div>
+                          )}
+
                           {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
 
                           <Warning
@@ -233,6 +243,7 @@ const TeamMemberTask = React.memo(
                             user={user}
                             userRole={userRole}
                             personId={user.personId}
+                            displayUser={displayUser}
                           />
                         </td>
                         <td
