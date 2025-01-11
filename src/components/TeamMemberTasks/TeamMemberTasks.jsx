@@ -13,6 +13,7 @@ import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
 import { MultiSelect } from 'react-multi-select-component';
 import { ENDPOINTS } from 'utils/URL';
+import { FaCalendarAlt, FaClock } from 'react-icons/fa';
 import TeamMemberTask from './TeamMemberTask';
 import TimeEntry from '../Timelog/TimeEntry';
 // import InfiniteScroll from 'react-infinite-scroller';
@@ -478,20 +479,22 @@ const TeamMemberTasks = React.memo(props => {
             <div className="hours-btn-div">
               <button
                 type="button"
-                className={
-                  'm-1 show-time-off-btn' + (darkMode ? ' box-shadow-dark' : '')
-                }
+                className={`m-1 show-time-off-btn${darkMode ? ' box-shadow-dark' : ''}`}
                 style={{
                   backgroundColor: showWhoHasTimeOff ? '#17a2b8' : 'white',
                 }}
                 onClick={handleshowWhoHasTimeOff}
               >
-                <FaCalendarAlt className={'show-time-off-calender-svg'}
-                               fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
-                               size="20px" />
-                <FaClock size={'12px'}
-                         fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
-                         className={'show-time-off-icon'} />
+                <FaCalendarAlt
+                  className="show-time-off-calender-svg"
+                  fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
+                  size="20px"
+                />
+                <FaClock
+                  size="12px"
+                  fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
+                  className="show-time-off-icon"
+                />
               </button>
               {Object.entries(hrsFilterBtnColorMap).map(([days, color]) => (
                 <button
@@ -626,16 +629,23 @@ const TeamMemberTasks = React.memo(props => {
         </Row>
       )}
       <div className="task_table-container">
-      <Table className='task-table'>
-          <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
+        <Table className="task-table">
+          <thead
+            className={`pc-component ${darkMode ? 'bg-space-cadet' : ''}`}
+            style={{ position: 'sticky', top: 0 }}
+          >
             <tr>
-              <th colSpan={3} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
-                <Table borderless className={`team-member-tasks-subtable ${darkMode ? "text-light" : ""}`}>
-                  <thead className={darkMode ? "bg-space-cadet" : ""}>
+              <th
+                colSpan={3}
+                className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}
+              >
+                <Table
+                  borderless
+                  className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
+                >
+                  <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
-                      <th className={darkMode ? "bg-space-cadet" : ""}>
-                        User Status
-                      </th>
+                      <th className={darkMode ? 'bg-space-cadet' : ''}>User Status</th>
                       <th
                         className={`team-member-tasks-headers team-member-tasks-user-name ${
                           darkMode ? 'bg-space-cadet' : ''
