@@ -219,8 +219,7 @@ export const TeamMembersPopup = React.memo(props => {
           className={darkMode ? 'bg-space-cadet' : ''}
           toggle={closePopup}
         >{`Members of ${props.selectedTeamName}`}</ModalHeader>
-        <div
-        className={darkMode ? 'bg-space-cadet' : ''}>
+        <div className={darkMode ? 'bg-space-cadet' : ''}>
           {canAssignTeamToUsers && (
             <div className="input-group-prepend" style={{ margin: '10px' }}>
               <MembersAutoComplete
@@ -239,7 +238,11 @@ export const TeamMembersPopup = React.memo(props => {
               </Button>
             </div>
           )}
-
+        </div>
+        <ModalBody
+          className={darkMode ? 'bg-yinmn-blue' : ''}
+          style={{ textAlign: 'center', overflowX: 'auto' }}
+        >
           {duplicateUserAlert && (
             <Alert color="danger">Member is already a part of this team.</Alert>
           )}
