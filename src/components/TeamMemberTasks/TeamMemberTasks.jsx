@@ -483,6 +483,7 @@ const TeamMemberTasks = React.memo(props => {
                 style={{
                   backgroundColor: showWhoHasTimeOff ? '#17a2b8' : 'white',
                 }}
+                aria-label="Calender Button"
                 onClick={handleshowWhoHasTimeOff}
               >
                 <FaCalendarAlt

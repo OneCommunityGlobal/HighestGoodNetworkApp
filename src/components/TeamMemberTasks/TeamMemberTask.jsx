@@ -161,6 +161,7 @@ const TeamMemberTask = React.memo(
                   onClick={() => {
                     setIsTimeOffContentOpen(false);
                   }}
+                  aria-label="Compress"
                 >
                   <FontAwesomeIcon icon={faCompressArrowsAlt} data-testid="icon" />
                 </button>
@@ -443,6 +444,7 @@ const TeamMemberTask = React.memo(
                         className={`expand-time-off-detail-button ${
                           isTimeOffContentOpen ? 'hidden' : ''
                         }`}
+                        aria-label="Expand"
                         onClick={() => setIsTimeOffContentOpen(true)}
                       >
                         <FontAwesomeIcon icon={faExpandArrowsAlt} data-testid="icon" />
