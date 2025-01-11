@@ -44,6 +44,7 @@ export function Team(props) {
             props.onMembersClick(props.teamId, props.name, props.teamCode);
           }}
           data-testid="members-btn"
+          aria-label="Users"
         >
           <i className="fa fa-users" aria-hidden="true" />
         </button>
