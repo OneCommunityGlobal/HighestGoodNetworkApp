@@ -1,0 +1,29 @@
+.star-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.star {
+  font-size: 40px;
+  /* Adjust the size of the stars */
+  color: transparent;
+  /* Make the stars transparent by default */
+  -webkit-text-stroke: 1px black;
+  /* Black outline around the star */
+  margin: 0 5px;
+  /* Space between stars */
+  transition: color 0.3s ease;
+  /* Smooth transition for color change */
+}
+
+.star.selected {
+  color: #b100cd;
+  /* Yellow color when selected */
+}
+
+.star:hover {
+  color: #b100cd;
+  /* Hover effect to show yellow when hovering over a star */
+}

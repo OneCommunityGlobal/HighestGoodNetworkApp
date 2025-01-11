@@ -28,6 +28,12 @@ const ReviewButton = ({
   const canReview = (dispatch(hasPermission('putReviewStatus')));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false); // New state for the final confirmation modal
+  const uniqueLinks = [...new Set(task.relatedWorkLinks)];
+  //console.log("Related Work Links: ", task.relatedWorkLinks);
+
+
+
+
 
   const toggleModal = () => {
     setModal(!modal);
@@ -52,9 +58,9 @@ const ReviewButton = ({
   const handleLink = (e) => {
     const url = e.target.value;
     setLink(url);
-    if (!url) { 
-      setLinkError("A valid URL is required for review"); 
-    } else if (!validURL(url)) { 
+    if (!url) {
+      setLinkError("A valid URL is required for review");
+    } else if (!validURL(url)) {
       setLinkError("Please enter a valid URL starting with 'https://'.");
     } else {
       setLinkError(null);
@@ -63,9 +69,9 @@ const ReviewButton = ({
 
   const validURL = (url) => {
     try {
-      if(url === "")
+      if (url === "")
         return false;
-      
+
       const pattern = /^(?=.{20,})(?:https?:\/\/)?[\w.-]+\.[a-zA-Z]{2,}(?:\/\S*)?$/;
       return pattern.test(url);
     } catch (err) {
@@ -94,13 +100,13 @@ const ReviewButton = ({
     });
     let updatedTask = { ...task, resources: newResources };
     //Add relatedWorkLinks to existing tasks
-    if(!Array.isArray(task.relatedWorkLinks)) {
+    if (!Array.isArray(task.relatedWorkLinks)) {
       task.relatedWorkLinks = [];
     }
-  
+
     if (newStatus === 'Submitted' && link) {
       if (validURL(link)) {
-        updatedTask = {...updatedTask, relatedWorkLinks: [...task.relatedWorkLinks, link] };
+        updatedTask = { ...updatedTask, relatedWorkLinks: [...task.relatedWorkLinks, link] };
         setLink("");
       } else {
         alert('Invalid URL. Please enter a valid URL of at least 20 characters');
@@ -139,13 +145,103 @@ const ReviewButton = ({
     httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
+
+
   const buttonFormat = () => {
     if (user.personId === myUserId && reviewStatus === "Unsubmitted") {
-      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={darkMode ? boxStyleDark : boxStyle} disabled = { isSubmitting }>
+      return (
+        <Button
+          className="reviewBtn"
+          color="primary"
+          onClick={toggleModal}
+          style={darkMode ? boxStyleDark : boxStyle}
+          disabled={isSubmitting}
+        >
+          Submit for Review
+        </Button>
+      );
+    } else if (reviewStatus === "Submitted") {
+      if (myRole === "Owner" || myRole === "Administrator" || myRole === "Mentor" || myRole === "Manager" || canReview) {
+        return (
+          <UncontrolledDropdown>
+            <DropdownToggle
+              className="btn--dark-sea-green reviewBtn"
+              caret
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Ready for Review
+            </DropdownToggle>
+            <DropdownMenu className={darkMode ? "bg-space-cadet" : ""}>
+              {task.relatedWorkLinks &&
+                task.relatedWorkLinks
+                  .filter((link) => link && link !== "https://www.google.com/" && validURL(link)) //Excluding null values after formatting & Validating each link
+                  .map((link, index) => (
+                    <DropdownItem
+                      key={index}
+                      href={link.startsWith("http") ? link : `https://${link}`}
+                      target="_blank"
+                      className={darkMode ? "text-light dark-mode-btn" : ""}
+                    >
+                      View Link
+                    </DropdownItem>
+                  ))}
+
+
+              {/* Conditional rendering of "Mark as Complete" based on permission */}
+              {canReview && (
+                <DropdownItem
+                  onClick={() => {
+                    setSelectedAction("Complete and Remove");
+                    toggleVerify();
+                  }}
+                  className={darkMode ? "text-light dark-mode-btn" : ""}
+                >
+                  <FontAwesomeIcon
+                    className="team-member-tasks-done"
+                    icon={faCheck}
+                  />{" "}
+                  Mark as Complete and remove task
+                </DropdownItem>
+              )}
+
+              <DropdownItem
+                onClick={() => {
+                  setSelectedAction("More Work Needed");
+                  toggleVerify();
+                }}
+                className={darkMode ? "text-light dark-mode-btn" : ""}
+              >
+                More work needed, reset this button
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
+        );
+      } else if (user.personId === myUserId) {
+        return (
+          <Button className="reviewBtn" color="info" disabled>
+            Work Submitted and Awaiting Review
+          </Button>
+        );
+      } else {
+        return (
+          <Button className="reviewBtn" color="success" disabled>
+            Ready for Review
+          </Button>
+        );
+      }
+    } else {
+      return <></>;
+    }
+  };
+
+
+  /*const buttonFormat = () => {
+    if (user.personId === myUserId && reviewStatus === "Unsubmitted") {
+      return <Button className='reviewBtn' color='primary' onClick={toggleModal} style={darkMode ? boxStyleDark : boxStyle} disabled={isSubmitting}>
         Submit for Review
       </Button>;
-     } else if (reviewStatus === "Submitted")  {
-      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || canReview) {
+    } else if (reviewStatus === "Submitted") {
+      if (myRole == "Owner" || myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || canReview) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
@@ -175,10 +271,10 @@ const ReviewButton = ({
           Ready for Review
         </Button>;
       }
-     } else {
+    } else {
       return <></>;
     }
-  };
+  };*/
 
   return (
     <>
@@ -191,8 +287,8 @@ const ReviewButton = ({
           You are about to submit the following link for review:
           <div className="mt-2" style={{ wordWrap: 'break-word', wordBreak: 'break-all' }}>
             <a href={link} target="_blank" rel="noopener noreferrer">
-                {link}
-              </a>
+              {link}
+            </a>
           </div>
           Please confirm if this is the correct link.
         </ModalBody>
@@ -207,23 +303,23 @@ const ReviewButton = ({
       </Modal>
 
 
-            {/* Submission Modal */}
+      {/* Submission Modal */}
       <Modal isOpen={modal} toggle={toggleModal} className={darkMode ? 'text-light dark-mode' : ''}>
         <ModalHeader toggle={toggleModal} className={darkMode ? 'bg-space-cadet' : ''}>
           Change Review Status
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-          {reviewStatus === "Unsubmitted" 
+          {reviewStatus === "Unsubmitted"
             ? `Are you sure you want to submit for review?`
             : `Are you sure you have completed the review?`}
         </ModalBody>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           Please add link to related work:
-          <Input 
-          type='text' 
-          required
-          value={link}
-          onChange={handleLink}
+          <Input
+            type='text'
+            required
+            value={link}
+            onChange={handleLink}
           />
           {linkError && <div className="text-danger">{linkError}</div>}
         </ModalBody>
@@ -235,7 +331,7 @@ const ReviewButton = ({
                 setLinkError("Please enter a valid URL starting with 'https://'.");
                 return;
               }
-              if(reviewStatus === "Unsubmitted") {
+              if (reviewStatus === "Unsubmitted") {
                 submitReviewRequest(e);
               }
               else {
