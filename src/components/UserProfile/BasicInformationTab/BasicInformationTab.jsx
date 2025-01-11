@@ -22,6 +22,7 @@ import { updateUserProfileProperty } from '../../../actions/userProfile';
 import permissionLabels from 'components/PermissionsManagement/PermissionsConst';
 import { permissionPresets } from '../UserProfileModal/PermissionPresetsTemp';
 import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
+import PermissionList from 'components/PermissionsManagement/PermissionList';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
@@ -319,6 +320,7 @@ const BasicInformationTab = props => {
   const [isPermissionModalOpen, setPermissionModalOpen] = useState(false);
   const [newRole, setNewRole] = useState('');
   const [currentUserPermissions, setCurrentUserPermissions] = useState([]);
+  const [immutablePermissions, setImmutablePermissions] = useState([]);
 
   let topMargin = '6px';
   if (isUserSelf) {
@@ -458,6 +460,10 @@ const BasicInformationTab = props => {
     console.log('rolePermissions:', rolePermissions);
     console.log('immutablePermissions:', immutablePermissions);
   }, [rolePermissions, immutablePermissions]); */
+
+  useEffect(() => {
+    console.log('immutablePermissions:', immutablePermissions);
+  }, [immutablePermissions]);
 
   const fetchPresetsByRole = useCallback(async (roleName) => {
     console.log('Fetching presets for role:', roleName);
@@ -739,6 +745,11 @@ const BasicInformationTab = props => {
     }
   };
 
+  const handlePermissionsChange = async () => {
+    const updatedPermissions = await getCurrentUserPermissions(permissionLabels);
+    setCurrentUserPermissions(updatedPermissions);
+  };
+
   const nameComponent = (
     <>
       <Col>
@@ -897,6 +908,15 @@ const BasicInformationTab = props => {
         newRolePermissionsToRemove={newRolePermissionsToRemove}
         setOldRole={setOldRole}
         getCurrentUserPermissions={getCurrentUserPermissions}
+      />
+      <PermissionList
+        rolePermissions={currentUserPermissions}
+        permissionsList={permissionLabels}
+        immutablePermissions={immutablePermissions}
+        editable={true}
+        setPermissions={setCurrentUserPermissions}
+        onChange={handlePermissionsChange}
+        darkMode={darkMode}
       />
       <Col>
         <Label className={darkMode ? 'text-light' : ''}>Role</Label>
