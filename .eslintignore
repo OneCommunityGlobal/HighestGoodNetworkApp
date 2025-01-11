@@ -15,11 +15,9 @@ src/__tests__/**
 /node_modules/
 src/components/Badge/**
 src/components/common/**
-src/components/Header/**
 src/components/Projects/**
 src/components/Reports/**
 src/components/SetupProfile/**
-src/components/SummaryBar/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**

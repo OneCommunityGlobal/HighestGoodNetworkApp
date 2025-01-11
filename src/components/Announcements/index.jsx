@@ -6,9 +6,10 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 
-function Announcements() {
+function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
+  const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
@@ -23,7 +24,7 @@ function Announcements() {
 
   const editorInit = {
     license_key: 'gpl',
-    selector: 'textarea#open-source-plugins',
+    selector: 'Editor#email-editor',
     height: 500,
     plugins: [
       'advlist autolink lists link image paste',
@@ -31,6 +32,8 @@ function Announcements() {
       'searchreplace visualblocks code',
       'insertdatetime media table paste wordcount',
     ],
+    menubar: false,
+    branding: false,
     image_title: true,
     automatic_uploads: true,
     file_picker_callback(cb) {
@@ -71,15 +74,22 @@ function Announcements() {
       input.click();
     },
     a11y_advanced_options: true,
-    menubar: 'file insert edit view format tools',
     toolbar:
       // eslint-disable-next-line no-multi-str
-      'undo redo | formatselect | bold italic | blocks fontfamily fontsize | image \
+      'undo redo | bold italic | blocks fontfamily fontsize | image \
       alignleft aligncenter alignright | \
       bullist numlist outdent indent | removeformat | help',
     skin: darkMode ? 'oxide-dark' : 'oxide',
     content_css: darkMode ? 'dark' : 'default',
   };
+
+  useEffect(() => {
+    if (email) {
+      const trimmedEmail = email.trim();
+      setEmailTo(email);
+      setEmailList(trimmedEmail.split(','));
+    }
+  }, [email]);
 
   const handleEmailListChange = e => {
     const emails = e.target.value.split(',');
@@ -88,6 +98,18 @@ function Announcements() {
 
   const handleHeaderContentChange = e => {
     setHeaderContent(e.target.value);
+  };
+
+  // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
+  const addHeaderToEmailContent = () => {
+    if (!headerContent) return;
+    const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
+    const editor = tinymce.get('email-editor');
+    if (editor) {
+      editor.insertContent(imageTag);
+      setEmailContent(editor.getContent());
+    }
+    setHeaderContent(''); // Clear the input field after inserting the header
   };
 
   const convertImageToBase64 = (file, callback) => {
@@ -111,40 +133,31 @@ function Announcements() {
     });
     e.target.value = '';
   };
-  // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
-  const addHeaderToEmailContent = () => {
-    if (!headerContent) return;
-    const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
-    const editor = tinymce.current.get('email-editor');
-    if (editor) {
-      editor.insertContent(imageTag);
-      setEmailContent(editor.getContent());
-    }
-    setHeaderContent(''); // Clear the input field after inserting the header
-  };
 
-  const validateEmail = email => {
+  const validateEmail = e => {
     /* Add a regex pattern for email validation */
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-    return emailPattern.test(email);
+    return emailPattern.test(e);
   };
 
   const handleSendEmails = () => {
     const htmlContent = emailContent;
 
-    if (emailList.length === 0 || emailList.every(email => !email.trim())) {
+    if (emailList.length === 0 || emailList.every(e => !e.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
 
-    const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
+    const invalidEmails = emailList.filter(e => !validateEmail(e.trim()));
 
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
       return;
     }
 
-    dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
+    dispatch(
+      sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent),
+    );
   };
 
   const handleBroadcastEmails = () => {
@@ -160,51 +173,59 @@ function Announcements() {
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: '100%' }}>
       <div className="email-update-container">
         <div className="editor">
-          <h3>Weekly Progress Editor</h3>
+          {title ? <h3> {title} </h3> : <h3>Weekly Progress Editor</h3>}
+
           <br />
           {showEditor && (
             <Editor
               tinymceScriptSrc="/tinymce/tinymce.min.js"
               id="email-editor"
               initialValue="<p>This is the initial content of the editor</p>"
-              onInit={(_, editor) => {
-                tinymce.current = editor;
-              }}
               init={editorInit}
               onEditorChange={content => {
                 setEmailContent(content);
               }}
             />
           )}
-          <button
-            type="button"
-            className="send-button"
-            onClick={handleBroadcastEmails}
-            style={darkMode ? boxStyleDark : boxStyle}
-          >
-            Broadcast Weekly Update
-          </button>
+          {title ? (
+            ''
+          ) : (
+            <button
+              type="button"
+              className="send-button"
+              onClick={handleBroadcastEmails}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Broadcast Weekly Update
+            </button>
+          )}
         </div>
         <div
           className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}
           style={darkMode ? boxStyleDark : boxStyle}
         >
-          <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-            Email List (comma-separated):
-          </label>
+          {title ? (
+            <p>Email</p>
+          ) : (
+            <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Email List (comma-separated):
+            </label>
+          )}
           <input
             type="text"
+            value={emailTo}
             id="email-list-input"
             onChange={handleEmailListChange}
             className="input-text-for-announcement"
           />
+
           <button
             type="button"
             className="send-button"
             onClick={handleSendEmails}
             style={darkMode ? boxStyleDark : boxStyle}
           >
-            Send Email to specific user
+            {title ? 'Send Email' : 'Send mail to specific users'}
           </button>
 
           <hr />

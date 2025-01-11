@@ -20,7 +20,6 @@ src/components/Memberships/**
 src/components/Projects/**
 src/components/Reports/**
 src/components/SetupProfile/**
-src/components/SummaryBar/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamLocations/**

@@ -99,6 +99,7 @@
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^10.4.9",
     "@testing-library/user-event": "^12.0.14",
+    "@types/react-router-dom": "^5.3.3",
     "babel-eslint": "^10.1.0",
     "cross-env": "^5.2.1",
     "enzyme": "^3.10.0",
