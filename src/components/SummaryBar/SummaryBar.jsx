@@ -272,7 +272,7 @@ function SummaryBar(props) {
     data.email = displayUserProfile.email;
     httpService
       .post(`${ApiEndpoint}/dashboard/bugreport/${displayUserProfile._id}`, data)
-      .catch(() => { });
+      .catch(() => {});
     openReport();
   };
 
@@ -312,7 +312,7 @@ function SummaryBar(props) {
       setEditType('');
       httpService
         .post(`${ApiEndpoint}/dashboard/suggestionoption/${displayUserProfile._id}`, data)
-        .catch(() => { });
+        .catch(() => {});
     } else {
       toast.error('Please fill all fields with valid values.');
     }
@@ -328,7 +328,7 @@ function SummaryBar(props) {
       setShowSuggestionModal(prev => !prev);
       const res = await httpService
         .post(`${ApiEndpoint}/dashboard/makesuggestion/${displayUserProfile._id}`, data)
-        .catch(() => { });
+        .catch(() => {});
       if (res.status === 200) {
         toast.success('Email sent successfully!');
       } else {
@@ -433,8 +433,9 @@ function SummaryBar(props) {
       }
       return (
         <div
-          className={`border border-danger col-4 no-gutters ${darkMode ? 'bg-yinmn-blue' : 'bg-white'
-            }`}
+          className={`border border-danger col-4 no-gutters ${
+            darkMode ? 'bg-yinmn-blue' : 'bg-white'
+          }`}
         >
           <div className="py-1"> </div>
           {isAuthUser || canEditData() ? (
@@ -572,13 +573,14 @@ function SummaryBar(props) {
             )}
 
             <div
-              className={`col-8 d-flex justify-content-center align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'
-                }`}
+              className={`col-8 d-flex justify-content-center align-items-center ${
+                darkMode ? 'bg-yinmn-blue' : 'bg-white'
+              }`}
               style={{ border: '1px solid black' }}
             >
               <div className="align-items-center" id="timelogweeklychart">
                 <div className="align-items-center med_text_summary">
-                  Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours.toFixed(2)}
+                  Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
                   <Progress
                     value={getProgressValue(totalEffort, weeklyCommittedHours)}
                     color={getProgressColor(totalEffort, weeklyCommittedHours)}
@@ -594,8 +596,9 @@ function SummaryBar(props) {
           <Row className="no-gutters w-100">
             {renderSummary()}
             <div
-              className={`col-8 d-flex align-items-center ${darkMode ? 'bg-yinmn-blue' : 'bg-white'
-                }`}
+              className={`col-8 d-flex align-items-center ${
+                darkMode ? 'bg-yinmn-blue' : 'bg-white'
+              }`}
               style={{ border: '1px solid black' }}
             >
               <div className="m-auto p-2 text-center">
