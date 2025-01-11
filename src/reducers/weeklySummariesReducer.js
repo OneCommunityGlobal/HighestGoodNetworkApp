@@ -7,7 +7,7 @@ const initialState = {
 };
 
 // eslint-disable-next-line default-param-last
-const weeklySummariesReducer = (state = initialState, action) => {
+export const weeklySummariesReducer = (state = initialState, action) => {
   switch (action.type) {
     case actions.FETCH_WEEKLY_SUMMARIES_BEGIN:
       return {
