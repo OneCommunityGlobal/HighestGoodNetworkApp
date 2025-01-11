@@ -219,9 +219,10 @@ export const TeamMembersPopup = React.memo(props => {
           className={darkMode ? 'bg-space-cadet' : ''}
           toggle={closePopup}
         >{`Members of ${props.selectedTeamName}`}</ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
+        <div
+        className={darkMode ? 'bg-space-cadet' : ''}>
           {canAssignTeamToUsers && (
-            <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
+            <div className="input-group-prepend" style={{ margin: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
                 existingMembers={validation}
