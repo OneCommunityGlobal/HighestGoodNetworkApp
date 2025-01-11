@@ -68,7 +68,8 @@ import {
 
 import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
-
+import { v4 as uuidv4 } from 'uuid';
+import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -115,7 +116,7 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
-
+  const [specialWarnings, setSpecialWarnings] = useState([]);
   const userProfileRef = useRef();
 
   const isTasksEqual = JSON.stringify(originalTasks) === JSON.stringify(tasks);
@@ -184,6 +185,7 @@ function UserProfile(props) {
     setShowLoading(true);
     loadUserProfile();
     loadUserTasks();
+    fetchSpecialWarnings();
   }, [props?.match?.params?.userId]);
 
 
@@ -317,18 +319,20 @@ function UserProfile(props) {
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         // startDate: newUserProfile?.startDate.split('T')[0],
-        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
-        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
+        ...(newUserProfile?.endDate &&
+          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
       });
       setOriginalUserProfile({
         ...newUserProfile,
         jobTitle: newUserProfile.jobTitle[0],
         phoneNumber: newUserProfile.phoneNumber[0],
         // startDate: newUserProfile?.startDate.split('T')[0],
-        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : "",
+        startDate: newUserProfile?.startDate ? formatDateYYYYMMDD(newUserProfile?.startDate) : '',
         createdDate: formatDateYYYYMMDD(newUserProfile?.createdDate),
-        ...(newUserProfile?.endDate && newUserProfile.endDate !== "" && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) })
+        ...(newUserProfile?.endDate &&
+          newUserProfile.endDate !== '' && { endDate: formatDateYYYYMMDD(newUserProfile.endDate) }),
       });
       setUserStartDate(startDate);
       checkIsProjectsEqual();
@@ -488,7 +492,7 @@ function UserProfile(props) {
    * @param {String} operation 'add' | 'update' | 'delete'
    */
   const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
-    setShowModal(false);
+    // setShowModal(false);
     if (operation === 'add') {
       /* peizhou: check that the date of the blue square is not future or empty. */
       if (moment(dateStamp).isAfter(moment().format('YYYY-MM-DD')) || dateStamp === '') {
@@ -500,8 +504,7 @@ function UserProfile(props) {
           console.log('WARNING: Empty Date');
           alert('WARNING: Cannot Assign Blue Square with an Empty Date');
         }
-      }
-      else {
+      } else {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
@@ -536,12 +539,14 @@ function UserProfile(props) {
       if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
-      await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
-        dateStamp,
-        summary,
-      }).catch(error => {
-        toast.error('Failed to update Blue Square!');
-      });
+      await axios
+        .put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
+          dateStamp,
+          summary,
+        })
+        .catch(error => {
+          toast.error('Failed to update Blue Square!');
+        });
       toast.success('Blue Square Updated!');
       setUserProfile({ ...userProfile, infringements: currentBlueSquares });
       setOriginalUserProfile({ ...userProfile, infringements: currentBlueSquares });
@@ -549,8 +554,7 @@ function UserProfile(props) {
       let newInfringements = [...userProfile?.infringements] || [];
       if (newInfringements.length !== 0) {
         newInfringements = newInfringements.filter(infringement => infringement._id !== id);
-        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id))
-        .catch(error => {
+        await axios.delete(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id)).catch(error => {
           toast.error('Failed to delete Blue Square!');
         });
         toast.success('Blue Square Deleted!');
@@ -558,8 +562,62 @@ function UserProfile(props) {
         setOriginalUserProfile({ ...userProfile, infringements: newInfringements });
       }
     }
+    setShowModal(false);
   };
 
+  const fetchSpecialWarnings = async () => {
+    const userId = props?.match?.params?.userId;
+    try {
+      dispatch(getSpecialWarnings(userId)).then(res => {
+        if (res.error) {
+          console.log(res.error);
+          return;
+        }
+        setSpecialWarnings(res);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  };
+
+  const handleLogWarning = async newWarningData => {
+    const warningData = {
+      userId: props?.match?.params?.userId,
+      description: newWarningData.title,
+      color: newWarningData.colorAssigned,
+      iconId: uuidv4(),
+      date: moment().format('MM/DD/YYYY'),
+      monitorData: {
+        firstName: userProfile.firstName,
+        lastName: userProfile.lastName,
+        email: userProfile.email,
+        userId: props.auth.user.userid,
+      },
+    };
+    let toastMessage = '';
+    dispatch(postWarningByUserId(warningData))
+      .then(response => {
+        if (response.error) {
+          toast.error('Warning failed to log try again');
+          return;
+        } else {
+          setShowModal(false);
+          fetchSpecialWarnings();
+
+          if (warningData.color === 'blue') {
+            toastMessage = 'Successfully logged and tracked';
+          } else if (warningData.color === 'yellow') {
+            toastMessage = 'Warning successfully logged';
+          } else {
+            toastMessage = 'Successfully logged and Blue Square issued';
+          }
+        }
+        toast.success(toastMessage);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   const handleSubmit = async () => {
     for (let i = 0; i < updatedTasks.length; i += 1) {
       const updatedTask = updatedTasks[i];
@@ -830,13 +888,15 @@ function UserProfile(props) {
 
   const startDateValidation = (createdDate, startDate) => {
     // console.log("userProfile:createdDate, startDate", createdDate, startDate === '' ? "EMPTY" : startDate);
-    return startDate === '' ? false : (createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate);
+    return startDate === ''
+      ? false
+      : createdDate < CREATED_DATE_CRITERIA || createdDate <= startDate;
   };
-  
+
   const endDateValidation = (startDate, endDate) => {
     // console.log("userProfile:startDate, endDate", startDate === '' ? "EMPTY" : startDate, endDate === '' ? "EMPTY" : endDate );
-    return endDate ? (startDate <= endDate) : true;
-  }
+    return endDate ? startDate <= endDate : true;
+  };
 
   const isStartDateValid = startDateValidation(userProfile.createdDate, userProfile.startDate);
   const isEndDateValid = endDateValidation(userProfile.startDate, userProfile.endDate);
@@ -863,6 +923,8 @@ function UserProfile(props) {
           id={id}
           handleLinkModel={props.handleLinkModel}
           role={requestorRole}
+          handleLogWarning={handleLogWarning}
+          specialWarnings={specialWarnings}
         />
       )}
       <Modal isOpen={showToggleVisibilityModal} toggle={handleCloseConfirmVisibilityModal}>
@@ -914,16 +976,15 @@ function UserProfile(props) {
                 </div>
               ) : null}
             </div>
-              <QuickSetupModal
-                setSaved={setSaved}
-                handleSubmit={handleSubmit}
-                setUserProfile={setUserProfile}
-                userProfile={userProfile}
-                userTeams={teams || []}
-                teamsData={props?.allTeams?.allTeamsData || []}
-                projectsData={props?.allProjects?.projects || []}
-              />
-
+            <QuickSetupModal
+              setSaved={setSaved}
+              handleSubmit={handleSubmit}
+              setUserProfile={setUserProfile}
+              userProfile={userProfile}
+              userTeams={teams || []}
+              teamsData={props?.allTeams?.allTeamsData || []}
+              projectsData={props?.allProjects?.projects || []}
+            />
           </Col>
           <Col md="8">
             {!isProfileEqual ||
@@ -1096,7 +1157,7 @@ function UserProfile(props) {
                 canEdit={canEdit || canManageAdminLinks}
                 darkMode={darkMode}
               />
-               <BlueSquareLayout
+              <BlueSquareLayout
                 userProfile={userProfile}
                 handleUserProfile={handleUserProfile}
                 handleSaveError={props.handleSaveError}

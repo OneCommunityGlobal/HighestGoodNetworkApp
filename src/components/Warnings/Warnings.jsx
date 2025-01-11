@@ -8,8 +8,9 @@ import {
 } from '../../actions/warnings';
 import WarningTrackerModal from './modals/WarningTrackerModal';
 
-import WarningItem from './WarningItem';
+import WarningIcons from './WarningIcons';
 import './Warnings.css';
+import WarningModal from './modals/WarningModal';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
 // Log Time to Tasks (“i” = ,lttt = Please log all time working on specific tasks to those tasks rather than the general category. )
 // Log Time as You Go (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
@@ -22,6 +23,8 @@ export default function Warning({ personId, username, userRole, displayUser }) {
 
   const [toggleWarningTrackerModal, setToggleWarningTrackerModal] = useState(false);
   const [toggle, setToggle] = useState(false);
+  const [toggleWarningModal, setToggleWarningModal] = useState(false);
+  const [selectedWarning, setSelectedWarning] = useState(null);
   const [error, setError] = useState(null);
 
   const fetchUsersWarningsById = async () => {
@@ -51,6 +54,14 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     });
   };
 
+  const handleShowWarningModal = ({ id, deleteWarning, warningDetails }) => {
+    const numberOfWarnings = usersWarnings.find(
+      warning => warning.title === warningDetails.warningText,
+    )?.warnings.length;
+
+    setSelectedWarning({ ...warningDetails, id, deleteWarning, numberOfWarnings, username });
+    setToggleWarningModal(prev => !prev);
+  };
   const handlePostWarningDetails = async ({
     id,
     colorAssigned: color,
@@ -64,7 +75,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       email,
     };
 
-    const data = {
+    const warningData = {
       userId: personId,
       iconId: id,
       color,
@@ -73,12 +84,13 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       monitorData,
     };
 
-    dispatch(postWarningByUserId(data)).then(res => {
+    dispatch(postWarningByUserId(warningData)).then(res => {
       if (res.error) {
         setError(res);
         setUsersWarnings([]);
         return;
       }
+
       setUsersWarnings(res);
     });
   };
@@ -86,15 +98,18 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   const warnings = !toggle
     ? null
     : usersWarnings.map(warning => (
-        <WarningItem
-          key={warning.title}
-          warnings={warning.warnings}
-          warningText={warning.title}
-          handlePostWarningDetails={handlePostWarningDetails}
-          username={username}
-          submitWarning={handlePostWarningDetails}
-          handleDeleteWarning={handleDeleteWarning}
-        />
+        <div className="warning-item-container" key={warning.title}>
+          <div className="warning-wrapper">
+            <WarningIcons
+              warnings={warning.warnings}
+              warningText={warning.title}
+              handleWarningIconClicked={handlePostWarningDetails}
+              handleShowWarningModal={handleShowWarningModal}
+              numberOfWarnings={warning.warnings.length}
+            />
+            <p className="warning-text"> {warning.title}</p>
+          </div>
+        </div>
       ));
 
   return (
@@ -120,6 +135,16 @@ export default function Warning({ personId, username, userRole, displayUser }) {
           )}
         </div>
 
+        {toggleWarningModal && (
+          <WarningModal
+            selectedWarning={selectedWarning}
+            visible={toggleWarningModal}
+            warning={selectedWarning}
+            setToggleModal={setToggleWarningModal}
+            handleDeleteWarning={handleDeleteWarning}
+            handleIssueWarning={handlePostWarningDetails}
+          />
+        )}
         {toggleWarningTrackerModal && (
           <WarningTrackerModal
             toggleWarningTrackerModal={toggleWarningTrackerModal}

@@ -7,8 +7,9 @@ function WarningIcons({
   handleWarningIconClicked,
   warnings,
   warningText,
-  handleModalTriggered,
+  handleShowWarningModal,
   numberOfWarnings,
+  userProfileModal,
 }) {
   const filledWarnings = warnings.concat(Array.from({ length: Math.max(8 - warnings.length, 0) }));
 
@@ -23,8 +24,9 @@ function WarningIcons({
               handleWarningIconClicked={handleWarningIconClicked}
               {...warning}
               warningText={warningText}
-              handleModalTriggered={handleModalTriggered}
+              handleShowWarningModal={handleShowWarningModal}
               numberOfWarnings={numberOfWarnings}
+              userProfileModal={userProfileModal}
             />
           );
         }
@@ -34,8 +36,9 @@ function WarningIcons({
             key={uuidv4()}
             handleWarningIconClicked={handleWarningIconClicked}
             warningText={warningText}
-            handleModalTriggered={handleModalTriggered}
+            handleShowWarningModal={handleShowWarningModal}
             numberOfWarnings={numberOfWarnings}
+            userProfileModal={userProfileModal}
           />
         );
       })}
