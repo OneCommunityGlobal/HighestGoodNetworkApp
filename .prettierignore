@@ -6,7 +6,6 @@ src/config.json
 
 src/index.js
 src/languages/**
-src/reducers/**
 src/registerServiceWorker.js
 src/routes.js
 src/setupTests.js

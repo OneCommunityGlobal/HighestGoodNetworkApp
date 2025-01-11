@@ -1,6 +1,5 @@
-import { createOrUpdateTaskNotificationHTTP } from 'actions/taskNotification';
 import { fetchTeamMembersTaskSuccess } from 'components/TeamMemberTasks/actions';
-import * as types from "../constants/task";
+import * as types from '../constants/task';
 
 const allTasksInital = {
   fetching: false,
@@ -15,7 +14,7 @@ const filterAndSort = (tasks, level) => {
   return tasks.sort((a, b) => {
     const aArr = a.num.split('.');
     const bArr = b.num.split('.');
-    for (let i = 0; i < level; i++) {
+    for (let i = 0; i < level; i += 1) {
       if (+aArr[i] !== +bArr[i]) return +aArr[i] - +bArr[i];
     }
     return 0;
@@ -46,26 +45,34 @@ const sortByNum = tasks => {
   return filterAndSort(appendTasks, 4);
 };
 
+// eslint-disable-next-line default-param-last
 export const taskReducer = (allTasks = allTasksInital, action) => {
-  let newTaskItems;
   switch (action.type) {
-    case types.FETCH_TASKS_START:
+    case types.FETCH_TASKS_START: {
       return { ...allTasks, fetched: false, fetching: true, error: 'none' };
-    case types.FETCH_TASKS_ERROR:
+    }
+
+    case types.FETCH_TASKS_ERROR: {
       return { ...allTasks, fetched: true, fetching: false, error: action.err };
-    case types.RECEIVE_TASKS:
-      allTasks.fetchedData[action.level] = action.taskItems;
-      newTaskItems = allTasks.fetchedData.flat();
+    }
+
+    case types.RECEIVE_TASKS: {
+      const updatedFetchedData = [...allTasks.fetchedData];
+      updatedFetchedData[action.level] = action.taskItems;
+
+      const newTaskItems = updatedFetchedData.flat();
       return {
         ...allTasks,
-        fetchedData: [...allTasks.fetchedData],
+        fetchedData: updatedFetchedData,
         taskItems: sortByNum(newTaskItems),
         fetched: true,
         fetching: false,
         error: 'none',
       };
-    case types.ADD_NEW_TASK:
-      newTaskItems = [action.newTask, ...allTasks.taskItems];
+    }
+
+    case types.ADD_NEW_TASK: {
+      const newTaskItems = [action.newTask, ...allTasks.taskItems];
       return {
         ...allTasks,
         taskItems: sortByNum(newTaskItems),
@@ -73,31 +80,36 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         fetching: false,
         error: 'none',
       };
-    case types.DELETE_TASK:
-      const delIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
-      let delIndexEnd = delIndexStart;
-      allTasks.taskItems.forEach((task, index) => {
-        if (task.parentId3 === action.taskId) {
-          delIndexEnd = index;
+    }
+
+    case types.DELETE_TASK: {
+      const startIndex = allTasks.taskItems.findIndex(task => task._id === action.taskId);
+      const endIndex = allTasks.taskItems.reduce((lastIndex, task, index) => {
+        if (
+          task.parentId1 === action.taskId ||
+          task.parentId2 === action.taskId ||
+          task.parentId3 === action.taskId
+        ) {
+          return index;
         }
-        if (task.parentId2 === action.taskId) {
-          delIndexEnd = index;
-        }
-        if (task.parentId1 === action.taskId) {
-          delIndexEnd = index;
-        }
-      });
+        return lastIndex;
+      }, startIndex);
+
+      const updatedTasks = [
+        ...allTasks.taskItems.slice(0, startIndex),
+        ...allTasks.taskItems.slice(endIndex + 1),
+      ];
+
       return {
         ...allTasks,
-        taskItems: [
-          ...allTasks.taskItems.slice(0, delIndexStart),
-          ...allTasks.taskItems.slice(delIndexEnd + 1),
-        ],
+        taskItems: updatedTasks,
         fetched: true,
         fetching: false,
         error: 'none',
       };
-    case types.EMPTY_TASK_ITEMS:
+    }
+
+    case types.EMPTY_TASK_ITEMS: {
       return {
         ...allTasks,
         taskItems: [],
@@ -106,31 +118,39 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
         fetching: false,
         error: 'none',
       };
-    case types.UPDATE_TASK:
-      const updIndexStart = allTasks.taskItems.findIndex(task => task._id === action.taskId);
-      const updIndexEnd = updIndexStart;
-      let updatedTask = allTasks.taskItems.filter(task => task._id === action.taskId)[0];
-      updatedTask = { ...updatedTask, ...action.updatedTask };
+    }
+
+    case types.UPDATE_TASK: {
+      const updatedTasks = allTasks.taskItems.map(task =>
+        task._id === action.taskId ? { ...task, ...action.updatedTask } : task,
+      );
+
       return {
         ...allTasks,
-        taskItems: [
-          ...allTasks.taskItems.slice(0, updIndexStart),
-          updatedTask,
-          ...allTasks.taskItems.slice(updIndexEnd + 1),
-        ],
+        taskItems: updatedTasks,
         fetched: true,
         fetching: false,
         error: 'none',
       };
-    case types.COPY_TASK:
-      const copiedTask = allTasks.taskItems.find(item => item._id === action.taskId);
+    }
+
+    case types.COPY_TASK: {
+      const copiedTask = allTasks.taskItems.find(task => task._id === action.taskId);
       return { ...allTasks, copiedTask };
-    case types.ADD_NEW_TASK_ERROR:
-      const error = action.err;
-      return { ...allTasks, error };
-    case fetchTeamMembersTaskSuccess.type:
-      return { ...allTasks, ...action.tasks }; // change that when there will be backend
-    default:
+    }
+
+    case types.ADD_NEW_TASK_ERROR: {
+      return { ...allTasks, error: action.err };
+    }
+
+    case fetchTeamMembersTaskSuccess.type: {
+      return { ...allTasks, ...action.tasks }; // Placeholder for backend integration
+    }
+
+    default: {
       return allTasks;
+    }
   }
 };
+
+export default taskReducer;

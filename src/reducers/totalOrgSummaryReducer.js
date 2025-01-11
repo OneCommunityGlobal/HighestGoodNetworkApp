@@ -8,6 +8,7 @@ const initialState = {
   fetchingError: null,
 };
 
+// eslint-disable-next-line default-param-last
 export const totalOrgSummaryReducer = (state = initialState, action) => {
   switch (action.type) {
     case actions.FETCH_TOTAL_ORG_SUMMARY_BEGIN:
@@ -30,7 +31,7 @@ export const totalOrgSummaryReducer = (state = initialState, action) => {
         loading: false,
         error: action.payload.error,
       };
-      
+
     case actions.FETCH_TOTAL_ORG_SUMMARY_DATA_SUCCESS:
       return {
         ...state,
@@ -49,3 +50,5 @@ export const totalOrgSummaryReducer = (state = initialState, action) => {
       return state;
   }
 };
+
+export default totalOrgSummaryReducer;
