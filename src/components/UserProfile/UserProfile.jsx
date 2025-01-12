@@ -854,7 +854,7 @@ function UserProfile(props) {
       )}
       <TabToolTips />
       <BasicToolTips />
-      <TeamsTabTips />
+
       <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
         style={{
@@ -1201,6 +1201,7 @@ function UserProfile(props) {
                 />
               </TabPane>
               <TabPane tabId="3">
+                <TeamsTabTips />
                 <TeamsTab
                   userTeams={teams || []}
                   teamsData={props?.allTeams?.allTeamsData || []}
@@ -1563,6 +1564,7 @@ function UserProfile(props) {
                   Teams
                 </ModalHeader>
                 <ModalBody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+                  <TeamsTabTips />
                   <TeamsTab
                     userTeams={userProfile?.teams || []}
                     teamsData={props?.allTeams?.allTeamsData || []}
