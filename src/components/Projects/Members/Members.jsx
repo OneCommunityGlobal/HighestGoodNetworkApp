@@ -21,11 +21,15 @@ import { boxStyle, boxStyleDark } from 'styles';
 import ToggleSwitch from 'components/UserProfile/UserProfileEdit/ToggleSwitch';
 import Loading from 'components/common/Loading';
 
-
 const Members = props => {
   const darkMode = props.state.theme.darkMode;
-
   const projectId = props.match.params.projectId;
+
+  // Get the project name from props or sessionStorage
+  const projectName = props.location.state && props.location.state.projectName
+    ? props.location.state.projectName
+    : sessionStorage.getItem('projectName') || 'Unknown Project';
+
   const [showFindUserList, setShowFindUserList] = useState(false);
   const [membersList, setMembersList] = useState(props.state.projectMembers.members);
   const [lastTimeoutId, setLastTimeoutId] = useState(null);
@@ -45,9 +49,8 @@ const Members = props => {
   }, [projectId]);
 
   const assignAll = async () => {
-    const allUsers = props.state.projectMembers.foundUsers.filter(user => user.assigned === false);
+    const allUsers = props.state.projectMembers.foundUsers.filter(user => !user.assigned);
 
-    // Wait for all members to be assigned
     await Promise.all(
       allUsers.map(user =>
         props.assignProject(projectId, user._id, 'Assign', user.firstName, user.lastName),
@@ -63,7 +66,6 @@ const Members = props => {
     }
   }, [props.state.projectMembers.members, isLoading]);
 
-  // ADDED: State for toggling display of active members only
   const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
 
   const displayedMembers = showActiveMembersOnly
@@ -76,7 +78,6 @@ const Members = props => {
     setMembersList(props.state.projectMembers.members);
   };
 
-  // Waits for user to finsh typing before calling API
   const handleInputChange = event => {
     const currentValue = event.target.value;
 
@@ -92,7 +93,7 @@ const Members = props => {
 
   return (
     <React.Fragment>
-      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+      <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
         <div className="container pt-2">
           <nav aria-label="breadcrumb">
             <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
@@ -102,9 +103,11 @@ const Members = props => {
                 </button>
               </NavItem>
 
-              <div id="member_project__name">PROJECTS {props.projectId}</div>
+              {/* Display Project Name */}
+              <div id="member_project__name">PROJECT: {projectName}</div>
             </ol>
           </nav>
+
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
@@ -124,7 +127,7 @@ const Members = props => {
                 <button
                   className="btn btn-outline-primary"
                   type="button"
-                  onClick={e => {
+                  onClick={() => {
                     props.getAllUserProfiles();
                     setShowFindUserList(true);
                   }}
@@ -135,7 +138,7 @@ const Members = props => {
                 <button
                   className="btn btn-outline-danger"
                   type="button"
-                  onClick={() => setShowFindUserList(false)} // Hide the find user list
+                  onClick={() => setShowFindUserList(false)}
                 >
                   Cancel
                 </button>
@@ -147,9 +150,7 @@ const Members = props => {
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                  <th scope="col" id="foundUsers__order">
-                    #
-                  </th>
+                  <th scope="col" id="foundUsers__order">#</th>
                   <th scope="col">Name</th>
                   <th scope="col">Email</th>
                   {canAssignProjectToUsers ? (
@@ -191,15 +192,15 @@ const Members = props => {
             handleUserProfile={handleToggle}
           />
 
-          {isLoading ? ( <Loading align="center" /> ) : (
+          {isLoading ? (
+            <Loading align="center" />
+          ) : (
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                  <th scope="col" id="members__order">
-                    #
-                  </th>
-                  <th scope="col" id="members__name"></th>
-                  {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
+                  <th scope="col" id="members__order">#</th>
+                  <th scope="col" id="members__name">Name</th>
+                  {canUnassignUserInProject ? <th scope="col" id="members__action">Action</th> : null}
                 </tr>
               </thead>
               <tbody>
@@ -209,12 +210,12 @@ const Members = props => {
                     key={member._id ?? i}
                     projectId={projectId}
                     uid={member._id}
-                    fullName={member.firstName + ' ' + member.lastName}
+                    fullName={`${member.firstName} ${member.lastName}`}
                     darkMode={darkMode}
                   />
                 ))}
               </tbody>
-            </table> 
+            </table>
           )}
         </div>
       </div>
@@ -225,6 +226,7 @@ const Members = props => {
 const mapStateToProps = state => {
   return { state };
 };
+
 export default connect(mapStateToProps, {
   fetchAllMembers,
   findUserProfiles,
