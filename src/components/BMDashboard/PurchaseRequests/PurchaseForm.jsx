@@ -48,10 +48,6 @@ function PurchaseForm({
     setUnit(selectedType ? selectedType.unit : '');
   }, [secondaryId, secondaryData]);
 
-  useEffect(() => {
-    if (validationError) setValidationError('');
-  }, [primaryId, secondaryId, quantity, priority, brand]);
-
   // Form validation logic
   const validateForm = () =>
     Joi.object({
@@ -88,7 +84,6 @@ function PurchaseForm({
       setUnit('');
       setPriority('Low');
       setBrand('');
-      history.push('/bmdashboard/materials');
     } else {
       toast.error(`Error: ${response?.statusText || 'Unknown error'}`);
     }
@@ -214,7 +209,7 @@ function PurchaseForm({
             style={boxStyle}
             disabled={!primaryId || !secondaryId || !quantity || !priority || !!validationError}
           >
-            Purchase Request
+            Submit
           </Button>
         </div>
       </Form>

@@ -22,13 +22,6 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
     }
   };
 
-  const formatName = name => {
-    if (name.startsWith('INDIVIDUAL:')) {
-      return name.replace('INDIVIDUAL:', '').trim();
-    }
-    return name;
-  };
-
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const maxPageNumbersToShow = 5;
@@ -102,7 +95,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
               <th className={`permission-change-log-table--header${addDark}`}>
                 Log Date and Time (PST)
               </th>
-              <th className={`permission-change-log-table--header${addDark}`}>Name</th>
+              <th className={`permission-change-log-table--header${addDark}`}>Role Name</th>
               <th className={`permission-change-log-table--header${addDark}`}>Permissions</th>
               <th className={`permission-change-log-table--header${addDark}`}>Permissions Added</th>
               <th className={`permission-change-log-table--header${addDark}`}>
@@ -118,13 +111,8 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{`${formatDate(
                   log.logDateTime,
                 )} ${formattedAmPmTime(log.logDateTime)}`}</td>
-                <td
-                  className={`permission-change-log-table--cell ${bgYinmnBlue}`}
-                  style={{
-                    fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
-                  }}
-                >
-                  {formatName(log.name)}
+                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
+                  {log.roleName}
                 </td>
                 <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
                   {renderPermissions(log.permissions, log._id)}

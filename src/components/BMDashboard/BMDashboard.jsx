@@ -26,7 +26,7 @@ export function BMDashboard() {
   }, [errors]);
 
   return (
-    <Container className="justify-content-center align-items-center">
+    <Container className="justify-content-center align-items-center mw-80 px-4">
       <header className="bm-dashboard__header">
         <h1>Building and Inventory Management Dashboard</h1>
       </header>
