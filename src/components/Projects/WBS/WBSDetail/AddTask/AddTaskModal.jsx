@@ -67,14 +67,18 @@ function AddTaskModal(props) {
   // states from hooks
   const defaultCategory = useMemo(() => {
     if (props.taskId) {
-      const task =  tasks.find(({ _id }) => _id === props.taskId);
-      return task.category? task.category : 'Unspecified';
-    } else if (props.projectId) {
-      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
-      return project.category? project.category : 'Unspecified';
+      const task = tasks.find(({ _id }) => _id === props.taskId);
+      return task?.category || 'Unspecified';
     }
+    
+    if (props.projectId) {
+      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
+      return project?.category || 'Unspecified';
+    }
+  
     return 'Unspecified';
   }, [props.taskId, props.projectId, tasks, allProjects.projects]);
+  
 
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
@@ -200,27 +204,25 @@ function AddTaskModal(props) {
 
   const changeDateStart = startDate => {
     setStartedDate(startDate);
-    if (dueDate) {
-      if (startDate > dueDate) {
-        setStartDateError(true);
-      } else {
-        setStartDateError(false);
-      }
-    }
-    setEndDateError(false);
   };
 
   const changeDateEnd = dueDate => {
-    setDueDate(dueDate);
-    if (startedDate) {
-      if (dueDate < startedDate) {
-        setEndDateError(true);
-      } else {
-        setEndDateError(false);
-      }
+    if (!startedDate) {
+      const newDate = dateFnsFormat(new Date(), FORMAT);
+      setStartedDate(newDate);
     }
-    setStartDateError(false);
+    setDueDate(dueDate);
   };
+
+  useEffect(()=>{
+    if (dueDate && dueDate < startedDate) {
+      setEndDateError(true);
+      setStartDateError(true);
+    } else {
+      setEndDateError(false);
+      setStartDateError(false);
+    }
+  }, [startedDate, dueDate]);
 
   const addLink = () => {
     setLinks([...links, link]);

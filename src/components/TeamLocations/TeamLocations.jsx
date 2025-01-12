@@ -239,7 +239,7 @@ function TeamLocations() {
                 />
               </div>
               {dropdown && (
-                <div className="position-absolute map-dropdown-table w-100">
+                <div className="position-absolute map-dropdown-table">
                   <div
                     className="overflow-auto pr-3"
                     style={{ height: '300px' }}
