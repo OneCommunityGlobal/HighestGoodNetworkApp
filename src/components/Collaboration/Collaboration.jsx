@@ -70,7 +70,7 @@ class Collaboration extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    this.setState({ currentPage: 1 }, this.fetchJobAds);
+    this.setState({ summaries: null, currentPage: 1 }, this.fetchJobAds);
   };
 
   handleCategoryChange = event => {
@@ -98,6 +98,7 @@ class Collaboration extends Component {
         currentPage: 1,
         jobAds: data.jobs,
         totalPages: data.pagination.totalPages,
+        summaries: null,
       });
     } catch (error) {
       toast.error('Error resetting filters');
@@ -109,11 +110,14 @@ class Collaboration extends Component {
   };
 
   handleShowSummaries = async () => {
-    const { searchTerm } = this.state;
+    const { searchTerm, selectedCategory } = this.state;
     try {
-      const response = await fetch(`${ApiEndpoint}/jobs/summaries?search=${searchTerm}`, {
-        method: 'GET',
-      });
+      const response = await fetch(
+        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
+        {
+          method: 'GET',
+        },
+      );
 
       if (!response.ok) {
         throw new Error(`Failed to fetch summaries: ${response.statusText}`);
