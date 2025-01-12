@@ -3,8 +3,13 @@ import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import { sendTweet, scheduleTweet } from '../../actions/sendSocialMediaPosts';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import {
+  Label,
+  Input,
+} from 'reactstrap';
 
 function Announcements({title, email}) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -12,6 +17,11 @@ function Announcements({title, email}) {
   const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
+
+  const [dateContent, setDateContent] = useState('');
+  const [timeContent, setTimeContent] = useState('');
+  const [errors, setErrors] = useState({});
+
   const [headerContent, setHeaderContent] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
@@ -165,6 +175,22 @@ function Announcements({title, email}) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const handlePostTweets = () => {
+    const htmlContent = `${emailContent}`;
+    dispatch(sendTweet(htmlContent));
+  };
+
+  const handleScheduleTweets = () => {
+    const htmlContent = `${emailContent}`;
+    const scheduleDate = `${dateContent}`;
+    
+    dispatch(scheduleTweet(scheduleDate, htmlContent));
+  };
+
+  const handleDateContentChange = e => {
+    setDateContent(e.target.value);    
+  }  
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
       <div className="email-update-container">
@@ -176,6 +202,23 @@ function Announcements({title, email}) {
           }
 
           <br />
+          <div inline className="mb-2">              
+            <Label for="dateOfWork">
+                Date
+              </Label>
+              <Input
+                className="responsive-font-size"
+                type="date"
+                name="dateOfWork"
+                id="dateOfWork"
+                value={dateContent}
+                onChange={handleDateContentChange}
+              />
+              {'dateOfWork' in errors && (
+                <div className="text-danger">
+                  <small>{errors.dateOfWork}</small>
+                </div>
+              )}</div>
           {showEditor && <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
             id="email-editor"
@@ -189,9 +232,17 @@ function Announcements({title, email}) {
           title ? (
             ""
           ) : (
-          <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
+          <div>
+          <button type="button" className="send-button mr-1 ml-1" onClick={handlePostTweets} style={darkMode ? boxStyleDark : boxStyle}>
+            Post Tweet
+          </button>
+          <button type="button" className="send-button mr-1 ml-1" onClick={handleScheduleTweets} style={darkMode ? boxStyleDark : boxStyle}>
+            Schedule Tweet
+          </button>
+          <button type="button" className="send-button mr-1 ml-1" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
             Broadcast Weekly Update
           </button>
+          </div>
           )
         }
 

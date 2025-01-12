@@ -217,6 +217,10 @@ export const ENDPOINTS = {
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
+
+  // social media poster api
+  POST_TWEETS: `${APIEndpoint}/createTweet`,
+  SCHEDULE_TWEETS: `${APIEndpoint}/scheduleTweet`,
 };
 
 export const ApiEndpoint = APIEndpoint;
