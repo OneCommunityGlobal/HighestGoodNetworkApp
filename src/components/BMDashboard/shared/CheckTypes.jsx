@@ -138,7 +138,7 @@ function CheckTypes({ type }) {
                 </tr>
               </thead>
               <tbody>
-                {buildingInvTypes?.map((elemType, idx) => (
+                {sortedBuildingInvTypes?.map((elemType, idx) => (
                   <tr key={elemType._id}>
                     <th>{idx + 1}</th>
                     <td>{elemType.name}</td>
