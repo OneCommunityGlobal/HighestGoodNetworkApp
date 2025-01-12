@@ -110,19 +110,6 @@ function QuickSetupModal(props) {
           ''
         )}
       </div>
-      <div className="col text-center mt-3">
-        {canAssignTitle ? (
-          <SaveButton
-            handleSubmit={props.handleSubmit}
-            userProfile={props.userProfile}
-            disabled={titleOnSet}
-            setSaved={() => props.setSaved(true)}
-            darkMode={darkMode}
-          />
-        ) : (
-          ''
-        )}
-      </div>
       {showAddTitle || editMode ? (
         <AddNewTitleModal
           teamsData={props.teamsData}
