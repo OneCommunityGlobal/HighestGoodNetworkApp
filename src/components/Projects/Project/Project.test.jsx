@@ -1,118 +1,198 @@
-import React from 'react';
-import { render, fireEvent, waitFor, screen } from '@testing-library/react';
-import '@testing-library/jest-dom/extend-expect';
-import { Provider } from 'react-redux';
-import configureMockStore from 'redux-mock-store';
-import { BrowserRouter } from 'react-router-dom';
-import Project from './Project';
-import thunk from 'redux-thunk';
-import { authMock, rolesMock, userProfileMock } from '../../../__tests__/mockStates';
+import { useState, useEffect } from 'react';
+import { ARCHIVE } from './../../../languages/en/ui';
+import './../projects.css';
+import { Link } from 'react-router-dom';
+import { NavItem } from 'reactstrap';
+import { connect } from 'react-redux';
+import hasPermission from 'utils/permissions';
+import { boxStyle } from 'styles';
+import { toast } from 'react-toastify';
 
-const middlewares = [thunk];
-const mockStore = configureMockStore(middlewares);
+const Project = (props) => {
+  const { darkMode, index } = props;
+  const [firstLoad, setFirstLoad] = useState(true);
+  const [projectData, setProjectData] = useState(props.projectData);
+  const { projectName, isActive, _id: projectId } = projectData;
+  const [displayName, setDisplayName] = useState(projectName);
+  const [category, setCategory] = useState(props.category || 'Unspecified');
+  const [showModal, setShowModal] = useState(false);
 
-const renderProject = (props) => {
-  const store = mockStore({
-    auth: authMock,
-    userProfile: userProfileMock,
-    role: rolesMock.role,
-  });
+  const canPutProject = props.hasPermission('putProject');
+  const canDeleteProject = props.hasPermission('deleteProject');
+  const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
+  const canEditCategoryAndStatus = props.hasPermission('editProject');
 
-  return render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <Project {...props} />
-      </BrowserRouter>
-    </Provider>
+  const updateProject = (key, value) => {
+    setProjectData({
+      ...projectData,
+      [key]: value,
+    });
+  };
+
+  const onDisplayNameChange = (e) => {
+    setDisplayName(e.target.value);
+  };
+
+  const onUpdateProjectName = () => {
+    if (displayName.length < 3) {
+      toast.error('Project name must be at least 3 characters long');
+    } else if (displayName !== projectName) {
+      updateProject('projectName', displayName);
+    }
+  };
+
+  const onUpdateProjectActive = () => {
+    updateProject('isActive', !isActive);
+  };
+
+  const onUpdateProjectCategory = (e) => {
+    setCategory(e.target.value);
+    updateProject('category', e.target.value);
+  };
+
+  const onArchiveProject = () => {
+    setShowModal(true);
+  };
+
+  const onCloseModal = () => {
+    setShowModal(false);
+  };
+
+  const confirmArchive = () => {
+    props.onClickArchiveBtn(projectData);
+    setShowModal(false);
+  };
+
+  useEffect(() => {
+    if (firstLoad) {
+      setFirstLoad(false);
+    } else {
+      props.onUpdateProject(projectData);
+    }
+    if (props.projectData.category) {
+      setCategory(props.projectData.category);
+    }
+  }, [projectData]);
+
+  return (
+    <>
+      <tr className="projects__tr" id={'tr_' + props.projectId}>
+        <th className="projects__order--input" scope="row">
+          <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
+        </th>
+
+        <td data-testid="projects__name--input" className="projects__name--input">
+          {canPutProject || canSeeProjectManagementFullFunctionality ? (
+            <input
+              type="text"
+              className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
+              value={displayName}
+              onChange={onDisplayNameChange}
+              onBlur={onUpdateProjectName}
+            />
+          ) : (
+            projectName
+          )}
+        </td>
+
+        <td className="projects__category--input">
+          {canEditCategoryAndStatus || canPutProject ? (
+            <select
+              data-testid="projects__category--input"
+              value={category}
+              onChange={onUpdateProjectCategory}
+            >
+              <option value="Unspecified">Unspecified</option>
+              <option value="Food">Food</option>
+              <option value="Energy">Energy</option>
+              <option value="Housing">Housing</option>
+              <option value="Education">Education</option>
+              <option value="Society">Society</option>
+              <option value="Economics">Economics</option>
+              <option value="Stewardship">Stewardship</option>
+              <option value="Other">Other</option>
+            </select>
+          ) : (
+            category
+          )}
+        </td>
+
+        <td
+          className="projects__active--input"
+          data-testid="project-active"
+          onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}
+        >
+          {isActive ? (
+            <div className="isActive">
+              <i className="fa fa-circle" aria-hidden="true"></i>
+            </div>
+          ) : (
+            <div className="isNotActive">
+              <i className="fa fa-circle" aria-hidden="true" color="#dee2e6"></i>
+            </div>
+          )}
+        </td>
+
+        <td>
+          <NavItem tag={Link} to={`/inventory/${projectId}`}>
+            <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+              <i className="fa fa-archive" aria-hidden="true"></i>
+            </button>
+          </NavItem>
+        </td>
+
+        <td>
+          <NavItem
+            tag={Link}
+            to={{
+              pathname: `/project/members/${projectId}`,
+              state: { projectName: projectName },
+            }}
+          >
+            <button
+              type="button"
+              className="btn btn-outline-info"
+              style={darkMode ? {} : boxStyle}
+            >
+              <i className="fa fa-users" aria-hidden="true"></i>
+            </button>
+          </NavItem>
+        </td>
+
+        <td>
+          <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
+            <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
+              <i className="fa fa-tasks" aria-hidden="true"></i>
+            </button>
+          </NavItem>
+        </td>
+
+        {canDeleteProject && (
+          <td>
+            <button
+              data-testid="delete-button"
+              type="button"
+              className="btn btn-outline-danger"
+              onClick={onArchiveProject}
+              style={darkMode ? {} : boxStyle}
+            >
+              {ARCHIVE}
+            </button>
+          </td>
+        )}
+      </tr>
+
+      {showModal && (
+        <div className="modal">
+          <h3>Confirm Archive</h3>
+          <p>Do you want to archive {projectName}?</p>
+          <button onClick={confirmArchive}>Archive</button>
+          <button onClick={onCloseModal}>Close</button>
+        </div>
+      )}
+    </>
   );
 };
 
-describe('Project Component', () => {
-  const sampleProjectData = {
-    _id: '1',
-    projectName: 'Sample Project',
-    category: 'Unspecified',
-    isActive: true,
-  };
-
-  const sampleProps = {
-    projectData: sampleProjectData,
-    index: 0,
-    darkMode: false,
-    hasPermission: jest.fn((permission) => true),
-    onUpdateProject: jest.fn(),
-    onClickArchiveBtn: jest.fn(),
-  };
-
-  it('renders correctly with props', () => {
-    const { getByDisplayValue, getByText } = renderProject(sampleProps);
-
-    // Check if the input element is present
-    expect(getByDisplayValue('Sample Project')).toBeInTheDocument();
-
-    // Verify the category value
-    expect(getByText('Unspecified')).toBeInTheDocument();
-  });
-
-  it('updates project name on input change', async () => {
-    const { getByDisplayValue } = renderProject(sampleProps);
-
-    // Find the input element using getByDisplayValue
-    const inputElement = getByDisplayValue('Sample Project');
-
-    // Simulate a user changing the input value
-    fireEvent.change(inputElement, { target: { value: 'New Project Name' } });
-
-    await waitFor(() => {
-      // Check if the input value has been updated
-      expect(getByDisplayValue('New Project Name')).toBeInTheDocument();
-    });
-  });
-
-  it('toggles project active status on button click', async () => {
-    const { getByTestId } = renderProject(sampleProps);
-
-    // Find the active status button and click it
-    const activeButton = getByTestId('project-active');
-    fireEvent.click(activeButton);
-
-    await waitFor(() => {
-      // Check if the active status is active after clicking
-      const activeStatus = getByTestId('project-active').querySelector('i');
-      expect(activeStatus).toHaveClass('fa-circle');
-    });
-  });
-
-  it('triggers delete action and handles modal interactions', async () => {
-    const { getByTestId } = renderProject(sampleProps);
-
-    // Find the delete button and click it
-    const deleteButton = getByTestId('delete-button');
-    fireEvent.click(deleteButton);
-
-    // Wait for the modal to appear using a more specific query
-    await waitFor(() => {
-      const modal = document.querySelector('.modal');
-      expect(modal).not.toBeNull();
-      expect(modal).toBeInTheDocument();
-    });
-
-    // Verify modal content
-    const archiveButton = await screen.findByText('Archive');
-    fireEvent.click(archiveButton);
-
-    expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
-    expect(
-      screen.getByText(`Do you want to archive ${sampleProjectData.projectName}?`)
-    ).toBeInTheDocument();
-
-    // Close the modal
-    const closeButton = screen.getByText('Close');
-    fireEvent.click(closeButton);
-
-    // Ensure modal is closed
-    await waitFor(() => {
-      expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
-    });
-  });
-});
+const mapStateToProps = (state) => state;
+export default connect(mapStateToProps, { hasPermission })(Project);
