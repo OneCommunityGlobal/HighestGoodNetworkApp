@@ -686,7 +686,7 @@ const BasicInformationTab = props => {
                 : 'Inactive'}
             </Label>
             &nbsp;
-            {(isUserSelf || canPauseResumeUser) && (
+            {(canPauseResumeUser) && (
               <PauseAndResumeButton
                 setUserProfile={setUserProfile}
                 loadUserProfile={loadUserProfile}
