@@ -233,6 +233,10 @@ const ScheduleReasonModal = ({
     setShowStartWeekModal(prev => !prev);
   };
 
+  const handleStartWeekConfirmationModal = () => {
+    setShowStartWeekModal(false);
+  };
+
   const getWeekIntervals = data => {
     const dateOfLeaveStr = getDateWithoutTimeZone(data.dateOfLeave);
     const intervals = [];
@@ -486,7 +490,10 @@ const ScheduleReasonModal = ({
                   </Container>
                 </ModalBody>
                 <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <Button variant="primary" onClick={handelConfirmReason}>
+                  <Button variant="primary" onClick={()=>{
+                    handelConfirmReason()
+                    handleStartWeekConfirmationModal()
+                  }}>
                     Confirm
                   </Button>
                   <Button variant="secondary" onClick={toggleConfirmationModal}>
