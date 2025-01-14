@@ -33,6 +33,7 @@ const UserProfileModal = props => {
     id,
     specialWarnings,
     handleLogWarning,
+    handlePostWarnings,
   } = props;
   let blueSquare = [
     {
@@ -70,7 +71,8 @@ const UserProfileModal = props => {
   const [summaryFieldView, setSummaryFieldView] = useState(true);
   const [displayWarningModal, setDisplayWarningModal] = useState(false);
   const [displayBothModal, setDisplayBothModal] = useState(false);
-  const [showSpinner, setShowSpinner] = useState(false);
+  const [showWarningSpinner, setShowWarningSpinner] = useState(false);
+  const [warningSelections, setWarningSelections] = useState({});
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
       switch (type) {
@@ -145,6 +147,21 @@ const UserProfileModal = props => {
     }
   };
 
+  const handleWarningChange = (warningTitle, warn, color) => {
+    setWarningSelections(prevData => {
+      return {
+        ...prevData,
+        [warningTitle]: { warn, color },
+      };
+    });
+  };
+
+  const handleSubmitWarning = () => {
+    setShowWarningSpinner(true);
+    console.log('warning data', warningSelections);
+    handlePostWarnings(warningSelections);
+    setShowWarningSpinner(false);
+  };
   const handleToggleLogWarning = warningData => {
     console.log('specialWarnings:', specialWarnings);
     if (warningData === 'both') {
@@ -171,7 +188,7 @@ const UserProfileModal = props => {
     setDisplayWarningModal(true);
   };
   const handleLogNewWarning = warningData => {
-    setShowSpinner(true);
+    setShowWarningSpinner(true);
     setWarningType('');
     handleLogWarning(warningData);
 
@@ -207,6 +224,8 @@ const UserProfileModal = props => {
           handleIssueWarning={handleLogNewWarning}
           visible={displayBothModal}
           userProfileModal={true}
+          handleWarningChange={handleWarningChange}
+          handleSubmitWarning={handleSubmitWarning}
         />
       )}
       {displayWarningModal && (
@@ -218,12 +237,13 @@ const UserProfileModal = props => {
           handleIssueWarning={handleLogNewWarning}
           userProfileHeader={true}
           userProfileModal={true}
+          handleWarningChange={handleWarningChange}
         />
       )}
 
       <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>
         <ModalHeader toggle={closeModal} className={darkMode ? 'bg-space-cadet' : ''}>
-          {modalTitle} {showSpinner && <Spinner color="primary" width="300px" />}{' '}
+          {modalTitle} {showWarningSpinner && <Spinner color="primary" width="300px" />}{' '}
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           {type === 'updateLink' && (

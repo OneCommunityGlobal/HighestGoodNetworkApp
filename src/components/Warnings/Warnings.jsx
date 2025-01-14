@@ -62,6 +62,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
     setSelectedWarning({ ...warningDetails, id, deleteWarning, numberOfWarnings, username });
     setToggleWarningModal(prev => !prev);
   };
+
   const handlePostWarningDetails = async ({
     id,
     colorAssigned: color,

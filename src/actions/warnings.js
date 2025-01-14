@@ -10,6 +10,7 @@ import {
   deleteWarningDescription as deleteWarningDescriptionAction,
   updateWarningDescription as updateWarningDescriptionAction,
   editWarningDescription as editWarningDescriptionAction,
+  postNewWarningsByUserId as postNewWarningsByUserIdAction,
 } from '../constants/warning';
 
 export const getWarningsByUserId = userId => {
@@ -43,6 +44,21 @@ export const getSpecialWarnings = userId => {
       } else {
         return { error: error.message };
       }
+    }
+  };
+};
+
+export const postNewWarningsByUserId = warningData => {
+  const { userId } = warningData;
+  const url = ENDPOINTS.POST_NEW_WARNINGS_BY_USER_ID(userId);
+  return async dispatch => {
+    try {
+      const res = await axios.post(url, warningData);
+      const response = dispatch(postNewWarningsByUserIdAction(res.data));
+      return response.payload.warnings;
+    } catch (err) {
+      console.log(err);
+      return err;
     }
   };
 };

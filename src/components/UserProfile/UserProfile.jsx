@@ -69,7 +69,11 @@ import {
 import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
 import { v4 as uuidv4 } from 'uuid';
-import { postWarningByUserId, getSpecialWarnings } from '../../actions/warnings';
+import {
+  postWarningByUserId,
+  getSpecialWarnings,
+  postNewWarningsByUserId,
+} from '../../actions/warnings';
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -176,9 +180,9 @@ function UserProfile(props) {
 
   useEffect(() => {
     checkIsProjectsEqual();
-    setUserProfile({ ...userProfile,  projects });
+    setUserProfile({ ...userProfile, projects });
     setOriginalUserProfile({ ...originalUserProfile, projects });
-  }, [ projects]);
+  }, [projects]);
 
   useEffect(() => {
     setShowLoading(true);
@@ -186,9 +190,6 @@ function UserProfile(props) {
     loadUserTasks();
     fetchSpecialWarnings();
   }, [props?.match?.params?.userId]);
-
-
-
 
   const checkIsProjectsEqual = () => {
     const originalProjectProperties = [];
@@ -301,8 +302,9 @@ function UserProfile(props) {
 
       const startDate = newUserProfile?.startDate.split('T')[0];
       // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
-      const createdDate = newUserProfile?.createdDate ? newUserProfile.createdDate.split('T')[0] : null;
-
+      const createdDate = newUserProfile?.createdDate
+        ? newUserProfile.createdDate.split('T')[0]
+        : null;
 
       if (startDate && createdDate && new Date(startDate) < new Date(createdDate)) {
         newUserProfile.startDate = createdDate;
@@ -579,6 +581,35 @@ function UserProfile(props) {
       console.log(err);
     }
   };
+  const handlePostWarnings = async warningData => {
+    const warningsArray = Object.entries(warningData).map(([title, color]) => ({
+      userId: props?.match?.params?.userId,
+      iconId: uuidv4(),
+      color: color.color,
+      date: moment().format('MM/DD/YYYY'), // Use a dynamic timestamp or pass it explicitly
+      description: title, // Use the title as the description
+    }));
+    const newWarningData = {
+      warningsArray,
+      userId: props?.match?.params?.userId,
+      monitorData: {
+        firstName: userProfile.firstName,
+        lastName: userProfile.lastName,
+        email: userProfile.email,
+      },
+    };
+
+    dispatch(postNewWarningsByUserId(newWarningData)).then(response => {
+      if (response.error) {
+        toast.error('Warning failed to log try again');
+      } else {
+        setShowModal(false);
+        fetchSpecialWarnings();
+      }
+    });
+    //create new route to call the backedn
+    // dispatch()
+  };
 
   const handleLogWarning = async newWarningData => {
     const warningData = {
@@ -730,12 +761,12 @@ function UserProfile(props) {
       ...userProfile,
       isRehireable: pendingRehireableStatus,
     };
-    try{
+    try {
       await dispatch(updateRehireableStatus(updatedUserProfile, pendingRehireableStatus));
       setIsRehireable(pendingRehireableStatus);
       setUserProfile(updatedUserProfile);
       setOriginalUserProfile(updatedUserProfile);
-    }catch(error){
+    } catch (error) {
       toast.error('Unable change rehireable status');
     }
   };
@@ -911,6 +942,7 @@ function UserProfile(props) {
           role={requestorRole}
           handleLogWarning={handleLogWarning}
           specialWarnings={specialWarnings}
+          handlePostWarnings={handlePostWarnings}
         />
       )}
       <TabToolTips />
@@ -963,9 +995,7 @@ function UserProfile(props) {
             />
           </Col>
           <Col md="8">
-            {!isProfileEqual ||
-            !isTasksEqual ||
-            !isProjectsEqual ? (
+            {!isProfileEqual || !isTasksEqual || !isProjectsEqual ? (
               <Alert color="warning">
                 Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
               </Alert>
@@ -1276,7 +1306,6 @@ function UserProfile(props) {
                     !formValid.lastName ||
                     !formValid.email ||
                     !(isProfileEqual && isTasksEqual && isProjectsEqual)
-                      
                   }
                   canEditTeamCode={canEditTeamCode}
                   setUserProfile={setUserProfile}
@@ -1497,7 +1526,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1574,7 +1603,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
@@ -1641,7 +1670,7 @@ function UserProfile(props) {
                       !formValid.firstName ||
                       !formValid.lastName ||
                       !formValid.email ||
-                      !(isProfileEqual && isTasksEqual  && isProjectsEqual)
+                      !(isProfileEqual && isTasksEqual && isProjectsEqual)
                     }
                     canEditTeamCode={canEditTeamCode}
                     setUserProfile={setUserProfile}
@@ -1825,7 +1854,7 @@ function UserProfile(props) {
                               !formValid.lastName ||
                               !formValid.email ||
                               !codeValid ||
-                              (isProfileEqual && isTasksEqual  && isProjectsEqual)
+                              (isProfileEqual && isTasksEqual && isProjectsEqual)
                             }
                             userProfile={userProfile}
                             setSaved={() => setSaved(true)}
