@@ -24,7 +24,7 @@ import TotalTeamReport from './TotalReport/TotalTeamReport';
 import TotalProjectReport from './TotalReport/TotalProjectReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
-import '../Header/DarkMode.css'
+import '../Header/DarkMode.css';
 const DATE_PICKER_MIN_DATE = '01/01/2010';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
@@ -165,7 +165,7 @@ class ReportsPage extends Component {
 
   filteredPeopleList = userProfiles => {
     const filteredList = userProfiles.filter(userProfile => {
-      // Applying the search filters before creating each team table data element 
+      // Applying the search filters before creating each team table data element
       if (
         (userProfile.firstName &&
           searchWithAccent(userProfile.firstName, this.state.teamNameSearchText) &&
@@ -308,36 +308,36 @@ class ReportsPage extends Component {
     }));
   }
 
-//   showTotalProject() {
-//     if (this.state.showTotalProject) {
-//       this.setState({
-//         showTotalProject: false,
-//         loading: false,
-//       });
-//       return;
-//     }
-  
-//     this.setState({
-//       loading: true,
-//       showProjects: false,
-//       showPeople: false,
-//       showTeams: false,
-//       showTotalTeam: false,
-//       showTotalPeople: false,
-//       showTotalProject: false,  // Initially hide the report
-//       showAddTimeForm: false,
-//       showAddProjHistory: false,
-//       showAddPersonHistory: false,
-//       showAddTeamHistory: false,
-//     }, () => {
-//       setTimeout(() => {
-//         this.setState({
-//           loading: false,
-//           showTotalProject: true,  // Show the report after loading completes
-//         });
-//       }, 2000);  // Adjust the delay as needed
-//     });
-//   }
+  //   showTotalProject() {
+  //     if (this.state.showTotalProject) {
+  //       this.setState({
+  //         showTotalProject: false,
+  //         loading: false,
+  //       });
+  //       return;
+  //     }
+
+  //     this.setState({
+  //       loading: true,
+  //       showProjects: false,
+  //       showPeople: false,
+  //       showTeams: false,
+  //       showTotalTeam: false,
+  //       showTotalPeople: false,
+  //       showTotalProject: false,  // Initially hide the report
+  //       showAddTimeForm: false,
+  //       showAddProjHistory: false,
+  //       showAddPersonHistory: false,
+  //       showAddTeamHistory: false,
+  //     }, () => {
+  //       setTimeout(() => {
+  //         this.setState({
+  //           loading: false,
+  //           showTotalProject: true,  // Show the report after loading completes
+  //         });
+  //       }, 2000);  // Adjust the delay as needed
+  //     });
+  //   }
   showTotalProject() {
     this.setState(prevState => ({
       showProjects: false,
@@ -352,7 +352,7 @@ class ReportsPage extends Component {
       showAddTeamHistory: false,
     }));
   }
-  
+
   showAddProjHistory() {
     this.setState(prevState => ({
       showProjects: false,
@@ -441,6 +441,7 @@ class ReportsPage extends Component {
     const textColor = darkMode ? 'text-light' : '';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
+    const clearFilter = () => {};
     return (
       <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
         <div
@@ -461,8 +462,8 @@ class ReportsPage extends Component {
         >
           <div className="container-component-category">
             <h2 className="mt-3 mb-5">
-                {/* Loading spinner at the top */}
-                {this.state.loading && (
+              {/* Loading spinner at the top */}
+              {this.state.loading && (
                 <div className="loading-spinner-top">
                   <Loading align="center" darkMode={darkMode} />
                 </div>
@@ -562,6 +563,13 @@ class ReportsPage extends Component {
                   onDateChange={this.onDateChange}
                   darkMode={darkMode}
                 />
+                <Button
+                  onClick={clearFilter}
+                  color="danger"
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  X
+                </Button>
                 <div className="total-report-container">
                   <div className="total-report-item">
                     <Button color="info" onClick={this.showTotalProject}>
@@ -598,22 +606,24 @@ class ReportsPage extends Component {
                     </div>
                   </div>
                   <div>
-                  <div className="total-report-item">
-                    <Button color="info" onClick={this.showTotalTeam}>
-                      {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
-                    </Button>
-                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                      <EditableInfoModal
-                        areaName="totalTeamReportInfoPoint"
-                       areaTitle="Total Team Report"
-                        role={userRole}
-                        fontSize={15}
-                       isPermissionPage
-                        darkMode={darkMode}
-                     />
-                   </div>
-              </div>
-              </div>
+                    <div className="total-report-item">
+                      <Button color="info" onClick={this.showTotalTeam}>
+                        {this.state.showTotalTeam
+                          ? 'Hide Total Team Report'
+                          : 'Show Total Team Report'}
+                      </Button>
+                      <div style={{ display: 'inline-block', marginLeft: 10 }}>
+                        <EditableInfoModal
+                          areaName="totalTeamReportInfoPoint"
+                          areaTitle="Total Team Report"
+                          role={userRole}
+                          fontSize={15}
+                          isPermissionPage
+                          darkMode={darkMode}
+                        />
+                      </div>
+                    </div>
+                  </div>
                 </div>
                 {myRole != 'Owner' && (
                   <div className="lost-time-container">
@@ -791,12 +801,12 @@ class ReportsPage extends Component {
             )}
             {!this.state.loading && this.state.showTotalProject && (
               <TotalProjectReport
-              startDate={this.state.startDate}
-              endDate={this.state.endDate}
-              userProfiles={userProfiles}
-              projects={projects}
-              darkMode={darkMode}
-            />
+                startDate={this.state.startDate}
+                endDate={this.state.endDate}
+                userProfiles={userProfiles}
+                projects={projects}
+                darkMode={darkMode}
+              />
             )}
             {this.state.showAddTimeForm && myRole === 'Owner' && (
               <AddLostTime

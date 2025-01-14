@@ -12,6 +12,7 @@ class ReportFilter extends Component {
     this.setActive = this.setActive.bind(this);
     this.setInActive = this.setInActive.bind(this);
     this.setAll = this.setAll.bind(this);
+    this.setTenHourFilter = this.setTenHourFilter.bind(this);
     this.onWildCardSearch = this.onWildCardSearch.bind(this);
   }
 
@@ -24,6 +25,10 @@ class ReportFilter extends Component {
   }
 
   setAll() {
+    this.props.setFilterStatus('');
+  }
+
+  setTenHourFilter(){
     this.props.setFilterStatus('');
   }
 
@@ -64,6 +69,15 @@ class ReportFilter extends Component {
             defaultChecked
           />
           All
+          <input
+            name="radio"
+            type="radio"
+            style={{ margin: '8px 12px' }}
+            value="all"
+            onChange={this.setTenHourFilter}
+            defaultChecked
+          />
+          10+ hours
         </div>
         <div className="mt-4">
           <ReportTableSearchPanel
