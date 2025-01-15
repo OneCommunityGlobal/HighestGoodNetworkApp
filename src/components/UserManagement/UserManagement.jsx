@@ -19,6 +19,7 @@ import {
 import {
   getAllUserProfile,
   updateUserStatus,
+  updateUserPauseStatus,
   updateUserFinalDayStatusIsSet,
   deleteUser,
   enableEditUserInfo,
@@ -346,7 +347,7 @@ class UserManagement extends React.PureComponent {
    */
   onPauseResumeClick = (user, status) => {
     if (status === UserStatus.Active) {
-      this.props.updateUserStatus(user, status, Date.now());
+      this.props.updateUserPauseStatus(user, status, Date.now());
     } else {
       this.setState({
         activationDateOpen: true,
@@ -437,7 +438,7 @@ class UserManagement extends React.PureComponent {
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
   pauseUser = reActivationDate => {
-    this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
+    this.props.updateUserPauseStatus(this.state.selectedUser, UserStatus.InActive, reActivationDate);
     this.setState({
       activationDateOpen: false,
       selectedUser: undefined,
@@ -793,6 +794,7 @@ const mapStateToProps = state => {
 export default connect(mapStateToProps, {
   getAllUserProfile,
   updateUserStatus,
+  updateUserPauseStatus,
   updateUserFinalDayStatusIsSet,
   deleteUser,
   hasPermission,

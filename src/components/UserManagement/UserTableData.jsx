@@ -60,7 +60,6 @@ const UserTableData = React.memo(props => {
   const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
   const canPauseResumeUser = props.hasPermission('pauseResumeUser');
-  const canModifyUserStatus = canChangeUserStatus || canPauseResumeUser;
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
   const toggleFinalDayTooltip = () => setTooltipFinalDay(!tooltipFinalDayOpen);
@@ -244,7 +243,7 @@ const UserTableData = React.memo(props => {
         )}
       </td>
       <td>
-        {!canModifyUserStatus ? (
+        {!canPauseResumeUser ? (
           <Tooltip
             placement="bottom"
             isOpen={tooltipPauseOpen}
@@ -273,7 +272,7 @@ const UserTableData = React.memo(props => {
             );
           }}
           style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
-          disabled={!canModifyUserStatus}
+          disabled={!canPauseResumeUser}
           id={`btn-pause-profile-${props.user._id}`}
         >
           {/* {isChanging ? '...' : props.isActive ? PAUSE : RESUME} */}
