@@ -5,7 +5,7 @@ import { toast } from 'react-toastify';
 import { PAUSE, RESUME } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActivationDatePopup from './ActivationDatePopup';
-import { updateUserStatus } from '../../actions/userManagement';
+import { updateUserPauseStatus } from '../../actions/userManagement';
 import { boxStyle, boxStyleDark } from '../../styles';
 
 /**
@@ -33,7 +33,7 @@ function PauseAndResumeButton(props) {
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
   const pauseUser = async reActivationDate => {
-    await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
+    await updateUserPauseStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
     setIsActive(false);
     setActivationDateOpen(false);
     setTimeout(async () => {
@@ -47,7 +47,7 @@ function PauseAndResumeButton(props) {
    */
   const onPauseResumeClick = async (user, status) => {
     if (status === UserStatus.Active) {
-      await updateUserStatus(user, status, Date.now())(dispatch);
+      await updateUserPauseStatus(user, status, Date.now())(dispatch);
       setIsActive(status);
       setTimeout(async () => {
         await props.loadUserProfile();
