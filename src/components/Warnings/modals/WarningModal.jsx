@@ -27,8 +27,9 @@ function WarningModal({
   issueBothWarnings,
   handleWarningChange,
   handleSubmitWarning,
+  numberOfWarnings,
 }) {
-  const { id: warningId, numberOfWarnings, warningText, username, deleteWarning } = warning || {};
+  const { id: warningId, warningText, username, deleteWarning } = warning || {};
   const [times, ordinal] = getOrdinal(numberOfWarnings + 1);
   if (deleteWarning) {
     return (
