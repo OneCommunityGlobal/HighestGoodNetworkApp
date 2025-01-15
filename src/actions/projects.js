@@ -70,9 +70,9 @@ export const modifyProject = updatedProject => {
       status = res.status;
       dispatch(updateProject({ updatedProject, status }));
     } catch (err) {
-      status = err.response.status;
-      error = err.response.data;
-      dispatch(updateProject({ status, error }));
+      // status = err.response.status;
+      // error = err.response.data;
+      // dispatch(updateProject({ status, error }));
     }
   };
 };

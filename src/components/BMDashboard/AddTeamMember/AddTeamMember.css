@@ -9,6 +9,10 @@
     color:#f49441;
 }
 
+.input-name, .role-input, .team-input {
+    width: 230px;
+}
+
 .container {
     background-color: white;
     border-radius:10%;
@@ -17,21 +21,12 @@
 
 .name-container {
     display: flex;
-    flex-direction: row;
-    text-align: center;
+    gap: 40px;
     justify-content: center;
 }
 
 .name-container label {
     display: block;
-    margin-bottom: 5px;
-    padding: 0 15px;
-}
-
-.name-container input {
-    margin: 0 15px;
-    display: block;
-    padding: 10px;
 }
 
 .name-container-p {
@@ -40,33 +35,27 @@
     text-align: center;
 }
 
-.role-container {
-    display: flex;
-    flex-direction: row;
-    text-align: center;
-    justify-content: center;
-}
-
 .role-input {
     display:flex;
     flex-direction: column;
-    gap: 5px;
 }
 
-.role-input label {
-    display: block;
-    margin-bottom: 5px;
+.name-container input,
+.role-input input,
+.team-input input,
+#role-options,
+#team-options {
+    width: 200px;
+    margin: 0;
+    padding: 10px;
 }
 
-#role-options {
-    margin: 0 50px;
-}
-
+.role-container,
 .team-container {
     display: flex;
-    flex-direction: row;
-    text-align: center;
     justify-content: center;
+    gap: 40px; 
+    padding-top: 20px;
 }
 
 
@@ -76,11 +65,103 @@
     gap: 5px;
 }
 
-.team-input label {
-    display: block;
+.name-container label,
+.role-input label,
+.team-input label,
+.role-input p,
+.team-input p {
+    padding: 0;
     margin-bottom: 5px;
+    text-align: left;
 }
 
-#team-options {
-    margin: 0 50px;
+.contact-info {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    padding-top: 20px;
+    width: 460px;
+    margin: 0 auto;
 }
+
+.contact-info input {
+    width: calc(400px + 60px);
+    padding: 10px;
+    margin: 0 auto;
+    display: block;
+}
+
+.contact-info .input-group {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.contact-info label {
+    width: 120px;
+    text-align: right;
+}
+
+.contact-info input {
+    width: 460px;
+    padding: 10px;
+}
+
+.submit-cancel {
+    display: flex;
+    padding: 60px 200px;
+    justify-content: center;
+    gap: 20px;
+    padding-top: 60px;
+}
+
+
+.submit-button,
+.cancel-button {
+    padding: 15px 40px;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+.submit-button {
+    background-color: #26505e;
+    color: white;
+}
+
+.cancel-button {
+    background-color: white;
+    border: 2px solid #26505e;
+    color:black;
+}
+
+.phone-input-container {
+    display: flex;
+    align-items: center;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    padding: 5px;
+    width: 250px;
+    background-color: #f9f9f9;
+  }
+
+  .country-code {
+    color: green;
+    font-weight: bold;
+    margin-right: 5px;
+  }
+
+  .phone-input {
+    border: none;
+    outline: none;
+    flex: 1;
+    font-size: 16px;
+    background: transparent;
+  }
+
+  .phone-input::placeholder {
+    color: #bbb;
+    font-style: italic;
+  }
+
+  

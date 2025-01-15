@@ -381,7 +381,6 @@ export class WeeklySummariesReport extends Component {
   };
 
   filterWeeklySummaries = () => {
-    
     const {
       selectedCodes,
       selectedColors,
@@ -401,18 +400,18 @@ export class WeeklySummariesReport extends Component {
     const temp = summaries.filter(summary => {
       const { activeTab } = this.state;
       const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-  
+
       const isMeetCriteria =
         summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
-  
+
       const isBio = !selectedBioStatus || isMeetCriteria;
-  
+
       const isOverHours =
         !selectedOverTime ||
         (summary.weeklycommittedHours > 0 &&
           hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
-  
+
       // Include all users regardless of active status
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
@@ -436,7 +435,6 @@ export class WeeklySummariesReport extends Component {
           const color = COLORS[index % COLORS.length];
           const members = [];
           team.forEach(member => {
-            console.log('Member active status:', member);
             members.push({
               name: `${member.firstName} ${member.lastName}`,
               role: member.role,
@@ -455,7 +453,6 @@ export class WeeklySummariesReport extends Component {
         const color = COLORS[index % COLORS.length];
         const members = [];
         team.forEach(member => {
-          console.log('Member active status:', member.isActive);
           members.push({
             name: `${member.firstName} ${member.lastName}`,
             role: member.role,
@@ -480,21 +477,20 @@ export class WeeklySummariesReport extends Component {
         const members = [];
         if (team !== undefined) {
           team.forEach(member => {
-            console.log('Member active status:', member.isActive);
             const isMemberInactive = !member.isActive;
-            const namePrefix = isMemberInactive ? "FINAL WEEK REPORTING: " : "";
+            const namePrefix = isMemberInactive ? 'FINAL WEEK REPORTING: ' : '';
             members.push({
-            name: `${namePrefix}${member.firstName} ${member.lastName}`,
-            role: `${namePrefix}${member.role}`,
-            id: member._id,
+              name: `${namePrefix}${member.firstName} ${member.lastName}`,
+              role: `${namePrefix}${member.role}`,
+              id: member._id,
             });
-            });
-            if (members.length > 0) {
-              structuredTeamTableData.push({ team: code.value, color, members });
-            }
+          });
+          if (members.length > 0) {
+            structuredTeamTableData.push({ team: code.value, color, members });
+          }
         }
       });
-    } 
+    }
 
     chartData.sort();
     temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
