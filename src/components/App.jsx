@@ -1,7 +1,7 @@
 import React, { Component, useEffect } from 'react';
 import jwtDecode from 'jwt-decode';
 import { Provider, useSelector } from 'react-redux';
-import { BrowserRouter as Router , useLocation} from 'react-router-dom';
+import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 import routes from '../routes';
 import logger from '../services/logService';
@@ -13,11 +13,11 @@ import configureStore from '../store';
 import Loading from './common/Loading';
 
 import config from '../config.json';
-import '../App.css';
+import './CommunityPortal/feedback-modal/styles/App.css';
 import { ModalProvider } from 'context/ModalContext';
 
 const { persistor, store } = configureStore();
-const {tokenKey} = config;
+const { tokenKey } = config;
 // Require re-login 2 days before the token expires on server side
 // Avoid failure due to token expiration when user is working
 const TOKEN_LIFETIME_BUFFER = 86400 * 2;
@@ -44,9 +44,9 @@ if (localStorage.getItem(tokenKey)) {
 function UpdateDocumentTitle() {
   const location = useLocation();
   const authUser = useSelector(state => state.userProfile);
-  const fullName = authUser?.firstName && authUser?.lastName 
-      ? `${authUser.firstName} ${authUser.lastName}` 
-      : 'User';
+  const fullName = authUser?.firstName && authUser?.lastName
+    ? `${authUser.firstName} ${authUser.lastName}`
+    : 'User';
 
   // Define the routes array with pattern and title
   const routes = [
