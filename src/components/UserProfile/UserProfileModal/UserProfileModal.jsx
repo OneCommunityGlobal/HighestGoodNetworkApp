@@ -159,7 +159,7 @@ const UserProfileModal = props => {
   const handleSubmitWarning = () => {
     setShowWarningSpinner(true);
     handlePostWarnings(warningSelections);
-    setShowWarningSpinner(false);
+    // setShowWarningSpinner(false);
   };
   const handleToggleLogWarning = warningData => {
     if (warningData === 'both') {
@@ -224,6 +224,11 @@ const UserProfileModal = props => {
           userProfileModal={true}
           handleWarningChange={handleWarningChange}
           handleSubmitWarning={handleSubmitWarning}
+          warningSelections={warningSelections}
+          numberOfWarnings={Math.max(
+            warningType.specialWarnings[0].warnings.length,
+            warningType.specialWarnings[1].warnings.length,
+          )}
         />
       )}
       {displayWarningModal && (

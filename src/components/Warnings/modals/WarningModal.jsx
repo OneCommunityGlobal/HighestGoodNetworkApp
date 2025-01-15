@@ -15,6 +15,7 @@ import {
 import WarningIcons from '../WarningIcons';
 import getOrdinal from '../../../utils/getOrdinal';
 import '../Warnings.css';
+import { useState } from 'react';
 
 function WarningModal({
   setToggleModal,
@@ -28,9 +29,15 @@ function WarningModal({
   handleWarningChange,
   handleSubmitWarning,
   numberOfWarnings,
+  warningSelections,
 }) {
   const { id: warningId, warningText, username, deleteWarning } = warning || {};
   const [times, ordinal] = getOrdinal(numberOfWarnings + 1);
+
+  const isFormComplete = () => {
+    return warning.specialWarnings.every(warn => warningSelections[warn.title]);
+  };
+
   if (deleteWarning) {
     return (
       <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
@@ -145,7 +152,6 @@ function WarningModal({
                       }}
                     >
                       <Form
-                        action=""
                         style={{
                           display: 'flex',
                           justifyContent: 'center',
@@ -223,6 +229,7 @@ function WarningModal({
               Cancel
             </Button>
             <Button
+              disabled={!isFormComplete()}
               onClick={() => {
                 handleSubmitWarning();
                 setToggleModal(false);

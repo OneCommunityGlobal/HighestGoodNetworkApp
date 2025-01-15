@@ -605,6 +605,7 @@ function UserProfile(props) {
       } else {
         setShowModal(false);
         fetchSpecialWarnings();
+        toast.success('Succesfully logged both warnings!');
       }
     });
     //create new route to call the backedn
