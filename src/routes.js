@@ -42,6 +42,7 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
+import AttendanceNoShow from './components/AttendanceSystem/AttendanceNoShowCharts';
 
 
 // Community Portal
@@ -113,6 +114,7 @@ const Teams = lazy(() => import('./components/Teams/Teams'));
 export default (
   <Switch>
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+    <Route path="/logattendance" component={AttendanceNoShow} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       <Header />
