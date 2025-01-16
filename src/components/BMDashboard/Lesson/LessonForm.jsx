@@ -112,24 +112,21 @@ function LessonForm() {
 
   // useEffect handles click away from input drop down menu
   useEffect(() => {
-    const handleClickOutside = (event) => {
+    const handleClickOutside = event => {
       // is click outside dropdown?
       const dropdown = document.querySelector('.tag-dropdown');
       const input = document.querySelector('.form-control');
-      
       if (dropdown && !dropdown.contains(event.target) && !input.contains(event.target)) {
         setShowDropdown(false);
       }
     };
-
-    // if clicked outside 
+    // if clicked outside
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
 
-  
   useEffect(() => {
     if (projectId) {
       // Fetch the project with the given projectId
