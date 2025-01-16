@@ -45,10 +45,10 @@ export function Dashboard(props) {
       alert(warningMessage);
       return;
     }
-  
+
     const shouldOpen = forceOpen !== null ? forceOpen : !popup;
     setPopup(shouldOpen);
-  
+
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -56,7 +56,7 @@ export function Dashboard(props) {
       }
     }, 150);
   };
-  
+
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
