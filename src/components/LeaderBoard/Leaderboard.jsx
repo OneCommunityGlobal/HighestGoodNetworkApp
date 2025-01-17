@@ -301,7 +301,6 @@ function LeaderBoard({
       moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
 
     let additionalWeeks = 0;
-    
     if (isCurrentlyOff) {
       additionalWeeks = moment(mostRecentRequest.endingDate).diff(
         moment(moment().startOf('week')),
