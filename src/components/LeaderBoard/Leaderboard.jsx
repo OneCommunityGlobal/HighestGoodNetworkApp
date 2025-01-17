@@ -140,7 +140,8 @@ function LeaderBoard({
     //  eslint-disable-next-line
     leaderBoardData.length > 0 && teamsUsers.length === 0 && setTeamsUsers(leaderBoardData);
   }, [leaderBoardData]);
-  
+  // prettier-ignore
+
   useEffect(() => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
@@ -344,7 +345,7 @@ function LeaderBoard({
     const searchTeam = formatSearchInput(e.target.value);
     if (searchTeam === '') setTeams(refTeam.current);
     else {
-     // prettier-ignore
+      // prettier-ignore
       const filteredTeams = refTeam.current.filter(item => formatSearchInput(item.teamName).includes(searchTeam));
       // prettier-ignore
       (() => filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams))();
