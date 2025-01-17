@@ -275,6 +275,7 @@ const TestEventRegistration = () => {
           name="dateOfBirth"
           value={formValues.dateOfBirth}
           onChange={handleChange}
+          max={new Date().toISOString().split("T")[0]}
           style={{
             width: "100%",
             padding: "0.5rem",
