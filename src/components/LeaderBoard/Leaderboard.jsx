@@ -140,7 +140,6 @@ function LeaderBoard({
     //  eslint-disable-next-line
     leaderBoardData.length > 0 && teamsUsers.length === 0 && setTeamsUsers(leaderBoardData);
   }, [leaderBoardData]);
-  // prettier-ignore
   
   useEffect(() => {
     setInnerWidth(window.innerWidth);
@@ -224,7 +223,6 @@ function LeaderBoard({
         const scrollWindow = document.getElementById('leaderboard');
         if (scrollWindow) {
           const elem = document.getElementById(`id${userId}`);
-
           if (elem) {
             const topPos = elem.offsetTop;
             scrollWindow.scrollTo(0, topPos - 100 < 100 ? 0 : topPos - 100);
@@ -255,7 +253,6 @@ function LeaderBoard({
         email,
         profilePic: profilePic || '/pfp-default-header.png',
       };
-
       sessionStorage.setItem('viewingUser', JSON.stringify(viewingUser));
       window.dispatchEvent(new Event('storage'));
       dashboardClose();
@@ -273,7 +270,6 @@ function LeaderBoard({
       await getLeaderboardData(userId);
       renderTeamsList(usersSelectedTeam);
     }
-
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
   };
@@ -305,7 +301,7 @@ function LeaderBoard({
       moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
 
     let additionalWeeks = 0;
-    // additional weeks until back
+    
     if (isCurrentlyOff) {
       additionalWeeks = moment(mostRecentRequest.endingDate).diff(
         moment(moment().startOf('week')),
@@ -349,7 +345,6 @@ function LeaderBoard({
     refInput.current = e.target.value;
     // prettier-ignore
     const obj = {_id: 1, teamName: `This team is not found: ${e.target.value}`,}
-
     const searchTeam = formatSearchInput(e.target.value);
     if (searchTeam === '') setTeams(refTeam.current);
     else {
