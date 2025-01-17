@@ -2,8 +2,6 @@ import { useEffect, useState, useRef, useCallback } from 'react';
 import './Leaderboard.css';
 import { isEqual, debounce } from 'lodash';
 import { Link } from 'react-router-dom';
-import { updateTimeOffRequestThunk } from '../../actions/timeOffRequestAction';
-import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import {
   Table,
   Progress,
@@ -40,6 +38,7 @@ import { boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
