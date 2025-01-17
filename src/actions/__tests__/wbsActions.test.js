@@ -78,17 +78,14 @@ describe('WBS Action Creators', () => {
       const mockDispatch = jest.fn();
       const mockError = new Error('Network Error');
 
-      // Mock both calls to fail
       axios.post.mockRejectedValueOnce(mockError);
-      axios.delete.mockResolvedValueOnce({}); // Let delete succeed
+      axios.delete.mockResolvedValueOnce({});
 
       const thunk = deleteWbs('test-wbs-id');
       await thunk(mockDispatch);
 
-      // Give time for promises to resolve
       await new Promise(process.nextTick);
 
-      // Verify the error action was dispatched
       expect(mockDispatch).toHaveBeenCalledWith({
         type: types.DELETE_WBS,
         wbsId: 'test-wbs-id',
