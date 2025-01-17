@@ -262,7 +262,6 @@ function LeaderBoard({
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
-      // get real time updates when timeoff requests are made for a particular user
       await dispatch(getAllTimeOffRequests());
       await getLeaderboardData(userId);
       setTeamsUsers(leaderBoardData);
@@ -306,7 +305,6 @@ function LeaderBoard({
         moment(moment().startOf('week')),
         'weeks',
       );
-      // weeks before time off
     } else if (moment().isBefore(moment(mostRecentRequest.startingDate))) {
       additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks') + 1;
     }
@@ -347,9 +345,7 @@ function LeaderBoard({
     const searchTeam = formatSearchInput(e.target.value);
     if (searchTeam === '') setTeams(refTeam.current);
     else {
-      // prettier-ignore
       const filteredTeams = refTeam.current.filter(item => formatSearchInput(item.teamName).includes(searchTeam));
-      // prettier-ignore
       (() => filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams))();
     }
   };
@@ -378,7 +374,7 @@ function LeaderBoard({
     debouncedFilterUsers(e.target.value);
   };
 
-    return (
+  return (
     <div>
       <h3>
         <div className="d-flex align-items-center">
