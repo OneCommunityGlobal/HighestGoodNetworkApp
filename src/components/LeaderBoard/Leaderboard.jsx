@@ -384,7 +384,7 @@ function LeaderBoard({
     debouncedFilterUsers(e.target.value);
   };
 
-  return (
+    return (
     <div>
       <h3>
         <div className="d-flex align-items-center">
@@ -534,8 +534,9 @@ function LeaderBoard({
           />
         </div>
         <Table
-          className={`leaderboard table-fixed ${darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
-            }`}
+          className={`leaderboard table-fixed ${
+            darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+          }`}
         >
           <thead className="responsive-font-size">
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
@@ -672,13 +673,14 @@ function LeaderBoard({
                         }}
                       >
                         {hasLeaderboardPermissions(item.role) &&
-                          showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                        showStar(item.tangibletime, item.weeklycommittedHours) ? (
                           <i
                             className="fa fa-star"
-                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${item.role === 'Core Team' && item.missedHours > 0
-                              ? `\n Additional make-up hours this week: ${item.missedHours}`
-                              : ''
-                              } \n Click to view their Dashboard`}
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
+                              item.role === 'Core Team' && item.missedHours > 0
+                                ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                : ''
+                            } \n Click to view their Dashboard`}
                             style={{
                               color: assignStarDotColors(
                                 item.tangibletime,
@@ -692,10 +694,11 @@ function LeaderBoard({
                           />
                         ) : (
                           <div
-                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${item.role === 'Core Team' && item.missedHours > 0
-                              ? `\n Additional make-up hours this week: ${item.missedHours}`
-                              : ''
-                              } \n Click to view their Dashboard`}
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
+                              item.role === 'Core Team' && item.missedHours > 0
+                                ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                : ''
+                            } \n Click to view their Dashboard`}
                             style={{
                               backgroundColor:
                                 item.tangibletime >= item.weeklycommittedHours + item.missedHours
