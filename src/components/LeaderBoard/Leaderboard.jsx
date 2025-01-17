@@ -344,9 +344,10 @@ function LeaderBoard({
     const searchTeam = formatSearchInput(e.target.value);
     if (searchTeam === '') setTeams(refTeam.current);
     else {
-      const filteredTeams = refTeam.current.filter(item => 
-          formatSearchInput(item.teamName).includes(searchTeam));
-      (() => (filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams)))();
+     // prettier-ignore
+      const filteredTeams = refTeam.current.filter(item => formatSearchInput(item.teamName).includes(searchTeam));
+      // prettier-ignore
+      (() => filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams))();
     }
   };
 
