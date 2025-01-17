@@ -150,7 +150,29 @@ function LeaderBoard({
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
 
-
+  const updateOrganizationData = (usersTaks, contUsers) => {
+    // prettier-ignore
+    const newOrganizationData = usersTaks.reduce((accumulator, item) => {
+        accumulator.name = `Totals of ${contUsers}  team members`;
+        accumulator.tangibletime += item.tangibletime;
+        accumulator.totalintangibletime_hrs += item.totalintangibletime_hrs;
+        accumulator.totaltangibletime_hrs += item.totaltangibletime_hrs;
+        accumulator.totaltime += item.totaltime;
+        accumulator.totaltime_hrs += item.totaltime_hrs;
+        accumulator.barprogress += item.barprogress;
+        accumulator.intangibletime += item.intangibletime;
+        accumulator.barcolor = organizationData.barcolor;
+        accumulator.totalweeklycommittedHours += item.weeklycommittedHours;
+        accumulator.weeklycommittedHours += item.weeklycommittedHours;
+        return accumulator;
+      },
+      // prettier-ignore
+      { name: '', totaltime: 0, barprogress: 0, intangibletime: 0,barcolor: '', tangibletime: 0,
+      totalintangibletime_hrs: 0, totaltangibletime_hrs: 0,  totaltime_hrs: 0,
+      totalweeklycommittedHours: 0, weeklycommittedHours: 0, memberCount: contUsers, _id: 2},
+    );
+    setStateOrganizationData(newOrganizationData);
+  };
   const renderTeamsList = async team => {
     setIsDisplayAlert(false);
     if (!team || team === 'Show all') {
