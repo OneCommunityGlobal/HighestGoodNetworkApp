@@ -3,6 +3,7 @@ import jwtDecode from 'jwt-decode';
 import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
+import { ModalProvider } from 'context/ModalContext';
 import routes from '../../../src/routes';
 import logger from '../../../src/services/logService';
 
@@ -14,7 +15,6 @@ import Loading from '../../../src/components/common/Loading';
 
 import config from '../config.json';
 import './components/CommunityPortal/feedback-modal/styles/App.css';
-import { ModalProvider } from 'context/ModalContext';
 
 const { persistor, store } = configureStore();
 const { tokenKey } = config;
@@ -44,9 +44,10 @@ if (localStorage.getItem(tokenKey)) {
 function UpdateDocumentTitle() {
   const location = useLocation();
   const authUser = useSelector(state => state.userProfile);
-  const fullName = authUser?.firstName && authUser?.lastName
-    ? `${authUser.firstName} ${authUser.lastName}`
-    : 'User';
+  const fullName =
+    authUser?.firstName && authUser?.lastName
+      ? `${authUser.firstName} ${authUser.lastName}`
+      : 'User';
 
   // Define the routes array with pattern and title
   const routes = [
@@ -127,8 +128,6 @@ function UpdateDocumentTitle() {
 
   return null;
 }
-
-
 
 class App extends Component {
   state = {};

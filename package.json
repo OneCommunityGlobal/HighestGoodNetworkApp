@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "license": "GPL-2.0",
   "engines": {
-    "node": ">=14.0.0 <19"
+    "node": ">=14.0.0 <15"
   },
   "private": true,
   "dependencies": {
@@ -44,7 +44,7 @@
     "react-circular-progressbar": "^2.1.0",
     "react-collapsible": "^2.10.0",
     "react-datepicker": "^7.6.0",
-    "react-day-picker": "^9.5.0",
+    "react-day-picker": "^7.4.10",
     "react-dom": "^18.3.1",
     "react-html-parser": "^2.0.2",
     "react-icons": "^4.3.1",
@@ -92,6 +92,9 @@
     "lint": "eslint . --ext .jsx,.js",
     "lint:fix": "eslint --fix . --ext .jsx,.js",
     "prepare": "husky install"
+  },
+  "resolutions": {
+    "wrap-ansi-cjs": "^6.0.0"
   },
   "browserslist": [
     ">0.2%",

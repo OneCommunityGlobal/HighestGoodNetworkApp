@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import './styles/StarRating.css';  // Import the updated CSS
+import './styles/StarRating.css'; // Import the updated CSS
 
-const StarRating = ({ onRate }) => {
+function StarRating({ onRate }) {
   const [rating, setRating] = useState(0);
 
-  const handleStarClick = (index) => {
+  const handleStarClick = index => {
     setRating(index + 1); // Set the selected rating
     onRate(index + 1); // Pass the rating value back to the parent
   };
@@ -19,17 +19,13 @@ const StarRating = ({ onRate }) => {
           onClick={() => handleStarClick(i)}
         >
           ★
-        </span>
+        </span>,
       );
     }
     return stars;
   };
 
-  return (
-    <div className="star-container">
-      {renderStars()}
-    </div>
-  );
-};
+  return <div className="star-container">{renderStars()}</div>;
+}
 
 export default StarRating;

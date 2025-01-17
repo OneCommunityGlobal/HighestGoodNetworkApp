@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import StarRating from './StarRating';
 import './styles/FeedbackModal.css';
 
-const FeedbackModal = ({ isOpen, onClose }) => {
+function FeedbackModal({ isOpen, onClose }) {
   const [rating, setRating] = useState(0);
   const [comment, setComment] = useState('');
   const [charCount, setCharCount] = useState(0);
@@ -10,20 +10,22 @@ const FeedbackModal = ({ isOpen, onClose }) => {
   const [successMessage, setSuccessMessage] = useState('');
   const [submitted, setSubmitted] = useState(false);
 
-  const handleCommentChange = (e) => {
+  const handleCommentChange = e => {
     const newComment = e.target.value;
     setComment(newComment);
     setCharCount(newComment.length);
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     if (rating === 0) {
       setErrorMessage('Please select a rating.');
       setSuccessMessage(''); // Clear any success message
     } else {
       setErrorMessage('');
-      setSuccessMessage('Thank you for submitting the feedback! We appreciate you taking the time to submit.');
+      setSuccessMessage(
+        'Thank you for submitting the feedback! We appreciate you taking the time to submit.',
+      );
       setSubmitted(true);
       // Optional:
       setRating(0);
@@ -38,7 +40,7 @@ const FeedbackModal = ({ isOpen, onClose }) => {
     }
   };
 
-  const handleOverlayClick = (e) => {
+  const handleOverlayClick = e => {
     if (e.target.className === 'modal-overlay') {
       handleClose();
     }
@@ -52,7 +54,11 @@ const FeedbackModal = ({ isOpen, onClose }) => {
         </span>
         <h2 className="header-feedback">Your feedback is very important to us!</h2>
         {submitted && <p className="success-message">{successMessage}</p>}
-        {!submitted && <p className="para">If you can, please tell us what parts you are not happy or satisfied with.</p>}
+        {!submitted && (
+          <p className="para">
+            If you can, please tell us what parts you are not happy or satisfied with.
+          </p>
+        )}
         {!submitted && (
           <form onSubmit={handleSubmit}>
             <StarRating onRate={setRating} />
@@ -77,6 +83,6 @@ const FeedbackModal = ({ isOpen, onClose }) => {
       </div>
     </div>
   ) : null;
-};
+}
 
 export default FeedbackModal;
