@@ -6,7 +6,7 @@ import './reportsPage.css';
 /**
  * The search panel stateless component for Report grid
  */
-function ReportTableSearchPanel({ onSearch }) {
+function ReportTableSearchPanel({ onSearch, wildCardSearchText }) {
   // Destructure onSearch here
   return (
     <div className="input-group" id="new_team">
@@ -22,6 +22,7 @@ function ReportTableSearchPanel({ onSearch }) {
         aria-label="Search"
         placeholder="Search Text"
         id="team-profiles-wild-card-search"
+        value={wildCardSearchText}
         onChange={e => {
           onSearch(e.target.value); // Use destructured onSearch directly
         }}

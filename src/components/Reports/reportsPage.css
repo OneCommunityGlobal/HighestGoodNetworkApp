@@ -103,14 +103,18 @@
 
 .date-picker-container {
   display: flex;
+  flex-direction: row;
   justify-content: flex-start;
-  padding: 16px 0;
+  padding: 8px 0px 8px 0px;
+  gap: 4%;
 }
 
 .date-picker-item {
   display: flex;
+  width: 30%;
   flex-direction: column;
-  margin: 8px 0;
+  flex-wrap: nowrap;
+  justify-content: space-between;
 }
 
 .date-picker-label {
