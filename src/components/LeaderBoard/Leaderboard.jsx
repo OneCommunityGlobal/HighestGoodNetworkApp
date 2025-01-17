@@ -290,7 +290,6 @@ function LeaderBoard({
 
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
-    console.log(request)
   };
 
 
