@@ -29,6 +29,7 @@ const DATE_PICKER_MIN_DATE = '01/01/2010';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 import Loading from '../common/Loading';
+import {getTimeEntriesForPeriod} from '../../actions/timeEntries';
 
 class ReportsPage extends Component {
   constructor(props) {
@@ -52,7 +53,7 @@ class ReportsPage extends Component {
       wildCardSearchText: '',
       selectedTeamId: 0,
       selectedTeam: '',
-      checkActive: '',
+      filterStatus: "all",
       formElements: {
         summary: '',
         summaryLastWeek: '',
@@ -97,15 +98,13 @@ class ReportsPage extends Component {
     this.showAddPersonHistory = this.showAddPersonHistory.bind(this);
     this.showAddTeamHistory = this.showAddTeamHistory.bind(this);
     this.showAddProjHistory = this.showAddProjHistory.bind(this);
-    this.setActive = this.setActive.bind(this);
-    this.setInActive = this.setInActive.bind(this);
-    this.setAll = this.setAll.bind(this);
     this.setTeamMemberList = this.setTeamMemberList.bind(this);
     this.setAddTime = this.setAddTime.bind(this);
     this.setRemainedTeams = this.setRemainedTeams.bind(this);
     this.setFilterStatus = this.setFilterStatus.bind(this);
     this.onWildCardSearch = this.onWildCardSearch.bind(this);
     this.onDateChange = this.onDateChange.bind(this);
+    this.handleClearFilters = this.handleClearFilters.bind(this);
   }
 
   async componentDidMount() {
@@ -114,8 +113,20 @@ class ReportsPage extends Component {
     this.props.getUserProfileBasicInfo();
   }
 
+  componentDidUpdate(prevProps, prevState) {
+    const { filterStatus, startDate, endDate } = this.state;
+
+    // Check if 10-hour filter is selected and start/end dates have changed
+    if (
+      filterStatus === 'tenHour' &&
+      (startDate !== prevState.startDate || endDate !== prevState.endDate)
+    ) {
+      this.filterByTenHours(startDate, endDate); // Call the function to filter users
+    }
+  }
+
   setFilterStatus(status) {
-    this.setState({ checkActive: status });
+    this.setState({ filterStatus: status });
   }
 
   /**
@@ -123,6 +134,14 @@ class ReportsPage extends Component {
    */
   onWildCardSearch(searchText) {
     this.setState({ wildCardSearchText: searchText });
+  }
+
+  handleClearFilters() {
+    this.setState({
+      startDate: new Date(DATE_PICKER_MIN_DATE),
+      endDate: new Date(),
+      wildCardSearchText: '',
+    });
   }
 
   filteredProjectList = projects => {
@@ -188,23 +207,22 @@ class ReportsPage extends Component {
     return filteredList;
   };
 
-  setActive() {
-    this.setState(state => ({
-      checkActive: 'true',
-    }));
-  }
+  filterByTenHours = async (startDate, endDate) => {
+    const { userProfiles } = this.props.state.allUserProfilesBasicInfo;
+    const promises = userProfiles.map(async userProfile => {
+      // time entries within selected date range
+      const timeEntries = await this.props.getTimeEntriesForPeriod(
+        userProfile.id,
+        startDate,
+        endDate,
+      );
+      const totalHours = timeEntries.reduce((sum, entry) => sum + entry.totalSeconds / 3600, 0);
+      return { ...userProfile, totalHours };
+    });
 
-  setAll() {
-    this.setState(state => ({
-      checkActive: '',
-    }));
-  }
-
-  setInActive() {
-    this.setState(() => ({
-      checkActive: 'false',
-    }));
-  }
+    const usersWithHours = await Promise.all(promises);
+    this.setState({ peopleSearchData: usersWithHours.filter(user => user.totalHours > 10)});
+  };
 
   setTeamMemberList(list) {
     this.setState(() => ({
@@ -417,14 +435,14 @@ class ReportsPage extends Component {
     this.state.teamSearchData = this.filteredTeamList(allTeams);
     this.state.peopleSearchData = this.filteredPeopleList(userProfilesBasicInfo);
     this.state.projectSearchData = this.filteredProjectList(projects);
-    if (this.state.checkActive === 'true') {
+    if (this.state.filterStatus === 'active') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === true);
       this.state.projectSearchData = projects.filter(project => project.isActive === true);
       this.state.peopleSearchData = userProfilesBasicInfo.filter(user => user.isActive === true);
       this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
-    } else if (this.state.checkActive === 'false') {
+    } else if (this.state.filterStatus === 'inactive') {
       this.state.teamSearchData = allTeams.filter(team => team.isActive === false);
       this.state.projectSearchData = projects.filter(project => project.isActive === false);
       this.state.peopleSearchData = userProfilesBasicInfo.filter(user => user.isActive === false);
@@ -432,6 +450,7 @@ class ReportsPage extends Component {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
     }
+
     if (this.state.startDate != null && this.state.endDate != null) {
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
     }
@@ -441,7 +460,6 @@ class ReportsPage extends Component {
     const textColor = darkMode ? 'text-light' : '';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
 
-    const clearFilter = () => {};
     return (
       <Container fluid className={`mb-5 container-component-wrapper ${isOxfordBlue}`}>
         <div
@@ -555,6 +573,7 @@ class ReportsPage extends Component {
                   setFilterStatus={this.setFilterStatus}
                   onWildCardSearch={this.onWildCardSearch}
                   onCreateNewTeamShow={this.onCreateNewTeamShow}
+                  wildCardSearchText={this.state.wildCardSearchText}
                 />
                 <ViewReportByDate
                   minDate={new Date(DATE_PICKER_MIN_DATE)}
@@ -562,14 +581,8 @@ class ReportsPage extends Component {
                   textColor={textColor}
                   onDateChange={this.onDateChange}
                   darkMode={darkMode}
+                  onClearFilters={this.handleClearFilters}
                 />
-                <Button
-                  onClick={clearFilter}
-                  color="danger"
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  X
-                </Button>
                 <div className="total-report-container">
                   <div className="total-report-item">
                     <Button color="info" onClick={this.showTotalProject}>
@@ -803,7 +816,7 @@ class ReportsPage extends Component {
               <TotalProjectReport
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
-                userProfiles={userProfiles}
+                userProfiles={userProfilesBasicInfo}
                 projects={projects}
                 darkMode={darkMode}
               />
@@ -860,5 +873,6 @@ export default connect(mapStateToProps, {
   fetchAllProjects,
   getAllUserTeams,
   getUserProfileBasicInfo,
+  getTimeEntriesForPeriod,
   fetchAllTasks,
 })(ReportsPage);
