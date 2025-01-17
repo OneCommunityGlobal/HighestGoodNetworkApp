@@ -116,9 +116,6 @@ function LeaderBoard({
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
 
-
-
-
   useEffect(() => {
     const fetchInitial = async () => {
       const url = ENDPOINTS.USER_PROFILE(displayUserId);
