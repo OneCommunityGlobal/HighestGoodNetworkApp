@@ -35,6 +35,7 @@ import { useDispatch } from 'react-redux';
 import { boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import { ENDPOINTS } from '../../utils/URL';
+import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -106,6 +107,9 @@ function LeaderBoard({
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
 
+
+
+
   useEffect(() => {
     const fetchInitial = async () => {
       const url = ENDPOINTS.USER_PROFILE(displayUserId);
@@ -129,9 +133,12 @@ function LeaderBoard({
     }
   }, [leaderBoardData]);
 
+
   useEffect(() => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
+
+
 
   const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
 
@@ -221,9 +228,16 @@ function LeaderBoard({
       dashboardClose();
     });
   };
+
+  // changed
+
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
+
+      // get real time updates when timeoff requests are made for a particular user
+      await dispatch(getAllTimeOffRequests());
+      // const updatedLeaderboardData = await getLeaderboardData(userId);
       await getLeaderboardData(userId);
       setTeamsUsers(leaderBoardData);
     } else {
@@ -231,13 +245,18 @@ function LeaderBoard({
       renderTeamsList(usersSelectedTeam);
       setTextButton('View All');
     }
+
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
   };
 
+
+
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
+    console.log(request)
   };
+
 
   const getTimeOffStatus = personId => {
     if (!allRequests || !allRequests[personId] || allRequests[personId].length === 0) {
@@ -405,9 +424,8 @@ function LeaderBoard({
           />
         </div>
         <Table
-          className={`leaderboard table-fixed ${
-            darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
-          }`}
+          className={`leaderboard table-fixed ${darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+            }`}
         >
           <thead className="responsive-font-size">
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
@@ -544,14 +562,13 @@ function LeaderBoard({
                         }}
                       >
                         {hasLeaderboardPermissions(item.role) &&
-                        showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                          showStar(item.tangibletime, item.weeklycommittedHours) ? (
                           <i
                             className="fa fa-star"
-                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                              item.role === 'Core Team' && item.missedHours > 0
-                                ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                : ''
-                            } \n Click to view their Dashboard`}
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${item.role === 'Core Team' && item.missedHours > 0
+                              ? `\n Additional make-up hours this week: ${item.missedHours}`
+                              : ''
+                              } \n Click to view their Dashboard`}
                             style={{
                               color: assignStarDotColors(
                                 item.tangibletime,
@@ -565,11 +582,10 @@ function LeaderBoard({
                           />
                         ) : (
                           <div
-                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                              item.role === 'Core Team' && item.missedHours > 0
-                                ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                : ''
-                            } \n Click to view their Dashboard`}
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${item.role === 'Core Team' && item.missedHours > 0
+                              ? `\n Additional make-up hours this week: ${item.missedHours}`
+                              : ''
+                              } \n Click to view their Dashboard`}
                             style={{
                               backgroundColor:
                                 item.tangibletime >= item.weeklycommittedHours + item.missedHours

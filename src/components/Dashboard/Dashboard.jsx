@@ -8,7 +8,6 @@ import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
 import './Dashboard.css';
 import '../../App.css';
-import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
 import { ENDPOINTS } from 'utils/URL';
 import './Dashboard.css';
@@ -45,10 +44,10 @@ export function Dashboard(props) {
       alert(warningMessage);
       return;
     }
-  
+
     const shouldOpen = forceOpen !== null ? forceOpen : !popup;
     setPopup(shouldOpen);
-  
+
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -56,7 +55,7 @@ export function Dashboard(props) {
       }
     }, 150);
   };
-  
+
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
