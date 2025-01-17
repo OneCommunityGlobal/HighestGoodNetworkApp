@@ -10,7 +10,9 @@ function App() {
 
   return (
     <div>
-      <button onClick={openModal}>Leave Feedback</button>
+      <button type="button" onClick={openModal}>
+        Leave Feedback
+      </button>
       <FeedbackModal isOpen={isModalOpen} onClose={closeModal} />
     </div>
   );

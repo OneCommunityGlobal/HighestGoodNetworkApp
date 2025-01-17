@@ -12,7 +12,7 @@ module.exports = {
     'import/resolver': {
       node: {
         paths: ['src'],
-        extensions: ['.js', '.jsx'],
+        extensions: ['.js', '.jsx', 'json'],
       },
     },
   },
@@ -44,7 +44,7 @@ module.exports = {
     'react/prop-types': 'off',
     'react-hooks/exhaustive-deps': 'off',
     'react/jsx-key': 'off',
-    'react/jsx-uses-react': 'off',
+    'react/jsx-uses-react': 'error',
     'react/display-name': 'off',
     'react/no-direct-mutation-state': 'off',
     'react/no-unknown-property': 'off',
@@ -58,7 +58,9 @@ module.exports = {
     'no-alert': 'error',
     'no-console': 'error',
     'import/no-extraneous-dependencies': ['error', { devDependencies: true }],
+    'import/extensions': ['error', 'always', { js: 'never', jsx: 'never', json: 'always' }],
   },
+
   overrides: [
     {
       files: ['**/*.test.js', '**/*.test.jsx'],

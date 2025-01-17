@@ -4,17 +4,17 @@ import { Provider, useSelector } from 'react-redux';
 import { BrowserRouter as Router, useLocation } from 'react-router-dom';
 import { PersistGate } from 'redux-persist/integration/react';
 import { ModalProvider } from 'context/ModalContext';
-import routes from '../../../src/routes';
-import logger from '../../../src/services/logService';
+import routes from '../../../routes';
+import logger from '../../../services/logService';
 
-import httpService from '../../../src/services/httpService';
-import { setCurrentUser, logoutUser } from '../../../src/actions/authActions';
+import httpService from '../../../services/httpService';
+import { setCurrentUser, logoutUser } from '../../../actions/authActions';
 
-import configureStore from '../../../src/store';
-import Loading from '../../../src/components/common/Loading';
+import configureStore from '../../../store';
+import Loading from '../../common/Loading';
 
-import config from '../config.json';
-import './components/CommunityPortal/feedback-modal/styles/App.css';
+import config from '../../../config.json';
+// import './components/CommunityPortal/feedback-modal/styles/App.css';
 
 const { persistor, store } = configureStore();
 const { tokenKey } = config;
@@ -50,7 +50,7 @@ function UpdateDocumentTitle() {
       : 'User';
 
   // Define the routes array with pattern and title
-  const routes = [
+  /* const routes = [
     { pattern: /^\/ProfileInitialSetup\/[^/]+$/, title: 'Profile Initial Setup' },
     { pattern: /^\/dashboard$/, title: `Dashboard - ${fullName}` },
     { pattern: /^\/dashboard\/[^/]+$/, title: `Dashboard - ${fullName}` },
@@ -116,9 +116,9 @@ function UpdateDocumentTitle() {
     { pattern: /^\/updatepassword\/[^/]+$/, title: 'Update Password' },
     { pattern: /^\/Logout$/, title: 'Logout' },
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
-    { pattern: /^\/$/, title: `Dashboard - ${fullName}` },
-    { pattern: /.*/, title: 'HGN APP' }, // Default case
-  ];
+    { pattern: /^\/$/, title: `Dashboard - ${fullName}` }, */
+  // { pattern: /.*/, title: 'HGN APP' }, // Default case
+  // ];
 
   useEffect(() => {
     // Find the first matching route and set the document title
@@ -130,9 +130,12 @@ function UpdateDocumentTitle() {
 }
 
 class App extends Component {
-  state = {};
+  constructor(props) {
+    super(props);
+    this.state = {};
+  }
 
-  componentDidCatch(error, errorInfo) {
+  componentDidCatch(error) {
     logger.logError(error);
   }
 

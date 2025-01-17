@@ -4,20 +4,14 @@ import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
 import logService from './services/logService';
 import React from 'react';
-import { createRoot } from 'react-dom/client';
+import ReactDOM from 'react-dom'; // Use ReactDOM from 'react-dom' for React 17
 import App from './components/CommunityPortal/feedback-modal/App';
 
 // Get the root element from your HTML (make sure the element exists)
 const rootElement = document.getElementById('root');
 
-// Create a root and render the App component
-const root = createRoot(rootElement);
-root.render(<App />);
-
-//import FeedbackModal from './components/CommunityPortal/feedback-modal'; // Assuming this is correct path for feedback modal
-
-
-//root.render(<FeedbackModal />); // Render FeedbackModal, which will call App
+// Use ReactDOM.render for React 17
+ReactDOM.render(<App />, rootElement);
 
 logService.init();
 registerServiceWorker();

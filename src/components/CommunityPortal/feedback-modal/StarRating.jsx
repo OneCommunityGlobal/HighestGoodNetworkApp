@@ -11,7 +11,7 @@ function StarRating({ onRate }) {
 
   const renderStars = () => {
     const stars = [];
-    for (let i = 0; i < 5; i++) {
+    for (let i = 0; i < 5; i += 1) {
       stars.push(
         <span
           key={i}
