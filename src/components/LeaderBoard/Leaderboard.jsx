@@ -141,8 +141,7 @@ function LeaderBoard({
     leaderBoardData.length > 0 && teamsUsers.length === 0 && setTeamsUsers(leaderBoardData);
   }, [leaderBoardData]);
   // prettier-ignore
-
-
+  
   useEffect(() => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
@@ -263,15 +262,11 @@ function LeaderBoard({
     });
   };
 
-  // changed
-
   const updateLeaderboardHandler = async () => {
     setIsLoading(true);
     if (isEqual(leaderBoardData, teamsUsers)) {
-
       // get real time updates when timeoff requests are made for a particular user
       await dispatch(getAllTimeOffRequests());
-      // const updatedLeaderboardData = await getLeaderboardData(userId);
       await getLeaderboardData(userId);
       setTeamsUsers(leaderBoardData);
     } else {
@@ -282,8 +277,6 @@ function LeaderBoard({
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
   };
-
-
 
   const handleTimeOffModalOpen = request => {
     showTimeOffRequestModal(request);
@@ -310,13 +303,6 @@ function LeaderBoard({
     const isCurrentlyOff =
       moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
       moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
-
-    // const isCurrentlyOff = moment().isBetween(
-    //   moment(mostRecentRequest.startingDate),
-    //   moment(mostRecentRequest.endingDate),
-    //   null,
-    //   '[]',
-    // );
 
     let additionalWeeks = 0;
     // additional weeks until back
