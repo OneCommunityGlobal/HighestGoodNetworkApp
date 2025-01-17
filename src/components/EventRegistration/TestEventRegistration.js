@@ -490,32 +490,33 @@ const TestEventRegistration = () => {
       </div>
       {/* How Did You Hear About Us Field */}
       <div style={{ marginBottom: "1rem" }}>
-        <label htmlFor="howDidYouHear" style={{ display: "block", marginBottom: "0.5rem" }}>
-            How did you hear about us? <span style={{ color: "red" }}>*</span>
-        </label>
-        {[
-            "Search Engine (Google, Bing, etc.)",
-            "Social Media",
-            "Radio",
-            "Television",
-            "Streaming Service Ad",
-            "Newspaper/Online Newspaper",
-            "Billboard",
-            "Word of Mouth",
-            "Referral",
-            "Others",
-        ].map((option) => (
+    <label htmlFor="howDidYouHear" style={{ display: "block", marginBottom: "0.5rem" }}>
+        How did you hear about us? <span style={{ color: "red" }}>*</span>
+    </label>
+    {[
+        "Search Engine (Google, Bing, etc.)",
+        "Social Media",
+        "Radio",
+        "Television",
+        "Streaming Service Ad",
+        "Newspaper/Online Newspaper",
+        "Billboard",
+        "Word of Mouth",
+        "Referral",
+        "Others",
+    ].map((option) => (
         <div key={option} style={{ marginBottom: "0.5rem" }}>
             <label>
                 <input
-                type="checkbox"
-                name="howDidYouHear"
-                value={option}
-                onChange={handleChange}
+                    type="radio"
+                    name="howDidYouHear" // Shared name for all radio buttons
+                    value={option}
+                    onChange={handleChange}
+                    checked={formValues.howDidYouHear === option} // Ensures correct selection
                 />
                 {option}
             </label>
-            {option === "Others" && formValues.howDidYouHear.includes("Others") && (
+            {option === "Others" && formValues.howDidYouHear === "Others" && (
                 <input
                     type="text"
                     name="otherHowDidYouHear"
@@ -531,11 +532,11 @@ const TestEventRegistration = () => {
                 />
             )}
         </div>
-        ))}
-        {errors.howDidYouHear && (
-            <span style={{ color: "red", fontSize: "0.875rem" }}>{errors.howDidYouHear}</span>
-        )}
-     </div>
+    ))}
+    {errors.howDidYouHear && (
+        <span style={{ color: "red", fontSize: "0.875rem" }}>{errors.howDidYouHear}</span>
+    )}
+</div>
 
 
       {/* buttons */}
