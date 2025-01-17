@@ -277,7 +277,6 @@ function LeaderBoard({
     showTimeOffRequestModal(request);
   };
 
-
   const getTimeOffStatus = personId => {
     if (!allRequests || !allRequests[personId] || allRequests[personId].length === 0) {
       return { hasTimeOff: false, isCurrentlyOff: false, additionalWeeks: 0 };
@@ -345,8 +344,9 @@ function LeaderBoard({
     const searchTeam = formatSearchInput(e.target.value);
     if (searchTeam === '') setTeams(refTeam.current);
     else {
-      const filteredTeams = refTeam.current.filter(item => formatSearchInput(item.teamName).includes(searchTeam));
-      (() => filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams))();
+      const filteredTeams = refTeam.current.filter(item => 
+          formatSearchInput(item.teamName).includes(searchTeam));
+      (() => (filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams)))();
     }
   };
 
