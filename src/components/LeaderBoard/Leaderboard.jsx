@@ -12,12 +12,14 @@ import {
   ModalFooter,
   ModalHeader,
   Button,
-  Dropdown,
+  UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
   Spinner,
+  Input,
 } from 'reactstrap';
+import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -36,6 +38,7 @@ import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
 import { boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
+import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
@@ -81,12 +84,12 @@ function LeaderBoard({
   showTimeOffRequestModal,
   darkMode,
   getWeeklySummaries,
+  setFilteredUserTeamIds,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  // const isOwner = ['Owner'].includes(loggedInUser.role);
-  const isOwner = loggedInUser && loggedInUser.role && ['Owner'].includes(loggedInUser.role);
+  const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
@@ -96,15 +99,21 @@ function LeaderBoard({
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
-  const [textButton, setTextButton] = useState('My Team');
-  const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
+  const [selectedTeamName, setSelectedTeamName] = useState('Show all');
+  const [usersSelectedTeam, setUsersSelectedTeam] = useState('Show all');
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [userRole, setUserRole] = useState();
-  const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
+  const [teamsUsers, setTeamsUsers] = useState([]);
   const [innerWidth, setInnerWidth] = useState();
+
+  const [isDisplayAlert, setIsDisplayAlert] = useState(false);
+  const [stateOrganizationData, setStateOrganizationData] = useState(organizationData);
+
+  const refTeam = useRef([]);
+  const refInput = useRef('');
+
   const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(loggedInUser.role);
+
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
 
@@ -116,6 +125,7 @@ function LeaderBoard({
       const url = ENDPOINTS.USER_PROFILE(displayUserId);
       try {
         const response = await axios.get(url);
+        refTeam.current = response.data.teams;
         setTeams(response.data.teams);
         setUserRole(response.data.role);
       } catch (error) {
@@ -127,12 +137,14 @@ function LeaderBoard({
   }, []);
 
   useEffect(() => {
-    if (!isEqual(leaderBoardData, teamsUsers)) {
-      if (selectedTeamName === 'Select a Team') {
-        setTeamsUsers(leaderBoardData);
-      }
-    }
+    if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
+  }, [organizationData, usersSelectedTeam]);
+
+  useEffect(() => {
+    //  eslint-disable-next-line
+    leaderBoardData.length > 0 && teamsUsers.length === 0 && setTeamsUsers(leaderBoardData);
   }, [leaderBoardData]);
+  // prettier-ignore
 
 
   useEffect(() => {
@@ -140,16 +152,16 @@ function LeaderBoard({
   }, [window.innerWidth]);
 
 
-
-  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
-
   const renderTeamsList = async team => {
-    if (!team) {
+    setIsDisplayAlert(false);
+    if (!team || team === 'Show all') {
       setIsLoadingTeams(true);
+      setFilteredUserTeamIds([]);
+      setStateOrganizationData(organizationData);
 
       setTimeout(() => {
-        setIsLoadingTeams(false);
         setTeamsUsers(leaderBoardData);
+        setIsLoadingTeams(false);
       }, 1000);
     } else {
       try {
@@ -157,25 +169,28 @@ function LeaderBoard({
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
         const idUsers = response.data.map(item => item._id);
         const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
-        setTeamsUsers(usersTaks);
-        setIsLoadingTeams(false);
+        // eslint-disable-next-line no-unused-expressions
+        usersTaks.length === 0
+          ? // eslint-disable-next-line no-unused-expressions
+            (setIsDisplayAlert(true), setIsLoadingTeams(false), null)
+          : // eslint-disable-next-line no-unused-expressions
+            (setTeamsUsers(usersTaks),
+            setIsLoadingTeams(false),
+            setFilteredUserTeamIds(idUsers),
+            updateOrganizationData(usersTaks, usersTaks.length));
       } catch (error) {
-        toast.error('Error fetching team members:', error);
+        toast.error('Error fetching team members');
         setIsLoadingTeams(false);
       }
     }
   };
 
   const handleToggleButtonClick = () => {
-    if (textButton === 'View All') {
-      setTextButton('My Team');
-      renderTeamsList(null);
-    } else if (usersSelectedTeam.length === 0) {
+    // prettier-ignore
+    if (usersSelectedTeam === 'Show all') {renderTeamsList(null)}
+     else if (usersSelectedTeam.length === 0) {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
-    } else {
-      setTextButton('View All');
-      renderTeamsList(usersSelectedTeam);
-    }
+    } else renderTeamsList(usersSelectedTeam);
   };
 
   const handleMouseoverTextUpdate = text => {
@@ -244,7 +259,6 @@ function LeaderBoard({
     } else {
       await getLeaderboardData(userId);
       renderTeamsList(usersSelectedTeam);
-      setTextButton('View All');
     }
 
     setIsLoading(false);
@@ -273,12 +287,19 @@ function LeaderBoard({
       sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
       sortedRequests[0];
 
-    const isCurrentlyOff = moment().isBetween(
-      moment(mostRecentRequest.startingDate),
-      moment(mostRecentRequest.endingDate),
-      null,
-      '[]',
-    );
+    const startOfWeek = moment().startOf('week');
+    const endOfWeek = moment().endOf('week');
+
+    const isCurrentlyOff =
+      moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
+      moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
+
+    // const isCurrentlyOff = moment().isBetween(
+    //   moment(mostRecentRequest.startingDate),
+    //   moment(mostRecentRequest.endingDate),
+    //   null,
+    //   '[]',
+    // );
 
     let additionalWeeks = 0;
     // additional weeks until back
@@ -305,12 +326,39 @@ function LeaderBoard({
   };
 
   const TeamSelected = team => {
-    if (team.teamName.length !== undefined) {
-      teamName(team.teamName, team.teamName.length);
-    }
+    setTeams(refTeam.current);
+    refInput.current = '';
+    if (team === 'Show all') {
+      setUsersSelectedTeam(team);
+      teamName('Show all', 7);
+    } else if (team.teamName.length !== undefined) teamName(team.teamName, team.teamName.length);
     setUsersSelectedTeam(team);
-    setTextButton('My Team');
   };
+
+  const formatSearchInput = result => {
+    return result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+  };
+
+  const handleInputSearchTeams = e => {
+    refInput.current = e.target.value;
+    // prettier-ignore
+    const obj = {_id: 1, teamName: `This team is not found: ${e.target.value}`,}
+
+    const searchTeam = formatSearchInput(e.target.value);
+    if (searchTeam === '') setTeams(refTeam.current);
+    else {
+      // prettier-ignore
+      const filteredTeams = refTeam.current.filter(item => formatSearchInput(item.teamName).includes(searchTeam));
+      // prettier-ignore
+      (() => filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams))();
+    }
+  };
+
+  const toastError = () =>
+    toast.error('Please wait for the users to appear in the Leaderboard table.');
 
   useEffect(() => {
     setFilteredUsers(teamsUsers);
@@ -358,47 +406,105 @@ function LeaderBoard({
           />
         </div>
       </h3>
-      {userRole === 'Administrator' || userRole === 'Owner' ? (
-        <section className="d-flex flex-row flex-wrap mb-3">
-          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=" mr-3">
-            <DropdownToggle caret>
-              {selectedTeamName} {/* Display selected team or default text */}
-            </DropdownToggle>
-            <DropdownMenu>
-              {teams.length === 0 ? (
-                <DropdownItem
-                  onClick={() => toast.warning('Please, create a team to use the filter.')}
-                >
-                  Please, create a team to use the filter.
-                </DropdownItem>
-              ) : (
-                teams.map(team => (
-                  <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                    {dropdownName(team.teamName, team.teamName.length)}
-                  </DropdownItem>
-                ))
-              )}
-            </DropdownMenu>
-          </Dropdown>
+      {userRole === 'Administrator' ||
+        (userRole === 'Owner' && (
+          <section className="d-flex flex-row flex-wrap mb-3">
+            <UncontrolledDropdown className=" mr-3">
+              {/* Display selected team or default text */}
+              <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
 
-          {teams.length === 0 ? (
-            <Link to="/teams">
-              <Button color="success" className="fw-bold" boxstyle={boxStyle}>
-                Create Team
+              {/* prettier-ignore */}
+              <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
+
+              <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
+                {teams.length === 0 ? (
+                  <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
+                    Please, create a team to use the filter.
+                  </p>
+                ) : (
+                  <>
+
+                  <div className='align-items-center d-flex flex-column'>
+                    <Input
+                      onChange={e => handleInputSearchTeams(e)}
+                      style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
+                      placeholder="Search teams"
+                      autoFocus
+                      value={refInput.current}
+                    />
+                  </div>
+
+                    <div className='overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle'
+                     style={{ height: teams.length > 8? '30rem' : 'auto', width: '100%' }}
+                     >
+                    <h5 className="text-center">My Teams</h5>
+
+                    {teams.map(team => {
+                      return (
+                        <div>
+                       { team._id !== 1?
+                       <DropdownItem key={team._id} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                        onClick={() => TeamSelected(team)}
+                       >
+                        <ul
+                          className={`${darkMode ? '  text-light' : ''}`}
+                        >
+                           <li>{dropdownName(team.teamName, team.teamName.length)}</li>
+                        </ul>
+                        </DropdownItem>
+                        :
+                        <div className='align-items-center d-flex flex-column'>
+                        <Alert color="danger"style={{ width: '90%' }} >
+                          {dropdownName(team.teamName, team.teamName.length)}
+                         </Alert>
+                        </div>
+                        }
+                        </div>
+                      );
+                    })}
+                    </div>
+
+                    <h5 className="ml-4 text-center">All users</h5>
+                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                      onClick={() => TeamSelected('Show all')}>
+                    <ul
+                      className={`${darkMode ? '  text-light' : ''}`}
+                    >
+                        <li>Show all</li>
+                    </ul>
+                    </DropdownItem>
+                  </>
+                )}
+              </div>
+            </DropdownMenu>
+            </UncontrolledDropdown>
+
+            {teams.length === 0 ? (
+              <Link to="/teams">
+                <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                  Create Team
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                color="primary"
+                onClick={filteredUsers.length > 0 ? handleToggleButtonClick : toastError}
+                disabled={isLoadingTeams}
+                boxstyle={boxStyle}
+              >
+                {isLoadingTeams ? <Spinner animation="border" size="sm" /> : 'My Team'}
               </Button>
-            </Link>
-          ) : (
-            <Button
-              color="primary"
-              onClick={handleToggleButtonClick}
-              disabled={isLoadingTeams}
-              boxstyle={boxStyle}
-            >
-              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : textButton}
-            </Button>
-          )}
-        </section>
-      ) : null}
+            )}
+          </section>
+        ))}
+
+      {isDisplayAlert && (
+        <Alert color="danger">
+          This team has no members, please add members to this team by clicking{' '}
+          <Link to="/teams">here</Link>.
+        </Alert>
+      )}
+
       {!isVisible && (
         <Alert color="warning">
           <div className="d-flex align-items-center">
@@ -472,7 +578,7 @@ function LeaderBoard({
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td aria-label="Placeholder" />
               <th scope="row" className="leaderboard-totals-container">
-                <span>{organizationData.name}</span>
+                <span>{stateOrganizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
                   <span className="leaderboard-totals-title">
                     0 hrs Totals:{' '}
@@ -639,13 +745,18 @@ function LeaderBoard({
                           fontSize: '15px',
                           justifyItems: 'center',
                         }}
-                        title={
-                          isCurrentlyOff
-                            ? `${additionalWeeks} additional weeks off`
-                            : `${additionalWeeks} weeks until next time off`
-                        }
                       >
                         {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                        <i
+                          className="fa fa-info-circle"
+                          style={{ marginLeft: '5px', cursor: 'pointer' }}
+                          data-tip={
+                            isCurrentlyOff
+                              ? `${additionalWeeks} additional weeks off`
+                              : `${additionalWeeks} weeks until next time off`
+                          }
+                        />
+                        <ReactTooltip place="top" type="dark" effect="solid" />
                       </span>
                     )}
                   </th>

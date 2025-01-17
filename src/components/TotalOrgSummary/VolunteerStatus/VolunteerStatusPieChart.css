@@ -1,0 +1,61 @@
+.volunteer-status-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.volunteer-status-chart {
+  position: relative;
+  width: 100%;
+  max-width: 400px;
+  height: 400px;
+}
+
+.volunteer-status-center {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: 14px;
+}
+
+.volunteer-status-center .volunteer-status-heading {
+  color: #828282;
+  font-size: 1.2rem;
+}
+
+.volunteer-status-center .volunteer-count {
+  color: #6c6c6c;
+  font-size: 2rem;
+  font-weight: bolder;
+}
+
+.volunteer-status-center > p {
+  font-weight: bold;
+}
+
+.volunteer-status-center div {
+  margin: 2px 0;
+}
+
+.volunteer-status-labels {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+
+.volunteer-status-label {
+  display: flex;
+  align-items: center;
+  margin: 0 10px;
+}
+
+.volunteer-status-color {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  margin-right: 5px;
+}
