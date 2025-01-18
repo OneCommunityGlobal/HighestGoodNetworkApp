@@ -1,10 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import style from './ToggleSwitch.module.scss';
 
 const DEFAULT_VISIBILITY = true;
 
-function ToggleSwitch ({ switchType, UpdateTeamMembersVisibility, userId, choice }) {
-
+function ToggleSwitch({ switchType, UpdateTeamMembersVisibility, userId, choice }) {
   const [visibility, setVisibility] = useState(choice !== undefined ? choice : DEFAULT_VISIBILITY);
 
   const toggleVisibility = () => {
