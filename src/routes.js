@@ -27,6 +27,7 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+import ActivitiesPage from 'components/communityportal/Activities/ActivitiesPage'; 
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -336,6 +337,11 @@ export default (
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
         {/* ----- END BM Dashboard Routing ----- */}
+         <BMProtectedRoute
+          path="/communityportal/Activities"
+          exact
+          component={ActivitiesPage}
+        />
 
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
