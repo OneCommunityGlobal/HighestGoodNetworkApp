@@ -27,6 +27,7 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
+import { PermissionsProvider } from './components/PermissionsManagement/PermissionsContext';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -95,6 +96,7 @@ const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRo
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
 export default (
+  <PermissionsProvider>
   <Switch>
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
@@ -352,4 +354,5 @@ export default (
       </Switch>
     </>
   </Switch>
+  </PermissionsProvider>
 );
