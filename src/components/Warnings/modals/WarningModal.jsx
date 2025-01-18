@@ -64,190 +64,194 @@ function WarningModal({
       </Modal>
     );
   }
-  if (issueBothWarnings) {
-    return (
-      <div>
-        <Modal isOpen={visible} toggle={() => setToggleModal(false)} size="lg">
-          {userProfileHeader ? (
-            <ModalHeader className="modal__header--center">
-              {issueBothWarnings ? null : `${times} + ${ordinal} occurance -`} Choose an action{' '}
-            </ModalHeader>
-          ) : (
-            <ModalHeader>Issue Warning</ModalHeader>
-          )}
-          <ModalBody>
-            <h3>
-              Are you sure you want to issue a {numberOfWarnings >= 3 ? 'blue square' : 'warning'}{' '}
-              to: {username}?
-            </h3>
-            <p>
-              The {numberOfWarnings >= 3 ? 'blue square' : 'warning'} will be because they
-              didn&apos;t meet the criteria for the following area:{' '}
-              <span className="warning__body--bold">
-                {issueBothWarnings ? null : `${times} + ${ordinal}`} {warningText}
-              </span>
-            </p>
-            {numberOfWarnings >= 3 && (
-              <>
-                <p className="warning__body--bold warning__body--margin"> Plase Note:</p>
-                <p>
-                  <span className="warning__body--bold">{username}</span> has received{' '}
-                  {numberOfWarnings} warnings, so by default they should get a blue square. If it
-                  has been a while since their last warning, you may issue another warning instead.
-                </p>
-              </>
-            )}
-            <p>
-              Issue a warning and the dot color will be:{' '}
-              <span className="warning__body--bold">Yellow</span>
-            </p>
-            <p>
-              Issue a blue square and the dot color will be:{' '}
-              <span className="warning__body--bold">Red</span>
-            </p>
+  // if (issueBothWarnings) {
+  //   return (
+  //     <div>
+  //       <Modal isOpen={visible} toggle={() => setToggleModal(false)} size="lg">
+  //         {userProfileHeader ? (
+  //           <ModalHeader className="modal__header--center">
+  //             {issueBothWarnings ? null : `${times} + ${ordinal} occurance -`} Choose an action{' '}
+  //           </ModalHeader>
+  //         ) : (
+  //           <ModalHeader>Issue Warning</ModalHeader>
+  //         )}
+  //         <ModalBody>
+  //           <h3>
+  //             Are you sure you want to issue a {numberOfWarnings >= 3 ? 'blue square' : 'warning'}{' '}
+  //             to: {username}?
+  //           </h3>
+  //           <p>
+  //             The {numberOfWarnings >= 3 ? 'blue square' : 'warning'} will be because they
+  //             didn&apos;t meet the criteria for the following area:{' '}
+  //             <span className="warning__body--bold">
+  //               {issueBothWarnings ? null : `${times} + ${ordinal}`} {warningText}
+  //             </span>
+  //           </p>
+  //           {numberOfWarnings >= 3 && (
+  //             <>
+  //               <p className="warning__body--bold warning__body--margin"> Plase Note:</p>
+  //               <p>
+  //                 <span className="warning__body--bold">{username}</span> has received{' '}
+  //                 {numberOfWarnings} warnings, so by default they should get a blue square. If it
+  //                 has been a while since their last warning, you may issue another warning instead.
+  //               </p>
+  //             </>
+  //           )}
+  //           <p>
+  //             Issue a warning and the dot color will be:{' '}
+  //             <span className="warning__body--bold">Yellow</span>
+  //           </p>
+  //           <p>
+  //             Issue a blue square and the dot color will be:{' '}
+  //             <span className="warning__body--bold">Red</span>
+  //           </p>
 
-            {userProfileModal && (
-              <div>
-                {warning.specialWarnings.map(warn => (
-                  <div
-                    style={{
-                      alignItems: 'center',
-                      display: 'grid',
-                      gridTemplateColumns: '1fr 1fr',
-                      justifyContent: 'center',
-                    }}
-                    key={warn.title}
-                  >
-                    <div
-                      style={{
-                        display: 'flex',
-                        gridTemplate: '1',
-                        justifyContent: 'center',
-                        alignItems: 'center',
-                        flexDirection: 'column',
-                      }}
-                    >
-                      <p
-                        style={{
-                          padding: 0,
-                          margin: 0,
-                          whiteSpace: 'nowrap',
-                        }}
-                      >
-                        {warn.title}
-                      </p>
+  //           {userProfileModal && (
+  //             <div>
+  //               {warning.specialWarnings.map(warn => (
+  //                 <div
+  //                   style={{
+  //                     alignItems: 'center',
+  //                     display: 'grid',
+  //                     gridTemplateColumns: '1fr 1fr',
+  //                     justifyContent: 'center',
+  //                   }}
+  //                   key={warn.title}
+  //                 >
+  //                   <div
+  //                     style={{
+  //                       display: 'flex',
+  //                       gridTemplate: '1',
+  //                       justifyContent: 'center',
+  //                       alignItems: 'center',
+  //                       flexDirection: 'column',
+  //                     }}
+  //                   >
+  //                     <p
+  //                       style={{
+  //                         padding: 0,
+  //                         margin: 0,
+  //                         whiteSpace: 'nowrap',
+  //                       }}
+  //                     >
+  //                       {warn.title}
+  //                     </p>
 
-                      <WarningIcons
-                        warnings={warn.warnings}
-                        userProfileModal={true}
-                        warningText={warn.title}
-                      />
-                    </div>
+  //                     <WarningIcons
+  //                       warnings={warn.warnings}
+  //                       userProfileModal={true}
+  //                       warningText={warn.title}
+  //                     />
+  //                   </div>
 
-                    <div
-                      style={{
-                        gridColumn: 2,
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      <Form
-                        style={{
-                          display: 'flex',
-                          justifyContent: 'center',
-                        }}
-                      >
-                        {[
-                          {
-                            condition: warn.warnings.length < 2,
-                            label: 'Log Warning',
-                            value: 'Log Warning',
-                            color: 'blue',
-                          },
-                          {
-                            condition: warn.warnings.length >= 2,
-                            label: 'Issue Warning',
-                            value: 'Issue Warning',
-                            color: 'yellow',
-                          },
-                          {
-                            condition: warn.warnings.length >= 2,
-                            label: 'Issue Blue Square',
-                            value: 'Issue Blue Square',
-                            color: 'red',
-                          },
-                        ]
-                          .filter(item => item.condition) // Only render items where condition is true
-                          .map((item, index) => (
-                            <FormGroup
-                              check
-                              key={index}
-                              style={{
-                                display: 'flex',
-                                justifyContent: 'center',
-                                alignItems: 'center',
-                                flexDirection: 'column',
-                                gap: '0.5rem', // Adds spacing between label and input
-                              }}
-                            >
-                              <Label
-                                check
-                                style={{
-                                  fontWeight: 'bold', // Optional for better visibility
-                                  whiteSpace: 'nowrap',
-                                }}
-                              >
-                                {item.label}
-                              </Label>
-                              <Input
-                                name={`warningGroup-${warn.title}`} // Group by warning title
-                                type="radio"
-                                value={item.value}
-                                onClick={e =>
-                                  handleWarningChange(warn.title, e.target.value, item.color)
-                                }
-                                style={{
-                                  margin: '2.5em 0 auto',
-                                }}
-                              />
-                            </FormGroup>
-                          ))}
-                      </Form>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </ModalBody>
+  //                   <div
+  //                     style={{
+  //                       gridColumn: 2,
+  //                       alignItems: 'center',
+  //                       justifyContent: 'center',
+  //                     }}
+  //                   >
+  //                     <Form
+  //                       style={{
+  //                         display: 'flex',
+  //                         justifyContent: 'center',
+  //                       }}
+  //                     >
+  //                       {[
+  //                         {
+  //                           condition: warn.warnings.length < 2,
+  //                           label: 'Log Warning',
+  //                           value: 'Log Warning',
+  //                           color: 'blue',
+  //                         },
+  //                         {
+  //                           condition: warn.warnings.length >= 2,
+  //                           label: 'Issue Warning',
+  //                           value: 'Issue Warning',
+  //                           color: 'yellow',
+  //                         },
+  //                         {
+  //                           condition: warn.warnings.length >= 2,
+  //                           label: 'Issue Blue Square',
+  //                           value: 'Issue Blue Square',
+  //                           color: 'red',
+  //                         },
+  //                       ]
+  //                         .filter(item => item.condition) // Only render items where condition is true
+  //                         .map((item, index) => (
+  //                           <FormGroup
+  //                             check
+  //                             key={index}
+  //                             style={{
+  //                               display: 'flex',
+  //                               justifyContent: 'center',
+  //                               alignItems: 'center',
+  //                               flexDirection: 'column',
+  //                               gap: '0.5rem', // Adds spacing between label and input
+  //                             }}
+  //                           >
+  //                             <Label
+  //                               check
+  //                               style={{
+  //                                 fontWeight: 'bold', // Optional for better visibility
+  //                                 whiteSpace: 'nowrap',
+  //                               }}
+  //                             >
+  //                               {item.label}
+  //                             </Label>
+  //                             <Input
+  //                               name={`warningGroup-${warn.title}`} // Group by warning title
+  //                               type="radio"
+  //                               value={item.value}
+  //                               onClick={e =>
+  //                                 handleWarningChange(warn.title, e.target.value, item.color)
+  //                               }
+  //                               style={{
+  //                                 margin: '2.5em 0 auto',
+  //                               }}
+  //                             />
+  //                           </FormGroup>
+  //                         ))}
+  //                     </Form>
+  //                   </div>
+  //                 </div>
+  //               ))}
+  //             </div>
+  //           )}
+  //         </ModalBody>
 
-          <ModalFooter>
-            <Button
-              onClick={() => setToggleModal(false)}
-              color="danger"
-              // className="warning__modal__footer__btn cancel__btn "
-            >
-              Cancel
-            </Button>
-            <Button
-              disabled={!isFormComplete()}
-              onClick={() => {
-                handleSubmitWarning();
-                setToggleModal(false);
-              }}
-              color="primary"
-              // className="warning__modal__footer__btn cancel__btn "
-            >
-              Submit
-            </Button>
-          </ModalFooter>
-        </Modal>
-      </div>
-    );
-  }
+  //         <ModalFooter>
+  //           <Button
+  //             onClick={() => setToggleModal(false)}
+  //             color="danger"
+  //             // className="warning__modal__footer__btn cancel__btn "
+  //           >
+  //             Cancel
+  //           </Button>
+  //           <Button
+  //             disabled={!isFormComplete()}
+  //             onClick={() => {
+  //               handleSubmitWarning();
+  //               setToggleModal(false);
+  //             }}
+  //             color="primary"
+  //             // className="warning__modal__footer__btn cancel__btn "
+  //           >
+  //             Submit
+  //           </Button>
+  //         </ModalFooter>
+  //       </Modal>
+  //     </div>
+  //   );
+  // }
 
   return (
     <div>
-      <Modal isOpen={visible} toggle={() => setToggleModal(false)}>
+      <Modal
+        isOpen={visible}
+        toggle={() => setToggleModal(false)}
+        size={`${issueBothWarnings ? 'lg' : 'md'}`}
+      >
         {userProfileHeader ? (
           <ModalHeader className="modal__header--center">
             {times + ordinal} Occurance - Choose an action{' '}
@@ -285,8 +289,120 @@ function WarningModal({
             Issue a blue square and the dot color will be:{' '}
             <span className="warning__body--bold">Red</span>
           </p>
+          {issueBothWarnings && (
+            <div>
+              {warning.specialWarnings.map(warn => (
+                <div
+                  style={{
+                    alignItems: 'center',
+                    display: 'grid',
+                    gridTemplateColumns: '1fr 1fr',
+                    justifyContent: 'center',
+                  }}
+                  key={warn.title}
+                >
+                  <div
+                    style={{
+                      display: 'flex',
+                      gridTemplate: '1',
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                      flexDirection: 'column',
+                    }}
+                  >
+                    <p
+                      style={{
+                        padding: 0,
+                        margin: 0,
+                        whiteSpace: 'nowrap',
+                      }}
+                    >
+                      {warn.title}
+                    </p>
 
-          {userProfileModal && (
+                    <WarningIcons
+                      warnings={warn.warnings}
+                      userProfileModal={true}
+                      warningText={warn.title}
+                    />
+                  </div>
+
+                  <div
+                    style={{
+                      gridColumn: 2,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    <Form
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {[
+                        {
+                          condition: warn.warnings.length < 2,
+                          label: 'Log Warning',
+                          value: 'Log Warning',
+                          color: 'blue',
+                        },
+                        {
+                          condition: warn.warnings.length >= 2,
+                          label: 'Issue Warning',
+                          value: 'Issue Warning',
+                          color: 'yellow',
+                        },
+                        {
+                          condition: warn.warnings.length >= 2,
+                          label: 'Issue Blue Square',
+                          value: 'Issue Blue Square',
+                          color: 'red',
+                        },
+                      ]
+                        .filter(item => item.condition) // Only render items where condition is true
+                        .map((item, index) => (
+                          <FormGroup
+                            check
+                            key={index}
+                            style={{
+                              display: 'flex',
+                              justifyContent: 'center',
+                              alignItems: 'center',
+                              flexDirection: 'column',
+                              gap: '0.5rem', // Adds spacing between label and input
+                            }}
+                          >
+                            <Label
+                              check
+                              style={{
+                                fontWeight: 'bold', // Optional for better visibility
+                                whiteSpace: 'nowrap',
+                              }}
+                            >
+                              {item.label}
+                            </Label>
+                            <Input
+                              name={`warningGroup-${warn.title}`} // Group by warning title
+                              type="radio"
+                              value={item.value}
+                              onClick={e =>
+                                handleWarningChange(warn.title, e.target.value, item.color)
+                              }
+                              style={{
+                                margin: '2.5em 0 auto',
+                              }}
+                            />
+                          </FormGroup>
+                        ))}
+                    </Form>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {userProfileModal && !issueBothWarnings && (
             <div
               style={{
                 display: 'flex',
@@ -302,7 +418,63 @@ function WarningModal({
         </ModalBody>
 
         <ModalFooter className="warning-modal-footer">
-          {numberOfWarnings >= 8 ? (
+          {issueBothWarnings ? (
+            <>
+              <Button
+                onClick={() => setToggleModal(false)}
+                color="danger"
+                // className="warning__modal__footer__btn cancel__btn "
+              >
+                Cancel
+              </Button>
+              <Button
+                disabled={!isFormComplete()}
+                onClick={() => {
+                  handleSubmitWarning();
+                  setToggleModal(false);
+                }}
+                color="primary"
+                // className="warning__modal__footer__btn cancel__btn "
+              >
+                Submit
+              </Button>
+            </>
+          ) : (
+            <>
+              <Button
+                onClick={() => {
+                  // email will be sent and logged
+                  handleIssueWarning({ ...warning, colorAssigned: 'yellow' });
+                  setToggleModal(false);
+                }}
+                color="warning"
+                className="warning__modal__footer__btn"
+              >
+                Issue Warning
+              </Button>
+
+              <Button
+                onClick={() => {
+                  // alert('BLUE SQUARE ISSUED!!');
+                  handleIssueWarning({ ...warning, colorAssigned: 'red' });
+                  setToggleModal(false);
+                }}
+                color="primary"
+                className="warning__modal__footer__btn"
+              >
+                Issue Blue Square
+              </Button>
+              <Button
+                onClick={() => setToggleModal(false)}
+                color="danger"
+                className="warning__modal__footer__btn cancel__btn "
+              >
+                Cancel
+              </Button>
+            </>
+          )}
+
+          {/* {numberOfWarnings >= 8 ? (
             <div>
               <p className="warning__body--bold warning__body--margin"> Plase Note:</p>
               <p> the user has received the maximum number of warnings for this category</p>
@@ -334,14 +506,7 @@ function WarningModal({
                 Issue Blue Square
               </Button>
             </>
-          )}
-          <Button
-            onClick={() => setToggleModal(false)}
-            color="danger"
-            className="warning__modal__footer__btn cancel__btn "
-          >
-            Cancel
-          </Button>
+          )} */}
         </ModalFooter>
       </Modal>
     </div>

@@ -221,7 +221,6 @@ const UserProfileModal = props => {
           userProfileModal={true}
           handleIssueWarning={handleLogNewWarning}
           visible={displayBothModal}
-          userProfileModal={true}
           handleWarningChange={handleWarningChange}
           handleSubmitWarning={handleSubmitWarning}
           warningSelections={warningSelections}
