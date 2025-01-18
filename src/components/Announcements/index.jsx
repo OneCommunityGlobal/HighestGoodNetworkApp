@@ -92,8 +92,9 @@ function Announcements({ title, email }) {
   }, [email]);
 
   const handleEmailListChange = e => {
-    const emails = e.target.value.split(',');
-    setEmailList(emails);
+    const value = e.target.value;
+    setEmailTo(value); // Update emailTo for the input field
+    setEmailList(value.split(',')); // Update emailList for the email list
   };
 
   const handleHeaderContentChange = e => {
@@ -238,7 +239,6 @@ function Announcements({ title, email }) {
             onChange={handleHeaderContentChange}
             className="input-text-for-announcement"
           />
-
           <button
             type="button"
             className="send-button"
@@ -260,7 +260,6 @@ function Announcements({ title, email }) {
         </div>
       </div>
     </div>
-  );
 }
 
 export default Announcements;
