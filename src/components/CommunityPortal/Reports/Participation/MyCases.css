@@ -1,0 +1,211 @@
+/* General Styles */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+.my-cases-page {
+  padding: 20px;
+  background-color: #ffffff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.my-cases-page .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #333;
+  margin: 0;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.view-switcher {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.view-switcher button,
+.create-new {
+  background-color: #fff;
+  border-radius: 4px;
+  padding: 8px 12px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+}
+
+.filter-wrapper {
+  margin: 10px 0;
+}
+
+.filter-dropdown {
+  padding: 8px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+/* Hover and focus effects for the dropdown */
+.filter-dropdown:hover,
+.filter-dropdown:focus {
+  border-color: #007bff;
+  outline: none;
+}
+
+.view-switcher button.active,
+.create-new:hover {
+  background-color: #007bff;
+  color: #fff;
+  border-color: #007bff;
+}
+
+.create-new {
+  font-weight: bold;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.content {
+  margin-top: 10px;
+}
+
+/* Card View Styles */
+.case-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 20px;
+}
+
+.case-card {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 15px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.event-badge {
+  display: inline-block;
+  font-size: 12px;
+  font-weight: bold;
+  padding: 5px 10px;
+  border-radius: 20px;
+  margin-bottom: 10px;
+  background-color: #e9f7ef;
+  color: #28a745;
+}
+
+.event-badge[data-type='Yoga Class'] {
+  background-color: #e9f7ef;
+  color: #28a745;
+}
+
+.event-badge[data-type='Cooking Workshop'] {
+  background-color: #fdecea;
+  color: #e74c3c;
+}
+
+.event-badge[data-type='Dance Class'] {
+  background-color: #fff5e6;
+  color: #f39c12;
+}
+
+.event-badge[data-type='Fitness Bootcamp'] {
+  background-color: #f5e6ff;
+  color: #9b59b6;
+}
+
+.event-time {
+  font-size: 14px;
+  color: #555;
+  margin-bottom: 10px;
+}
+
+.event-name {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.attendees-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.avatars img {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  margin-right: -8px;
+  border: 2px solid #fff;
+}
+
+.attendees-count {
+  font-size: 14px;
+  color: #555;
+}
+
+.rates {
+  margin-top: 10px;
+  font-size: 14px;
+  color: #555;
+}
+
+/* List View Styles */
+.case-list {
+  list-style-type: none;
+  padding: 0;
+  margin: 0;
+}
+
+.case-list-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background-color: #fff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.case-list-item span {
+  margin-right: 15px;
+  font-size: 14px;
+  color: #333;
+}
+
+.event-type {
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* Calendar View Styles */
+.calendar-view {
+  padding: 20px;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  text-align: center;
+  font-size: 16px;
+  color: #555;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}

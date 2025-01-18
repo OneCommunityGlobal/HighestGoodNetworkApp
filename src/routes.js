@@ -52,7 +52,7 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
-
+import EventParticipation from './components/CommunityPortal/Reports/Participation/EventParticipation';
 
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -362,6 +362,8 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/reports/participation" exact component={EventParticipation} />
+
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
 
 
