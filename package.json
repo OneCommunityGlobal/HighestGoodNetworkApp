@@ -96,7 +96,8 @@
     "prepare": "husky install"
   },
   "resolutions": {
-    "wrap-ansi-cjs": "^6.0.0"
+    "wrap-ansi-cjs": "^6.0.0",
+    "jest-environment-jsdom": "^27.0.6"
   },
   "browserslist": [
     ">0.2%",
