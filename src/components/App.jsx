@@ -123,7 +123,7 @@ function UpdateDocumentTitle() {
     // Find the first matching route and set the document title
     const match = routes.find(route => route.pattern.test(location.pathname));
     document.title = match.title;
-  }, [location, fullName]);
+  }, [location, authUser]);
 
   return null;
 }
