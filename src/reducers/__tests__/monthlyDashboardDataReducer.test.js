@@ -28,7 +28,7 @@ describe('Monthly Dashboard Data Reducer', () => {
       
   });
 
-  it('should retrun null as the initial state', () => {
+  it('should return null as the initial state', () => {
 
     const result = monthlyDashboardDataReducer(undefined, {} );
     expect(result).toBeNull();
@@ -40,7 +40,7 @@ describe('Monthly Dashboard Data Reducer', () => {
         type: 'UNKNOWN_ACTION', 
         payload: { projectName: 'Project Name', timeSpent_hrs : '0' } 
     }; 
-    
+
     const result = monthlyDashboardDataReducer(monthlyDashboardData, action);
     expect(result).toEqual(monthlyDashboardData); 
   });
