@@ -128,7 +128,7 @@ export const fetchAllMembers = projectId => {
  * the members of one project
  */
 export const getProjectActiveUserById = projectId => {
-  const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
+  const request = axios.get(ENDPOINTS.PROJECT_MEMBER_ACTIVE(projectId));
   return async (dispatch, getState) => {
     await dispatch(findUsersStart());
     request
@@ -144,6 +144,7 @@ export const getProjectActiveUserById = projectId => {
       });
   };
 };
+
 export const getProjectActiveUser = () => {
   const request = axios.get(ENDPOINTS.USER_PROFILES);
   return async (dispatch, getState) => {

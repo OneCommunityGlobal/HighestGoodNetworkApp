@@ -122,8 +122,9 @@ const Projects = function (props) {
     refreshProjects(); // Refresh project list after adding a project
   };
 
-  const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
+  const generateProjectList = async (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
+
     const projectList = projects.filter(project => {
       if (categorySelectedForSort && showStatus) {
         return project.category === categorySelectedForSort && project.isActive === showStatus;
@@ -143,16 +144,19 @@ const Projects = function (props) {
         return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
       } else if (sortedByName === "SortingByMostActiveMembers") {
         // console.log(props.state);
+        // if (!activeUserList[a._id]) {
+
+        //   props.getProjectActiveUserById(a._id);
+        //   activeUserList[a._id]
+        // }
         props.getProjectActiveUserById(a._id);
-        console.log(props.state)
         const len_a = props.state.projectMembers.activeUserCount;
         props.getProjectActiveUserById(b._id);
         const len_b = props.state.projectMembers.activeUserCount;
-        console.log(len_a, len_b);
+
+        // return activeUserList[a._id] < activeUserList[a._id] ? 1 : -1;
 
         return len_a < len_b ? 1 : -1;
-
-        // return a.members.length < b.members.length ? 1 : -1;
       } else {
         return 0;
       }
@@ -168,7 +172,7 @@ const Projects = function (props) {
     ));
     setProjectList(projectList);
     setAllProjects(projectList);
-  }
+  };
 
   const refreshProjects = async () => {
     await props.fetchAllProjects();
