@@ -11,8 +11,8 @@ export const ENDPOINTS = {
   USER_PROFILE_UPDATE: `${APIEndpoint}/userprofile/update`,
   ADD_BLUE_SQUARE: userId => `${APIEndpoint}/userprofile/${userId}/addInfringement`,
   MODIFY_BLUE_SQUARE: (userId, blueSquareId) => `${APIEndpoint}/userprofile/${userId}/infringements/${blueSquareId}`,
-  USERS_ALLTEAMCODE_CHANGE : `${APIEndpoint}/AllTeamCodeChanges`,
-  USER_PROFILE_BASIC_INFO : `${APIEndpoint}/userProfile/basicInfo`,
+  USERS_ALLTEAMCODE_CHANGE: `${APIEndpoint}/AllTeamCodeChanges`,
+  USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
@@ -33,6 +33,7 @@ export const ENDPOINTS = {
   BADGE_COUNT: userId => `${APIEndpoint}/badge/badgecount/${userId}`,
   BADGE_COUNT_RESET: userId => `${APIEndpoint}/badge/badgecount/reset/${userId}`,
   PROJECT_MEMBER: projectId => `${APIEndpoint}/project/${projectId}/users`,
+  PROJECT_MEMBER_ACTIVE: projectId => `${APIEndpoint}/project/${projectId}/users?fields=_id,isActive`,
   UPDATE_PASSWORD: userId => `${APIEndpoint}/userprofile/${userId}/updatePassword`,
   FORCE_PASSWORD: `${APIEndpoint}/forcepassword`,
   LEADER_BOARD: userId => `${APIEndpoint}/dashboard/leaderboard/${userId}`,
@@ -73,7 +74,7 @@ export const ENDPOINTS = {
   GET_SUMMARY_RECEPIENTS: () => `${APIEndpoint}/reports/getrecepients`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () => `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
   TOTAL_ORG_SUMMARY: (startDate, endDate) => `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}`,
-  HOURS_TOTAL_ORG_SUMMARY: (startDate,endDate) => `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
+  HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) => `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
 
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
@@ -101,7 +102,7 @@ export const ENDPOINTS = {
   // TITLES: () => `${APIEndpoint}/title/deleteAll`,
   TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
   CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
-  EDIT_OLD_TITLE:  ()=>`${APIEndpoint}/title/update`,
+  EDIT_OLD_TITLE: () => `${APIEndpoint}/title/update`,
   DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
 
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>

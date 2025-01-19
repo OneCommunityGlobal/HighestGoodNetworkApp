@@ -144,6 +144,32 @@ export const getProjectActiveUserById = projectId => {
       });
   };
 };
+
+// export const getProjectActiveUserById = (projectId) => {
+//   return async (dispatch, getState) => {
+//     try {
+//       await dispatch(findUsersStart());
+//       const { data: users } = await axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
+//       const { members } = getState().projectMembers;
+
+//       // Calculate the count of active users
+//       const activeUserCount = users.reduce((count, user) => {
+//         return members.some((member) => member._id === user._id && user.isActive)
+//           ? count + 1
+//           : count;
+//       }, 0);
+
+//       dispatch(setActiveUserCount(activeUserCount));
+//       return activeUserCount; // Return the count as the Promise result
+//     } catch (err) {
+//       dispatch(findUsersError(err));
+//       return 0; // Default to 0 in case of an error
+//     }
+//   };
+// };
+
+
+
 export const getProjectActiveUser = () => {
   const request = axios.get(ENDPOINTS.USER_PROFILES);
   return async (dispatch, getState) => {
