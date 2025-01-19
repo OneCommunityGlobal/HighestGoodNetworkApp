@@ -15,7 +15,20 @@ function Announcements({title, email}) {
   const [headerContent, setHeaderContent] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
-  const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+  const [showEditor, setShowEditor] = useState(true);
+
+  // Reddit-related states
+  const [redditTitle, setRedditTitle] = useState('');
+  const [subreddit, setSubreddit] = useState('');
+  const [redditMediaFiles, setRedditMediaFiles] = useState([]);
+  const [redditScheduleTime, setRedditScheduleTime] = useState('');
+  const [scheduledPosts, setScheduledPosts] = useState([]);
+  const [redditLoading, setRedditLoading] = useState(false);
+  const [redditError, setRedditError] = useState('');
+
+  // Calculate max schedule date (6 months from now)
+  const maxScheduleDate = new Date();
+  maxScheduleDate.setMonth(maxScheduleDate.getMonth() + 6);
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -39,31 +52,17 @@ function Announcements({title, email}) {
       input.setAttribute('type', 'file');
       input.setAttribute('accept', 'image/*');
 
-      /*
-        Note: In modern browsers input[type="file"] is functional without
-        even adding it to the DOM, but that might not be the case in some older
-        or quirky browsers like IE, so you might want to add it to the DOM
-        just in case, and visually hide it. And do not forget do remove it
-        once you do not need it anymore.
-      */
-
       input.onchange = function() {
         const file = this.files[0];
 
         const reader = new FileReader();
         reader.onload = function() {
-          /*
-            Note: Now we need to register the blob in TinyMCEs image blob
-            registry. In the next release this part hopefully won't be
-            necessary, as we are looking to handle it internally.
-          */
           const id = `blobid${new Date().getTime()}`;
           const { blobCache } = tinymce.activeEditor.editorUpload;
           const base64 = reader.result.split(',')[1];
           const blobInfo = blobCache.create(id, file, base64);
           blobCache.add(blobInfo);
 
-          /* call the callback and populate the Title field with the file name */
           cb(blobInfo.blobUri(), { title: file.name });
         };
         reader.readAsDataURL(file);
@@ -97,7 +96,6 @@ function Announcements({title, email}) {
     setHeaderContent(e.target.value);
   }
 
-  // const htmlContent = `<html><head><title>Weekly Update</title></head><body>${emailContent}</body></html>`;
   const addHeaderToEmailContent = () => {
     if (!headerContent) return;
     const imageTag = `<img src="${headerContent}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
@@ -106,7 +104,7 @@ function Announcements({title, email}) {
         editor.insertContent(imageTag);
         setEmailContent(editor.getContent());
       }
-      setHeaderContent(''); // Clear the input field after inserting the header
+      setHeaderContent('');
   };
   
   const convertImageToBase64 = (file, callback) => {
@@ -132,7 +130,6 @@ function Announcements({title, email}) {
   };
 
   const validateEmail = (email) => {
-    /* Add a regex pattern for email validation */
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
   };
@@ -155,7 +152,6 @@ function Announcements({title, email}) {
     dispatch(sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent));
   };
 
-
   const handleBroadcastEmails = () => {
     const htmlContent = `
     <div style="max-width: 900px; width: 100%; margin: auto;">
@@ -163,6 +159,92 @@ function Announcements({title, email}) {
     </div>
   `;
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
+  };
+
+  // Reddit-related handlers
+  const handleRedditFileChange = (e) => {
+    // Handle file selection for Reddit posts
+    const files = Array.from(e.target.files);
+    const validFiles = files.filter(file => {
+      const isValid = file.size <= 200 * 1024 * 1024; // 200MB limit
+      if (!isValid) {
+        setRedditError(`File ${file.name} exceeds 200MB limit`);
+      }
+      return isValid;
+    });
+    setRedditMediaFiles(prevFiles => [...prevFiles, ...validFiles].slice(0, 9)); // Max 9 files
+  };
+
+  const handleRemoveRedditFile = (index) => {
+    // Remove a file from the Reddit media files list
+    setRedditMediaFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+  };
+
+  const fetchScheduledPosts = async () => {
+    // Fetch all scheduled Reddit posts
+    try {
+      const response = await fetch('/api/scheduledPosts');
+      const data = await response.json();
+      if (response.ok) {
+        setScheduledPosts(data.scheduledPosts);
+      }
+    } catch (err) {
+      console.error('Failed to fetch scheduled posts:', err);
+    }
+  };
+
+  const handleRedditPost = async () => {
+    // Handle Reddit post submission
+    if (!redditTitle || !subreddit) {
+      setRedditError('Title and subreddit are required');
+      return;
+    }
+
+    setRedditLoading(true);
+    setRedditError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('title', redditTitle);
+      formData.append('content', emailContent);
+      formData.append('subreddit', subreddit);
+      
+      if (redditScheduleTime) {
+        formData.append('scheduleTime', new Date(redditScheduleTime).toISOString());
+      }
+      
+      redditMediaFiles.forEach(file => {
+        formData.append('media', file);
+      });
+
+      const response = await fetch('/api/postToReddit', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      
+      if (!response.ok) {
+        throw new Error(data.message || 'Failed to post to Reddit');
+      }
+
+      // Reset form after successful submission
+      setRedditTitle('');
+      setSubreddit('');
+      setRedditScheduleTime('');
+      setRedditMediaFiles([]);
+      toast.success('Successfully posted to Reddit!');
+      
+      // Update scheduled posts list if needed
+      if (redditScheduleTime) {
+        fetchScheduledPosts();
+      }
+    } catch (err) {
+      setRedditError(err.message);
+      toast.error('Failed to post to Reddit: ' + err.message);
+    } finally {
+      setRedditLoading(false);
+    }
   };
 
   return (
@@ -194,6 +276,124 @@ function Announcements({title, email}) {
           </button>
           )
         }
+
+        {/* Reddit Post Section */}
+        <div className="reddit-post-section mt-8">
+          <h3 className={darkMode ? 'text-light' : ''}>Post to Reddit</h3>
+          <div className={`reddit-form ${darkMode ? 'bg-yinmn-blue' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+            {/* Title input */}
+            <div className="mb-4">
+              <label className={`block mb-2 ${darkMode ? 'text-light' : 'text-dark'}`}>
+                Post Title*
+              </label>
+              <input
+                type="text"
+                value={redditTitle}
+                onChange={(e) => setRedditTitle(e.target.value)}
+                className="input-text-for-announcement"
+                required
+              />
+            </div>
+
+            {/* Subreddit input */}
+            <div className="mb-4">
+              <label className={`block mb-2 ${darkMode ? 'text-light' : 'text-dark'}`}>
+                Subreddit*
+              </label>
+              <input
+                type="text"
+                value={subreddit}
+                onChange={(e) => setSubreddit(e.target.value)}
+                className="input-text-for-announcement"
+                placeholder="e.g., programming"
+                required
+              />
+            </div>
+
+            {/* Media upload */}
+            <div className="mb-4">
+              <label className={`block mb-2 ${darkMode ? 'text-light' : 'text-dark'}`}>
+                Media Files (Max 9 files, 200MB each)
+              </label>
+              <input
+                type="file"
+                onChange={handleRedditFileChange}
+                multiple
+                accept="image/*,video/*"
+                className="input-file-upload"
+              />
+              {/* Display selected files */}
+              <div className="mt-2">
+                {redditMediaFiles.map((file, index) => (
+                  <div key={index} className="flex items-center justify-between p-2 mb-2" style={darkMode ? boxStyleDark : boxStyle}>
+                    <span className={darkMode ? 'text-light' : ''}>{file.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleRemoveRedditFile(index)}
+                      className="text-red-500 hover:text-red-700"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Schedule datetime */}
+            <div className="mb-4">
+              <label className={`block mb-2 ${darkMode ? 'text-light' : 'text-dark'}`}>
+                Schedule Post (Optional)
+              </label>
+              <input
+                type="datetime-local"
+                value={redditScheduleTime}
+                onChange={(e) => setRedditScheduleTime(e.target.value)}
+                min={new Date().toISOString().slice(0, 16)}
+                max={maxScheduleDate.toISOString().slice(0, 16)}
+                className="input-text-for-announcement"
+              />
+            </div>
+
+            {/* Submit button */}
+            <button
+              type="button"
+              onClick={handleRedditPost}
+              disabled={redditLoading}
+              className="send-button"
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              {redditLoading ? 'Posting...' : redditScheduleTime ? 'Schedule Reddit Post' : 'Post to Reddit Now'}
+            </button>
+
+            {/* Error message */}
+            {redditError && (
+              <div className="p-2 mt-2 text-red-500 bg-red-50 rounded">
+                {redditError}
+              </div>
+            )}
+          </div>
+
+          {/* Display scheduled posts */}
+          {scheduledPosts.length > 0 && (
+            <div className="mt-4">
+              <h4 className={`mb-2 ${darkMode ? 'text-light' : ''}`}>Scheduled Reddit Posts</h4>
+              <div className="space-y-2">
+                {scheduledPosts.map((post) => (
+                  <div 
+                    key={post.jobId} 
+                    className="p-3 rounded"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    <h5 className={`font-medium ${darkMode ? 'text-light' : ''}`}>{post.title}</h5>
+                    <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                      Subreddit: r/{post.subreddit}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
 
         </div>
         <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}  style={darkMode ? boxStyleDark : boxStyle}>
@@ -252,4 +452,3 @@ function Announcements({title, email}) {
 }
 
 export default Announcements;
-
