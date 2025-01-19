@@ -5,6 +5,7 @@ import {
   modifyProject,
   clearError,
 } from '../../actions/projects';
+import { getProjectActiveUserById } from '../../actions/projectMembers';
 import { getProjectsByUsersName } from '../../actions/userProfile';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
@@ -20,7 +21,7 @@ import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 import SearchProjectByPerson from 'components/SearchProjectByPerson/SearchProjectByPerson';
 import ProjectsList from 'components/BMDashboard/Projects/ProjectsList';
 
-const Projects = function(props) {
+const Projects = function (props) {
   const role = props.state.userProfile.role;
   const { darkMode } = props.state.theme;
   const numberOfProjects = props.state.allProjects.projects.length;
@@ -50,17 +51,17 @@ const Projects = function(props) {
 
   const useDebounce = (value, delay) => {
     const [debouncedValue, setDebouncedValue] = useState(value);
-  
+
     useEffect(() => {
       const handler = setTimeout(() => {
         setDebouncedValue(value);
       }, delay);
-  
+
       return () => {
         clearTimeout(handler);
       };
     }, [value, delay]);
-  
+
     return debouncedValue;
   };
 
@@ -98,7 +99,7 @@ const Projects = function(props) {
   }
 
   const onUpdateProject = async (updatedProject) => {
-    await props.modifyProject(updatedProject);  
+    await props.modifyProject(updatedProject);
     /* refresh the page after updating the project */
     await props.fetchAllProjects();
   };
@@ -124,7 +125,7 @@ const Projects = function(props) {
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
     const projectList = projects.filter(project => {
-      if (categorySelectedForSort && showStatus){
+      if (categorySelectedForSort && showStatus) {
         return project.category === categorySelectedForSort && project.isActive === showStatus;
       } else if (categorySelectedForSort) {
         return project.category === categorySelectedForSort;
@@ -140,18 +141,30 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
       } else if (sortedByName === "SortingByRecentEditedMembers") {
         return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
+      } else if (sortedByName === "SortingByMostActiveMembers") {
+        // console.log(props.state);
+        props.getProjectActiveUserById(a._id);
+        console.log(props.state)
+        const len_a = props.state.projectMembers.activeUserCount;
+        props.getProjectActiveUserById(b._id);
+        const len_b = props.state.projectMembers.activeUserCount;
+        console.log(len_a, len_b);
+
+        return len_a < len_b ? 1 : -1;
+
+        // return a.members.length < b.members.length ? 1 : -1;
       } else {
         return 0;
       }
     }).map((project, index) => (
-        <Project
-          key={project._id}
-          index={index}
-          projectData={project}
-          onUpdateProject={onUpdateProject}
-          onClickArchiveBtn={onClickArchiveBtn}
-          darkMode={darkMode}
-        />
+      <Project
+        key={project._id}
+        index={index}
+        projectData={project}
+        onUpdateProject={onUpdateProject}
+        onClickArchiveBtn={onClickArchiveBtn}
+        darkMode={darkMode}
+      />
     ));
     setProjectList(projectList);
     setAllProjects(projectList);
@@ -183,7 +196,7 @@ const Projects = function(props) {
       if (debouncedSearchName) {
         const projects = await props.getProjectsByUsersName(debouncedSearchName);
         if (projects) {
-          const newProjectList = allProjects.filter(project => 
+          const newProjectList = allProjects.filter(project =>
             projects.some(p => p === project.key)
           );
           setProjectList(newProjectList);
@@ -224,10 +237,10 @@ const Projects = function(props) {
 
           <table className="table table-bordered table-responsive-sm">
             <thead>
-              <ProjectTableHeader 
-                onChange={onChangeCategory} 
-                selectedValue={categorySelectedForSort} 
-                showStatus={showStatus} 
+              <ProjectTableHeader
+                onChange={onChangeCategory}
+                selectedValue={categorySelectedForSort}
+                showStatus={showStatus}
                 selectStatus={onSelectStatus}
                 sorted={sortedByName}
                 handleSort={handleSort}
@@ -263,5 +276,6 @@ export default connect(mapStateToProps, {
   clearError,
   getPopupById,
   hasPermission,
-  getProjectsByUsersName
+  getProjectsByUsersName,
+  getProjectActiveUserById
 })(Projects);
