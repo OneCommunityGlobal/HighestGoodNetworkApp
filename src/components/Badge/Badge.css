@@ -12,6 +12,10 @@
   overflow: inherit;
 }
 
+#rank-filter {
+  width: 200px;
+}
+
 .badge_image_md > img {
   border-radius: 50%;
   height: 100px;
@@ -97,7 +101,7 @@
 .badge_history_container {
   display: flex;
   flex-wrap: wrap;
-  overflow-y: scroll;
+  overflow-y: auto;
 }
 
 .badge_image_container {

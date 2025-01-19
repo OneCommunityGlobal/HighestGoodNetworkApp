@@ -3,14 +3,10 @@
 } /*1rem = 16px*/
 
 .my-custom-scrollbar {
-  max-height: 1000px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-bottom: 1rem;
 }
 
-.table-wrapper-scroll-y {
-  display: relative;
-}
 
 .leaderboard thead th {
   top: 0;
@@ -27,13 +23,9 @@
   } /*1rem = 16px*/
 
   .my-custom-scrollbar {
-    height: 300px;
+    max-height: 500px;
     overflow: scroll;
     margin-bottom: 1rem;
-  }
-
-  .table-wrapper-scroll-y {
-    display: relative;
   }
 
   .leaderboard thead th {
@@ -51,8 +43,10 @@
 .table-fixed tbody td {
   white-space: normal; /* Allow text wrapping within cells */
 }
+
 .table-fixed {
   font-size: 0.93rem;
+  word-break: break-word;
 }
 
 .animation {
@@ -68,7 +62,7 @@
 }
 
 .leaderboard-totals-title {
-  color: #007bff;
+  color: #339CFF;
   font-weight: bold;
 }
 

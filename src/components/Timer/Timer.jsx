@@ -109,24 +109,7 @@ function Timer({ authUser, darkMode }) {
   const logHours = timeToLog.hours();
   const logMinutes = timeToLog.minutes();
 
-  const sendMessageNoQueue = useCallback(msg => sendMessage(msg, false), [sendMessage]);
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
-
-  const wsMessageHandler = useMemo(
-    () => ({
-      sendStart: () => sendMessageNoQueue(action.START_TIMER),
-      sendPause: () => sendMessageNoQueue(action.PAUSE_TIMER),
-      sendClear: () => sendMessageNoQueue(action.CLEAR_TIMER),
-      sendStop: () => sendMessageNoQueue(action.STOP_TIMER),
-      sendAckForced: () => sendMessageNoQueue(action.ACK_FORCED),
-      sendStartChime: state => sendMessageNoQueue(action.START_CHIME.concat(state)),
-      sendSetGoal: timerGoal => sendMessageNoQueue(action.SET_GOAL.concat(timerGoal)),
-      sendAddGoal: duration => sendMessageNoQueue(action.ADD_GOAL.concat(duration)),
-      sendRemoveGoal: duration => sendMessageNoQueue(action.REMOVE_GOAL.concat(duration)),
-      sendHeartbeat: () => sendMessageNoQueue(action.HEARTBEAT),
-    }),
-    [sendMessageNoQueue],
-  );
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -555,7 +538,7 @@ function Timer({ authUser, darkMode }) {
                 message={message}
                 timerRange={{ MAX_HOURS, MIN_MINS }}
                 running={running}
-                wsMessageHandler={wsMessageHandler}
+                wsMessageHandler={wsJsonMessageHandler}
                 remaining={remaining}
                 setConfirmationResetModal={setConfirmationResetModal}
                 checkBtnAvail={checkBtnAvail}
@@ -587,12 +570,14 @@ function Timer({ authUser, darkMode }) {
       )}
       <audio
         ref={timeIsOverAudioRef}
+        key="timeIsOverAudio"
         loop
         preload="auto"
         src="https://bigsoundbank.com/UPLOAD/mp3/2554.mp3"
       />
       <audio
         ref={forcedPausedAudioRef}
+        key="forcedPausedAudio"
         loop
         preload="auto"
         src="https://bigsoundbank.com/UPLOAD/mp3/1102.mp3"
@@ -602,7 +587,7 @@ function Timer({ authUser, darkMode }) {
         toggle={() => setConfirmationResetModal(!confirmationResetModal)}
         centered
         size="md"
-        className={`${fontColor} dark-mode`}
+        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
       >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet' : ''}
@@ -626,7 +611,7 @@ function Timer({ authUser, darkMode }) {
         </ModalFooter>
       </Modal>
       <Modal
-        className={`${fontColor} dark-mode`}
+        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
         size="md"
         isOpen={inacModal}
         toggle={() => setInacModal(!inacModal)}
@@ -654,7 +639,7 @@ function Timer({ authUser, darkMode }) {
         </ModalFooter>
       </Modal>
       <Modal
-        className={`${fontColor} dark-mode`}
+        className={cs(fontColor, darkMode ? 'dark-mode' : '')}
         isOpen={timeIsOverModalOpen}
         toggle={toggleTimeIsOver}
         centered

@@ -102,6 +102,13 @@ const WeeklySummaries = ({ userProfile }) => {
 
   };
 
+  // Images are not allowed while editing weekly summaries
+  const customImageUploadHandler = () =>
+    new Promise((_, reject) => {
+      // eslint-disable-next-line prefer-promise-reject-errors
+      reject({ message: 'Pictures are not allowed here!', remove: true });
+    });
+
   const TINY_MCE_INIT_OPTIONS = {
     license_key: 'gpl',
     menubar: false,
@@ -112,6 +119,7 @@ const WeeklySummaries = ({ userProfile }) => {
     min_height: 180,
     max_height: 500,
     autoresize_bottom_margin: 1,
+    images_upload_handler: customImageUploadHandler,
   }; 
 
   const renderSummary = (title, summary, index) => {

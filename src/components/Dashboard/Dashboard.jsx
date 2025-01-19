@@ -18,6 +18,7 @@ import {
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
+  const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const { authUser } = props;
 
@@ -29,7 +30,7 @@ export function Dashboard(props) {
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const toggle = () => {
+  const toggle = (forceOpen = null) => {
     if (isNotAllowedToEdit) {
       const warningMessage =
         viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
@@ -38,7 +39,10 @@ export function Dashboard(props) {
       alert(warningMessage);
       return;
     }
-    setPopup(!popup);
+
+    const shouldOpen = forceOpen !== null ? forceOpen : !popup;
+    setPopup(shouldOpen);
+
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -100,6 +104,7 @@ export function Dashboard(props) {
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
+            setFilteredUserTeamIds={setFilteredUserTeamIds}
           />
         </Col>
         <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
@@ -119,13 +124,7 @@ export function Dashboard(props) {
               isDashboard
               passSummaryBarData={setSummaryBarData}
               isNotAllowedToEdit={isNotAllowedToEdit}
-            />
-          </div>
-          <div className="my-5">
-            <Badge
-              userId={displayUserId}
-              role={authUser.role}
-              isNotAllowedToEdit={isNotAllowedToEdit}
+              filteredUserTeamIds={filteredUserTeamIds}
             />
           </div>
         </Col>
