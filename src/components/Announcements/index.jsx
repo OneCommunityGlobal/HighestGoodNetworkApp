@@ -92,7 +92,7 @@ function Announcements({ title, email }) {
   }, [email]);
 
   const handleEmailListChange = e => {
-    const value = e.target.value;
+    const { value } = e.target;
     setEmailTo(value); // Update emailTo for the input field
     setEmailList(value.split(',')); // Update emailList for the email list
   };
@@ -260,6 +260,7 @@ function Announcements({ title, email }) {
         </div>
       </div>
     </div>
+  );
 }
 
 export default Announcements;
