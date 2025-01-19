@@ -1,17 +1,14 @@
 // eslint-disable-next-line no-unused-vars
 import React, { useEffect, useState, useMemo} from 'react';
-import { useDispatch } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
-import { getTeamMembers } from '../../../actions/allTeamsAction';
 import Loading from '../../common/Loading';
 
 function TotalTeamReport(props) {
-  const dispatch = useDispatch();
   const [totalTeamReportDataLoading, setTotalTeamReportDataLoading] = useState(true);
   const [totalTeamReportDataReady, setTotalTeamReportDataReady] = useState(false);
   const [showTotalTeamTable, setShowTotalTeamTable] = useState(false);
@@ -40,10 +37,10 @@ function TotalTeamReport(props) {
     return filteredTeams;
   };
 
-  const matchTeamUser = async teamList => {
+  const matchTeamUser = async teams => {
     // get the members of each team in the team list
     // console.log('Load team-members list');
-    const teamUserList = teamList.map((team) => {
+    const teamUserList = teams.map((team) => {
       // Check if the team has members data
       const users = team.members ? team.members.map((member) => member.userId) : [];
   
@@ -57,9 +54,9 @@ function TotalTeamReport(props) {
     setAllTeamsMembers(teamUserList);
   };
 
-  const groupByTeam = (userTimeSum, teamList) => {
+  const groupByTeam = (userTimeSum, teams) => {
     const accTeam = {};
-    teamList.forEach(team => {
+    teams.forEach(team => {
       const key = team.teamId;
       if (!accTeam[key]) {
         accTeam[key] = {
@@ -93,8 +90,8 @@ function TotalTeamReport(props) {
           tangibleMinutes: 0,
         };
       }
-      const hours = parseInt(entry.hours);
-      const minutes = parseInt(entry.minutes);
+      const hours = parseInt(entry.hours, 10);
+      const minutes = parseInt(entry.minutes, 10);
       accTeam[key].hours += hours;
       accTeam[key].minutes += minutes;
       if(entry.isTangible){
@@ -129,7 +126,7 @@ function TotalTeamReport(props) {
       setAllTimeEntries(timeEntries);
 
     url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
-    const teamTimeEntries = await axios
+    const fetchedTeamTimeEntries = await axios
       .post(url, { teams: teamList, fromDate, toDate })
       .then(res => {
         return res.data.map(entry => {
@@ -143,10 +140,7 @@ function TotalTeamReport(props) {
           };
         });
       })
-      .catch(err => {
-        console.log(err.message);
-      });
-    setTeamTimeEntries(teamTimeEntries);
+    setTeamTimeEntries(fetchedTeamTimeEntries);
   };
 
   const sumByUser = (objectArray, property) => {
@@ -336,9 +330,9 @@ function TotalTeamReport(props) {
   };
 
   const totalTeamTable = (totalTeam, userNameList2) => {
-    let teamList = [];
+    let sortedTeamList = [];
     if (totalTeam.length > 0) {
-      teamList = totalTeam
+      sortedTeamList = totalTeam
         .sort((a, b) => a.teamName.localeCompare(b.teamName))
         .map((team, index) => {
           const nameList = getMemberName(team.teamId, userNameList2);
@@ -390,7 +384,7 @@ function TotalTeamReport(props) {
             <th scope="col">Total Logged Time (Hrs)</th>
           </tr>
         </thead>
-        {teamList}
+        {sortedTeamList}
       </table>
     );
   };

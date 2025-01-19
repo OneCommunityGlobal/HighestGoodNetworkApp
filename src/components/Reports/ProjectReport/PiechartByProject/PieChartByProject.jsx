@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import {ProjectPieChart} from '../ProjectPieChart/ProjectPieChart';
 import './PieChartByProject.css';
 import TriMembersStateToggleSwitch from '../TriMembersStateToggleSwitch/TriMembersStateToggleSwitch'
@@ -64,8 +64,8 @@ export function PieChartByProject({
       const sortedArr = inactiveArr.sort((a, b) => (a.name).localeCompare(b.name))
       setUserData(sortedArr)
     } else    if (showMembers === true) {
-      const activeUsers = mergedProjectUsersArray.filter(member => member.personId.isActive )
-      setActiveData(activeUsers);
+      const au = mergedProjectUsersArray.filter(member => member.personId.isActive )
+      setActiveData(au);
 
       const totalHoursActive = activeUsers.reduce((acc, curr) => {
         return ((acc + curr.totalSeconds));
@@ -91,19 +91,19 @@ export function PieChartByProject({
 
   }, [mergedProjectUsersArray,showMembers])
 
-  useEffect(() => {
-    window.addEventListener('resize', updateWindowSize);
-    return () => {
-      window.removeEventListener('resize', updateWindowSize);
-    };
-  }, []);
-
   const updateWindowSize = () => {
     setWindowSize({
       width: window.innerWidth,
       height: window.innerHeight
     });
   };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateWindowSize);
+    return () => {
+      window.removeEventListener('resize', updateWindowSize);
+    };
+  }, []);
 
   const handleShowPieChart = () => {
     setIsChecked(!isChecked);
@@ -122,7 +122,7 @@ export function PieChartByProject({
   const noDataPlaceholder = [{
     name: "No Data",
     value: 1/1000,
-    projectName: projectName,
+    projectName,
     totalHoursCalculated: 0,
     lastName: ""
   }];

@@ -1,5 +1,4 @@
-// eslint-disable-next-line no-unused-vars
-import React, { Component, useState } from 'react';
+import { Component } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
 import { Link } from 'react-router-dom';
@@ -7,6 +6,7 @@ import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import { Spinner, Alert } from 'reactstrap';
 import { formatDate } from '../../../utils/formatDate';
 import {
   updateUserProfileProperty,
@@ -28,7 +28,6 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import { Spinner, Alert } from 'reactstrap';
 import { updateRehireableStatus } from '../../../actions/userManagement'
 
 class PeopleReport extends Component {
@@ -88,7 +87,7 @@ class PeopleReport extends Component {
   }
 
   async componentDidMount() {
-    const { match, userProfile, userTask, userProjects, timeEntries, auth } = this.props;
+    const { match } = this.props;
     const { fromDate, toDate } = this.state;
 
     if (match) {
@@ -429,7 +428,7 @@ class PeopleReport extends Component {
 
     const renderProfileInfo = () => {
       const { isRehireable, bioStatus, authRole } = this.state;
-      const { profilePic, role, jobTitle, endDate, _id, createdDate, startDate } = userProfile;
+      const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
 
       return (
         <ReportPage.ReportHeader

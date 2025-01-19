@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
+import Collapse from 'react-bootstrap/Collapse';
 import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
 import 'react-table/react-table.css';
-import Collapse from 'react-bootstrap/Collapse';
 import './TasksDetail.css';
 
-const ShowCollapse = (props) => {
+function ShowCollapse(props) {
   const [open, setOpen] = useState(false);
   return (
     <>
@@ -20,7 +20,7 @@ const ShowCollapse = (props) => {
       </Button>
     </>
   );
-};
+}
 
 const formatDate = (datetime) => {
   if(datetime){
@@ -31,12 +31,12 @@ const formatDate = (datetime) => {
 };
 
 const truncate = (str, n) => {
-  return str.length > n ? str.substring(0, n - 1) + '...' : str;
+  return str.length > n ? `${str.substring(0, n - 1)  }...` : str;
 };
 
-export const TasksDetail = (props) => {
+function TasksDetail(props) {
   const [filteredTasks, setFilteredTasks] = useState(props.tasks_filter);
-  const darkMode = props.darkMode;
+  const {darkMode} = props;
 
   useEffect(() => {
     let tasks = props.tasks_filter;
@@ -76,11 +76,11 @@ export const TasksDetail = (props) => {
       <td className="tasks-detail-center-cells">
         {task.isActive ? (
           <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" />
           </div>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
+            <i className="fa fa-circle-o" aria-hidden="true" />
           </div>
         )}
       </td>
@@ -133,4 +133,6 @@ export const TasksDetail = (props) => {
       </table>
     </div>
   );
-};
+}
+
+export default TasksDetail;

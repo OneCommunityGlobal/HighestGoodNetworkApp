@@ -1,10 +1,10 @@
-import { Stub } from '../../common/Stub';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import { Stub } from '../../common/Stub';
 
-export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCount, darkMode, counts }) => {
+export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCount, darkMode, counts }) {
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
@@ -38,7 +38,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
   }, [fetched]);
 
   const activeMemberTable = activeMemberList.slice(skip, skip + take).map((member, index) => (
-    <div className="project-member-table-row" id={'tr_' + member._id} key={'ac_' + member._id}>
+    <div className="project-member-table-row" id={`tr_${  member._id}`} key={`ac_${  member._id}`}>
       <div>
         <div>{skip + index + 1}</div>
       </div>
@@ -50,11 +50,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div className="projects__active--input">
         {member.active ? (
           <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" />
           </div>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
+            <i className="fa fa-circle-o" aria-hidden="true" />
           </div>
         )}
       </div>
@@ -66,7 +66,7 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
   ));
 
   const allMemberTable = allMemberList.slice(skip, skip + take).map((member, index) => (
-    <div className="project-member-table-row" id={'tr_' + member._id} key={'al_' + member._id}>
+    <div className="project-member-table-row" id={`tr_${  member._id}`} key={`al_${  member._id}`}>
       <div>
         <div>{skip + index + 1}</div>
       </div>
@@ -78,11 +78,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
       <div className="projects__active--input">
         {member.active ? (
           <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
+            <i className="fa fa-circle" aria-hidden="true" />
           </div>
         ) : (
           <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
+            <i className="fa fa-circle-o" aria-hidden="true" />
           </div>
         )}
       </div>
@@ -124,18 +124,11 @@ export const ProjectMemberTable = ({ projectMembers, skip, take, handleMemberCou
         <div className="reports-table-head-cell">ID</div>
       </div>
       <div>
-        {memberFilter == 'all-time' ? (
-          allMemberTable.length > 0 ? (
-            allMemberTable
-          ) : (
-            <Stub darkMode={darkMode}/>
-          )
-        ) : activeMemberTable.length > 0 ? (
-          activeMemberTable
-        ) : (
-          <Stub darkMode={darkMode}/>
-        )}
+        {memberFilter === 'all-time' && allMemberTable.length > 0 && allMemberTable}
+        {memberFilter === 'all-time' && allMemberTable.length === 0 && <Stub darkMode={darkMode}/>}
+        {memberFilter !== 'all-time' && activeMemberTable.length > 0 && activeMemberTable}
+        {memberFilter !== 'all-time' && activeMemberTable.length === 0 && <Stub darkMode={darkMode}/>}
       </div>
     </div>
   );
-};
+}

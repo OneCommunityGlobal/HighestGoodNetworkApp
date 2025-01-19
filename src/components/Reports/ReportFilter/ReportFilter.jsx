@@ -1,4 +1,4 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import ReportTableSearchPanel from '../ReportTableSearchPanel';
 
 class ReportFilter extends Component {
@@ -36,7 +36,9 @@ class ReportFilter extends Component {
     return (
       <div>
         <div>
-          <a>Select a Filter</a>
+          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
+            Select a Filter
+          </button>
         </div>
         <div>
           <input

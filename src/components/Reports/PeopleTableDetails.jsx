@@ -17,7 +17,6 @@ function PeopleTableDetails(props) {
   const [order, setOrder] = useState('');
   const [startDate] = useState('');
   const [endDate] = useState('');
-  const [isMobile, setisMobile] = useState(false);
 
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   // useEffect(() => {
@@ -87,16 +86,14 @@ function PeopleTableDetails(props) {
 
   const filterOptions = tasks => {
     let filterTaskslist = tasks.filter(task => {
-      if (
+      return (
         task.taskName.toLowerCase().includes(name.toLowerCase()) &&
         task?.estimatedHours?.toLowerCase().includes(estimatedHours.toLowerCase())
-      ) {
-        return true;
-      }
+      );
     });
     // addtasknamelist
     filterTaskslist = filterTaskslist.filter(task => {
-      let tasklist = []
+      const tasklist = []
       for (let i = 0; i < task.taskName.length; i += 1) {
         tasklist.push(task.taskName[i])
 
@@ -153,84 +150,6 @@ function PeopleTableDetails(props) {
 
   const renderMobileFilteredTask = (value) => {
     return (
-      // <div className="mobile-table">
-      //   <div key={value._id} >
-      //     <h5 >Task :</h5>
-      //     <div>  {value.taskName}</div>
-      //     <h5 >Priority :</h5>
-      //     <div >{value.priority}</div>
-      //     <h5 >Status :</h5>
-      //     <div > {value.status}</div>
-      //     <h5 >Resources:</h5>
-      //     <div >
-      //       {value.resources?.map(res =>
-      //         res.map((resource, index) => {
-      //           if (index < 2) {
-      //             return (
-      //               <img
-      //                 key={resource.index}
-      //                 alt={resource.name}
-      //                 src={resource.profilePic || '/pfp-default.png'}
-      //                 className="img-circle"
-      //                 title={resource.name}
-      //               />
-      //             );
-      //           }
-      //           return null;
-      //         }),
-      //       )}
-      //       {value.resources?.map((res, index) =>
-      //         res.length > 2 ? (
-      //           <button
-      //             key={index}
-      //             type="button"
-      //             className="name resourceMoreToggle"
-      //             onClick={() => toggleMoreResources(value._id)}
-      //           >
-      //             <span className="dot">{res.length - 2}+</span>
-      //           </button>
-      //         ) : null,
-      //       )}
-      //       <div id={value._id} className="extra">
-      //         <div className="extra1">
-      //           {value.resources?.map(res =>
-      //             // eslint-disable-next-line array-callback-return,consistent-return
-      //             res.map((resource, index) => {
-      //               if (index >= 2) {
-      //                 return (
-      //                   <img
-      //                     key={resource.index}
-      //                     alt={resource.name}
-      //                     src={resource.profilePic || '/pfp-default.png'}
-      //                     className="img-circle"
-      //                     title={resource.name}
-      //                   />
-      //                 );
-      //               }
-      //             }),
-      //           )}
-      //         </div>
-      //       </div>
-      //     </div>
-      //     <div className="people-table-center-cell">
-      //       <h5 >Active: {value.active === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</h5>
-
-      //     </div>
-      //     <div className="people-table-center-cell">
-      //       <h5 >Assign: {value.assign === 'Yes' ? <span>&#10003;</span> : <span>&#10060;</span>}</h5>
-      //     </div>
-      //     <div className="people-table-end-cell">
-
-      //       <h5 >Estimated Hours: {value.estimatedHours}</h5>
-      //     </div>
-      //     <div className="people-table-end-cell">
-      //       <h5>Start Date: {value.startDate}</h5>
-      //     </div>
-      //     <div className="people-table-end-cell">
-      //       <h5>End Date: {value.endDate}</h5>
-      //     </div>
-      //   </div>
-      // </div>
       <div className={`task-card ${darkMode ? 'text-dark' : ''}`}>
         <div key={value._id} >
           <div className='task-header'>
@@ -317,10 +236,10 @@ function PeopleTableDetails(props) {
               return null;
             }),
           )}
-          {value.resources?.map((res, index) =>
+          {value.resources?.map((res) =>
             res.length > 2 ? (
               <button
-                key={index}
+                key={res[0]?.name || res[0]?.id}
                 type="button"
                 className="name resourceMoreToggle"
                 onClick={() => toggleMoreResources(value._id)}
@@ -391,7 +310,7 @@ function PeopleTableDetails(props) {
           startDate={startDate}
           EndDate={endDate}
         />
-        <button onClick={resetFilters} className="tasks-table-clear-filter-button">
+        <button type="button" onClick={resetFilters} className="tasks-table-clear-filter-button">
           Clear Filters
         </button>
       </div>

@@ -1,12 +1,12 @@
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PieChart, Pie, Sector, ResponsiveContainer } from 'recharts';
 
 
 const generateRandomHexColor = () => {
 
   const randomColor = Math.floor(Math.random() * 16777215).toString(16);
-  const hexColor = "#" + "0".repeat(6 - randomColor.length) + randomColor;
+  const hexColor = `#${  "0".repeat(6 - randomColor.length)  }${randomColor}`;
   return hexColor;
 }
 

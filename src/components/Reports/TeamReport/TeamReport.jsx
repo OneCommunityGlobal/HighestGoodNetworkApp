@@ -5,12 +5,7 @@ import { useDispatch, useSelector, connect } from 'react-redux';
 import moment from 'moment';
 import DatePicker from 'react-datepicker';
 import { FiUsers } from 'react-icons/fi';
-import Dropdown from 'react-bootstrap/Dropdown';
 import axios from 'axios';
-import { persistReducer } from 'redux-persist';
-import storage from 'redux-persist/lib/storage';
-import { compressToUTF16, decompressFromUTF16 } from 'lz-string';
-import { rootReducers } from '../../../store.js';
 import { ENDPOINTS } from 'utils/URL';
 import { getTeamDetail } from '../../../actions/team';
 import {
@@ -28,24 +23,6 @@ import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
-const parser = (val) => {
-  try {
-    return JSON.parse(val);
-  } catch (error) {
-    console.error("Failed to parse state:", error);
-    return null;
-  }
-};
-
-const persistConfig = {
-  key: 'root',
-  storage,
-  serialize: (outboundState) => compressToUTF16(JSON.stringify(outboundState)),
-  deserialize: (inboundState) => parser(decompressFromUTF16(inboundState))
-};
-
-const persistedReducer = persistReducer(persistConfig, rootReducers);
-
 export function TeamReport({ match }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -53,7 +30,7 @@ export function TeamReport({ match }) {
   const { team } = useSelector(getTeamReportData);
   const user = useSelector(state => state.auth.user);
   const [teamMembers, setTeamMembers] = useState([]);
-  const [allTeams, setAllTeams] = useState([]);
+  const [setAllTeams] = useState([]);
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
   const [searchParams, setSearchParams] = useState({
     teamName: '',
@@ -63,7 +40,7 @@ export function TeamReport({ match }) {
     isInactive: false,
   });
 
-  const [selectedTeams, setSelectedTeams] = useState([]);
+  const [selectedTeams] = useState([]);
 
   // Create a state variable to store the selected radio input
   // eslint-disable-next-line no-unused-vars
@@ -74,57 +51,6 @@ export function TeamReport({ match }) {
     // Update the selectedInput state variable with the value of the selected radio input
     setSelectedInput(event.target.value);
   };
-
-  const handleStatus = useMemo(
-    () =>
-      // eslint-disable-next-line react/no-unstable-nested-components,func-names
-      function(isActive) {
-        return isActive ? (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-            }}
-          >
-            <span
-              className="dot"
-              style={{ backgroundColor: '#00ff00', width: '0.7rem', height: '0.7rem' }}
-            />
-            <strong>Active</strong>
-          </div>
-        ) : (
-          <div
-            style={{
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: '0.5rem',
-            }}
-          >
-            <span
-              className="dot"
-              style={{ backgroundColor: 'red', width: '0.7rem', height: '0.7rem' }}
-            />
-            <strong>Inactive</strong>
-          </div>
-        );
-      },
-    [],
-  );
-
-  const handleSelectTeam = useCallback((event, selectedTeam, index) => {
-    if (event.target.checked) {
-      if (selectedTeams.length < 4) {
-        setSelectedTeams([...selectedTeams, { selectedTeam, index }]);
-      }
-    } else {
-      setSelectedTeams(prevSelectedTeams =>
-        prevSelectedTeams.filter(team => team.selectedTeam._id !== selectedTeam._id),
-      );
-    }
-  }, [selectedTeams]);
 
   const debounceSearchByName = debounce((value) => {
     setSearchParams(prevParams => ({
@@ -164,34 +90,6 @@ export function TeamReport({ match }) {
     }
   }
 
-  const memoizedSearchResults = useMemo(() => {
-    return allTeams.filter(team => {
-      const isMatchedName = team.teamName.toLowerCase().includes(searchParams.teamName.toLowerCase());
-      const isMatchedCreatedDate = moment(team.createdDatetime).isSameOrAfter(
-        moment(searchParams.createdAt).startOf('day'),
-      );
-      const isMatchedModifiedDate = moment(team.modifiedDatetime).isSameOrAfter(
-        moment(searchParams.modifiedAt).startOf('day'),
-      );
-      const isActive = team.isActive === searchParams.isActive;
-      const isInactive = team.isActive !== searchParams.isInactive;
-      return isMatchedName && isMatchedCreatedDate && isMatchedModifiedDate && (isActive || isInactive);
-    }).slice(0, 5);
-  }, [allTeams, searchParams]);
-
-  function handleDate(date) {
-    const formattedDates = {};
-    // eslint-disable-next-line no-shadow
-    const getFormattedDate = date => {
-      if (!formattedDates[date]) {
-        formattedDates[date] = moment(date).format('MM-DD-YYYY');
-      }
-      return formattedDates[date];
-    };
-
-    return getFormattedDate(date);
-  }
-
   useEffect(() => {
     let isMounted = true; // flag to check component mount status
   
@@ -212,7 +110,7 @@ export function TeamReport({ match }) {
           return result;
         })
         .then(result => {
-          const allTeamMembersPromises = result.map(team => dispatch(getTeamMembers(team._id)));
+          const allTeamMembersPromises = result.map(t => dispatch(getTeamMembers(t._id)));
           Promise.all(allTeamMembersPromises).then(results => {
             if (isMounted) { // Only update state if component is still mounted
               setAllTeamsMembers([...results]);
@@ -539,7 +437,7 @@ export function TeamReport({ match }) {
                     <td>{handleDate(team.createdDatetime)}</td>
                     <td>{handleDate(team.modifiedDatetime)}</td>
                   </tr>
-                ))*/}
+                )) */}
               </tbody>
             ) : (
               <tbody>

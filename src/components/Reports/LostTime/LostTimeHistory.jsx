@@ -1,38 +1,24 @@
 import axios from 'axios';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import Loading from 'components/common/Loading';
 import { boxStyle, boxStyleDark } from 'styles';
-import EditHistoryModal from './EditHistoryModal';
 import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
+import EditHistoryModal from './EditHistoryModal';
 
 function LostTimeHistory(props) {
-  const darkMode = props.darkMode;
+  const {darkMode} = props;
 
   const [entriesRow, setEntriesRow] = useState([]);
   const [dataLoading, setDataLoading] = useState(true);
 
-  const isOpen = props.isOpen;
-  const type = props.type;
+  const {isOpen} = props;
+  const {type} = props;
   const fromDate = props.startDate.toLocaleDateString('en-CA');
   const toDate = props.endDate.toLocaleDateString('en-CA');
-
   const idList = props.allData.map(data => data._id);
 
-  useEffect(() => {
-    loadLostTimeEntries(type, idList, fromDate, toDate);
-  }, []);
-  
-  const reload = () => {
-    setDataLoading(true);
-    loadLostTimeEntries(type, idList, fromDate, toDate);
-  }
-  
-  useEffect(() => {
-    reload();
-  }, [darkMode])
-  
   const alphabetize = timeEntries => {
     const temp = [...timeEntries];
     return temp.sort((a, b) =>
@@ -40,12 +26,12 @@ function LostTimeHistory(props) {
     );
   };
 
-  const loadLostTimeEntries = async (type, idList, fromDate, toDate) => {
+  const loadLostTimeEntries = async (entryType, ids, startDate, endDate) => {
     let timeEntries = [];
-    if(type == 'project') {
-      let url = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+    if(entryType === 'project') {
+      const url = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
       timeEntries = await axios
-        .post(url, { projects: idList, fromDate, toDate })
+        .post(url, { projects: ids, fromDate: startDate, toDate: endDate })
         .then(res => {
           return res.data.map(entry => {
             return {
@@ -60,17 +46,17 @@ function LostTimeHistory(props) {
             };
           });
         });
-    } else if(type == 'person') {
-      let url = ENDPOINTS.TIME_ENTRIES_LOST_USER_LIST;
+    } else if(entryType === 'person') {
+      const url = ENDPOINTS.TIME_ENTRIES_LOST_USER_LIST;
       timeEntries = await axios
-        .post(url, { users: idList, fromDate, toDate })
+        .post(url, { users: ids, fromDate: startDate, toDate: endDate })
         .then(res => {
           return res.data.map(entry => {
             return {
               _id: entry._id,
               dataId: entry.personId._id,
               entryType: entry.entryType,
-              name: entry.firstName + ' ' + entry.lastName,
+              name: `${entry.firstName  } ${  entry.lastName}`,
               hours: entry.hours,
               minutes: entry.minutes,
               isTangible: entry.isTangible,
@@ -78,10 +64,10 @@ function LostTimeHistory(props) {
             };
           });
         });
-    } else {
-      let url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
+    } else if(entryType === 'team') {
+      const url = ENDPOINTS.TIME_ENTRIES_LOST_TEAM_LIST;
       timeEntries = await axios
-        .post(url, { teams: idList, fromDate, toDate })
+        .post(url, { teams: ids, fromDate: startDate, toDate: endDate })
         .then(res => {
           return res.data.map(entry => {
             return {
@@ -100,9 +86,9 @@ function LostTimeHistory(props) {
 
     timeEntries = alphabetize(timeEntries);
 
-    let entriesRow = [];
+    let newEntriesRow = [];
     if (timeEntries.length > 0) {
-      entriesRow = timeEntries.map((entry) => (
+      newEntriesRow = timeEntries.map((entry) => (
         <tr id={`tr_${entry._id}`} key={entry._id}  className={darkMode ? 'hover-effect-reports-page-dark-mode text-light' : ''}>
           <td>
             {entry.name}
@@ -111,7 +97,7 @@ function LostTimeHistory(props) {
             {entry.date}
           </td>
           <td>
-            {entry.hours + ':' + entry.minutes}
+            {`${entry.hours  }:${  entry.minutes}`}
           </td>
           <td>
             {entry.isTangible ? (
@@ -142,11 +128,24 @@ function LostTimeHistory(props) {
       ));
     }
 
-    setEntriesRow(entriesRow);
+    setEntriesRow(newEntriesRow);
     setDataLoading(false);
 
   };
 
+  const reload = () => {
+    setDataLoading(true);
+    loadLostTimeEntries(type, idList, fromDate, toDate);
+  }
+
+  useEffect(() => {
+    loadLostTimeEntries(type, idList, fromDate, toDate);
+  }, []);
+  
+  useEffect(() => {
+    reload();
+  }, [darkMode])
+  
   return (
     <div className="table-data-container mt-5">
       {isOpen && (
