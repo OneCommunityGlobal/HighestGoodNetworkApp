@@ -1,12 +1,14 @@
+import { useContext } from 'react';
 import { connect } from 'react-redux';
 // eslint-disable-next-line import/no-cycle
 import PermissionListItem from './PermissionListItem';
 import permissionLabel from './PermissionsConst';
+import { PermissionsContext } from './PermissionsContext';
 
 function PermissionList(props) {
   const {
     // the modifiable permissions for this role/user
-    rolePermissions = [],
+    // rolePermissions = [],
     // all permissions to be listed
     permissionsList = permissionLabel,
     // any additional permissions that cannot be added
@@ -18,16 +20,31 @@ function PermissionList(props) {
     // used for indentation in subcategories/sublists
     depth = 0,
     // function to update the permission list in parent component
-    setPermissions = () => {},
+    // setPermissions = () => {},
     // runs when permission is added or removed
-    onChange = () => {},
+    // onChange = () => {},
   } = props;
+
+  // console.log('PermissionList rolePermissions:', rolePermissions);
+  // console.log('PermissionList permissionsList:', permissionsList);
+  // console.log('PermissionList immutablePermissions:', immutablePermissions);
+
+  const { currentUserPermissions, handlePermissionsChange } = useContext(PermissionsContext);
+
+  const handlePermissionToggle = updatedPermissions => {
+    console.log('handlePermissionToggle called with:', updatedPermissions);
+    // setPermissions(updatedPermissions);
+    // onChange(updatedPermissions);
+    handlePermissionsChange(updatedPermissions);
+  };
+
   return (
     <ul className="user-role-tab__permissionList">
       {permissionsList.map(permission => (
         <PermissionListItem
           key={permission.label}
-          rolePermissions={rolePermissions}
+          /* rolePermissions={rolePermissions} */
+          rolePermissions={currentUserPermissions}
           immutablePermissions={immutablePermissions}
           label={permission.label}
           permission={permission.key}
@@ -38,8 +55,8 @@ function PermissionList(props) {
           // eslint-disable-next-line react/destructuring-assignment
           darkMode={props.darkMode}
           // functions
-          setPermissions={setPermissions}
-          onChange={onChange}
+          setPermissions={handlePermissionToggle}
+          onChange={handlePermissionToggle}
         />
       ))}
     </ul>
