@@ -199,7 +199,7 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
       const isActive = team.isActive === searchParams.isActive;
       const isInactive = team.isActive !== searchParams.isInactive;
       return isMatchedName && isMatchedCreatedDate && isMatchedModifiedDate && (isActive || isInactive);
-    }).slice(0, 5);
+    });
   }, [allTeams, searchParams]);
 
   function handleDate(date) {
@@ -517,104 +517,45 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
               </div>
             </div>
           </div>
-          <table className="table tableHeader">
-            <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}`}>
-              <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                <td>
-                  <strong>All</strong>
-                </td>
-                <td>
-                  <strong>Team</strong>
-                </td>
-                <td>
-                  <strong>Status</strong>
-                </td>
-                <td>
-                  <strong>Team Members</strong>
-                </td>
-                <td>
-                  <strong>ID</strong>
-                </td>
-                <td>
-                  <strong>Created At</strong>
-                </td>
-                <td>
-                  <strong>Modified At</strong>
-                </td>
-              </tr>
-            </thead>
-            {allTeamsMembers?.length > 1 ? (
-              <tbody className="table">
-                {/* eslint-disable-next-line no-shadow */}
-                {/* Note: the handleSearch() function will cause the white page error */}
-                {/* handleSearch().map((team, index) => (
-                  <tr className={`table-row ${darkMode ? 'bg-yinmn-blue text-light table-hover-dark' : ''}`} key={team._id}>
-                    <td>
-                      <input
-                        type="checkbox"
-                        onChange={event => handleSelectTeam(event, team, index)}
-                        checked={selectedTeams.some(st => st.selectedTeam._id === team._id)}
-                        disabled={
-                          selectedTeams.length === 4 &&
-                          !selectedTeams.some(st => st.selectedTeam._id === team._id)
-                        }
-                      />
-                    </td>
-                    <td>
-                      <strong>{team?.teamName}</strong>
-                    </td>
-                    <td>{handleStatus(team?.isActive)}</td>
-                    <td>
-                      <Dropdown>
-                        <Dropdown.Toggle
-                          variant="success"
-                          id="dropdown-basic"
-                          style={{ backgroundColor: '#996cd3', border: 'none' }}
-                        >
-                          <span  onClick={()=>getCurrentTeamMembers(team?._id)}>
-                             See
-                          </span>
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                          {allTeamsMembers[index].length > 1 ? (
-                            allTeamsMembers[index].map(member => (
-                              <div key={`${team?._id}-${member?._id}`}>
-                                <Dropdown.Item href="#/action-1">
-                                  {member?.firstName} {member?.lastName}
-                                </Dropdown.Item>
-                                <Dropdown.Divider />
-                              </div>
-                            ))
-                          ) : (
-                            <Dropdown.Item href="#/action-1">
-                              <strong>This team has no members!</strong>
-                            </Dropdown.Item>
-                          )}
-                        </Dropdown.Menu>
-                      </Dropdown>
-                    </td>
-                    <td>{team._id}</td>
-                    <td>{handleDate(team?.createdDatetime)}</td>
-                    <td>{handleDate(team?.modifiedDatetime)}</td>
-                  </tr>
-                ))*/}
-              </tbody>
-            ) : (
-              <tbody>
-                <tr style={{ backgroundColor: darkMode ? '#3A506B' : 'white' }}>
-                  <td />
-                  <td />
-                  <td />
-                  <td>
-                    <strong className={darkMode ? 'text-light' : ''}>Loading...</strong>
-                  </td>
-                  <td />
-                  <td />
-                  <td />
-                </tr>
-              </tbody>
-            )}
-          </table>
+          <div className="table-container">
+  <table className="table">
+    <thead>
+      <tr>
+        <th>All</th>
+        <th>Team</th>
+        <th>Status</th>
+        <th>Team Members</th>
+        <th>ID</th>
+        <th>Created At</th>
+        <th>Modified At</th>
+      </tr>
+    </thead>
+    <tbody>
+      {memoizedSearchResults.map((team, index) => (
+        <tr key={team._id}>
+          <td>
+            <input
+              type="checkbox"
+              onChange={(event) => handleSelectTeam(event, team, index)}
+              checked={selectedTeams.some((st) => st.selectedTeam._id === team._id)}
+              disabled={
+                selectedTeams.length === 4 &&
+                !selectedTeams.some((st) => st.selectedTeam._id === team._id)
+              }
+            />
+          </td>
+          <td>{team.teamName}</td>
+          <td>{handleStatus(team.isActive)}</td>
+          <td>{}</td>
+          <td>{team._id}</td>
+          <td>{handleDate(team.createdDatetime)}</td>
+          <td>{handleDate(team.modifiedDatetime)}</td>
+        </tr>
+      ))}
+    </tbody>
+  </table>
+</div>
+
         </ReportPage.ReportBlock>
       </div>
     </ReportPage>
