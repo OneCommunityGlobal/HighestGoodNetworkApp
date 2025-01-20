@@ -208,14 +208,7 @@ function Announcements({ title, email }) {
               </label>
             )
           }
-          <input
-            type="text"
-            value={emailTo}
-            id="email-list-input"
-            onChange={handleEmailListChange}
-            className="input-text-for-announcement"
-          />
-
+          <input type="text" value={emailTo} id="email-list-input" onChange={handleEmailListChange} className='input-text-for-announcement' />
           <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
             {
               title ? (
@@ -234,6 +227,7 @@ function Announcements({ title, email }) {
             type="text"
             id="header-content-input"
             onChange={handleHeaderContentChange}
+            value={headerContent}
             className="input-text-for-announcement"
           />
 
