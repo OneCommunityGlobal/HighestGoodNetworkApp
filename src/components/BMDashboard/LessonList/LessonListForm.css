@@ -1,6 +1,5 @@
 
 .form-container{
-  
   .form-control {
    max-width: unset !important;
    font-size: small !important;
@@ -8,21 +7,8 @@
  .form-label{
   margin: 5px 0;
   font-size: small;
-  }
 }
-
-.form-control-delete {
-  margin-left: 10px;
-  font-size: small !important;
-  max-width: 100%;
 }
-
-.tag .delete-tag {
-  margin-left: 10px;
-  background-color: red;
-  
-}
-
 .main-container{
  display: flex;
  flex-direction: column;
@@ -56,90 +42,39 @@
   background-color: #F2F2F266 !important;
 
 }
-
 .tag-container {
   display: flex;
   flex-wrap: wrap;
   gap: 5px;
   padding: 5px;
-  margin-top: 10px;
-}
-
-.delete-input-wrapper {
-  position: relative;
-  flex: 1;
-}
-
-.form-control-delete {
-  width: 100%;
-  margin-left: 0;
-  font-size: small !important;
-}
-
-.tags-input-container {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  
 }
 
 .tag {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  background-color: #F2F2F266;
+  background-color: #F2F2F266 !important;
   border-radius: 5px;
-  padding: 2px 5px;
-  margin: 2px;
+  margin-right: 5px;
   font-size: small;
-  gap: 5px;
-  min-height: 24px;
+  word-break: break-all;
+  overflow: hidden;
 }
 
 .tag .close {
   margin-left: 5px;
   cursor: pointer;
 } 
+.close-button {
+  border: none !important;
+  background-color: transparent !important;
+} 
 
-.tag .button-close {
-  background-color: #F2F2F266;
-  border-color: #F2F2F266;
-  color: black;
-}
-
-.tags-input-container {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-.tags-wrapper {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-
-.tag-dropdown {
-  position: absolute;
-  background: white;
-  border: 1px solid #ccc;
-  max-height: 200px;
-  overflow-y: auto;
-  z-index: 1000;
-  width: 100%;
-}
-
-.tag-dropdown-item {
-  padding: 8px;
-  cursor: pointer;
-}
-
-.tag-dropdown-item:hover {
-  background-color: #f0f0f0;
-}
 
   @media (max-width: 570px) {
    .form-select-container {
      flex-direction: column;
    }
   }
-

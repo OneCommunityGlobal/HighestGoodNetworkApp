@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { useSelector } from 'react-redux';
-import { toast } from 'react-toastify';
 import _ from 'lodash';
 import httpService from '../../services/httpService';
 import { ENDPOINTS } from '../../utils/URL';
@@ -35,7 +34,11 @@ const SetupNewUserPopup = React.memo(props => {
         .post(ENDPOINTS.SETUP_NEW_USER(), { baseUrl, email, weeklyCommittedHours })
         .then(res => {
           if (res.status === 200) {
-            toast.success('The setup link has been successfully sent');
+            setAlert({
+              visibility: 'visible',
+              message: 'The setup link has been successfully sent',
+              state: 'success',
+            });
           } else {
             setAlert({ visibility: 'visible', message: 'An error has occurred', state: 'error' });
           }
@@ -55,6 +58,7 @@ const SetupNewUserPopup = React.memo(props => {
           setTimeout(() => {
             setAlert({ visibility: 'hidden', message: '', state: 'success' });
             setEmail('');
+            setWeeklyCommittedHours(0);
           }, 2000);
           // Prevent multiple requests to fetch invitation history
           const deboucingRefreshHistory = _.debounce(() => {

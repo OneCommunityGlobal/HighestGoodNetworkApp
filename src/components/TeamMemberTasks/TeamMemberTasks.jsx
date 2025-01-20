@@ -1,6 +1,12 @@
 import { Fragment } from 'react';
 import { faClock } from '@fortawesome/free-solid-svg-icons';
 import {
+  Dropdown,
+  DropdownToggle,
+  DropdownMenu,
+  DropdownItem,
+  Button,
+  Spinner,
   Table,
   Row,
   Col,
@@ -14,19 +20,21 @@ import { TaskDifferenceModal } from './components/TaskDifferenceModal';
 import './style.css';
 import TaskCompletedModal from './components/TaskCompletedModal';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
+import { boxStyle } from 'styles';
 import axios from 'axios';
 import moment from 'moment';
 import TeamMemberTask from './TeamMemberTask';
 import TimeEntry from '../Timelog/TimeEntry';
 import { hrsFilterBtnColorMap } from 'constants/colors';
 import { toast } from 'react-toastify';
+// import InfiniteScroll from 'react-infinite-scroller';
 import { getAllTimeOffRequests } from '../../actions/timeOffRequestAction';
 import { fetchAllFollowUps } from '../../actions/followUpActions';
 import { MultiSelect } from 'react-multi-select-component';
 import { fetchTeamMembersTaskSuccess } from './actions';
 
+import { Link } from 'react-router-dom';
 import { ENDPOINTS } from 'utils/URL';
-import { FaCalendarAlt, FaClock } from 'react-icons/fa'
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store
@@ -516,26 +524,45 @@ const TeamMemberTasks = React.memo(props => {
               <button
                 type="button"
                 className={
-                  'm-1 show-time-off-btn' + (darkMode ? ' box-shadow-dark' : '')
+                  `m-1 show-time-off-btn ${
+                    showWhoHasTimeOff ? 'show-time-off-btn-selected ' : ''
+                  }` + (darkMode ? ' box-shadow-dark' : '')
                 }
-                style={{
-                  backgroundColor: showWhoHasTimeOff ? '#17a2b8' : 'white',
-                }}
                 onClick={handleshowWhoHasTimeOff}
               >
-                <FaCalendarAlt className={'show-time-off-calender-svg'}
-                               fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
-                               size="20px" />
-                <FaClock size={'12px'}
-                         fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
-                         className={'show-time-off-icon'} />
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="22"
+                  height="19"
+                  viewBox="0 0 448 512"
+                  className={`show-time-off-calender-svg ${
+                    showWhoHasTimeOff ? 'show-time-off-calender-svg-selected' : ''
+                  }`}
+                >
+                  <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
+                </svg>
+                <i
+                  className={`show-time-off-icon ${
+                    showWhoHasTimeOff ? 'show-time-off-icon-selected' : ''
+                  }`}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="18"
+                    height="18"
+                    viewBox="0 0 512 512"
+                    className="show-time-off-icon-svg"
+                  >
+                    <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+                  </svg>
+                </i>
               </button>
               {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
                 <button
                   key={idx}
                   type="button"
                   className={
-                    `m-1 responsive-btn-size circle-border` +
+                    `m-1 responsive-btn-size circle-border ${days} days ` +
                     (darkMode ? 'box-shadow-dark' : '')
                   }
                   title={`Timelogs submitted in the past ${days} days`}
@@ -547,9 +574,7 @@ const TeamMemberTasks = React.memo(props => {
                   }}
                   onClick={() => selectPeriod(days)}
                 >
-                  {days}
-                  <br />
-                  {days === '1' ? 'day' : 'days'}
+                  {days} {days === '1' ? 'day' : 'days'}
                 </button>
               ))}
               <select
@@ -578,7 +603,7 @@ const TeamMemberTasks = React.memo(props => {
                       border: `1px solid ${color}`,
                     }}
                   >
-                    {`${days} ${days === '1' ? 'day' : 'days'}`}
+                    {days} {days === '1' ? 'day' : 'days'}
                   </option>
                 ))}
               </select>
@@ -664,16 +689,27 @@ const TeamMemberTasks = React.memo(props => {
         </Row>
       )}
       <div className="task_table-container">
-      <Table className='task-table'>
-          <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
+        <Table className="task-table">
+          <thead
+            className={`pc-component ${darkMode ? 'bg-space-cadet' : ''}`}
+            style={{ position: 'sticky', top: 0 }}
+          >
             <tr>
-              <th colSpan={3} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
-                <Table borderless className={`team-member-tasks-subtable ${darkMode ? "text-light" : ""}`}>
-                  <thead className={darkMode ? "bg-space-cadet" : ""}>
+              {/* Empty column header for hours completed icon */}
+              <th
+                colSpan={1}
+                className={`hours-completed-column ${darkMode ? 'bg-space-cadet' : ''}`}
+              />
+              <th
+                colSpan={2}
+                className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}
+              >
+                <Table
+                  borderless
+                  className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
+                >
+                  <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
-                      <th className={darkMode ? "bg-space-cadet" : ""}>
-                        User Status
-                      </th>
                       <th
                         className={`team-member-tasks-headers team-member-tasks-user-name ${
                           darkMode ? 'bg-space-cadet' : ''
@@ -754,7 +790,6 @@ const TeamMemberTasks = React.memo(props => {
                         showWhoHasTimeOff={showWhoHasTimeOff}
                         onTimeOff={userOnTimeOff[user.personId]}
                         goingOnTimeOff={userGoingOnTimeOff[user.personId]}
-                        displayUser={displayUser}
                       />
                     );
                   } else {

@@ -1,5 +1,5 @@
 import { Component } from 'react';
-import './Collaboration.module.css';
+import './Collaboration.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
@@ -13,13 +13,11 @@ class Collaboration extends Component {
       currentPage: 1,
       jobAds: [],
       totalPages: 0,
-      categories: [],
     };
   }
 
   componentDidMount() {
     this.fetchJobAds();
-    this.fetchCategories();
   }
 
   fetchJobAds = async () => {
@@ -48,22 +46,6 @@ class Collaboration extends Component {
     }
   };
 
-  fetchCategories = async () => {
-    try {
-      const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
-
-      if (!response.ok) {
-        throw new Error(`Failed to fetch categories: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      const sortedCategories = data.categories.sort((a, b) => a.localeCompare(b));
-      this.setState({ categories: sortedCategories });
-    } catch (error) {
-      toast.error('Error fetching categories');
-    }
-  };
-
   handleSearch = event => {
     this.setState({ searchTerm: event.target.value });
   };
@@ -74,11 +56,7 @@ class Collaboration extends Component {
   };
 
   handleCategoryChange = event => {
-    const selectedValue = event.target.value;
-    this.setState(
-      { selectedCategory: selectedValue === '' ? '' : selectedValue, currentPage: 1 },
-      this.fetchJobAds,
-    );
+    this.setState({ selectedCategory: event.target.value, currentPage: 1 }, this.fetchJobAds);
   };
 
   setPage = pageNumber => {
@@ -86,14 +64,7 @@ class Collaboration extends Component {
   };
 
   render() {
-    const {
-      searchTerm,
-      selectedCategory,
-      currentPage,
-      jobAds,
-      totalPages,
-      categories,
-    } = this.state;
+    const { searchTerm, selectedCategory, currentPage, jobAds, totalPages } = this.state;
 
     return (
       <div className="job-landing">
@@ -121,15 +92,12 @@ class Collaboration extends Component {
                 </button>
               </form>
             </div>
-
             <div className="navbar-right">
-              <select value={selectedCategory} onChange={event => this.handleCategoryChange(event)}>
-                <option value="">Select from Categories</option>
-                {categories.map(category => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
+              <select value={selectedCategory} onChange={this.handleCategoryChange}>
+                <option value="">All Categories</option>
+                <option value="Engineering">Engineering</option>
+                <option value="Design">Design</option>
+                <option value="Marketing">Marketing</option>
               </select>
             </div>
           </nav>

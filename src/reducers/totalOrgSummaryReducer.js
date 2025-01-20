@@ -2,7 +2,6 @@ import * as actions from '../constants/totalOrgSummary';
 
 const initialState = {
   volunteerstats: [],
-  volunteerOverview: [],
   loading: false,
   error: null,
   fetchingError: null,

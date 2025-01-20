@@ -109,7 +109,6 @@ export default function PasswordInputModal({
               id="passwordField"
               value={passwordField}
               onChange={onChangeFunc}
-              data-testid="password-input"
             />
             {showPassword ? (
               <FontAwesomeIcon
