@@ -51,8 +51,7 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-
-
+import ActivityAgenda from './components/CommunityPortal/Activities/ActivityAgenda';
 
 
 // eslint-disable-next-line import/order, import/no-unresolved
@@ -357,13 +356,12 @@ export default (
           component={InventoryTypesList}
         />
 
-
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-
+        <CPProtectedRoute path="/communityportal/ActivityAgenda" exact component={ActivityAgenda} />
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
