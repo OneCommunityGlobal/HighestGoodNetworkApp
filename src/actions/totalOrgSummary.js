@@ -57,3 +57,48 @@ export const getTaskAndProjectStats = (startDate, endDate) => {
     }
   };
 };
+
+/**
+ * Action to set the 'loading' flag to true.
+ */
+export const fetchVolunteerRolesTeamStatsBegin = () => ({
+  type: actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_BEGIN
+});
+
+/**
+ * This action is used to set the Team Stats in Volunteer Roles Weekly Summary Dashboard
+ *
+ * @param {object} volunteerRoleTeamStats An Object with the count of active members in the team.
+ */
+export const fetchVolunteerRolesTeamStatsSuccess = (volunteerRoleTeamStats) => ({
+  type: actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_SUCCESS,
+  payload: { volunteerRoleTeamStats },
+});
+
+/**
+ * Handle the error case.
+ *
+ * @param {Object} error The error object.
+ */
+export const fetchVolunteerRolesTeamStatsError = error => ({
+  type: actions.FETCH_VOLUNTEER_ROLES_TEAM_STATS_ERROR,
+  payload: { error },
+});
+
+export const getTeamStatsActiveMembers = (endDate, activeMembersMinimum) =>{
+
+const url =  ENDPOINTS.VOLUNTEER_ROLES_TEAM_STATS(endDate, activeMembersMinimum);
+  return async dispatch => {
+    dispatch(fetchVolunteerRolesTeamStatsBegin());
+    try {
+      const response = await axios.get(url);
+      dispatch(fetchVolunteerRolesTeamStatsSuccess(response.data));
+      return {
+        data: response.data
+      };
+    } catch (error) {
+      dispatch(fetchVolunteerRolesTeamStatsError(error));
+      return error.response.status;
+    }
+  };
+}
