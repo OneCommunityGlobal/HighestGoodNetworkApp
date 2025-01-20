@@ -52,6 +52,7 @@ import dashboardReducer  from '../reducers/dashboardReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
+import { selectedProjectIdReducer } from './bmdashboard/selectedProjectIdReducer';
 
 const localReducers = {
   auth: authReducer,
@@ -99,7 +100,8 @@ const localReducers = {
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
-  dashboard: dashboardReducer
+  dashboard: dashboardReducer,
+  selectedProjectId: selectedProjectIdReducer, 
 };
 
 const sessionReducers = {

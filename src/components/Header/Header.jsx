@@ -4,9 +4,8 @@ import { useState, useEffect, useMemo } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { getWeeklySummaries } from 'actions/weeklySummaries';
-import { Link, useLocation } from 'react-router-dom';
-import { connect, useDispatch } from 'react-redux';
-import { useHistory } from 'react-router-dom';
+import { Link, useLocation, useHistory } from 'react-router-dom';
+import { connect, useDispatch, useSelector } from 'react-redux';
 import {
   Collapse,
   Navbar,
@@ -165,6 +164,8 @@ export function Header(props) {
   const history = useHistory();
 
   const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+
+  const selectedProjectId = useSelector(state => state.selectedProjectId);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -414,9 +415,14 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
                         Lesson
                       </DropdownItem>
-                      <DropdownItem tag={Link} to="/" className={fontColor}>
+                      <DropdownItem tag={Link} to="/bmdashboard" className={fontColor}>
                         Main Dashboard
                       </DropdownItem>
+                      {selectedProjectId && ( // Only show the link if a project ID is available
+                        <DropdownItem tag={Link} to={`/bmdashboard/projects/${selectedProjectId}`}>
+                          Project Dashboard
+                        </DropdownItem>
+                      )}
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 )}

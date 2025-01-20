@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
 import ErrorAlert from '../ErrorAlert';
+import { setSelectProjectId } from '../../../actions/bmdashboard/projectByIdAction';
 
 function ProjectSelectForm() {
   const projects = useSelector(state => state.bmProjects);
   const history = useHistory();
+  const dispatch = useDispatch();
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [error, setError] = useState(false);
 
@@ -21,6 +23,7 @@ function ProjectSelectForm() {
   const handleOptionChange = event => {
     setError(false);
     setSelectedProjectId(event.target.value);
+    dispatch(setSelectProjectId(event.target.value));
   };
 
   const handleButtonClick = () => {
