@@ -85,37 +85,16 @@ export const updateUserStatus = (user, status, reactivationDate) => {
  * @param{boolean} isRehireable - the new rehireable status
  */
 export const updateRehireableStatus = (user, isRehireable) => {
-  return async dispatch => {
-    const userProfile = { ...user, isRehireable };
-    const requestData = { isRehireable };
-    try {
-      await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
-      dispatch(userProfileUpdateAction(userProfile));
-    } catch (err) {
-      throw err;
-    }
-  };
-};
-
-/**
- * Switches the visibility of a user
- * @param{*} user - the user whose visibility is to be changed
- * @param{boolean} isVisible - the new visiblity status
- */
-export const toggleVisibility = (user, isVisible) => {
   const userProfile = { ...user };
-  userProfile.isVisible = isVisible
-  const requestData = { isVisible };
+  userProfile.isRehireable = isRehireable
+  const requestData = { isRehireable };
   
-  const toggleVisibilityPromise = axios.patch(ENDPOINTS.TOGGLE_VISIBILITY(user._id), requestData)
+  const updateProfilePromise = axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData)
   return async dispatch => {
-    toggleVisibilityPromise.then(res => {
+    updateProfilePromise.then(res => {
       dispatch(userProfileUpdateAction(userProfile));
-    }).catch(err => {
-      console.error("failed to toggle visibility: ", err);
     });
   };
-
 };
 
 /**

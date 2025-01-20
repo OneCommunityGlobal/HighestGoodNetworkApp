@@ -35,11 +35,9 @@ thead {
   text-align: start;
 }
 
-
-.teams__overview--top {
-  background: transparent;
-}
-
+/*.teams__overview--top {
+  background: gray;
+} */
 
 .teams__overview--top .card {
   width: 200px;

@@ -1,17 +1,12 @@
 import { React, useState, useEffect, useRef } from 'react';
-import { Button, Col, Input } from 'reactstrap';
+import { Button, Col, Tooltip, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
+import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
-import Switch from './Switch';
-import './TeamsAndProjects.css';
-import './UserTeamsTable.css';
-
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
-import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
-
 import './../../Teams/Team.css';
 import { TeamMember } from './TeamMember';
 import axios from 'axios';
@@ -21,6 +16,9 @@ import { toast } from 'react-toastify';
 const UserTeamsTable = props => {
   const { darkMode } = props;
 
+  const [tooltipOpen, setTooltip] = useState(false);
+
+  const [teamCodeExplainTooltip, setTeamCodeExplainTooltip] = useState(false);
 
   const [showDropdown, setShowDropdown] = useState(false);
 
@@ -47,7 +45,7 @@ const UserTeamsTable = props => {
 
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
-
+  const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   useEffect(() => {
     if (props.userProfile?.teamCode) {
@@ -107,6 +105,7 @@ const UserTeamsTable = props => {
     opacity: !props.canEditTeamCode ? 0.6 : 0.9,
   };
 
+  const toggleTeamCodeExplainTooltip = () => setTeamCodeExplainTooltip(!teamCodeExplainTooltip);
 
   const fetchTeamSelected = async (teamId, teamName, isUpdate) => {
     const urlTeamData = ENDPOINTS.TEAM_BY_ID(teamId);
@@ -132,6 +131,7 @@ const UserTeamsTable = props => {
   };
 
   return (
+
     <div className={`teamtable-container   ${darkMode ? 'bg-yinmn-blue' : ''}`}>
       <TeamMember
         isOpenModalTeamMember={isOpenModalTeamMember}
@@ -141,10 +141,9 @@ const UserTeamsTable = props => {
       />
       <div style={{ display: 'flex', flexDirection: 'column' }}>
         {props.canEditVisibility && (
-          <div className="row">
+          <>
             <Col
-              md="7"
-              xs="12"
+              md="12"
               style={{
                 backgroundColor: darkMode ? '#1C2541' : '#e9ecef',
                 border: '1px solid #ced4da',
@@ -154,25 +153,17 @@ const UserTeamsTable = props => {
               <span className="teams-span">Visibility</span>
             </Col>
             <Col
-              md="5"
-              xs="12"
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                backgroundColor: darkMode ? '#1C2541' : '#ffffff',
-                border: darkMode ? '0px' : '1px solid #ced4da',
-                marginBottom: '10px',
-              }}
+              md="12"
+              style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}
             >
               <ToggleSwitch
-
                 switchType="visible"
                 state={props.isVisible}
                 handleUserProfile={props.onUserVisibilitySwitch}
                 darkMode={darkMode}
               />
             </Col>
-          </div>
+          </>
         )}
         <div className="row">
           <Col
@@ -216,23 +207,19 @@ const UserTeamsTable = props => {
           <Col md="12" style={{ padding: '0' }}>
             {canAssignTeamToUsers ? (
               props.disabled ? (
-
-                <Button id="teamCodeAssign" className="btn-addteam" color="primary" style={boxStyle} disabled>
+                <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
                   Assign Team
                 </Button>
               ) : (
-                <>
-                  <Button
-                    id="teamCodeAssign"
-                    className="btn-addteam"
-                    color="primary"
-                    onClick={() => {
-                      props.onButtonClick();
-                    }}
-                  >
-                    Assign Team
-                  </Button>
-                </>
+                <Button
+                  className="btn-addteam"
+                  color="primary"
+                  onClick={() => {
+                    props.onButtonClick();
+                  }}
+                >
+                  Assign Team
+                </Button>
               )
             ) : (
               <></>

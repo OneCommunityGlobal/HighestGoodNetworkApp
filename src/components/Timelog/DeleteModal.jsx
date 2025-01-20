@@ -6,7 +6,7 @@ import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
 import { deleteTimeEntry } from '../../actions/timeEntries';
 import {toast} from 'react-toastify';
 
-const DeleteModal = ({ timeEntry, projectCategory, taskClassification,userProfile }) => {
+const DeleteModal = ({ timeEntry }) => {
   const [isOpen, setOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();

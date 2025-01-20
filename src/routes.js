@@ -27,8 +27,6 @@ import ForgotPassword from './components/Login/ForgotPassword';
 import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
-import NotFoundPage from './components/NotFound/NotFoundPage';
-import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // BM Dashboard
@@ -42,19 +40,6 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
-
-
-// Community Portal
-import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
-import CPLogin from './components/CommunityPortal/Login';
-import CPDashboard from './components/CommunityPortal';
-import ActivityList from './components/CommunityPortal/Activities/ActivityList';
-// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
-// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-
-
-
-
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 
@@ -117,8 +102,6 @@ export default (
       {/* Comment out the Header component and its import during phase 2 development. */}
       <Header />
       {/* Uncomment BMHeader and its import during phase 2 development. */}
-
-
       {/* <BMHeader /> */}
       <AutoUpdate />
       <ToastContainer />
@@ -127,9 +110,9 @@ export default (
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render={(props) => {
-          const { userId } = props.match.params;
-          return <Timelog userId={userId} />
+        <ProtectedRoute path="/timelog/:userId" exact render ={(props) => {
+           const {userId} = props.match.params;
+            return <Timelog userId ={userId}/>
         }} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
@@ -260,13 +243,6 @@ export default (
           component={Announcements}
           routePermissions={RoutePermissions.announcements}
         />
-        <ProtectedRoute
-          path="/sendemail"
-          exact
-          component={EmailSender}
-          allowedRoles={[UserRole.Administrator, UserRole.Owner]}
-          routePermissions={RoutePermissions.projects}
-        />
 
         <ProtectedRoute
           path="/totalorgsummary"
@@ -357,16 +333,9 @@ export default (
           component={InventoryTypesList}
         />
 
-
-        {/* Community Portal Routes */}
-        <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
-        <Route path="/communityportal/login" component={CPLogin} />
-        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
-        {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
-
-
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
-        {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
+        <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
+
         {/* ----- END BM Dashboard Routing ----- */}
 
         <Route path="/login" component={Login} />
@@ -382,7 +351,6 @@ export default (
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
-        <Route path="*" component={NotFoundPage} />
       </Switch>
     </>
   </Switch>
