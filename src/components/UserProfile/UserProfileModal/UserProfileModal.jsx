@@ -565,8 +565,8 @@ const UserProfileModal = props => {
                   placement="top"
                   delay={{ show: 100, hide: 100 }}
                   overlay={
-                    <Popover id="popover-basic" className="popover__title">
-                      <Popover.Title as="h4">
+                    <Popover>
+                      <Popover.Title as="h4" className="popover__title">
                         Removes Blue Square for both Not Enough Hours and No Summary
                       </Popover.Title>
                       <Popover.Content>
