@@ -25,7 +25,6 @@ const UserTableData = React.memo(props => {
   const [tooltipDeleteOpen, setTooltipDelete] = useState(false);
   const [tooltipPauseOpen, setTooltipPause] = useState(false);
   const [tooltipFinalDayOpen, setTooltipFinalDay] = useState(false);
-
   const [isChanging, onReset] = useState(false);
   const canAddDeleteEditOwners = props.hasPermission('addDeleteEditOwners');
   const [formData, updateFormData] = useState({
@@ -37,6 +36,7 @@ const UserTableData = React.memo(props => {
     weeklycommittedHours: props.user.weeklycommittedHours,
     startDate: formatDate(props.user.startDate),
     endDate: formatDate(props.user.endDate),
+    jobTitle: props.user.jobTitle,
   });
   const dispatch = useDispatch();
   const { roles } = useSelector(state => state.role);
@@ -81,6 +81,7 @@ const UserTableData = React.memo(props => {
       weeklycommittedHours: props.user.weeklycommittedHours,
       startDate: formatDateYYYYMMDD(props.user.startDate),
       endDate: formatDateYYYYMMDD(props.user.endDate),
+      jobTitle: props.user.jobTitle,
     });
   }, [props.user]);
 
@@ -98,7 +99,6 @@ const UserTableData = React.memo(props => {
       cantUpdateDevAdminDetails(recordEmail, loginUserEmail)
     );
   };
-
   const isCurrentUser = props.user.email === props.authEmail;
 
   const getButtonText = () => {
@@ -110,7 +110,6 @@ const UserTableData = React.memo(props => {
     }
     return RESUME;
   };
-
   return (
     <tr
       className={`usermanagement__tr ${darkMode ? 'bg-yinmn-blue' : ''}`}
@@ -200,7 +199,6 @@ const UserTableData = React.memo(props => {
           </select>
         )}
       </td>
-
       <td className="email_cell">
         {editUser?.email ? (
           <div>
@@ -238,6 +236,22 @@ const UserTableData = React.memo(props => {
               updateFormData({ ...formData, weeklycommittedHours: e.target.value });
               addUserInformation('weeklycommittedHours', e.target.value, props.user._id);
             }}
+          />
+        )}
+      </td>
+      <td className="email_cell">
+        {editUser?.jobTitle ? (
+          <div>{formData.jobTitle ? formData.jobTitle : ''}</div>
+        ) : (
+          <input
+            type="text"
+            className="edituser_input_jobTitle"
+            value={formData.jobTitle}
+            onChange={e => {
+              updateFormData({ ...formData, jobTitle: e.target.value });
+              addUserInformation('jobTitle', e.target.value, props.user._id);
+            }}
+            placeholder="Enter Job Title"
           />
         )}
       </td>
