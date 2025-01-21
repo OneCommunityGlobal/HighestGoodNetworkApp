@@ -4,7 +4,7 @@
  * Display member of the members list
  ********************************************************************************/
 import React, { useState } from 'react';
-import { connect, useSelector } from 'react-redux';
+import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';

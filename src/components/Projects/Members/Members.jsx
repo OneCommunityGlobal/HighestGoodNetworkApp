@@ -201,7 +201,7 @@ const Members = props => {
                   <th scope="col" id="members__name">
                     Name
                   </th>
-                  <th scope="col" id="members__name"></th>
+                  <th scope="col" id="members__delete"></th>
                   {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
                 </tr>
               </thead>
