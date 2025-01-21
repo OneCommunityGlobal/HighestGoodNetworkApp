@@ -29,6 +29,9 @@ import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import Collaboration from './components/Collaboration';
 
+// LB Dashboard
+import LBRegister from './components/LBDashboard/Register/Register';
+
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -335,9 +338,10 @@ export default (
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
-
         {/* ----- END BM Dashboard Routing ----- */}
-
+        {/* ----- BEGIN LB Dashboard Routing ----- */}
+        <Route path="/lbdashboard/register" component={LBRegister} />
+        {/* ----- END LB Dashboard Routing ----- */}
         <Route path="/login" component={Login} />
         <Route path="/forgotpassword" component={ForgotPassword} />
         <Route path="/email-subscribe" component={EmailSubscribeForm} />
