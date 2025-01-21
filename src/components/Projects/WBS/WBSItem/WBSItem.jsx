@@ -38,7 +38,6 @@ const WBSItem = ({ darkMode, index, name, wbsId, projectId, getPopupById, delete
           <div>{index}</div>
         </th>
         <td className="members__name">
-        mrinalini-fix-timer
           <Link to={`/wbs/tasks/${props.wbsId}/${props.projectId}/${props.name}`} className={darkMode ? 'text-azure' : ''}>{props.name}</Link>
         </td>
         {canDeleteWBS ? (
