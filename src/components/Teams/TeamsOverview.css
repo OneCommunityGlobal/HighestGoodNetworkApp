@@ -1,3 +1,81 @@
+/* Default full size layout (applies to all screen sizes by default) */
+.teams__overview--top {
+  display: flex;
+  gap: 10px;
+  background-color: transparent;
+}
+
+.teams__overview--top .card {
+  flex: 1;
+  background-color: white;
+  box-shadow: none;
+  border: none;
+}
+
+/* General table layout */
+.table-container {
+  width: 100%;
+  overflow: hidden; /* Stops horizontal scrolling on the table */
+  padding-left: 5px;
+  padding-right: 5px;
+  box-sizing: border-box;
+}
+
+.table {
+  width: 100%;
+  margin: 0 auto;
+  border-collapse: collapse;
+  table-layout: auto; /* Allows more flexibility in layout */
+}
+
+.table th, .table td {
+  padding: 10px;
+  font-size: 14px;
+  white-space: normal; /* Allows wrapping within each cell */
+  word-break: break-word; /* Breaks long text to fit within cells */
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Set width percentages to control column sizes */
+.table th:nth-child(1), .table td:nth-child(1) {
+  width: 5%; /* Adjust first column width */
+  white-space: nowrap; /* Prevent stacking/wrapping of numbers */
+  text-align: center; 
+}
+
+
+.table th:nth-child(2):not(.def-width),
+.table td:nth-child(2):not(.def-width) {
+  width: 40%;
+  /* Adjust team name column to take up more space */
+}
+
+.table th:nth-child(3):not(.def-width),
+.table td:nth-child(3):not(.def-width) {
+  width: 15%;
+  /* Adjust Active column width */
+}
+
+.table th:nth-child(4), .table td:nth-child(4) {
+  width: 20%; /* Adjust Members column width */
+}
+
+/* Buttons should stay aligned horizontally */
+.usermanagement-actions-cell {
+  white-space: nowrap; /* Prevent line breaks in the buttons' container */
+}
+
+.usermanagement-actions-cell .btn-group {
+  display: flex;
+  gap: 5px; /* Add space between buttons */
+}
+
+.usermanagement-actions-cell .btn {
+  padding: 5px 8px; /* Adjust padding for better fit */
+}
+
+/* Cards styling */
 .card#card_team {
     display: flex;
     justify-content: center;
