@@ -15,7 +15,6 @@ import {
 import WarningIcons from '../WarningIcons';
 import getOrdinal from '../../../utils/getOrdinal';
 import '../Warnings.css';
-import { useState } from 'react';
 
 function WarningModal({
   setToggleModal,

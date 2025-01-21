@@ -578,6 +578,7 @@ const UserProfileModal = props => {
                   <Button
                     color="warning"
                     name="both"
+                    disabled={specialWarnings.some(warn => warn.warnings.length < 1)}
                     onClick={e => {
                       handleToggleLogWarning('both');
                     }}
