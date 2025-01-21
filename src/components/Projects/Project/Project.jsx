@@ -6,11 +6,10 @@ import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import { toast } from 'react-toastify';  
+import { toast } from 'react-toastify';
 
 const Project = props => {
   const { darkMode, index } = props;
-  const [firstLoad, setFirstLoad] = useState(true);
   const [projectData, setProjectData] = useState(props.projectData);
   const { projectName, isActive, _id: projectId } = projectData;
   const [displayName, setDisplayName] = useState(projectName);
@@ -24,10 +23,17 @@ const Project = props => {
 
 
   const updateProject = (key, value) => {
-    setProjectData({
+    const updatedData = {
       ...projectData,
       [key]: value,
-    });
+    };
+    props.onUpdateProject(updatedData)
+      .then(() => {
+        setProjectData(updatedData);
+      })
+      .catch((error) => {
+        console.error('Error updating project data:', error);
+      });
   };
 
   const onDisplayNameChange = (e) => {
@@ -40,11 +46,11 @@ const Project = props => {
       setDisplayName(displayName);
     } else if (displayName !== projectName) {
       updateProject('projectName', displayName);
-    } 
+    }
   };
 
   const onUpdateProjectActive = () => {
-    updateProject('isActive', !isActive);
+    updateProject('isActive', !props.projectData.isActive);
   }
 
   const onUpdateProjectCategory = (e) => {
@@ -55,17 +61,13 @@ const Project = props => {
   const onArchiveProject = () => {
     props.onClickArchiveBtn(projectData);
   }
-  
+
+
+  //Bad Code: Sync the local state with global state (local state should not be when using redux)
   useEffect(() => {
-    if (firstLoad) {
-      setFirstLoad(false);
-    } else {
-      props.onUpdateProject(projectData)
-    }
-    if (props.projectData.category) {
-      setCategory(props.projectData.category);
-    }
-  }, [projectData]);
+    setProjectData(props.projectData);
+  }, [props.projectData]);
+
 
   return (
     <tr className="projects__tr" id={'tr_' + props.projectId}>
@@ -119,8 +121,8 @@ const Project = props => {
       </td>
       {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
         {props.active ? ( */}
-          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
-              {isActive ? (
+      <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
+        {projectData.isActive ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
           </div>
