@@ -3,15 +3,15 @@
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
 
-.close-button {
+close-button {
   position: absolute;
   top: 0;
   left: 0;
-  padding: 12px;
+  padding: 12px; /* Add some padding for easier clicking */
 }
 
 .card-content {
-  padding: 5px;
+  padding: 5px; /* Add padding around the card content */
   padding-left: 40px;
   padding-right: 40px;
   white-space: pre-line;
