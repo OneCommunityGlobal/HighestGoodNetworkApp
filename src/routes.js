@@ -335,7 +335,6 @@ export default (
         />
         <BMProtectedRoute path="/bmdashboard/AddNewTeam" fallback component={CreateNewTeam} />
 
-
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} />
 
