@@ -84,4 +84,102 @@ describe('User Profile Actions', () => {
         payload: mockTasks,
       });
     });
+
+    it('should handle non-200 response', async () => {
+      const userId = '123';
+      axios.get.mockResolvedValueOnce({ status: 400, statusText: 'Bad Request' });
+
+      const action = actions.getUserTasks(userId);
+      await action(dispatch);
+
+      expect(dispatch).not.toHaveBeenCalled();
+    });
+
+    it('should handle error', async () => {
+      const userId = '123';
+      const error = new Error('Network error');
+      axios.get.mockRejectedValueOnce(error);
+
+      const action = actions.getUserTasks(userId);
+      await action(dispatch);
+
+      expect(dispatch).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('updateUserProfile', () => {
+    it('should update user profile successfully', async () => {
+      const userProfile = { _id: '123', name: 'John Doe' };
+      axios.put.mockResolvedValueOnce({ status: 200 });
+
+      const action = actions.updateUserProfile(userProfile);
+      const result = await action(dispatch);
+
+      expect(axios.put).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE(userProfile._id), userProfile);
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_USER_PROFILE,
+        payload: userProfile,
+      });
+      expect(result).toBe(200);
+    });
+  });
+
+  describe('updateUserProfileProperty', () => {
+    it('should update user profile property successfully', async () => {
+      const userProfile = { _id: '123', name: 'John Doe' };
+      const key = 'name';
+      const value = 'Jane Doe';
+      axios.patch.mockResolvedValueOnce({ status: 200 });
+
+      const action = actions.updateUserProfileProperty(userProfile, key, value);
+      const result = await action(dispatch);
+
+      expect(axios.patch).toHaveBeenCalledWith(ENDPOINTS.USER_PROFILE_PROPERTY(userProfile._id), {
+        key,
+        value,
+      });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_USER_PROFILE,
+        payload: userProfile,
+      });
+      expect(result).toBe(200);
+    });
+  });
+
+  describe('getProjectsByUsersName', () => {
+    it('should fetch and dispatch projects successfully', async () => {
+      const searchName = 'John';
+      const mockProjects = { allProjects: [{ id: 1, name: 'Project 1' }] };
+      axios.get.mockResolvedValueOnce({ data: mockProjects });
+
+      const action = actions.getProjectsByUsersName(searchName);
+      const result = await action(dispatch);
+
+      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.GET_PROJECT_BY_PERSON(searchName));
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_PROJECT_BY_USER_NAME,
+        payload: mockProjects,
+      });
+      expect(result).toEqual(mockProjects.allProjects);
+    });
+
+    it('should handle error and show toast', async () => {
+      const searchName = 'John';
+      const error = new Error('User not found');
+      axios.get.mockRejectedValueOnce(error);
+
+      const action = actions.getProjectsByUsersName(searchName);
+      await action(dispatch);
+
+      expect(dispatch).toHaveBeenCalledWith({
+        type: USER_NOT_FOUND_ERROR,
+        payload: error.message,
+      });
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_PROJECT_BY_USER_NAME,
+        payload: [],
+      });
+      expect(toast.error).toHaveBeenCalledWith('Could not find user or project, please try again');
+    });
+  });
 });
