@@ -185,7 +185,7 @@ class UserProfileAdd extends Component {
               <Form>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor} >Name <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>Name</Label>
                   </Col>
                   <Col md="3">
                     <FormGroup>
@@ -196,13 +196,9 @@ class UserProfileAdd extends Component {
                         value={firstName}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="First Name"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.firstName)}
+                        invalid={!!this.state.formErrors.firstName}
                       />
-                       {this.state.formSubmitted && this.state.formErrors.firstName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.firstName}
-    </FormFeedback>
-  )}
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.firstName}</FormFeedback>
                     </FormGroup>
                   </Col>
                   <Col md="3">
@@ -214,19 +210,15 @@ class UserProfileAdd extends Component {
                         value={lastName}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Last Name"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.lastName)}
+                        invalid={!!this.state.formErrors.lastName}
                       />
-                      {this.state.formSubmitted && this.state.formErrors.lastName && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.lastName}
-    </FormFeedback>
-  )}
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.lastName}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 3, offset: 1 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Job Title <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>Job Title</Label>
                   </Col>
                   <Col md={{ size: 6 }}>
                     <FormGroup>
@@ -237,18 +229,15 @@ class UserProfileAdd extends Component {
                         value={jobTitle}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Job Title"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.jobTitle)}
+                        invalid={!!this.state.formErrors.jobTitle}
                       />
-                      {this.state.formSubmitted && this.state.formErrors.jobTitle && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.jobTitle}
-    </FormFeedback>)}
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.jobTitle}</FormFeedback>
                     </FormGroup>
                   </Col>
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Email <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>Email</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -259,12 +248,9 @@ class UserProfileAdd extends Component {
                         value={email}
                         onChange={(e) => this.handleUserProfile(e)}
                         placeholder="Email"
-                        invalid={!!(this.state.formSubmitted && this.state.formErrors.email)}
+                        invalid={!!this.state.formErrors.email}
                       />
-                      {this.state.formSubmitted && this.state.formErrors.email && (
-    <FormFeedback className={fontWeight}>
-      {this.state.formErrors.email}
-    </FormFeedback>)}
+                      <FormFeedback className={fontWeight}>{this.state.formErrors.email}</FormFeedback>
                       <ToggleSwitch
                         switchType="email"
                         state={this.state.userProfile.privacySettings?.email}
@@ -275,7 +261,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 2, offset: 2 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Phone <span style={{ color: 'red' }}>*</span> </Label>
+                    <Label className={fontColor}>Phone</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>
@@ -286,7 +272,7 @@ class UserProfileAdd extends Component {
                         value={phoneNumber}
                         onChange={phone => this.phoneChange(phone)}
                       />
-                      {phoneNumberEntered && this.state.formSubmitted && (
+                      {phoneNumberEntered && (
                         <div className={`required-user-field ${fontWeight}`}>
                           {this.state.formErrors.phoneNumber}
                         </div>
@@ -301,7 +287,7 @@ class UserProfileAdd extends Component {
                 </Row>
                 <Row className="user-add-row">
                   <Col md={{ size: 4 }} className="text-md-right my-2">
-                    <Label className={fontColor}>Weekly Committed Hours <span style={{ color: 'red' }}>*</span></Label>
+                    <Label className={fontColor}>Weekly Committed Hours</Label>
                   </Col>
                   <Col md="6">
                     <FormGroup>

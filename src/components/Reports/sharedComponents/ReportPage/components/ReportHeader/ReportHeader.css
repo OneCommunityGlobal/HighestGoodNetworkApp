@@ -1,5 +1,5 @@
 .report-header {
-  min-height: 25vh;
+  min-height: 35vh;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -17,6 +17,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
+
   background: #a780d9;
   border: 3px solid #e5daf0;
 }

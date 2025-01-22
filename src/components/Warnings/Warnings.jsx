@@ -6,7 +6,6 @@ import {
   postWarningByUserId,
   deleteWarningsById,
 } from '../../actions/warnings';
-import WarningTrackerModal from './modals/WarningTrackerModal';
 
 import WarningItem from './WarningItem';
 import './Warnings.css';
@@ -16,15 +15,16 @@ import './Warnings.css';
 // Log Time to Action Items (“i” = ,ltayg = Reminder to please log your time as you go. At a minimum, please log daily any time you work.)
 // Intangible Time Log w/o Reason (“i” = ,itlr = The timer should be used for all time logged, so any time logged as intangible must also include in the time log description an explanation for why you didn’t use the timer.
 
-export default function Warning({ personId, username, userRole, displayUser }) {
+export default function Warning({ personId, username, userRole }) {
   const dispatch = useDispatch();
+
   const [usersWarnings, setUsersWarnings] = useState([]);
 
-  const [toggleWarningTrackerModal, setToggleWarningTrackerModal] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchUsersWarningsById = async () => {
+  const handleToggle = () => {
+    setToggle(prev => !prev);
     dispatch(getWarningsByUserId(personId)).then(res => {
       if (res.error) {
         setError(res);
@@ -33,11 +33,6 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       }
       setUsersWarnings(res);
     });
-  };
-
-  const handleToggle = () => {
-    setToggle(prev => !prev);
-    fetchUsersWarningsById();
   };
 
   const handleDeleteWarning = async warningId => {
@@ -50,27 +45,18 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       setUsersWarnings(res);
     });
   };
-
   const handlePostWarningDetails = async ({
     id,
     colorAssigned: color,
     todaysDate: dateAssigned,
     warningText,
   }) => {
-    const { firstName, lastName, email } = displayUser;
-    const monitorData = {
-      firstName,
-      lastName,
-      email,
-    };
-
     const data = {
       userId: personId,
       iconId: id,
       color,
       date: dateAssigned,
       description: warningText,
-      monitorData,
     };
 
     dispatch(postWarningByUserId(data)).then(res => {
@@ -100,34 +86,9 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   return (
     (userRole === 'Administrator' || userRole === 'Owner') && (
       <div className="warnings-container">
-        <div className="button__container">
-          <Button
-            className="btn btn-warning warning-btn tracking__btn"
-            size="sm"
-            onClick={handleToggle}
-          >
-            {toggle ? 'Hide' : 'Tracking'}
-          </Button>
-
-          {userRole === 'Owner' && (
-            <Button
-              className="btn"
-              size="sm"
-              onClick={() => setToggleWarningTrackerModal(prev => !prev)}
-            >
-              +/-
-            </Button>
-          )}
-        </div>
-
-        {toggleWarningTrackerModal && (
-          <WarningTrackerModal
-            toggleWarningTrackerModal={toggleWarningTrackerModal}
-            personId={personId}
-            setToggleWarningTrackerModal={setToggleWarningTrackerModal}
-            getUsersWarnings={fetchUsersWarningsById}
-          />
-        )}
+        <Button className="btn btn-warning warning-btn ml-auto" size="sm" onClick={handleToggle}>
+          {toggle ? 'Hide' : 'Tracking'}
+        </Button>
 
         <div className="warning-wrapper"> {warnings}</div>
         <div className="error-container">

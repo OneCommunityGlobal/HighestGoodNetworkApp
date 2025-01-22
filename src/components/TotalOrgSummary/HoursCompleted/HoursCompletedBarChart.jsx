@@ -40,13 +40,10 @@ export default function HoursCompletedBarChart({ data, darkMode }) {
   }
 
   const { taskHours, projectHours, lastTaskHours, lastProjectHours } = data;
-  // const taskPercentage = parseFloat(taskHours) / (parseFloat(taskHours) + parseFloat(projectHours));
-  // const taskChangePercentage = parseFloat(taskHours - lastTaskHours) / parseFloat(lastTaskHours);
-  // const projectChangePercentage =
-  //   parseFloat(projectHours - lastProjectHours) / parseFloat(lastProjectHours);
-  const taskPercentage = taskHours / (taskHours + projectHours);
-  const taskChangePercentage = (taskHours - lastTaskHours) / lastTaskHours;
-  const projectChangePercentage = (projectHours - lastProjectHours) / lastProjectHours;
+  const taskPercentage = parseFloat(taskHours) / (parseFloat(taskHours) + parseFloat(projectHours));
+  const taskChangePercentage = parseFloat(taskHours - lastTaskHours) / parseFloat(lastTaskHours);
+  const projectChangePercentage =
+    parseFloat(projectHours - lastProjectHours) / parseFloat(lastProjectHours);
   const stats = [
     { name: 'Task', amount: taskHours, percentage: taskPercentage, change: taskChangePercentage },
     {

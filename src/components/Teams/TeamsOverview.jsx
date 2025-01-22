@@ -1,6 +1,6 @@
 import React from 'react';
 import { TOTAL_TEAMS, ACTIVE_TEAMS } from '../../languages/en/ui';
-import './TeamsOverview.css';
+import "./TeamsOverview.css"
 
 const TeamsOverview = ({ numberOfTeams, numberOfActiveTeams }) => {
   return (

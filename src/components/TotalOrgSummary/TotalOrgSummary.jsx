@@ -20,13 +20,15 @@ import './TotalOrgSummary.css';
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
+import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
+import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
+import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
+import TeamStats from './TeamStats/TeamStats';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
-import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
-import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
-import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -102,12 +104,13 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
-  const { darkMode, loading, error, allUserProfiles, volunteerOverview } = props;
-
+  const { darkMode, loading, error, allUserProfiles } = props;
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
   const [taskProjectHours, setTaskProjectHours] = useState([]);
+  const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
+  const [volunteerStats, setVolunteerStats] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -163,18 +166,10 @@ function TotalOrgSummary(props) {
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
   useEffect(() => {
     async function fetchData() {
-      // const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
-      // const {
-      //   taskHours: lastTaskHours,
-      //   projectHours: lastProjectHours,
-      // } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
+      const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
       const {
-        taskHours: { count: taskHours },
-        projectHours: { count: projectHours },
-      } = await props.getTaskAndProjectStats(fromDate, toDate);
-      const {
-        taskHours: { count: lastTaskHours },
-        projectHours: { count: lastProjectHours },
+        taskHours: lastTaskHours,
+        projectHours: lastProjectHours,
       } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
 
       if (taskHours && projectHours) {
@@ -190,11 +185,20 @@ function TotalOrgSummary(props) {
   }, [fromDate, toDate, fromOverDate, toOverDate]);
 
   useEffect(() => {
-    props.getTotalOrgSummary(fromDate, toDate);
-    props.hasPermission('');
+    const fetchVolunteerStats = async () => {
+      try {
+        const volunteerStatsResponse = await props.getTotalOrgSummary(fromDate, toDate);
+        setVolunteerStats(volunteerStatsResponse.data);
+        await props.hasPermission('');
+      } catch (catchFetchError) {
+        setIsVolunteerFetchingError(true);
+      }
+    };
+
+    fetchVolunteerStats();
   }, [fromDate, toDate]);
 
-  if (error) {
+  if (error || isVolunteerFetchingError) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Row
@@ -221,6 +225,7 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
+
   return (
     <Container
       fluid
@@ -238,7 +243,10 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerStatus
+                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                totalHoursWorked={volunteerStats?.totalHoursWorked}
+              />
             </div>
           </Col>
         </Row>
@@ -247,7 +255,13 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerActivities
+                totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+                completedAssignedHours={volunteerStats?.completedAssignedHours}
+                totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+                tasksStats={volunteerStats?.tasksStats}
+                totalActiveTeams={volunteerStats?.totalActiveTeams}
+              />
             </div>
           </Col>
         </Row>
@@ -261,7 +275,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <VolunteerStatusChart volunteerNumberStats={volunteerStats?.volunteerNumberStats} />
             </div>
           </Col>
         </Row>
@@ -315,19 +329,12 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <h4 className="text-center">Volunteer Trends by time</h4>
-              <span className="text-center"> Work in progres...</span>
+              <VolunteerHoursDistribution />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <AnniversaryCelebrated
-                fromDate={fromDate}
-                toDate={toDate}
-                fromOverDate={fromOverDate}
-                toOverDate={toOverDate}
-                darkMode={darkMode}
-              />
+              <VolunteerHoursDistribution />
             </div>
           </Col>
         </Row>
@@ -336,22 +343,40 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <div className="role-distribution-title">
-                <p>Work Distribution</p>
-              </div>
-              <WorkDistributionBarChart
-                workDistributionStats={volunteerOverview?.workDistributionStats}
-              />
+              <VolunteerHoursDistribution />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <div className="role-distribution-title">
-                <p>Role Distribution</p>
-              </div>
-              <RoleDistributionPieChart
-                roleDistributionStats={volunteerOverview?.roleDistributionStats}
-              />
+              <VolunteerHoursDistribution />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <TeamStats usersInTeamStats={volunteerStats?.usersInTeamStats} />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <BlueSquareStats blueSquareStats={volunteerStats?.blueSquareStats} />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <TeamStats usersInTeamStats={volunteerStats?.usersInTeamStats} />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <BlueSquareStats blueSquareStats={volunteerStats?.blueSquareStats} />
             </div>
           </Col>
         </Row>
@@ -363,7 +388,7 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  volunteerOverview: state.totalOrgSummary.volunteerOverview,
+  totalOrgSummary: state.totalOrgSummary,
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
@@ -371,7 +396,7 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTotalOrgSummary: (startDate, endDate) => dispatch(getTotalOrgSummary(startDate, endDate)),
+  getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
