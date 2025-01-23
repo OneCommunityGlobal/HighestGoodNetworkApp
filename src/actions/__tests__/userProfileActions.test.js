@@ -13,7 +13,6 @@ import {
   GET_USER_AUTOCOMPLETE,
 } from '../../constants/userProfile';
 
-// Mock axios and toast
 jest.mock('axios');
 jest.mock('react-toastify', () => ({
   toast: {
@@ -21,7 +20,6 @@ jest.mock('react-toastify', () => ({
   },
 }));
 
-// Mock ENDPOINTS
 jest.mock('../../utils/URL', () => ({
   ENDPOINTS: {
     USER_PROFILE: jest.fn(id => `/api/users/${id}`),
