@@ -2,120 +2,135 @@
     padding: 50px;
     justify-content: center;
     text-align: center;
-
 }
 
-.title-member{
-    color:#f49441;
-}
-
-.input-name, .role-input, .team-input {
-    width: 230px;
+.title-member {
+    color: #f49441;
 }
 
 .container {
     background-color: white;
-    border-radius:10%;
-    padding-bottom:50px;
+    border-radius: 10%;
+    padding-bottom: 50px;
 }
 
+/* Name Section */
 .name-container {
     display: flex;
     gap: 40px;
     justify-content: center;
+    margin: 20px auto;
+    width: 500px;
 }
 
-.name-container label {
-    display: block;
-}
-
-.name-container-p {
+.input-name {
     display: flex;
-    justify-content: center;
-    text-align: center;
-}
-
-.role-input {
-    display:flex;
     flex-direction: column;
+    width: 230px;
 }
 
-.name-container input,
-.role-input input,
-.team-input input,
-#role-options,
-#team-options {
-    width: 200px;
-    margin: 0;
+.input-name input {
+    width: 100%;
     padding: 10px;
+    box-sizing: border-box;
+    height: 38px;
 }
 
-.role-container,
-.team-container {
-    display: flex;
-    justify-content: center;
-    gap: 40px; 
-    padding-top: 20px;
-}
-
-
-.team-input {
-    display:flex;
-    flex-direction: column;
-    gap: 5px;
-}
-
-.name-container label,
-.role-input label,
-.team-input label,
-.role-input p,
-.team-input p {
-    padding: 0;
+.input-name label {
     margin-bottom: 5px;
     text-align: left;
 }
 
+/* Role Section */
+.role-container {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    width: 500px;
+    margin: 20px auto;
+}
+
+.role-input {
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+}
+
+.role-input label {
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.role-input input,
+.role-input .css-b62m3t-container {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Team Section */
+.team-container {
+    display: flex;
+    gap: 40px;
+    justify-content: center;
+    width: 500px;
+    margin: 20px auto;
+}
+
+.team-input {
+    display: flex;
+    flex-direction: column;
+    width: 230px;
+}
+
+.team-input label {
+    margin-bottom: 5px;
+    text-align: left;
+}
+
+.team-input input,
+.team-input .css-b62m3t-container {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Contact Info Section */
 .contact-info {
     display: flex;
     flex-direction: column;
     gap: 15px;
     padding-top: 20px;
-    width: 460px;
+    width: 500px;
     margin: 0 auto;
-}
-
-.contact-info input {
-    width: calc(400px + 60px);
-    padding: 10px;
-    margin: 0 auto;
-    display: block;
-}
-
-.contact-info .input-group {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 10px;
 }
 
 .contact-info label {
-    width: 120px;
-    text-align: right;
+    margin-bottom: 5px;
+    text-align: left;
 }
 
 .contact-info input {
-    width: 460px;
+    width: 100%;
     padding: 10px;
+    box-sizing: border-box;
+    height: 38px;
 }
 
-.submit-cancel {
+.phone-input-group {
     display: flex;
-    padding: 60px 200px;
-    justify-content: center;
-    gap: 20px;
-    padding-top: 60px;
+    gap: 10px;
 }
 
+.country-code-select {
+    width: 150px;
+}
+
+/* Button Section */
+.submit-cancel {
+  display: flex;
+  justify-content: center;
+  gap: 20px;
+  padding-top: 60px;
+}
 
 .submit-button,
 .cancel-button {
@@ -123,45 +138,28 @@
     border-radius: 5px;
     font-size: 16px;
     cursor: pointer;
+    margin: 0px 50px;
 }
+
 .submit-button {
     background-color: #26505e;
     color: white;
+    border: none;
 }
 
 .cancel-button {
     background-color: white;
     border: 2px solid #26505e;
-    color:black;
+    color: black;
 }
 
-.phone-input-container {
-    display: flex;
-    align-items: center;
-    border: 1px solid #ccc;
-    border-radius: 5px;
-    padding: 5px;
-    width: 250px;
-    background-color: #f9f9f9;
-  }
+/* Error Styles */
+.error {
+    border-color: red;
+}
 
-  .country-code {
-    color: green;
-    font-weight: bold;
-    margin-right: 5px;
-  }
-
-  .phone-input {
-    border: none;
-    outline: none;
-    flex: 1;
-    font-size: 16px;
-    background: transparent;
-  }
-
-  .phone-input::placeholder {
-    color: #bbb;
-    font-style: italic;
-  }
-
-  
+.error-message {
+    color: red;
+    font-size: 12px;
+    margin-top: 5px;
+}

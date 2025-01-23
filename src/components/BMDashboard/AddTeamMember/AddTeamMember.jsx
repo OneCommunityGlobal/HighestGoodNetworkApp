@@ -2,6 +2,9 @@ import { useState } from 'react';
 import Select from 'react-select';
 import { MdOutlinePersonAddAlt1 } from 'react-icons/md';
 import './AddTeamMember.css';
+import { toast } from 'react-toastify';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL';
 
 function AddTeamMember() {
   const initialState = {
@@ -64,24 +67,74 @@ function AddTeamMember() {
     const errors = {};
     if (!formData.firstName.trim()) errors.firstName = 'First name is required';
     if (!formData.lastName.trim()) errors.lastName = 'Last name is required';
+    if (!formData.role) errors.role = 'Role selection is required';
+    if (!formData.team) errors.team = 'Team selection is required';
+    if (formData.role?.value === 'other' && !formData.roleSpecify.trim()) {
+      errors.roleSpecify = 'Please specify the role';
+    }
+    if (formData.team?.value === 'other' && !formData.teamSpecify.trim()) {
+      errors.teamSpecify = 'Please specify the team';
+    }
     if (!formData.email.trim()) {
       errors.email = 'Email is required';
-    } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      errors.email = 'Email is invalid';
+    } else {
+      const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+      if (!emailRegex.test(formData.email)) {
+        errors.email = 'Please enter a valid email address';
+      }
     }
     if (formData.phone && !/^\d{10}$/.test(formData.phone.replace(/\D/g, ''))) {
-      errors.phone = 'Invalid phone number format';
+      errors.phone = 'Please enter a valid 10-digit phone number';
     }
     return errors;
   };
 
-  const handleSubmit = () => {
+  const createTeamMember = async memberData => {
+    const response = await axios.post(ENDPOINTS.BM_EXTERNAL_TEAM, memberData, {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    return response.data;
+  };
+
+  const handleSubmit = async () => {
     const errors = validateForm();
-    setFormData(prev => ({
-      ...prev,
-      errors,
-    }));
-    // console.log('Form submitted:', formData);
+    if (Object.keys(errors).length > 0) {
+      setFormData(prev => ({
+        ...prev,
+        errors,
+      }));
+      return;
+    }
+
+    try {
+      const memberData = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        role: formData.role?.value === 'other' ? formData.roleSpecify : formData.role?.value,
+        roleSpecify: formData.roleSpecify,
+        team:
+          formData.team?.value === 'other'
+            ? 'External Team - Non-volunteers'
+            : formData.team?.value,
+        teamSpecify: formData.teamSpecify,
+        email: formData.email,
+        countryCode: formData.countryCode,
+        phone: formData.phone.replace(/\D/g, ''),
+      };
+
+      const response = await createTeamMember(memberData);
+
+      if (response.success) {
+        setFormData(initialState);
+        /* eslint-disable-next-line no-console */
+        console.log('Form submitted:', memberData);
+        toast.success('Team member created successfully!');
+      }
+    } catch (error) {
+      toast.error('Failed to create team member. Please try again.');
+    }
   };
 
   return (
@@ -131,19 +184,23 @@ function AddTeamMember() {
             options={optionsRole}
             value={formData.role}
             onChange={option => handleSelectChange(option, 'role')}
+            className={formData.errors.role ? 'error' : ''}
           />
+          {formData.errors.role && <span className="error-message">{formData.errors.role}</span>}
         </div>
-        {formData.role?.value === 'other' && (
-          <div className="role-input">
-            <label>Specify Role</label>
-            <input
-              name="roleSpecify"
-              type="text"
-              value={formData.roleSpecify}
-              onChange={handleInputChange}
-            />
-          </div>
-        )}
+        <div className="role-input">
+          <label>Specify Role</label>
+          <input
+            name="roleSpecify"
+            type="text"
+            value={formData.roleSpecify}
+            onChange={handleInputChange}
+            className={formData.errors.roleSpecify ? 'error' : ''}
+          />
+          {formData.errors.roleSpecify && (
+            <span className="error-message">{formData.errors.roleSpecify}</span>
+          )}
+        </div>
       </div>
 
       <div className="team-container">
@@ -154,19 +211,23 @@ function AddTeamMember() {
             options={optionsTeam}
             value={formData.team}
             onChange={option => handleSelectChange(option, 'team')}
+            className={formData.errors.team ? 'error' : ''}
           />
+          {formData.errors.team && <span className="error-message">{formData.errors.team}</span>}
         </div>
-        {formData.team?.value === 'other' && (
-          <div className="team-input">
-            <label>Specify Team</label>
-            <input
-              name="teamSpecify"
-              type="text"
-              value={formData.teamSpecify}
-              onChange={handleInputChange}
-            />
-          </div>
-        )}
+        <div className="team-input">
+          <label>Specify Team</label>
+          <input
+            name="teamSpecify"
+            type="text"
+            value={formData.teamSpecify}
+            onChange={handleInputChange}
+            className={formData.errors.teamSpecify ? 'error' : ''}
+          />
+          {formData.errors.teamSpecify && (
+            <span className="error-message">{formData.errors.teamSpecify}</span>
+          )}
+        </div>
       </div>
 
       <div className="contact-info">
@@ -177,7 +238,9 @@ function AddTeamMember() {
           name="email"
           value={formData.email}
           onChange={handleInputChange}
+          className={formData.errors.email ? 'error' : ''}
         />
+        {formData.errors.email && <span className="error-message">{formData.errors.email}</span>}
 
         <div className="phone-input-group">
           <Select
