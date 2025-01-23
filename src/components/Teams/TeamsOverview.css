@@ -45,7 +45,6 @@
 }
 
 
-<<<<<<< HEAD
 .table th:nth-child(2):not(.def-width),
 .table td:nth-child(2):not(.def-width) {
   width: 40%;
@@ -56,14 +55,6 @@
 .table td:nth-child(3):not(.def-width) {
   width: 15%;
   /* Adjust Active column width */
-=======
-.table th:nth-child(2), .table td:nth-child(2) {
-  width: 40%; /* Adjust team name column to take up more space */
-}
-
-.table th:nth-child(3), .table td:nth-child(3) {
-  width: 15%; /* Adjust Active column width */
->>>>>>> parent of 3563c06e2 (Merge pull request #2911 from OneCommunityGlobal/reina-view-lessons-dashboard)
 }
 
 .table th:nth-child(4), .table td:nth-child(4) {
@@ -85,21 +76,6 @@
 }
 
 /* Cards styling */
-<<<<<<< HEAD
-=======
-.card#card_team, .card#card_active {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  border-radius: 8px;
-  height: 40px;
-  width: 300px;
-  margin: 10px;
-  padding: 10px;
-}
-
->>>>>>> parent of 3563c06e2 (Merge pull request #2911 from OneCommunityGlobal/reina-view-lessons-dashboard)
 .card#card_team {
   background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
 }
