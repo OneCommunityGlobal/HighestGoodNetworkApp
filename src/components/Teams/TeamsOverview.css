@@ -45,6 +45,7 @@
 }
 
 
+<<<<<<< HEAD
 .table th:nth-child(2):not(.def-width),
 .table td:nth-child(2):not(.def-width) {
   width: 40%;
@@ -55,6 +56,14 @@
 .table td:nth-child(3):not(.def-width) {
   width: 15%;
   /* Adjust Active column width */
+=======
+.table th:nth-child(2), .table td:nth-child(2) {
+  width: 40%; /* Adjust team name column to take up more space */
+}
+
+.table th:nth-child(3), .table td:nth-child(3) {
+  width: 15%; /* Adjust Active column width */
+>>>>>>> parent of 3563c06e2 (Merge pull request #2911 from OneCommunityGlobal/reina-view-lessons-dashboard)
 }
 
 .table th:nth-child(4), .table td:nth-child(4) {
@@ -76,45 +85,230 @@
 }
 
 /* Cards styling */
+<<<<<<< HEAD
+=======
+.card#card_team, .card#card_active {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  border-radius: 8px;
+  height: 40px;
+  width: 300px;
+  margin: 10px;
+  padding: 10px;
+}
+
+>>>>>>> parent of 3563c06e2 (Merge pull request #2911 from OneCommunityGlobal/reina-view-lessons-dashboard)
 .card#card_team {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
-    border-radius: 8px;
-    height: 40px;
-    width: 300px;
-    margin-top: 10px;
-    padding: 10px;
-  }
-  
-  .card#card_active {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
-    border-radius: 8px;
-    height: 40px;
-    width: 300px;
-    margin: 10px;
-    padding: 10px;
+  background: linear-gradient(to bottom, #87CEEB, #1E90FF, #4169E1);
+}
+
+.card#card_active {
+  background: linear-gradient(to bottom, #FFD700, #FFA500, #FF8C00);
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.card-text {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.card-text i {
+  margin-right: 5px;
+}
+
+/* Media Queries */
+
+/* 800px and below */
+@media (max-width: 800px) {
+  .table-container {
+    padding-left: 5px;
+    padding-right: 5px;
   }
 
-  .card-body {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+  .table {
+    display: block;
+    width: 100%;
   }
 
-  .card-text {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+  .table th, .table td {
+    padding: 8px;
+    font-size: 13px;
+  }
+}
+
+/* 767px and below */
+@media (max-width: 767px) {
+  body {
+    overflow-x: hidden;
   }
 
-  .card-text i {
-    margin-right: 5px;
+  .table-container {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden; /* Avoid side scrolling */
   }
+
+  .table {
+    table-layout: auto;
+    width: 100%; /* Ensure table fits within viewport */
+    max-width: 100%;
+  }
+
+  .table th, .table td {
+    padding: 6px;
+    font-size: 12px;
+  }
+
+  .btn {
+    font-size: 10px;
+    padding: 4px 6px;
+  }
+
+  .usermanagement-actions-cell .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+}
+
+/* 575px and below */
+@media (max-width: 575px) {
+  .table th, .table td {
+    padding: 5px;
+    font-size: 11px;
+  }
+
+  .table-container {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden; /* Prevents scrolling within table container */
+  }
+
+  .btn {
+    font-size: 9px;
+    padding: 3px 5px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+}
+
+/* 479px and below */
+@media (max-width: 479px) {
+  .teams__overview--top .card {
+    flex: 1 1 45%;
+    margin: 5px 0;
+  }
+
+  .teams__overview--top {
+    justify-content: space-between;
+  }
+
+  .table th, .table td {
+    padding: 4px;
+    font-size: 10px;
+  }
+
+  .table-container {
+    width: 100%;
+    padding-left: 3px;
+    padding-right: 3px;
+    overflow: hidden;
+  }
+
+  .btn {
+    font-size: 8px;
+    padding: 2px 4px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+}
+
+/* 400px and below */
+@media (max-width: 400px) {
+  .table th, .table td {
+    padding: 2px;
+    font-size: 9px;
+  }
+
+  .table-container {
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+    overflow: hidden;
+  }
+
+  .btn {
+    font-size: 7px;
+    padding: 2px 4px;
+  }
+
+  .btn-group {
+    display: flex;
+    gap: 5px;
+  }
+}
+
+/* Ensure no overflow */
+.table-container {
+  overflow-x: hidden !important; /* Prevents horizontal scroll within table container */
+}
+
+.usermanagement-actions-cell {
+  white-space: nowrap;
+}
+
+.usermanagement-actions-cell .btn-group {
+  display: flex;
+  gap: 5px;
+}
+
+@media (max-width: 767px) {
+  .table, .table-container {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .teams__overview--top {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+@media (max-width: 575px) {
+  .teams__overview--top {
+    font-size: 9px; 
+  }
+}
+
+@media (max-width: 479px) {
+  .members-modal-table {
+    overflow-x: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .card#card_team, .card#card_active {
+    width: auto;
+    height: 30px;
+    font-size: 8px;
+  }
+}
+

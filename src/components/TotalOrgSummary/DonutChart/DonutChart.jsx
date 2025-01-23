@@ -1,4 +1,4 @@
-/** import PropTypes from 'prop-types';
+import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { Chart, ArcElement } from 'chart.js';
@@ -89,5 +89,3 @@ DonutChart.propTypes = {
 };
 
 export default DonutChart;
-
-*/

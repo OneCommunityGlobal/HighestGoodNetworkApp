@@ -244,7 +244,7 @@ describe('ProjectReport WBS link visibility', () => {
     const mockWBS = { _id: 'wbs123', wbsName: 'wbs name1' };
     const projectId = '123';
 
-    /** if (canViewWBS) {
+    if (canViewWBS) {
       screen.findByRole('link', { name: mockWBS.wbsName }).then(linkElement => {
         expect(linkElement).toBeInTheDocument();
         expect(linkElement).toHaveAttribute(
@@ -257,7 +257,7 @@ describe('ProjectReport WBS link visibility', () => {
         expect(divElement).toBeInTheDocument();
         expect(divElement.tagName).toBe('DIV');
       });
-    } */
+    }
   });
 
   it(`should not display WBS links when the user lacks required permissions`, async () => {
