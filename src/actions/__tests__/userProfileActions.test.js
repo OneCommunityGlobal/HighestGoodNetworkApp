@@ -182,4 +182,60 @@ describe('User Profile Actions', () => {
       expect(toast.error).toHaveBeenCalledWith('Could not find user or project, please try again');
     });
   });
+
+  describe('getUserByAutocomplete', () => {
+    it('should fetch and dispatch autocomplete suggestions successfully', async () => {
+      const searchText = 'John';
+      const mockSuggestions = [{ id: 1, name: 'John Doe' }];
+      axios.get.mockResolvedValueOnce({ data: mockSuggestions });
+
+      const action = actions.getUserByAutocomplete(searchText);
+      const result = await action(dispatch);
+
+      expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.USER_AUTOCOMPLETE(searchText));
+      expect(dispatch).toHaveBeenCalledWith({
+        type: GET_USER_AUTOCOMPLETE,
+        payload: mockSuggestions,
+      });
+      expect(result).toEqual(mockSuggestions);
+    });
+
+    it('should handle error and show toast', async () => {
+      const searchText = 'John';
+      const error = new Error('Network error');
+      axios.get.mockRejectedValueOnce(error);
+
+      const action = actions.getUserByAutocomplete(searchText);
+      const result = await action(dispatch);
+
+      expect(toast.error).toHaveBeenCalledWith('Error fetching autocomplete suggestions');
+      expect(result).toEqual([]);
+    });
+  });
+
+  describe('Action Creators', () => {
+    it('should create action for editing first name', () => {
+      const data = 'John';
+      expect(actions.editFirstName(data)(dispatch)).toBeUndefined();
+      expect(dispatch).toHaveBeenCalledWith({
+        type: EDIT_FIRST_NAME,
+        payload: data,
+      });
+    });
+
+    it('should create action for putting user profile', () => {
+      const data = { name: 'John Doe' };
+      expect(actions.putUserProfile(data)(dispatch)).toBeUndefined();
+      expect(dispatch).toHaveBeenCalledWith({
+        type: EDIT_USER_PROFILE,
+        payload: data,
+      });
+    });
+
+    it('should create action for clearing user profile', () => {
+      expect(actions.clearUserProfile()).toEqual({
+        type: CLEAR_USER_PROFILE,
+      });
+    });
+  });
 });
