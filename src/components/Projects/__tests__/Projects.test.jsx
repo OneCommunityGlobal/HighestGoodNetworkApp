@@ -201,16 +201,15 @@ describe("Projects component",()=>{
     const ascendingButton=container.querySelector('[id="Ascending"]')
     fireEvent.click(ascendingButton)
 
-    // Code related to "Archive" functionality is refactored into Project component and will be tested in Project.test.js 
-  //   const archiveButton=screen.getAllByText('Archive')[1]
-  //   fireEvent.click(archiveButton)
+    const archiveButton=screen.getAllByText('Archive')[1]
+    fireEvent.click(archiveButton)
     
-  //   expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
-  //   expect(screen.getByText(`Do you want to archive ${projects[0].projectName}?`)).toBeInTheDocument();
+    expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
+    expect(screen.getByText(`Do you want to archive ${projects[0].projectName}?`)).toBeInTheDocument();
 
-  //   const closeButton=screen.getByText('Close')
-  //   fireEvent.click(closeButton)
-  //   expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
+    const closeButton=screen.getByText('Close')
+    fireEvent.click(closeButton)
+    expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
   })
   
 })

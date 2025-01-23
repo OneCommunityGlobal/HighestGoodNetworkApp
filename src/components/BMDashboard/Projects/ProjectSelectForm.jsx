@@ -5,7 +5,7 @@ import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
 import ErrorAlert from '../ErrorAlert';
 
 function ProjectSelectForm() {
-  const projects = useSelector(state => state.bmProjects) || [];
+  const projects = useSelector(state => state.bmProjects);
   const history = useHistory();
   const [selectedProjectId, setSelectedProjectId] = useState('');
   const [error, setError] = useState(false);
@@ -33,7 +33,7 @@ function ProjectSelectForm() {
   };
 
   return (
-    <Form className="w-100 p-1 text-center">
+    <Form className="w-100 p-3  text-center">
       <Row className="ml-0 gx-5 w-75 mx-auto" md="2" sm="1" xs="1">
         <FormGroup>
           <Col className="p-3">

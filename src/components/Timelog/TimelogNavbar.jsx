@@ -36,7 +36,7 @@ const TimelogNavbar = ({ userId }) => {
           <Nav navbar className="navbar-nav w-100">
             <NavItem className="nav-item navbar-text w-80" id="timelogweeklychart">
               <div>
-                Current Week : {totalEffort.toFixed(2)} / {weeklycommittedHours.toFixed(2)}
+                Current Week : {totalEffort.toFixed(2)} / {weeklycommittedHours}
               </div>
               <Progress
                 value={getProgressValue(totalEffort, weeklycommittedHours)}

@@ -57,7 +57,7 @@ function QuickSetupModal(props) {
   };
 
   return (
-    <div>
+    <div className="container pt-3">
       {canAssignTitle || canEditTitle || canAddTitle ? (
         <QuickSetupCodes
           setSaved={props.setSaved}
@@ -81,7 +81,7 @@ function QuickSetupModal(props) {
             onClick={() => setShowAddTitle(true)}
             style={darkMode ? boxStyleDark : boxStyle}
             disabled={editMode == true}
-            title="Click this to add a new Quick Setup Title"
+            title="Click this to add a new QST"
           >
             Add New QST
           </Button>

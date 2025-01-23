@@ -16,37 +16,23 @@
   }
 }
 
-.container {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 0 1em;
-}
-
+/* project summaries */
 .projects-list {
-  width: 100%;
-  max-width: 1200px;
+  width: 80%;
   list-style-type: none;
   max-height: 80vh;
   overflow-x: hidden;
   overflow-y: auto;
-  padding: 0;
-  margin: 1em auto;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  background-color: #f9f9f9;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  padding:0;
 }
 
 .project-summary {
   background-color: #e8f4f9;
-  margin: 1em;
+  min-height: 20vh;
+  height: auto;
+  margin-bottom: 2em;
   padding: 1em;
   border-radius: 5px;
-  transition: transform 0.2s;
-}
-
-.project-summary:hover {
-  transform: scale(1.02);
 }
 
 .project-summary_header {
@@ -54,6 +40,7 @@
   font-weight: bold;
   text-align: center;
   justify-content: center;
+  /* color: #3ea0cb; */
 }
 
 .project-summary_content {
@@ -76,9 +63,12 @@
 .project-summary_span {
   color: #3ea0cb;
   font-weight: bold;
+  /* margin-left: 1em; */
   display: inline-block;
-  white-space: nowrap;
+  white-space: no-wrap;
 }
+
+/* error page */
 
 .bm-error-page {
   width: 100%;
@@ -90,6 +80,8 @@
 .bm-error-page section {
   margin-top: 2rem;
 }
+
+/* forms */
 
 .inv-form-page-container {
   width: 100%;
@@ -149,23 +141,6 @@
 }
 
 .form-footer {
-  font-size: 0.875em;
-  margin-top: 3px;
-}
-
-.projects-list::-webkit-scrollbar {
-  width: 8px;
-}
-
-.projects-list::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-
-.projects-list::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 4px;
-}
-
-.projects-list::-webkit-scrollbar-thumb:hover {
-  background: #555;
+font-size: 0.875em;
+margin-top:3px;
 }

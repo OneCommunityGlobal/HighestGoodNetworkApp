@@ -51,11 +51,9 @@ export const postNewProject = (projectName, projectCategory) => {
       await dispatch(fetchAllProjects());
       return _id;
     } catch (err) {
-      const errorInfo = {
-        status: err.response ? err.response.status : 500,
-        error: err.response ? err.response.data : 'Network error'
-      };
-      dispatch(setProjectsError(errorInfo)); 
+      status = err.response.status;
+      error = err.response.data;
+      dispatch(addNewProject({ status, error }));
       throw error;
     }
   };

@@ -9,7 +9,6 @@ import { toast } from 'react-toastify';
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
-  const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
   const [headerContent, setHeaderContent] = useState('');
@@ -80,20 +79,12 @@ function Announcements({ title, email }) {
     content_css: darkMode ? 'dark' : 'default',
   }
 
-  useEffect(() => {
-    if (email) {
-      const trimmedEmail = email.trim();
-      setEmailTo(email);
-      setEmailList(trimmedEmail.split(','));
-    }
-  }, [email]);
-
   const handleEmailListChange = e => {
     const value = e.target.value;
     setEmailTo(value); // Update emailTo for the input field
     setEmailList(value.split(',')); // Update emailList for the email list
   };
-
+  
   const handleHeaderContentChange = e => {
     setHeaderContent(e.target.value);
   }
@@ -140,22 +131,22 @@ function Announcements({ title, email }) {
 
   const handleSendEmails = () => {
     const htmlContent = emailContent;
-
+    
     if (emailList.length === 0 || emailList.every(email => !email.trim())) {
       toast.error('Error: Empty Email List. Please enter AT LEAST One email.');
       return;
     }
-
+  
     const invalidEmails = emailList.filter(email => !validateEmail(email.trim()));
-
+    
     if (invalidEmails.length > 0) {
       toast.error(`Error: Invalid email addresses: ${invalidEmails.join(', ')}`);
       return;
     }
-
-    dispatch(sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent));
+  
+    dispatch(sendEmail(emailList.join(','), 'Weekly Update', htmlContent));
   };
-
+  
 
   const handleBroadcastEmails = () => {
     const htmlContent = `
@@ -208,14 +199,7 @@ function Announcements({ title, email }) {
               </label>
             )
           }
-          <input
-            type="text"
-            value={emailTo}
-            id="email-list-input"
-            onChange={handleEmailListChange}
-            className="input-text-for-announcement"
-          />
-
+          <input type="text" value={emailTo} id="email-list-input" onChange={handleEmailListChange} className='input-text-for-announcement' />
           <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
             {
               title ? (
@@ -234,6 +218,7 @@ function Announcements({ title, email }) {
             type="text"
             id="header-content-input"
             onChange={handleHeaderContentChange}
+            value={headerContent}
             className="input-text-for-announcement"
           />
 

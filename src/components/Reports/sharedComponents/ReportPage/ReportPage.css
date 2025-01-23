@@ -19,17 +19,13 @@
   /* padding-bottom: 24px; */
 }
 
+
 .report-page-profile {
+  padding-right: 24px;
+  /* background-color: #f1ebf7; */
   border-top-left-radius: 25px;
   border-radius: 25px;
-  margin-bottom: 10px;
-  width: 100%;
-}
-.report-page-profile-dark {
-  border-top-left-radius: 25px;
-  border-radius: 25px;
-  margin-bottom: 10px;
-  width: 100%;
+  margin-bottom: 24px;
 }
 
 @media (max-width: 1300px) {
@@ -73,10 +69,15 @@
 
 .project-header{
   font-size: 32px;
-  padding: 5px 5px;
+  padding: 10px 10px;
   text-align: center;
   background-color:white;
   border-radius: 20px;
   box-shadow: 0 0 12px #eae1f6;
-  width: 100%;
+}
+
+@media (max-width: 450px){
+  .project-header{
+    margin-top: 1rem;
+  }
 }

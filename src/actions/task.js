@@ -138,6 +138,7 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
     }else{
       oldTask = selectUpdateTaskData(state, taskId);
     }
+    
     if (hasPermission) {
       await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
       const userIds = updatedTask.resources.map(resource => resource.userID);
