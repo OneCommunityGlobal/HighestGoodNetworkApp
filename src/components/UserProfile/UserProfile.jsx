@@ -591,6 +591,7 @@ function UserProfile(props) {
     }));
     const newWarningData = {
       warningsArray,
+      issueBlueSquare: warningData.issueBlueSquare,
       userId: props?.match?.params?.userId,
       monitorData: {
         firstName: userProfile.firstName,

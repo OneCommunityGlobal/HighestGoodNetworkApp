@@ -152,6 +152,7 @@ const UserProfileModal = props => {
       return {
         ...prevData,
         [warningTitle]: { warn, color },
+        issueBlueSquare: warn === 'Issue Blue Square',
       };
     });
   };
