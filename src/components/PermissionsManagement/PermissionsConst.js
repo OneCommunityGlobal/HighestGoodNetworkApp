@@ -138,7 +138,7 @@ export const permissionLabels = [
   },
   {
     label: 'Tracking Management',
-    description: 'Permissions for managing tracking-related activities (Admin Only)',
+    description: 'Permissions for managing tracking-related activities.',
     subperms: [
       {
         label: 'View Tracking Overview',
@@ -146,25 +146,39 @@ export const permissionLabels = [
         description: 'Allows user to view an overview of tracking activities for all users.',
       },
       {
-        label: 'Issue Tracking Warnings',
+        label: 'Issue a Tracking Warnings',
         key: 'issueTrackingWarnings',
-        description: 'Allows user to issue warnings for tracking violations.',
+        description: 'Allows the user to issue warnings for violations of tracking activities.',
       },
       {
-        label: 'Edit Tracking Logs',
-        key: 'editTrackingLogs',
-        description: 'Enables user to edit tracking logs submitted by users.',
+        label: 'Issue a Blue Square',
+        key: 'issueBlueSquare',
+        description: 'Allows the user to issue a blue square for viloations of tracking activity.',
       },
       {
-        label: 'Delete Tracking Logs',
-        key: 'deleteTrackingLogs',
-        description: 'Gives user permission to delete invalid or unnecessary tracking logs.',
+        label: 'Delete a Warning',
+        key: 'deleteWarning',
+        description: 'Gives the user permission to delete existing tracking warnings.',
       },
       {
-        label: 'Enable/Disable Tracking Features',
-        key: 'toggleTrackingFeatures',
-        description:
-          'Allows user to enable or disable specific tracking features for users or teams.',
+        label: 'Add a New Warning Tracker',
+        key: 'addWarningTracker',
+        description: 'Allows user to add a new warning tracker to the system.',
+      },
+      {
+        label: 'Deactivate a Warning Tracker',
+        key: 'deactivateWarningTracker',
+        description: 'Allows user to deactivate an existing warning tracker.',
+      },
+      {
+        label: 'Reactivate a Warning Tracker',
+        key: 'reactivateWarningTracker',
+        description: 'Allows user to reactivate an existing warning tracker.',
+      },
+      {
+        label: 'Delete a Warning Tracker',
+        key: 'deleteWarningTracker',
+        description: 'Gives user permission to delete a warning tracker from the system.',
       },
     ],
   },
