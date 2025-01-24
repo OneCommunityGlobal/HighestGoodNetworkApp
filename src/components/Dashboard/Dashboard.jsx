@@ -20,11 +20,11 @@ export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { match, authUser } = props;
-  const displayUserId = match.params.userId || authUser.userid;
+  const { authUser } = props;
+
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
-  const [displayUserIdviewuser, setDisplayUserId] = useState(
+  const [displayUserId, setDisplayUserId] = useState(
     viewingUser ? viewingUser.userId : authUser.userid,
   );
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
