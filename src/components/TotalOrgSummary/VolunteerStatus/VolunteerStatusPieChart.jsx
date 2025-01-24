@@ -1,3 +1,4 @@
+/** 
 import PropTypes from 'prop-types';
 import { Doughnut } from 'react-chartjs-2';
 import ChartDataLabels from 'chartjs-plugin-datalabels';
@@ -96,3 +97,5 @@ VolunteerStatusPieChart.propTypes = {
 };
 
 export default VolunteerStatusPieChart;
+
+*/
