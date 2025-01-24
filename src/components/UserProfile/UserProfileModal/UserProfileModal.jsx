@@ -33,7 +33,7 @@ const UserProfileModal = props => {
     id,
     specialWarnings,
     handleLogWarning,
-    handlePostWarnings,
+    handlePostTwoWarnings,
   } = props;
   let blueSquare = [
     {
@@ -159,7 +159,7 @@ const UserProfileModal = props => {
 
   const handleSubmitWarning = () => {
     setShowWarningSpinner(true);
-    handlePostWarnings(warningSelections);
+    handlePostTwoWarnings(warningSelections);
     // setShowWarningSpinner(false);
   };
   const handleToggleLogWarning = warningData => {
@@ -170,7 +170,6 @@ const UserProfileModal = props => {
         username: `${userProfile.firstName} ${userProfile.lastName}`,
         warningText: `${specialWarnings[0].title} and ${specialWarnings[1].title}`,
       });
-      // setWarningType({...specialWarnings[0], warnings: specialWarnings});
       return;
     }
     setWarningType({

@@ -581,7 +581,7 @@ function UserProfile(props) {
       console.log(err);
     }
   };
-  const handlePostWarnings = async warningData => {
+  const handlePostTwoWarnings = async warningData => {
     const warningsArray = Object.entries(warningData).map(([title, color]) => ({
       userId: props?.match?.params?.userId,
       iconId: uuidv4(),
@@ -609,8 +609,6 @@ function UserProfile(props) {
         toast.success('Succesfully logged both warnings!');
       }
     });
-    //create new route to call the backedn
-    // dispatch()
   };
 
   const handleLogWarning = async newWarningData => {
@@ -944,7 +942,7 @@ function UserProfile(props) {
           role={requestorRole}
           handleLogWarning={handleLogWarning}
           specialWarnings={specialWarnings}
-          handlePostWarnings={handlePostWarnings}
+          handlePostTwoWarnings={handlePostTwoWarnings}
         />
       )}
       <TabToolTips />
