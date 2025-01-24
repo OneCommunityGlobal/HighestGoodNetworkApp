@@ -182,6 +182,41 @@ const ReviewButton = ({
 
   return (
     <>
+      {/* Verification Modal */}
+      <Modal isOpen={verifyModal} toggle={toggleVerify} className={darkMode ? 'text-light dark-mode' : ''}>
+        <ModalHeader toggle={toggleVerify} className={darkMode ? 'bg-space-cadet' : ''}>
+          {selectedAction === 'Complete and Remove' && 'Are you sure you have completed the review?'}
+          {selectedAction === 'More Work Needed' && 'Are you sure?'}
+          </ModalHeader>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button
+              onClick={(e) => {
+                toggleVerify();
+                if (selectedAction === 'More Work Needed') {
+                  updReviewStat("Unsubmitted");
+                  setIsSubmitting(false);
+                } else if (reviewStatus === "Unsubmitted") {
+                  submitReviewRequest(e);
+                } else {
+                  updReviewStat("Reviewed");
+                }
+              }}
+              color="primary"
+              className="float-left"
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              {reviewStatus === "Unsubmitted"
+                ? `Submit`
+                : `Complete`}
+            </Button>
+            <Button
+              onClick={toggleVerify}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Cancel
+            </Button>
+        </ModalFooter>
+      </Modal>
       {/* Second Confirmation Modal */}
       <Modal isOpen={confirmSubmitModal} toggle={toggleConfirmSubmitModal} className={darkMode ? 'text-light dark-mode' : ''}>
         <ModalHeader toggle={toggleConfirmSubmitModal} className={darkMode ? 'bg-space-cadet' : ''}>

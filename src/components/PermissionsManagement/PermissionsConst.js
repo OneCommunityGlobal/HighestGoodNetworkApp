@@ -98,6 +98,12 @@ export const permissionLabels = [
           'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
       },
       {
+        label: 'Toggle Invisibility Permission Self and Others',
+        key: 'toggleInvisibility',
+        description:
+          'Gives the user permission to change the invisibility toggle for themselves and others',
+      },
+      {
         label: 'Assign Blue Squares',
         key: 'addInfringements',
         description: 'Gives the user permission to add blue squares to any user.',
@@ -318,6 +324,18 @@ export const permissionLabels = [
           'Gives the user permission to toggle the Tangible check when editing their own time entry.',
       },
       {
+        label: 'Timelog Management (Own)',
+        description: 'Category for all permissions related to timelog management',
+        subperms: [
+          {
+            label: 'Delete Time Entry (Own)',
+            key: 'deleteTimeEntryOwn',
+            description:
+              'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
+          },
+        ],
+      },
+      {
         label: 'Timelog Management (Others)',
         description: 'Category for all permissions related to timelog management',
         subperms: [
@@ -329,7 +347,7 @@ export const permissionLabels = [
           },
           {
             label: 'Delete Time Entry (Others)',
-            key: 'deleteTimeEntry',
+            key: 'deleteTimeEntryOthers',
             description:
               'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
           },

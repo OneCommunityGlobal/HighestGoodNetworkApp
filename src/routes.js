@@ -28,7 +28,7 @@ import Inventory from './components/Inventory';
 import EmailSubscribeForm from './components/EmailSubscribeForm';
 import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
-import  { EmailSender } from './components/common/EmailSender/EmailSender';
+import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // BM Dashboard
@@ -42,6 +42,20 @@ import ToolDetailPage from './components/BMDashboard/Tools/ToolDetailPage';
 import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
+import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+
+
+// Community Portal
+import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
+import CPLogin from './components/CommunityPortal/Login';
+import CPDashboard from './components/CommunityPortal';
+import ActivityList from './components/CommunityPortal/Activities/ActivityList';
+// import AddActivities from './components/CommunityPortal/Activities/AddActivities';
+// import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
+
+
+
+
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 
@@ -104,6 +118,8 @@ export default (
       {/* Comment out the Header component and its import during phase 2 development. */}
       <Header />
       {/* Uncomment BMHeader and its import during phase 2 development. */}
+
+
       {/* <BMHeader /> */}
       <AutoUpdate />
       <ToastContainer />
@@ -112,9 +128,9 @@ export default (
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
-        <ProtectedRoute path="/timelog/:userId" exact render ={(props) => {
-           const {userId} = props.match.params;
-            return <Timelog userId ={userId}/>
+        <ProtectedRoute path="/timelog/:userId" exact render={(props) => {
+          const { userId } = props.match.params;
+          return <Timelog userId={userId} />
         }} />
         <ProtectedRoute path="/peoplereport/:userId" component={PeopleReport} fallback />
         <ProtectedRoute path="/projectreport/:projectId" component={ProjectReport} fallback />
@@ -330,6 +346,7 @@ export default (
           path="/bmdashboard/tools/:equipmentId/update"
           component={UpdateEquipment}
         />
+        <BMProtectedRoute path="/bmdashboard/AddTeamMember" component={AddTeamMember} />
         <BMProtectedRoute path="/bmdashboard/tools" exact component={Toolslist} />
         <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} />
         <BMProtectedRoute path="/bmdashboard/tools/log" exact component={LogTools} />
@@ -341,6 +358,14 @@ export default (
           fallback
           component={InventoryTypesList}
         />
+
+
+        {/* Community Portal Routes */}
+        <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
+        <Route path="/communityportal/login" component={CPLogin} />
+        <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
+
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
         {/* <BMProtectedRoute path="/bmdashboard/:path" component={BMDashboard} /> */}
