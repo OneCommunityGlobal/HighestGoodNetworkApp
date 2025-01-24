@@ -208,8 +208,8 @@ class ReportsPage extends Component {
   };
 
   filterByTenHours = async (startDate, endDate) => {
-    const { userProfiles } = this.props.state.allUserProfilesBasicInfo;
-    const promises = userProfiles.map(async userProfile => {
+    const { userProfilesBasicInfo } = this.props.state.allUserProfilesBasicInfo;
+    const promises = userProfilesBasicInfo.map(async userProfile => {
       // time entries within selected date range
       const timeEntries = await this.props.getTimeEntriesForPeriod(
         userProfile.id,
