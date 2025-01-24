@@ -275,7 +275,7 @@ const TestEventRegistration = () => {
           name="dateOfBirth"
           value={formValues.dateOfBirth}
           onChange={handleChange}
-          max={new Date().toISOString().split("T")[0]}
+          max={new Date(new Date().setFullYear(new Date().getFullYear() - 18)).toISOString().split("T")[0]} // Set max to today's date minus 18 years
           style={{
             width: "100%",
             padding: "0.5rem",
