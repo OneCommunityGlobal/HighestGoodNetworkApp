@@ -116,6 +116,7 @@ function UserProfile(props) {
   const [showToggleVisibilityModal, setShowToggleVisibilityModal] = useState(false);
   const [pendingRehireableStatus, setPendingRehireableStatus] = useState(null);
   const [isRehireable, setIsRehireable] = useState(null);
+  const [canResetPassword, setCanResetPassword] = useState(false);
 
   const userProfileRef = useRef();
 
@@ -276,6 +277,7 @@ function UserProfile(props) {
       const response = await axios.get(ENDPOINTS.USER_PROFILE(userId));
       const currentUserEmail = response.data.email;
       dispatch(setCurrentUser({ ...props.auth.user, email: currentUserEmail }));
+      setCanResetPassword(response.data.permissions.frontPermissions.includes('resetPassword'));
     } catch (err) {
       toast.error('Error while getting current logged in user email');
     }
@@ -1289,7 +1291,7 @@ function UserProfile(props) {
               </TabPane>
             </TabContent>
             <div className="profileEditButtonContainer">
-              {canUpdatePassword && canEdit && !isUserSelf && (
+              {(canUpdatePassword && canEdit && !isUserSelf || canResetPassword) && (
                 <ResetPasswordButton
                   className="mr-1 btn-bottom"
                   user={userProfile}
