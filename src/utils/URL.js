@@ -213,9 +213,7 @@ export const ENDPOINTS = {
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
-  BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
-
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
