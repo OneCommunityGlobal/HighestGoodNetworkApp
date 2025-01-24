@@ -412,7 +412,6 @@ export class WeeklySummariesReport extends Component {
           hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
-      // Include all users regardless of active status
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
@@ -477,17 +476,13 @@ export class WeeklySummariesReport extends Component {
         const members = [];
         if (team !== undefined) {
           team.forEach(member => {
-            const isMemberInactive = !member.isActive;
-            const namePrefix = isMemberInactive ? 'FINAL WEEK REPORTING: ' : '';
             members.push({
-              name: `${namePrefix}${member.firstName} ${member.lastName}`,
-              role: `${namePrefix}${member.role}`,
+              name: `${member.firstName} ${member.lastName}`,
+              role: member.role,
               id: member._id,
             });
           });
-          if (members.length > 0) {
-            structuredTeamTableData.push({ team: code.value, color, members });
-          }
+          structuredTeamTableData.push({ team: code.value, color, members });
         }
       });
     }

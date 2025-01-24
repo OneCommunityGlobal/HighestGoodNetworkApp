@@ -64,21 +64,6 @@ export function Dashboard(props) {
     };
   }, []);
 
-  useEffect(() => {
-    const fetchUserStats = async () => {
-      try {
-        const response = await axios.get('/api/reports/active-inactive-users');
-        const { activeUsers, inactiveUsers } = response.data;
-        console.log('Active Users:', activeUsers);
-        console.log('Inactive Users:', inactiveUsers);
-      } catch (error) {
-        console.error('Error fetching user stats:', error);
-      }
-    };
-
-    fetchUserStats();
-  }, []); 
-
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
       <SummaryBar
