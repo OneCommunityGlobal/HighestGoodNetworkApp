@@ -626,12 +626,12 @@ function UserProfile(props) {
     });
   };
 
-  const setActiveInactive = isActive => {
+  const setActiveInactive = async isActive => {
     let endDate;
 
     if (!isActive) {
-      endDate = dispatch(
-        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate),
+      endDate = await dispatch(
+        getTimeEndDateEntriesByPeriod(userProfile._id, userProfile.createdDate, userProfile.toDate)
       );
       if (endDate == 'N/A') {
         endDate = userProfile.createdDate;
@@ -644,7 +644,7 @@ function UserProfile(props) {
     };
 
     try {
-      props.updateUserStatus(
+      await props.updateUserStatus(
         newUserProfile,
         isActive ? UserStatus.Active : UserStatus.InActive,
         undefined,

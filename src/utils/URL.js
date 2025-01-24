@@ -83,6 +83,8 @@ export const ENDPOINTS = {
     `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}`,
   HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
+  VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
+    `${APIEndpoint}/reports/teams?endDate=${endDate}&activeMembersMinimum=${activeMembersMinimum}`,
 
   POPUP_EDITORS: `${APIEndpoint}/popupeditors/`,
   POPUP_EDITOR_BY_ID: id => `${APIEndpoint}/popupeditor/${id}`,
@@ -108,6 +110,7 @@ export const ENDPOINTS = {
   CREATE_NEW_TITLE: () => `${APIEndpoint}/title`,
   EDIT_OLD_TITLE: () => `${APIEndpoint}/title/update`,
   DELETE_TITLE_BY_ID: titleId => `${APIEndpoint}/title/${titleId}`,
+  REORDER_TITLES: () => `${APIEndpoint}/title/order`,
 
   DELETE_TASK_NOTIFICATION_BY_USER_ID: (taskId, userId) =>
     `${APIEndpoint}/tasknotification/${userId}/${taskId}`,
