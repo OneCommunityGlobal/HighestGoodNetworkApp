@@ -1,0 +1,155 @@
+  .add-team-form Label{
+  font-size: .8em;
+  }
+  
+  .add-team-buttons{
+    display: flex;
+    gap: 1rem;
+    margin: 1rem auto 2rem;
+  }
+  
+  .add-team-buttons button{
+    width: 50%;
+  }
+
+  .add-team-buttons button#submit-button {
+    background-color: #4CAF50; 
+    border-color: #4CAF50;
+    color: white;
+  }
+  
+  .add-team-buttons button#submit-button:hover {
+    background-color: #45a049;
+    border-color: #45a049;
+  }
+  
+  .add-team-buttons button:hover {
+    background-color: #e7e7e7;
+  }
+  
+  .add-team-buttons Button:active {
+    background-color: #e7e7e7;
+  }
+  
+  .add-team-buttons Button.outline {
+    background-color: transparent;
+    border-color: #ccc; 
+    color: #333; 
+  }
+  
+  .add-team-buttons Button.outline:hover {
+    background-color: #f1f1f1; 
+    border-color: #bbb;
+  }
+  
+  .add-team-buttons button#cancel-button {
+    background-color: #f44336; 
+    border-color: #f44336; 
+    color: white; 
+  }
+  
+  .add-team-buttons button#cancel-button:hover {
+    background-color: #e53935; 
+    border-color: #e53935;
+  }
+  
+  .teamFormError {
+    font-weight: 500;
+    font-size: 11px !important;
+    color: red;
+    display: flex;
+    justify-content: flex-start;
+  }
+  
+  .field-required{
+    color: red;
+  }
+  
+  .add-team-container{
+    width: 100%;
+    max-width: 800px;
+    margin: 1rem auto;
+    padding: 1rem 2rem;
+    border: 1px solid #ccc;
+    border-radius: 20px;
+  }
+  
+  .add-team-header h2{
+   font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+   margin-left: 1rem;
+   color:#f49441;
+   text-align: center;
+  }
+
+  .select-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .member-dropdown {
+    flex: 1;
+  }
+  
+  .add-team-container Button{
+    flex-shrink: 0;
+    padding: 8px 12px;
+    font-size: 1rem;
+    cursor: pointer;
+    color: white;
+    background-color: #f49441;
+    border: none;
+    border-radius: 4px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+    border-radius: 10px; 
+    padding: 0.5rem; 
+    border: 1px solid #ccc;
+    width: 15%;
+  }
+  
+  .add-team-container Button:hover {
+    background-color: #d97a32;
+    transform: scale(1.05);
+  }
+  
+  .add-team-container Button:disabled {
+    background-color: #ccc;
+    color: #666;
+    cursor: not-allowed;
+  }
+
+  .add-team-form input,
+  .add-team-form select,
+  .add-team-form textarea,
+  .add-team-form button {
+    border-radius: 10px; 
+    padding: 0.5rem; 
+    border: 1px solid #ccc; 
+  }
+
+  @media screen and (max-width: 800px) {
+    .add-team-container {
+      width: 95%;
+    }
+  }
+
+  .badge-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 0;
+  }
+  
+  .badge-container .badge {
+    background-color: #f9d29c; 
+    color: black; 
+    border-radius: 6px; 
+    padding: 0.5rem 1rem; 
+    line-height: 1.5rem;
+  }
+
+  .badge-container span {
+    cursor: pointer;
+    padding-left: 5px;
+  }
+
