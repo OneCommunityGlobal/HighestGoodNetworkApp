@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import React, { useState, useEffect, useMemo, useCallback, useContext } from 'react';
 import { Row, Label, Input, Col, FormFeedback, FormGroup, Button } from 'reactstrap';
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 import moment from 'moment';
@@ -23,6 +23,8 @@ import permissionLabels from 'components/PermissionsManagement/PermissionsConst'
 import { permissionPresets } from '../UserProfileModal/PermissionPresetsTemp';
 import { getPresetsByRole } from '../../../actions/rolePermissionPresets';
 import PermissionList from 'components/PermissionsManagement/PermissionList';
+import { PermissionsContext } from 'components/PermissionsManagement/PermissionsContext';
+import { PermissionsProvider } from 'components/PermissionsManagement/PermissionsContext';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
@@ -319,7 +321,7 @@ const BasicInformationTab = props => {
   const [newRolePermissions, setNewRolePermissions] = useState([]);
   const [isPermissionModalOpen, setPermissionModalOpen] = useState(false);
   const [newRole, setNewRole] = useState('');
-  const [currentUserPermissions, setCurrentUserPermissions] = useState([]);
+  // const [currentUserPermissions, setCurrentUserPermissions] = useState([]);
   const [immutablePermissions, setImmutablePermissions] = useState([]);
 
   let topMargin = '6px';
@@ -374,10 +376,11 @@ const BasicInformationTab = props => {
     };
   }, []);
 
+  const { currentUserPermissions, setCurrentUserPermissions, getCurrentUserPermissions } = useContext(PermissionsContext);
   const dispatch = useDispatch();
 
   // function to remove permissions that are not in the permissionLabels array
-  const getValidPermissions = useCallback((permissions) => {
+  /* const getValidPermissions = useCallback((permissions) => {
     const validPermissions = new Set();
 
     const traversePermissions = (perms) => {
@@ -393,24 +396,24 @@ const BasicInformationTab = props => {
 
     traversePermissions(permissions);
     return validPermissions;
-  }, []);
+  }, []); */
 
-  const permissionLabelPermissions = useMemo(() => getValidPermissions(permissionLabels), [getValidPermissions, permissionLabels]);
+  // const permissionLabelPermissions = useMemo(() => getValidPermissions(permissionLabels), [getValidPermissions, permissionLabels]);
   // console.log('Permission Label Permissions:', Array.from(permissionLabelPermissions)); // Convert Set to Array and log
 
-  const getCurrentUserPermissions = useCallback(async (permissions) => {
+  // const getCurrentUserPermissions = useCallback(async (permissions) => {
     // console.log('getCurrentUserPermissions function invoked');
-    const userPermissions = [];
+    // const userPermissions = [];
 
-    const traversePermissions = async (perms) => {
-      for (let perm of perms) {
+    // const traversePermissions = async (perms) => {
+      // for (let perm of perms) {
         /* if (perm.key && dispatch(hasPermission(perm.key)) && permissionLabelPermissions.has(perm.key) && !userPermissions.includes(perm.key)) {
           userPermissions.push(perm.key);
         } */
-          if (perm.key) {
-            const hasPerm = await dispatch(hasPermission(perm.key, false, userProfile.role));
+          // if (perm.key) {
+            // const hasPerm = await dispatch(hasPermission(perm.key, false, userProfile.role));
             // console.log(`Checking permission: ${perm.key}, hasPermission: ${hasPerm}`);
-            if (hasPerm && permissionLabelPermissions.has(perm.key) && !userPermissions.includes(perm.key)) {
+            /* if (hasPerm && permissionLabelPermissions.has(perm.key) && !userPermissions.includes(perm.key)) {
               userPermissions.push(perm.key);
             }
           }
@@ -420,18 +423,18 @@ const BasicInformationTab = props => {
       }
     };
 
-    await traversePermissions(permissions);
+    await traversePermissions(permissions); */
 
     // return userPermissions;
 
     // making sure all roles can update a role for testing purposes
     // Add 'putRole' and 'putUserProfile' to the permissions array if they are not already present
-    const updatedPermissions = [...new Set([...userPermissions, 'putRole', 'putUserProfile'])];
+    /* const updatedPermissions = [...new Set([...userPermissions, 'putRole', 'putUserProfile'])];
     
     await dispatch(updateUserProfileProperty(userProfile, 'permissions.frontPermissions', updatedPermissions));
 
     return updatedPermissions;
-  }, [dispatch, permissionLabelPermissions, userProfile.role]);
+  }, [dispatch, permissionLabelPermissions, userProfile.role]); */
   // const currentUserPermissions = getCurrentUserPermissions(permissionLabels)
 
   useEffect(() => {
@@ -745,8 +748,13 @@ const BasicInformationTab = props => {
     }
   };
 
-  const handlePermissionsChange = async () => {
+  /* const handlePermissionsChange = async () => {
     const updatedPermissions = await getCurrentUserPermissions(permissionLabels);
+    setCurrentUserPermissions(updatedPermissions);
+  }; */
+
+  const handlePermissionsChange = (updatedPermissions) => {
+    console.log('handlePermissionsChange called with:', updatedPermissions);
     setCurrentUserPermissions(updatedPermissions);
   };
 
@@ -892,24 +900,27 @@ const BasicInformationTab = props => {
 
   const roleComponent = (
     <>
-      <PermissionChangeModal 
-        userProfile={userProfile} 
-        setUserProfile={setUserProfile}
-        isOpen={isPermissionModalOpen}
-        closeModal={closePermissionModal}
-        newRole={newRole}
-        oldRolePermissions={oldRolePermissions}
-        newRolePermissions={newRolePermissions}
-        currentUserPermissions={currentUserPermissions}
-        setCurrentUserPermissions={setCurrentUserPermissions}
-        permissionLabelPermissions={permissionLabelPermissions}
-        permissionPresets={permissionPresets}
-        newRolePermissionsToAdd={newRolePermissionsToAdd}
-        newRolePermissionsToRemove={newRolePermissionsToRemove}
-        setOldRole={setOldRole}
-        getCurrentUserPermissions={getCurrentUserPermissions}
-      />
-      <PermissionList
+      <PermissionsProvider userProfile={userProfile}>
+        <PermissionChangeModal 
+          userProfile={userProfile} 
+          setUserProfile={setUserProfile}
+          isOpen={isPermissionModalOpen}
+          closeModal={closePermissionModal}
+          newRole={newRole}
+          oldRolePermissions={oldRolePermissions}
+          newRolePermissions={newRolePermissions}
+          currentUserPermissions={currentUserPermissions}
+          setCurrentUserPermissions={setCurrentUserPermissions}
+          permissionLabelPermissions={permissionLabelPermissions}
+          permissionPresets={permissionPresets}
+          newRolePermissionsToAdd={newRolePermissionsToAdd}
+          newRolePermissionsToRemove={newRolePermissionsToRemove}
+          setOldRole={setOldRole}
+          getCurrentUserPermissions={getCurrentUserPermissions}
+          onPermissionsChange={handlePermissionsChange}
+        />
+      </PermissionsProvider>
+      {/* <PermissionList
         rolePermissions={currentUserPermissions}
         permissionsList={permissionLabels}
         immutablePermissions={immutablePermissions}
@@ -917,7 +928,7 @@ const BasicInformationTab = props => {
         setPermissions={setCurrentUserPermissions}
         onChange={handlePermissionsChange}
         darkMode={darkMode}
-      />
+      /> */}
       <Col>
         <Label className={darkMode ? 'text-light' : ''}>Role</Label>
       </Col>
