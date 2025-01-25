@@ -30,17 +30,10 @@ import { getProgressColor, getProgressValue } from '../../utils/effortColors';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
 import moment from 'moment';
-const startOfWeek = offset => {
+const getWeekBoundary = (offset, boundary) => {
   return moment()
     .tz('America/Los_Angeles')
-    .startOf('week')
-    .subtract(offset, 'weeks')
-    .format('YYYY-MM-DD');
-};
-const endOfWeek = offset => {
-  return moment()
-    .tz('America/Los_Angeles')
-    .endOf('week')
+    [boundary]('week') // Either 'startOf' or 'endOf'
     .subtract(offset, 'weeks')
     .format('YYYY-MM-DD');
 };
@@ -235,16 +228,17 @@ const SummaryBar = props => {
     if (!displayUserProfile || !displayUserProfile.badgeCollection) {
       return 0;
     }
-    console.log(displayUserProfile.badgeCollection)
-    const startDate= new Date(startOfWeek(0));
-    const lastDate= new Date(endOfWeek(0))
+   
+    const startDate= new Date(getWeekBoundary(0, 'startOf'));
+    const lastDate= new Date(getWeekBoundary(0, 'endOf'))
     let totalBadges = 0;
-    console.log( displayUserProfile.badgeCollection)
+   
     displayUserProfile.badgeCollection.forEach(badge => {
+      if(badge.viewed==false){
       for(let date of badge.earnedDate){
           let dateElement= new Date(date)
           if(  dateElement >= startDate && dateElement <= lastDate){
-            if(badge.viewed==false){
+           
               totalBadges++
             }
           }
