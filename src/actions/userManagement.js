@@ -85,16 +85,37 @@ export const updateUserStatus = (user, status, reactivationDate) => {
  * @param{boolean} isRehireable - the new rehireable status
  */
 export const updateRehireableStatus = (user, isRehireable) => {
-  const userProfile = { ...user };
-  userProfile.isRehireable = isRehireable
-  const requestData = { isRehireable };
-  
-  const updateProfilePromise = axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData)
   return async dispatch => {
-    updateProfilePromise.then(res => {
+    const userProfile = { ...user, isRehireable };
+    const requestData = { isRehireable };
+    try {
+      await axios.patch(ENDPOINTS.UPDATE_REHIREABLE_STATUS(user._id), requestData);
       dispatch(userProfileUpdateAction(userProfile));
+    } catch (err) {
+      throw err;
+    }
+  };
+};
+
+/**
+ * Switches the visibility of a user
+ * @param{*} user - the user whose visibility is to be changed
+ * @param{boolean} isVisible - the new visiblity status
+ */
+export const toggleVisibility = (user, isVisible) => {
+  const userProfile = { ...user };
+  userProfile.isVisible = isVisible
+  const requestData = { isVisible };
+  
+  const toggleVisibilityPromise = axios.patch(ENDPOINTS.TOGGLE_VISIBILITY(user._id), requestData)
+  return async dispatch => {
+    toggleVisibilityPromise.then(res => {
+      dispatch(userProfileUpdateAction(userProfile));
+    }).catch(err => {
+      console.error("failed to toggle visibility: ", err);
     });
   };
+
 };
 
 /**
@@ -207,8 +228,8 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
     patchData.endDate = undefined;
     userProfile.endDate = undefined;
   } else {
-    userProfile.endDate = moment(finalDayDate).format('YYYY-MM-DD');
-    patchData.endDate = moment(finalDayDate).format('YYYY-MM-DD');
+    userProfile.endDate = moment(finalDayDate).add(1,'days').format('YYYY-MM-DD');
+    patchData.endDate = moment(finalDayDate).add(1,'days').format('YYYY-MM-DD');
   }
 
   const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
