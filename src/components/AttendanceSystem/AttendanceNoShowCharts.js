@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 
 const events = [
@@ -53,7 +53,7 @@ const attendanceColors = ['#0088FE', '#FF8042'];
 const noShowColors = ['#82ca9d', '#FF6347'];
 
 const RADIAN = Math.PI / 180;
-const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent, value }) => {
+const renderCustomizedLabel = ({ cx, cy, midAngle, innerRadius, outerRadius, percent }) => {
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * Math.sin(-midAngle * RADIAN);
@@ -75,7 +75,8 @@ function AttendanceNoShowCharts() {
   };
 
   const calculatePercentage = (value, total) => {
-    return ((value / total) * 100).toFixed(1) + '%';
+    //return ((value / total) * 100).toFixed(1) + '%';
+    return `${((value / total) * 100).toFixed(1)} %`;
   };
 
   const attendanceData = [
