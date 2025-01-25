@@ -228,8 +228,8 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
     patchData.endDate = undefined;
     userProfile.endDate = undefined;
   } else {
-    userProfile.endDate = moment(finalDayDate).format('YYYY-MM-DD');
-    patchData.endDate = moment(finalDayDate).format('YYYY-MM-DD');
+    userProfile.endDate = moment(finalDayDate).add(1,'days').format('YYYY-MM-DD');
+    patchData.endDate = moment(finalDayDate).add(1,'days').format('YYYY-MM-DD');
   }
 
   const updateProfilePromise = axios.patch(ENDPOINTS.USER_PROFILE(user._id), patchData);
