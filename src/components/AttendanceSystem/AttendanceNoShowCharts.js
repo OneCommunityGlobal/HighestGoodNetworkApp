@@ -75,7 +75,6 @@ function AttendanceNoShowCharts() {
   };
 
   const calculatePercentage = (value, total) => {
-    //return ((value / total) * 100).toFixed(1) + '%';
     return `${((value / total) * 100).toFixed(1)} %`;
   };
 
@@ -241,7 +240,7 @@ function AttendanceNoShowCharts() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {attendanceData.map((entry, index) => (
+                  {attendanceData.map(index => (
                     <Cell
                       key={`cell-${index}`}
                       fill={attendanceColors[index % attendanceColors.length]}
@@ -266,7 +265,7 @@ function AttendanceNoShowCharts() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {noShowData.map((entry, index) => (
+                  {noShowData.map(index => (
                     <Cell key={`cell-${index}`} fill={noShowColors[index % noShowColors.length]} />
                   ))}
                 </Pie>
