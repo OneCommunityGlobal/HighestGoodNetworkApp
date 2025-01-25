@@ -78,8 +78,8 @@ function InfoForm() {
       // Rest all the pages when "Cancel" button is clicked
 
       // PAGE 1: General form fields
-      name: '',
-      email: '',
+      // name: '',
+      // email: '',
       github: '',
       slack: '',
 
