@@ -240,9 +240,9 @@ function AttendanceNoShowCharts() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {attendanceData.map(index => (
+                  {attendanceData.map((entry, index) => (
                     <Cell
-                      key={`cell-${index}`}
+                      key={`cell-${entry.name}`}
                       fill={attendanceColors[index % attendanceColors.length]}
                     />
                   ))}
@@ -265,8 +265,11 @@ function AttendanceNoShowCharts() {
                   fill="#8884d8"
                   dataKey="value"
                 >
-                  {noShowData.map(index => (
-                    <Cell key={`cell-${index}`} fill={noShowColors[index % noShowColors.length]} />
+                  {noShowData.map((entry, index) => (
+                    <Cell
+                      key={`cell-${entry.name}`}
+                      fill={noShowColors[index % noShowColors.length]}
+                    />
                   ))}
                 </Pie>
                 <Tooltip />
