@@ -64,7 +64,7 @@ function Login() {
         <img src={logo} alt="One Community Logo" />
       </div>
       <div className="form-container">
-        <div className="form-top"></div>
+        <div className="form-top" />
         <div className="form-main">
           <h2>Login Page</h2>
           <p>Log in to rent or bid on any of your favorite units!</p>

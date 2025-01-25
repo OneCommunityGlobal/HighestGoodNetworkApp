@@ -69,7 +69,7 @@ function Register() {
         <img src={logo} alt="One Community Logo" />
       </div>
       <div className="form-container">
-        <div className="form-top"></div>
+        <div className="form-top" />
         <div className="form-main">
           <h2>Registration Page</h2>
           <p>
