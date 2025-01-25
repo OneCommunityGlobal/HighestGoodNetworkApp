@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Button,
   Form,
@@ -63,6 +63,7 @@ function AssignBadge(props) {
       }
       setError(null);
     } catch (err) {
+      console.error('Error filtering users:', err);
       setError(err.message);
       setFilteredUsers([]);
       // Also clear selection on error

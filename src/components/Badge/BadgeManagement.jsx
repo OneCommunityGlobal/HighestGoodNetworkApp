@@ -9,10 +9,10 @@ import BadgeDevelopment from './BadgeDevelopment';
 import { fetchAllBadges, setActiveTab } from '../../actions/badgeManagement';
 
 function BadgeManagement(props) {
-  const { darkMode, activeTab, role } = props;
+  const { darkMode, activeTab, setActiveTab, role } = props;
 
   useEffect(() => {
-    props.fetchAllBadges();
+    props.fetchAllBadges(); 
   }, [props.fetchAllBadges]);
 
   const handleTabChange = tabId => {
@@ -95,5 +95,10 @@ const mapDispatchToProps = dispatch => ({
   fetchAllBadges: () => dispatch(fetchAllBadges()),
   setActiveTab: tab => dispatch(setActiveTab(tab)),
 });
+
+function checkIfBadgeAssignmentIsAllowed(permissions, role) {
+  if (role === 'Administrator' || role === 'Owner') return true;
+  return permissions?.frontPermissions.includes('assignBadges');
+}
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);

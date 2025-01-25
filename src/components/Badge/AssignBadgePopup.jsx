@@ -54,8 +54,7 @@ function AssignBadgePopup(props) {
                 >
                   <p className="badge_info_icon_text">
                     Check those boxes to select the badges you wish to assign a person. Click the
-                    &quot;Confirm&quot; button at the bottom when you&apos;ve selected all you wish
-                    to add.
+                    "Confirm" button at the bottom when you've selected all you wish to add.
                   </p>
                   <p className="badge_info_icon_text">
                     Want to assign multiple of the same badge to a person? Repeat the process!
@@ -69,7 +68,7 @@ function AssignBadgePopup(props) {
               <AssignTableRow
                 badge={value}
                 index={index}
-                key={value.id}
+                key={index}
                 selectedBadges={selectedBadges}
               />
             ))}

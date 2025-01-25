@@ -32,7 +32,7 @@ function BadgeHistory({ badges, personalBestMaxHrs }) {
           count={value.count}
           badgeData={value.badge}
           index={index}
-          key={value.badge.id}
+          key={index}
         />
       ))}
     </div>

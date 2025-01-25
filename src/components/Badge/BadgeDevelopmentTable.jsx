@@ -316,7 +316,7 @@ const onRankSort = () => {
                   <Button
                     outline
                     color="info"
-                    disabled={!canUpdateBadges}
+                    disabled = {!canUpdateBadges}
                     onClick={() => onEditButtonClick(value)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -327,7 +327,7 @@ const onRankSort = () => {
                   <Button
                     outline
                     color="danger"
-                    disabled={!canDeleteBadges}
+                    disabled = {!canDeleteBadges}
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -360,7 +360,13 @@ const onRankSort = () => {
         >
           <p
             className={`${
-              props.color === 'success' ? 'text-success' : 'text-danger'
+              props.color === 'success'
+                ? darkMode
+                  ? 'text-success'
+                  : 'text-success'
+                : darkMode
+                ? 'text-danger'
+                : 'text-danger'
             } font-weight-bold mb-0`}
           >
             {props.message}
