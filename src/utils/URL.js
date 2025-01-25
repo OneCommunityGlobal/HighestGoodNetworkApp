@@ -207,6 +207,7 @@ export const ENDPOINTS = {
   BM_LESSONS: `${APIEndpoint}/bm/lessons`,
   BM_LESSON: `${APIEndpoint}/bm/lesson/`,
   BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
+  BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
