@@ -4,6 +4,7 @@ module.exports = {
     browser: true,
     es6: true,
     node: true,
+    es2020: true,
   },
   settings: {
     react: {
@@ -16,6 +17,7 @@ module.exports = {
       },
     },
   },
+
   extends: [
     'airbnb',
     'plugin:react/recommended', // Uses the recommended rules from @eslint-plugin-react
@@ -37,7 +39,7 @@ module.exports = {
     ecmaVersion: 2018,
     sourceType: 'module',
   },
-  plugins: ['react', 'testing-library', 'prettier'],
+  plugins: ['react', 'testing-library', 'prettier', 'jest'],
   rules: {
     'react/jsx-filename-extension': [1, { extensions: ['.js', '.jsx'] }],
     'no-underscore-dangle': 'off',
@@ -63,9 +65,9 @@ module.exports = {
 
   overrides: [
     {
-      files: ['**/*.test.js', '**/*.test.jsx'],
+      files: ['**/*.test.js', '**/*.test.jsx', 'jest.config.js', 'src/graceful-fs.js'],
       env: {
-        jest: true,
+        jest: true, // Enable Jest globals for these files
       },
     },
   ],
