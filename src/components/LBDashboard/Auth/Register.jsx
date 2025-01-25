@@ -20,7 +20,8 @@ function Register() {
     firstName: /^[A-Za-z]{2,}$/,
     lastName: /^[A-Za-z]{2,}$/,
     email: /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/,
-    phone: /^[0-9]{10}$/, // Assumes a 10-digit phone number format
+    // eslint-disable-next-line
+    phone: /^(?:\+?\d{1,4})?[\s\-.\()]*\d{1,4}[\s\-.\()]*\d{1,4}[\s\-.\()]*\d{1,4}[\s\-.\()]*\d{1,4}$/,
     password: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d!@#$%^&*()\-_=+{};:,<.>]{8,}$/,
   };
 
