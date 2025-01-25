@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Card, CardBody, CardImg, CardText, Popover, CustomInput } from 'reactstrap';
-import { useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
+import { toast } from 'react-toastify';
+import { useDispatch, useSelector } from 'react-redux';
 import { addSelectBadge, removeSelectBadge } from '../../actions/badgeManagement';
 
 function AssignTableRow({ badge, index, existBadges }) {

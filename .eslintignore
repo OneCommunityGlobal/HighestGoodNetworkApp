@@ -16,6 +16,7 @@ src/__tests__/**
 /node_modules/
 src/components/App.jsx
 src/components/AutoReload/**
+src/components/Badge/**
 src/components/common/**
 src/components/Projects/**
 src/components/Reports/**
