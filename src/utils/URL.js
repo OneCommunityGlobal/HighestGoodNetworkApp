@@ -226,6 +226,10 @@ export const ENDPOINTS = {
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
+
+  HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
+  HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
+  HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
 };
 
 export const ApiEndpoint = APIEndpoint;

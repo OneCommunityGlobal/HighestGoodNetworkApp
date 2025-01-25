@@ -10,6 +10,12 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
+import Page1 from 'HGNForm/pages/Page1';
+import Page2 from 'HGNForm/pages/Page2';
+import Page3 from 'HGNForm/pages/Page3';
+import Page4 from 'HGNForm/pages/Page4';
+import Page5 from 'HGNForm/pages/Page5';
+import Page6 from 'HGNForm/pages/Page6';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -381,6 +387,12 @@ export default (
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
+        <ProtectedRoute path="/hgnform" exact component={Page1}/>
+        <ProtectedRoute path="/hgnform/page2" exact component={Page2}/>
+        <ProtectedRoute path="/hgnform/page3" exact component={Page3}/>
+        <ProtectedRoute path="/hgnform/page4" exact component={Page4}/>
+        <ProtectedRoute path="/hgnform/page5" exact component={Page5}/>
+        <ProtectedRoute path="/hgnform/page6" exact component={Page6}/>  
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
       </Switch>
