@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-function TestEventRegistration () {
+function TestEventRegistration() {
   // State to store the event name and error message
   const [formValues, setFormValues] = useState({
     eventName: '',
@@ -606,7 +606,7 @@ function TestEventRegistration () {
             <h2 style={{ marginBottom: '1rem' }}>Form Submitted</h2>
             <p>Your form has been successfully submitted!</p>
             <button
-              type='button'
+              type="button"
               onClick={closeModal}
               style={{
                 marginTop: '1rem',
@@ -625,6 +625,6 @@ function TestEventRegistration () {
       )}
     </div>
   );
-};
+}
 
 export default TestEventRegistration;
