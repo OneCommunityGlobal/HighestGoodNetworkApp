@@ -16,7 +16,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: '14'
-
+          
+      - name: Set NODE_ENV
+        run: echo "NODE_ENV=test" >> $GITHUB_ENV
+        
       - name: Install dependencies
         run: npm install
 
