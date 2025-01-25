@@ -179,8 +179,8 @@ body {
 }
 
 .case-list-item {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
+  grid-template-columns: 2fr 3fr 1fr 1fr;
   align-items: center;
   padding: 15px;
   background-color: #fff;
