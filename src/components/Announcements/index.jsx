@@ -183,8 +183,9 @@ function Announcements({title, email}) {
   const handleScheduleTweets = () => {
     const htmlContent = `${emailContent}`;
     const scheduleDate = `${dateContent}`;
-    
-    dispatch(scheduleTweet(scheduleDate, htmlContent));
+    const scheduleTime = `${timeContent}`;
+
+    dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
   };
 
   const handleDateContentChange = e => {
@@ -219,6 +220,24 @@ function Announcements({title, email}) {
                   <small>{errors.dateOfWork}</small>
                 </div>
               )}</div>
+          <div inline className="mb-2">
+            <Label for="timeOfWork">
+              Time
+            </Label>
+            <Input
+              className="responsive-font-size"
+              type="time"
+              name="timeOfWork"
+              id="timeOfWork"
+              value={timeContent}
+              onChange={e => setTimeContent(e.target.value)}
+            />
+            {'timeOfWork' in errors && (
+              <div className="text-danger">
+                <small>{errors.timeOfWork}</small>
+              </div>
+            )}
+          </div>
           {showEditor && <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
             id="email-editor"

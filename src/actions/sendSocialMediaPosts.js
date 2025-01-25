@@ -29,13 +29,14 @@ export const sendTweet = (html) => {
   };
 };
 
-export const scheduleTweet = (scheduleDate, html) => {
+export const scheduleTweet = (scheduleDate, scheduleTime, html) => {
   const url = ENDPOINTS.SCHEDULE_TWEETS;
 
   return async () => {
     try {
-      console.log('ScheduleDate',scheduleDate);
-      const response = await axios.post(url, { "ScheduleDate": scheduleDate,"EmailContent": html });
+      console.log('ScheduleDate', scheduleDate);
+      console.log('ScheduleTime', scheduleTime);
+      const response = await axios.post(url, { "ScheduleDate": scheduleDate, "ScheduleTime": scheduleTime, "EmailContent": html });
       console.log('Tweet scheduled successfully:', response);
 
       // Display a success toast
