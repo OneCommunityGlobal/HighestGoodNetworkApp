@@ -237,7 +237,6 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
-
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
@@ -502,7 +501,7 @@ function LeaderBoard({
             )}
           </section>
         ))}
-
+        {leaderBoardData.length!==0?<div>
       {isDisplayAlert && (
         <Alert color="danger">
           This team has no members, please add members to this team by clicking{' '}
@@ -848,6 +847,12 @@ function LeaderBoard({
           </tbody>
         </Table>
       </div>
+      </div>:<div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: '200px' }}
+        >
+          <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
+        </div>}
     </div>
   );
 }
