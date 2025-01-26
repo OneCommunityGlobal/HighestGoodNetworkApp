@@ -120,6 +120,7 @@ function LostTimeHistory(props) {
               isTangible={entry.isTangible}
               entryType={entry.entryType}
               allData={props.allData}
+              // eslint-disable-next-line no-use-before-define
               reload={reload}
               darkMode={darkMode}
             />

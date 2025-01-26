@@ -8,19 +8,20 @@ import hasPermission from 'utils/permissions';
 import { updateTeam } from 'actions/allTeamsAction';
 import { boxStyle, boxStyleDark } from 'styles';
 
-function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
+function TeamTable({ allTeams, auth, darkMode }) {
   // Display project lists
   let TeamsList = [];
   const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role === 'Owner';
 
+  // eslint-disable-next-line react/no-unstable-nested-components
   function EditTeamCode({team}) {
 
     const [teamCode, setTeamCode] = useState(team.teamCode);
     const [hasError, setHasError] = useState(false);
     const fullCodeRegex = /^.{5,7}$/;
 
-    const handleOnChange = (value, team) => {
-      updateTeam(team.teamName, team._id, team.isActive, value);
+    const handleOnChange = (value, teamData) => {
+      updateTeam(teamData.teamName, teamData._id, teamData.isActive, value);
     };
   
     const handleCodeChange = e => {

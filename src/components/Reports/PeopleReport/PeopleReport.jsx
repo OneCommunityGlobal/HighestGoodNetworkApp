@@ -1,3 +1,4 @@
+/* eslint-disable no-nested-ternary */
 import { Component } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';

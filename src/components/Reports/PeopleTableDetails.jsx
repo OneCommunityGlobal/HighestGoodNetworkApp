@@ -327,6 +327,7 @@ function PeopleTableDetails(props) {
       </div>
       <div className="people-table">
         {filteredTasks.map(value => (
+          // eslint-disable-next-line react/no-unstable-nested-components
           <NewModal header="Task info" trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
             <div>Why This Task is important</div>
             <textarea className="rectangle" type="text" value={value.whyInfo} />
