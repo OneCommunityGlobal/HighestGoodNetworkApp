@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import classnames from 'classnames';
 import { ReportBlock } from '../ReportBlock';
 import './ReportHeader.css';

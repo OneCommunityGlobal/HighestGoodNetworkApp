@@ -1,3 +1,4 @@
+/* eslint-disable import/prefer-default-export */
 import { useEffect, useState } from 'react';
 import './ProjectMemberTable.css';
 import { Link } from 'react-router-dom';
