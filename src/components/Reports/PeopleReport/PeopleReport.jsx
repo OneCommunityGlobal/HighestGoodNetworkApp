@@ -30,7 +30,7 @@ import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
 import { Spinner, Alert } from 'reactstrap';
 import { updateRehireableStatus } from '../../../actions/userManagement'
-
+import { Row, Col } from 'reactstrap';
 class PeopleReport extends Component {
   constructor(props) {
     super(props);
@@ -432,69 +432,11 @@ class PeopleReport extends Component {
       const { profilePic, role, jobTitle, endDate, _id, createdDate, startDate } = userProfile;
 
       return (
-        <ReportPage.ReportHeader
-          src={profilePic}
-          avatar={profilePic ? undefined : <FiUser />}
-          isActive={isActive}
-          darkMode={darkMode}
-        >
-          <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
-            <p>
-              <Link to={`/userProfile/${_id}`}
-                title="View Profile"
-                className={darkMode ? 'text-light font-weight-bold' : ''}
-                style={{ fontSize: "24px" }}>
-                {firstName} {lastName}
-              </Link>
-            </p>
-            <p>Role: {role}</p>
-            <p>Title: {jobTitle}</p>
-
-            {/* {endDate ? ( */}
-            <div className="rehireable">
-              <Checkbox
-                value={isRehireable}
-                onChange={() => this.setRehireable(!isRehireable)}
-                label="Rehireable"
-                darkMode={darkMode}
-                backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
-                textColorCN={darkMode ? "text-light" : ""}
-              />
-            </div>
-            {/* ) : (
-              ''
-            )} */}
-
-            <div className="stats">
-              <div>
-                <h4>{formatDate(startDate)}</h4>
-                <p>Start Date</p>
-              </div>
-              <div>
-                <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
-                <p>End Date</p>
-              </div>
-              {bioStatus ? (
-                <div>
-                  <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
-                  {authRole === 'Administrator' || authRole === 'Owner' ? (
-                    <ToggleSwitch
-                      fontSize="13px"
-                      fontColor="#007BFF"
-                      switchType="bio"
-                      state={bioStatus}
-                      /* eslint-disable-next-line no-use-before-define */
-                      handleUserProfile={bio => onChangeBioPosted(bio)}
-                    />
-                  ) : null}
-                </div>
-              ) : null}
-            </div>
-          </div>
-        </ReportPage.ReportHeader>
+        <div></div>
       );
     };
-
+    const { isRehireable, bioStatus, authRole } = this.state;
+    const { profilePic, role, jobTitle, endDate, _id, createdDate, startDate } = userProfile;
     const onChangeBioPosted = async bio => {
       const bioStatus = bio;
       this.setState(() => {
@@ -521,110 +463,179 @@ class PeopleReport extends Component {
 
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
-        <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
-          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
-            <ReportPage.ReportBlock
-              firstColor="#ff5e82"
-              secondColor="#e25cb2"
-              className="people-report-time-log-block"
+        <Row >
+          <Col style={{ paddingTop: '40px' }} xs="12" md="3" className="order-md-last">
+            <ReportPage.ReportHeader
+              src={profilePic}
+              avatar={profilePic ? undefined : <FiUser />}
+              isActive={isActive}
               darkMode={darkMode}
             >
-              <h3 className="text-light">{weeklycommittedHours}</h3>
-              <p>Weekly Committed Hours</p>
-            </ReportPage.ReportBlock>
-
-            {userProfile.endDate ? (
-              ''
-            ) : (
-              <ReportPage.ReportBlock
-                firstColor="#b368d2"
-                secondColor="#831ec4"
-                className="people-report-time-log-block"
-                darkMode={darkMode}
-              >
-                <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
-                <p>Hours Logged This Week</p>
-              </ReportPage.ReportBlock>
-            )}
-
-            <ReportPage.ReportBlock
-              firstColor="#64b7ff"
-              secondColor="#928aef"
-              className="people-report-time-log-block"
-              darkMode={darkMode}
-            >
-              <h3 className="text-light">{infringements.length}</h3>
-              <p>Blue squares</p>
-            </ReportPage.ReportBlock>
-            <ReportPage.ReportBlock
-              firstColor="#ffdb56"
-              secondColor="#ff9145"
-              className="people-report-time-log-block"
-              darkMode={darkMode}
-            >
-              <h3 className="text-light">{totalTangibleHrsRound}</h3>
-              <p>Total Hours Logged</p>
-            </ReportPage.ReportBlock>
-          </div>
-          
-          <PeopleTasksPieChart darkMode={darkMode} />
-          
-          <div className="mobile-people-table">
-            <ReportPage.ReportBlock darkMode={darkMode}>
-              {this.state.isLoading ? (
-                <p
-                  className={`${darkMode ? 'text-light' : ''}
-                   d-flex align-items-center flex-row justify-content-center`}
-                >
-                  Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+              <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
+                <p>
+                  <Link to={`/userProfile/${_id}`}
+                    title="View Profile"
+                    className={darkMode ? 'text-light font-weight-bold' : ''}
+                    style={{ fontSize: "24px" }}>
+                    {firstName} {lastName}
+                  </Link>
                 </p>
-              ) : activeTasks.length > 0 ? (
-                <>
-                  <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
-                    <h4>Tasks contributed</h4>
-                  </div>
-                  <PeopleDataTable />
-                </>
-              ) : (
-                <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
-              )}
-              <div className="Infringementcontainer">
-                <div className="InfringementcontainerInner">
-                  <UserProject userProjects={userProjects} />
-                  <Infringements
-                    infringements={infringements}
-                    fromDate={fromDate}
-                    toDate={toDate}
-                    timeEntries={timeEntries}
+                <p>Role: {role}</p>
+                <p>Title: {jobTitle}</p>
+
+                {/* {endDate ? ( */}
+                <div className="rehireable">
+                  <Checkbox
+                    value={isRehireable}
+                    onChange={() => this.setRehireable(!isRehireable)}
+                    label="Rehireable"
+                    darkMode={darkMode}
+                    backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
+                    textColorCN={darkMode ? "text-light" : ""}
                   />
-                  <div className="visualizationDiv">
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
+                </div>
+                {/* ) : (
+              ''
+            )} */}
+
+                <div className="stats">
+                  <div>
+                    <h4>{formatDate(startDate)}</h4>
+                    <p>Start Date</p>
                   </div>
-                  <div className="visualizationDiv">
-                    <InfringementsViz
-                      infringements={infringements}
-                      fromDate={fromDate}
-                      toDate={toDate}
-                      darkMode={darkMode}
-                    />
+                  <div>
+                    <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
+                    <p>End Date</p>
                   </div>
-                  <div className="visualizationDivRow">
-                    <div className="BadgeSummaryDiv">
-                      <BadgeSummaryViz
-                        authId={auth.user.userid}
-                        userId={match.params.userId}
-                        badges={userProfile.badgeCollection}
-                      />
+                  {bioStatus ? (
+                    <div>
+                      <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
+                      {authRole === 'Administrator' || authRole === 'Owner' ? (
+                        <ToggleSwitch
+                          fontSize="13px"
+                          fontColor="#007BFF"
+                          switchType="bio"
+                          state={bioStatus}
+                          /* eslint-disable-next-line no-use-before-define */
+                          handleUserProfile={bio => onChangeBioPosted(bio)}
+                        />
+                      ) : null}
                     </div>
-                    <div className="BadgeSummaryPreviewDiv">
-                      <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
-                    </div>
-                  </div>
+                  ) : null}
                 </div>
               </div>
-            </ReportPage.ReportBlock>
-          </div>
-          {/* {tangibleHoursReportedThisWeek === 0 ? (
+            </ReportPage.ReportHeader>
+
+
+          </Col >
+          <Col xs="12" md="9">
+            <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
+
+
+              <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
+                <ReportPage.ReportBlock
+                  firstColor="#ff5e82"
+                  secondColor="#e25cb2"
+                  className="people-report-time-log-block"
+                  darkMode={darkMode}
+                >
+                  <h3 className="text-light">{weeklycommittedHours}</h3>
+                  <p>Weekly Committed Hours</p>
+                </ReportPage.ReportBlock>
+
+                {userProfile.endDate ? (
+                  ''
+                ) : (
+                  <ReportPage.ReportBlock
+                    firstColor="#b368d2"
+                    secondColor="#831ec4"
+                    className="people-report-time-log-block"
+                    darkMode={darkMode}
+                  >
+                    <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
+                    <p>Hours Logged This Week</p>
+                  </ReportPage.ReportBlock>
+                )}
+                <ReportPage.ReportBlock
+                  firstColor="#64b7ff"
+                  secondColor="#928aef"
+                  className="people-report-time-log-block"
+                  darkMode={darkMode}
+                >
+                  <h3 className="text-light">{infringements.length}</h3>
+                  <p>Blue squares</p>
+                </ReportPage.ReportBlock>
+                <ReportPage.ReportBlock
+                  firstColor="#ffdb56"
+                  secondColor="#ff9145"
+                  className="people-report-time-log-block"
+                  darkMode={darkMode}
+                >
+                  <h3 className="text-light">{totalTangibleHrsRound}</h3>
+                  <p>Total Hours Logged</p>
+                </ReportPage.ReportBlock>
+              </div>
+
+
+
+              <PeopleTasksPieChart darkMode={darkMode} />
+
+              <div className="mobile-people-table">
+                <ReportPage.ReportBlock darkMode={darkMode}>
+                  {this.state.isLoading ? (
+                    <p
+                      className={`${darkMode ? 'text-light' : ''}
+                   d-flex align-items-center flex-row justify-content-center`}
+                    >
+                      Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+                    </p>
+                  ) : activeTasks.length > 0 ? (
+                    <>
+                      <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
+                        <h4>Tasks contributed</h4>
+                      </div>
+                      <PeopleDataTable />
+                    </>
+                  ) : (
+                    <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
+                  )}
+                  <div className="Infringementcontainer">
+                    <div className="InfringementcontainerInner">
+                      <UserProject userProjects={userProjects} />
+                      <Infringements
+                        infringements={infringements}
+                        fromDate={fromDate}
+                        toDate={toDate}
+                        timeEntries={timeEntries}
+                      />
+                      <div className="visualizationDiv">
+                        <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
+                      </div>
+                      <div className="visualizationDiv">
+                        <InfringementsViz
+                          infringements={infringements}
+                          fromDate={fromDate}
+                          toDate={toDate}
+                          darkMode={darkMode}
+                        />
+                      </div>
+                      <div className="visualizationDivRow">
+                        <div className="BadgeSummaryDiv">
+                          <BadgeSummaryViz
+                            authId={auth.user.userid}
+                            userId={match.params.userId}
+                            badges={userProfile.badgeCollection}
+                          />
+                        </div>
+                        <div className="BadgeSummaryPreviewDiv">
+                          <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </ReportPage.ReportBlock>
+              </div>
+              {/* {tangibleHoursReportedThisWeek === 0 ? (
             <div className="report-no-log-message">No task has been logged this week...</div>
           ) : (
             <div className="mobile-people-table">
@@ -671,7 +682,10 @@ class PeopleReport extends Component {
               </ReportPage.ReportBlock>
             </div>
           )} */}
-        </ReportPage>
+            </ReportPage>
+          </Col>
+
+        </Row>
       </div>
     );
   }

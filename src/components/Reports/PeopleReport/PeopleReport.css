@@ -25,12 +25,12 @@ body {
 }
 
 
-.people-report-time-log-block h3{
+.people-report-time-log-block h3 {
   color: #fff;
 }
 
-.auto-width-report-time-logs-wrapper{
-  gap:40px
+.auto-width-report-time-logs-wrapper {
+  gap: 40px
 }
 
 
@@ -223,7 +223,6 @@ body {
 
 @media (min-width: 850px) {
   .people-report-time-logs-wrapper {
-    margin-top: 25px;
     display: flex;
     flex-wrap: wrap;
     justify-content: space-between;
@@ -232,8 +231,7 @@ body {
 }
 
 @media (min-width: 850px) and (max-width: 1249px) {
-  .people-report-time-logs-wrapper > * {
-    margin-top: 25px;
+  .people-report-time-logs-wrapper>* {
     /* display: flex; */
     flex-wrap: wrap;
     justify-content: space-between;
@@ -242,8 +240,8 @@ body {
 }
 
 @media (min-width: 275px) and (max-width: 435px) {
-  .people-report-time-logs-wrapper > * {
-    margin-top: 25px; 
+  .people-report-time-logs-wrapper>* {
+    margin-top: 25px;
     /* display: flex; */
     flex-wrap: wrap;
     justify-content: space-between;
