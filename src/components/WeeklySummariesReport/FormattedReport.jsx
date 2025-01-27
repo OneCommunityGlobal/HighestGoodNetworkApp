@@ -88,7 +88,7 @@ function FormattedReport({
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
-            loadBzadges={loadBadges}
+            loadBadges={loadBadges}
             canSeeBioHighlight={canSeeBioHighlight}
             darkMode={darkMode}
             handleTeamCodeChange={handleTeamCodeChange}
