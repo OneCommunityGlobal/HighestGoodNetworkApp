@@ -29,7 +29,7 @@ const DATE_PICKER_MIN_DATE = '01/01/2010';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 import Loading from '../common/Loading';
-import {getTimeEntriesForPeriod} from '../../actions/timeEntries';
+import { getUsersTotalHoursForSpecifiedPeriod } from '../../actions/timeEntries';
 
 class ReportsPage extends Component {
   constructor(props) {
@@ -53,7 +53,7 @@ class ReportsPage extends Component {
       wildCardSearchText: '',
       selectedTeamId: 0,
       selectedTeam: '',
-      filterStatus: "all",
+      filterStatus: 'all',
       formElements: {
         summary: '',
         summaryLastWeek: '',
@@ -79,7 +79,7 @@ class ReportsPage extends Component {
       activeTab: '1',
       errors: {},
       fetchError: null,
-      loading: false,
+      loading: true,
       teamSearchData: {},
       peopleSearchData: [],
       projectSearchData: {},
@@ -88,6 +88,7 @@ class ReportsPage extends Component {
       endDate: new Date(),
       teamMemberList: {},
       remainedTeams: [],
+      userProfilesWithHours: [],
     };
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable = this.showPeopleTable.bind(this);
@@ -108,32 +109,33 @@ class ReportsPage extends Component {
   }
 
   async componentDidMount() {
-    this.props.fetchAllProjects(); // Fetch to get all projects
-    this.props.getAllUserTeams();
-    this.props.getUserProfileBasicInfo();
-  }
+    const fetchProjects = this.props.fetchAllProjects();
+    const fetchTeams = this.props.getAllUserTeams();
+    const fetchUserProfile = this.props.getUserProfileBasicInfo();
 
-  componentDidUpdate(prevProps, prevState) {
-    const { filterStatus, startDate, endDate } = this.state;
+    // parallel api calls
+    await Promise.all([fetchProjects, fetchTeams, fetchUserProfile]);
 
-    // Check if 10-hour filter is selected and start/end dates have changed
-    if (
-      filterStatus === 'tenHour' &&
-      (startDate !== prevState.startDate || endDate !== prevState.endDate)
-    ) {
-      this.filterByTenHours(startDate, endDate); // Call the function to filter users
-    }
+    const userIds = this.props.state.allUserProfilesBasicInfo.userProfilesBasicInfo.map(
+      userProfile => userProfile._id,
+    );
+
+    const timeEntriesHours = await this.props.getUsersTotalHoursForSpecifiedPeriod(
+      userIds,
+      new Date(DATE_PICKER_MIN_DATE),
+      new Date(),
+    );
+
+    const userProfilesMappedWithHours = timeEntriesHours.map(entry => ({
+      id: entry.userId,
+      totalHours: Math.round(entry.totalHours * 10) / 10,
+    }));
+
+    this.setState({ userProfilesWithHours: userProfilesMappedWithHours, loading: false });
   }
 
   setFilterStatus(status) {
     this.setState({ filterStatus: status });
-  }
-
-  /**
-   * callback for search
-   */
-  onWildCardSearch(searchText) {
-    this.setState({ wildCardSearchText: searchText });
   }
 
   handleClearFilters() {
@@ -142,6 +144,12 @@ class ReportsPage extends Component {
       endDate: new Date(),
       wildCardSearchText: '',
     });
+  }
+  /**
+   * callback for search
+   */
+  onWildCardSearch(searchText) {
+    this.setState({ wildCardSearchText: searchText });
   }
 
   filteredProjectList = projects => {
@@ -205,23 +213,6 @@ class ReportsPage extends Component {
     });
 
     return filteredList;
-  };
-
-  filterByTenHours = async (startDate, endDate) => {
-    const { userProfilesBasicInfo } = this.props.state.allUserProfilesBasicInfo;
-    const promises = userProfilesBasicInfo.map(async userProfile => {
-      // time entries within selected date range
-      const timeEntries = await this.props.getTimeEntriesForPeriod(
-        userProfile.id,
-        startDate,
-        endDate,
-      );
-      const totalHours = timeEntries.reduce((sum, entry) => sum + entry.totalSeconds / 3600, 0);
-      return { ...userProfile, totalHours };
-    });
-
-    const usersWithHours = await Promise.all(promises);
-    this.setState({ peopleSearchData: usersWithHours.filter(user => user.totalHours > 10)});
   };
 
   setTeamMemberList(list) {
@@ -449,6 +440,15 @@ class ReportsPage extends Component {
       this.state.teamSearchData = this.filteredTeamList(this.state.teamSearchData);
       this.state.peopleSearchData = this.filteredPeopleList(this.state.peopleSearchData);
       this.state.projectSearchData = this.filteredProjectList(this.state.projectSearchData);
+    }
+    if (this.state.filterStatus === 'tenHour') {
+      const filteredIds = this.state.userProfilesWithHours
+        .filter(user => user.totalHours > 10)
+        .map(user => user.id);
+
+      this.state.peopleSearchData = this.props.state.allUserProfilesBasicInfo.userProfilesBasicInfo.filter(
+        userProfile => filteredIds.includes(userProfile._id),
+      );
     }
 
     if (this.state.startDate != null && this.state.endDate != null) {
@@ -873,6 +873,6 @@ export default connect(mapStateToProps, {
   fetchAllProjects,
   getAllUserTeams,
   getUserProfileBasicInfo,
-  getTimeEntriesForPeriod,
+  getUsersTotalHoursForSpecifiedPeriod,
   fetchAllTasks,
 })(ReportsPage);
