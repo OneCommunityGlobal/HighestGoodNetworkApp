@@ -15,16 +15,16 @@ import {
   ModalFooter,
 } from 'reactstrap';
 import moment from 'moment-timezone';
-import { isEmpty, isEqual } from 'lodash';
+import { isEmpty, isEqual, set } from 'lodash';
 import { Editor } from '@tinymce/tinymce-react';
 import { toast } from 'react-toastify';
 import ReactTooltip from 'react-tooltip';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import { getUserProfile } from 'actions/userProfile';
-
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
 import ReminderModal from './ReminderModal';
+import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import axios from 'axios';
 import { ENDPOINTS } from '../../../utils/URL';
 import hasPermission from 'utils/permissions';
@@ -77,11 +77,11 @@ const TINY_MCE_INIT_OPTIONS = {
 const TimeEntryForm = props => {
   /*---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, userProfile, darkMode } = props;
   // props from store
   const { authUser } = props;
 
-  const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}'); 
+  const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
 
   const initialFormValues = Object.assign(
     {
@@ -101,7 +101,7 @@ const TimeEntryForm = props => {
     data,
   );
 
-  const timeEntryUserId = from === 'Timer' 
+  const timeEntryUserId = from === 'Timer'
     ? (viewingUser.userId ?? authUser.userid)
     : data.personId;
 
@@ -141,22 +141,27 @@ const TimeEntryForm = props => {
   const [reminder, setReminder] = useState(initialReminder);
   const [isTangibleInfoModalVisible, setTangibleInfoModalVisibility] = useState(false);
   const [isAboutModalVisible, setAboutModalVisible] = useState(false);
+  const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
-  const isSameDayTimeEntry = moment().tz('America/Los_Angeles').format('YYYY-MM-DD') === formValues.dateOfWork;
+  const isSameDayTimeEntry =
+    moment()
+      .tz('America/Los_Angeles')
+      .format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
   const canEditTimeEntryTime = props.hasPermission('editTimeEntryTime');
   const canEditTimeEntryDescription = props.hasPermission('editTimeEntryDescription');
-  const canEditTimeEntryToggleTangible = isForAuthUser ?
-    props.hasPermission('toggleTangibleTime'):
-    props.hasPermission('editTimeEntryToggleTangible');
+  const canEditTimeEntryToggleTangible = isForAuthUser
+    ? props.hasPermission('toggleTangibleTime')
+    : props.hasPermission('editTimeEntryToggleTangible');
   const canEditTimeEntryDate = props.hasPermission('editTimeEntryDate');
   const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
 
-// Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
-  const canChangeTime = from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntryTime || isSameDayAuthUserEdit) ;
+  // Administrator/Owner can add time entries for any dates, and other roles can only edit their own time entry in the same day.
+  const canChangeTime =
+    from !== 'Timer' && (from === 'TimeLog' || canEditTimeEntryTime || isSameDayAuthUserEdit);
 
   /*---------------- methods -------------- */
   const toggleRemainder = () =>
@@ -229,6 +234,7 @@ const TimeEntryForm = props => {
     }));
   };
 
+
   const validateForm = isTimeModified => {
     const errorObj = {};
     const remindObj = { ...initialReminder };
@@ -237,7 +243,8 @@ const TimeEntryForm = props => {
 
     if (!formValues.dateOfWork) errorObj.dateOfWork = 'Date is required';
     if (!isDateValid) errorObj.dateOfWork = 'Invalid date';
-    if (from !== 'Timer' && from !== 'WeeklyTab' && !canChangeTime) errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
+    if (from !== 'Timer' && from !== 'WeeklyTab' && !canChangeTime)
+      errorObj.dateOfWork = 'Invalid date. Please refresh the page.';
     if (!formValues.hours && !formValues.minutes)
       errorObj.time = 'Time should be greater than 0 minutes';
     if (!formValues.projectId) errorObj.projectId = 'Project/Task is required';
@@ -288,35 +295,44 @@ const TimeEntryForm = props => {
     if (closed === true && isOpen) toggle();
   };
 
-  const handleSubmit = async event => {
-    event.preventDefault();
+  const handleSubmit = async (event) => {
+    if (event) {
+      event.preventDefault();
+    }
     setSubmitting(true);
-
+  
     if (edit && isEqual(formValues, initialFormValues)) {
       toast.info(`Nothing is changed for this time entry`);
       setSubmitting(false);
       return;
     }
+    
+    if (!edit && !formValues.isTangible) {
+      setTimelogConfirmationModalVisible(true);
+      setSubmitting(false);
+      return;
+    }
+  
+    await submitTimeEntry();
+  };
 
+  const submitTimeEntry = async () => {
     const { hours: formHours, minutes: formMinutes } = formValues;
-
+    const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
-
+  
     if (!validateForm(isTimeModified)) {
       setSubmitting(false);
       return;
     }
-
-    // Construct the timeEntry object
-    const timeEntry = { ...formValues };
-
+  
     try {
       if (edit) {
         await props.editTimeEntry(data._id, timeEntry, initialDateOfWork);
       } else {
         await props.postTimeEntry(timeEntry);
       }
-  
+
       setFormValues(initialFormValues);
 
       //Clear the form and clean up.
@@ -352,15 +368,23 @@ const TimeEntryForm = props => {
           editLimitNotification: !reminder.editLimitNotification,
         }));
       }
-  
+
       setReminder(initialReminder);
       if (isOpen) toggle();
       setSubmitting(false);
-
     } catch (error) {
       toast.error(`An error occurred while attempting to submit your time entry. Error: ${error}`);
       setSubmitting(false);
-    }
+    };
+  };
+
+  const handleTangibleTimelogConfirm = async () => {
+    setTimelogConfirmationModalVisible(false);
+    await submitTimeEntry();
+  };
+  
+  const handleTangibleTimelogCancel = () => {
+    setTimelogConfirmationModalVisible(false);
   };
 
   const tangibleInfoModalToggle = e => {
@@ -485,8 +509,8 @@ const TimeEntryForm = props => {
   }, [isOpen, timeEntryUserId]);
 
   useEffect(() => {
-    setFormValues({ ...formValues, ...data})
-  }, [data])
+    setFormValues({ ...formValues, ...data });
+  }, [data]);
 
   const fontColor = darkMode ? 'text-light' : '';
   const headerBg = darkMode ? 'bg-space-cadet' : '';
@@ -494,7 +518,13 @@ const TimeEntryForm = props => {
 
   return (
     <>
-      <Modal className={darkMode ? `${fontColor} dark-mode` : ''} isOpen={isOpen} toggle={toggle} data-testid="timeEntryFormModal" style={darkMode ? boxStyleDark : {}}>
+      <Modal
+        className={darkMode ? `${fontColor} dark-mode` : ''}
+        isOpen={isOpen}
+        toggle={toggle}
+        data-testid="timeEntryFormModal"
+        style={darkMode ? boxStyleDark : {}}
+      >
         <ModalHeader toggle={toggle} className={`${headerBg}`}>
           <div>
             {edit ? 'Edit ' : 'Add '}
@@ -512,7 +542,7 @@ const TimeEntryForm = props => {
               title="timeEntryTip"
               onClick={aboutModalToggle}
             />
-            { !isAsyncDataLoaded && <span> Loading Data...</span> }
+            {!isAsyncDataLoaded && <span> Loading Data...</span>}
           </div>
           <ReactTooltip id="registerTip" place="bottom" effect="solid">
             Click this icon to learn about this time entry form
@@ -521,14 +551,16 @@ const TimeEntryForm = props => {
         <ModalBody className={bodyBg}>
           <Form>
             <FormGroup>
-              <Label for="dateOfWork" className={fontColor}>Date</Label>
+              <Label for="dateOfWork" className={fontColor}>
+                Date
+              </Label>
               <Input
                 type="date"
                 name="dateOfWork"
                 id="dateOfWork"
                 value={formValues.dateOfWork}
                 onChange={handleInputChange}
-                // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]} 
+                // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]}
                 disabled={!canEditTimeEntryDate}
               />
               {'dateOfWork' in errors && (
@@ -538,7 +570,9 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
+              <Label for="timeSpent" className={fontColor}>
+                Time (HH:MM)
+              </Label>
               <Row form>
                 <Col>
                   <Input
@@ -574,7 +608,9 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="project" className={fontColor}>Project/Task</Label>
+              <Label for="project" className={fontColor}>
+                Project/Task
+              </Label>
               <Input
                 type="select"
                 name="projectOrTask"
@@ -591,7 +627,9 @@ const TimeEntryForm = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="notes" className={fontColor}>Notes</Label>
+              <Label for="notes" className={fontColor}>
+                Notes
+              </Label>
               <Editor
                 tinymceScriptSrc="/tinymce/tinymce.min.js"
                 init={TINY_MCE_INIT_OPTIONS}
@@ -639,7 +677,12 @@ const TimeEntryForm = props => {
           <Button onClick={clearForm} color="danger" style={darkMode ? boxStyleDark : boxStyle}>
             Clear Form
           </Button>
-          <Button color="primary" onClick={handleSubmit} style={darkMode ? boxStyleDark : boxStyle} disabled={submitting}>
+          <Button
+            color="primary"
+            onClick={handleSubmit}
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={submitting}
+          >
             {edit ? (submitting ? 'Saving...' : 'Save') : submitting ? 'Submitting...' : 'Submit'}
           </Button>
         </ModalFooter>
@@ -649,7 +692,11 @@ const TimeEntryForm = props => {
         setVisible={setTangibleInfoModalVisibility}
         darkMode={darkMode}
       />
-      <AboutModal visible={isAboutModalVisible} setVisible={setAboutModalVisible} darkMode={darkMode}/>
+      <AboutModal
+        visible={isAboutModalVisible}
+        setVisible={setAboutModalVisible}
+        darkMode={darkMode}
+      />
       <ReminderModal
         inputs={formValues}
         data={data}
@@ -658,6 +705,14 @@ const TimeEntryForm = props => {
         visible={reminder.openModal}
         setVisible={toggleRemainder}
         cancelChange={cancelChange}
+        darkMode={darkMode}
+      />
+      <TimeLogConfirmationModal 
+        isOpen={isTimelogConfirmationModalVisible}
+        toggleModal={handleTangibleTimelogCancel}
+        onConfirm={handleTangibleTimelogConfirm}
+        onReject={handleTangibleTimelogCancel}
+        onIntangible={handleTangibleTimelogConfirm}
         darkMode={darkMode}
       />
     </>

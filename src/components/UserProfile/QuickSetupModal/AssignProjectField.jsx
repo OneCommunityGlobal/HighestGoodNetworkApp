@@ -3,7 +3,13 @@ import { Dropdown, Input } from 'reactstrap';
 
 
 const AssignProjectField = React.memo(props => {
-  const [searchText, onInputChange] = useState('');
+  const [searchText, onInputChange] = useState(()=>{
+    if(props.editMode){
+      return props.value.projectName
+    }else{
+      return ''
+    }
+  });
   const [isOpen, toggle] = useState(false);
 
   useEffect(() => {
@@ -29,6 +35,7 @@ const AssignProjectField = React.memo(props => {
           onInputChange(e.target.value);
           toggle(true);
         }}
+
       />
 
       {searchText !== '' && props.projectsData && props.projectsData.length > 0 ? (

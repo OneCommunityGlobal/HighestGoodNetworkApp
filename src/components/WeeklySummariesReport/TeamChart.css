@@ -1,0 +1,42 @@
+/* TeamTable.css */
+
+/* Style for the table */
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-bottom: 20px;
+  }
+
+.thead-dark th{
+  background-color: #1C2A41;
+  color: white
+}
+.thead-light th{
+  background-color: #F6F6F3;
+  color: black;
+}
+  
+  /* Style for table headers */
+  th {
+    text-align: center;
+    padding: 8px;
+  }
+
+  
+  /* Style for table data cells */
+  td {
+    border: 1px solid #ddd;
+    padding: 8px;
+    text-align: center;
+  }
+  
+  /* Style for footer */
+  tfoot td {
+    font-weight: bold;
+  }
+  
+  /* Hover effect on rows */
+  tbody tr:hover {
+    background-color: #e2e2e2;
+  }
+  
