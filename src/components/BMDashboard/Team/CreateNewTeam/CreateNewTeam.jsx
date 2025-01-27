@@ -9,7 +9,7 @@ import { getUserProfileBasicInfo } from '../../../../actions/userManagement';
 const initialFormState = {
   teamName: '',
   additionalInformation: '',
-  members: [],
+  teamMembers: [],
   tasks: [],
 };
 
@@ -27,6 +27,14 @@ export default function CreateNewTeam() {
   const [tasks] = useState([]);
   const [assignedMembers, setAssignedMembers] = useState([]);
   const [assignedTasks, setAssignedTasks] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [taskErrorMessage, setTaskErrorMessage] = useState('');
+
+  const [touchedFields, setTouchedFields] = useState({
+    teamName: false,
+    assignedMembers: false,
+    additionalInformation: false,
+  });
 
   useEffect(() => {
     dispatch(getUserProfileBasicInfo());
@@ -40,17 +48,12 @@ export default function CreateNewTeam() {
     additionalInformation: Joi.string()
       .max(500)
       .allow(''),
-    teamName: Joi.string().required(),
+    teamName: Joi.string()
+      .required()
+      .max(35),
   };
 
   const schema = Joi.object(validationObj).unknown();
-
-  const handleInputChange = (name, value) => {
-    setFormData(prevData => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
 
   const validate = data => {
     const result = schema.validate(data, { abortEarly: false });
@@ -60,15 +63,46 @@ export default function CreateNewTeam() {
         errorMessages[detail.path[0]] = detail.message;
       });
     }
-
     if (assignedMembers.length === 0) {
       errorMessages.assignedMembers = 'You must assign at least one member.';
+    } else {
+      // Clear the assignedMembers error if members have been added
+      delete errorMessages.assignedMembers;
     }
     return Object.keys(errorMessages).length > 0 ? errorMessages : null;
   };
 
+  useEffect(() => {
+    // Only trigger validation if the form is touched (fields are interacted with)
+    if (Object.values(touchedFields).includes(true)) {
+      const validationErrors = validate({ ...formData, teamMembers: assignedMembers });
+      setErrors(validationErrors || {});
+    }
+  }, [assignedMembers, touchedFields]);
+
+  const handleInputChange = (name, value) => {
+    setFormData(prevData => ({
+      ...prevData,
+      [name]: value,
+    }));
+
+    // const validationErrors = validate(formData);
+    // setErrors(validationErrors || {});
+  };
+
+  const handleTeamNameBlur = () => {
+    setTouchedFields(prevState => ({ ...prevState, teamName: true }));
+    const validationErrors = validate(formData); // Trigger validation when field loses focus
+    setErrors(validationErrors || {});
+  };
+
   const handleSubmit = async event => {
     event.preventDefault();
+    setTouchedFields({
+      teamName: true,
+      assignedMembers: true,
+      additionalInformation: true,
+    });
     const validationErrors = validate(formData);
     setErrors(validationErrors || {});
     if (validationErrors) {
@@ -77,7 +111,7 @@ export default function CreateNewTeam() {
 
     const updatedFormData = {
       ...formData,
-      members: assignedMembers,
+      teamMembers: assignedMembers,
       tasks: assignedTasks,
     };
 
@@ -89,6 +123,12 @@ export default function CreateNewTeam() {
     setSelectedTask('');
     setAssignedTasks([]);
     setFormData(initialFormState);
+    setErrors({});
+    setTouchedFields({
+      teamName: false,
+      assignedMembers: false,
+      additionalInformation: false,
+    });
   };
 
   const handleCancelClick = () => {
@@ -97,15 +137,44 @@ export default function CreateNewTeam() {
     setSelectedTask('');
     setAssignedTasks([]);
     setFormData(initialFormState);
+    setErrors({});
+    setTouchedFields({
+      teamName: false,
+      assignedMembers: false,
+      additionalInformation: false,
+    });
   };
 
   const handleMemberChange = e => {
     setSelectedMember(e.target.value);
+    setErrorMessage('');
   };
 
   const handleAddMember = () => {
+    if (!selectedMember) {
+      setErrorMessage('Please select a member!');
+      return;
+    }
+    if (assignedMembers.includes(selectedMember)) {
+      setErrorMessage('This member is already assigned!'); // Error for duplicate addition
+      return;
+    }
+    // if (selectedMember && !assignedMembers.includes(selectedMember)) {
+    //   setAssignedMembers([...assignedMembers, selectedMember]);
+    //   setSelectedMember('');
+    //   setErrorMessage('');
+
+    //   const validationErrors = validate(formData);
+    //   setErrors(validationErrors || {});
+    // }
     if (selectedMember && !assignedMembers.includes(selectedMember)) {
-      setAssignedMembers([...assignedMembers, selectedMember]);
+      setAssignedMembers(prevMembers => {
+        const updatedMembers = [...prevMembers, selectedMember];
+        const validationErrors = validate({ ...formData, teamMembers: updatedMembers });
+        setErrors(validationErrors || {});
+        setErrorMessage('');
+        return updatedMembers;
+      });
       setSelectedMember('');
     }
   };
@@ -114,13 +183,22 @@ export default function CreateNewTeam() {
     setAssignedMembers(assignedMembers.filter(m => m !== member));
   };
 
-  const isMemberAssigned = assignedMembers.includes(selectedMember);
+  // const isMemberAssigned = assignedMembers.includes(selectedMember);
 
   const handleTaskChange = e => {
     setSelectedTask(e.target.value);
+    setTaskErrorMessage('');
   };
 
   const handleAddTask = () => {
+    // if (!selectedTask) {
+    //   setTaskErrorMessage('Please select a Task!');
+    //   return;
+    // }
+    if (assignedTasks.includes(selectedTask)) {
+      setTaskErrorMessage('This task is already assigned!'); // Error for duplicate addition
+      return;
+    }
     if (selectedTask && !assignedTasks.includes(selectedTask)) {
       setAssignedTasks([...assignedTasks, selectedTask]);
       setSelectedTask('');
@@ -131,7 +209,7 @@ export default function CreateNewTeam() {
     setAssignedTasks(assignedTasks.filter(t => t !== task));
   };
 
-  const isTaskAssigned = assignedTasks.includes(selectedTask);
+  // const isTaskAssigned = assignedTasks.includes(selectedTask);
 
   return (
     <main className="add-team-container">
@@ -151,6 +229,7 @@ export default function CreateNewTeam() {
             placeholder="Input new team name"
             value={formData.teamName}
             onChange={event => handleInputChange('teamName', event.target.value)}
+            onBlur={handleTeamNameBlur}
           />
           {errors.teamName && (
             <Label for="teamNameErr" sm={12} className="teamFormError">
@@ -180,7 +259,7 @@ export default function CreateNewTeam() {
             </Input>
             <Button
               onClick={handleAddMember}
-              disabled={!selectedMember || isMemberAssigned}
+              // disabled={!selectedMember || isMemberAssigned}
               className="add-member-button"
             >
               Add
@@ -189,6 +268,11 @@ export default function CreateNewTeam() {
           {errors.assignedMembers && (
             <Label for="assignedMembersErr" className="teamFormError">
               {errors.assignedMembers}
+            </Label>
+          )}
+          {errorMessage && (
+            <Label className="teamFormError" style={{ color: 'red' }}>
+              {errorMessage}
             </Label>
           )}
         </FormGroup>
@@ -219,12 +303,17 @@ export default function CreateNewTeam() {
             </Input>
             <Button
               onClick={handleAddTask}
-              disabled={!selectedTask || isTaskAssigned}
+              // disabled={!selectedTask || isTaskAssigned}
               style={{ marginTop: '10px' }}
             >
               Add
             </Button>
           </div>
+          {errorMessage && (
+            <Label className="teamFormError" style={{ color: 'red' }}>
+              {taskErrorMessage}
+            </Label>
+          )}
         </FormGroup>
 
         <div>

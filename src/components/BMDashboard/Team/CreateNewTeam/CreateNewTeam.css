@@ -1,15 +1,21 @@
   .add-team-form Label{
   font-size: .8em;
   }
-  
-  .add-team-buttons{
+
+  .add-team-buttons {
     display: flex;
     gap: 1rem;
     margin: 1rem auto 2rem;
   }
   
-  .add-team-buttons button{
-    width: 50%;
+  .add-team-buttons button {
+    flex: 1; /* Ensure buttons share equal width */
+  }
+  
+  @media screen and (max-width: 800px) {
+    .add-team-buttons {
+      gap: 0.5rem; /* Reduce gap for smaller screens */
+    }
   }
 
   .add-team-buttons button#submit-button {
@@ -86,9 +92,22 @@
     align-items: center;
     gap: 10px;
   }
+  
+  @media screen and (max-width: 800px) {
+    .select-container {
+      flex-direction: column; /* Stack items vertically on small screens */
+      align-items: stretch; /* Make items take full width */
+    }
+  
+    .select-container .member-dropdown,
+    .select-container Button {
+      width: 100%; /* Full width for dropdown and button */
+    }
 
-  .member-dropdown {
-    flex: 1;
+    .select-container Button {
+      max-width: 300px; /* Prevent it from growing too large */
+      min-width: 150px; /* Prevent it from shrinking too small */
+    }
   }
   
   .add-team-container Button{
