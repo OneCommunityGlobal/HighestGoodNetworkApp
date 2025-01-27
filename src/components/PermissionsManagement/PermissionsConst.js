@@ -396,6 +396,17 @@ export const permissionLabels = [
     ],
   },
   {
+    label: 'Meetings',
+    description: 'Category to arrange meetings',
+    subperms: [
+      {
+        label: 'Schedule Meetings',
+        key: 'scheduleMeetings',
+        description: 'Gives the user permission to schedule a meeting with other users. ',
+      },
+    ],
+  },
+  {
     label: 'Permissions Management',
     description: 'Category for all permissions related to permissions management',
     subperms: [

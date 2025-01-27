@@ -88,12 +88,10 @@ const notificationReducer = (state = initialState, action) => {
       const updatedUnreadNotifications = unreadNotifications.filter((notification) => notification._id !== action.payload);
       return {
         ...state,
-        // remove the notification from unreadNotifications
         unreadNotifications: updatedUnreadNotifications,
         loading: false,
         error: null,
       };
-
     
     default:
       return state;

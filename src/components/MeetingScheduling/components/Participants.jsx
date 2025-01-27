@@ -1,0 +1,133 @@
+import { useState } from 'react';
+import './Participants.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faTimesCircle } from '@fortawesome/free-solid-svg-icons';
+
+function Participants({
+  userProfiles,
+  participantList,
+  addParticipant,
+  removeParticipant,
+  authUserId,
+  darkMode,
+}) {
+  const [filteredData, setFilteredData] = useState([]);
+  const [isFocused, setIsFocused] = useState(false);
+
+  const sortByStartingWith = keyword => {
+    const newFilterList = userProfiles.filter(
+      userProfile =>
+        userProfile._id !== authUserId &&
+        !participantList.some(
+          participant => participant.name === `${userProfile.firstName} ${userProfile.lastName}`,
+        ) &&
+        `${userProfile.firstName} ${userProfile.lastName}`
+          .toLowerCase()
+          .includes(keyword.toLowerCase()),
+    );
+
+    const finalList = newFilterList.sort((a, b) => {
+      // check if the first name starts with the input letter
+      const aStarts = `${a.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
+      const bStarts = `${b.firstName}`.toLowerCase().startsWith(keyword.toLowerCase());
+      if (aStarts && bStarts)
+        return `${a.firstName}`.toLowerCase().localeCompare(`${b.firstName}`.toLowerCase());
+      if (aStarts && !bStarts) return -1;
+      if (!aStarts && bStarts) return 1;
+      if (!aStarts && !bStarts) {
+        // if the first name does not start with input letter, check if the last name starts with the input letter
+        const aLastName = `${a.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
+        const bLastName = `${b.lastName}`.toLowerCase().startsWith(keyword.toLowerCase());
+        if (aLastName && bLastName)
+          return `${a.lastName}`.toLowerCase().localeCompare(`${b.lastName}`.toLowerCase());
+        if (aLastName && !bLastName) return -1;
+        if (!aLastName && bLastName) return 1;
+      }
+      return `${a.firstName} ${a.lastName}`
+        .toLowerCase()
+        .localeCompare(`${b.firstName} ${b.lastName}`.toLowerCase());
+    });
+
+    return finalList;
+  };
+
+  const handleFilter = event => {
+    const wordToSearch = event.target.value;
+    const newFilter = sortByStartingWith(wordToSearch);
+    setFilteredData(newFilter);
+  };
+
+  const handleFocus = () => {
+    setIsFocused(true);
+  };
+
+  const handleBlur = () => {
+    setTimeout(() => setIsFocused(false), 200);
+  };
+
+  const handleClick = (event, userProfile) => {
+    addParticipant(userProfile._id, userProfile.firstName, userProfile.lastName);
+    const closestElement = event.target.closest('.filter-userprofiles');
+    if (closestElement && closestElement.previousElementSibling) {
+      closestElement.previousElementSibling.value = '';
+    }
+    setFilteredData([]);
+  };
+
+  return (
+    <div>
+      <div className="position-relative">
+        <input
+          type="text"
+          placeholder="Add participants"
+          onChange={handleFilter}
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+        />
+        {filteredData.length !== 0 && isFocused && (
+          <ul
+            className={`filter-userprofiles custom-dropdown-menu position-absolute ${
+              darkMode ? 'text-light bg-dark' : 'text-dark bg-light'
+            }`}
+          >
+            {filteredData.map(userProfile => (
+              <li>
+                <button
+                  type="button"
+                  onClick={event => handleClick(event, userProfile)}
+                  style={{
+                    all: 'unset',
+                    cursor: 'pointer',
+                  }}
+                >
+                  {`${userProfile.firstName} ${userProfile.lastName}`}
+                </button>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+      <div>
+        {participantList?.map(participant => (
+          <ul key={`${participant.userProfileId}`}>
+            <button
+              type="button"
+              className="rounded-pill badge bg-primary text-wrap text-white"
+              onClick={() => removeParticipant(participant.userProfileId)}
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                cursor: 'pointer',
+              }}
+            >
+              <small className="fs-6 mr-1">{`${participant.name}`}</small>
+              <FontAwesomeIcon icon={faTimesCircle} />
+            </button>
+          </ul>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+export default Participants;
