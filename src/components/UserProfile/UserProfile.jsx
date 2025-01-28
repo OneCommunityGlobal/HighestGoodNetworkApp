@@ -582,13 +582,15 @@ function UserProfile(props) {
     }
   };
   const handlePostTwoWarnings = async warningData => {
-    const warningsArray = Object.entries(warningData).map(([title, color]) => ({
-      userId: props?.match?.params?.userId,
-      iconId: uuidv4(),
-      color: color.color,
-      date: moment().format('MM/DD/YYYY'), // Use a dynamic timestamp or pass it explicitly
-      description: title, // Use the title as the description
-    }));
+    const warningsArray = Object.entries(warningData)
+      .filter(([key]) => key !== 'issueBlueSquare')
+      .map(([title, color]) => ({
+        userId: props?.match?.params?.userId,
+        iconId: uuidv4(),
+        color: color.color,
+        date: moment().format('MM/DD/YYYY'), // Use a dynamic timestamp or pass it explicitly
+        description: title, // Use the title as the description
+      }));
     const newWarningData = {
       warningsArray,
       issueBlueSquare: warningData.issueBlueSquare,
@@ -599,7 +601,6 @@ function UserProfile(props) {
         email: userProfile.email,
       },
     };
-
     dispatch(postNewWarningsByUserId(newWarningData)).then(response => {
       if (response.error) {
         toast.error('Warning failed to log try again');

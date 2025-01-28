@@ -190,7 +190,7 @@ const UserProfileModal = props => {
     setWarningType('');
     handleLogWarning(warningData);
 
-    modifyBlueSquares(id, dateStamp, summary, 'delete');
+    // modifyBlueSquares(id, dateStamp, summary, 'delete');
   };
   function checkFields(field1, field2) {
     // console.log('f1:', field1, ' f2:', field2);
@@ -578,7 +578,7 @@ const UserProfileModal = props => {
                   <Button
                     color="warning"
                     name="both"
-                    disabled={specialWarnings.some(warn => warn.warnings.length < 1)}
+                    disabled={!specialWarnings.some(warn => warn.warnings.length >= 2)}
                     onClick={e => {
                       handleToggleLogWarning('both');
                     }}
