@@ -190,7 +190,7 @@ const UserProfileModal = props => {
     setWarningType('');
     handleLogWarning(warningData);
 
-    // modifyBlueSquares(id, dateStamp, summary, 'delete');
+    modifyBlueSquares(id, dateStamp, summary, 'delete');
   };
   function checkFields(field1, field2) {
     // console.log('f1:', field1, ' f2:', field2);
