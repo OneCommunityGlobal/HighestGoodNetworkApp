@@ -60,7 +60,6 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
 
     getInfoCollections();
     getUserRole(auth?.user.userid);
-
     const getChangeLogs = async () => {
       try {
         const response = await axios.get(ENDPOINTS.PERMISSION_CHANGE_LOGS(auth?.user.userid));
@@ -244,7 +243,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
       </div>
       {loading && <p className="loading-message">Loading...</p>}
       {changeLogs?.length > 0 && (
-        <PermissionChangeLogTable changeLogs={changeLogs.slice().reverse()} darkMode={darkMode} />
+        <PermissionChangeLogTable changeLogs={changeLogs} darkMode={darkMode} />
       )}
       <br />
       <br />
