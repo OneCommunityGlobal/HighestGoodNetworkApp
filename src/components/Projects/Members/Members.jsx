@@ -37,7 +37,7 @@ const Members = props => {
   useEffect(() => {
     const fetchMembers = async () => {
       setIsLoading(true);
-      setMembersList([]); 
+      setMembersList([]);
       await props.fetchAllMembers(projectId);
       setIsLoading(false);
     };
@@ -191,14 +191,17 @@ const Members = props => {
             handleUserProfile={handleToggle}
           />
 
-          {isLoading ? ( <Loading align="center" /> ) : (
+          {isLoading ? (<Loading align="center" />) : (
             <table className={`table table-bordered table-responsive-sm ${darkMode ? 'text-light' : ''}`}>
               <thead>
                 <tr className={darkMode ? 'bg-space-cadet' : ''}>
                   <th scope="col" id="members__order">
                     #
                   </th>
-                  <th scope="col" id="members__name"></th>
+                  <th scope="col" id="members__name">
+                    Name
+                  </th>
+                  <th scope="col" id="members__delete"></th>
                   {canUnassignUserInProject ? <th scope="col" id="members__name"></th> : null}
                 </tr>
               </thead>
@@ -213,8 +216,9 @@ const Members = props => {
                     darkMode={darkMode}
                   />
                 ))}
+
               </tbody>
-            </table> 
+            </table>
           )}
         </div>
       </div>

@@ -59,14 +59,6 @@ import PropTypes from 'prop-types';
 import Badge from '../Badge';
 import { ENDPOINTS } from '../../utils/URL';
 
-const doesUserHaveTaskWithWBS = userHaveTask => {
-  return userHaveTask.reduce((acc, item) => {
-    const hasIncompleteTask = item.resources.some(val => val.completedTask === false);
-    if (hasIncompleteTask) acc.push(item);
-    return acc;
-  }, []);
-};
-
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
 // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
 const startOfWeek = offset => {
@@ -136,6 +128,18 @@ const Timelog = props => {
 
   const { userId: urlId } = useParams();
   const [userprofileId, setUserProfileId] = useState(urlId || authUser.userid);
+
+  const doesUserHaveTaskWithWBS = userHaveTask => {
+    return userHaveTask.reduce((acc, item) => {
+      const hasIncompleteTask = item.resources.some(
+        val =>
+          (viewingUser.userId === val.userID || val.userID === userprofileId) &&
+          val.completedTask === false,
+      );
+      if (hasIncompleteTask) acc.push(item);
+      return acc;
+    }, []);
+  };
 
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
