@@ -56,37 +56,32 @@ const UserTeamsTable = props => {
 
   const handleCodeChange = async (e, autoComplete) => {
     const validation = autoComplete ? e : e.target.value;
-    const isUpdateAutoComplete = validationUpdateAutoComplete(validation, props.inputAutoComplete);
-    const regexTest = fullCodeRegex.test(validation);
-    refInput.current = validation;
-    if (regexTest) {
-      props.setCodeValid(true);
-      setTeamCode(validation);
-      if (props.userProfile) {
-        try {
-          const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
-          await axios.patch(url, { key: 'teamCode', value: refInput.current });
-          toast.success('Team code updated!');
-          setTimeout(async () => {
-            //prettier-ignore
-            if(isUpdateAutoComplete.length === 0){
-             const newAutoComplete = await props.fetchTeamCodeAllUsers();
-              toast.info('Auto complete updated!')
-              validationUpdateAutoComplete(refInput.current, newAutoComplete);
-            }
-          }, 2000);
-        } catch {
-          toast.error('It is not possible to save the team code.');
+    setTeamCode(validation);
+    // prettier-ignore
+    validationUpdateAutoComplete(validation, props.inputAutoComplete);
+    if (validation !== '') {
+      const regexTest = fullCodeRegex.test(validation);
+      refInput.current = validation;
+      if (regexTest) {
+        props.setCodeValid(true);
+        if (props.userProfile) {
+          try {
+            const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
+            await axios.patch(url, { key: 'teamCode', value: refInput.current });
+            toast.success('Team code updated!');
+          } catch {
+            toast.error('It is not possible to save the team code.');
+          }
+        } else {
+          props.onAssignTeamCode(validation);
         }
       } else {
-        props.onAssignTeamCode(validation);
+        setTeamCode(validation);
+        props.setCodeValid(false);
       }
-    } else {
-      setTeamCode(validation);
-      props.setCodeValid(false);
+      autoComplete ? setShowDropdown(false) : null;
+      autoComplete = false;
     }
-    autoComplete ? setShowDropdown(false) : null;
-    autoComplete = false;
   };
 
   const validationUpdateAutoComplete = (e, autoComplete) => {
