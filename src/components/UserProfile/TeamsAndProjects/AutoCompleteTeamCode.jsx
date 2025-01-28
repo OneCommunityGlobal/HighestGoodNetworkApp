@@ -35,8 +35,11 @@ export const AutoCompleteTeamCode = props => {
     border: '1px solid #ccc',
     backgroundColor: '#fff',
     width:
-      arrayInputAutoComplete && arrayInputAutoComplete.length <= 3 ? '100%' :
-        arrayInputAutoComplete && arrayInputAutoComplete.length <= 30 ? '102px' : '100px',
+      arrayInputAutoComplete && arrayInputAutoComplete.length <= 3
+        ? '100%'
+        : arrayInputAutoComplete && arrayInputAutoComplete.length <= 30
+        ? '102px'
+        : '100px',
   };
 
   const borderBottomRadius = {
@@ -52,8 +55,6 @@ export const AutoCompleteTeamCode = props => {
     border: '2px solid #1c5b87',
   };
 
-
-
   let autoComplete = false;
 
   return (
@@ -64,7 +65,7 @@ export const AutoCompleteTeamCode = props => {
             ref={refDropdown}
             className={`overflow-auto mb-2 scrollAutoComplete`}
             style={{
-              height: isLoading ? '7rem' : arrayInputAutoComplete.length <= 30 ? 'a
+              height: isLoading ? '7rem' : arrayInputAutoComplete.length <= 30 ? 'auto' : '23rem',
               width: 'auto',
               position: arrayInputAutoComplete.length <= 3 || isLoading ? '' : 'relative',
             }}
@@ -92,12 +93,14 @@ export const AutoCompleteTeamCode = props => {
                   </ListGroupItem>
                 </ListGroup>
               ) : (
-                <div className={`${arrayInputAutoComplete.length > 3 && 'row row-cols-lg-5 row-cols-sm-4'}`}>
+                <div
+                  className={`${arrayInputAutoComplete.length > 3 &&
+                    'row row-cols-lg-5 row-cols-sm-4'}`}
+                >
                   {arrayInputAutoComplete.map(item => (
                     <div
                       key={item}
-                      className={`${arrayInputAutoComplete.length <= 3 ? '' : 'col col-cols-3'
-                        }`}
+                      className={`${arrayInputAutoComplete.length <= 3 ? '' : 'col col-cols-3'}`}
                     >
                       <p
                         className={classNameStyleP}

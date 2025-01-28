@@ -22,7 +22,6 @@ import { toast } from 'react-toastify';
 const UserTeamsTable = props => {
   const { darkMode } = props;
 
-
   const [showDropdown, setShowDropdown] = useState(false);
 
   const [autoComplete, setAutoComplete] = useState(false);
@@ -110,7 +109,6 @@ const UserTeamsTable = props => {
       .replace(/\s+/g, '');
   };
 
-
   const styleDefault = {
     cursor: !props.canEditTeamCode ? 'not-allowed' : 'pointer',
     opacity: !props.canEditTeamCode ? 0.6 : 0.9,
@@ -124,7 +122,6 @@ const UserTeamsTable = props => {
     cursor: !props.canEditTeamCode ? 'not-allowed' : 'pointer',
     opacity: !props.canEditTeamCode ? 0.6 : 0.9,
   };
-
 
   const fetchTeamSelected = async (teamId, teamName, isUpdate) => {
     const urlTeamData = ENDPOINTS.TEAM_BY_ID(teamId);
@@ -183,7 +180,6 @@ const UserTeamsTable = props => {
               }}
             >
               <ToggleSwitch
-
                 switchType="visible"
                 state={props.isVisible}
                 handleUserProfile={props.onUserVisibilitySwitch}
@@ -216,7 +212,7 @@ const UserTeamsTable = props => {
               disabled={!props.canEditTeamCode}
             />
           </Col>
-          <div className="row" style={{ display: 'flex', flexDirection: 'column' }} >
+          <div className="row" style={{ display: 'flex', flexDirection: 'column' }}>
             <AutoCompleteTeamCode
               refDropdown={refDropdown}
               showDropdown={showDropdown}
@@ -234,8 +230,13 @@ const UserTeamsTable = props => {
           <Col md="12" style={{ padding: '0' }}>
             {canAssignTeamToUsers ? (
               props.disabled ? (
-
-                <Button id="teamCodeAssign" className="btn-addteam" color="primary" style={boxStyle} disabled>
+                <Button
+                  id="teamCodeAssign"
+                  className="btn-addteam"
+                  color="primary"
+                  style={boxStyle}
+                  disabled
+                >
                   Assign Team
                 </Button>
               ) : (
@@ -254,7 +255,6 @@ const UserTeamsTable = props => {
               )
             ) : (
               <></>
-
             )}
           </Col>
         )}
@@ -270,7 +270,7 @@ const UserTeamsTable = props => {
                   <>
                     <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
                     <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
-                      { }
+                      {}
                     </th>
                   </>
                 ) : null}
@@ -285,7 +285,9 @@ const UserTeamsTable = props => {
                   <td>{`${team.teamName}`}</td>
                   {props.edit && props.role && (
                     <>
-                      <td>
+                      <td
+                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                      >
                         <button
                           style={darkMode ? {} : boxStyle}
                           disabled={!canAssignTeamToUsers}
@@ -315,7 +317,6 @@ const UserTeamsTable = props => {
                           >
                             Delete
                           </Button>
-      </Col>
                         </div>
                       </td>
                     </>
@@ -329,7 +330,6 @@ const UserTeamsTable = props => {
         </table>
       </div>
     </div>
-
   );
 };
 
