@@ -134,7 +134,11 @@ body {
   color: black;
 } */
 
-.bg-azure{
+.bg-darkmode-liblack {
+  background-color: #1C1C1C !important;
+}
+
+.bg-azure {
   background-color: #007BFF !important;
 }
 
@@ -172,6 +176,10 @@ body {
 
 nav ul.navbar-nav li:last-child > div {
   transform: translate3d(-26px, 40px, 0px) !important;
+}
+
+.calendar-icon-dark {
+  color-scheme: dark;
 }
 
 .top {

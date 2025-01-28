@@ -785,7 +785,7 @@ function Timelog(props) {
                   <Nav tabs className="task-and-timelog-card-nav mb-1 responsive-font-size">
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 0 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 0 })} ${darkMode ? 'dark-mode' : ''}`}
                         onClick={() => {
                           changeTab(0);
                         }}
@@ -796,7 +796,7 @@ function Timelog(props) {
                       </NavLink>
                     </NavItem>
                     <NavLink
-                      className={classnames({ active: timeLogState.activeTab === 1 })}
+                      className={`${classnames({ active: timeLogState.activeTab === 1 })} ${darkMode ? 'dark-mode' : ''}`}
                       onClick={() => {
                         changeTab(1);
                       }}
@@ -808,7 +808,7 @@ function Timelog(props) {
 
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 2 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 2 })} ${darkMode ? 'dark-mode' : ''}`}
                         onClick={() => {
                           changeTab(2);
                         }}
@@ -820,7 +820,7 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 3 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 3 })} ${darkMode ? 'dark-mode' : ''}`}
                         onClick={() => {
                           changeTab(3);
                         }}
@@ -832,7 +832,7 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 4 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 4 })} ${darkMode ? 'dark-mode' : ''}`}
                         onClick={() => {
                           changeTab(4);
                         }}
@@ -844,7 +844,7 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 5 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 5 })} ${darkMode ? 'dark-mode' : ''}`}
                         onClick={() => {
                           changeTab(5);
                         }}
@@ -856,7 +856,7 @@ function Timelog(props) {
                     </NavItem>
                     <NavItem>
                       <NavLink
-                        className={classnames({ active: timeLogState.activeTab === 6 })}
+                        className={`${classnames({ active: timeLogState.activeTab === 6 })} ${darkMode ? 'dark-mode' : ''}`}
                         onClick={() => {
                           changeTab(6);
                         }}

@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
+import { useSelector } from 'react-redux';
 
 const AddProjectsAutoComplete = React.memo(props => {
   const [isOpen, toggle] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     if (!props.selectedProject) props.onInputChange('');
@@ -27,6 +29,7 @@ const AddProjectsAutoComplete = React.memo(props => {
           toggle(true);
           props.isSetUserIsNotSelectedAutoComplete(true);
         }}
+        className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
       />
 
       {props.searchText !== '' && props.projectsData && props.projectsData.length > 0 ? (

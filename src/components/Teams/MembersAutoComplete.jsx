@@ -114,6 +114,7 @@ export function MemberAutoComplete(props) {
           toggle(true);
           props.onAddUser(undefined);
         }}
+        className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
       />
 
       {/* {props.searchText !== '' &&

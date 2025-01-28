@@ -2,9 +2,11 @@ import React from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import { toast } from 'react-toastify';
+import { useSelector } from 'react-redux';
 
 const AddTeamsAutoComplete = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   return (
     <Dropdown
@@ -22,6 +24,7 @@ const AddTeamsAutoComplete = React.memo(props => {
           props.setSearchText(e.target.value);
           toggle(true);
         }}
+        className={darkMode ? "bg-darkmode-liblack border-0 text-light" : ""}
       />
 
       {props.searchText !== '' && props.teamsData ? (
