@@ -8,10 +8,10 @@ const BlueSquare = props => {
   const canEditInfringements = props.hasPermission('editInfringements');
   const canDeleteInfringements = props.hasPermission('deleteInfringements');
   const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements
-  const { blueSquares, handleBlueSquare } = props;
+  const { blueSquares, handleBlueSquare, darkMode } = props;
 
   return (
-    <div className="blueSquareContainer">
+    <div className={`blueSquareContainer ${darkMode ? 'bg-darkmode-liblack' : ''}`}>
       <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
         {blueSquares?.length > 0
           ? blueSquares

@@ -57,7 +57,7 @@ function QuickSetupModal(props) {
   };
 
   return (
-    <div className="container pt-3">
+    <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>
       {canAssignTitle || canEditTitle || canAddTitle ? (
         <QuickSetupCodes
           setSaved={props.setSaved}

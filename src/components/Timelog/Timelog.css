@@ -94,6 +94,12 @@
   padding: 0 17%;
 }
 
+.active.dark-mode.nav-link {
+  background-color: #1C1C1C !important;
+  color: #fff !important;
+  border: 0 !important;
+}
+
 @media screen and (max-width: 1400px) and (min-width: 1100px) {
   .timelogPageContainer{
     padding: 0 10%;

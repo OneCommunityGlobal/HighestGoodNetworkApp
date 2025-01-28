@@ -191,7 +191,7 @@ const AddProject = (props) => {
             <label htmlFor="projectName" className={darkMode ? "text-light":" "}>Project Name (required)</label>
             <input
               type="text"
-              className="form-control"
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               id="projectName"
               placeholder="Enter project name"
               value={newName}
@@ -203,7 +203,7 @@ const AddProject = (props) => {
           <div className="form-group">
             <label htmlFor="category" className={darkMode ? "text-light":" "}>Select Category</label>
             <select
-              className="form-control"
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               id="category"
               value={newCategory}
               onChange={(e) => setNewCategory(e.target.value)}
@@ -227,7 +227,7 @@ const AddProject = (props) => {
               <div className="input-group">
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
                   id="wbsName"
                   placeholder="Enter WBS name"
                   value={wbsName}
@@ -261,7 +261,7 @@ const AddProject = (props) => {
               <div className="input-group">
                 <input
                   type="text"
-                  className="form-control"
+                  className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
                   id="memberName"
                   placeholder="Search for members"
                   value={memberName}

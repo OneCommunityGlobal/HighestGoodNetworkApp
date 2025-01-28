@@ -93,7 +93,7 @@ const Members = props => {
   return (
     <React.Fragment>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
-        <div className="container pt-2">
+        <div className={`container pt-2 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           <nav aria-label="breadcrumb">
             <ol className={`breadcrumb ${darkMode ? 'bg-space-cadet' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
               <NavItem tag={Link} to={`/projects/`}>
@@ -108,13 +108,13 @@ const Members = props => {
           {canAssignProjectToUsers ? (
             <div className="input-group" id="new_project">
               <div className="input-group-prepend">
-                <span className="input-group-text">Find user</span>
+                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>Find user</span>
               </div>
 
               <input
                 autoFocus
                 type="text"
-                className="form-control"
+                className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 aria-label="Search user"
                 placeholder="Name"
                 onChange={e => handleInputChange(e)}

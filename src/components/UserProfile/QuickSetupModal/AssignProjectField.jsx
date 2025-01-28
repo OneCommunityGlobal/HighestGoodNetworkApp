@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
-
+import { useSelector } from 'react-redux';
 
 const AssignProjectField = React.memo(props => {
   const [searchText, onInputChange] = useState(()=>{
@@ -11,6 +11,7 @@ const AssignProjectField = React.memo(props => {
     }
   });
   const [isOpen, toggle] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   useEffect(() => {
     if (props.selectedProject && props.selectedProject.projectName !== searchText) {
@@ -35,7 +36,7 @@ const AssignProjectField = React.memo(props => {
           onInputChange(e.target.value);
           toggle(true);
         }}
-
+        className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
       />
 
       {searchText !== '' && props.projectsData && props.projectsData.length > 0 ? (

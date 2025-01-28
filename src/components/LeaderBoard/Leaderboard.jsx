@@ -520,7 +520,9 @@ function LeaderBoard({
       <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
         <div className="search-container mx-1">
           <input
-            className="form-control col-12 mb-2"
+            className={`form-control col-12 mb-2 ${
+              darkMode ? 'text-light bg-darkmode-liblack' : ''
+            }`}
             type="text"
             placeholder="Search users..."
             value={searchInput}

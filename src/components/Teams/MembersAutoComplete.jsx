@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 import { searchWithAccent } from 'utils/search';
+import { useSelector } from 'react-redux';
+
 export const MemberAutoComplete = props => {
   const [isOpen, toggle] = useState(false);
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const dropdownStyle = {
     marginTop: '0px',
@@ -50,6 +53,7 @@ export const MemberAutoComplete = props => {
           toggle(true);
           props.onAddUser(undefined);
         }}
+        className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
       />
 
       {/* {props.searchText !== '' &&
@@ -97,7 +101,7 @@ export const MemberAutoComplete = props => {
               tabIndex="-1"
               role="menu"
               aria-hidden="false"
-              className={`dropdown-menu${isOpen ? ' show' : ''}`}
+              className={`dropdown-menu ${isOpen ? 'show' : ''} ${darkMode ? 'bg-yinmn-blue border-0 text-light': ''}`}
               style={{ marginTop: '0px', width: '100%' }}
             >
               {props.summaries

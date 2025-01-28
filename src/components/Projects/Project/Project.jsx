@@ -101,7 +101,7 @@ const Project = props => {
             onChange={e => {
               onUpdateProjectCategory(e);
             }}
-
+            className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
           >
             <option value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>

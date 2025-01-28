@@ -399,6 +399,10 @@
   flex-direction: row;
 }
 
+.dark-mode.multi-select-filter .dropdown-container {
+  background-color: #1C1C1C !important;
+}
+
 @media (max-width: 1240px) and (min-width: 992px) {
   .header-box {
     flex-direction: column;

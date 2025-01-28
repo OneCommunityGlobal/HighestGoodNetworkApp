@@ -654,7 +654,7 @@ const TeamMemberTasks = React.memo(props => {
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
             <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Team</span>
             <MultiSelect
-              className="multi-select-filter responsive-font-size"
+              className={`multi-select-filter responsive-font-size ${darkMode ?'dark-mode' : ''}`}
               options={teamNames}
               value={selectedTeamNames}
               onChange={e => {
@@ -667,7 +667,7 @@ const TeamMemberTasks = React.memo(props => {
               Select Team Code
             </span>
             <MultiSelect
-              className="multi-select-filter responsive-font-size"
+              className={`multi-select-filter responsive-font-size ${darkMode ?'dark-mode' : ''}`}
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
@@ -678,7 +678,7 @@ const TeamMemberTasks = React.memo(props => {
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
             <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Color</span>
             <MultiSelect
-              className="multi-select-filter responsive-font-size"
+              className={`multi-select-filter responsive-font-size ${darkMode ?'dark-mode' : ''}`}
               options={colors}
               value={selectedColors}
               onChange={e => {
