@@ -39,6 +39,25 @@ font-size: .8em;
   padding-right: 1em;
 }
 
+.add-material-createdby{
+  display: flex;  
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #add3ef;
+  padding-left: 1em;
+  margin-top: 1em;
+}
+
+.add-material-createdby div{
+  width: 50%;
+}
+
+.createdby{
+  text-align: end;
+  padding-right: 1em;
+}
+
 .file-preview-container{
   display: flex;
   flex-direction: row;

@@ -49,6 +49,7 @@ export default function AddMaterialForm() {
   const units = useSelector(state => state.bmInvUnits.list);
   // console.log(materialTypes);
   // console.log(units)
+  const createdBy = useSelector(state => state.auth.user.email);
 
   useEffect(() => {
     dispatch(fetchMaterialTypes());
@@ -96,6 +97,7 @@ export default function AddMaterialForm() {
       .min(1)
       .required(),
     purchaseDate: Joi.date().required(),
+    createdBy,
   };
 
   const schema = Joi.object(validationObj).unknown();
@@ -479,6 +481,10 @@ export default function AddMaterialForm() {
           <div className="total-price-calculated">
             {totalPriceWithShipping} {formData.currency}
           </div>
+        </div>
+        <div className="add-material-createdby">
+          <div>Created By</div>
+          <div className="createdby">{createdBy}</div>
         </div>
         {errors &&
           (errors.name ||
