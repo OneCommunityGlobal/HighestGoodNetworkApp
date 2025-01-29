@@ -185,6 +185,7 @@ function UserProfile(props) {
       setInputAutoComplete(stringNoRepeat);
       setInputAutoStatus(response.status);
       setIsLoading(false);
+      return stringNoRepeat;
     } catch (error) {
       console.log(error);
       setIsLoading(false);
@@ -595,7 +596,6 @@ function UserProfile(props) {
       }
       await loadUserProfile();
       await loadUserTasks();
-      await fetchTeamCodeAllUsers();
       setSaved(false);
     } catch (err) {
       if (err.response && err.response.data && err.response.data.error) {
