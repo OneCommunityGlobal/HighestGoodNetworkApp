@@ -22,8 +22,10 @@ import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
+import TimerPopout from './TimerPopout';
 
 function Timer({ authUser, darkMode }) {
+  const isPopout = !!window.opener;
   /**
    *  Because the websocket can not be closed when internet is cut off (lost server connection),
    *  the readyState will be stuck at OPEN, so here we need to use a custom readyState to
@@ -402,7 +404,7 @@ function Timer({ authUser, darkMode }) {
   const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
 
   return (
-    <div className={css.timerContainer}>
+    <div className={cs(css.timerContainer)}>
       <button
         type="button"
         disabled={isButtonDisabled}
@@ -527,13 +529,18 @@ function Timer({ authUser, darkMode }) {
               fontSize="1.3rem"
             />
           </button>
+          {!isPopout && (
+            <button type="button" aria-label="Open Timer Popout" className="popout">
+              <TimerPopout authUser={authUser} darkMode={darkMode} TimerComponent={Timer} />
+            </button>
+          )}
         </div>
       )}
 
       {showTimer && (
         <div className={css.timer}>
           <div className={css.timerContent}>
-            {customReadyState === ReadyState.OPEN ? (
+            {customReadyState === ReadyState.OPEN && !isPopout && (
               <Countdown
                 message={message}
                 timerRange={{ MAX_HOURS, MIN_MINS }}
@@ -548,7 +555,8 @@ function Timer({ authUser, darkMode }) {
                 handleStopButton={handleStopButton}
                 toggleTimer={toggleTimer}
               />
-            ) : (
+            )}
+            {customReadyState !== ReadyState.OPEN && (
               <TimerStatus
                 readyState={customReadyState}
                 message={message}
