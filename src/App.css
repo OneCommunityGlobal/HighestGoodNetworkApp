@@ -9,7 +9,7 @@ body {
 
 #root {
   height: 100%;
-  overflow-x: auto; 
+  overflow-x: auto;
   overflow: hidden;
   background-color: var(--background-color);
 }
@@ -97,7 +97,7 @@ body {
   /*  90%to100%-red */
 }
 
-.bg-oxford-blue{
+.bg-oxford-blue {
   background-color: #1B2A41 !important;
 }
 
@@ -106,7 +106,7 @@ body {
   color:black;
 } */
 
-.bg-space-cadet{
+.bg-space-cadet {
   background-color: #1C2541 !important;
 }
 
@@ -115,7 +115,7 @@ body {
   color:black; 
 } */
 
-.bg-yinmn-blue{
+.bg-yinmn-blue {
   background-color: #3A506B !important;
 }
 
@@ -124,8 +124,8 @@ body {
   color: black;
 } */
 
-.bg-yinmn-blue-light{
-  background-color:#2f4157;
+.bg-yinmn-blue-light {
+  background-color: #2f4157;
 }
 
 /* .bg-yinmn-blue-light:hover{
@@ -137,31 +137,35 @@ body {
   background-color: #1C1C1C !important;
 }
 
+.bg-darkmode-black {
+  background-color: #000000 !important;
+}
+
 .bg-azure {
   background-color: #007BFF !important;
 }
 
-.text-oxford-blue{
+.text-oxford-blue {
   color: #1B2A41 !important;
 }
 
-.text-space-cadet{
+.text-space-cadet {
   color: #1C2541 !important;
 }
 
-.text-yinmn-blue{
+.text-yinmn-blue {
   color: #3A506B !important;
 }
 
-.text-azure{
+.text-azure {
   color: #007BFF !important;
 }
 
-.text-dark-green{
+.text-dark-green {
   color: #193D31 !important;
 }
 
-.text-custom-grey{
+.text-custom-grey {
   color: rgb(192, 192, 192) !important;
 }
 
@@ -169,11 +173,11 @@ body {
   box-shadow: 2px 2px 4px 1px black;
 }
 
-.box-shadow-light{
+.box-shadow-light {
   box-shadow: 2px 2px 4px 1px lightgray;
 }
 
-nav ul.navbar-nav li:last-child > div {
+nav ul.navbar-nav li:last-child>div {
   transform: translate3d(-26px, 40px, 0px) !important;
 }
 

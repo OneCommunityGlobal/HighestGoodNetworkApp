@@ -37,7 +37,7 @@
   padding: 32px;
 }
 
-.category-container > .card-category-item.selected {
+.category-container>.card-category-item.selected {
   background-color: #d7cdda;
   box-shadow: 0px 8px 16px rgba(78, 32, 125, 0.2);
   transform: scale(1.05);
@@ -105,6 +105,7 @@
   display: flex;
   justify-content: flex-start;
   padding: 16px 0;
+  gap: 10px;
 }
 
 .date-picker-item {
@@ -183,10 +184,12 @@
     padding: 16px;
     margin: 4px;
   }
+
   .card-category-item img {
     width: 72px;
     height: 72px;
   }
+
   .card-category-item-number {
     font-size: 24px;
     font-weight: 700;
@@ -201,31 +204,38 @@
     justify-content: flex-start;
     align-items: center;
   }
+
   .table-data-container {
     width: 100%;
     max-width: 600px;
   }
+
   .table-data-container {
     overflow-x: scroll;
   }
+
   .table-data-container::-webkit-scrollbar {
     display: none;
-  }  
+  }
+
   .category-container {
     display: flex;
-    flex-direction: column;    
-  }  
+    flex-direction: column;
+  }
+
   .card-category-item {
     width: 100%;
     padding: 16px;
     margin: 4px;
   }
+
   .total-report-container {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
     gap: 1rem;
   }
+
   .lost-time-container {
     display: flex;
     flex-direction: column;
@@ -238,6 +248,7 @@
   .container-component-wrapper {
     padding: 16px;
   }
+
   .container-component-category {
     width: 100%;
     display: flex;
@@ -245,10 +256,12 @@
     border-radius: 0 0 16px 16px;
     padding: 16px;
   }
+
   .card-category-item img {
     width: 72px;
     height: 72px;
   }
+
   .card-category-item-number {
     font-size: 24px;
     font-weight: 700;

@@ -95,6 +95,7 @@ const EditHistoryModal = props => {
           <Label className={fontColor}>Project Name</Label>
           <Input
             defaultValue={selectedData.projectName}
+            className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
             disabled
           />
         </FormGroup>
@@ -106,6 +107,7 @@ const EditHistoryModal = props => {
             <Label className={fontColor}>Name</Label>
             <Input
               defaultValue={searchText}
+              className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
               disabled
             />
           </FormGroup>
@@ -117,6 +119,7 @@ const EditHistoryModal = props => {
           <Label className={fontColor}>Team Name</Label>
           <Input
             defaultValue={selectedData.teamName}
+            className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
             disabled
           />
         </FormGroup>
@@ -338,6 +341,7 @@ const EditHistoryModal = props => {
                 id="dateOfWork"
                 value={inputs.dateOfWork}
                 onChange={handleInputChange}
+                className={darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -358,6 +362,7 @@ const EditHistoryModal = props => {
                     placeholder="Hours"
                     value={inputs.hours}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
                 <Col>
@@ -370,6 +375,7 @@ const EditHistoryModal = props => {
                     placeholder="Minutes"
                     value={inputs.minutes}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
               </Row>

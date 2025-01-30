@@ -143,7 +143,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="text"
-            className="edituser_input_firstname"
+            className={`edituser_input_firstname ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.firstName}
             onChange={e => {
               updateFormData({ ...formData, firstName: e.target.value });
@@ -170,7 +170,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="text"
-            className="edituser_input text-center"
+            className={`edituser_input text-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.lastName}
             onChange={e => {
               updateFormData({ ...formData, lastName: e.target.value });
@@ -190,6 +190,7 @@ const UserTableData = React.memo(props => {
               updateFormData({ ...formData, role: e.target.value });
               addUserInformation('role', e.target.value, props.user._id);
             }}
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           >
             {roles?.map((e, index) => (
               // eslint-disable-next-line react/no-array-index-key
@@ -217,7 +218,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="text"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.email}
             onChange={e => {
               updateFormData({ ...formData, email: e.target.value });
@@ -232,7 +233,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="number"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.weeklycommittedHours}
             onChange={e => {
               updateFormData({ ...formData, weeklycommittedHours: e.target.value });
@@ -366,7 +367,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="date"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.startDate}
             onChange={e => {
               updateFormData({ ...formData, startDate: e.target.value });
@@ -393,7 +394,7 @@ const UserTableData = React.memo(props => {
         ) : (
           <input
             type="date"
-            className="edituser_input"
+            className={`edituser_input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
             value={formData.endDate}
             onChange={e => {
               updateFormData({ ...formData, endDate: e.target.value });

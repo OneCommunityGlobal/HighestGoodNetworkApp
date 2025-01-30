@@ -562,6 +562,7 @@ const TimeEntryForm = props => {
                 onChange={handleInputChange}
                 // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]}
                 disabled={!canEditTimeEntryDate}
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''}
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -585,6 +586,7 @@ const TimeEntryForm = props => {
                     value={formValues.hours}
                     onChange={handleInputChange}
                     disabled={!canChangeTime}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                 </Col>
                 <Col>
@@ -598,6 +600,7 @@ const TimeEntryForm = props => {
                     value={formValues.minutes}
                     onChange={handleInputChange}
                     disabled={!canChangeTime}
+                    className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
                   />
                 </Col>
               </Row>
@@ -617,6 +620,7 @@ const TimeEntryForm = props => {
                 id="projectOrTask"
                 value={projectOrTaskId || 'title'}
                 onChange={handleProjectOrTaskChange}
+                className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
               >
                 {projectsAndTasksOptions}
               </Input>
@@ -633,7 +637,7 @@ const TimeEntryForm = props => {
               <Editor
                 tinymceScriptSrc="/tinymce/tinymce.min.js"
                 init={TINY_MCE_INIT_OPTIONS}
-                id="notes"
+                id={`${darkMode ? 'darknotes' : 'notes'}`}
                 name="notes"
                 className="form-control"
                 value={formValues.notes}

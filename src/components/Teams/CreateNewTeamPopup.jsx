@@ -55,6 +55,7 @@ export const CreateNewTeamPopup = React.memo(props => {
           placeholder="Please enter a new team name"
           value={newTeam}
           onChange={handleTeamNameChange}
+          className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           required
         />
         {!isValidTeam && <Alert color="danger">Please enter a team name.</Alert>}

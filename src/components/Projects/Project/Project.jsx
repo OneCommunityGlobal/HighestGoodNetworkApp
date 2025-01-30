@@ -215,7 +215,9 @@ const Project = props => {
           setInactiveModal={modalData.hasInactiveBtn ? setProjectInactive : null}
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
         />
+
     </>
   );
 };

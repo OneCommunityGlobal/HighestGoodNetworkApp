@@ -37,7 +37,9 @@ const AddProjectsAutoComplete = React.memo(props => {
           tabIndex="-1"
           role="menu"
           aria-hidden="false"
-          className={`dropdown-menu${isOpen ? ' show' : ''}`}
+          className={`dropdown-menu${isOpen ? ' show' : ''} ${
+            darkMode ? 'bg-darkmode-liblack text-light' : ''
+          }`}
           style={{ marginTop: '0px', width: '100%' }}
         >
           {props.projectsData

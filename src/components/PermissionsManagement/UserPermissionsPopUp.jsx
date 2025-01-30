@@ -171,13 +171,16 @@ function UserPermissionsPopUp({
               setIsOpen(true);
             }}
             placeholder="Shows only ACTIVE users"
+            className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}
           />
           {isInputFocus || (searchText !== '' && allUserProfiles && allUserProfiles.length > 0) ? (
             <div
               tabIndex="-1"
               role="menu"
               aria-hidden="false"
-              className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''}`}
+              className={`dropdown-menu${isOpen ? ' show dropdown__user-perms' : ''} ${
+                darkMode ? 'bg-darkmode-liblack text-light' : ''
+              }`}
               style={{ marginTop: '0px', width: '100%' }}
             >
               {allUserProfiles
