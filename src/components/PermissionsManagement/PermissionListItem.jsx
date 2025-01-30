@@ -23,6 +23,7 @@ function PermissionListItem(props) {
     depth,
     setPermissions,
     darkMode,
+    authUser,
   } = props;
   const isCategory = !!subperms;
   const [infoRoleModal, setinfoRoleModal] = useState(false);
@@ -49,9 +50,11 @@ function PermissionListItem(props) {
   const toggleInfoRoleModal = () => {
     setinfoRoleModal(!infoRoleModal);
   };
-
   const togglePermission = permissionKey => {
-    if (rolePermissions.includes(permissionKey) || immutablePermissions.includes(permissionKey)) {
+    if (
+      rolePermissions.includes(permissionKey) ||
+      (immutablePermissions.includes(permissionKey) && authUser.role !== 'Owner')
+    ) {
       setPermissions(previous => previous.filter(perm => perm !== permissionKey));
     } else if (rolePermissions.includes('showModal')) {
       setPermissions(previous => [...previous, permissionKey]);
@@ -212,7 +215,8 @@ function PermissionListItem(props) {
                 updateModalStatus(true);
               }}
               disabled={
-                !props.hasPermission('putRole') || immutablePermissions.includes(permission)
+                !props.hasPermission('putRole') ||
+                (immutablePermissions.includes(permission) && authUser.role !== 'Owner')
               }
               style={darkMode ? boxStyleDark : boxStyle}
             >
@@ -263,7 +267,7 @@ function PermissionListItem(props) {
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles });
+const mapStateToProps = state => ({ roles: state.role.roles, authUser: state.auth.user });
 
 const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
