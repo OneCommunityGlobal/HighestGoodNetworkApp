@@ -243,7 +243,7 @@ const AddProject = (props) => {
               {wbsList.length > 0 && (
                 <ul className="list-group mt-2" style={{ maxHeight: '15vh', overflowY: 'auto' }}>
                   {wbsList.map((wbs, index) => (
-                    <li key={index} className="list-group-item d-flex justify-content-between align-items-center" style={{color:"#403e3e"}}>
+                    <li key={index} className={`list-group-item d-flex justify-content-between align-items-center ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`} style={{color:"#403e3e"}}>
                       {wbs}
                       <Button color="danger" size="sm" onClick={() => removeWBS(index)} disabled={loading}>
                         Delete

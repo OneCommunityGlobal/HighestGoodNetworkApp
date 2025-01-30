@@ -341,6 +341,7 @@ function AddLostTime(props) {
                   id="dateOfWork"
                   value={inputs.dateOfWork}
                   onChange={handleInputChange}
+                  className={darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}
                 />
                 {'dateOfWork' in errors && (
                   <div className="text-danger">
@@ -361,6 +362,7 @@ function AddLostTime(props) {
                     placeholder="Hours"
                     value={inputs.hours}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
                 <Col>
@@ -373,6 +375,7 @@ function AddLostTime(props) {
                     placeholder="Minutes"
                     value={inputs.minutes}
                     onChange={handleInputChange}
+                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
                   />
                 </Col>
               </Row>

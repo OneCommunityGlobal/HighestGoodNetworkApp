@@ -148,9 +148,8 @@ class Teams extends React.PureComponent {
             />
             <div className="overflow-container">
               <table
-                className={`table table-bordered table-responsive-sm ${
-                  darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''
-                }`}
+                className={`table table-bordered table-responsive-sm ${darkMode ? 'dark-mode bg-yinmn-blue text-light' : ''
+                  }`}
               >
                 <thead>
                   <TeamTableHeader
@@ -450,14 +449,14 @@ class Teams extends React.PureComponent {
       teams: prevState.teams.map(team =>
         team.props.teamId === prevState.selectedTeamId // Use prevState here
           ? {
-              ...team,
-              props: {
-                ...team.props,
-                name,
-                active: prevState.isActive, // Use prevState here
-                teamCode: prevState.selectedTeamCode, // Use prevState here
-              },
-            }
+            ...team,
+            props: {
+              ...team.props,
+              name,
+              active: prevState.isActive, // Use prevState here
+              teamCode: prevState.selectedTeamCode, // Use prevState here
+            },
+          }
           : team,
       ),
       selectedTeamId: undefined,

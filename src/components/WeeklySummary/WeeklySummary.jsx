@@ -889,7 +889,9 @@ export class WeeklySummary extends Component {
                     <Row>
                       <FormGroup>
                         <Input
-                          className="responsive-font-size"
+                          className={`responsive-font-size ${
+                            darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''
+                          }`}
                           type="url"
                           name="mediaUrl"
                           id="mediaUrl"

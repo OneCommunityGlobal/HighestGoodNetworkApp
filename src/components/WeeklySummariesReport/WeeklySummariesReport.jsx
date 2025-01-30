@@ -860,7 +860,7 @@ export class WeeklySummariesReport extends Component {
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <MultiSelect
-              className="multi-select-filter text-dark"
+              className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
@@ -871,7 +871,7 @@ export class WeeklySummariesReport extends Component {
           </Col>
           <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
             <MultiSelect
-              className="multi-select-filter text-dark"
+              className={`multi-select-filter text-dark ${darkMode ? 'dark-mode' : ''}`}
               options={colorOptions}
               value={selectedColors}
               onChange={e => {
@@ -1029,6 +1029,7 @@ export class WeeklySummariesReport extends Component {
                     data-testid={item}
                     active={item === activeTab}
                     onClick={() => this.toggleTab(item)}
+                    className={darkMode ? 'dark-mode' : ''}
                   >
                     {item}
                   </NavLink>

@@ -216,6 +216,7 @@ const Projects = function(props) {
               fontSize={30}
               isPermissionPage={true}
               role={role}
+              darkMode={darkMode}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
@@ -249,6 +250,7 @@ const Projects = function(props) {
           setInactiveModal={modalData.hasInactiveBtn ? setInactiveProject : null}
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
         />
       </div>
     </>

@@ -391,7 +391,7 @@ function AddTaskModal(props) {
                   <textarea
                     type="text"
                     rows="2"
-                    className="task-name border border-dark rounded"
+                    className={`task-name border border-dark rounded ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                     onChange={e => setTaskName(e.target.value)}
                     onKeyPress={e => setTaskName(e.target.value)}
                     value={taskName}
@@ -401,7 +401,7 @@ function AddTaskModal(props) {
               <div className='add_new_task_form-group'>
                 <span className={`add_new_task_form-label ${fontColor}`} >Priority</span>
                 <span className='add_new_task_form-input_area'>
-                  <select id="priority" onChange={e => setPriority(e.target.value)} ref={priorityRef}>
+                  <select id="priority" onChange={e => setPriority(e.target.value)} ref={priorityRef} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>
                     <option value="Primary">Primary</option>
                     <option value="Secondary">Secondary</option>
                     <option value="Tertiary">Tertiary</option>
@@ -418,6 +418,7 @@ function AddTaskModal(props) {
                       removeResource={removeResource}
                       resourceItems={resourceItems}
                       disableInput={false}
+                      darkMode={darkMode}
                     />
                   
                 </span>
@@ -541,7 +542,7 @@ function AddTaskModal(props) {
                       onChange={handleBestHoursChange}
                       onBlur={handleBestHoursBlur}
                       id="bestCaseInput"
-                      className='hours-input'
+                      className={`hours-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                     />
                     
                   </div>
@@ -562,7 +563,7 @@ function AddTaskModal(props) {
                       onChange={handleWorstHoursChange}
                       onBlur={handleWorstHoursBlur}
                       id='worstCaseInput'
-                      className='hours-input'
+                      className={`hours-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                     />
                     
                   </div>
@@ -584,7 +585,7 @@ function AddTaskModal(props) {
                       onChange={handleMostHoursChange}
                       onBlur={handleMostHoursBlur}
                       id='mostCaseInput'
-                      className='hours-input'
+                      className={`hours-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                     />
                     
                   </div>
@@ -604,7 +605,7 @@ function AddTaskModal(props) {
                       value={hoursEstimate}
                       onChange={handleEstimateHoursChange}
                       id='estimatedInput'
-                      className='hours-input'
+                      className={`hours-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                     />
                   </div>
                 </span>
@@ -617,7 +618,7 @@ function AddTaskModal(props) {
                       type="text"
                       aria-label="Search user"
                       placeholder="Link"
-                      className="task-resouces-input"
+                      className={`task-resouces-input ${darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}`}
                       data-tip="Add a link"
                       onChange={e => setLink(e.target.value)}
                       value={link}
@@ -648,7 +649,7 @@ function AddTaskModal(props) {
               <div className="d-flex border align-items-center">
                 <span  className= {`add_new_task_form-label ${fontColor}`}>Category</span>
                 <span  className="add_new_task_form-input_area">
-                  <select value={category} onChange={e => setCategory(e.target.value)}>
+                  <select value={category} onChange={e => setCategory(e.target.value)} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>
                     {categoryOptions.map(cla => (
                       <option value={cla.value} key={cla.value}>
                         {cla.label}
