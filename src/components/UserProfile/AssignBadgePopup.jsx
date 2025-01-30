@@ -67,10 +67,10 @@ function AssignBadgePopup(props) {
   let filteredBadges = filterBadges(badgeList);
 
   const addExistBadges = () => {
-    if (props.userProfile && props.userProfile.badgeCollection) {
-      const existBadges = props.userProfile.badgeCollection.map(badge => `assign-badge-${badge.badge._id}`);
-      return existBadges;
-    }
+    // if (props.userProfile && props.userProfile.badgeCollection) {
+    //   const existBadges = props.userProfile.badgeCollection.map(badge => `assign-badge-${badge.badge._id}`);
+    //   return existBadges;
+    // }
     return [];
   };
 
