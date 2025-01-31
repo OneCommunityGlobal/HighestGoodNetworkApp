@@ -20,7 +20,7 @@
     min-width: 250px;
   }
   
-  .form-container {
+  .lb-auth-page .form-container {
     background-color: white;
     border: 1px solid #ccc;
     border-radius: 8px;
@@ -68,7 +68,7 @@
     min-width: 140px;
   }
 
-  form {
+  .lb-auth-page form {
     display: flex;
     flex-direction: column;
     width: 100%;

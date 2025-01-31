@@ -59,7 +59,7 @@ function Login() {
   };
 
   return (
-    <div className="auth-page">
+    <div className="auth-page lb-auth-page">
       <div className="logo-container">
         <img src={logo} alt="One Community Logo" />
       </div>
