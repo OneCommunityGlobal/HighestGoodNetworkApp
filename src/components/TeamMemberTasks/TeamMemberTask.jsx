@@ -88,7 +88,7 @@ const TeamMemberTask = React.memo(
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
-    const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
+    const canRemoveUserFromTask = dispatch(hasPermission('deleteTask', true));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
     const handleTruncateTasksButtonClick = () => {
