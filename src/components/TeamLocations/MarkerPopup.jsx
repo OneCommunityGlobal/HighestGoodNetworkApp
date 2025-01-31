@@ -5,25 +5,30 @@ import { Button } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
 import './TeamLocations.css';
 
-const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocation, isOpen, randomLocationOffset, darkMode}) => {
+function MarkerPopup({
+  profile,
+  userName,
+  isAbleToEdit,
+  editHandler,
+  removeLocation,
+  isOpen,
+  darkMode,
+}) {
   const popupRef = useRef();
 
   useEffect(() => {
-    if ( popupRef.current !== undefined) {
-        if(isOpen){
-            popupRef.current.openPopup();
-        }else{
-            popupRef.current.closePopup();
-        }
+    if (popupRef.current !== undefined) {
+      if (isOpen) {
+        popupRef.current.openPopup();
+      } else {
+        popupRef.current.closePopup();
+      }
     }
   }, [isOpen]);
 
   return (
     <CircleMarker
-      center={[
-        profile.location.coords.lat,
-        profile.location.coords.lng
-      ]}
+      center={[profile.location.coords.lat, profile.location.coords.lng]}
       key={profile._id}
       color={profile.isActive ? 'green' : 'gray'}
       // eventHandlers={{
@@ -64,6 +69,6 @@ const MarkerPopup = ({ profile, userName, isAbleToEdit, editHandler, removeLocat
       </Popup>
     </CircleMarker>
   );
-};
+}
 
 export default MarkerPopup;
