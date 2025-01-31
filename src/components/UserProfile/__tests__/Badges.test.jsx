@@ -94,11 +94,11 @@ describe('Badges Component', () => {
         });
         expect(renderedBadges.find('.card-footer').text()).toBe('This person has no badges.');
       });
-
+      // Modified this test case to match improved badge structure, see PR3098 for details
       it('should display the correct text when they have exactly 1 badge', () => {
         const props = {
           ...badgeProps,
-          userProfile: { ...badgeProps.userProfile, badgeCollection: [{ count: 1 }] },
+          userProfile: { ...badgeProps.userProfile, badgeCollection: [{ badge: { badgeName: 'Test Badge', type: 'Normal' }, count: 1 }] },
         };
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
           store,
@@ -107,13 +107,17 @@ describe('Badges Component', () => {
           'Bravo! This person has earned 1 badge!'
         );
       });
-
+      // Modified this test case to match improved badge structure, see PR3098 for details
       it('should display the correct text when they have amount of badges > 1', () => {
         const props = {
           ...badgeProps,
           userProfile: {
             ...badgeProps.userProfile,
-            badgeCollection: [{ count: 1 }, { count: 2 }, { count: 3 }],
+            badgeCollection: [
+              { badge: { badgeName: 'Badge 1', type: 'Normal' }, count: 1 },
+              { badge: { badgeName: 'Badge 2', type: 'Normal' }, count: 2 },
+              { badge: { badgeName: 'Badge 3', type: 'Normal' }, count: 3 }
+            ],
           },
         };
         const renderedBadges = renderWithProvider(<Badges {...props} />, {
