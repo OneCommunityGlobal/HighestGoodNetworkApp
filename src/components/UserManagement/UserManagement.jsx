@@ -109,7 +109,6 @@ class UserManagement extends React.PureComponent {
       let { roles: rolesPermissions } = this.props.state.role;
       let { requests: timeOffRequests } = this.props.state.timeOffRequests;
       
-      
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
     }
   
@@ -121,10 +120,11 @@ class UserManagement extends React.PureComponent {
                                (prevState.emailSearchText !== this.state.emailSearchText);
   
     const pageSizeChanged = prevState.pageSize !== this.state.pageSize;
+    const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
     
     if ((prevState.selectedPage !== this.state.selectedPage) || 
         (prevState.wildCardSearchText !== this.state.wildCardSearchText) || 
-        searchStateChanged || pageSizeChanged) {
+        searchStateChanged || pageSizeChanged || userProfilesChanged ) {
   
       let darkMode = this.props.state.theme.darkMode;
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
@@ -515,15 +515,28 @@ class UserManagement extends React.PureComponent {
    * Call back to trigger the delete based on the type chosen from the popup.
    */
   onDeleteUser = deleteType => {
-    if (deleteType === UserDeleteType.Inactive) {
-      this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, undefined);
-    } else {
-      this.props.deleteUser(this.state.selectedUser, deleteType);
-    }
     this.setState({
       deletePopupOpen: false,
       selectedUser: undefined,
+      isUpdating: true
     });
+
+    if (deleteType === UserDeleteType.Inactive) {
+      this.props.updateUserStatus(
+        this.state.selectedUser, 
+        UserStatus.InActive, 
+        undefined
+      ).finally(() => {      
+        this.setState({ isUpdating: false });    
+      });
+    } else {
+      this.props.deleteUser(
+        this.state.selectedUser, 
+        deleteType
+      ).finally(() => {      
+        this.setState({ isUpdating: false });    
+      });
+    }
   };
 
   /**

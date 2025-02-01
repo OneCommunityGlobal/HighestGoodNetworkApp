@@ -207,15 +207,14 @@ export const ENDPOINTS = {
   BM_LESSONS: `${APIEndpoint}/bm/lessons`,
   BM_LESSON: `${APIEndpoint}/bm/lesson/`,
   BM_LESSON_LIKES: lessonId => `${APIEndpoint}/bm/lesson/${lessonId}/like`,
+  BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
   BM_INVENTORY_UNITS: `${APIEndpoint}/bm/inventoryUnits`,
   BM_INVTYPE_ROOT: `${APIEndpoint}/bm/invtypes`,
   BM_TOOLS: `${APIEndpoint}/bm/tools/`,
   BM_TOOL_BY_ID: singleToolId => `${APIEndpoint}/bm/tools/${singleToolId}`,
   BM_LOG_TOOLS: `${APIEndpoint}/bm/tools/log`,
   BM_EQUIPMENT_BY_ID: singleEquipmentId => `${APIEndpoint}/bm/equipment/${singleEquipmentId}`,
-  BM_EXTERNAL_TEAM: `${APIEndpoint}/bm/externalTeam`,
   BM_EQUIPMENTS: `${APIEndpoint}/bm/equipments`,
-
   BM_INVTYPE_TYPE: type => `${APIEndpoint}/bm/invtypes/${type}`,
 
   BM_TAGS: `${APIEndpoint}/bm/tags`,
@@ -228,6 +227,10 @@ export const ENDPOINTS = {
   DELETE_TIME_OFF_REQUEST: id => `${APIEndpoint}/deleteTimeOffRequest/${id}`,
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
+
+  // lb dashboard endpoints
+  LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
+  LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
 };
 
 export const ApiEndpoint = APIEndpoint;

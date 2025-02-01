@@ -138,7 +138,7 @@ function AddTeamMember() {
   };
 
   return (
-    <div className="container">
+    <div className="container-add">
       <div className="icon-add-person">
         <MdOutlinePersonAddAlt1 size={90} />
         <h1 className="title-member">Create new team member</h1>
