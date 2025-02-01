@@ -14,7 +14,7 @@ jobs:
           command: 'sudo npm install'
       - run:
           name: Run react build
-          command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS npm run build && sudo mv build/index.html build/200.html'
+          command: 'sudo REACT_APP_APIENDPOINT=$APIENDPOINT_PROD REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD REACT_APP_SENTRY_URL=$SENTRY_URL_PROD SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS="$NODE_OPTIONS --max_old_space_size=4096" npm run build --prod && sudo mv build/index.html build/200.html'
       - run:
           name: Export error log if 'Build the React client' failed
           command: |
@@ -62,7 +62,7 @@ jobs:
           command: npm install
       - run:
           name: Build the React client
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS && npm run build --prod
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_DEV REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD REACT_APP_SENTRY_URL=$SENTRY_URL_DEV SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS="$NODE_OPTIONS --max_old_space_size=4096" && npm run build --prod
       - run:
           name: Export error log if 'Build the React client' failed
           command: |
@@ -106,7 +106,7 @@ jobs:
           command: npm install
       - run:
           name: Build the React client
-          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS=$NODE_OPTIONS && npm run build  --prod
+          command: export REACT_APP_APIENDPOINT=$APIENDPOINT_BETA REACT_APP_DEF_PWD=$REACT_APP_DEF_PWD SKIP_PREFLIGHT_CHECK=true NODE_OPTIONS="$NODE_OPTIONS --max_old_space_size=4096" && npm run build --prod
       - run:
           name: Export error log if 'Build the React client' failed
           command: |
