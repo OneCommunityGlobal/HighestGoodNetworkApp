@@ -55,7 +55,7 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-
+import Resources from './components/CommunityPortal/Activities/:activityid/Resources';
 
 
 
@@ -389,6 +389,10 @@ export default (
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
+        <BMProtectedRoute
+          path="/CommunityPortal/Activities/:activityid/Resources"
+          exact component={Resources}
+        />
 
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
