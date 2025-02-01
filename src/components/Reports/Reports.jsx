@@ -308,50 +308,51 @@ class ReportsPage extends Component {
     }));
   }
 
-//   showTotalProject() {
-//     if (this.state.showTotalProject) {
-//       this.setState({
-//         showTotalProject: false,
-//         loading: false,
-//       });
-//       return;
-//     }
-  
-//     this.setState({
-//       loading: true,
-//       showProjects: false,
-//       showPeople: false,
-//       showTeams: false,
-//       showTotalTeam: false,
-//       showTotalPeople: false,
-//       showTotalProject: false,  // Initially hide the report
-//       showAddTimeForm: false,
-//       showAddProjHistory: false,
-//       showAddPersonHistory: false,
-//       showAddTeamHistory: false,
-//     }, () => {
-//       setTimeout(() => {
-//         this.setState({
-//           loading: false,
-//           showTotalProject: true,  // Show the report after loading completes
-//         });
-//       }, 2000);  // Adjust the delay as needed
-//     });
-//   }
   showTotalProject() {
-    this.setState(prevState => ({
+    if (this.state.showTotalProject) {
+      this.setState({
+        showTotalProject: false,
+        loading: false,
+      });
+      return;
+    }
+  
+    this.setState({
+      loading: true,
       showProjects: false,
       showPeople: false,
       showTeams: false,
-      showTotalProject: !prevState.showTotalProject,
       showTotalTeam: false,
       showTotalPeople: false,
+      showTotalProject: false,  // Initially hide the report
       showAddTimeForm: false,
       showAddProjHistory: false,
       showAddPersonHistory: false,
       showAddTeamHistory: false,
-    }));
+    }, () => {
+      setTimeout(() => {
+        this.setState({
+          loading: false,
+          showTotalProject: true,  // Show the report after loading completes
+        });
+      }, 2000);  // Adjust the delay as needed
+    });
   }
+  
+  // showTotalProject() {
+  //   this.setState(prevState => ({
+  //     showProjects: false,
+  //     showPeople: false,
+  //     showTeams: false,
+  //     showTotalProject: !prevState.showTotalProject,
+  //     showTotalTeam: false,
+  //     showTotalPeople: false,
+  //     showAddTimeForm: false,
+  //     showAddProjHistory: false,
+  //     showAddPersonHistory: false,
+  //     showAddTeamHistory: false,
+  //   }));
+  // }
   
   showAddProjHistory() {
     this.setState(prevState => ({
@@ -597,24 +598,18 @@ class ReportsPage extends Component {
                       />
                     </div>
                   </div>
-                  <div>
-                  <div className="total-report-item">
-                    <Button color="info" onClick={this.showTotalTeam}>
-                      {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
-                    </Button>
-                    <div style={{ display: 'inline-block', marginLeft: 10 }}>
-                      <EditableInfoModal
-                        areaName="totalTeamReportInfoPoint"
-                       areaTitle="Total Team Report"
-                        role={userRole}
-                        fontSize={15}
-                       isPermissionPage
-                        darkMode={darkMode}
-                     />
-                   </div>
-              </div>
-              </div>
-                </div>
+                  
+                  
+                
+                <div>
+          <div className="total-report-item">
+  <Button color="info" onClick={this.showTotalProject}>
+    {this.state.showTotalProject ? 'Hide Total Project Report' : 'Show Total Project Report'}
+  </Button>
+</div>
+</div>
+</div>
+
                 {myRole != 'Owner' && (
                   <div className="lost-time-container">
                     <div className="lost-time-item">
@@ -760,15 +755,6 @@ class ReportsPage extends Component {
             )}
             {this.state.showTeams && (
               <TeamTable allTeams={this.state.teamSearchData} darkMode={darkMode} />
-            )}
-            {this.state.showTotalProject && (
-              <TotalProjectReport
-                startDate={this.state.startDate}
-                endDate={this.state.endDate}
-                userProfiles={userProfilesBasicInfo}
-                projects={projects}
-                darkMode={darkMode}
-              />
             )}
             {this.state.showTotalPeople && (
               <TotalPeopleReport
