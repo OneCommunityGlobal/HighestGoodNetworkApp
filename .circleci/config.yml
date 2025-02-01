@@ -3,7 +3,7 @@ jobs:
   build_PROD:
     docker:
       - image: cimg/node:14.21.3
-    resource_class: large
+    resource_class: xlarge
     steps:
       - checkout
       - restore_cache:
@@ -49,7 +49,7 @@ jobs:
       # cimg convient image comes with node, yarn, and other pre-installed software.
       # This will remove the steps of install node, yarn, and other software.
       - image: cimg/node:14.21.3
-    resource_class: large
+    resource_class: xlarge
     steps:
       - checkout
       - restore_cache:
@@ -95,7 +95,7 @@ jobs:
     docker:
       # - image: ubuntu:20.04
       - image: cimg/node:14.21.3
-    resource_class: large
+    resource_class: xlarge
     steps:
       - checkout
       - restore_cache:
