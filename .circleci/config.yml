@@ -84,7 +84,7 @@ jobs:
           name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV --project ./build
       - run:
-          name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV
+          name: Deploy compiled app to surge.sh on $SURGE_DOMAIN_DEV1
           command: ./node_modules/.bin/surge --domain $SURGE_DOMAIN_DEV1 --project ./build
       - save_cache:
           key: v1.1-dependencies-{{ checksum "package-lock.json" }}
