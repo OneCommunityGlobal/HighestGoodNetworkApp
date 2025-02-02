@@ -621,7 +621,11 @@ class PeopleReport extends Component {
               isActive={isActive}
               darkMode={darkMode}
             >
-              <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
+
+              <div
+                style={{ minHeight: '468px' }}
+                className={`report-stats ${darkMode ? 'text-light' : ''}`}
+              >
                 <p>
                   <Link to={`/userProfile/${_id}`}
                     title="View Profile"
