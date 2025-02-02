@@ -419,7 +419,11 @@ export function Header(props) {
                         Main Dashboard
                       </DropdownItem>
                       {selectedProjectId && ( // Only show the link if a project ID is available
-                        <DropdownItem tag={Link} to={`/bmdashboard/projects/${selectedProjectId}`}>
+                        <DropdownItem
+                          tag={Link}
+                          to={`/bmdashboard/projects/${selectedProjectId}`}
+                          className={fontColor}
+                        >
                           Project Dashboard
                         </DropdownItem>
                       )}
