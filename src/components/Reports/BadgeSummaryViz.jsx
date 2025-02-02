@@ -52,7 +52,6 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
         setSortedBadges([]);
       }
     } catch (error) {
-      console.error("Error sorting badges:", error);
       setSortedBadges([]);
     }
   }, [badges]);
@@ -198,7 +197,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                               />
                             )}
                           </td>
-                          // ... rest of the code
+                          {/* ... rest of the code */}
                           <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                             <Card className="text-center">
                               <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />

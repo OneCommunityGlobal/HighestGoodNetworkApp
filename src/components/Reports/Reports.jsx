@@ -703,7 +703,7 @@ class ReportsPage extends Component {
               <TotalProjectReport
               startDate={this.state.startDate}
               endDate={this.state.endDate}
-              userProfiles={userProfiles}
+              userProfiles={userProfilesBasicInfo}
               projects={projects}
               darkMode={darkMode}
             />

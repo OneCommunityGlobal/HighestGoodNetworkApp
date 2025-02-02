@@ -34,26 +34,6 @@ function ShowCollapse(props) {
       {}
       <Button onClick={() => setOpen(!open)} aria-expanded={open} size="sm">
         {open ? 'Show less' : `Show more (${props.resources.length})`} ➤
-      <div>
-        {props.resources[0].name}
-        {props.resources.length > 1 && ','}
-      </div>
-      {}
-      {open && (
-        <>
-          {props.resources.slice(1).map((resource, index) => (
-            <Collapse in={open} key={resource._id}>
-              <div>
-                {resource.name}
-                {index < props.resources.length - 2 && ','}
-              </div>
-            </Collapse>
-          ))}
-        </>
-      )}
-      {}
-      <Button onClick={() => setOpen(!open)} aria-expanded={open} size="sm">
-        {open ? 'Show less' : `Show more (${props.resources.length})`} ➤
       </Button>
     </>
   );
@@ -112,10 +92,10 @@ export function TasksDetail(props) {
       </td>
       <td className="tasks-detail-center-cells">
   {task.resources.length <= 2 ? (
-    task.resources.map((resource, index) => (
+    task.resources.map((resource, innerIndex) => (
       <span key={resource._id}>
         {resource.name}
-        {index < task.resources.length - 1 && ', '}
+        {innerIndex < task.resources.length - 1 && ', '}
       </span>
     ))
   ) : (
