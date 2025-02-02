@@ -76,9 +76,8 @@ function UserSearchPanel({
         {CREATE_NEW_USER}
       </button>
 
-      <div className="input-group-prepend">
+      <div className="input-group-prepend" style={{marginRight: "5px"}}>
         <span className="input-group-text">{SEARCH}</span>
-      </div>
       <input
         // autoFocus
         type="text"
@@ -91,7 +90,8 @@ function UserSearchPanel({
           onSearch(e.target.value);
         }}
       />
-      <div className="input-group-prepend ml-2">
+      </div>
+      <div className="input-group-prepend">
         <span className="input-group-text">{SHOW}</span>
         <select
           id="active-filter-dropdown"

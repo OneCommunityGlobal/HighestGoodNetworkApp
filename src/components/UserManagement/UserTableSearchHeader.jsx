@@ -7,7 +7,7 @@ import DropDownSearchBox from './DropDownSearchBox';
  * The header row of the user table.
  */
 const UserTableSearchHeader = React.memo(props => {
-  const { darkMode } = props;
+  const { darkMode, isMobile, mobileFontSize, mobileWidth } = props;
 
   const onFirstNameSearch = text => {
     props.onFirstNameSearch(text);
@@ -34,13 +34,16 @@ const UserTableSearchHeader = React.memo(props => {
   };
 
   return (
-    <tr className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+    <tr className={darkMode ? 'bg-yinmn-blue text-light' : ''}
+        style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
+    >
       <td id="user_active" />
       <td id="user_first">
         <TextSearchBox
           id="firts_name_search"
           searchCallback={onFirstNameSearch}
           placeholder=" Search First Name"
+          style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
         />
       </td>
       <td id="user_last_name">
@@ -48,10 +51,11 @@ const UserTableSearchHeader = React.memo(props => {
           id="last_name_search"
           searchCallback={onLastNameSearch}
           placeholder=" Search Last Name"
+          style={{fontSize: isMobile ? mobileFontSize : 'initial'}}
         />
       </td>
       <td id="user_role">
-        <DropDownSearchBox id="role_search" items={props.roles} searchCallback={onRoleSearch} />
+        <DropDownSearchBox id="role_search" items={props.roles} searchCallback={onRoleSearch} style={{fontSize: isMobile ? mobileFontSize : 'initial'}}/>
       </td>
       <td id="user_title">
         <TextSearchBox
@@ -65,14 +69,14 @@ const UserTableSearchHeader = React.memo(props => {
         <TextSearchBox
           id="email_search"
           searchCallback={onEmailSearch}
-          style={{ width: '100%' }}
+          style={{ width: isMobile ? mobileWidth : '100%' }}
           placeholder=" Search Email"
         />
       </td>
       <td id="user_hrs" style={{ display: 'flex' }}>
         <TextSearchBox
           id="hrs_search"
-          style={{ maxWidth: '75px', margin: '0 auto' }}
+          style={{ maxWidth: '75px', margin: '0 auto', width: isMobile ? mobileWidth : 'initial' }}
           searchCallback={onWeeklyHrsSearch}
         />
       </td>
