@@ -6,7 +6,7 @@ import ErrorAlert from '../ErrorAlert';
 import { setSelectProjectId } from '../../../actions/bmdashboard/projectByIdAction';
 
 function ProjectSelectForm() {
-  const projects = useSelector(state => state.bmProjects);
+  const projects = useSelector(state => state.bmProjects) || [];
   const history = useHistory();
   const dispatch = useDispatch();
   const [selectedProjectId, setSelectedProjectId] = useState('');

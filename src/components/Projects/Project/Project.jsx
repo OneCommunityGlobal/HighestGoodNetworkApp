@@ -38,12 +38,14 @@ const Project = props => {
   const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
   const canEditCategoryAndStatus = props.hasPermission('editProject');
 
-
-  const updateProject = (key, value) => {
-    setProjectData({
-      ...projectData,
-      [key]: value,
-    });
+   const updateProject = ({ updatedProject, status }) => async dispatch => {
+    try {
+      dispatch(updateProject({ updatedProject, status }));
+    } catch (err) {
+      const status = err?.response?.status || 500;
+      const error = err?.response?.data || { message: 'An error occurred' };
+      dispatch(updateProject({ status, error }));
+    }
   };
 
   const onDisplayNameChange = (e) => {
@@ -219,4 +221,3 @@ const Project = props => {
 };
 const mapStateToProps = state => state;
 export default connect(mapStateToProps, { hasPermission, modifyProject, clearError })(Project);
-

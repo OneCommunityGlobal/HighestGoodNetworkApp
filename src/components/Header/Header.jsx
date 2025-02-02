@@ -461,7 +461,7 @@ export function Header(props) {
                 ) : (
                   <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/teamlocations">
-                      {TEAM_LOCATIONS}
+                      <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
                     </NavLink>
                   </NavItem>
                 )}
@@ -621,6 +621,7 @@ export function Header(props) {
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}
+      <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
     </div>
   );
 }

@@ -71,8 +71,6 @@
   transform: translate3d(0, 0, 0); 
 }
 
-
-
 .dropdown-item-hover:hover{
   background-color: #2f4157 !important;
 }
@@ -121,5 +119,3 @@
     overflow-y: auto; 
   }
 }
-
-

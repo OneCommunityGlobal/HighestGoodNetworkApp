@@ -125,3 +125,14 @@ tr:hover {
   padding-left: 10px;
 }
 
+@media (max-width: 768px) {
+  .overflow-container {
+    overflow-x: auto;
+    overflow-y: auto;
+    height: 60vh;
+  }
+}
+
+.overflow-container table {
+  min-width: 600px; 
+}

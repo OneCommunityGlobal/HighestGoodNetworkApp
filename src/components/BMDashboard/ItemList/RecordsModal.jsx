@@ -82,7 +82,7 @@ export function Record({ record, recordType }) {
           </tr>
         </thead>
         <tbody>
-          {record?.purchaseRecord && record?.purchaseRecord.length ? (
+          {record && record?.length ? (
             record.map(({ _id, date, status, brandPref, priority, quantity, requestedBy }) => {
               return (
                 <tr key={_id}>
