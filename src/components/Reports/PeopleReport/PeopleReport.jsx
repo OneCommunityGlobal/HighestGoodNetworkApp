@@ -614,7 +614,7 @@ class PeopleReport extends Component {
           )} */}
             </ReportPage>
           </Col>
-          <Col style={{ paddingTop: '40px', justifyContent: 'center', minWidth: "230px" }} xs="12" md="3" lg="3" className='order-sm-first order-md-first order-lg-last'>
+          <Col style={{ paddingTop: '40px', justifyContent: 'center', minWidth: '230px' }} xs="12" md="3" lg="3" className='order-column'>
             <ReportPage.ReportHeader
               src={profilePic}
               avatar={profilePic ? undefined : <FiUser />}

@@ -297,3 +297,16 @@ body {
     align-items: flex-start;
   }
 }
+
+.order-column {
+  order: 1;
+}
+
+@media (max-width: 981px) {
+  .order-column {
+    order: -1;
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+
+}
