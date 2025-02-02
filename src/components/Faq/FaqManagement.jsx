@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button } from 'reactstrap';
-import { addFAQ, editFAQ, getTopFAQs, deleteFAQ } from './api';
+import { Link } from 'react-router-dom';
+import { addFAQ, editFAQ, getAllFAQs, deleteFAQ } from './api';
 
 function FaqManagement({ editMode = false, faqToEdit = {} }) {
   const [question, setQuestion] = useState(editMode ? faqToEdit.question : '');
@@ -14,11 +15,11 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
 
     const fetchFAQs = async () => {
       try {
-        const topFAQs = await getTopFAQs();
-        console.log('Fetched FAQs:', topFAQs);
+        const allFAQs = await getAllFAQs();
+        console.log('Fetched FAQs:', allFAQs);
 
         if (isMounted) {
-          setFaqs(Array.isArray(topFAQs.data) ? topFAQs.data : []);
+          setFaqs(Array.isArray(allFAQs.data) ? allFAQs.data : []);
         }
       } catch (error) {
         console.error('Error fetching FAQs:', error);
@@ -42,7 +43,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
       setQuestion('');
       setAnswer('');
 
-      const updatedFAQs = await getTopFAQs();
+      const updatedFAQs = await getAllFAQs();
       setFaqs(Array.isArray(updatedFAQs.data) ? updatedFAQs.data : []);
     } catch (error) {
       console.error('Error adding FAQ:', error);
@@ -63,7 +64,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
       setQuestion('');
       setAnswer('');
 
-      const updatedFAQs = await getTopFAQs();
+      const updatedFAQs = await getAllFAQs();
       setFaqs(Array.isArray(updatedFAQs.data) ? updatedFAQs.data : []);
     } catch (error) {
       console.error('Error updating FAQ:', error);
@@ -75,7 +76,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
       await deleteFAQ(faqId);
       alert('FAQ deleted successfully!');
 
-      const updatedFAQs = await getTopFAQs();
+      const updatedFAQs = await getAllFAQs();
       setFaqs(Array.isArray(updatedFAQs.data) ? updatedFAQs.data : []);
     } catch (error) {
       console.error('Error deleting FAQ:', error);
@@ -111,7 +112,11 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
         {editingFAQ ? 'Save Changes' : 'Add FAQ'}
       </button>
 
-      <h4>Top 20 FAQs</h4>
+      <Link to="/unanswered-faqs" style={{ color: 'blue', textDecoration: 'underline' }}>
+        View Unanswered Questions
+      </Link>
+
+      <h4>All FAQs</h4>
       {loading ? (
         <p>Loading FAQs...</p>
       ) : Array.isArray(faqs) && faqs.length === 0 ? (

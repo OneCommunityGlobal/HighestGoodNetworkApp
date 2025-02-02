@@ -44,6 +44,7 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 // eslint-disable-next-line import/order, import/no-unresolved
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import FaqHistory from 'components/Faq/FaqHistory';
+import UnansweredFaqs from 'components/Faq/UnansweredFaqs';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -250,7 +251,6 @@ export default (
           path="/faq"
           exact
           component={FaqSearch}
-          routePermissions={RoutePermissions.faq}
         />
 
         <ProtectedRoute
@@ -264,6 +264,13 @@ export default (
           path="/faqs/:id/history"
           exact
           component={FaqHistory}
+          routePermissions={RoutePermissions.faqManagement}
+        />
+
+        <ProtectedRoute
+          path="/unanswered-faqs"
+          exact
+          component={UnansweredFaqs}
           routePermissions={RoutePermissions.faqManagement}
         />
 

@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { debounce } from 'lodash';
+import { Button } from 'reactstrap';
 import { searchFAQs, logUnansweredQuestion } from './api';
 
 function FaqSearch() {
@@ -7,6 +8,7 @@ function FaqSearch() {
   const [suggestions, setSuggestions] = useState([]);
   const [notFound, setNotFound] = useState(false);
   const [selectedFAQ, setSelectedFAQ] = useState(null);
+  const [logging, setLogging] = useState(false);
 
   const fetchSuggestions = debounce(async query => {
     try {
@@ -23,7 +25,7 @@ function FaqSearch() {
     setSearchQuery(query);
     setSelectedFAQ(null);
 
-    if (query.length > 1) {
+    if (query.length >= 1) {
       fetchSuggestions(query);
     } else {
       setSuggestions([]);
@@ -39,11 +41,17 @@ function FaqSearch() {
   };
 
   const handleLogUnanswered = async () => {
+    if (!searchQuery.trim()) return;
+
+    setLogging(true);
     try {
-      await logUnansweredQuestion(searchQuery);
-      alert('Your question has been recorded and will be reviewed.');
+      const response = await logUnansweredQuestion(searchQuery);
+      alert(response.data.message || 'Your question has been recorded.');
     } catch (error) {
       console.error('Error logging unanswered question:', error);
+      alert('Failed to log question. It may already exist.');
+    } finally {
+      setLogging(false);
     }
   };
 
@@ -56,7 +64,7 @@ function FaqSearch() {
         onChange={handleSearchChange}
         placeholder="Search FAQs"
       />
-      
+
       {selectedFAQ ? (
         <div>
           <h4>{selectedFAQ.question}</h4>
@@ -77,8 +85,8 @@ function FaqSearch() {
                 backgroundColor: '#f9f9f9',
                 transition: 'background-color 0.3s',
               }}
-              onMouseOver={(e) => (e.currentTarget.style.backgroundColor = '#e0e0e0')}
-              onMouseOut={(e) => (e.currentTarget.style.backgroundColor = '#f9f9f9')}
+              onMouseOver={e => (e.currentTarget.style.backgroundColor = '#e0e0e0')}
+              onMouseOut={e => (e.currentTarget.style.backgroundColor = '#f9f9f9')}
             >
               {faq.question}
             </li>
@@ -87,7 +95,9 @@ function FaqSearch() {
       ) : notFound ? (
         <div>
           <p>No results found.</p>
-          <button onClick={handleLogUnanswered}>Log this question</button>
+          <Button color="primary" onClick={handleLogUnanswered} disabled={logging}>
+            {logging ? 'Logging...' : 'Log this question and notify Owner'}
+          </Button>
         </div>
       ) : null}
     </div>

@@ -176,6 +176,8 @@ export const ENDPOINTS = {
   EDIT_FAQ: faqId => `${APIEndpoint}/faqs/${faqId}`,
   DELETE_FAQ: faqId => `${APIEndpoint}/faqs/${faqId}`,
   FAQ_HISTORY: faqId => `${APIEndpoint}/faqs/${faqId}/history`,
+  UNANSWERED_FAQS: `${APIEndpoint}/faqs/unanswered`,
+  DELETE_UNANSWERED_FAQ: faqId => `${APIEndpoint}/faqs/unanswered/${faqId}`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
