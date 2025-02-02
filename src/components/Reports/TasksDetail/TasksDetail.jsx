@@ -7,11 +7,33 @@ import 'react-table/react-table.css';
 import './TasksDetail.css';
 
 
+
 function ShowCollapse(props) {
   const [open, setOpen] = useState(false);
 
+
   return (
     <>
+      <div>
+        {props.resources[0].name}
+        {props.resources.length > 1 && ','}
+      </div>
+      {}
+      {open && (
+        <>
+          {props.resources.slice(1).map((resource, index) => (
+            <Collapse in={open} key={resource._id}>
+              <div>
+                {resource.name}
+                {index < props.resources.length - 2 && ','}
+              </div>
+            </Collapse>
+          ))}
+        </>
+      )}
+      {}
+      <Button onClick={() => setOpen(!open)} aria-expanded={open} size="sm">
+        {open ? 'Show less' : `Show more (${props.resources.length})`} ➤
       <div>
         {props.resources[0].name}
         {props.resources.length > 1 && ','}
@@ -90,10 +112,10 @@ export function TasksDetail(props) {
       </td>
       <td className="tasks-detail-center-cells">
   {task.resources.length <= 2 ? (
-    task.resources.map((resource, innerIndex) => (
+    task.resources.map((resource, index) => (
       <span key={resource._id}>
         {resource.name}
-        {innerIndex < task.resources.length - 1 && ', '}
+        {index < task.resources.length - 1 && ', '}
       </span>
     ))
   ) : (

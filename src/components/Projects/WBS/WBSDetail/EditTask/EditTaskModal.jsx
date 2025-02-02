@@ -8,6 +8,7 @@ import { DateUtils } from 'react-day-picker';
 import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
+import parseISO from 'date-fns/parseISO';
 import { updateTask } from 'actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
@@ -140,24 +141,32 @@ function EditTaskModal(props) {
 
   const changeDateStart = startDate => {
     setStartedDate(startDate);
-    if (dueDate) {
-      if (startDate > dueDate) {
-        setDateWarning(true);
-      } else {
-        setDateWarning(false);
-      }
-    }
   };
+  
   const changeDateEnd = dueDate => {
-    setDueDate(dueDate);
-    if (startedDate) {
-      if (dueDate < startedDate) {
-        setDateWarning(true);
-      } else {
-        setDateWarning(false);
-      }
+    if (!startedDate) {
+      const newDate = dateFnsFormat(new Date(), FORMAT);
+      setStartedDate(newDate);
     }
+    setDueDate(dueDate);
   };
+
+  useEffect(()=>{
+    let parsedDueDate;
+    let parsedStartedDate;
+    if (dueDate){
+      parsedDueDate = dueDate.includes("T") ? parseISO(dueDate) : dateFnsParse(dueDate, FORMAT, new Date());
+    }
+    if (startedDate){
+      parsedStartedDate = startedDate.includes("T") ? parseISO(startedDate) : dateFnsParse(startedDate, FORMAT, new Date());
+    }
+    if (dueDate && parsedDueDate < parsedStartedDate) {
+      setDateWarning(true);
+    } else {
+      setDateWarning(false);
+    }
+  }, [startedDate, dueDate]);
+
   const formatDate = (date, format, locale) => dateFnsFormat(date, format, { locale });
   const parseDate = (str, format, locale) => {
     const parsed = dateFnsParse(str, format, new Date(), { locale });
@@ -455,8 +464,8 @@ function EditTaskModal(props) {
                   Hours
                 </td>
                 <td scope="col" className="w-100">
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="bestCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                  <div className="py-1 flex-responsive">
+                    <label htmlFor="bestCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Best-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -475,13 +484,14 @@ function EditTaskModal(props) {
                       {componentOnly:true}
                     )}
                   </div>
-                  <div className="warning">
+                  {hoursWarning && (
+                  <div className="warning mb-3">
                     {hoursWarning
                       ? 'The number of hours must be less than other cases'
                       : ''}
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="worstCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                  </div>)}
+                  <div className="py-1 flex-responsive">
+                    <label htmlFor="worstCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Worst-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -499,13 +509,14 @@ function EditTaskModal(props) {
                       {componentOnly:true}
                     )}
                   </div>
-                  <div className="warning">
+                  {hoursWarning && (
+                  <div className="warning mb-3">
                     {hoursWarning
                       ? 'The number of hours must be higher than other cases'
                       : ''}
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="mostCase" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                  </div>)}
+                  <div className="py-1 flex-responsive">
+                    <label htmlFor="mostCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Most-case
                     </label>
                     {ReadOnlySectionWrapper(
@@ -523,13 +534,14 @@ function EditTaskModal(props) {
                       {componentOnly:true}
                     )}
                   </div>
-                  <div className="warning">
+                  {hoursWarning && (
+                  <div className="warning mb-3">
                     {hoursWarning
                       ? 'The number of hours must range between best and worst cases'
                       : ''}
-                  </div>
-                  <div className="py-2 flex-responsive">
-                    <label htmlFor="Estimated" className={`text-nowrap w-25 mr-4 ${darkMode ? 'text-light' : ''}`}>
+                  </div>)}
+                  <div className="py-1 flex-responsive">
+                    <label htmlFor="Estimated" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Estimated
                     </label>
                     {ReadOnlySectionWrapper(
@@ -698,7 +710,7 @@ function EditTaskModal(props) {
                           formatDate={formatDate}
                           placeholder={`${dateFnsFormat(new Date(), FORMAT)}`}
                           onDayChange={(day, mod, input) => changeDateEnd(input.state.value)}
-                          
+                          value={dueDate} 
                         />
                         <div className='warning text-danger'>
                           {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
@@ -715,7 +727,7 @@ function EditTaskModal(props) {
         {canUpdateTask || canSuggestTask ? (
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             {taskName !== '' && startedDate !== '' && dueDate !== '' ? (
-              <Button color="primary" onClick={updateTask} style={darkMode ? boxStyleDark : boxStyle}>
+              <Button color="primary" onClick={updateTask} style={darkMode ? boxStyleDark : boxStyle} disabled={dateWarning}>
                 Update
               </Button>
             ) : null}

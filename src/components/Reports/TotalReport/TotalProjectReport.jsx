@@ -10,7 +10,6 @@ import Loading from '../../common/Loading';
 
 function TotalProjectReport(props) {
   const { startDate, endDate, userProfiles, projects, darkMode } = props;
-
   const [totalProjectReportDataLoading, setTotalProjectReportDataLoading] = useState(true);
   const [totalProjectReportDataReady, setTotalProjectReportDataReady] = useState(false);
   const [showTotalProjectTable, setShowTotalProjectTable] = useState(false);

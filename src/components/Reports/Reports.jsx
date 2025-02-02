@@ -389,12 +389,12 @@ class ReportsPage extends Component {
         type="button">
           <div className="container-component-category">
             <h2 className="mt-3 mb-5">
-            {/* Loading spinner at the top */}
-            {this.state.loading && (
-            <div className="loading-spinner-top">
-              <Loading align="center" darkMode={darkMode} />
-            </div>
-            )}
+                {/* Loading spinner at the top */}
+                {this.state.loading && (
+                <div className="loading-spinner-top">
+                  <Loading align="center" darkMode={darkMode} />
+                </div>
+              )}
               <div className="d-flex align-items-center">
                 <span className="mr-2">Reports Page</span>
                 <EditableInfoModal
@@ -509,23 +509,21 @@ class ReportsPage extends Component {
                   </div>
                   <div>
                   <div className="total-report-item">
-                    <Button type="button" color="info" onClick={this.showTotalTeam}>
-                      {this.state.showTotalTeam
-                        ? 'Hide Total Team Report'
-                        : 'Show Total Team Report'}
+                    <Button color="info" onClick={this.showTotalTeam}>
+                      {this.state.showTotalTeam ? 'Hide Total Team Report' : 'Show Total Team Report'}
                     </Button>
                     <div style={{ display: 'inline-block', marginLeft: 10 }}>
                       <EditableInfoModal
                         areaName="totalTeamReportInfoPoint"
-                        areaTitle="Total Team Report"
+                       areaTitle="Total Team Report"
                         role={userRole}
                         fontSize={15}
-                        isPermissionPage
+                       isPermissionPage
                         darkMode={darkMode}
-                      />
-                    </div>
-                  </div>
-                </div>
+                     />
+                   </div>
+              </div>
+              </div>
                 </div>
                 {myRole !== 'Owner' && (
                   <div className="lost-time-container">
@@ -690,16 +688,25 @@ class ReportsPage extends Component {
                 darkMode={darkMode}
               />
             )}
-             {this.state.showTotalTeam && (
+            {this.state.showTotalTeam && (
               <TotalTeamReport
                 startDate={this.state.startDate}
                 endDate={this.state.endDate}
                 userProfiles={userProfilesBasicInfo}
-                allTeamsData={allTeams}
+                allTeamsData={this.props.state.allTeamsData.allTeams}
                 passTeamMemberList={this.setTeamMemberList}
                 savedTeamMemberList={this.state.teamMemberList}
                 darkMode={darkMode}
               />
+            )}
+            {!this.state.loading && this.state.showTotalProject && (
+              <TotalProjectReport
+              startDate={this.state.startDate}
+              endDate={this.state.endDate}
+              userProfiles={userProfiles}
+              projects={projects}
+              darkMode={darkMode}
+            />
             )}
             {this.state.showAddTimeForm && myRole === 'Owner' && (
               <AddLostTime
