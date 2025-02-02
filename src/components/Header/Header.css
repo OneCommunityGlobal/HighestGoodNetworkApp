@@ -21,7 +21,6 @@
 
 .navbar {
   z-index: 1050;
-  /* z-index: 100; */
   white-space: nowrap;
   margin-bottom: 20px;
   overflow: visible;
