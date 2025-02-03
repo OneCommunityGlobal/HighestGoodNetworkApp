@@ -1,18 +1,17 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import ReportTableSearchPanel from '../ReportTableSearchPanel';
 
 class ReportFilter extends Component {
   constructor(props) {
     super(props);
-    this.state = {
-      wildCardSearchText: '',
-      teamNameSearchText: '',
-    };
-
     this.setActive = this.setActive.bind(this);
     this.setInActive = this.setInActive.bind(this);
     this.setAll = this.setAll.bind(this);
     this.onWildCardSearch = this.onWildCardSearch.bind(this);
+  }
+
+  onWildCardSearch(searchText) {
+    this.props.onWildCardSearch(searchText);
   }
 
   setActive() {
@@ -27,16 +26,13 @@ class ReportFilter extends Component {
     this.props.setFilterStatus('');
   }
 
-  onWildCardSearch(searchText) {
-    this.setState({ wildCardSearchText: searchText });
-    this.props.onWildCardSearch(searchText);
-  }
-
   render() {
     return (
       <div>
         <div>
-          <a>Select a Filter</a>
+          <button type="button" style={{ background: 'none', border: 'none', padding: 0, cursor: 'pointer', color: 'blue', textDecoration: 'underline' }}>
+            Select a Filter
+          </button>
         </div>
         <div>
           <input

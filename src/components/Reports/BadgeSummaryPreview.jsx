@@ -23,23 +23,18 @@ function BadgeSummaryPreview({ badges, darkMode }) {
   const [sortedBadges, setSortedBadges] = useState([]);
 
   useEffect(() => {
-     try {
-      if (badges && badges.length) {
-        const sortBadges = [...badges].sort((a, b) => {
-          if (a?.badge?.ranking === 0) return 1;
-          if (b?.badge?.ranking === 0) return -1;
-          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
-          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
-          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
-          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
-          return 0;
-        });
-        setSortedBadges(sortBadges);
-      }
-     } catch (error) {
-      console.log(error);
-     }
-   
+    if (badges && badges.length) {
+      const sortBadges = [...badges].sort((a, b) => {
+        if (a?.badge?.ranking === 0) return 1;
+        if (b?.badge?.ranking === 0) return -1;
+        if (a?.badge?.ranking > b?.badge?.ranking) return 1;
+        if (a?.badge?.ranking < b?.badge?.ranking) return -1;
+        if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
+        if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
+        return 0;
+      });
+      setSortedBadges(sortBadges);
+    }
   }, [badges]);
 
   const toggle = () => setIsOpen(prev => !prev);

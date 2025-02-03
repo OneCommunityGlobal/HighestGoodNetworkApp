@@ -1,4 +1,5 @@
-import React, {  useEffect, useState } from 'react';
+/* eslint-disable import/prefer-default-export */
+import {  useEffect, useState } from 'react';
 import { ProjectPieChart } from '../ProjectPieChart/ProjectPieChart';
 import '../PiechartByProject/PieChartByProject.css';
 
@@ -40,19 +41,19 @@ export function WbsPieChart({
 
   }, [projectMembers])
 
-  useEffect(() => {
-    window.addEventListener('resize', updateWindowSize);
-    return () => {
-      window.removeEventListener('resize', updateWindowSize);
-    };
-  }, []);
-
   const updateWindowSize = () => {
     setWindowSize({
       width: window.innerWidth,
       height: window.innerHeight
     });
   };
+
+  useEffect(() => {
+    window.addEventListener('resize', updateWindowSize);
+    return () => {
+      window.removeEventListener('resize', updateWindowSize);
+    };
+  }, []);
 
   const handleShowPieChart = () => {
     setIsChecked(!isChecked);
@@ -61,7 +62,7 @@ export function WbsPieChart({
   const noDataPlaceholder = [{
     name: "No Data",
     value: 1/1000,
-    projectName: projectName,
+    projectName,
     totalHoursCalculated: 0,
     lastName: ""
   }];
@@ -93,4 +94,3 @@ export function WbsPieChart({
     </div>
   )
 }
-

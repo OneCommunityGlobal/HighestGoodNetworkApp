@@ -19,10 +19,10 @@ import {
   DropdownItem,
   UncontrolledTooltip
 } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';
-import { useSelector } from 'react-redux';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -52,7 +52,6 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
         setSortedBadges([]);
       }
     } catch (error) {
-      console.error("Error sorting badges:", error);
       setSortedBadges([]);
     }
   }, [badges]);
@@ -127,8 +126,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                               : value.lastModified.toLocaleString().substring(0, 10)}
                           </td>
                           <td style={{ display: 'flex', alignItems: 'center' }}>
-                            <>
-                              {' '}
+                            {' '}
                               <UncontrolledDropdown className="me-2" direction="down">
                                 <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                                   Dates
@@ -157,8 +155,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                 </UncontrolledTooltip>
                               </>)
                               : null
-                              } 
-                            </>
+                              }
                           </td>
                           <td>{value.count}</td>
                         </tr>
@@ -200,7 +197,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                               />
                             )}
                           </td>
-                          // ... rest of the code
+                          {/* ... rest of the code */}
                           <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                             <Card className="text-center">
                               <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
