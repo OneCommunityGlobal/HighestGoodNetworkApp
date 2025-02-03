@@ -7,7 +7,7 @@
   background-color: #faf7fd;
   padding: 40px 0 0 24px;
   align-items: start;
-  padding: 2vh 7vw;
+
 }
 
 .report-page-content {
@@ -22,13 +22,12 @@
 .report-page-profile {
   border-top-left-radius: 25px;
   border-radius: 25px;
-  margin-bottom: 10px;
   width: 100%;
 }
+
 .report-page-profile-dark {
   border-top-left-radius: 25px;
   border-radius: 25px;
-  margin-bottom: 10px;
   width: 100%;
 }
 
@@ -71,11 +70,11 @@
   }
 }
 
-.project-header{
+.project-header {
   font-size: 32px;
   padding: 5px 5px;
   text-align: center;
-  background-color:white;
+  background-color: white;
   border-radius: 20px;
   box-shadow: 0 0 12px #eae1f6;
   width: 100%;
