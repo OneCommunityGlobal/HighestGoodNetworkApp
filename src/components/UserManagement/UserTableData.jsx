@@ -33,6 +33,7 @@ const UserTableData = React.memo(props => {
     lastName: props.user.lastName,
     id: props.user._id,
     role: props.user.role,
+    jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
     startDate: formatDate(props.user.startDate),
@@ -77,6 +78,7 @@ const UserTableData = React.memo(props => {
       lastName: props.user.lastName,
       id: props.user._id,
       role: props.user.role,
+      jobTitle:props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
       startDate: formatDateYYYYMMDD(props.user.startDate),
@@ -179,7 +181,7 @@ const UserTableData = React.memo(props => {
           />
         )}
       </td>
-      <td>
+      <td id="usermanagement_role">
         {editUser?.role && roles !== undefined ? (
           formData.role
         ) : (
@@ -199,6 +201,33 @@ const UserTableData = React.memo(props => {
               </option>
             ))}
           </select>
+        )}
+      </td>
+
+
+      <td className="email_cell">
+        {editUser?.jobTitle ? (
+          <div>
+            {formData.jobTitle}
+            <FontAwesomeIcon
+              className="copy_icon"
+              icon={faCopy}
+              onClick={() => {
+                navigator.clipboard.writeText(formData.jobTitle);
+                toast.success('Title Copied!');
+              }}
+            />
+          </div>
+        ) : (
+          <input
+            type="text"
+            className="edituser_input"
+            value={formData.jobTitle}
+            onChange={e => {
+              updateFormData({ ...formData, jobTitle: e.target.value });
+              addUserInformation('jobTitle', e.target.value, props.user._id);
+            }}
+          />
         )}
       </td>
 

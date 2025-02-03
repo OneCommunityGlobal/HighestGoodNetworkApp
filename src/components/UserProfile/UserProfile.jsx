@@ -1055,7 +1055,7 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
-              {canGetProjectMembers && teams.length !== 0 ? (
+              {(canGetProjectMembers && teams.length !== 0) || ['Owner','Administrator','Manager'].includes(requestorRole) ? (
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);

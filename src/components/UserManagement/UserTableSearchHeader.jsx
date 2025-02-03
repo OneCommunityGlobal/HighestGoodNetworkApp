@@ -21,6 +21,10 @@ const UserTableSearchHeader = React.memo(props => {
     props.onRoleSearch(text);
   };
 
+  const onTitleSearch = text => {
+    props.onTitleSearch(text);
+  };
+
   const onEmailSearch = text => {
     props.onEmailSearch(text);
   };
@@ -50,6 +54,14 @@ const UserTableSearchHeader = React.memo(props => {
       </td>
       <td id="user_role">
         <DropDownSearchBox className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''} id="role_search" items={props.roles} searchCallback={onRoleSearch} />
+      </td>
+      <td id="user_title">
+        <TextSearchBox
+          id="title_search"
+          searchCallback={onTitleSearch}
+          style={{ width: '100%' }}
+          placeholder=" Search Title"
+        />
       </td>
       <td id="user_email">
         <TextSearchBox
