@@ -12,19 +12,24 @@ class ReportFilter extends Component {
     this.setActive = this.setActive.bind(this);
     this.setInActive = this.setInActive.bind(this);
     this.setAll = this.setAll.bind(this);
+    this.setTenHourFilter = this.setTenHourFilter.bind(this);
     this.onWildCardSearch = this.onWildCardSearch.bind(this);
   }
 
   setActive() {
-    this.props.setFilterStatus('true');
+    this.props.setFilterStatus('active');
   }
 
   setInActive() {
-    this.props.setFilterStatus('false');
+    this.props.setFilterStatus('inactive');
   }
 
   setAll() {
-    this.props.setFilterStatus('');
+    this.props.setFilterStatus('all');
+  }
+
+  setTenHourFilter(){
+    this.props.setFilterStatus('tenHour');
   }
 
   onWildCardSearch(searchText) {
@@ -64,10 +69,19 @@ class ReportFilter extends Component {
             defaultChecked
           />
           All
+          <input
+            name="radio"
+            type="radio"
+            style={{ margin: '8px 12px' }}
+            value="tenHour"
+            onChange={this.setTenHourFilter}
+          />
+          10+ hours
         </div>
         <div className="mt-4">
           <ReportTableSearchPanel
             onSearch={this.onWildCardSearch}
+            wildCardSearchText={this.props.wildCardSearchText}
             onCreateNewTeamClick={this.props.onCreateNewTeamShow}
           />
         </div>
