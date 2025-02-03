@@ -84,10 +84,11 @@ const TeamMemberTask = React.memo(
     const isAllowedToResolveTasks =
       rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('resolveTask'));
     const isAllowedToSeeDeadlineCount = rolesAllowedToSeeDeadlineCount.includes(userRole);
+    const isAllowedToEditTask = rolesAllowedToResolveTasks.includes(userRole);
     // ^^^
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
-    const canUpdateTask = dispatch(hasPermission('updateTask'));
+    const canUpdateTask = dispatch(hasPermission('updateTask')) || isAllowedToEditTask;
     const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
