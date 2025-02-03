@@ -373,6 +373,41 @@
   flex-direction: row;
 }
 
+.container .google-icon-wrapper img {
+  width: 24px;
+  height: auto;
+}
+
+
+.name {
+  margin-bottom: 4px;
+  margin-right: 4px;
+}
+
+.name-initial {
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  color: black;
+  display: flex;
+  justify-content: center;
+  /* Center horizontally */
+  align-items: center;
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.name-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.member-links-wrapper {
+  display: flex;
+  align-items: center;
+}
+
 @media (max-width: 1240px) and (min-width: 992px) {
   .header-box {
     flex-direction: column;
