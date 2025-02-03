@@ -1,11 +1,8 @@
-/* eslint-disable no-restricted-globals */
 import { useEffect, useState } from 'react';
 import * as d3 from 'd3/dist/d3.min';
 import { CHART_RADIUS, CHART_SIZE } from './constants';
-import { generateArrayOfUniqColors } from './colorsGenerator';
 import './PieChart.css';
 
-// eslint-disable-next-line import/prefer-default-export, react/function-component-definition
 export const PieChart = ({
   data,
   dataLegend,
@@ -15,8 +12,16 @@ export const PieChart = ({
   darkMode,
 }) => {
   const [totalHours, setTotalHours] = useState(0);
-  const [colors] = useState(generateArrayOfUniqColors(Object.keys(data).length));
-  // create the pie chart
+  
+  // Custom vibrant color palette
+  const customColors = [
+    '#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFBE0B',
+    '#FF006E', '#8338EC', '#3A86FF', '#FB5607', '#38B000',
+    '#7209B7', '#F72585', '#4CC9F0', '#80ED99', '#F15BB5',
+  ];
+
+  let color = d3.scaleOrdinal().range(customColors);
+
   const getCreateSvgPie = totalValue => {
     const svg = d3
       .select(`#pie-chart-container-${pieChartId}`)
@@ -26,6 +31,7 @@ export const PieChart = ({
       .attr('height', CHART_SIZE)
       .append('g')
       .attr('transform', `translate(${CHART_SIZE / 2},${CHART_SIZE / 2})`);
+
     svg
       .append('text')
       .attr('text-anchor', 'middle')
@@ -34,20 +40,21 @@ export const PieChart = ({
 
     return svg;
   };
-  let color = d3.scaleOrdinal().range(colors);
-  const pie = d3.pie().value(d => d[1]);
-  useEffect(() => {
-    color = d3.scaleOrdinal().range(colors);
 
-    // eslint-disable-next-line camelcase
+  const pie = d3.pie().value(d => d[1]);
+
+  useEffect(() => {
+    if (!data || Object.keys(data).length === 0) return;
+
+    color = d3.scaleOrdinal().range(customColors);
     const data_ready = pie(Object.entries(data));
 
     const totalValue = data_ready
       .map(obj => obj.value)
-      .reduce((a, c) => {
-        return a + c;
-      }, 0);
+      .reduce((a, c) => a + c, 0);
+    
     setTotalHours(totalValue);
+
     let div = d3.select('.tooltip-donut');
     if (div.empty()) {
       div = d3
@@ -55,9 +62,10 @@ export const PieChart = ({
         .append('div')
         .attr('class', 'tooltip-donut')
         .style('opacity', 0)
-        .style('position', 'absolute') // Ensure the tooltip uses absolute positioning
-        .style('pointer-events', 'none'); // Prevents the tooltip from interfering with mouse events
+        .style('position', 'absolute')
+        .style('pointer-events', 'none');
     }
+
     getCreateSvgPie(totalValue)
       .selectAll('whatever')
       .data(data_ready)
@@ -70,25 +78,26 @@ export const PieChart = ({
           .outerRadius(CHART_RADIUS),
       )
       .attr('fill', d => color(d.data[0]))
-      .on('mouseover', function(d, i) {
+      .style('filter', 'brightness(1.1)')
+      .on('mouseover', function(event, d) {
         d3.select(this)
           .transition()
           .duration('50')
-          .attr('opacity', '.5');
+          .attr('opacity', '.7')
+          .style('filter', 'brightness(1.2)');
+          
         div
           .transition()
           .duration(50)
           .style('opacity', 1)
           .style('visibility', 'visible');
-        const taskName = Object.keys(chartLegend).map(key => {
-          return chartLegend[key][0];
-        });
+
+        const taskName = Object.keys(chartLegend).map(key => chartLegend[key][0]);
         const index = Object.keys(chartLegend)
-          .map(function(e) {
-            return e;
-          })
-          .indexOf(i.data[0]);
+          .map(e => e)
+          .indexOf(d.data[0]);
         const legendInfo = taskName[index].toString();
+        
         div
           .html(legendInfo)
           .style('left', `${event.pageX + 10}px`)
@@ -98,13 +107,15 @@ export const PieChart = ({
         d3.select(this)
           .transition()
           .duration('50')
-          .attr('opacity', '.85');
+          .attr('opacity', '1')
+          .style('filter', 'brightness(1.1)');
+          
         div
           .transition()
-          .duration('50')
+          .duration(50)
           .style('opacity', 0)
           .on('end', function() {
-            d3.select(this).style('visibility', 'hidden'); // Hide after transition
+            d3.select(this).style('visibility', 'hidden');
           });
       });
 
@@ -123,7 +134,13 @@ export const PieChart = ({
         </div>
         {Object.keys(dataLegend).map(key => (
           <div key={key} className="pie-chart-legend-item">
-            <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
+            <div 
+              className="data-legend-color" 
+              style={{ 
+                backgroundColor: color(key),
+                filter: 'brightness(1.1)'
+              }} 
+            />
             <div className="data-legend-info">
               {dataLegend[key].map((legendPart, index) => (
                 <div
