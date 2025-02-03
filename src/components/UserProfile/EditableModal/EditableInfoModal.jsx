@@ -229,6 +229,7 @@ export class EditableInfoModal extends Component {
                     disabled={!this.state.editing}
                     value={infoContent}
                     onEditorChange={this.handleInputChange}
+                    darkMode={darkMode}
                   />
                   : <div
                     style={{ paddingLeft: '20px' }}

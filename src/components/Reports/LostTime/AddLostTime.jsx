@@ -16,23 +16,6 @@ import { postTimeEntry } from 'actions/timeEntries';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: '',
-  plugins:
-    'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar:
-    'bold italic underline link removeformat | bullist numlist outdent indent |\
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                    subscript superscript charmap  | help',
-  branding: false,
-  min_height: 180,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-  content_style: 'body { cursor: text !important; }',
-};
-
 const AddLostTime = props => {
 
   const darkMode = useSelector((state) => state.theme.darkMode);
@@ -50,6 +33,25 @@ const AddLostTime = props => {
     minutes: 0,
     notes: '',
     isTangible: true,
+  };
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: '',
+    plugins:
+      'advlist autolink autoresize lists link charmap table paste help wordcount',
+    toolbar:
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const dispatch = useDispatch();

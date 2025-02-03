@@ -84,6 +84,8 @@ function EditTaskModal(props) {
       min_height: 180,
       max_height: 300,
       autoresize_bottom_margin: 1,
+      skin: darkMode ? 'oxide-dark' : 'oxide',
+      content_css: darkMode ? 'dark' : 'default',
   };
   /*
   * -------------------------------- functions --------------------------------
