@@ -48,12 +48,31 @@ function AddLostTime(props) {
     isTangible: true,
   };
 
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: '',
+    plugins:
+      'advlist autolink autoresize lists link charmap table paste help wordcount',
+    toolbar:
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
+
   const dispatch = useDispatch();
 
   const [entryType, setEntryType] = useState('');
   const [isSubmitting, setSubmitting] = useState(false);
   const [inputs, setInputs] = useState(initialForm);
-  
+
   const [selectedTeam, setSelectTeam] = useState(undefined);
   const [selectedProject, setSelectProject] = useState(undefined);
   const [searchText, setSearchText] = useState('');
@@ -99,7 +118,7 @@ function AddLostTime(props) {
   };
 
   const selectUser = person => {
-    if(person){
+    if (person) {
       setInputs(prevInputs => ({
         ...prevInputs,
         projectId: undefined,
@@ -139,28 +158,28 @@ function AddLostTime(props) {
     } if (entryType === 'person') {
       return (
         <FormGroup>
-            <Label className={fontColor}>Name</Label>
-            <MemberAutoComplete
-              userProfileData={{userProfiles: props.users}}
-              onAddUser={selectUser}
-              searchText={searchText}
-              setSearchText={setSearchText}
-            />
-            {'personId' in errors && (
-              <div className="text-danger">
-                <small style={{ fontWeight: darkMode ? 'bold' : 'normal' }}>{errors.personId}</small>
-              </div>
-            )}
-          </FormGroup>
+          <Label className={fontColor}>Name</Label>
+          <MemberAutoComplete
+            userProfileData={{ userProfiles: props.users }}
+            onAddUser={selectUser}
+            searchText={searchText}
+            setSearchText={setSearchText}
+          />
+          {'personId' in errors && (
+            <div className="text-danger">
+              <small style={{ fontWeight: darkMode ? 'bold' : 'normal' }}>{errors.personId}</small>
+            </div>
+          )}
+        </FormGroup>
       )
     } if (entryType === 'team') {
       return (
         <FormGroup>
-          <Label className={fontColor}>Team Name</Label> 
+          <Label className={fontColor}>Team Name</Label>
           <AddTeamsAutoComplete
-            teamsData={{allTeams: props.teams}}
+            teamsData={{ allTeams: props.teams }}
             onDropDownSelect={selectTeam}
-            setNewTeamName={setNewTeamName} 
+            setNewTeamName={setNewTeamName}
             setInputs={setInputs}
             newTeamName={newTeamName}
             selectedTeam={selectedTeam}
@@ -175,8 +194,8 @@ function AddLostTime(props) {
           )}
         </FormGroup>
       )
-    } 
-      return null
+    }
+    return null
   };
 
   const handleInputChange = event => {
@@ -221,7 +240,7 @@ function AddLostTime(props) {
     if (!date.isValid()) {
       result.dateOfWork = 'Invalid date';
     } else if (
-        today.diff(date, 'days') < 0
+      today.diff(date, 'days') < 0
     ) {
       result.dateOfWork = 'Cannot add lost time for future dates.';
     }
@@ -296,9 +315,9 @@ function AddLostTime(props) {
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <FormGroup>
-            <Label for="entryType" className={fontColor} >Type</Label><br/>
+            <Label for="entryType" className={fontColor} >Type</Label><br />
             <div className={`type-container ${fontColor}`}>
-              <div className='type-item' style={{paddingLeft: '20px'}} >
+              <div className='type-item' style={{ paddingLeft: '20px' }} >
                 <Input
                   type="radio"
                   id="project"
@@ -309,7 +328,7 @@ function AddLostTime(props) {
                 <Label htmlFor="project" className={fontColor}>Project</Label>
               </div>
               <div className='type-item'>
-                <Input  
+                <Input
                   type="radio"
                   id="person"
                   name='entryType'
@@ -350,78 +369,78 @@ function AddLostTime(props) {
                 )}
               </FormGroup>
               <FormGroup>
-              <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
-              <Row form>
-                <Col>
-                  <Input
-                    type="number"
-                    name="hours"
-                    id="hours"
-                    min={0}
-                    max={40}
-                    placeholder="Hours"
-                    value={inputs.hours}
-                    onChange={handleInputChange}
-                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
-                  />
-                </Col>
-                <Col>
-                  <Input
-                    type="number"
-                    name="minutes"
-                    id="minutes"
-                    min={0}
-                    max={59}
-                    placeholder="Minutes"
-                    value={inputs.minutes}
-                    onChange={handleInputChange}
-                    className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
-                  />
-                </Col>
-              </Row>
-              {'time' in errors && (
-                <div className="text-danger">
-                  <small style={{ fontWeight: darkMode ? 'bold' : 'normal' }}>{errors.time}</small>
-                </div>
-              )}
-            </FormGroup>
-            {entryType === 'person' && (
-              <FormGroup>
-                <Label for="notes" className={fontColor}>Notes</Label>
-                <Editor
-                  tinymceScriptSrc="/tinymce/tinymce.min.js"
-                  init={TINY_MCE_INIT_OPTIONS}
-                  id="notes"
-                  name="notes"
-                  className="form-control"
-                  value={inputs.notes}
-                  onEditorChange={handleEditorChange}
-                />
-
-                {'notes' in errors && (
+                <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
+                <Row form>
+                  <Col>
+                    <Input
+                      type="number"
+                      name="hours"
+                      id="hours"
+                      min={0}
+                      max={40}
+                      placeholder="Hours"
+                      value={inputs.hours}
+                      onChange={handleInputChange}
+                      className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
+                    />
+                  </Col>
+                  <Col>
+                    <Input
+                      type="number"
+                      name="minutes"
+                      id="minutes"
+                      min={0}
+                      max={59}
+                      placeholder="Minutes"
+                      value={inputs.minutes}
+                      onChange={handleInputChange}
+                      className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
+                    />
+                  </Col>
+                </Row>
+                {'time' in errors && (
                   <div className="text-danger">
-                    <small>{errors.notes}</small>
+                    <small style={{ fontWeight: darkMode ? 'bold' : 'normal' }}>{errors.time}</small>
                   </div>
                 )}
               </FormGroup>
-            )}
-            <FormGroup check>
-              <Label check className={fontColor}>
-                <Input
-                  type="checkbox"
-                  name="isTangible"
-                  checked={inputs.isTangible}
-                  onChange={e => {
-                    e.persist();
-                    setInputs(prevInputs => ({
-                      ...prevInputs,
-                      [e.target.name]: e.target.checked,
-                    }));
-                  }}
-                />
-                Tangible
-              </Label>
-            </FormGroup>
+              {entryType === 'person' && (
+                <FormGroup>
+                  <Label for="notes" className={fontColor}>Notes</Label>
+                  <Editor
+                    tinymceScriptSrc="/tinymce/tinymce.min.js"
+                    init={TINY_MCE_INIT_OPTIONS}
+                    id="notes"
+                    name="notes"
+                    className="form-control"
+                    value={inputs.notes}
+                    onEditorChange={handleEditorChange}
+                  />
+
+                  {'notes' in errors && (
+                    <div className="text-danger">
+                      <small>{errors.notes}</small>
+                    </div>
+                  )}
+                </FormGroup>
+              )}
+              <FormGroup check>
+                <Label check className={fontColor}>
+                  <Input
+                    type="checkbox"
+                    name="isTangible"
+                    checked={inputs.isTangible}
+                    onChange={e => {
+                      e.persist();
+                      setInputs(prevInputs => ({
+                        ...prevInputs,
+                        [e.target.name]: e.target.checked,
+                      }));
+                    }}
+                  />
+                  Tangible
+                </Label>
+              </FormGroup>
             </>
           )}
         </Form>
@@ -444,4 +463,4 @@ const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
 });
 
-export default connect(mapStateToProps, {getUserProfile})(AddLostTime);
+export default connect(mapStateToProps, { getUserProfile })(AddLostTime);

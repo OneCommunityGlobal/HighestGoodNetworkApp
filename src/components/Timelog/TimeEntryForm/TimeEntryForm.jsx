@@ -89,6 +89,26 @@ function TimeEntryForm(props) {
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
 
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: 'Description (10-word minimum) and reference link',
+    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
+
   const initialFormValues = {
     dateOfWork: moment()
       .tz('America/Los_Angeles')
@@ -120,8 +140,8 @@ function TimeEntryForm(props) {
 
   const timeEntryInitialProjectOrTaskId = edit
     ? initialProjectId +
-      (initialwbsId ? `/${initialwbsId}` : '') +
-      (initialTaskId ? `/${initialTaskId}` : '')
+    (initialwbsId ? `/${initialwbsId}` : '') +
+    (initialTaskId ? `/${initialTaskId}` : '')
     : 'defaultProject';
 
   const initialReminder = {
@@ -592,7 +612,9 @@ function TimeEntryForm(props) {
                 onChange={handleInputChange}
                 // min={userProfile?.isFirstTimelog === true ? moment().toISOString().split('T')[0] : userProfile?.startDate.split('T')[0]}
                 disabled={!canEditTimeEntryDate}
-                className={darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''}
+                className={
+                  darkMode ? 'bg-darkmode-liblack text-light border-0 calendar-icon-dark' : ''
+                }
               />
               {'dateOfWork' in errors && (
                 <div className="text-danger">
@@ -667,7 +689,7 @@ function TimeEntryForm(props) {
               <Editor
                 tinymceScriptSrc="/tinymce/tinymce.min.js"
                 init={TINY_MCE_INIT_OPTIONS}
-                id={`${darkMode ? 'darknotes' : 'notes'}`}
+                id="notes"
                 name="notes"
                 className="form-control"
                 value={formValues.notes}

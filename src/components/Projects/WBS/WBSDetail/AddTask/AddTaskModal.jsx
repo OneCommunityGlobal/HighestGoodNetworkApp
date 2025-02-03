@@ -18,26 +18,28 @@ import '../../../../Header/DarkMode.css'
 import TagsSearch from '../components/TagsSearch';
 import './AddTaskModal.css';
 
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  plugins: 'advlist autolink autoresize lists link charmap table paste help',
-  toolbar:
-    'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                    subscript superscript charmap  | help',
-  branding: false,
-  min_height: 180,
-  max_height: 300,
-  autoresize_bottom_margin: 1,
-};
-
 function AddTaskModal(props) {
   /*
   * -------------------------------- variable declarations -------------------------------- 
   */
   // props from store 
   const { tasks, copiedTask, allMembers, allProjects, error, darkMode } = props;
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    plugins: 'advlist autolink autoresize lists link charmap table paste help',
+    toolbar:
+      'bold italic  underline numlist   |  removeformat link bullist  outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
+  };
 
   const handleBestHoursChange = (e) => {
     setHoursBest(e.target.value);

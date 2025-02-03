@@ -60,21 +60,6 @@ const customImageUploadHandler = () =>
     reject({ message: 'Pictures are not allowed here!', remove: true });
   });
 
-const TINY_MCE_INIT_OPTIONS = {
-  license_key: 'gpl',
-  menubar: false,
-  placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
-  plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-  toolbar:
-    'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
-  branding: false,
-  min_height: 180,
-  max_height: 500,
-  autoresize_bottom_margin: 1,
-  content_style: 'body { font-size: 14px; }',
-  images_upload_handler: customImageUploadHandler,
-};
-
 // Need this export here in order for automated testing to work.
 export class WeeklySummary extends Component {
   // eslint-disable-next-line react/state-in-constructor
@@ -692,6 +677,24 @@ export class WeeklySummary extends Component {
     const headerBg = darkMode ? 'bg-space-cadet' : '';
     const bodyBg = darkMode ? 'bg-yinmn-blue' : '';
     const boxStyling = darkMode ? boxStyleDark : boxStyle;
+
+    const TINY_MCE_INIT_OPTIONS = {
+      license_key: 'gpl',
+      menubar: false,
+      placeholder: `Did you: Write it in 3rd person with a minimum of 50-words? Remember to run it through ChatGPT or other AI editor using the “Current AI Editing Prompt” from above? Remember to read and do a final edit before hitting Save?`,
+      plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+      toolbar:
+        'bold italic underline link removeformat | bullist numlist outdent indent | styleselect fontsizeselect | table| strikethrough forecolor backcolor | subscript superscript charmap | help',
+      branding: false,
+      min_height: 180,
+      max_height: 500,
+      autoresize_bottom_margin: 1,
+      content_style: 'body { font-size: 14px; }',
+      images_upload_handler: customImageUploadHandler,
+      skin: darkMode ? 'oxide-dark' : 'oxide',
+      content_css: darkMode ? 'dark' : 'default',
+    };
+
     if (fetchError) {
       return (
         <Container>
