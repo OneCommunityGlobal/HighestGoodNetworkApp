@@ -33,7 +33,6 @@ const UserProfileModal = props => {
     id,
     specialWarnings,
     handleLogWarning,
-    handlePostTwoWarnings,
   } = props;
   let blueSquare = [
     {
@@ -153,13 +152,14 @@ const UserProfileModal = props => {
         ...prevData,
         [warningTitle]: { warn, color },
         issueBlueSquare: warn === 'Issue Blue Square',
+        bothTriggered: true,
       };
     });
   };
 
   const handleSubmitWarning = () => {
     setShowWarningSpinner(true);
-    handlePostTwoWarnings(warningSelections);
+    handleLogWarning(warningSelections);
     // setShowWarningSpinner(false);
   };
   const handleToggleLogWarning = warningData => {

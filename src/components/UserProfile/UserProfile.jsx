@@ -581,44 +581,34 @@ function UserProfile(props) {
       console.log(err);
     }
   };
-  const handlePostTwoWarnings = async warningData => {
-    const warningsArray = Object.entries(warningData)
-      .filter(([key]) => key !== 'issueBlueSquare')
-      .map(([title, color]) => ({
-        userId: props?.match?.params?.userId,
-        iconId: uuidv4(),
-        color: color.color,
-        date: moment().format('MM/DD/YYYY'), // Use a dynamic timestamp or pass it explicitly
-        description: title, // Use the title as the description
-      }));
-    const newWarningData = {
-      warningsArray,
-      issueBlueSquare: warningData.issueBlueSquare,
-      userId: props?.match?.params?.userId,
-      monitorData: {
-        firstName: userProfile.firstName,
-        lastName: userProfile.lastName,
-        email: userProfile.email,
-      },
-    };
-    dispatch(postNewWarningsByUserId(newWarningData)).then(response => {
-      if (response.error) {
-        toast.error('Warning failed to log try again');
-      } else {
-        setShowModal(false);
-        fetchSpecialWarnings();
-        toast.success('Succesfully logged both warnings!');
-      }
-    });
-  };
 
   const handleLogWarning = async newWarningData => {
-    const warningData = {
+    let warningData = {};
+    let warningsArray = null;
+    if (newWarningData.bothTriggered) {
+      warningsArray = Object.entries(newWarningData)
+        .filter(([key]) => key !== 'issueBlueSquare' && key !== 'bothTriggered')
+        .map(([title, color]) => ({
+          userId: props?.match?.params?.userId,
+          iconId: uuidv4(),
+          color: color.color,
+          date: moment().format('MM/DD/YYYY'), // Use a dynamic timestamp or pass it explicitly
+          description: title, // Use the title as the description
+        }));
+    } else {
+      warningData = {
+        description: newWarningData.title,
+        color: newWarningData.colorAssigned,
+        iconId: uuidv4(),
+        date: moment().format('MM/DD/YYYY'),
+      };
+    }
+
+    warningData = {
+      ...warningData,
+      warningsArray,
+      issueBlueSquare: newWarningData.issueBlueSquare,
       userId: props?.match?.params?.userId,
-      description: newWarningData.title,
-      color: newWarningData.colorAssigned,
-      iconId: uuidv4(),
-      date: moment().format('MM/DD/YYYY'),
       monitorData: {
         firstName: userProfile.firstName,
         lastName: userProfile.lastName,
@@ -626,6 +616,7 @@ function UserProfile(props) {
         userId: props.auth.user.userid,
       },
     };
+
     let toastMessage = '';
     dispatch(postWarningByUserId(warningData))
       .then(response => {
@@ -943,7 +934,6 @@ function UserProfile(props) {
           role={requestorRole}
           handleLogWarning={handleLogWarning}
           specialWarnings={specialWarnings}
-          handlePostTwoWarnings={handlePostTwoWarnings}
         />
       )}
       <TabToolTips />
