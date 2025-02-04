@@ -72,6 +72,10 @@ function WarningItem({
           handleWarningIconClicked={handlePostWarningDetails}
           handleModalTriggered={handleModalTriggered}
           numberOfWarnings={warnings.length}
+          handleIssueWarning={handleIssueWarning}
+          canIssueTrackingWarnings={canIssueTrackingWarnings}
+          canIssueBlueSquare={canIssueBlueSquare}
+          canDeleteWarning={canDeleteWarning}
         />
         <p className="warning-text"> {warningText}</p>
       </div>
