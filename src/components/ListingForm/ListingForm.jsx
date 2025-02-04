@@ -1,20 +1,20 @@
-import React, { useState } from "react";
-import "bootstrap/dist/css/bootstrap.min.css";
+import React, { useState } from 'react';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
-const ListingForm = () => {
+const ListingForm () {
   const [formData, setFormData] = useState({
-    hostName: "",
-    hostEmail: "",
-    hostPhoneNumber: "",
-    unitNumber: "",
-    village: "",
-    amenities: "",
-    pricePerNight: "",
-    includesMeals: "",
-    landmarks: "",
-    nearbyPlaces: "",
-    exactAddress: "",
-    availableFrom: "",
+    hostName: '',
+    hostEmail: '',
+    hostPhoneNumber: '',
+    unitNumber: '',
+    village: '',
+    amenities: '',
+    pricePerNight: '',
+    includesMeals: '',
+    landmarks: '',
+    nearbyPlaces: '',
+    exactAddress: '',
+    availableFrom: '',
     propertyImages: [],
   });
 
