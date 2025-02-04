@@ -1,3 +1,3 @@
-import ListingForm from "./ListingForm";
+import ListingForm from './ListingForm';
 
 export default ListingForm;
