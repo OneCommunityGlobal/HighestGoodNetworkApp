@@ -55,6 +55,7 @@ class UserManagement extends React.PureComponent {
       firstNameSearchText: '',
       lastNameSearchText: '',
       roleSearchText: '',
+      titleSearchText: '',
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
@@ -116,6 +117,7 @@ class UserManagement extends React.PureComponent {
     const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || 
                                (prevState.lastNameSearchText !== this.state.lastNameSearchText) || 
                                (prevState.roleSearchText !== this.state.roleSearchText) || 
+                               prevState.titleSearchText !== this.state.titleSearchText ||
                                (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || 
                                (prevState.emailSearchText !== this.state.emailSearchText);
   
@@ -247,6 +249,7 @@ class UserManagement extends React.PureComponent {
               onResetClick={that.onResetClick}
               authEmail={this.props.state.userProfile.email}
               user={user}
+              jobTitle={this.props.state.userProfile.jobTitle}
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
@@ -315,6 +318,7 @@ class UserManagement extends React.PureComponent {
       return (
         nameMatches &&
         user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
+        user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
         user.email.toLowerCase().includes(this.state.emailSearchText.toLowerCase()) &&
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
@@ -579,6 +583,16 @@ class UserManagement extends React.PureComponent {
   };
 
   /**
+   * Call back for search filter - Job Title
+   */
+  onTitleSearch = searchText => {
+    this.setState({
+      titleSearchText: searchText.trim(),
+      selectedPage: 1,
+    });
+  };
+
+  /**
    * Call back for search filter - email
    */
   onEmailSearch = searchText => {
@@ -774,6 +788,7 @@ class UserManagement extends React.PureComponent {
                   onFirstNameSearch={this.onFirstNameSearch}
                   onLastNameSearch={this.onLastNameSearch}
                   onRoleSearch={this.onRoleSearch}
+                  onTitleSearch={this.onTitleSearch}
                   onEmailSearch={this.onEmailSearch}
                   onWeeklyHrsSearch={this.onWeeklyHrsSearch}
                   roles={roles}
