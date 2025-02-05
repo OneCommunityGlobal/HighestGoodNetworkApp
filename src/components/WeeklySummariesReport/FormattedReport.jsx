@@ -69,7 +69,6 @@ function FormattedReport({
   darkMode,
   handleTeamCodeChange,
   handleSpecialColorDotClick,
-  selectedSpecialColorsMap,
 }) {
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
@@ -96,7 +95,6 @@ function FormattedReport({
             handleTeamCodeChange={handleTeamCodeChange}
             auth={auth}
             handleSpecialColorDotClick={handleSpecialColorDotClick}
-            selectedSpecialColorsMap={selectedSpecialColorsMap}
           />
         ))}
       </ListGroup>
@@ -212,7 +210,6 @@ function ReportDetails({
   handleTeamCodeChange,
   auth,
   handleSpecialColorDotClick,
-  selectedSpecialColorsMap,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -239,7 +236,6 @@ function ReportDetails({
             allRoleInfo={allRoleInfo}
             auth={auth}
             handleSpecialColorDotClick={handleSpecialColorDotClick}
-            selectedSpecialColorsMap={selectedSpecialColorsMap}
           />
         </ListGroupItem>
         <Row className="flex-nowrap">
@@ -645,14 +641,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({
-  summary,
-  weekIndex,
-  allRoleInfo,
-  auth,
-  handleSpecialColorDotClick,
-  selectedSpecialColorsMap,
-}) {
+function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotClick }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
   const colors = ['purple', 'green', 'navy'];
@@ -709,9 +698,7 @@ function Index({
               height: '15px',
               margin: '0 5px',
               borderRadius: '50%',
-              backgroundColor: selectedSpecialColorsMap[color].includes(summary._id)
-                ? color
-                : 'transparent',
+              backgroundColor: summary.filterColor === color ? color : 'transparent',
               border: `3px solid ${color}`,
               cursor: 'pointer',
             }}

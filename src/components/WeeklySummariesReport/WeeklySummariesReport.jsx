@@ -88,11 +88,6 @@ export class WeeklySummariesReport extends Component {
       replaceCodeError: null,
       replaceCodeLoading: false,
       // weeklyRecipientAuthPass: '',
-      selectedSpecialColorsMap: {
-        purple: [],
-        green: [],
-        navy: [],
-      },
       selectedSpecialColors: {
         purple: false,
         green: false,
@@ -399,7 +394,6 @@ export class WeeklySummariesReport extends Component {
       selectedBioStatus,
       tableData,
       COLORS,
-      selectedSpecialColorsMap,
       selectedSpecialColors,
     } = this.state;
     const chartData = [];
@@ -409,11 +403,9 @@ export class WeeklySummariesReport extends Component {
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
 
-    const selectedUserIds = new Set(
-      Object.entries(selectedSpecialColors)
-        .filter(([, isSelected]) => isSelected) // Include only active colors
-        .flatMap(([color]) => selectedSpecialColorsMap[color]), // Get users for active colors
-    );
+    const activeFilterColors = Object.entries(selectedSpecialColors)
+      .filter(([, isSelected]) => isSelected)
+      .map(([color]) => color);
 
     const temp = summaries.filter(summary => {
       const { activeTab } = this.state;
@@ -430,12 +422,14 @@ export class WeeklySummariesReport extends Component {
           hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
-      const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
+      // const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
+      const matchesSpecialColor =
+        activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
-        matchesSelectedUsers &&
+        matchesSpecialColor &&
         isOverHours &&
         isBio
       );
@@ -569,17 +563,15 @@ export class WeeklySummariesReport extends Component {
 
   handleSpecialColorDotClick = (userId, color) => {
     this.setState(prevState => {
-      const updatedMap = { ...prevState.selectedSpecialColorsMap };
-      // Remove user from all color lists
-      Object.keys(updatedMap).forEach(col => {
-        updatedMap[col] = updatedMap[col].filter(id => id !== userId);
+      const updatedSummaries = prevState.summaries.map(summary => {
+        // Update the summary if the userId matches (using summary._id)
+        if (summary._id === userId) {
+          return { ...summary, filterColor: color };
+        }
+        return summary;
       });
-      // Add user to the selected color list
-      if (color) {
-        updatedMap[color].push(userId);
-      }
-      return { selectedSpecialColorsMap: updatedMap };
-    });
+      return { summaries: updatedSummaries };
+    }, this.filterWeeklySummaries);
   };
 
   handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
@@ -1069,7 +1061,6 @@ export class WeeklySummariesReport extends Component {
                         darkMode={darkMode}
                         handleTeamCodeChange={this.handleTeamCodeChange}
                         handleSpecialColorDotClick={this.handleSpecialColorDotClick}
-                        selectedSpecialColorsMap={this.state.selectedSpecialColorsMap}
                       />
                     </Col>
                   </Row>
