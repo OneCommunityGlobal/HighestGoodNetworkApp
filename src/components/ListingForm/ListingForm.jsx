@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-function ListingForm () {
+function ListingForm() {
   const [formData, setFormData] = useState({
     hostName: '',
     hostEmail: '',
@@ -22,10 +22,10 @@ function ListingForm () {
   const [uploadProgress, setUploadProgress] = useState({});
 
   const validate = () => {
-    let newErrors = {};
-    if (!formData.hostName) newErrors.hostName = "Host Name is required";
-    if (!formData.hostEmail.includes("@")) newErrors.hostEmail = "Enter a valid email";
-    if (!formData.propertyImages.length) newErrors.propertyImages = "Upload at least one image";
+    const newErrors = {};
+    if (!formData.hostName) newErrors.hostName = 'Host Name is required';
+    if (!formData.hostEmail.includes('@')) newErrors.hostEmail = 'Enter a valid email';
+    if (!formData.propertyImages.length) newErrors.propertyImages = 'Upload at least one image';
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -33,21 +33,10 @@ function ListingForm () {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    setErrors({ ...errors, [name]: "" });
+    setErrors({ ...errors, [name]: '' });
   };
 
-  const handleFileChange = (e) => {
-    const files = Array.from(e.target.files);
-    processFiles(files);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    const files = Array.from(e.dataTransfer.files);
-    processFiles(files);
-  };
-
-  const processFiles = (files) => {
+    const processFiles = (files) => {
     const validFiles = files.filter((file) => file.size <= 2 * 1024 * 1024);
     const newErrors = {};
 
@@ -70,6 +59,18 @@ function ListingForm () {
 
     setErrors({ ...errors, propertyImages: newErrors.propertyImages || "" });
   };
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    processFiles(files);
+  };
+
+  const handleDrop = (e) => {
+    e.preventDefault();
+    const files = Array.from(e.dataTransfer.files);
+    processFiles(files);
+  };
+
 
   const removeImage = (index) => {
     const updatedImages = [...formData.propertyImages];
