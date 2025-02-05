@@ -49,6 +49,7 @@ class ReportFilter extends Component {
             type="radio"
             style={{ margin: '8px 12px', marginLeft: 0 }}
             value="active"
+            checked={this.props.filterStatus === 'active'}
             onChange={this.setActive}
           />
           Active
@@ -57,6 +58,7 @@ class ReportFilter extends Component {
             type="radio"
             style={{ margin: '8px 12px' }}
             value="inactive"
+            checked={this.props.filterStatus === 'inactive'}
             onChange={this.setInActive}
           />
           Inactive
@@ -65,8 +67,8 @@ class ReportFilter extends Component {
             type="radio"
             style={{ margin: '8px 12px' }}
             value="all"
+            checked={this.props.filterStatus === 'all'}
             onChange={this.setAll}
-            defaultChecked
           />
           All
           <input
@@ -74,6 +76,7 @@ class ReportFilter extends Component {
             type="radio"
             style={{ margin: '8px 12px' }}
             value="tenHour"
+            checked={this.props.filterStatus === 'tenHour'}
             onChange={this.setTenHourFilter}
           />
           10+ hours

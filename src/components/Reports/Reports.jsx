@@ -143,6 +143,7 @@ class ReportsPage extends Component {
       startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
       wildCardSearchText: '',
+      filterStatus: 'all',
     });
   }
   /**
@@ -571,6 +572,7 @@ class ReportsPage extends Component {
               >
                 <ReportFilter
                   setFilterStatus={this.setFilterStatus}
+                  filterStatus={this.state.filterStatus}
                   onWildCardSearch={this.onWildCardSearch}
                   onCreateNewTeamShow={this.onCreateNewTeamShow}
                   wildCardSearchText={this.state.wildCardSearchText}
