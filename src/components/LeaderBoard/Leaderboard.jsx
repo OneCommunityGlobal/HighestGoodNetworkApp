@@ -202,7 +202,7 @@ function LeaderBoard({
   const dashboardClose = () => setIsDashboardOpen(false);
 
   const showDashboard = item => {
-    if (displayUserRole !== 'Owner' && displayUserRole !== 'Admin') {
+    if (displayUserRole !== 'Owner' && displayUserRole !== 'Administrator') {
       dashboardClose();
       toast.error("You do not have permission to view other's dashboard.");
       return;
