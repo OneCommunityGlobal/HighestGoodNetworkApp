@@ -1,6 +1,10 @@
 import axios from 'axios';
 import moment from 'moment';
-import { GET_TIME_ENTRIES_WEEK, GET_TIME_ENTRIES_PERIOD } from '../constants/timeEntries';
+import {
+  GET_TIME_ENTRIES_WEEK,
+  GET_TIME_ENTRIES_PERIOD,
+  GET_TIME_ENTRIES_PERIOD_BULK,
+} from '../constants/timeEntries';
 import { ENDPOINTS } from '../utils/URL';
 
 /**
@@ -71,38 +75,66 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
   };
 };
 
-export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //Find last week of work in date
+export const getUsersTotalHoursForSpecifiedPeriod = (userIds, fromDate, toDate) => {
   toDate = moment(toDate)
     .endOf('day')
     .format('YYYY-MM-DDTHH:mm:ss');
-  const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate,toDate);
   return async dispatch => {
     let loggedOut = false;
-    try{
+    try {
+      const res = await axios.post(ENDPOINTS.TIME_ENTRIES_USERS_HOURS_PERIOD, {
+        userIds,
+        fromDate,
+        toDate,
+      });
+      if (res && res.data) {
+        await dispatch(setUsersTotalHoursPeriod(res.data));
+        return res.data; // Return the data here
+      }
+    } catch (error) {
+      if (error.response?.status === 401) {
+        loggedOut = true;
+      }
+      console.error('Error fetching total hours:', error);
+    }
+    return [];
+  };
+};
+
+
+export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => {
+  //Find last week of work in date
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DDTHH:mm:ss');
+  const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
+  return async dispatch => {
+    let loggedOut = false;
+    try {
       const res = await axios.get(url);
-      if (!res || !res.data){
-        console.log("Request failed or no data");
-        return "N/A";
+      if (!res || !res.data) {
+        console.log('Request failed or no data');
+        return 'N/A';
       }
       const filteredEntries = res.data.filter(entry => {
         const entryDate = moment(entry.dateOfWork);
         return entryDate.isBetween(fromDate, toDate, 'day', '[]');
       });
-      filteredEntries.sort((a,b) => {
+      filteredEntries.sort((a, b) => {
         return moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf();
       });
       const lastEntry = filteredEntries[0];
-      if(!lastEntry){
-        return "N/A";
+      if (!lastEntry) {
+        return 'N/A';
       }
       const formattedLastEntryDate = moment(lastEntry.dateOfWork).format('YYYY-MM-DD');
       return formattedLastEntryDate;
     } catch (error) {
-      console.error("Error fetching time entries:", error);
+      console.error('Error fetching time entries:', error);
       if (error.response && error.response.status === 401) {
         loggedOut = true;
       }
-      return "N/A"; // Return "N/A" in case of error
+      return 'N/A'; // Return "N/A" in case of error
     }
   };
 };
@@ -111,7 +143,7 @@ export const postTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      if(timeEntry.entryType == 'default'){
+      if (timeEntry.entryType == 'default') {
         dispatch(updateTimeEntries(timeEntry));
       }
       return res.status;
@@ -176,5 +208,10 @@ export const setTimeEntriesForWeek = (data, offset) => ({
 
 export const setTimeEntriesForPeriod = data => ({
   type: GET_TIME_ENTRIES_PERIOD,
+  payload: data,
+});
+
+export const setUsersTotalHoursPeriod = data => ({
+  type: GET_TIME_ENTRIES_PERIOD_BULK,
   payload: data,
 });
