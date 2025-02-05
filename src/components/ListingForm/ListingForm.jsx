@@ -30,18 +30,18 @@ function ListingForm() {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleChange = (e) => {
+  const handleChange = e => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
     setErrors({ ...errors, [name]: '' });
   };
 
-    const processFiles = (files) => {
+    const processFiles = files => {
     const validFiles = files.filter((file) => file.size <= 2 * 1024 * 1024);
     const newErrors = {};
 
-    if (files.some((file) => file.size > 2 * 1024 * 1024)) {
-      newErrors.propertyImages = "Some files exceed 2MB and were not uploaded.";
+    if (files.some(file => file.size > 2 * 1024 * 1024)) {
+      newErrors.propertyImages = 'Some files exceed 2MB and were not uploaded.';
     }
 
     if (validFiles.length > 0) {
@@ -53,26 +53,26 @@ function ListingForm() {
         }, (index + 1) * 500);
       });
 
-      setUploadProgress((prev) => ({ ...prev, ...newUploadProgress }));
+      setUploadProgress(prev => ({ ...prev, ...newUploadProgress }));
       setFormData({ ...formData, propertyImages: [...formData.propertyImages, ...validFiles] });
     }
 
-    setErrors({ ...errors, propertyImages: newErrors.propertyImages || "" });
+    setErrors({ ...errors, propertyImages: newErrors.propertyImages || '' });
   };
 
-  const handleFileChange = (e) => {
+  const handleFileChange = e => {
     const files = Array.from(e.target.files);
     processFiles(files);
   };
 
-  const handleDrop = (e) => {
+  const handleDrop = e => {
     e.preventDefault();
     const files = Array.from(e.dataTransfer.files);
     processFiles(files);
   };
 
 
-  const removeImage = (index) => {
+  const removeImage = index => {
     const updatedImages = [...formData.propertyImages];
     updatedImages.splice(index, 1);
     setFormData({ ...formData, propertyImages: updatedImages });
@@ -85,7 +85,7 @@ function ListingForm() {
     setFormData({ ...formData, propertyImages: updatedImages });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = e => {
     e.preventDefault();
     if (validate()) {
       console.log("Form submitted:", formData);
