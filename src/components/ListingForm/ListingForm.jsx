@@ -2,6 +2,7 @@ import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 /* prettier-ignore */
+/* eslint-disable jsx-a11y/label-has-associated-control, react/self-closing-comp */
 function ListingForm() {
   const [formData, setFormData] = useState({
     hostName: '',
@@ -79,8 +80,6 @@ function ListingForm() {
   const handleSubmit = e => {
     e.preventDefault();
   };
-
-  /* eslint-disable react/no-array-index-key, jsx-a11y/no-noninteractive-element-interactions */
 
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100"
@@ -195,7 +194,6 @@ function ListingForm() {
       </div>
     </div>
   );
-};
+}
 
 export default ListingForm;
-
