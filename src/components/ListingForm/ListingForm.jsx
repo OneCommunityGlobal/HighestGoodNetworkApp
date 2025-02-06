@@ -20,16 +20,7 @@ function ListingForm() {
 
   const [errors, setErrors] = useState({});
   const [uploadProgress, setUploadProgress] = useState({});
-
-  const validate = () => {
-    const newErrors = {};
-    if (!formData.hostName) newErrors.hostName = 'Host Name is required';
-    if (!formData.hostEmail.includes('@')) newErrors.hostEmail = 'Enter a valid email';
-    if (!formData.propertyImages.length) newErrors.propertyImages = 'Upload at least one image';
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
+  
   const handleChange = e => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -89,23 +80,23 @@ function ListingForm() {
   };
 
   return (
-    <div 
-      className="container d-flex justify-content-center align-items-center min-vh-100"
+    <div className="container d-flex justify-content-center align-items-center min-vh-100"
       >
-      <div className="card shadow-lg p-4 w-100" style={{ maxWidth: "600px", backgroundColor: "#f0f0f0" }}>
+      <div className="card shadow-lg p-4 w-100" style={{ maxWidth: "600px", backgroundColor: "#f0f0f0" }}
+        >
         <h2 className="text-center text-dark mb-4">Create a Listing</h2>
         <form onSubmit={handleSubmit}>
           {/* Input Fields */}
           {[
-        { label: 'Host Name', name: 'hostName' },
-        { label: 'Host Email', name: 'hostEmail', type: 'email' },
-        { label: 'Unit Number', name: 'unitNumber' },
-        { label: 'Village', name: 'village' },
-        { label: 'Amenities', name: 'amenities' },
-        { label: 'Price Per Night', name: 'pricePerNight', type: 'number' },
-        { label: 'Nearby Property Landmarks', name: 'landmarks' },
-        { label: 'Places to Visit Nearby', name: 'nearbyPlaces' },
-        { label: 'Exact Address', name: 'exactAddress' },
+            { label: 'Host Name', name: 'hostName' },
+            { label: 'Host Email', name: 'hostEmail', type: 'email' },
+            { label: 'Unit Number', name: 'unitNumber' },
+            { label: 'Village', name: 'village' },
+            { label: 'Amenities', name: 'amenities' },
+            { label: 'Price Per Night', name: 'pricePerNight', type: 'number' },
+            { label: 'Nearby Property Landmarks', name: 'landmarks' },
+            { label: 'Places to Visit Nearby', name: 'nearbyPlaces' },
+            { label: 'Exact Address', name: 'exactAddress' },
            ].map(({ label, name, type = 'text' }) => (
 
             <div className="mb-3" key={name}>
