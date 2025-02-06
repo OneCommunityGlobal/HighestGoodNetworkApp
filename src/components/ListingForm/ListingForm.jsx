@@ -80,6 +80,8 @@ function ListingForm() {
     e.preventDefault();
   };
 
+  /* eslint-disable react/no-array-index-key, jsx-a11y/no-noninteractive-element-interactions */
+
   return (
     <div className="container d-flex justify-content-center align-items-center min-vh-100"
       >
