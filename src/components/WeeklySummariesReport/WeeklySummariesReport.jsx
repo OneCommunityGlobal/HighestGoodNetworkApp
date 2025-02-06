@@ -390,28 +390,40 @@ export class WeeklySummariesReport extends Component {
       tableData,
       COLORS,
     } = this.state;
+  
     const chartData = [];
     let temptotal = 0;
     const structuredTeamTableData = [];
-
-    const selectedCodesArray = selectedCodes.map(e => e.value);
-    const selectedColorsArray = selectedColors.map(e => e.value);
-
-    const temp = summaries.filter(summary => {
+  
+    const selectedCodesArray = selectedCodes.map((e) => e.value);
+    const selectedColorsArray = selectedColors.map((e) => e.value);
+  
+    
+    const temp = summaries.filter((summary) => {
       const { activeTab } = this.state;
       const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-
+  
       const isMeetCriteria =
-        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== 'posted';
-
+        summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== "posted";
+  
       const isBio = !selectedBioStatus || isMeetCriteria;
-
+  
       const isOverHours =
         !selectedOverTime ||
         (summary.weeklycommittedHours > 0 &&
           hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
-
+  
+      
+      const isLastWeekTab = activeTab === "last week";
+      const isDeactivated = !summary.isActive; 
+  
+      if (isLastWeekTab && isDeactivated) {
+        summary.name = `FINAL WEEK REPORTING: ${summary.name}`;
+        summary.role = `${summary.role} (No longer active)`;
+        return true;
+      }
+  
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
@@ -420,20 +432,21 @@ export class WeeklySummariesReport extends Component {
         isBio
       );
     });
-
-    if (selectedCodes[0]?.value === '' || selectedCodes.length >= 52) {
+  
+    
+    if (selectedCodes[0]?.value === "" || selectedCodes.length >= 52) {
       if (selectedCodes.length >= 52) {
-        selectedCodes.forEach(code => {
-          if (code.value === '') return;
+        selectedCodes.forEach((code) => {
+          if (code.value === "") return;
           chartData.push({
             name: code.label,
-            value: temp.filter(summary => summary.teamCode === code.value).length,
+            value: temp.filter((summary) => summary.teamCode === code.value).length,
           });
           const team = tableData[code.value];
           const index = selectedCodesArray.indexOf(code.value);
           const color = COLORS[index % COLORS.length];
           const members = [];
-          team.forEach(member => {
+          team.forEach((member) => {
             members.push({
               name: `${member.firstName} ${member.lastName}`,
               role: member.role,
@@ -444,38 +457,38 @@ export class WeeklySummariesReport extends Component {
         });
       } else {
         chartData.push({
-          name: 'All With NO Code',
-          value: temp.filter(summary => summary.teamCode === '').length,
+          name: "All With NO Code",
+          value: temp.filter((summary) => summary.teamCode === "").length,
         });
         const team = tableData.noCodeLabel;
-        const index = selectedCodesArray.indexOf('noCodeLabel');
+        const index = selectedCodesArray.indexOf("noCodeLabel");
         const color = COLORS[index % COLORS.length];
         const members = [];
-        team.forEach(member => {
+        team.forEach((member) => {
           members.push({
             name: `${member.firstName} ${member.lastName}`,
             role: member.role,
             id: member._id,
           });
         });
-        structuredTeamTableData.push({ team: 'noCodeLabel', color, members });
+        structuredTeamTableData.push({ team: "noCodeLabel", color, members });
       }
     } else {
-      selectedCodes.forEach(code => {
-        const val = temp.filter(summary => summary.teamCode === code.value).length;
+      selectedCodes.forEach((code) => {
+        const val = temp.filter((summary) => summary.teamCode === code.value).length;
         if (val > 0) {
           chartData.push({
             name: code.label,
             value: val,
           });
         }
-
+  
         const team = tableData[code.value];
         const index = selectedCodesArray.indexOf(code.value);
         const color = COLORS[index % COLORS.length];
         const members = [];
         if (team !== undefined) {
-          team.forEach(member => {
+          team.forEach((member) => {
             members.push({
               name: `${member.firstName} ${member.lastName}`,
               role: member.role,
@@ -486,6 +499,15 @@ export class WeeklySummariesReport extends Component {
         }
       });
     }
+  
+    chartData.sort();
+    temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
+    structuredTeamTableData.sort();
+    this.setState({ total: temptotal });
+    this.setState({ filteredSummaries: temp });
+    this.setState({ chartData });
+    this.setState({ structuredTableData: structuredTeamTableData });
+  };
 
     chartData.sort();
     temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
