@@ -36,8 +36,8 @@ function ListingForm() {
     setErrors({ ...errors, [name]: '' });
   };
 
-    const processFiles = files => {
-    const validFiles = files.filter((file) => file.size <= 2 * 1024 * 1024);
+  const processFiles = files => {
+    const validFiles = files.filter(file => file.size <= 2 * 1024 * 1024);
     const newErrors = {};
 
     if (files.some(file => file.size > 2 * 1024 * 1024)) {
@@ -49,7 +49,7 @@ function ListingForm() {
       validFiles.forEach((file, index) => {
         newUploadProgress[file.name] = 0;
         setTimeout(() => {
-          setUploadProgress((prev) => ({ ...prev, [file.name]: 100 }));
+          setUploadProgress(prev => ({ ...prev, [file.name]: 100 }));
         }, (index + 1) * 500);
       });
 
@@ -71,7 +71,6 @@ function ListingForm() {
     processFiles(files);
   };
 
-
   const removeImage = index => {
     const updatedImages = [...formData.propertyImages];
     updatedImages.splice(index, 1);
@@ -87,28 +86,28 @@ function ListingForm() {
 
   const handleSubmit = e => {
     e.preventDefault();
-    if (validate()) {
-      console.log("Form submitted:", formData);
-    }
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center min-vh-100">
+    <div 
+      className="container d-flex justify-content-center align-items-center min-vh-100"
+      >
       <div className="card shadow-lg p-4 w-100" style={{ maxWidth: "600px", backgroundColor: "#f0f0f0" }}>
         <h2 className="text-center text-dark mb-4">Create a Listing</h2>
         <form onSubmit={handleSubmit}>
           {/* Input Fields */}
           {[
-            { label: "Host Name", name: "hostName" },
-            { label: "Host Email", name: "hostEmail", type: "email" },
-            { label: "Unit Number", name: "unitNumber" },
-            { label: "Village", name: "village" },
-            { label: "Amenities", name: "amenities" },
-            { label: "Price Per Night", name: "pricePerNight", type: "number" },
-            { label: "Nearby Property Landmarks", name: "landmarks" },
-            { label: "Places to Visit Nearby", name: "nearbyPlaces" },
-            { label: "Exact Address", name: "exactAddress" },
-          ].map(({ label, name, type = "text" }) => (
+        { label: 'Host Name', name: 'hostName' },
+        { label: 'Host Email', name: 'hostEmail', type: 'email' },
+        { label: 'Unit Number', name: 'unitNumber' },
+        { label: 'Village', name: 'village' },
+        { label: 'Amenities', name: 'amenities' },
+        { label: 'Price Per Night', name: 'pricePerNight', type: 'number' },
+        { label: 'Nearby Property Landmarks', name: 'landmarks' },
+        { label: 'Places to Visit Nearby', name: 'nearbyPlaces' },
+        { label: 'Exact Address', name: 'exactAddress' },
+           ].map(({ label, name, type = 'text' }) => (
+
             <div className="mb-3" key={name}>
               <label className="form-label fw-bold">{label}</label>
               <input
