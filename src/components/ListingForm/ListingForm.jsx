@@ -2,7 +2,7 @@ import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 /* prettier-ignore */
-/* eslint-disable jsx-a11y/label-has-associated-control, react/self-closing-comp */
+/* eslint-disable react/no-array-index-key, jsx-a11y/label-has-associated-control, react/self-closing-comp */
 function ListingForm() {
   const [formData, setFormData] = useState({
     hostName: '',
