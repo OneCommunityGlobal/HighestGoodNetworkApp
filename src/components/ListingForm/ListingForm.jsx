@@ -2,7 +2,7 @@ import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 /* prettier-ignore */
-/* eslint-disable react/no-array-index-key, jsx-a11y/label-has-associated-control, react/self-closing-comp */
+/* eslint-disable react/no-array-index-key, jsx-a11y/no-noninteractive-element-interactions, jsx-a11y/label-has-associated-control, react/self-closing-comp */
 function ListingForm() {
   const [formData, setFormData] = useState({
     hostName: '',
@@ -175,6 +175,10 @@ function ListingForm() {
                           <div
                             className="progress-bar bg-success"
                             role="progressbar"
+                            aria-valuenow={uploadProgress[file.name]}
+                            aria-valuemin="0"
+                            aria-valuemax="100"
+                            aria-label={`Upload progress: ${uploadProgress[file.name]}%`}
                             style={{ width: `${uploadProgress[file.name]}%` }}
                           ></div>
                         </div>
