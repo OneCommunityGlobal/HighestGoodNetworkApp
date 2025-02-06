@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
+/* prettier-ignore */
 function ListingForm() {
   const [formData, setFormData] = useState({
     hostName: '',
