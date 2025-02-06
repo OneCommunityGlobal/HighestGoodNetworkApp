@@ -5,7 +5,7 @@ function TeamsTabTips() {
   const [teamCodeExplainTooltip, setTeamCodeExplainTooltip] = useState(false);
   const toggleTeamCodeExplainTooltip = () => setTeamCodeExplainTooltip(!teamCodeExplainTooltip);
   return (
-    <div data-testid="test-teamstabtips">
+    <div data-testid="test-teamstabtips" id='teamCodeAssign'>
 
       <Tooltip
         placement="top"
