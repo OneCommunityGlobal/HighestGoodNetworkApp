@@ -124,7 +124,7 @@ export const ENDPOINTS = {
   REJECT_TASK_EDIT_SUGGESTION: taskEditSuggestionId =>
     `${APIEndpoint}/taskeditsuggestion/${taskEditSuggestionId}`,
 
-  TIMER_SERVICE: `${APIEndpoint.replace(/^https?/i, 'ws').replace('api', 'timer-service')}`,
+  TIMER_SERVICE: `${APIEndpoint.replace(/^http:\/\//i, 'ws://').replace(/^https:\/\//i, 'wss://').replace('api', 'timer-service')}`,
   TIMEZONE_LOCATION: location => `${APIEndpoint}/timezone/${location}`,
 
   ROLES: () => `${APIEndpoint}/roles`,
