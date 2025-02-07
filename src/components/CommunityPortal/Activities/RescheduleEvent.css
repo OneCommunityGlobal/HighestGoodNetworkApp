@@ -1,0 +1,19 @@
+.reschedule-page {
+  text-align: center;
+  margin-top: 50px;
+}
+
+.reschedule-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: #007FFF;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 5px;
+
+}
+
+.reschedule-button:hover {
+  background-color: #007FFF;
+}

@@ -55,7 +55,7 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-
+import RescheduleEvent from './components/CommunityPortal/Activities/RescheduleEvent';
 
 
 
@@ -388,6 +388,7 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+        <CPProtectedRoute path="/communityportal/activities/:activityId/manage" component={RescheduleEvent} routePermissions={['rescheduleEvent']}/>
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
 
 
@@ -408,6 +409,7 @@ export default (
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
         <Route path="*" component={NotFoundPage} />
+        
       </Switch>
     </>
   </Switch>
