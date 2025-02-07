@@ -36,24 +36,10 @@ export const lessonsReducer = (state = initialState, action) => {
       
 
         case DELETE_LESSON:
-          const lessonIdToDelete = action.payload;
-          // Find the index of the lesson to delete
-          const lessonIndex = state.lessons.findIndex(lesson => lesson._id === lessonIdToDelete);
-    
-          if (lessonIndex !== -1) {
-            // Create a new array without the deleted lesson
-            const updatedLessons = [
-              ...state.lessons.slice(0, lessonIndex),
-              ...state.lessons.slice(lessonIndex + 1),
-            ];
-    
-            return {
-              ...state,
-              lessons: updatedLessons,
-            };
-          }
-          
-          return state;
+          return {
+            ...state,
+            lessons: state.lessons.filter(lesson => lesson._id !== action.lessonId)
+          };
 
 
       case SET_LESSON:

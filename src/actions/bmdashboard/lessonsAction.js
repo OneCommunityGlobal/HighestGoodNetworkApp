@@ -115,24 +115,21 @@ export const updateLesson = (lessonId, content) => {
   
 
 
-  export const deleteBMLesson = (lessonId) => {
-    return async dispatch => {
-      const url = ENDPOINTS.BM_LESSON + lessonId;
-      try {
-        await axios.delete(url);
-      } catch (err) {
-       console.log('err')
-      }
+export const deleteBMLesson = (lessonId) => {
+  return async dispatch => {
+    const url = ENDPOINTS.BM_LESSON + lessonId;
+    try {
+      await axios.delete(url);
       dispatch(deleteLesson(lessonId));
-      dispatch(fetchBMLessons())
-      
-    };
-    
-  }
-  
-  export const deleteLesson = (lessonId) => {
-    return {
-      type: DELETE_LESSON,
-      lessonId
-    };
+      return Promise.resolve();
+    } catch (err) {
+      console.error('Error deleting lesson:', err);
+      return Promise.reject(err);
+    }
   };
+};
+
+export const deleteLesson = (lessonId) => ({
+  type: DELETE_LESSON,
+  lessonId
+});
