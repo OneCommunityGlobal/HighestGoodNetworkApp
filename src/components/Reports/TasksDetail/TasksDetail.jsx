@@ -5,18 +5,32 @@ import 'react-table/react-table.css';
 import Collapse from 'react-bootstrap/Collapse';
 import './TasksDetail.css';
 
+
 const ShowCollapse = (props) => {
   const [open, setOpen] = useState(false);
+
   return (
     <>
-      <div>{props.resources[0].name}</div>
-      {props.resources.slice(1).map((resource) => (
-        <Collapse in={open} key={resource._id}>
-          <div>{resource.name}</div>
-        </Collapse>
-      ))}
-      <Button onClick={() => setOpen(!open)} aria-expanded={open} size='sm'>
-        {props.resources.length} ➤
+      <div>
+        {props.resources[0].name}
+        {props.resources.length > 1 && ','}
+      </div>
+      {}
+      {open && (
+        <>
+          {props.resources.slice(1).map((resource, index) => (
+            <Collapse in={open} key={resource._id}>
+              <div>
+                {resource.name}
+                {index < props.resources.length - 2 && ','}
+              </div>
+            </Collapse>
+          ))}
+        </>
+      )}
+      {}
+      <Button onClick={() => setOpen(!open)} aria-expanded={open} size="sm">
+        {open ? 'Show less' : `Show more (${props.resources.length})`} ➤
       </Button>
     </>
   );
@@ -74,16 +88,18 @@ export const TasksDetail = (props) => {
         )}
       </td>
       <td className="tasks-detail-center-cells">
-        {task.isActive ? (
-          <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
-          </div>
-        ) : (
-          <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
-          </div>
-        )}
-      </td>
+  {task.resources.length <= 2 ? (
+    task.resources.map((resource, index) => (
+      <span key={resource._id}>
+        {resource.name}
+        {index < task.resources.length - 1 && ', '}
+      </span>
+    ))
+  ) : (
+    <ShowCollapse resources={task.resources} />
+  )}
+</td>
+
       <td className="tasks-detail-center-cells collapse-column">
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
       </td>
