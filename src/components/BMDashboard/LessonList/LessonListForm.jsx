@@ -1,3 +1,4 @@
+import { GET_BM_LESSONS } from 'constants/bmdashboard/lessonConstants';
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
@@ -26,26 +27,38 @@ function LessonList(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        // Fetch both lessons and tags in parallel
         const [lessonsResponse, tagsResponse] = await Promise.all([
           axios.get(`${ENDPOINTS.BM_LESSONS}`),
           axios.get(`${ENDPOINTS.BM_TAGS}`),
         ]);
-        // Update Redux store
+
+        console.log('Before dispatch:', lessonsResponse.data);
+
         dispatch({
-          type: 'SET_LESSONS',
+          type: GET_BM_LESSONS,
           payload: lessonsResponse.data,
         });
-        // Update available tags
+
+        const processedLessons = lessonsResponse.data.map(lesson => ({
+          ...lesson,
+          date: new Date(lesson.date?.$date || lesson.date),
+          author: lesson.author?.$oid || lesson.author,
+          relatedProject: lesson.relatedProject?.$oid || lesson.relatedProject,
+        }));
+
+        setFilteredLessons(processedLessons);
         setAvailableTags(tagsResponse.data);
-        // Update filtered lessons
-        setFilteredLessons(lessonsResponse.data);
       } catch (error) {
+        console.error('Fetch error:', error);
         toast.error('Failed to load data');
       }
     };
     fetchData();
-  }, []);
+  }, [dispatch]);
+
+  useEffect(() => {
+    console.log('Redux lessons structure:', JSON.stringify(lessons[0], null, 2));
+  }, [lessons]);
 
   const handleDeleteTags = async () => {
     try {
@@ -132,6 +145,12 @@ function LessonList(props) {
   const isInThisYear = date => {
     const currentDate = new Date();
     const lessonDate = new Date(date);
+    console.log('Year comparison:', {
+      date,
+      currentYear: currentDate.getFullYear(),
+      lessonYear: lessonDate.getFullYear(),
+      isValid: !isNaN(lessonDate.getTime()),
+    });
     return currentDate.getFullYear() === lessonDate.getFullYear();
   };
 
@@ -145,12 +164,12 @@ function LessonList(props) {
   };
 
   useEffect(() => {
-    // Update filteredLessons based on the lessons prop
     setFilteredLessons(prevFilteredLessons => {
-      return prevFilteredLessons.map(filteredLesson => {
+      const updated = prevFilteredLessons.map(filteredLesson => {
         const updatedLesson = lessons.find(lesson => lesson._id === filteredLesson._id);
         return updatedLesson || filteredLesson;
       });
+      return updated;
     });
   }, [lessons]);
 
@@ -168,50 +187,6 @@ function LessonList(props) {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, []);
-
-  useEffect(() => {
-    const filterAndSort = () => {
-      // Filter logic
-      switch (filterOption) {
-        case '2':
-          setFilteredLessons(prevLessons => prevLessons.filter(item => isInThisYear(item.date)));
-          break;
-        case '3':
-          setFilteredLessons(prevLessons => prevLessons.filter(item => isInThisMonth(item.date)));
-          break;
-        case '4':
-          setFilteredLessons(prevLessons => prevLessons.filter(item => isInThisWeek(item.date)));
-          break;
-        default:
-          setFilteredLessons(lessons);
-          break;
-      }
-
-      // Sort logic
-      switch (sortOption) {
-        case '1':
-          setFilteredLessons(prevLessons =>
-            [...prevLessons].sort((a, b) => new Date(a.date) - new Date(b.date)),
-          );
-          break;
-        case '2':
-          setFilteredLessons(prevLessons =>
-            [...prevLessons].sort((a, b) => new Date(b.date) - new Date(a.date)),
-          );
-          break;
-        case '3':
-          setFilteredLessons(prevLessons =>
-            [...prevLessons].sort((a, b) => b.totalLikes - a.totalLikes),
-          );
-          break;
-        default:
-          // Default: no sorting
-          break;
-      }
-    };
-
-    filterAndSort(); // Initial filter and sort when component mounts
-  }, [filterOption, sortOption, lessons]);
 
   const addTag = tag => {
     // Check if the tag already exists
@@ -253,49 +228,73 @@ function LessonList(props) {
     newTags.splice(index, 1);
     setTags(newTags);
   };
-  const filterLessonsByTags = () => {
-    let filtered = [...lessons];
-    // If tags exist
-    if (tags.length > 0) {
-      filtered = filtered.filter(
-        lesson => lesson.tags && tags.every(tag => lesson.tags.includes(tag)),
-      );
-    }
-    // date filtering
-    switch (filterOption) {
-      case '2':
-        filtered = filtered.filter(item => isInThisYear(item.date));
-        break;
-      case '3':
-        filtered = filtered.filter(item => isInThisMonth(item.date));
-        break;
-      case '4':
-        filtered = filtered.filter(item => isInThisWeek(item.date));
-        break;
-      default:
-        // Keep original filtering if no option matches
-        break;
-    }
-    // apply sorting
-    switch (sortOption) {
-      case '1':
-        filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
-        break;
-      case '2':
-        filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
-        break;
-      case '3':
-        filtered.sort((a, b) => b.totalLikes - a.totalLikes);
-        break;
-      default:
-        // Keep original sorting if no option matches
-        break;
-    }
-    setFilteredLessons(filtered);
-  };
+
   useEffect(() => {
-    filterLessonsByTags();
-  }, [tags, lessons, filterOption, sortOption]);
+    const applyFiltersAndSort = () => {
+      console.log('Starting filtering with:', {
+        lessonsCount: lessons?.length || 0,
+        firstLesson: lessons?.[0],
+      });
+      let filtered = [...lessons];
+
+      // 1. Apply tag filtering
+      if (tags.length > 0) {
+        filtered = filtered.filter(lesson => {
+          console.log('Checking lesson:', lesson.title, 'tags:', lesson.tags);
+          const hasAllTags = lesson.tags && tags.every(tag => lesson.tags.includes(tag));
+          console.log('Has all tags?', hasAllTags);
+          return hasAllTags;
+        });
+      }
+
+      // 2. Apply date filtering
+      console.log('Before date filtering:', filtered.length, 'lessons');
+      switch (filterOption) {
+        case '2':
+          console.log('Applying year filter...');
+          filtered = filtered.filter(item => {
+            const result = isInThisYear(item.date);
+            console.log(`Lesson ${item._id}: ${result}`);
+            return result;
+          });
+          break;
+        case '3':
+          filtered = filtered.filter(item => isInThisMonth(item.date));
+          break;
+        case '4':
+          filtered = filtered.filter(item => isInThisWeek(item.date));
+          break;
+        default:
+          break;
+      }
+      console.log('After date filtering:', filtered.length, 'lessons');
+
+      // 3. Apply sorting
+      console.log(
+        'Before sorting:',
+        filtered.map(l => ({ title: l.title, date: l.date })),
+      );
+      switch (sortOption) {
+        case '1': // Newest
+          filtered = filtered.sort((a, b) => new Date(b.date) - new Date(a.date));
+          break;
+        case '2': // Date (oldest)
+          filtered = filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+          break;
+        case '3': // Likes
+          filtered = filtered.sort((a, b) => b.totalLikes - a.totalLikes);
+          break;
+        default:
+          break;
+      }
+
+      console.log('Final filtered lessons:', filtered);
+
+      setFilteredLessons(filtered);
+    };
+
+    applyFiltersAndSort();
+  }, [lessons, tags, filterOption, sortOption]); // All dependencies that should trigger filtering
 
   return (
     <div className="main-container">
@@ -458,8 +457,11 @@ function LessonList(props) {
   );
 }
 
-const mapStateToProps = state => ({
-  lessons: state.lessons.lessons,
-});
+const mapStateToProps = state => {
+  console.log('Current Redux state:', state);
+  return {
+    lessons: state.lessons.lessons,
+  };
+};
 
 export default connect(mapStateToProps)(LessonList);
