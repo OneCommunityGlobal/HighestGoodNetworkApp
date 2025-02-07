@@ -33,6 +33,7 @@ function UserPermissionsPopUp({
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
   const [userPermissions, setUserPermissions] = useState();
+  const [userRemovedDefaultPermissions, setUserRemovedDefaultPermissions] = useState(); // defulat perms taht were deleted
   const [isOpen, setIsOpen] = useState(false);
   const [isInputFocus, setIsInputFocus] = useState(false);
   const [actualUserRolePermission, setActualUserRolePermission] = useState();
@@ -45,6 +46,9 @@ function UserPermissionsPopUp({
 
   useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
+    setUserRemovedDefaultPermissions(
+      actualUserProfile?.permissions?.removedDefaultPermissions?.front || [],
+    );
   }, [actualUserProfile]);
 
   const refInput = useRef();
@@ -81,7 +85,13 @@ function UserPermissionsPopUp({
 
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
-    const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
+    const newUserInfo = {
+      ...allUserInfo,
+      permissions: {
+        frontPermissions: userPermissions,
+        removedDefaultPermissions: { front: userRemovedDefaultPermissions },
+      },
+    };
 
     await axios
       .put(url, newUserInfo)
@@ -225,6 +235,8 @@ function UserPermissionsPopUp({
               immutablePermissions={actualUserRolePermission}
               editable={!!actualUserProfile}
               setPermissions={setUserPermissions}
+              removedDefaultPermissions={userRemovedDefaultPermissions}
+              setRemovedDefaultPermissions={setUserRemovedDefaultPermissions}
             />
           </ul>
         </div>
