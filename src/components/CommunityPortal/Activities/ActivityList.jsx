@@ -1,7 +1,7 @@
 // Activity List Component
 import { useState, useEffect } from 'react';
 import './ActivityList.css';
-import { useHistory } from "react-router-dom";
+// import { useHistory } from 'react-router-dom';
 
 function ActivityList() {
   const [activities, setActivities] = useState([]);
@@ -10,8 +10,6 @@ function ActivityList() {
     date: '',
     location: '',
   });
-
-  const history = useHistory();
 
   useEffect(() => {
     // Fetch activities (mock or replace with API call)
@@ -47,9 +45,7 @@ function ActivityList() {
       (!filter.location || activity.location.includes(filter.location))
     );
   });
-  const handleActivityClick = (id) => {
-    history.push(`/communityportal/activities/Register/${id}`);
-  };
+
   return (
     <div>
       <h1>Activity List</h1>
@@ -82,21 +78,12 @@ function ActivityList() {
           />
         </label>
       </div>
-
       <div className="activity-list">
         {filteredActivities.length > 0 ? (
-          // <ul>
-          //   {filteredActivities.map(activity => (
-          //     <li key={activity.id}>
-          //       <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
-          //       {activity.location}
-          //     </li>
-          //   ))}
-          // </ul>
           <ul>
-            {filteredActivities.map((activity) => (
-              <li key={activity.id} onClick={() => handleActivityClick(activity.id)}>
-                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{" "}
+            {filteredActivities.map(activity => (
+              <li key={activity.id}>
+                <strong>{activity.name}</strong> - {activity.type} - {activity.date} -{' '}
                 {activity.location}
               </li>
             ))}
