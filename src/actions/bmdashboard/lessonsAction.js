@@ -46,7 +46,7 @@ export const fetchBMLessons = () => {
 };
 
 export const setLessons = payload => {
-  console.log('Setting lessons in Redux:', payload); // Add this
+  //console.log('Setting lessons in Redux:', payload);
   return {
     type: GET_BM_LESSONS,
     payload

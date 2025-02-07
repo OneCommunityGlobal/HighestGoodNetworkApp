@@ -5,7 +5,7 @@ const initialState = {
 };
 
 export const lessonsReducer = (state = initialState, action) => {
-  console.log('Reducer received action:', action.type, action.payload);
+  // console.log('Reducer received action:', action.type, action.payload);
   switch (action.type) {
     case GET_BM_LESSONS:
       return {
