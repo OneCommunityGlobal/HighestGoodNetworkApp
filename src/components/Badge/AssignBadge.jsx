@@ -214,6 +214,17 @@ function AssignBadge(props) {
         >
           Assign Badge
         </Button>
+        <Button
+          className={`${classnames({ active: activeTab === '2' })} ${
+            darkMode && activeTab !== '2' ? 'bg-light' : ''
+          }`}
+          onClick={() => handleTabChange('2')}
+          style={
+            darkMode ? { ...boxStyleDark, cursor: 'pointer' } : { ...boxStyle, cursor: 'pointer' }
+          }
+        >
+          Select a Badge
+        </Button>
         <Modal
           isOpen={isOpen}
           toggle={toggle}
