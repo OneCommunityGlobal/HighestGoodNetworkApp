@@ -18,7 +18,7 @@ import {
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
 
-const getAllBadges = allBadges => ({
+export const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
   allBadges,
 });
