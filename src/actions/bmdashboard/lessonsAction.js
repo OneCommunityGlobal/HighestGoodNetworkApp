@@ -39,14 +39,14 @@ export const fetchBMLessons = () => {
       // Dispatch an action to update the lessons with the new author and project info
       dispatch(setLessons(updatedLessons));
     } catch (error) {
-      console.error('Error fetching lessons:', error);
+      // console.error('Error fetching lessons:', error);
       dispatch(setErrors(error));
     }
   };
 };
 
 export const setLessons = payload => {
-  //console.log('Setting lessons in Redux:', payload);
+  // console.log('Setting lessons in Redux:', payload);
   return {
     type: GET_BM_LESSONS,
     payload
@@ -83,7 +83,7 @@ export const fetchSingleBMLesson = (lessonId) => {
       };
       dispatch(setLesson(updatedLesson));
     } catch (error) {
-      console.error('Error fetching lesson:', error);
+      // console.error('Error fetching lesson:', error);
       dispatch(setErrors(error));
     }
   };
@@ -124,7 +124,7 @@ export const deleteBMLesson = (lessonId) => {
       dispatch(deleteLesson(lessonId));
       return Promise.resolve();
     } catch (err) {
-      console.error('Error deleting lesson:', err);
+      // console.error('Error deleting lesson:', err);
       return Promise.reject(err);
     }
   };

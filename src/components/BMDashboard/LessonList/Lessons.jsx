@@ -25,7 +25,7 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
       // Update filtered lessons
       setFilteredLessons(prevLessons => prevLessons.filter(lesson => lesson._id !== lessonId));
     } catch (error) {
-      console.error('Error deleting lesson:', error);
+      // console.error('Error deleting lesson:', error);
     }
   };
 
@@ -50,7 +50,7 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
         }),
       );
     } catch (error) {
-      console.error('Error updating like:', error);
+      // console.error('Error updating like:', error);
     }
   };
 
