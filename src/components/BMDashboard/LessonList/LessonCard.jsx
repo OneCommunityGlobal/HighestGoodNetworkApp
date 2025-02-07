@@ -68,6 +68,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   };
 
   const lessonCards = filteredLessons.map(lesson => {
+    const isLiked = lesson.likes?.includes(currentUserId);
     return (
       <Card key={`${lesson._id} + ${lesson.title} `} className="lesson-card">
         <Card.Header
@@ -182,9 +183,13 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                       className="ml-2"
                       icon={faHeart}
                       size="sm"
-                      style={{ color: '##7A7D81', cursor: 'pointer' }}
+                      style={{
+                        color: isLiked ? '#ff4d4d' : '#7A7D81',
+                        cursor: 'pointer',
+                        fill: isLiked ? '#ff4d4d' : 'none',
+                      }}
                     />
-                    Like:{lesson.totalLikes}
+                    Like: {lesson.totalLikes}
                   </span>
                 </div>
               </div>

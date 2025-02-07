@@ -30,7 +30,28 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
   };
 
   const handleLike = async (lessonId, userId) => {
-    await dispatch(likeLessonAction(lessonId, userId));
+    try {
+      await dispatch(likeLessonAction(lessonId, userId));
+      // Update filteredLessons with the new like count
+      setFilteredLessons(prevLessons =>
+        prevLessons.map(lesson => {
+          if (lesson._id === lessonId) {
+            // Update the likes for this specific lesson
+            const isLiked = lesson.likes?.includes(userId);
+            return {
+              ...lesson,
+              totalLikes: isLiked ? lesson.totalLikes - 1 : lesson.totalLikes + 1,
+              likes: isLiked
+                ? lesson.likes.filter(id => id !== userId)
+                : [...(lesson.likes || []), userId],
+            };
+          }
+          return lesson;
+        }),
+      );
+    } catch (error) {
+      console.error('Error updating like:', error);
+    }
   };
 
   return (

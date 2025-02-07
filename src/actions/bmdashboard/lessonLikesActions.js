@@ -13,8 +13,7 @@ export const likeLessonAction = (lessonIndex, userId) => {
       });
       
       if (response.status === 200) {
-        dispatch(fetchBMLessons())
-
+        dispatch(setLikes(response.data));
       } else {
         console.error('Unexpected response status:', response.status);
       }
@@ -23,7 +22,6 @@ export const likeLessonAction = (lessonIndex, userId) => {
     }
   };
 };
-
 
 export const setLikes = payload => {
   return {
