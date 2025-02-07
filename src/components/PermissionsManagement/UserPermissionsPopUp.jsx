@@ -183,6 +183,7 @@ function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, aut
             editable={!!actualUserProfile}
             setPermissions={setUserPermissions}
             darkMode={darkMode}
+            userProfile={actualUserProfile}
           />
         </ul>
       </div>
