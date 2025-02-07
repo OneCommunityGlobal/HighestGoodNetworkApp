@@ -89,7 +89,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                   lesson.tags.length > 0 &&
                   lesson.tags.map((tag, index) => (
                     <span
-                      key={`tag-in-header-${tag}-${lesson._id}-${index}`}
+                      key={`tag-in-header-${tag}-${lesson._id}`}
                       className="text-muted tag-item"
                     >
                       {`#${tag}`}
@@ -107,10 +107,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                 {lesson.tags &&
                   lesson.tags.length > 0 &&
                   lesson.tags.map((tag, index) => (
-                    <span
-                      key={`tag-in-body-${tag}-${lesson._id}-${index}`}
-                      className="text-muted tag-item"
-                    >
+                    <span key={`tag-in-body-${tag}-${lesson._id}`} className="text-muted tag-item">
                       {`#${tag}`}
                     </span>
                   ))}

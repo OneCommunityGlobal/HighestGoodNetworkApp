@@ -240,9 +240,9 @@ function LessonList(props) {
       // 1. Apply tag filtering
       if (tags.length > 0) {
         filtered = filtered.filter(lesson => {
-          //console.log('Checking lesson:', lesson.title, 'tags:', lesson.tags);
+          // console.log('Checking lesson:', lesson.title, 'tags:', lesson.tags);
           const hasAllTags = lesson.tags && tags.every(tag => lesson.tags.includes(tag));
-          //console.log('Has all tags?', hasAllTags);
+          // console.log('Has all tags?', hasAllTags);
           return hasAllTags;
         });
       }
