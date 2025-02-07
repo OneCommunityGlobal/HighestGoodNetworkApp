@@ -34,6 +34,8 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
+import { useDispatch } from 'react-redux';
+import { updateIndividualTaskTime } from '../../TeamMemberTasks/actions';
 
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
@@ -85,6 +87,7 @@ function TimeEntryForm(props) {
   const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
   // props from store
   const { authUser } = props;
+  const dispatch = useDispatch();
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
 
@@ -300,7 +303,7 @@ function TimeEntryForm(props) {
   };
 
   const submitTimeEntry = async () => {
-    const { hours: formHours, minutes: formMinutes } = formValues;
+    const { hours: formHours, minutes: formMinutes, personId, taskId } = formValues;
     const timeEntry = { ...formValues };
     const isTimeModified = edit && (initialHours !== formHours || initialMinutes !== formMinutes);
 
@@ -326,6 +329,13 @@ function TimeEntryForm(props) {
         case 'Timer':
           sendStop();
           clearForm();
+          dispatch(
+            updateIndividualTaskTime({
+              newTime: { hours: formHours, minutes: formMinutes },
+              taskId,
+              personId,
+            }),
+          );
           break;
         case 'TimeLog': {
           const date = moment(formValues.dateOfWork);
