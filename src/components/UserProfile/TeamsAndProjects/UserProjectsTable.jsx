@@ -277,9 +277,9 @@ const UserProjectsTable = React.memo(props => {
                             <td>
                               <span className='opacity-70'>{project.projectName} </span>
                               <br />
-                              <Link className="fs-18" to={`/wbs/tasks/${task._id}`}>
+                              <a className="fs-18" href={`/wbs/tasks/${task._id}`}>
                                 {task.taskName && `\u2003 ↳ ${task.taskName}`}
-                              </Link>
+                              </a>
                             </td>
                             {!isCompletedTask && props.edit && props.role && canDeleteTasks && (
                               <td>
