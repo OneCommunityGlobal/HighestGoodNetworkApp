@@ -61,7 +61,7 @@ describe('EPLogin component', () => {
   });
   it('check if login elements get displayed when isAuthenticated is true', () => {
     renderComponent(store);
-    expect(screen.getByText('Log In To Community Portal')).toBeInTheDocument();
+    expect(screen.getByText('Log In To Good Education Portal')).toBeInTheDocument();
   });
   it('check if login elements does not get displayed when isAuthenticated is false', () => {
     const testStore = mockStore({
@@ -81,14 +81,12 @@ describe('EPLogin component', () => {
       },
     });
     renderComponent(testStore);
-    expect(screen.queryByText('Log In To Community Portal')).not.toBeInTheDocument();
+    expect(screen.queryByText('Log In To Good Education Portal')).not.toBeInTheDocument();
   });
   it('check if Enter your current user credentials to access the Building Management Dashboard header displays as expected', () => {
     renderComponent(store);
     expect(
-      screen.getByText(
-        'Enter your current user credentials to access the Community Portal Dashboard',
-      ),
+      screen.getByText('Enter your current user credentials to access the Good Education Portal'),
     ).toBeInTheDocument();
   });
   it('check if email label is displaying as expected', () => {
