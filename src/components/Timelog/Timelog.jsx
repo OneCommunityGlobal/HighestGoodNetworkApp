@@ -878,8 +878,9 @@ function Timelog(props) {
                         <FormGroup className="mr-2 date-selector-form">
                           <Label
                             for="fromDate"
-                            className={`responsive-font-size mr-2 ml-1 ${darkMode ? 'text-light' : ''
-                              }`}
+                            className={`responsive-font-size mr-2 ml-1 ${
+                              darkMode ? 'text-light' : ''
+                            }`}
                           >
                             From
                           </Label>
@@ -895,9 +896,7 @@ function Timelog(props) {
                         <FormGroup>
                           <Label
                             for="toDate"
-                            className={`responsive-font-size mr-2 ${
-                              darkMode ? 'text-light' : ''
-                            }`}
+                            className={`responsive-font-size mr-2 ${darkMode ? 'text-light' : ''}`}
                           >
                             To
                           </Label>
