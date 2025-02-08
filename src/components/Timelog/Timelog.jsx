@@ -697,11 +697,11 @@ function Timelog(props) {
                                     <br />
                                     <br />
                                     Intangible Time is almost always used only by the management
-                                    team. It is used for weekly Monday night management team
-                                    calls, monthly management team reviews and Welcome Team Calls,
-                                    and non-action-item-related research, classes, and other
-                                    learning, meetings, etc., that benefit or relate to the
-                                    project but are not related to a specific action item in the
+                                    team. It is used for weekly Monday night management team calls,
+                                    monthly management team reviews and Welcome Team Calls, and
+                                    non-action-item-related research, classes, and other learning,
+                                    meetings, etc., that benefit or relate to the project but are
+                                    not related to a specific action item in the
                                     <a href="https://www.tinyurl.com/oc-os-wbs">
                                       One Community Work Breakdown Structure.
                                     </a>
@@ -709,8 +709,8 @@ function Timelog(props) {
                                     <br />
                                     Intangible Time may also be logged by a volunteer when in the
                                     field or for other reasons when the timer was not able to be
-                                    used. In these cases, the volunteer will use this button to
-                                    log time as “Intangible Time” and then request that an Admin
+                                    used. In these cases, the volunteer will use this button to log
+                                    time as “Intangible Time” and then request that an Admin
                                     manually change the log from Intangible to Tangible.
                                     <br />
                                     <br />
@@ -895,7 +895,8 @@ function Timelog(props) {
                         <FormGroup>
                           <Label
                             for="toDate"
-                            className={`responsive-font-size mr-2 ${darkMode ? 'text-light' : ''}`}
+                            className={`responsive-font-size mr-2 ${darkMode ? 'text-light' : ''
+                              }`}
                           >
                             To
                           </Label>
@@ -919,13 +920,14 @@ function Timelog(props) {
                       </Form>
                     )}
                     {timeLogState.activeTab === 0 ||
-                    timeLogState.activeTab === 5 ||
-                    timeLogState.activeTab === 6 ? null : (
+                      timeLogState.activeTab === 5 ||
+                      timeLogState.activeTab === 6 ? null : (
                       <Form className="mb-2 responsive-font-size">
                         <FormGroup>
                           <Label
                             htmlFor="projectSelected"
-                            className={`mr-1 ml-1 mb-1 align-top ${darkMode ? 'text-light' : ''}`}
+                            className={`mr-1 ml-1 mb-1 align-top ${darkMode ? 'text-light' : ''
+                              }`}
                           >
                             Filter Entries by Project and Task:
                           </Label>
@@ -954,8 +956,8 @@ function Timelog(props) {
                     )}
 
                     {timeLogState.activeTab === 0 ||
-                    timeLogState.activeTab === 5 ||
-                    timeLogState.activeTab === 6 ? null : (
+                      timeLogState.activeTab === 5 ||
+                      timeLogState.activeTab === 6 ? null : (
                       <EffortBar
                         activeTab={timeLogState.activeTab}
                         projectsSelected={timeLogState.projectsSelected}
