@@ -59,9 +59,6 @@ import PropTypes from 'prop-types';
 import Badge from '../Badge';
 import { ENDPOINTS } from '../../utils/URL';
 
-
-
-
 // startOfWeek returns the date of the start of the week based on offset. Offset is the number of weeks before.
 // For example, if offset is 0, returns the start of this week. If offset is 1, returns the start of last week.
 const startOfWeek = offset => {
@@ -646,24 +643,25 @@ const Timelog = props => {
                         <div className="tasks-and-timelog-header-add-time-div mt-2">
                           <div>
                             <div className="followup-tooltip-container">
-                              <Button 
-                                className="btn btn-success" 
+                              <Button
+                                className="btn btn-success"
                                 onClick={toggle}
                                 style={darkMode ? boxStyleDark : boxStyle}
                               >
                                 Add Intangible Time Entry
                                 <div className="followup-tooltip-button">
-                                  <i 
-                                    className="fa fa-info-circle" 
-                                    data-tip data-for="timeEntryTip" 
-                                    aria-hidden="true" 
-                                    title="" 
+                                  <i
+                                    className="fa fa-info-circle"
+                                    data-tip
+                                    data-for="timeEntryTip"
+                                    aria-hidden="true"
+                                    title=""
                                   />
                                   <div className="followup-tooltip">
-                                    Clicking this button only allows for “Intangible Time” to be added to your time log.{' '}
+                                    Clicking this button only allows for “Intangible Time” to be added to
+                                    your time log.{' '}
                                     <u>
-                                      You can manually log Intangible Time, but it does not 
-                                      <br />
+                                      You can manually log Intangible Time, but it does not <br />
                                       count towards your weekly time commitment.
                                     </u>
                                     <br />
@@ -671,19 +669,17 @@ const Timelog = props => {
                                     “Tangible Time” is the default for logging time using the timer at the
                                     top of the app. It represents all work done on assigned action items{' '}
                                     <br />
-                                    and is what counts towards a person’s weekly volunteer time
-                                    commitment. The only way for a volunteer to log Tangible Time is by
-                                    using the clock
+                                    and is what counts towards a person’s weekly volunteer time commitment.
+                                    The only way for a volunteer to log Tangible Time is by using the clock
                                     <br />
-                                    in/out timer. <br />
+                                    in/out timer.
                                     <br />
-                                    Intangible Time is almost always used only by the management team. It
-                                    is used for weekly Monday night management team calls, monthly
-                                    management
                                     <br />
-                                    team reviews and Welcome Team Calls, and non-action-item-related
-                                    research, classes, and other learning, meetings, etc., that benefit or
-                                    relate to 
+                                    Intangible Time is almost always used only by the management team. It is
+                                    used for weekly Monday night management team calls, monthly management
+                                    <br />
+                                    team reviews and Welcome Team Calls, and non-action-item-related research,
+                                    classes, and other learning, meetings, etc., that benefit or relate to
                                     <br />
                                     the project but are not related to a specific action item in the{' '}
                                     <a href="https://www.tinyurl.com/oc-os-wbs">
@@ -692,10 +688,8 @@ const Timelog = props => {
                                     <br />
                                     <br />
                                     Intangible Time may also be logged by a volunteer when in the field or
-                                    for other reasons when the timer was not able to be used. In these
-                                    cases, the 
-                                    <br />
-                                    volunteer will use this button to log time as “Intangible Time” and
+                                    for other reasons when the timer was not able to be used. In these cases,
+                                    the volunteer will use this button to log time as “Intangible Time” and
                                     then request that an Admin manually change the log from Intangible to
                                     Tangible.
                                     <br />
@@ -704,7 +698,7 @@ const Timelog = props => {
                                 </div>
                               </Button>
                             </div>
-                          </div>
+                          </div>;
                         </div>
                       ) : (
                         !(
