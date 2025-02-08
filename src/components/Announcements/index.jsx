@@ -5,6 +5,7 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import axios from 'axios';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -165,6 +166,18 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const handleCreateFbPost = async () => {
+    try {
+      const response = await axios.post('/api/createFbPost', {
+        EmailContent: emailContent, // Send the email content (HTML)
+      });
+      toast.success('Post successfully created on Facebook!');
+    } catch (error) {
+      console.error('Error posting to Facebook:', error);
+      toast.error('Failed to create post on Facebook');
+    }
+  };
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
       <div className="email-update-container">
@@ -266,7 +279,7 @@ function Announcements({ title, email }) {
             title ? (
               ""
             ) : (
-              <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
+              <button type="button" className="send-button" onClick={handleCreateFbPost} style={darkMode ? boxStyleDark : boxStyle}>
                 Facebook
               </button>
             )
