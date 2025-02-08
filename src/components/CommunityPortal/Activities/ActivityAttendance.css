@@ -1,0 +1,205 @@
+/* General container */
+.dashboard-container {
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+}
+
+/* Main Dashboard */
+.dashboard-main {
+  margin-top: 20px;
+}
+
+.dashboard-title {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  margin-bottom: 15px;
+  width: 100%;
+}
+
+.search-container {
+  flex: 1; 
+  display: flex;
+  justify-content: flex-end; 
+}
+
+.search-bar {
+  padding: 10px;
+  width: 250px;
+  border-radius: 5px;
+  border: 1px solid red;
+  font-size: 14px;
+  outline: none;
+  color: black;
+  background-color: white;
+}
+
+/* Stats and Chart Container */
+.stats-chart-container {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+/* Chart Styling */
+.chart-container {
+  position: relative;
+  width: 150px;
+  height: 150px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.chart-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 20px;
+  font-weight: bold;
+  color: #333;
+}
+
+/* Stats Grid */
+.stats-grid {
+  margin-left: 3rem;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 30px;
+  flex-grow: 1;
+}
+
+/* Individual Stats Card */
+.stats-card {
+  background: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  min-width: 150px;
+  border: 1px solid #eee;
+}
+
+.stats-card h3 {
+  margin: 0 0 10px;
+  font-size: 16px;
+}
+
+.stats-value {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+/* Live Updates Section */
+.live-updates {
+  background-color: white;
+  padding: 20px;
+  margin-top: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Live Updates Header */
+.updates-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* Export Button */
+.export-btn {
+  background-color: #4caf50;
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.export-btn:hover {
+  background-color: #388e3c;
+}
+
+/* Students List */
+.updates-list {
+  margin-top: 20px;
+}
+
+/* Student Row */
+.student-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 15px 10px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+/* Left - Image & Name */
+.student-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 30%; /* Ensures consistent spacing */
+}
+
+/* Center - Time (Aligned Below Each Other) */
+.student-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 40%;
+}
+
+/* Right - IDs (Aligned Below Each Other) */
+.student-right {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  width: 20%;
+}
+
+/* Student Image */
+.student-img {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+/* Student Name */
+.student-name {
+  font-weight: bold;
+}
+
+/* Time and ID */
+.student-time,
+.student-id {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 14px;
+  color: black;
+}
+
+/* Icons */
+.student-icon {
+  font-size: 14px;
+  color: gray;
+}
+
+
