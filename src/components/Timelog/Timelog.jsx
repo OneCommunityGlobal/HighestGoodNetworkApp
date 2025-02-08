@@ -919,8 +919,8 @@ function Timelog(props) {
                       </Form>
                     )}
                     {timeLogState.activeTab === 0 ||
-                      timeLogState.activeTab === 5 ||
-                      timeLogState.activeTab === 6 ? null : (
+                    timeLogState.activeTab === 5 ||
+                    timeLogState.activeTab === 6 ? null : (
                       <Form className="mb-2 responsive-font-size">
                         <FormGroup>
                           <Label
@@ -954,8 +954,8 @@ function Timelog(props) {
                     )}
 
                     {timeLogState.activeTab === 0 ||
-                      timeLogState.activeTab === 5 ||
-                      timeLogState.activeTab === 6 ? null : (
+                    timeLogState.activeTab === 5 ||
+                    timeLogState.activeTab === 6 ? null : (
                       <EffortBar
                         activeTab={timeLogState.activeTab}
                         projectsSelected={timeLogState.projectsSelected}
