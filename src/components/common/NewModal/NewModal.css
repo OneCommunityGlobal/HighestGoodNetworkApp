@@ -5,7 +5,7 @@
 }
 
 .popup-content-wrapper {
-  height: calc(100% - 40px - 60px);
+  height: calc(100% - 60px - 60px);
   overflow-y: scroll;
   padding: 14px 14px 0 4px;
 }
@@ -36,13 +36,17 @@
 }
 
 .popup-content-wrapper::-webkit-scrollbar {
-  width: 10px; /* width of the entire scrollbar */
+  width: 10px;
+  /* width of the entire scrollbar */
 }
 
 .popup-content-wrapper::-webkit-scrollbar-thumb {
-  background-color: #c6c6c6; /* color of the scroll thumb */
-  border-radius: 20px; /* roundness of the scroll thumb */
-  border: 3px solid white; /* creates padding around scroll thumb */
+  background-color: #c6c6c6;
+  /* color of the scroll thumb */
+  border-radius: 20px;
+  /* roundness of the scroll thumb */
+  border: 3px solid white;
+  /* creates padding around scroll thumb */
 }
 
 .popup-close-button {
