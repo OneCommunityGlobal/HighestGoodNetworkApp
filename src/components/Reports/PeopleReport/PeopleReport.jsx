@@ -473,9 +473,8 @@ class PeopleReport extends Component {
                   <p>Weekly Committed Hours</p>
                 </ReportPage.ReportBlock>
 
-                {userProfile.endDate ? (
-                  ''
-                ) : (
+                {(userProfile.isActive == null || userProfile.isActive) && (
+
                   <ReportPage.ReportBlock
                     firstColor="#b368d2"
                     secondColor="#831ec4"
