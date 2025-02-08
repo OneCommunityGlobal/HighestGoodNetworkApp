@@ -52,9 +52,9 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
-import GEProtectedRoute from './components/common/GEDashboard/GEProtectedRoute';
-import GELogin from './components/GoodEducation/Login';
-import GEDashboard from './components/GoodEducation';
+import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
+import EPLogin from './components/EductionPortal/Login';
+import EPDashboard from './components/EductionPortal';
 
 
 
@@ -361,15 +361,14 @@ export default (
           component={InventoryTypesList}
         />
 
-
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
 
         {/* Good Education  Portal Routes */}
-        <GEProtectedRoute path="/educationportal" exact component={GEDashboard} />
-        <Route path="/educationportal/login" component={GELogin} />
+        <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
+        <Route path="/educationportal/login" component={EPLogin} />
 
 
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
