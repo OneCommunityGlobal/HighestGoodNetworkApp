@@ -895,8 +895,9 @@ function Timelog(props) {
                         <FormGroup>
                           <Label
                             for="toDate"
-                            className={`responsive-font-size mr-2 ${darkMode ? 'text-light' : ''
-                              }`}
+                            className={`responsive-font-size mr-2 ${
+                              darkMode ? 'text-light' : ''
+                            }`}
                           >
                             To
                           </Label>
@@ -920,14 +921,13 @@ function Timelog(props) {
                       </Form>
                     )}
                     {timeLogState.activeTab === 0 ||
-                      timeLogState.activeTab === 5 ||
-                      timeLogState.activeTab === 6 ? null : (
+                    timeLogState.activeTab === 5 ||
+                    timeLogState.activeTab === 6 ? null : (
                       <Form className="mb-2 responsive-font-size">
                         <FormGroup>
                           <Label
                             htmlFor="projectSelected"
-                            className={`mr-1 ml-1 mb-1 align-top ${darkMode ? 'text-light' : ''
-                              }`}
+                            className={`mr-1 ml-1 mb-1 align-top ${darkMode ? 'text-light' : ''}`}
                           >
                             Filter Entries by Project and Task:
                           </Label>
@@ -956,8 +956,8 @@ function Timelog(props) {
                     )}
 
                     {timeLogState.activeTab === 0 ||
-                      timeLogState.activeTab === 5 ||
-                      timeLogState.activeTab === 6 ? null : (
+                    timeLogState.activeTab === 5 ||
+                    timeLogState.activeTab === 6 ? null : (
                       <EffortBar
                         activeTab={timeLogState.activeTab}
                         projectsSelected={timeLogState.projectsSelected}
