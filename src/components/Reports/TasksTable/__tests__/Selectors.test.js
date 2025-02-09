@@ -1,6 +1,6 @@
-import { get_task_by_wbsId } from '../selectors';
+import { getTaskByWbsId } from '../selectors';
 
-describe('get_task_by_wbsId', () => {
+describe('getTaskByWbsId', () => {
   it('returns the correct tasks based on WbsTasksID', () => {
     const mockTasks = {
       fetched: true,
@@ -11,7 +11,7 @@ describe('get_task_by_wbsId', () => {
       ]
     };
     const WbsTasksID = ['A','B'];
-    const result = get_task_by_wbsId(WbsTasksID, mockTasks);
+    const result = getTaskByWbsId(WbsTasksID, mockTasks);
     expect(result).toEqual([ { id: 1, wbsId: 'A' }, { id: 3, wbsId: 'A' }, { id: 2, wbsId: 'B' } ]);
   });
 
@@ -25,7 +25,7 @@ describe('get_task_by_wbsId', () => {
       ]
     };
     const WbsTasksID = ['A'];
-    const result = get_task_by_wbsId(WbsTasksID, mockTasks);
+    const result = getTaskByWbsId(WbsTasksID, mockTasks);
     console.log("RESULT: ");
     console.log(result)
     expect(result).toEqual([{"id": 1, "wbsId": "A"}, {"id": 3, "wbsId": "A"}]);
@@ -41,7 +41,7 @@ describe('get_task_by_wbsId', () => {
       ]
     };
     const WbsTasksID = ['C']; // WbsTasksID not found
-    const result = get_task_by_wbsId(WbsTasksID, mockTasks);
+    const result = getTaskByWbsId(WbsTasksID, mockTasks);
     expect(result).toEqual([]);
   });
 });
