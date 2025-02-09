@@ -1,0 +1,84 @@
+/* Container styling */
+.event-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+  
+  /* Title styling */
+  .event-title {
+    text-align: center;
+    font-size: 24px;
+    color: #333;
+    margin-bottom: 20px;
+  }
+  
+  /* Button group */
+  .button-group {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+  
+  /* Buttons */
+  .chart-button {
+    padding: 10px 20px;
+    margin: 0 10px;
+    border: 2px solid #888;
+    background-color: white;
+    color: #333;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: all 0.3s ease;
+  }
+
+  .chart-button.active {
+    background-color: #4CAF50;
+    color: white;
+    border-color: #4CAF50;
+  }
+  
+  
+  
+  /* Chart wrapper */
+  .chart-wrapper {
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  label {
+    font-size: 16px;
+    color: #555;
+    margin-right: 10px;
+  }
+
+  .select-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+  }
+
+  select {
+    padding: 2px 10px;
+    font-size: 16px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    color: #333;
+    cursor: pointer;
+    transition: border-color 0.3s ease;
+    outline: none;
+    margin-bottom: 20px;
+  }
+
+  select:focus {
+    border-color: #4CAF50; /* Green border on focus */
+  }
+  
