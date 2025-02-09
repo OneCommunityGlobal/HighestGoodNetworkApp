@@ -83,9 +83,14 @@
 }
 
 .team-member-tasks-user-name {
-  width: 70%;
+  width: 50%;
 }
 
+.team-member-tasks-user-report-link  .team-member-tasks-user-report-link-image{
+   width: 20px;
+   height: 20px;
+   margin: 0 0 5px 5px;
+}
 .deadlineCount {
   position: absolute;
   text-align: center;
@@ -105,6 +110,18 @@
   justify-content: space-around;
 }
 
+.team-member-tasks-number{
+  display: inline-block;
+  text-align: center;
+  vertical-align: middle;
+  background: #ff4d4f;
+  border-radius: 50%;
+  color: #fff;
+  height: 22px;
+  font-size: 14px;
+  width: 22px;
+  margin: 0 0 5px 5px;
+}
 .dashboard-team-clocks{
   color: #339CFF !important;
 }
@@ -154,7 +171,7 @@
 }
 
 .right-padding-temp-fix {
-  padding-right: 0px !important;
+  padding-right: 0 !important;
 }
 
 .table-row {
@@ -178,7 +195,6 @@
   z-index: 10;
   display: flex;
   justify-content: center;
-  align-items: center;
 }
 
 .row-content {
@@ -219,50 +235,25 @@
   color: white;
   box-shadow: 2px 2px 4px 1px lightgray;
   box-sizing: border-box;
-}
-
-.show-time-off-btn-selected {
-  background-color: #17a2b8;
+  /* Icon group centering */
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
 }
 
 .show-time-off-calender-svg {
-  fill: #17a2b8;
-  width: 22px;
-  height: 20px;
   position: relative;
-  top: 11px;
-  left: -2px;
 }
-.show-time-off-calender-svg-selected {
-  fill: white;
-}
+
 .show-time-off-icon {
-  width: 16px;
-  height: 16px;
-  position: relative;
-  top: -16px;
-  left: 7px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 50%;
-  background-color: white;
-}
-
-.show-time-off-icon-selected {
-  background-color: #17a2b8;
-}
-
-.show-time-off-icon path {
-  fill: #17a2b8;
-}
-
-.show-time-off-icon-selected path {
-  fill: white;
+  position: absolute;
+  top: 6px;
+  right: 6px;
 }
 
 .taking-time-off-content-btn {
-  background-color: none;
   color: white;
   box-sizing: border-box;
   border: 1px solid white;
@@ -362,7 +353,7 @@
   grid-column: 1 / span 1;
   grid-row: 1 / span 1;
   align-self: center;
-  
+
 }
 
 .team-task-progress-time-volunteers {
@@ -416,13 +407,13 @@
     grid-column: 1 / span 2;
     grid-row: 1 / span 1;
   }
-  
+
   .followup-tooltip-container {
     grid-column: 2 / span 1;
     grid-row: 3 / span 1;
     justify-self: start;
   }
-  
+
   .team-task-progress-bar {
     grid-column: 1 / span 3;
     grid-row: 2 / span 1;
@@ -464,7 +455,7 @@
     padding: 0 5%;
   }
 
- 
+
 
   .card-body {
     padding-left: 0 !important;
@@ -537,7 +528,7 @@
 @media only screen and (min-width: 768px) {
  .mobile-view-select{
     display: none;
-  } 
+  }
 }
 
 @media only screen and (max-width: 767px) {
@@ -549,7 +540,7 @@
   .mobile-view-select{
     width: 63px;
     color: white;
-  } 
+  }
   .responsive-btn-size{
     display: none;
   }
@@ -557,7 +548,6 @@
 
 @media only screen and (max-width: 530px) {
   .hours-btn-container{
-    min-width: none;
     padding: 0;
   }
   .team-selector-container{
@@ -575,7 +565,7 @@
     font-size: 14px;
     text-align: center;
   }
-  
+
 }
 
 @media only screen and (max-width: 544px) {

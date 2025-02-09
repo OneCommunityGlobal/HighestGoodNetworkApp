@@ -25,6 +25,7 @@ import CreateNewTeamPopup from './CreateNewTeamPopup';
 import DeleteTeamPopup from './DeleteTeamPopup';
 import TeamStatusPopup from './TeamStatusPopup';
 import lo from 'lodash';
+import EditableInfoModal from '../UserProfile/EditableModal/EditableInfoModal';
 
 class Teams extends React.PureComponent {
   constructor(props) {
@@ -116,10 +117,21 @@ class Teams extends React.PureComponent {
           <React.Fragment>
             <div className="container mt-3">
               {this.teampopupElements(allTeams)}
+              <div className="d-flex align-items-center">
+                <h3 style={{ display: 'inline-block', marginRight: 10 }}>Teams</h3>
+                <EditableInfoModal
+                  areaName="teamsInfoModal"
+                  areaTitle="Teams"
+                  fontSize={30}
+                  isPermissionPage={true}
+                  role={this.props.state?.auth?.user?.role}
+                />
+              
               <TeamOverview
                 numberOfTeams={numberOfTeams}
                 numberOfActiveTeams={numberOfActiveTeams}
               />
+              </div>
               <TeamTableSearchPanel
                 onSearch={this.onWildCardSearch}
                 onCreateNewTeamClick={this.onCreateNewTeamShow}
@@ -179,6 +191,10 @@ class Teams extends React.PureComponent {
             team={team}
           />
         ));
+    }
+    else {
+      // Return an empty array when there are no teams
+      return [];
     }
   };
 
@@ -534,6 +550,7 @@ class Teams extends React.PureComponent {
     this.setState({ sortTeamActiveState: newSortState, sortTeamNameState: 'none' });
   };
 }
+export { Teams };
 const mapStateToProps = state => ({ state });
 export default connect(mapStateToProps, {
   getAllUserProfile,
