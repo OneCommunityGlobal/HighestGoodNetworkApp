@@ -1,4 +1,4 @@
-import { createContext, useState, useCallback, useMemo, useEffect } from 'react';
+import { createContext, useState, useCallback, useMemo, useEffect, useRef } from 'react';
 import { useDispatch } from 'react-redux';
 import permissionLabels from 'components/PermissionsManagement/PermissionsConst';
 import { updateUserProfileProperty } from '../../actions/userProfile';
@@ -9,9 +9,10 @@ export const PermissionsContext = createContext();
 export function PermissionsProvider({ children, userProfile }) {
   const [currentUserPermissions, setCurrentUserPermissions] = useState([]);
   const dispatch = useDispatch();
+  const initialLoad = useRef(true); // Ref to track initial load
 
   useEffect(() => {
-    if (userProfile) {
+    if (userProfile && userProfile.role) {
       console.log('PermissionsProvider userProfile:', userProfile);
     } else {
       console.log('PermissionsProvider userProfile is undefined');
@@ -50,14 +51,18 @@ export function PermissionsProvider({ children, userProfile }) {
       const userPermissions = [];
 
       const traversePermissions = async perms => {
-        console.log('Traversing getCurrentUserPermissions permissions:', perms);
+        // console.log('Traversing getCurrentUserPermissions permissions:', perms);
         for (let perm of perms) {
           if (perm.key) {
-            console.log(
+            if (!userProfile || !userProfile.role) {
+              console.error('userProfile or userProfile.role is undefined');
+              return []; // Early return if userProfile or userProfile.role is undefined
+            }
+            /* console.log(
               `Dispatching hasPermission for ${perm.key} with viewingUser: true and userRole: ${userProfile.role}`,
-            );
+            ); */
             const hasPerm = await dispatch(hasPermission(perm.key, false, userProfile.role));
-            console.log(`Checking permission: ${perm.key}, hasPermission: ${hasPerm}`);
+            // console.log(`Checking permission: ${perm.key}, hasPermission: ${hasPerm}`);
             if (
               hasPerm &&
               permissionLabelPermissions.has(perm.key) &&
@@ -80,6 +85,11 @@ export function PermissionsProvider({ children, userProfile }) {
 
       console.log('Updated permissions from getCurrentUserPermissions:', updatedPermissions);
 
+      if (!userProfile || !userProfile._id) {
+        console.error('userProfile or userProfile._id is undefined');
+        return updatedPermissions; // Early return if userProfile or userProfile._id is undefined
+      }
+
       await dispatch(
         updateUserProfileProperty(userProfile, 'permissions.frontPermissions', updatedPermissions),
       );
@@ -89,25 +99,49 @@ export function PermissionsProvider({ children, userProfile }) {
     [dispatch, userProfile, permissionLabelPermissions],
   );
 
-  const handlePermissionsChange = updatedPermissions => {
+  const handlePermissionsChange = useCallback(updatedPermissions => {
     console.log('handlePermissionsChange called with:', updatedPermissions);
-    // const newPermissions = await getCurrentUserPermissions(permissionLabels);
-    // console.log('New permissions:', newPermissions);
-    // setCurrentUserPermissions(newPermissions);
-    setCurrentUserPermissions(updatedPermissions);
-  };
+    setCurrentUserPermissions(prevPermissions => {
+      if (JSON.stringify(prevPermissions) !== JSON.stringify(updatedPermissions)) {
+        console.log('Updating currentUserPermissions state');
+        return updatedPermissions;
+      }
+      return prevPermissions;
+    });
+  }, []); // Ensure handlePermissionsChange is memoized and not recreated on every render
 
   useEffect(() => {
-    if (userProfile) {
-      handlePermissionsChange(permissionLabels);
+    if (initialLoad.current) {
+      initialLoad.current = false;
+      console.log('Initial load, fetching permissions'); // Detailed logging
+      if (userProfile && userProfile.role) {
+        getCurrentUserPermissions(permissionLabels).then(handlePermissionsChange);
+      }
+    } else {
+      console.log('Subsequent load, skipping permissions fetch'); // Detailed logging
     }
-  }, [userProfile]);
+  }, [userProfile, getCurrentUserPermissions, handlePermissionsChange]);
 
-  return (
-    <PermissionsContext.Provider
-      value={{ currentUserPermissions, setCurrentUserPermissions, handlePermissionsChange }}
-    >
-      {children}
-    </PermissionsContext.Provider>
+  useEffect(() => {
+    console.log('currentUserPermissions updated:', currentUserPermissions); // Log state updates
+  }, [currentUserPermissions]);
+
+  const contextValue = useMemo(
+    () => ({
+      currentUserPermissions,
+      setCurrentUserPermissions,
+      handlePermissionsChange,
+      permissionLabelPermissions,
+      getCurrentUserPermissions,
+    }),
+    [
+      currentUserPermissions,
+      setCurrentUserPermissions,
+      handlePermissionsChange,
+      permissionLabelPermissions,
+      getCurrentUserPermissions,
+    ],
   );
+
+  return <PermissionsContext.Provider value={contextValue}>{children}</PermissionsContext.Provider>;
 }
