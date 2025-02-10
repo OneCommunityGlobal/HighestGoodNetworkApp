@@ -240,7 +240,7 @@ function TotalProjectReport(props) {
     <div>
       {!totalProjectReportDataReady ? (
         <div style={{ textAlign: 'center' }}>
-          <Loading align="center" darkMode={darkMode}/>
+          ""
           <div
             style={{
               width: '50%',

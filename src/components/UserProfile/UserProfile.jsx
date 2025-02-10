@@ -528,10 +528,11 @@ function UserProfile(props) {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
-          createdDate: moment
-            .tz('America/Los_Angeles')
-            .toISOString()
-            .split('T')[0],
+          // createdDate: moment
+          //   .tz('America/Los_Angeles')
+          //   .toISOString()
+          //   .split('T')[0],
+          createdDate: moment().format('YYYY-MM-DD'),
         };
         setModalTitle('Blue Square');
         await axios
