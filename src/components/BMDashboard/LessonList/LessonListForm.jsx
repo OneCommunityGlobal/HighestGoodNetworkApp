@@ -1,15 +1,14 @@
-import { GET_BM_LESSONS } from 'constants/bmdashboard/lessonConstants';
 import { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Form, FormControl, InputGroup, Button } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import { fetchBMLessons } from 'actions/bmdashboard/lessonsAction';
 import './LessonListForm.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import Lessons from './Lessons';
 import ConfirmationModal from './ConfirmationModal';
-import { fetchBMLessons } from 'actions/bmdashboard/lessonsAction';
 
 function LessonList(props) {
   const { lessons, dispatch } = props;
