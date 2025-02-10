@@ -6,7 +6,6 @@ import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
-import Loading from '../../common/Loading';
 
 function TotalProjectReport(props) {
   const { startDate, endDate, userProfiles, projects, darkMode } = props;
@@ -240,7 +239,7 @@ function TotalProjectReport(props) {
     <div>
       {!totalProjectReportDataReady ? (
         <div style={{ textAlign: 'center' }}>
-          ""
+          &quot;&quot;
           <div
             style={{
               width: '50%',
