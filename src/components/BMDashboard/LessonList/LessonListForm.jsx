@@ -9,6 +9,7 @@ import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import Lessons from './Lessons';
 import ConfirmationModal from './ConfirmationModal';
+import { fetchBMLessons } from 'actions/bmdashboard/lessonsAction';
 
 function LessonList(props) {
   const { lessons, dispatch } = props;
@@ -27,37 +28,20 @@ function LessonList(props) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [lessonsResponse, tagsResponse] = await Promise.all([
-          axios.get(`${ENDPOINTS.BM_LESSONS}`),
-          axios.get(`${ENDPOINTS.BM_TAGS}`),
-        ]);
-
-        // console.log('Before dispatch:', lessonsResponse.data);
-
-        dispatch({
-          type: GET_BM_LESSONS,
-          payload: lessonsResponse.data,
-        });
-
-        const processedLessons = lessonsResponse.data.map(lesson => ({
-          ...lesson,
-          date: new Date(lesson.date?.$date || lesson.date),
-          author: lesson.author?.$oid || lesson.author,
-          relatedProject: lesson.relatedProject?.$oid || lesson.relatedProject,
-        }));
-
-        setFilteredLessons(processedLessons);
+        await dispatch(fetchBMLessons());
+        const tagsResponse = await axios.get(`${ENDPOINTS.BM_TAGS}`);
         setAvailableTags(tagsResponse.data);
       } catch (error) {
-        // console.error('Fetch error:', error);
-        // toast.error('Failed to load data');
+        toast.error('Failed to load data');
       }
     };
     fetchData();
   }, [dispatch]);
 
   useEffect(() => {
-    // console.log('Redux lessons structure:', JSON.stringify(lessons[0], null, 2));
+    if (lessons) {
+      setFilteredLessons(lessons);
+    }
   }, [lessons]);
 
   const handleDeleteTags = async () => {
