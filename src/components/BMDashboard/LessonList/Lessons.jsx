@@ -49,7 +49,7 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
       await dispatch(likeLessonAction(lessonId, userId));
     } catch (error) {
       // console.error('Error updating like:', error);
-      setFilteredLessons(lessons);
+      setFilteredLessons(Lessons);
     }
   };
 
