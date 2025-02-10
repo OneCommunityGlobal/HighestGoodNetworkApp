@@ -231,6 +231,14 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+
+  // community portal
+  CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/cp/no-shows/location`,
+  CP_NOSHOW_VIZ_AGEGROUP: `${APIEndpoint}/cp/no-shows/age-group`,
+  CP_NOSHOW_VIZ_PROPORTION: `${APIEndpoint}/cp/no-shows/proportions`,
+  CP_NOSHOW_VIZ_PERIOD: `${APIEndpoint}/cp/no-shows/data`,
+  CP_ATTENDENCE_VIZ_DAY: `${APIEndpoint}/cp/attendance/by-day`,
+  CP_NOSHOW_VIZ_UNIQUE_EVENTTYPES: `${APIEndpoint}/cp/no-shows/unique-eventTypes`,
 };
 
 export const ApiEndpoint = APIEndpoint;

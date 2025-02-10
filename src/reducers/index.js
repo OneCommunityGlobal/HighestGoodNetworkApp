@@ -53,6 +53,9 @@ import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 
+//community portal
+import noShowVizReducer from './communityPortal/noShowVizReducer';
+
 const localReducers = {
   auth: authReducer,
   allUserProfiles: allUserProfilesReducer,
@@ -99,7 +102,10 @@ const localReducers = {
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
-  dashboard: dashboardReducer
+  dashboard: dashboardReducer,
+
+  // community portal
+  noShowViz: noShowVizReducer,
 };
 
 const sessionReducers = {
