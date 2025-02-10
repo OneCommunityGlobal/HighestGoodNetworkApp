@@ -31,12 +31,9 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
 
   const handleLike = async (lessonId, userId) => {
     try {
-      await dispatch(likeLessonAction(lessonId, userId));
-      // Update filteredLessons with the new like count
       setFilteredLessons(prevLessons =>
         prevLessons.map(lesson => {
           if (lesson._id === lessonId) {
-            // Update the likes for this specific lesson
             const isLiked = lesson.likes?.includes(userId);
             return {
               ...lesson,
@@ -49,8 +46,10 @@ function Lessons({ filteredLessons, setFilteredLessons, dispatch }) {
           return lesson;
         }),
       );
+      await dispatch(likeLessonAction(lessonId, userId));
     } catch (error) {
       // console.error('Error updating like:', error);
+      setFilteredLessons(lessons);
     }
   };
 

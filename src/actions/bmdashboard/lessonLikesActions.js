@@ -14,6 +14,7 @@ export const likeLessonAction = (lessonIndex, userId) => {
       
       if (response.status === 200) {
         dispatch(setLikes(response.data));
+        await dispatch(fetchBMLessons());
       } else {
         // console.error('Unexpected response status:', response.status);
       }
