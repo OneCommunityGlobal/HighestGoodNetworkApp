@@ -1,67 +1,62 @@
 import { useState } from 'react';
-import { useHistory } from 'react-router-dom';
 import { useSelector } from 'react-redux';
-import { Form, FormGroup, Col, Row, Label, Input, Button } from 'reactstrap';
-import ErrorAlert from '../ErrorAlert';
+import { Row, Col, Card, CardBody, Button, Collapse } from 'reactstrap';
+import ProjectDetails from './ProjectDetails/ProjectDetails';
 
 function ProjectSelectForm() {
   const projects = useSelector(state => state.bmProjects) || [];
-  const history = useHistory();
-  const [selectedProjectId, setSelectedProjectId] = useState('');
-  const [error, setError] = useState(false);
+  const [expandedProject, setExpandedProject] = useState(null);
 
-  const selectOptions = projects.map(project => {
-    return (
-      <option key={project._id} value={project._id}>
-        {project.name}
-      </option>
-    );
-  });
-
-  const handleOptionChange = event => {
-    setError(false);
-    setSelectedProjectId(event.target.value);
-  };
-
-  const handleButtonClick = () => {
-    if (selectedProjectId) {
-      // navigate to a new page with information about the selected project
-      history.push(`/bmdashboard/projects/${selectedProjectId}`);
-    } else {
-      setError(true);
-    }
+  const toggleProject = projectId => {
+    setExpandedProject(expandedProject === projectId ? null : projectId);
   };
 
   return (
-    <Form className="w-100 p-1 text-center">
-      <Row className="ml-0 gx-5 w-75 mx-auto" md="2" sm="1" xs="1">
-        <FormGroup>
-          <Col className="p-3">
-            <Label for="projectSelect" hidden>
-              Select
-            </Label>
-            <Input
-              id="projectSelect"
-              name="select"
-              type="select"
-              value={selectedProjectId}
-              onChange={handleOptionChange}
-            >
-              <option value="" default>
-                Select a project
-              </option>
-              {selectOptions}
-            </Input>
-          </Col>
-        </FormGroup>
-        <Col className="p-3">
-          <Button className="bm-dashboard__button w-100" onClick={handleButtonClick}>
-            Go to Project Dashboard
-          </Button>
-        </Col>
-        <ErrorAlert error={error} message="Please select a project" />
-      </Row>
-    </Form>
+    <Row className="justify-content-center mt-4">
+      <Col md={12}>
+        <ul className="projects-list list-unstyled">
+          {projects.length ? (
+            projects.map(project => (
+              <li key={project._id} className="">
+                <Card>
+                  <CardBody className="p-0">
+                    <Button
+                      color="link"
+                      onClick={() => toggleProject(project._id)}
+                      className="w-100 text-left d-flex justify-content-between align-items-center"
+                      style={{
+                        fontSize: '1.1rem',
+                        textDecoration: 'none',
+                        fontWeight: 'bold',
+                        color: 'black',
+                        backgroundColor: 'lightblue',
+                      }}
+                    >
+                      {project.name}
+                      <span>{expandedProject === project._id ? '▲' : '▼'}</span>
+                    </Button>
+                    <Collapse isOpen={expandedProject === project._id}>
+                      <div
+                        className="mt-3 border-top pt-3"
+                        style={{
+                          maxHeight: '600px', // Set a max height for the collapsible content
+                          overflowY: 'auto', // Allow scrolling inside the collapsible content
+                        }}
+                      >
+                        {/* ✅ Correctly pass projectId */}
+                        <ProjectDetails projectId={expandedProject} />
+                      </div>
+                    </Collapse>
+                  </CardBody>
+                </Card>
+              </li>
+            ))
+          ) : (
+            <p className="text-center text-muted">No projects available</p>
+          )}
+        </ul>
+      </Col>
+    </Row>
   );
 }
 
