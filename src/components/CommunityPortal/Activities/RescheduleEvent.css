@@ -1,6 +1,7 @@
 .reschedule-page {
   text-align: center;
-  margin-top: 50px;
+  margin-top: 100px;
+  position: relative;
 }
 
 .reschedule-button {
@@ -11,9 +12,129 @@
   border: none;
   cursor: pointer;
   border-radius: 5px;
-
 }
 
 .reschedule-button:hover {
-  background-color: #007FFF;
+  background-color: #0066CC; /* Darker shade for hover effect */
+}
+
+/* ----- FIXED MODAL STYLES BELOW ----- */
+.modal {
+  display: flex !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  z-index: 9999 !important;
+  position: relative !important;
+  top: 0;
+  transform: translateX(1%); 
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  justify-content: center;
+  align-items: center; 
+  width:min-content;  
+  height: 200%; 
+  
+}
+
+/* Ensure Event Name stays on one line */
+.event-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start; /* Left-align everything */
+  padding-right: 20px;
+}
+
+/* Stack Time, Location, and Link below each other */
+.event-details-header h3 {
+  margin-bottom: 5px; /* Space between title and details */
+}
+
+.event-details {
+  display: flex;
+  flex-direction: column; /* Stack details vertically */
+  gap: 5px; /* Add space between each detail */
+  text-align: justify;
+}
+
+.event-details p {
+  margin: 0;
+}
+
+
+
+.modal-content {
+  display: flex;
+  flex-direction: row; /* Place event details and DatePicker side by side */
+  align-items: center; /* Align items vertically in the center */
+  justify-content: space-between; /* Ensure spacing between elements */
+  padding: 20px;
+  width: 600px; /* Increase modal width to fit both sections */
+  max-width: 90%;
+}
+
+
+/* Apply centering on DatePicker container */
+.datepicker-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* width: 100%;
+  padding: 0; */
+  flex: 1;
+}
+.modal button {
+  margin: 10px;
+  padding: 8px 16px;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.modal button:first-of-type {
+  background: #007bff;
+  color: white;
+}
+
+.modal button:last-of-type {
+  background: #ccc;
+}
+
+.react-datepicker {
+  width: 100% !important;
+  max-width: 350px !important;
+  /* text-align: center !important;
+  margin: 0 auto !important;  */
+}
+
+.react-datepicker__month-container {
+  display: block !important; /* Ensures the month container stacks vertically */
+  width: 100% !important;   /* Full width */
+}
+
+.react-datepicker-wrapper {
+  display: flex !important;
+  justify-content: center !important;
+  width: 100% !important;
+  background-color: transparent; /* This removes the white background */
+}
+.react-datepicker__input-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.datepicker-wrapper {
+  width: auto;
+  max-width: 350px;  /* Set the max width for DatePicker */
+  margin: 0 ;  /* Center wrapper */
+  display: block;
+  text-decoration-color: black;
+}
+
+
+
+h2{
+  color: black;
+  font-weight: lighter;
+  font: 1em sans-serif;
+  font-size: x-small;
 }

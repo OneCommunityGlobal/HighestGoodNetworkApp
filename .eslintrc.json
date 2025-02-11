@@ -8,7 +8,11 @@
   ],
   "rules": {
     "prettier/prettier": "error",
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }]
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx"] }],
+    "no-alert": "off",
+    "react/jsx-uses-react": "off", // Disable this rule
+    "react/react-in-jsx-scope": "off", // Disable this rule
+    "no-console": "off"
   },
   "env": {
     "browser": true,
