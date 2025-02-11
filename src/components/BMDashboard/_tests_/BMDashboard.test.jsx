@@ -85,7 +85,7 @@ describe('BMDashboard Tests', () => {
     );
     expect(screen.getByText('Building and Inventory Management Dashboard')).toBeInTheDocument();
   });
-  //Test Case 2:
+  //Test Casee 2:
   it('Renders dropdown with project options', async () => {
     render(
       <Provider store={store}>
