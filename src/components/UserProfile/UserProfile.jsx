@@ -326,9 +326,7 @@ function UserProfile(props) {
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       const teamId = newUserProfile?.teams[0]?._id;
-      // if (teamId) {
         await loadSummaryIntroDetails(teamId, response.data);
-      // }
 
       const startDate = newUserProfile?.startDate.split('T')[0];
       // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
