@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import './RescheduleEvent.css';
@@ -6,26 +6,28 @@ import './RescheduleEvent.css';
 function RescheduleEvent() {
   const [showModal, setShowModal] = useState(false);
   const [selectedDate, setSelectedDate] = useState(null);
+  const [selectedTime, setSelectedTime] = useState('');
   const [confirmStep, setConfirmStep] = useState(false);
   const [buttonClicked, setButtonClicked] = useState(false);
 
   const handleReschedule = () => {
-    setShowModal(true); // Show modal when clicked
-    setButtonClicked(true); // Hide the "Reschedule Event" button after clicking it
+    setShowModal(true);
+    setButtonClicked(true);
   };
 
   const handleConfirm = () => {
     // eslint-disable-next-line no-alert
-    alert(`Event rescheduled to: ${selectedDate?.toDateString()}`);
+    alert(`Event rescheduled to: ${selectedDate?.toDateString()} at ${selectedTime}`);
     setShowModal(false);
     setConfirmStep(false);
     setSelectedDate(null);
+    setSelectedTime('');
   };
-
-  useEffect(() => {
-    // eslint-disable-next-line no-console
-    console.log('Updated showModal state:', showModal);
-  }, [showModal]);
+  const formatTime = hour => {
+    const formattedHour = hour % 12 === 0 ? 12 : hour % 12;
+    const period = hour < 12 ? 'AM' : 'PM';
+    return `${formattedHour < 10 ? `0${formattedHour}` : formattedHour}:00 ${period}`;
+  };
 
   return (
     <div className="reschedule-page">
@@ -44,9 +46,27 @@ function RescheduleEvent() {
                   <div className="event-details-header">
                     <h3>Event Name</h3>
                     <div className="event-details">
-                      <p>Time: September 2024</p>
                       <p>Location: San Francisco, CA 94108</p>
                       <p>Link: Event Link</p>
+                      <p>
+                        Time:
+                        <select
+                          value={selectedTime}
+                          onChange={e => setSelectedTime(e.target.value)}
+                          className="time-dropdown"
+                        >
+                          <option value="">Select time</option>
+                          {[...Array(12)].map((_, i) => {
+                            const hour = 8 + i * 2;
+                            const timeSlot = `${formatTime(hour)} - ${formatTime(hour + 2)}`;
+                            return (
+                              <option key={timeSlot} value={timeSlot}>
+                                {timeSlot}
+                              </option>
+                            );
+                          })}
+                        </select>
+                      </p>
                     </div>
                   </div>
                 </div>
@@ -57,29 +77,29 @@ function RescheduleEvent() {
                       selected={selectedDate}
                       onChange={date => {
                         setSelectedDate(date);
-                        setConfirmStep(true);
+                        setConfirmStep(false); // Reset confirm step if date is changed
                       }}
                       inline
                     />
-                    {selectedDate && (
-                      <button
-                        type="button"
-                        onClick={() => setConfirmStep(true)}
-                        className="confirm-date-button"
-                      >
-                        Confirm Date
-                      </button>
-                    )}
                   </div>
                 </div>
+                {selectedDate && selectedTime && (
+                  <button
+                    type="button"
+                    onClick={() => setConfirmStep(true)}
+                    className="confirm-date-button"
+                  >
+                    Reschedule Event
+                  </button>
+                )}
               </>
             ) : (
               <>
                 <h2>Are you sure you want to reschedule?</h2>
                 <div className="event-details">
-                  <p>Time: {selectedDate?.toDateString()}</p>
                   <p>Location: San Francisco, CA 94108</p>
-                  <p>Link: Event Link</p>
+                  <p>Date: {selectedDate?.toDateString()}</p>
+                  <p>Time: {selectedTime}</p>
                 </div>
 
                 <button
@@ -97,6 +117,7 @@ function RescheduleEvent() {
                     setShowModal(false);
                     setConfirmStep(false);
                     setSelectedDate(null);
+                    setSelectedTime('');
                     setButtonClicked(false); // Show the reschedule button again when modal closes
                   }}
                 >
