@@ -248,7 +248,7 @@ function Announcements({ title, email }) {
           </label>
           <input
             type="file"
-            id="upload-header-input" 
+            id="upload-header-input"
             onChange={addImageToEmailContent}
             className="input-file-upload"
           />
