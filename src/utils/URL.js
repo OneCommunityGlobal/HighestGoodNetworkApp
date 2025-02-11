@@ -233,12 +233,12 @@ export const ENDPOINTS = {
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
 
   // community portal
-  CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/cp/no-shows/location`,
-  CP_NOSHOW_VIZ_AGEGROUP: `${APIEndpoint}/cp/no-shows/age-group`,
-  CP_NOSHOW_VIZ_PROPORTION: `${APIEndpoint}/cp/no-shows/proportions`,
-  CP_NOSHOW_VIZ_PERIOD: `${APIEndpoint}/cp/no-shows/data`,
-  CP_ATTENDENCE_VIZ_DAY: `${APIEndpoint}/cp/attendance/by-day`,
-  CP_NOSHOW_VIZ_UNIQUE_EVENTTYPES: `${APIEndpoint}/cp/no-shows/unique-eventTypes`,
+  CP_NOSHOW_VIZ_LOCATION: `${APIEndpoint}/communityportal/reports/participation/location`,
+  CP_NOSHOW_VIZ_AGEGROUP: `${APIEndpoint}/communityportal/reports/participation/age-group`,
+  CP_NOSHOW_VIZ_PROPORTION: `${APIEndpoint}/communityportal/reports/participation/proportions`,
+  CP_NOSHOW_VIZ_PERIOD: `${APIEndpoint}/communityportal/reports/participation/data`,
+  CP_ATTENDENCE_VIZ_DAY: `${APIEndpoint}/communityportal/reports/participation/by-day`,
+  CP_NOSHOW_VIZ_UNIQUE_EVENTTYPES: `${APIEndpoint}/communityportal/reports/participation/unique-eventTypes`,
 };
 
 export const ApiEndpoint = APIEndpoint;
