@@ -250,10 +250,7 @@ function UserProfile(props) {
 
   const loadSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
-<<<<<<< HEAD
-=======
     
->>>>>>> luis-fix-summary-bug
     if (!teamId) {
       setSummaryIntro(
         `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes . 
@@ -262,10 +259,6 @@ function UserProfile(props) {
       );
       return;
     }
-<<<<<<< HEAD
-=======
-
->>>>>>> luis-fix-summary-bug
     try {
       const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
       const { data } = res;
@@ -334,13 +327,7 @@ function UserProfile(props) {
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       const teamId = newUserProfile?.teams[0]?._id;
-<<<<<<< HEAD
-      // if (teamId) {
-      await loadSummaryIntroDetails(teamId, response.data);
-      // }
-=======
         await loadSummaryIntroDetails(teamId, response.data);
->>>>>>> luis-fix-summary-bug
 
       const startDate = newUserProfile?.startDate.split('T')[0];
       // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
