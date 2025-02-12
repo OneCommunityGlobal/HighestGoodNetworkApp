@@ -98,7 +98,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       ));
 
   return (
-    (userRole === 'Administrator' || userRole === 'Owner') && (
+    (userRole === 'Administrator' || userRole === 'Owner' || userRole === 'Manager') && (
       <div className="warnings-container">
         <div className="button__container">
           <Button
