@@ -11,7 +11,8 @@ body {
   height: 100%;
   overflow-x: auto; 
   overflow: hidden;
-  background-color: var(--background-color);
+  /* background-color: var(--background-color); */
+  background-color: #ffffff;
 }
 
 .App {

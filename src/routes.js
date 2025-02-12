@@ -57,6 +57,10 @@ import NoshowViz from './components/CommunityPortal/Attendence/NoshowViz';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
 
+import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
+import EPLogin from './components/EductionPortal/Login';
+import EPDashboard from './components/EductionPortal';
+
 
 
 
@@ -390,7 +394,15 @@ export default (
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
         <CPProtectedRoute path="/communityportal/reports/participation" component={NoshowViz} />
+
+
+        {/* Good Education  Portal Routes */}
+        <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
+        <Route path="/educationportal/login" component={EPLogin} />
+
+
         {/* <BMProtectedRoute path="/bmdashboard/tools/add" exact component={AddTool} /> */}
+
 
 
         {/* Temporary route to redirect all subdirectories to login if unauthenticated */}
