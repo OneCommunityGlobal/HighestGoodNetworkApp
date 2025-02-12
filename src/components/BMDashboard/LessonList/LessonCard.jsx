@@ -19,6 +19,15 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   const [validationError, setValidationError] = useState('');
   const [showDeletePopup, setShowDeletePopup] = useState(false);
   const [lessonToDeleteId, setLessonToDeleteId] = useState(null);
+  const lessons = useSelector(state => state.lessons.lessons);
+
+  const getLikeStatus = lessonId => {
+    const lesson = lessons.find(l => l._id === lessonId);
+    return {
+      isLiked: lesson?.likes?.includes(currentUserId),
+      totalLikes: lesson?.totalLikes || 0,
+    };
+  };
 
   const handleEdit = (lessonId, lessonSummary) => {
     setEditableLessonId(lessonId);
@@ -68,7 +77,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
   };
 
   const lessonCards = filteredLessons.map(lesson => {
-    const isLiked = lesson.likes?.includes(currentUserId);
+    const { isLiked, totalLikes } = getLikeStatus(lesson._id);
     return (
       <Card key={`${lesson._id} + ${lesson.title} `} className="lesson-card">
         <Card.Header
@@ -193,7 +202,7 @@ function LessonCard({ filteredLessons, onEditLessonSummary, onDeliteLessonCard, 
                         fill: isLiked ? '#ff4d4d' : 'none',
                       }}
                     />
-                    Like: {lesson.totalLikes}
+                    Like: {totalLikes}
                   </span>
                 </div>
               </div>
