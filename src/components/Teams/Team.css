@@ -35,9 +35,11 @@ thead {
   text-align: start;
 }
 
+
 .teams__overview--top {
-  background: gray;
+  background: transparent;
 }
+
 
 .teams__overview--top .card {
   width: 200px;
@@ -126,35 +128,9 @@ tr:hover {
 @media (max-width: 768px) {
   .overflow-container {
     overflow-x: auto;
-    max-height: 80vh;
     overflow-y: auto;
+    height: 60vh;
   }
-}
-
-body.open-team-members-popup-modal {
-  overflow: hidden;
-  position: fixed;
-  width: 100%;
-  padding-right: 15px !important;
-}
-
-.modal-content {
-  max-height: 95vh;
-  overflow: auto;
-}
-
-.table td {
-  vertical-align: middle !important;
-}
-
-table .ToggleSwitch_switchSection__3twC9 {
-  justify-content: center;
-}
-
-.empty-data-message {
-  color: grey;
-  margin: auto;
-  text-align: center;
 }
 
 .overflow-container table {
