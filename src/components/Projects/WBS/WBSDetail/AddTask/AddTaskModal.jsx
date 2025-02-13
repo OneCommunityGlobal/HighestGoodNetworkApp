@@ -9,6 +9,10 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { useMemo } from 'react';
 import { addNewTask } from '../../../../../actions/task';
 import { DUE_DATE_MUST_GREATER_THAN_START_DATE } from '../../../../../languages/en/messages';
+import {
+  START_DATE_ERROR_MESSAGE,
+  END_DATE_ERROR_MESSAGE,
+} from '../../../../../languages/en/messages.js';
 import 'react-day-picker/lib/style.css';
 import '../../../../Header/DarkMode.css'
 import TagsSearch from '../components/TagsSearch';
@@ -61,13 +65,25 @@ function AddTaskModal(props) {
   };
 
   // states from hooks
+
   const defaultCategory = useMemo(() => {
     if (props.taskId) {
-      return tasks.find(({ _id }) => _id === props.taskId).category;
-    } 
-    return allProjects.projects.find(({ _id }) => _id === props.projectId);
-      
-  }, []);
+        const task = tasks.find(({ _id }) => _id === props.taskId);
+        return task && task.category ? task.category : 'Unspecified';
+    } else if (props.projectId) {
+        const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
+        return project && project.category ? project.category : 'Unspecified';
+    }
+    
+    if (props.projectId) {
+      const project = allProjects.projects.find(({ _id }) => _id === props.projectId);
+      return project?.category || 'Unspecified';
+    }
+  
+    return 'Unspecified';
+}, [props.taskId, props.projectId, tasks, allProjects.projects]);
+
+
   const [taskName, setTaskName] = useState('');
   const [priority, setPriority] = useState('Primary');
   const [resourceItems, setResourceItems] = useState([]);
@@ -84,6 +100,8 @@ function AddTaskModal(props) {
   const [intentInfo, setIntentInfo] = useState('');
   const [startedDate, setStartedDate] = useState('');
   const [endstateInfo, setEndstateInfo] = useState('');
+  const [startDateError, setStartDateError] = useState(false);
+  const [endDateError, setEndDateError] = useState(false);
   const [dueDate, setDueDate] = useState('');
   const [modal, setModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -190,25 +208,25 @@ function AddTaskModal(props) {
 
   const changeDateStart = startDate => {
     setStartedDate(startDate);
-    if (dueDate) {
-      if (startDate > dueDate) {
-        setDateWarning(true);
-      } else {
-        setDateWarning(false);
-      }
-    }
   };
 
   const changeDateEnd = dueDate => {
-    setDueDate(dueDate);
-    if (startedDate) {
-      if (dueDate < startedDate) {
-        setDateWarning(true);
-      } else {
-        setDateWarning(false);
-      }
+    if (!startedDate) {
+      const newDate = dateFnsFormat(new Date(), FORMAT);
+      setStartedDate(newDate);
     }
+    setDueDate(dueDate);
   };
+
+  useEffect(()=>{
+    if (dueDate && dueDate < startedDate) {
+      setEndDateError(true);
+      setStartDateError(true);
+    } else {
+      setEndDateError(false);
+      setStartDateError(false);
+    }
+  }, [startedDate, dueDate]);
 
   const addLink = () => {
     setLinks([...links, link]);
@@ -236,6 +254,8 @@ function AddTaskModal(props) {
     setIntentInfo('');
     setEndstateInfo('');
     setCategory(defaultCategory);
+    setStartDateError(false);
+    setEndDateError(false);
   };
 
   const paste = () => {
@@ -317,6 +337,15 @@ function AddTaskModal(props) {
     }
   }, [error, tasks])
 
+  useEffect(() => {
+    if (!modal) {
+      setStartedDate('');
+      setDueDate('');
+      setStartDateError(false);
+      setEndDateError(false);
+    }
+  }, [modal]);
+
   const fontColor = darkMode ? 'text-light' : '';
 
   return (
@@ -345,7 +374,7 @@ function AddTaskModal(props) {
             Reset
           </button>
         </ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode no-hover' : ''}>
           <div className="table table-bordered responsive">
             <div>
               <div className="add_new_task_form-group">
@@ -682,7 +711,7 @@ function AddTaskModal(props) {
                       value={startedDate}
                     />
                     <div className="warning">
-                      {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                      {startDateError ? START_DATE_ERROR_MESSAGE : ''}
                     </div>
                   </div>
                 </span>
@@ -698,7 +727,7 @@ function AddTaskModal(props) {
                     value={dueDate}
                   />
                   <div className="warning">
-                    {dateWarning ? DUE_DATE_MUST_GREATER_THAN_START_DATE : ''}
+                    {endDateError ? END_DATE_ERROR_MESSAGE : ''}
                   </div>
                 </span>
               </div>
@@ -706,7 +735,7 @@ function AddTaskModal(props) {
           </div>
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-          <Button color="primary" onClick={addNewTask} disabled={taskName === '' || hoursWarning || isLoading} style={darkMode ? boxStyleDark : boxStyle}>
+          <Button color="primary" onClick={addNewTask} disabled={taskName === '' || hoursWarning || isLoading || startDateError || endDateError} style={darkMode ? boxStyleDark : boxStyle}>
             {isLoading ? "Adding Task..." : "Save"}
           </Button>
         </ModalFooter>

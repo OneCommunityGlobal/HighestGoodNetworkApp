@@ -22,8 +22,15 @@ export const loginUser = credentials => dispatch => {
       }
     })
     .catch(err => {
-      if (err.response && err.response.status === 403) {
-        const errors = { email: err.response.data.message };
+      let errors;
+      if (err.response && err.response.status === 404) {
+        errors = { password: err.response.data.message };
+        dispatch({
+          type: GET_ERRORS,
+          payload: errors,
+        });
+      } else if (err.response && err.response.status === 403) {
+        errors = { email: err.response.data.message };
         dispatch({
           type: GET_ERRORS,
           payload: errors,
@@ -34,7 +41,7 @@ export const loginUser = credentials => dispatch => {
 
 export const loginBMUser = (credentials) => async dispatch => {
   return httpService
-    .post (ENDPOINTS.BM_LOGIN, credentials)
+    .post(ENDPOINTS.BM_LOGIN, credentials)
     .then((res) => {
       localStorage.setItem(tokenKey, res.data.token);
       httpService.setjwt(res.data.token);
@@ -44,6 +51,21 @@ export const loginBMUser = (credentials) => async dispatch => {
     })
     .catch(err => err.response)
 }
+
+// end points needed for community Portal 
+
+// export const loginBMUser = (credentials) => async dispatch => {
+//   return httpService
+//     .post (ENDPOINTS.BM_LOGIN, credentials)
+//     .then((res) => {
+//       localStorage.setItem(tokenKey, res.data.token);
+//       httpService.setjwt(res.data.token);
+//       const decoded = jwtDecode(res.data.token)
+//       dispatch(setCurrentUser(decoded));
+//       return res
+//     })
+//     .catch(err => err.response)
+// }
 
 export const getHeaderData = userId => {
   const url = ENDPOINTS.USER_PROFILE(userId);

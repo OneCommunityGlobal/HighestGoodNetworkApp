@@ -136,9 +136,8 @@ export default function ItemsTable({
                       <button
                         type="button"
                         onClick={() => handleEditRecordsClick(el, 'Update')}
-                        aria-label="Update record"
+                        aria-label="Edit Record"
                       >
-                        {' '}
                         <BiPencil />
                       </button>
                       <Button
@@ -155,7 +154,7 @@ export default function ItemsTable({
                         color="primary"
                         outline
                         size="sm"
-                        onClick={() => handleViewRecordsClick(el.purchaseRecord, 'Purchase')}
+                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
                       >
                         View
                       </Button>

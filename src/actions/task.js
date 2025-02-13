@@ -12,11 +12,12 @@ import {
   fetchTeamMembersDataError,
   deleteTaskNotificationSuccess,
   deleteTaskNotificationBegin,
-} from '../components/TeamMemberTasks/actions';
-import { createTaskEditSuggestionHTTP } from '../components/TaskEditSuggestions/service';
+} from 'components/TeamMemberTasks/actions';
+import { createTaskEditSuggestionHTTP } from 'components/TaskEditSuggestions/service';
 import * as types from '../constants/task';
 import { ENDPOINTS } from '../utils/URL';
 import { createOrUpdateTaskNotificationHTTP } from './taskNotification';
+import { fetchTaskEditSuggestions } from 'components/TaskEditSuggestions/thunks';
 
 const selectFetchTeamMembersTaskData = state => state.auth.user.userid;
 const selectUserId = state => state.auth.user.userid;
@@ -54,8 +55,8 @@ export const fetchTeamMembersTimeEntries = () => async (dispatch, getState) => {
     const userIds = teamMemberTasks.usersWithTasks.map(user => user.personId)
 
     const { data: usersWithTimeEntries } = await axios.post(ENDPOINTS.TIME_ENTRIES_USER_LIST, {
-      users: userIds,
-      fromDate,
+      users: userIds, 
+      fromDate, 
       toDate
     });
 
@@ -130,20 +131,21 @@ export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => asyn
   let status = 200;
   try {
     const state = getState();
-
-    let oldTask
+    
+    let oldTask 
     if(prevTask){
       oldTask = prevTask
     }else{
       oldTask = selectUpdateTaskData(state, taskId);
     }
-
     if (hasPermission) {
       await axios.put(ENDPOINTS.TASK_UPDATE(taskId), updatedTask);
       const userIds = updatedTask.resources.map(resource => resource.userID);
-      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);
+      await createOrUpdateTaskNotificationHTTP(taskId, oldTask, userIds);   
     } else {
-      await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask);
+      await createTaskEditSuggestionHTTP(taskId, selectUserId(state), oldTask, updatedTask).then(() => {
+        dispatch(fetchTaskEditSuggestions())   
+      });
     }
   } catch (error) {
     // dispatch(fetchTeamMembersTaskError());

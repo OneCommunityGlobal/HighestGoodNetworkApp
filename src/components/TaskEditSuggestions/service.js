@@ -1,10 +1,11 @@
 import axios from 'axios';
-import { ENDPOINTS } from '../../../src/utils/URL';
+import httpService from 'services/httpService';
+import { ENDPOINTS } from 'utils/URL';
 
 export const getTaskEditSuggestionsHTTP = async () => {
   try {
     const response =  await axios.get(ENDPOINTS.TASK_EDIT_SUGGESTION());
-    //console.log('Response:', response.data);
+    //console.log('Response:', response.data); 
     return response.data;
   } catch (error) {
     console.log(`Error on create task edit suggestion: ${  error}`);
@@ -27,6 +28,7 @@ export const rejectTaskEditSuggestionHTTP = async taskEditSuggestionId => {
     return response.data;
   } catch (error) {
     console.log(`reject task edit suggestion http error ${  error}`);
+    throw error;
   }
 };
 
