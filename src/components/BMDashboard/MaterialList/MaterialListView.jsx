@@ -10,6 +10,14 @@ function MaterialListView() {
   const errors = useSelector(state => state.errors);
   const postMaterialUpdateResult = useSelector(state => state.materials.updateMaterials);
 
+  // Transform the materials to match expected PropTypes
+  const transformedMaterials =
+    materials?.map(material => ({
+      ...material,
+      id: parseInt(material._id?.split('-')[0], 16) || Math.random(), // Convert first part of _id to number or use random fallback
+      name: material.itemType?.name || 'Unnamed Material',
+    })) || [];
+
   useEffect(() => {
     dispatch(fetchAllMaterials());
   }, []);
@@ -32,7 +40,7 @@ function MaterialListView() {
   return (
     <ItemListView
       itemType={itemType}
-      items={materials}
+      items={transformedMaterials}
       errors={errors}
       UpdateItemModal={UpdateMaterialModal}
       dynamicColumns={dynamicColumns}
