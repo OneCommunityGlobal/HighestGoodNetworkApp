@@ -11,7 +11,8 @@ body {
   height: 100%;
   overflow-x: auto; 
   overflow: hidden;
-  background-color: var(--background-color);
+  /* background-color: var(--background-color); */
+  background-color: #ffffff;
 }
 
 .App {
@@ -101,17 +102,37 @@ body {
   background-color: #1B2A41 !important;
 }
 
+/* .bg-oxford-blue:hover{
+  background-color: #1B2A41 !important;
+  color:black;
+} */
+
 .bg-space-cadet{
   background-color: #1C2541 !important;
 }
+
+/* .bg-space-cadet:hover{
+  background-color: #1C2541 !important;
+  color:black; 
+} */
 
 .bg-yinmn-blue{
   background-color: #3A506B !important;
 }
 
+/* .bg-yinmn-blue:hover{
+  background-color: #3A506B !important;
+  color: black;
+} */
+
 .bg-yinmn-blue-light{
   background-color:#2f4157;
 }
+
+/* .bg-yinmn-blue-light:hover{
+  background-color:#2f4157;
+  color: black;
+} */
 
 .bg-azure{
   background-color: #007BFF !important;

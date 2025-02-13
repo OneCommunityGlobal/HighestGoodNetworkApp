@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert } from 'reactstrap';
+import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Container, Alert, Spinner } from 'reactstrap';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
@@ -173,7 +173,7 @@ export const TeamMembersPopup = React.memo(props => {
     sortList(sortOrder);
     const newMemberVisibility = getMemberVisibility();
     setMemberVisibility(newMemberVisibility);
-  }, [validation, sortOrder, props.teamData]);
+  }, [validation, sortOrder]);
 
   useEffect(() => {
     setIsValidUser(true);
@@ -189,6 +189,8 @@ export const TeamMembersPopup = React.memo(props => {
     setInfoModal(!infoModal);
   };
 
+  const emptyState = (<tr><td colSpan={6} className='empty-data-message'>There are no users on this team.</td></tr>);
+
   return (
     <Container fluid>
       <InfoModal isOpen={infoModal} toggle={toggleInfoModal} />
@@ -198,15 +200,16 @@ export const TeamMembersPopup = React.memo(props => {
         toggle={closePopup}
         autoFocus={false}
         size="lg"
-        className={darkMode ? 'dark-mode text-light' : ''}
+        className={`${darkMode ? 'dark-mode text-light' : ''} ${props.open ? ' open-team-members-popup-modal' : ''}`}
       >
         <ModalHeader
           className={darkMode ? 'bg-space-cadet' : ''}
           toggle={closePopup}
         >{`Members of ${props.selectedTeamName}`}</ModalHeader>
-        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center' }}>
+        <div
+        className={darkMode ? 'bg-space-cadet' : ''}>
           {canAssignTeamToUsers && (
-            <div className="input-group-prepend" style={{ marginBottom: '10px' }}>
+            <div className="input-group-prepend" style={{ margin: '10px' }}>
               <MembersAutoComplete
                 userProfileData={props.usersdata}
                 existingMembers={validation}
@@ -223,7 +226,8 @@ export const TeamMembersPopup = React.memo(props => {
               </Button>
             </div>
           )}
-
+        </div>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''} style={{ textAlign: 'center', overflowX: 'auto' }}>
           {duplicateUserAlert ? (
             <Alert color="danger">Member is already a part of this team.</Alert>
           ) : isValidUser === false ? (
@@ -233,9 +237,8 @@ export const TeamMembersPopup = React.memo(props => {
           )}
 
           <table
-            className={`table table-bordered table-responsive-sm ${
-              darkMode ? 'dark-mode text-light' : ''
-            }`}
+            className={`table table-bordered table-responsive-xlg ${darkMode ? 'dark-mode text-light' : ''
+              }`}
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
@@ -319,13 +322,9 @@ export const TeamMembersPopup = React.memo(props => {
                       </td>
                       {canAssignTeamToUsers && (
                         <td>
-                          <Button
-                            color="danger"
-                            onClick={() => handleDelete(user._id)}
-                            style={darkMode ? boxStyleDark : boxStyle}
-                          >
-                            Delete
-                          </Button>
+                          <div className={user.isActive ? 'isActive' : 'isNotActive'}>
+                            <i className="fa fa-circle" aria-hidden="true" />
+                          </div>
                         </td>
                       )}
                     </tr>
