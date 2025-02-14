@@ -53,7 +53,7 @@ const TINY_MCE_INIT_OPTIONS = {
                     styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
                     subscript superscript charmap  | help',
   branding: false,
-  toolbar_mode: 'sliding',
+  toolbar_mode: 'wrap',
   min_height: 180,
   max_height: 300,
   autoresize_bottom_margin: 1,
