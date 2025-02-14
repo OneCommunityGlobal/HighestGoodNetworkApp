@@ -1,0 +1,157 @@
+/* General Styles */
+body {
+  margin: 0;
+  padding: 0;
+  background-color: white;
+  font-family: Arial, sans-serif;
+}
+
+.resource-management-dashboard {
+  padding: 20px;
+}
+
+.dashboard-title {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  /* Spacing between the title and button */
+  margin-bottom: 20px;
+}
+
+.dashboard-title h2 {
+  font-size: 1.5em;
+  font-weight: bold;
+  color: black;
+}
+
+.add-log-button {
+  background-color: #d3d3d3;
+  color: black;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.add-log-button:hover {
+  background-color: #b3b3b3;
+}
+
+/* Search Bar */
+.search-bar-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #f0f0f0;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+
+.search-bar-left {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  font-size: 1.2em;
+}
+
+.search-bar-right {
+  display: flex;
+  gap: 10px;
+}
+
+.search-input {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.search-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.search-button:hover {
+  background-color: #0056b3;
+}
+
+/* Resource List */
+.resource-list {
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 10px;
+}
+.checkbox-container {
+  flex: 0;
+  /* Ensures the checkbox doesn't stretch unnecessarily */
+  margin-right: 20px;
+  /* Add a margin to create space between the checkbox and the rest of the items */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.resource-heading,
+.resource-item {
+  display: flex;
+  
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 0;
+}
+
+.resource-heading-item {
+  flex: 1;
+  text-align: left;
+  color: #555;
+  /* Font color for headings */
+  font-weight: bold;
+}
+
+.resource-item-detail {
+  flex: 1;
+  text-align: left;
+  color: #333;
+  /* Font color for logs */
+}
+
+.calendar-icon {
+  margin-right: 5px;
+  /* Space between icon and text */
+}
+
+hr {
+  border: none;
+  border-top: 1px solid #ddd;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+.pagination button {
+  background-color: #f1f1f1;
+  border: 1px solid #ddd;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+.pagination button:hover {
+  background-color: #007bff;
+  color: white;
+}
+
+.arrow-button {
+  font-weight: bold;
+  padding: 5px 15px;
+}

@@ -44,7 +44,10 @@ import AddTool from './components/BMDashboard/Tools/AddTool';
 import LogTools from './components/BMDashboard/LogTools/LogTools';
 import notFoundPage from './components/not-found/notFoundPage';
 
+
+// Social Architecture
 import RequestResources from './components/SocialArchitecture/RequestResources';
+import ResourceManagement from './components/ResourceManagement/ResourceManagement';
 
 const ReusableListView = lazy(() => import('./components/BMDashboard/ReusableList'));
 const ConsumableListView = lazy(() => import('./components/BMDashboard/ConsumableList'));
@@ -212,6 +215,13 @@ export default (
           routePermissions={RoutePermissions.resourcesAdd}
         />
 
+      
+        <ProtectedRoute
+          path="/communityportal/activity/:activityId/resources"
+          exact
+          component={ResourceManagement}
+          routePermissions={RoutePermissions.resourceManagement}
+        />
 
         <ProtectedRoute
           path="/usermanagement"
