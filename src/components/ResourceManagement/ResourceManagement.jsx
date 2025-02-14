@@ -11,7 +11,9 @@ function SearchBar() {
       </div>
       <div className="search-bar-right">
         <input type="text" className="search-input" placeholder="Search" />
-        <button type="button" className="search-button">Search</button>
+        <button type="button" className="search-button">
+          Search
+        </button>
       </div>
     </div>
   );
@@ -20,6 +22,7 @@ function SearchBar() {
 function ResourceManagement() {
   const [resources] = useState([
     {
+      id: 1,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'Landing Page',
@@ -27,6 +30,7 @@ function ResourceManagement() {
       date: 'Just now',
     },
     {
+      id: 2,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'CRM Admin pages',
@@ -34,6 +38,7 @@ function ResourceManagement() {
       date: 'A minute ago',
     },
     {
+      id: 3,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'Client Project',
@@ -41,6 +46,7 @@ function ResourceManagement() {
       date: '1 hour ago',
     },
     {
+      id: 4,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'Admin Dashboard',
@@ -48,6 +54,7 @@ function ResourceManagement() {
       date: 'Yesterday',
     },
     {
+      id: 5,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'App Landing page',
@@ -55,6 +62,7 @@ function ResourceManagement() {
       date: 'Feb 2, 2024',
     },
     {
+      id: 6,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'Landing Page',
@@ -62,6 +70,7 @@ function ResourceManagement() {
       date: 'Just now',
     },
     {
+      id: 7,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'CRM Admin Pages',
@@ -69,6 +78,7 @@ function ResourceManagement() {
       date: 'A minute ago',
     },
     {
+      id: 8,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'Client Project',
@@ -76,6 +86,7 @@ function ResourceManagement() {
       date: '1 hour ago',
     },
     {
+      id: 9,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'Admin Dashboard',
@@ -83,6 +94,7 @@ function ResourceManagement() {
       date: 'Yesterday',
     },
     {
+      id: 10,
       user: 'First Last',
       timeDuration: '02:32:56',
       facilities: 'App Landing Page',
@@ -95,7 +107,9 @@ function ResourceManagement() {
     <div className="resource-management-dashboard">
       <div className="dashboard-title">
         <h2>Used Resources</h2>
-        <button className="add-log-button">Add New Log</button>
+        <button type="button" className="add-log-button">
+          Add New Log
+        </button>
       </div>
 
       <SearchBar />
@@ -113,8 +127,8 @@ function ResourceManagement() {
         </div>
         <hr />
 
-        {resources.map((resource, index) => (
-          <div key={index}>
+        {resources.map(resource => (
+          <div key={resource.id}>
             <div className="resource-item">
               <div className="checkbox-container">
                 <input type="checkbox" />
@@ -133,13 +147,17 @@ function ResourceManagement() {
       </div>
 
       <div className="pagination">
-        <button type="button" className="arrow-button">←</button>
-        <button>1</button>
-        <button>2</button>
-        <button>3</button>
-        <button>4</button>
-        <button>5</button>
-        <button className="arrow-button">→</button>
+        <button type="button" className="arrow-button">
+          ←
+        </button>
+        <button type="button">1</button>
+        <button type="button">2</button>
+        <button type="button">3</button>
+        <button type="button">4</button>
+        <button type="button">5</button>
+        <button type="button" className="arrow-button">
+          →
+        </button>
       </div>
     </div>
   );
