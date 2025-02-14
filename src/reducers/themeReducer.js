@@ -10,6 +10,11 @@ export const themeReducer = (state = initialState, action) => {
         ...state,
         darkMode: !state.darkMode,
       };
+    case 'SET_THEME':
+      return {
+        ...state,
+        darkMode: action.payload
+      }
     default:
       return state;
   }
