@@ -95,6 +95,7 @@ export function Record({ record, recordType, setRecord }) {
             <th>Quantity Used</th>
             <th>Quantity Wasted</th>
             <th>Creator</th>
+            <th>Email</th>
           </tr>
         </thead>
         <tbody>
@@ -110,6 +111,7 @@ export function Record({ record, recordType, setRecord }) {
                       {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
                     </a>
                   </td>
+                  <td>{data?.createdBy?.email}</td>
                 </tr>
               );
             })
@@ -133,6 +135,7 @@ export function Record({ record, recordType, setRecord }) {
             <th>Brand</th>
             <th>Quantity</th>
             <th>Requested By</th>
+            <th>Email</th>
             <th>Date</th>
             <th>Status</th>
           </tr>
@@ -151,6 +154,7 @@ export function Record({ record, recordType, setRecord }) {
                         {`${requestedBy.firstName} ${requestedBy.lastName}`}
                       </a>
                     </td>
+                    <td>{requestedBy.email}</td>
                     <td>{moment(date).format('MM/DD/YY')}</td>
                     <td>{status}</td>
                     <td>
