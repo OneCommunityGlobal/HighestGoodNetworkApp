@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import PhoneInput from 'react-phone-input-2';
 import { toast } from 'react-toastify';
@@ -38,6 +39,7 @@ export default function AddMaterialForm() {
   const [phoneNumber, setPhoneNumber] = useState('');
   const [uploadedFiles, setUploadedFiles] = useState([]); // log here for correct state snapshot (will show each render)
   const [errors, setErrors] = useState({});
+  const history = useHistory();
   const dispatch = useDispatch();
   const postBuildingInventoryResult = useSelector(state => state.bmInvTypes.postedResult);
   const materialTypes = useSelector(state => state.bmInvTypes.list);
@@ -65,6 +67,7 @@ export default function AddMaterialForm() {
       toast.success(
         `Created a new Material Type "${postBuildingInventoryResult?.result.name}" successfully`,
       );
+      history.push('/bmdashboard/inventorytypes');
       dispatch(fetchMaterialTypes());
       dispatch(resetPostBuildingInventoryTypeResult());
     }
