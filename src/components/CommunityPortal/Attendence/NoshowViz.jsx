@@ -45,12 +45,15 @@ function EventNoShowChart() {
   }, [dispatch, selectedEventType]);
 
   const locationData = useSelector(state => state.noShowViz.noShowsByLocation);
-  const ageGroupData = useSelector(state => state.noShowViz.noShowsByAgeGroup);
+  // const ageGroupData = useSelector(state => state.noShowViz.noShowsByAgeGroup);
   const noShowProportions = useSelector(state => state.noShowViz.noShowProportions);
   const noShowPeriod = useSelector(state => state.noShowViz.noShowsData);
   const attendanceByDay = useSelector(state => state.noShowViz.attendanceByDay);
   const uniqueEventTypes = useSelector(state => state.noShowViz.uniqueEventTypes);
   const eventTypesWithAll = ['All', ...uniqueEventTypes];
+  const { ageGroupData = [], genderTypes = [] } = useSelector(
+    state => state.noShowViz.noShowsByAgeGroup,
+  );
 
   const maxNoShows = Math.max(
     0,
@@ -179,12 +182,12 @@ function EventNoShowChart() {
       <h2 className="event-title">No Shows by Age Group and Gender</h2>
       <div className="chart-wrapper">
         <ResponsiveContainer width="100%" height={400}>
-          <BarChart data={ageGroupData.ageGroupData}>
+          <BarChart data={ageGroupData}>
             <XAxis dataKey="ageGroup" />
             <YAxis />
             <Tooltip />
             <Legend />
-            {ageGroupData.genderTypes.map(gender => (
+            {genderTypes.map(gender => (
               <Bar key={gender} dataKey={gender} fill={genderColorMapping[gender] || '#8884d8'} />
             ))}
           </BarChart>
