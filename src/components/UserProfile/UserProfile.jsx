@@ -951,6 +951,7 @@ function UserProfile(props) {
               {(userProfile?.profilePic!==undefined)?
                 <Button color="danger" onClick={toggleRemoveModal} className="remove-button">
                   Remove Image</Button>:<></>}
+{/*                   
               {((userProfile?.profilePic==undefined || 
                 userProfile?.profilePic==null || 
                 userProfile?.profilePic=="")&& 
@@ -959,10 +960,10 @@ function UserProfile(props) {
                   userProfile?.suggestedProfilePics.length!==0
                 ))?
                 <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
-                :null}
+                :null} */}
                 </div>
 
-                {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>}
+                {/* {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>} */}
                 <ConfirmRemoveModal
                   isOpen={isRemoveModalOpen}
                   toggleModal={toggleRemoveModal}
