@@ -23,9 +23,21 @@ function MaterialListView() {
   }, []);
 
   useEffect(() => {
-    if (!postMaterialUpdateResult || postMaterialUpdateResult?.result == null)
-      dispatch(fetchAllMaterials());
-  }, [postMaterialUpdateResult?.result]);
+    if (postMaterialUpdateResult?.result != null) {
+      // Update only the changed material in the local state if possible
+      const updatedMaterial = postMaterialUpdateResult.result;
+      if (updatedMaterial && updatedMaterial._id) {
+        // If we have the updated material data, we can update it locally
+        dispatch({
+          type: 'SET_MATERIALS',
+          payload: materials.map(mat => (mat._id === updatedMaterial._id ? updatedMaterial : mat)),
+        });
+      } else {
+        // Fallback to full refresh only if necessary
+        fetchAllMaterials();
+      }
+    }
+  }, [postMaterialUpdateResult?.result, materials, dispatch, fetchAllMaterials]);
 
   const itemType = 'Materials';
 
