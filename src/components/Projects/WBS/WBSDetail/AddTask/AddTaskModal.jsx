@@ -239,7 +239,7 @@ function AddTaskModal(props) {
   };
 
   const clear = () => {
-    console.log("CLEARING localStorage!");
+    //console.log("CLEARING localStorage!");
     setTaskName('');
     setPriority('Primary');
     setResourceItems([]);
@@ -259,7 +259,6 @@ function AddTaskModal(props) {
     setStartDateError(false);
     setEndDateError(false);
     localStorage.removeItem(STORAGE_KEY);
-    
   };
 
   const paste = () => {
@@ -323,8 +322,6 @@ function AddTaskModal(props) {
         toggle();
         props.load();
       }
-      // If 'outdated', do nothing here (keep data so user can fix concurrency).
-      // If 'error', handle the error if you like.
     } finally {
       setIsLoading(false);
     }
@@ -359,7 +356,7 @@ function AddTaskModal(props) {
 
   /**
    * 1) LOAD from localStorage when the modal component mounts
-   *    (or when user opens the modal).
+   *
    */
   useEffect(() => {
     const savedData = localStorage.getItem(STORAGE_KEY);
@@ -403,9 +400,6 @@ function AddTaskModal(props) {
       setDueDate(storedDueDate || '');
     }
   }, [modal]);
-  // ↑ If you only want to load when the modal opens,
-  //   you can check `modal` state changes or do this once on mount.
-
   /**
    * 2) SAVE to localStorage whenever any relevant piece of state changes.
    */
@@ -429,7 +423,7 @@ function AddTaskModal(props) {
       startedDate,
       dueDate,
     };
-    console.log('[LocalStorage] Setting AddTaskModalFormData:', formData);
+    //console.log('[LocalStorage] Setting AddTaskModalFormData:', formData);
     localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
   }, [
     taskName,
@@ -448,7 +442,7 @@ function AddTaskModal(props) {
     intentInfo,
     endstateInfo,
     startedDate,
-    dueDate
+    dueDate,
   ]);
 
   const fontColor = darkMode ? 'text-light' : '';
