@@ -323,6 +323,7 @@ const BasicInformationTab = props => {
   const [newRole, setNewRole] = useState('');
   // const [currentUserPermissions, setCurrentUserPermissions] = useState([]);
   const [immutablePermissions, setImmutablePermissions] = useState([]);
+  const [currentUserPermissionsWithHasPermission, setCurrentUserPermissionsWithHasPermission] = useState([]);
 
   let topMargin = '6px';
   if (isUserSelf) {
@@ -376,77 +377,30 @@ const BasicInformationTab = props => {
     };
   }, []);
 
-  const { currentUserPermissions, setCurrentUserPermissions, getCurrentUserPermissions } = useContext(PermissionsContext);
+  const { 
+    currentUserPermissions, 
+    setCurrentUserPermissions, 
+    getCurrentUserPermissions, 
+    permissionLabelPermissions,
+  } = useContext(PermissionsContext);
   const dispatch = useDispatch();
 
-  // function to remove permissions that are not in the permissionLabels array
-  /* const getValidPermissions = useCallback((permissions) => {
-    const validPermissions = new Set();
+  /* useEffect(() => {
+    console.log('BasicInformationTab currentUserPermissions:', currentUserPermissions); // Log state updates
+  }, [currentUserPermissions]); */
 
-    const traversePermissions = (perms) => {
-      for (let perm of perms) {
-        if (perm.key) {
-          validPermissions.add(perm.key);
-        }
-        if (perm.subperms) {
-          traversePermissions(perm.subperms);
-        }
-      }
-    };
-
-    traversePermissions(permissions);
-    return validPermissions;
-  }, []); */
-
-  // const permissionLabelPermissions = useMemo(() => getValidPermissions(permissionLabels), [getValidPermissions, permissionLabels]);
-  // console.log('Permission Label Permissions:', Array.from(permissionLabelPermissions)); // Convert Set to Array and log
-
-  // const getCurrentUserPermissions = useCallback(async (permissions) => {
-    // console.log('getCurrentUserPermissions function invoked');
-    // const userPermissions = [];
-
-    // const traversePermissions = async (perms) => {
-      // for (let perm of perms) {
-        /* if (perm.key && dispatch(hasPermission(perm.key)) && permissionLabelPermissions.has(perm.key) && !userPermissions.includes(perm.key)) {
-          userPermissions.push(perm.key);
-        } */
-          // if (perm.key) {
-            // const hasPerm = await dispatch(hasPermission(perm.key, false, userProfile.role));
-            // console.log(`Checking permission: ${perm.key}, hasPermission: ${hasPerm}`);
-            /* if (hasPerm && permissionLabelPermissions.has(perm.key) && !userPermissions.includes(perm.key)) {
-              userPermissions.push(perm.key);
-            }
-          }
-        if (perm.subperms) {
-          await traversePermissions(perm.subperms);
-        }
-      }
-    };
-
-    await traversePermissions(permissions); */
-
-    // return userPermissions;
-
-    // making sure all roles can update a role for testing purposes
-    // Add 'putRole' and 'putUserProfile' to the permissions array if they are not already present
-    /* const updatedPermissions = [...new Set([...userPermissions, 'putRole', 'putUserProfile'])];
-    
-    await dispatch(updateUserProfileProperty(userProfile, 'permissions.frontPermissions', updatedPermissions));
-
-    return updatedPermissions;
-  }, [dispatch, permissionLabelPermissions, userProfile.role]); */
-  // const currentUserPermissions = getCurrentUserPermissions(permissionLabels)
-
-  useEffect(() => {
+  /* useEffect(() => {
     let isMounted = true;
     
     const getPermissions = async () => {
+      if (userProfile && userProfile.role) {
       // console.log('Fetching current user permissions');
       const permissions = await getCurrentUserPermissions(permissionLabels);
       if (isMounted) {
         // console.log('Fetched current user permissions:', permissions);
         setCurrentUserPermissions(permissions);
       }
+    }
     };
 
     getPermissions();
@@ -454,7 +408,11 @@ const BasicInformationTab = props => {
     return () => {
       isMounted = false;
     };
-  }, [permissionLabels, userProfile.role, getCurrentUserPermissions]);
+  }, [permissionLabels, userProfile?.role, getCurrentUserPermissions]); */
+
+  /* if (!userProfile) {
+    return <div>Loading...</div>;
+  } */
 
   // const rolePermissions = useSelector(state => state.role.rolePermissions) || [];
   // const immutablePermissions = useSelector(state => state.role.immutablePermissions) || [];
@@ -465,18 +423,18 @@ const BasicInformationTab = props => {
   }, [rolePermissions, immutablePermissions]); */
 
   useEffect(() => {
-    console.log('immutablePermissions:', immutablePermissions);
+    // console.log('immutablePermissions:', immutablePermissions);
   }, [immutablePermissions]);
 
   const fetchPresetsByRole = useCallback(async (roleName) => {
-    console.log('Fetching presets for role:', roleName);
+    // console.log('Fetching presets for role:', roleName);
     try {
       const response = await dispatch(getPresetsByRole(roleName));
       const presets = response.presets || [];
-      console.log('Fetched presets:', JSON.stringify(presets, null, 2));
+      // console.log('Fetched presets:', JSON.stringify(presets, null, 2));
       
       const rolePresets = presets.find(preset => preset.roleName === roleName)?.permissions || [];
-      console.log('Role presets for', roleName, ':', rolePresets);
+      // console.log('Role presets for', roleName, ':', rolePresets);
       
       // make sure that the permissions are in the permissionLabelPermissions array and there are no duplicates
       const uniquePermissions = new Set(rolePresets.filter(permission => permissionLabelPermissions.has(permission)));
@@ -486,7 +444,15 @@ const BasicInformationTab = props => {
 
       switch (roleName) {
         case 'Administrator':
-          additionalPermissions = ['resolveTask', 'putRole'];
+          additionalPermissions = [
+            'resolveTask', 
+            'putRole',
+            // testing these
+            'suggestTask',
+            'putReviewStatus',
+            'editTitle',
+            'highlightEligibleBios'
+          ];
           break;
         case 'Manager':
           additionalPermissions = [
@@ -542,15 +508,16 @@ const BasicInformationTab = props => {
             'changeUserStatus',  
             'putRole', 
             'putUserProfilePermissions',
-            // 'addInfringements', 
-            // 'editInfringements', 
-            // 'deleteInfringements', 
-            // 'getProjectMembers', 
-            // 'postTask', 
-            // 'updateTask', 
-            // 'suggestTask', 
-            // 'putReviewStatus', 
-            // 'putTeam',
+            // testing these
+            'addInfringements', 
+            'editInfringements', 
+            'deleteInfringements', 
+            'getProjectMembers', 
+            'postTask', 
+            'updateTask', 
+            'suggestTask', 
+            'putReviewStatus', 
+            'putTeam',
             // temporary for testing
             'getUserProfiles', 
             'putUserProfile'
@@ -563,6 +530,17 @@ const BasicInformationTab = props => {
             'postUserProfile',
             'updateBadges', 
             'deleteBadges',
+            // testing these
+            'getUserProfiles', 
+            'addInfringements', 
+            'editInfringements', 
+            'deleteInfringements', 
+            'getProjectMembers', 
+            'postTask', 
+            'updateTask', 
+            'suggestTask', 
+            'putReviewStatus', 
+            'putTeam',
             // temporary for testing
             'putUserProfile',
             'putRole',
@@ -591,10 +569,23 @@ const BasicInformationTab = props => {
           break;
         case 'Volunteer':
           additionalPermissions = [ 
-            // 'putReviewStatus',
+            // testing these
+            'editTeamCode',
+            'putReviewStatus',
             // temporary for testing
             'putUserProfile',
             'putRole',
+          ];
+          break;
+        case 'General':
+          additionalPermissions = [
+            'seeUsersInDashboard', 
+            'editHeaderMessage', 
+            'editTeamCode', 
+            'putUserProfile', 
+            'suggestTask', 
+            'putReviewStatus', 
+            'putRole'
           ];
           break;
         // Add cases for other roles as needed
@@ -628,6 +619,7 @@ const BasicInformationTab = props => {
   useEffect(() => {
     const fetchNewRolePresets = async () => {
       const validNewRolePermissions = await fetchPresetsByRole(newRole);
+      console.log('Fetched new role presets:', validNewRolePermissions);
       setNewRolePermissions(validNewRolePermissions);
     };
 
@@ -658,18 +650,14 @@ const BasicInformationTab = props => {
     // console.log('user profile:', userProfile);
     // console.log('user profile:', JSON.stringify(userProfile, null, 2));
     console.log('currentUserPermissions:', currentUserPermissions);
-    console.log('oldRole:', oldRole);
+    // console.log('oldRole:', oldRole);
     console.log('oldRolePermissions:', oldRolePermissions);
     console.log('newRolePermissions:', newRolePermissions);
     // console.log('customAddedPermissions:', customAddedPermissions);
     // console.log('customRemovedPermissions:', customRemovedPermissions);
     // console.log('newRolePermissionsToAdd:', newRolePermissionsToAdd);
     // console.log('newRolePermissionsToRemove:', newRolePermissionsToRemove);
-    console.log('userprofile permissions:', userProfile.permissions);
-    /* manager: ['getUserProfiles', 'putUserProfile', 'addInfringements', 
-      'editInfringements', 'deleteInfringements', 'getProjectMembers', 
-      'postTask', 'updateTask', 'suggestTask', 'putReviewStatus', 'putTeam', 
-      'putRole'] */
+    // console.log('userprofile permissions:', userProfile.permissions);
 
     // Compare the arrays and log the differences
     const compareArrays = (arr1, arr2) => {
@@ -707,8 +695,8 @@ const BasicInformationTab = props => {
       currentUserPermissions.some((permission) => !oldRolePermissions.includes(permission));
 
     // console.log('permissionsDifferent: ', permissionsDifferent);
-    console.log('newRolePermissionsToAdd:', newRolePermissionsToAdd);
-    console.log('newRolePermissionsToRemove:', newRolePermissionsToRemove);
+    // console.log('newRolePermissionsToAdd:', newRolePermissionsToAdd);
+    // console.log('newRolePermissionsToRemove:', newRolePermissionsToRemove);
     
     if (permissionsDifferent && (newRolePermissionsToAdd.length > 0 || newRolePermissionsToRemove.length > 0)) {
       openPermissionModal();
@@ -723,7 +711,7 @@ const BasicInformationTab = props => {
             role: chosenRole,
             permissions: {
               ...userProfile.permissions,
-              frontPermissions: newRolePermissions
+              frontPermissions: validNewRolePermissions
             }
           });
           
@@ -754,9 +742,54 @@ const BasicInformationTab = props => {
   }; */
 
   const handlePermissionsChange = (updatedPermissions) => {
-    console.log('handlePermissionsChange called with:', updatedPermissions);
+    // console.log('handlePermissionsChange called with:', updatedPermissions);
     setCurrentUserPermissions(updatedPermissions);
   };
+
+  const getPermissionsWithHasPermission = useCallback(async () => {
+    let testPerms = [];
+    for (let permission of permissionLabelPermissions) {
+      const hasPerm = await dispatch(hasPermission(permission, false, userProfile.role));
+      if (hasPerm && !testPerms.includes(permission)) {
+        testPerms.push(permission);
+      }
+    }
+    return testPerms;
+  }, [dispatch, permissionLabelPermissions, userProfile.role]);
+  
+  useEffect(() => {
+    const fetchPermissions = async () => {
+      const permissions = await getPermissionsWithHasPermission();
+      console.log('Fetched permissions:', permissions);
+      setCurrentUserPermissionsWithHasPermission(permissions);
+    };
+  
+    fetchPermissions();
+  }, [getPermissionsWithHasPermission]);
+
+  useEffect(() => {
+    console.log('currentUserPermissionsWithHasPermission:', currentUserPermissionsWithHasPermission);
+  }, [currentUserPermissionsWithHasPermission]);
+
+  useEffect(() => {
+    let isMounted = true;
+    
+    const getPermissions = async () => {
+      if (userProfile && userProfile.role) {
+        const permissions = await getPermissionsWithHasPermission();
+        if (isMounted) {
+          console.log('Fetched current user permissions:', permissions);
+          setCurrentUserPermissions(permissions);
+        }
+      }
+    };
+
+    getPermissions();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [userProfile?.role, getPermissionsWithHasPermission]);
 
   const nameComponent = (
     <>
@@ -919,7 +952,6 @@ const BasicInformationTab = props => {
           getCurrentUserPermissions={getCurrentUserPermissions}
           onPermissionsChange={handlePermissionsChange}
         />
-      </PermissionsProvider>
       {/* <PermissionList
         rolePermissions={currentUserPermissions}
         permissionsList={permissionLabels}
@@ -994,6 +1026,7 @@ const BasicInformationTab = props => {
       ) : (
         <hr />
       )}
+    </PermissionsProvider>
     </>
   );
 
