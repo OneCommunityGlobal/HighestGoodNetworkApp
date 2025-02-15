@@ -122,6 +122,7 @@ function AddTaskModal(props) {
     { value: 'Other', label: 'Other' },
   ];
   const FORMAT = 'MM/dd/yy';
+  const STORAGE_KEY = 'AddTaskModalFormData';
 
   /*
   * -------------------------------- functions -------------------------------- 
@@ -238,6 +239,7 @@ function AddTaskModal(props) {
   };
 
   const clear = () => {
+    console.log("CLEARING localStorage!");
     setTaskName('');
     setPriority('Primary');
     setResourceItems([]);
@@ -256,6 +258,8 @@ function AddTaskModal(props) {
     setCategory(defaultCategory);
     setStartDateError(false);
     setEndDateError(false);
+    localStorage.removeItem(STORAGE_KEY);
+    
   };
 
   const paste = () => {
@@ -311,10 +315,19 @@ function AddTaskModal(props) {
       intentInfo,
       endstateInfo,
     };
-    await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
-    toggle();
-    setIsLoading(false);
-    props.load();
+    try {
+      const result = await props.addNewTask(newTask, props.wbsId, props.pageLoadTime);
+      if (result === 'success') {
+        // The task was successfully added, so clear the form and close modal
+        clear();
+        toggle();
+        props.load();
+      }
+      // If 'outdated', do nothing here (keep data so user can fix concurrency).
+      // If 'error', handle the error if you like.
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   /*
@@ -332,8 +345,6 @@ function AddTaskModal(props) {
     if (error === 'outdated') {
       alert('Database changed since your page loaded , click OK to get the newest data!');
       props.load();
-    } else {
-      clear();
     }
   }, [error, tasks])
 
@@ -345,6 +356,100 @@ function AddTaskModal(props) {
       setEndDateError(false);
     }
   }, [modal]);
+
+  /**
+   * 1) LOAD from localStorage when the modal component mounts
+   *    (or when user opens the modal).
+   */
+  useEffect(() => {
+    const savedData = localStorage.getItem(STORAGE_KEY);
+    if (savedData) {
+      const {
+        taskName: storedTaskName,
+        priority: storedPriority,
+        resourceItems: storedResourceItems,
+        assigned: storedAssigned,
+        status: storedStatus,
+        hoursBest: storedHoursBest,
+        hoursMost: storedHoursMost,
+        hoursWorst: storedHoursWorst,
+        hoursEstimate: storedHoursEstimate,
+        link: storedLink,
+        links: storedLinks,
+        category: storedCategory,
+        whyInfo: storedWhyInfo,
+        intentInfo: storedIntentInfo,
+        endstateInfo: storedEndstateInfo,
+        startedDate: storedStartedDate,
+        dueDate: storedDueDate,
+      } = JSON.parse(savedData);
+      // Now use the renamed variables to set state
+      setTaskName(storedTaskName || '');
+      setPriority(storedPriority || 'Primary');
+      setResourceItems(storedResourceItems || []);
+      setAssigned(storedAssigned || false);
+      setStatus(storedStatus || 'Started');
+      setHoursBest(storedHoursBest || 0);
+      setHoursMost(storedHoursMost || 0);
+      setHoursWorst(storedHoursWorst || 0);
+      setHoursEstimate(storedHoursEstimate || 0);
+      setLink(storedLink || '');
+      setLinks(storedLinks || []);
+      setCategory(storedCategory || 'Unspecified');
+      setWhyInfo(storedWhyInfo || '');
+      setIntentInfo(storedIntentInfo || '');
+      setEndstateInfo(storedEndstateInfo || '');
+      setStartedDate(storedStartedDate || '');
+      setDueDate(storedDueDate || '');
+    }
+  }, [modal]);
+  // ↑ If you only want to load when the modal opens,
+  //   you can check `modal` state changes or do this once on mount.
+
+  /**
+   * 2) SAVE to localStorage whenever any relevant piece of state changes.
+   */
+  useEffect(() => {
+    const formData = {
+      taskName,
+      priority,
+      resourceItems,
+      assigned,
+      status,
+      hoursBest,
+      hoursMost,
+      hoursWorst,
+      hoursEstimate,
+      link,
+      links,
+      category,
+      whyInfo,
+      intentInfo,
+      endstateInfo,
+      startedDate,
+      dueDate,
+    };
+    console.log('[LocalStorage] Setting AddTaskModalFormData:', formData);
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(formData));
+  }, [
+    taskName,
+    priority,
+    resourceItems,
+    assigned,
+    status,
+    hoursBest,
+    hoursMost,
+    hoursWorst,
+    hoursEstimate,
+    link,
+    links,
+    category,
+    whyInfo,
+    intentInfo,
+    endstateInfo,
+    startedDate,
+    dueDate
+  ]);
 
   const fontColor = darkMode ? 'text-light' : '';
 

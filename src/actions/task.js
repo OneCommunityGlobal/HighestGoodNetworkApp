@@ -112,6 +112,7 @@ export const addNewTask = (newTask, wbsId, pageLoadTime) => async (dispatch, get
     const wbs = await axios.get(ENDPOINTS.TASK_WBS(wbsId));
     if (Date.parse(wbs.data.modifiedDatetime) > pageLoadTime) {
       dispatch(setAddTaskError('outdated'));
+      return 'outdated'; // <-- Return here if concurrency conflict
     } else {
       const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
       dispatch(postNewTask(res.data, status));
@@ -120,11 +121,13 @@ export const addNewTask = (newTask, wbsId, pageLoadTime) => async (dispatch, get
       task = res.data;
       const userIds = task.resources.map(resource => resource.userID);
       await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
+      newTask._id = _id;
+      return 'success'; // <-- Return here if successful
     }
   } catch (error) {
     status = 400;
+    return 'error'; // <-- Return here if an exception occurs
   }
-  newTask._id = _id;
 };
 
 export const updateTask = (taskId, updatedTask, hasPermission, prevTask) => async (dispatch, getState) => {
