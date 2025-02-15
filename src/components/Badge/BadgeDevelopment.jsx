@@ -9,7 +9,6 @@ import { matches } from 'lodash';
 
 function BadgeDevelopment(props) {
   const { darkMode, allBadgeData = [] } = props; 
-
   const [isCreateNewBadgePopupOpen, setCreateNewBadgePopupOpen] = useState(false);
   const [isAddFiltersOpen, setAddFiltersOpen] = useState(false);
   const [searchType, setSearchType] = useState('');
@@ -28,7 +27,6 @@ function BadgeDevelopment(props) {
     const matchesType = searchType === '' || badge.type.replace(/\s+/g, '').toLowerCase().includes(searchType.replace(/\s+/g, '').toLowerCase());
     const matchesRank = badge.ranking <= rankFilter;
     const matchesChoosenRank = chooseRankFilterNumber === null || badge.ranking === chooseRankFilterNumber;
-
     const matchesName = searchName === '' || badge.badgeName.replace(/\s+/g, '').toLowerCase().includes(searchName.replace(/\s+/g, '').toLowerCase());
 
     return matchesType && matchesRank && matchesName && matchesChoosenRank;
@@ -99,7 +97,6 @@ function BadgeDevelopment(props) {
       <Modal
         isOpen={isCreateNewBadgePopupOpen}
         toggle={toggle}
-        backdrop="static"
         className={darkMode ? 'text-light dark-mode' : ''}
       >
         <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={toggle}>
@@ -111,7 +108,6 @@ function BadgeDevelopment(props) {
       </Modal>
       <br/>
       {filteredBadgeData.length === 0 ? (
-      
         <p> No badges match the current filters.</p>
       ) : (
         <BadgeDevelopmentTable allBadgeData={filteredBadgeData} />

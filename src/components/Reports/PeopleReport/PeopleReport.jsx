@@ -28,6 +28,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
+import { Spinner, Alert } from 'reactstrap';
 import { updateRehireableStatus } from '../../../actions/userManagement';
 
 class PeopleReport extends Component {
@@ -511,6 +512,13 @@ class PeopleReport extends Component {
       }
     };
 
+    const activeTasks = userTask.reduce((accumulator, item) => {
+      const incompleteTasks = item.resources.filter(
+        task => task.completedTask === false && task.userID === userProfile._id,
+      );
+      return accumulator.concat(incompleteTasks);
+    }, []);
+
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
@@ -558,16 +566,27 @@ class PeopleReport extends Component {
               <p>Total Hours Logged</p>
             </ReportPage.ReportBlock>
           </div>
-
+          
           <PeopleTasksPieChart darkMode={darkMode} />
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
-              <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
-                <h4>Tasks contributed</h4>
-              </div>
-
-              <PeopleDataTable />
-
+              {this.state.isLoading ? (
+                <p
+                  className={`${darkMode ? 'text-light' : ''}
+                   d-flex align-items-center flex-row justify-content-center`}
+                >
+                  Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
+                </p>
+              ) : activeTasks.length > 0 ? (
+                <>
+                  <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>
+                    <h4>Tasks contributed</h4>
+                  </div>
+                  <PeopleDataTable />
+                </>
+              ) : (
+                <Alert color="danger" style={{ margin: '0 35% ' }}>You have no tasks.</Alert>
+              )}
               <div className="Infringementcontainer">
                 <div className="InfringementcontainerInner">
                   <UserProject userProjects={userProjects} />

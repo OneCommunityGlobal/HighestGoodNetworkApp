@@ -28,19 +28,27 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
   useEffect(() => {
     try {
       if (badges && badges.length) {
-        const sortBadges = [...badges].sort((a, b) => {
-          if (a?.badge?.ranking === 0) return 1;
-          if (b?.badge?.ranking === 0) return -1;
-          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
-          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
-          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
-          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
-          return 0;
-        });
+        const sortBadges = badges
+          .filter(badge => badge && badge.badge) // Filter out null or undefined badges
+          .sort((a, b) => {
+            const rankingA = a.badge?.ranking ?? Infinity;
+            const rankingB = b.badge?.ranking ?? Infinity;
+            const nameA = a.badge?.badgeName ?? '';
+            const nameB = b.badge?.badgeName ?? '';
+  
+            if (rankingA === 0) return 1;
+            if (rankingB === 0) return -1;
+            if (rankingA > rankingB) return 1;
+            if (rankingA < rankingB) return -1;
+            return nameA.localeCompare(nameB);
+          });
         setSortedBadges(sortBadges);
+      } else {
+        setSortedBadges([]);
       }
     } catch (error) {
-      console.log(error);
+      console.error("Error sorting badges:", error);
+      setSortedBadges([]);
     }
   }, [badges]);
 
