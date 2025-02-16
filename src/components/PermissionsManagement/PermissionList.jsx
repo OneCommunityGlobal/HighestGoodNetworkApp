@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+// import { useContext, useEffect } from 'react';
 import { connect } from 'react-redux';
 // eslint-disable-next-line import/no-cycle
 import PermissionListItem from './PermissionListItem';
@@ -8,7 +8,7 @@ import { PermissionsContext, PermissionsProvider } from './PermissionsContext';
 function PermissionList(props) {
   const {
     // the modifiable permissions for this role/user
-    // rolePermissions = [],
+    rolePermissions = [],
     // all permissions to be listed
     permissionsList = permissionLabel,
     // any additional permissions that cannot be added
@@ -20,9 +20,9 @@ function PermissionList(props) {
     // used for indentation in subcategories/sublists
     depth = 0,
     // function to update the permission list in parent component
-    // setPermissions = () => {},
+    setPermissions = () => {},
     // runs when permission is added or removed
-    // onChange = () => {},
+    onChange = () => {},
     userProfile,
   } = props;
 
@@ -30,14 +30,19 @@ function PermissionList(props) {
   // console.log('PermissionList permissionsList:', permissionsList);
   // console.log('PermissionList immutablePermissions:', immutablePermissions);
 
-  const { currentUserPermissions, handlePermissionsChange } = useContext(PermissionsContext);
+  // const { currentUserPermissions, handlePermissionsChange } = useContext(PermissionsContext);
 
-  const handlePermissionToggle = updatedPermissions => {
+  /* const handlePermissionToggle = updatedPermissions => {
     console.log('handlePermissionToggle called with:', updatedPermissions);
     // setPermissions(updatedPermissions);
     // onChange(updatedPermissions);
     handlePermissionsChange(updatedPermissions);
-  };
+  }; */
+
+  /* useEffect(() => {
+    console.log('PermissionList userProfile:', userProfile);
+    console.log('PermissionList currentUserPermissions:', currentUserPermissions);
+  }, [userProfile, currentUserPermissions]); */
 
   return (
     <PermissionsProvider userProfile={userProfile}>
@@ -45,8 +50,8 @@ function PermissionList(props) {
         {permissionsList.map(permission => (
           <PermissionListItem
             key={permission.label}
-            /* rolePermissions={rolePermissions} */
-            rolePermissions={currentUserPermissions}
+            rolePermissions={rolePermissions}
+            /* rolePermissions={currentUserPermissions} */
             immutablePermissions={immutablePermissions}
             label={permission.label}
             permission={permission.key}
@@ -57,8 +62,9 @@ function PermissionList(props) {
             // eslint-disable-next-line react/destructuring-assignment
             darkMode={props.darkMode}
             // functions
-            setPermissions={handlePermissionToggle}
-            onChange={handlePermissionToggle}
+            setPermissions={setPermissions}
+            onChange={onChange}
+            userProfile={userProfile}
           />
         ))}
       </ul>
