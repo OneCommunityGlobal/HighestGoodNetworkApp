@@ -448,10 +448,10 @@ const BasicInformationTab = props => {
             'resolveTask', 
             'putRole',
             // testing these
-            'suggestTask',
-            'putReviewStatus',
+            // 'suggestTask',
+            // 'putReviewStatus',
             'editTitle',
-            'highlightEligibleBios'
+            // 'highlightEligibleBios'
           ];
           break;
         case 'Manager':
@@ -475,8 +475,8 @@ const BasicInformationTab = props => {
             'deleteInfringements', 
             'getProjectMembers',
             'updateTask',
-            'postTask',
-            'putTeam',
+            // 'postTask',
+            // 'putTeam',
             // temporary for testing
             'putRole'
           ];
@@ -508,16 +508,16 @@ const BasicInformationTab = props => {
             'changeUserStatus',  
             'putRole', 
             'putUserProfilePermissions',
-            // testing these
-            'addInfringements', 
-            'editInfringements', 
-            'deleteInfringements', 
-            'getProjectMembers', 
-            'postTask', 
-            'updateTask', 
-            'suggestTask', 
-            'putReviewStatus', 
-            'putTeam',
+            // the following nine should only be needed if hasPermission viewingUser is false
+            // 'addInfringements', 
+            // 'editInfringements', 
+            // 'deleteInfringements', 
+            // 'getProjectMembers', 
+            // 'postTask', 
+            // 'updateTask', 
+            // 'suggestTask', 
+            // 'putReviewStatus', 
+            // 'putTeam',
             // temporary for testing
             'getUserProfiles', 
             'putUserProfile'
@@ -530,17 +530,17 @@ const BasicInformationTab = props => {
             'postUserProfile',
             'updateBadges', 
             'deleteBadges',
-            // testing these
-            'getUserProfiles', 
-            'addInfringements', 
-            'editInfringements', 
-            'deleteInfringements', 
-            'getProjectMembers', 
-            'postTask', 
-            'updateTask', 
-            'suggestTask', 
-            'putReviewStatus', 
-            'putTeam',
+            // the following 10 should only be needed if hasPermission viewingUser is false
+            // 'getUserProfiles', 
+            // 'addInfringements', 
+            // 'editInfringements', 
+            // 'deleteInfringements', 
+            // 'getProjectMembers', 
+            // 'postTask', 
+            // 'updateTask', 
+            // 'suggestTask', 
+            // 'putReviewStatus', 
+            // 'putTeam',
             // temporary for testing
             'putUserProfile',
             'putRole',
@@ -571,7 +571,7 @@ const BasicInformationTab = props => {
           additionalPermissions = [ 
             // testing these
             'editTeamCode',
-            'putReviewStatus',
+            // 'putReviewStatus',
             // temporary for testing
             'putUserProfile',
             'putRole',
@@ -581,10 +581,11 @@ const BasicInformationTab = props => {
           additionalPermissions = [
             'seeUsersInDashboard', 
             'editHeaderMessage', 
-            'editTeamCode', 
             'putUserProfile', 
-            'suggestTask', 
-            'putReviewStatus', 
+            // the following 3 should only be needed if hasPermission viewingUser is false
+            // 'editTeamCode', 
+            // 'suggestTask', 
+            // 'putReviewStatus', 
             'putRole'
           ];
           break;
@@ -749,12 +750,15 @@ const BasicInformationTab = props => {
   const getPermissionsWithHasPermission = useCallback(async () => {
     let testPerms = [];
     for (let permission of permissionLabelPermissions) {
-      const hasPerm = await dispatch(hasPermission(permission, false, userProfile.role));
+      const hasPerm = await dispatch(hasPermission(permission, true, userProfile.role));
       if (hasPerm && !testPerms.includes(permission)) {
         testPerms.push(permission);
       }
     }
-    return testPerms;
+    // return testPerms;
+    // Add 'putRole' and 'putUserProfile' permissions for testing purposes
+    const updatedPermissions = [...new Set([...testPerms, 'putRole', 'putUserProfile'])];
+    return updatedPermissions;
   }, [dispatch, permissionLabelPermissions, userProfile.role]);
   
   useEffect(() => {
