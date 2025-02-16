@@ -687,7 +687,7 @@ const BasicInformationTab = props => {
             &nbsp;
             {canEdit && (
               <PauseAndResumeButton
-                setUserProfile={setUserProfile}
+                setUserProfile={setUserProfile} 
                 loadUserProfile={loadUserProfile}
                 isBigBtn={true}
                 userProfile={userProfile}
