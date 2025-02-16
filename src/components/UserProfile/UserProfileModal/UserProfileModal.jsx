@@ -70,8 +70,9 @@ const UserProfileModal = props => {
 
   const [summary, setSummary] = useState(blueSquare[0]?.description || '');
 
-  const [addButton, setAddButton] = useState(true);
-  const [summaryFieldView, setSummaryFieldView] = useState(true);
+
+  const [addButton, setAddButton] = useState(false); 
+  const [summaryFieldView, setSummaryFieldView] = useState(false); 
 
   const [personalLinks, dispatchPersonalLinks] = useReducer(
     (personalLinks, { type, value, passedIndex }) => {
@@ -147,15 +148,14 @@ const UserProfileModal = props => {
     }
   };
 
-  function checkFields(field1, field2) {
-    // console.log('f1:', field1, ' f2:', field2);
-
-    if (field1 != null && field2 != null) {
-      setAddButton(false);
-    } else {
-      setAddButton(true);
+    function checkFields(field1, field2) { 
+      if (field1.trim() && field2.trim()) {
+        setAddButton(false);
+      } else {
+        setAddButton(true);
+      }
     }
-  }
+    
 
   const adjustTextareaHeight = (textarea) => {
     textarea.style.height = 'auto';
