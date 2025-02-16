@@ -30,6 +30,7 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import EventPopularity from './components/EventPopularity/EventPopularity';
 
 // LB Dashboard
 import LBRegister from './components/LBDashboard/Auth/Register';
@@ -122,6 +123,7 @@ export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
     {/* If it's possible incorporate this route with others without the header, please do */}
+    <Route path="/EventPopularity" component={EventPopularity} />
     <Route
       path="/lbdashboard/register"
       render={() => (
