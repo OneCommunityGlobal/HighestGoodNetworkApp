@@ -29,7 +29,7 @@ function AddNewTitleModal({
   title,
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
-  const teamCodes = useSelector(state => state.teamCodes.teamCodes || []);
+  const teamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
   const [titleData, setTitleData] = useState(() => {
     if (editMode && Object.keys(title).length !== 0) {
@@ -109,7 +109,7 @@ function AddNewTitleModal({
   const [selectedTeamCode, onSelectTeamCode] = useState(undefined);
   const [isValidProject, onValidation] = useState(false);
   const [searchText, setSearchText] = useState(''); // For addTeamAutoComplete
-  
+
   const selectProject = project => {
     onSelectProject(project);
     setTitleData({
@@ -306,11 +306,12 @@ function AddNewTitleModal({
               }}
               placeholder="Enter a valid URL"
             />
-            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) && titleData.mediaFolder !== '' && (
-              <small style={{ color: 'red', marginTop: '5px', display: 'block' }}>
-                Please enter a valid URL that starts with http:// or https://
-              </small>
-            )}
+            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) &&
+              titleData.mediaFolder !== '' && (
+                <small style={{ color: 'red', marginTop: '5px', display: 'block' }}>
+                  Please enter a valid URL that starts with http:// or https://
+                </small>
+              )}
             <Label className={fontColor}>
               Team Code<span className="qsm-modal-required">*</span>:
             </Label>
