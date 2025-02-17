@@ -89,6 +89,11 @@ export class WeeklySummariesReport extends Component {
       replaceCodeError: null,
       replaceCodeLoading: false,
       // weeklyRecipientAuthPass: '',
+      selectedSpecialColors: {
+        purple: false,
+        green: false,
+        navy: false,
+      },
     };
   }
 
@@ -395,6 +400,7 @@ export class WeeklySummariesReport extends Component {
       selectedBioStatus,
       tableData,
       COLORS,
+      selectedSpecialColors,
     } = this.state;
     const chartData = [];
     let temptotal = 0;
@@ -402,6 +408,10 @@ export class WeeklySummariesReport extends Component {
 
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
+
+    const activeFilterColors = Object.entries(selectedSpecialColors)
+      .filter(([, isSelected]) => isSelected)
+      .map(([color]) => color);
 
     const temp = summaries.filter(summary => {
       const { activeTab } = this.state;
@@ -418,10 +428,14 @@ export class WeeklySummariesReport extends Component {
           hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
+      // const matchesSelectedUsers = selectedUserIds.size === 0 || selectedUserIds.has(summary._id);
+      const matchesSpecialColor =
+        activeFilterColors.length === 0 || activeFilterColors.includes(summary.filterColor);
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
+        matchesSpecialColor &&
         isOverHours &&
         isBio
       );
@@ -536,6 +550,34 @@ export class WeeklySummariesReport extends Component {
         this.filterWeeklySummaries();
       },
     );
+  };
+
+  handleSpecialColorToggleChange = event => {
+    const { id, checked } = event.target;
+    const color = id.split('-')[0];
+
+    this.setState(
+      prevState => ({
+        selectedSpecialColors: {
+          ...prevState.selectedSpecialColors,
+          [color]: checked,
+        },
+      }),
+      this.filterWeeklySummaries,
+    );
+  };
+
+  handleSpecialColorDotClick = (userId, color) => {
+    this.setState(prevState => {
+      const updatedSummaries = prevState.summaries.map(summary => {
+        // Update the summary if the userId matches (using summary._id)
+        if (summary._id === userId) {
+          return { ...summary, filterColor: color };
+        }
+        return summary;
+      });
+      return { summaries: updatedSummaries };
+    }, this.filterWeeklySummaries);
   };
 
   handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
@@ -852,6 +894,47 @@ export class WeeklySummariesReport extends Component {
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
             <div className="filter-container">
+              {hasPermissionToFilter && (
+                <div className="filter-style margin-right">
+                  <span>Filter by Special</span>
+                  <div className="switch-toggle-control">
+                    <input
+                      type="checkbox"
+                      className="switch-toggle"
+                      id="purple-toggle"
+                      onChange={this.handleSpecialColorToggleChange}
+                    />
+                    <label className="switch-toggle-label" htmlFor="purple-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
+                    </label>
+                  </div>
+                  <div className="switch-toggle-control">
+                    <input
+                      type="checkbox"
+                      className="switch-toggle"
+                      id="green-toggle"
+                      onChange={this.handleSpecialColorToggleChange}
+                    />
+                    <label className="switch-toggle-label" htmlFor="green-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
+                    </label>
+                  </div>
+                  <div className="switch-toggle-control">
+                    <input
+                      type="checkbox"
+                      className="switch-toggle"
+                      id="navy-toggle"
+                      onChange={this.handleSpecialColorToggleChange}
+                    />
+                    <label className="switch-toggle-label" htmlFor="navy-toggle">
+                      <span className="switch-toggle-inner" />
+                      <span className="switch-toggle-switch" />
+                    </label>
+                  </div>
+                </div>
+              )}
               {(hasPermissionToFilter || this.canSeeBioHighlight) && (
                 <div className="filter-style margin-right">
                   <span>Filter by Bio Status</span>
@@ -1003,6 +1086,7 @@ export class WeeklySummariesReport extends Component {
                         canSeeBioHighlight={this.canSeeBioHighlight}
                         darkMode={darkMode}
                         handleTeamCodeChange={this.handleTeamCodeChange}
+                        handleSpecialColorDotClick={this.handleSpecialColorDotClick}
                       />
                     </Col>
                   </Row>

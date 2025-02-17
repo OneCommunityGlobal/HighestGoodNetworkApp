@@ -19,10 +19,10 @@ import {
   DropdownItem,
   UncontrolledTooltip
 } from 'reactstrap';
+import { useSelector } from 'react-redux';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryViz.css';
-import { useSelector } from 'react-redux';
 
 function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -33,21 +33,27 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
   useEffect(() => {
     try {
       if (badges && badges.length) {
-        const sortBadges = [...badges].sort((a, b) => {
-          if (a?.badge?.ranking === 0) return 1;
-          if (b?.badge?.ranking === 0) return -1;
-          if (a?.badge?.ranking > b?.badge?.ranking) return 1;
-          if (a?.badge?.ranking < b?.badge?.ranking) return -1;
-          if (a?.badge?.badgeName > b?.badge?.badgeName) return 1;
-          if (a?.badge?.badgeName < b?.badge?.badgeName) return -1;
-          return 0;
-        });
+        const sortBadges = badges
+          .filter(badge => badge && badge.badge) // Filter out null or undefined badges
+          .sort((a, b) => {
+            const rankingA = a.badge?.ranking ?? Infinity;
+            const rankingB = b.badge?.ranking ?? Infinity;
+            const nameA = a.badge?.badgeName ?? '';
+            const nameB = b.badge?.badgeName ?? '';
+  
+            if (rankingA === 0) return 1;
+            if (rankingB === 0) return -1;
+            if (rankingA > rankingB) return 1;
+            if (rankingA < rankingB) return -1;
+            return nameA.localeCompare(nameB);
+          });
         setSortedBadges(sortBadges);
+      } else {
+        setSortedBadges([]);
       }
     } catch (error) {
-       console.log(error);
+      setSortedBadges([]);
     }
-   
   }, [badges]);
 
   const toggle = () => setIsOpen(prev => !prev);
@@ -81,15 +87,16 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                   <tbody>
                     {badges && badges.length>0 ? (
                       sortedBadges &&
-                      sortedBadges.map(value => value &&(
-                        <tr key={value.badge._id}>
+                      sortedBadges.map(value => value && value.badge && (
+                        <tr key={value.badge._id || value._id}>
                           <td className="badge_image_sm">
-                            {' '}
-                            <img
-                              src={value.badge.imageUrl}
-                              id={`popover_${value.badge._id}`}
-                              alt="badge"
-                            />
+                            {value.badge.imageUrl && (
+                              <img
+                                src={value.badge.imageUrl}
+                                id={`popover_${value.badge._id || value._id}`}
+                                alt="badge"
+                              />
+                            )}
                           </td>
                           <UncontrolledPopover
                             trigger="hover"
@@ -119,8 +126,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                               : value.lastModified.toLocaleString().substring(0, 10)}
                           </td>
                           <td style={{ display: 'flex', alignItems: 'center' }}>
-                            <>
-                              {' '}
+                            {' '}
                               <UncontrolledDropdown className="me-2" direction="down">
                                 <DropdownToggle caret color="primary" style={darkMode ? boxStyleDark : boxStyle}>
                                   Dates
@@ -149,8 +155,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                                 </UncontrolledTooltip>
                               </>)
                               : null
-                              } 
-                            </>
+                              }
                           </td>
                           <td>{value.count}</td>
                         </tr>
@@ -181,16 +186,18 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                   <tbody>
                     {badges && badges.length ? (
                       sortedBadges &&
-                      sortedBadges.map(value => value &&(
-                        <tr key={value._id}>
+                      sortedBadges.map(value => value && value.badge && (
+                        <tr key={value.badge._id || value._id}>
                           <td className="badge_image_sm">
-                            {' '}
-                            <img
-                              src={value?.badge.imageUrl}
-                              id={`popover_${value._id}`}
-                              alt="badge"
-                            />
+                            {value.badge.imageUrl && (
+                              <img
+                                src={value.badge.imageUrl}
+                                id={`popover_${value.badge._id || value._id}`}
+                                alt="badge"
+                              />
+                            )}
                           </td>
+                          {/* ... rest of the code */}
                           <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
                             <Card className="text-center">
                               <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
