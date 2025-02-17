@@ -13,6 +13,7 @@ export const PieChart = ({
   pieChartId,
   dataLegendHeader,
   darkMode,
+  project,
 }) => {
   const [totalHours, setTotalHours] = useState(0);
   const [colors] = useState(generateArrayOfUniqColors(Object.keys(data).length));
@@ -197,7 +198,7 @@ export const PieChart = ({
   }, [data, togglePercentage, selectedTasks]);
 
   return (
-    <div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
+  !project?<div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
       <div className="pie-chart-legend-container">
         <div className="pie-chart-legend-header">
@@ -208,14 +209,35 @@ export const PieChart = ({
           <div key={key} className="pie-chart-legend-item">
             <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
             <div className="data-legend-info">
-              {dataLegend[key].map((legendPart, index) => (
+                  <div
+                    className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`}>
+                    {dataLegend[key]}
+                  </div>             
+            </div>
+          </div>
+        ))}
+        <div className="data-total-value">Total Hours : {totalHours.toFixed(2)}</div>
+      </div>
+    </div>:<div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
+      <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
+      <div className="pie-chart-legend-container">
+        <div className="pie-chart-legend-header">
+          <div>Name</div>
+          <div>{dataLegendHeader}</div>
+        </div>
+        {Object.keys(dataLegend).map(key => (
+          <div key={key} className="pie-chart-legend-item">
+            <div className="data-legend-color" style={{ backgroundColor: color(key) }} />
+            <div className="data-legend-info">
+               {dataLegend[key].map((legendPart, index) => (
                 <div
                   className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`}
                   key={index}
                 >
                   {legendPart}
-                </div>
-              ))}
+                </div> 
+               )
+              )}  
             </div>
           </div>
         ))}

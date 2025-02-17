@@ -29,7 +29,30 @@ const getRounded = number => {
   return Math.round(number * 100) / 100;
 };
 
-export const peopleTasksPieChartViewData = ({ userTask, allProjects }) => {
+export const peopleTasksPieChartViewData = ({ userTask, allProjects, userProjects,timeEntries }) => {
+  
+  var hoursLoggedToProjectsOnly = {};
+  userProjects.projects.map(project => {
+    timeEntries.period.map(entry=>{
+      if(project.projectId === entry.projectId && entry.wbsId===null){
+        hoursLoggedToProjectsOnly[project.projectId] = hoursLoggedToProjectsOnly[project.projectId] ? hoursLoggedToProjectsOnly[project.projectId] + entry.hours+(entry.minutes/60) : entry.hours+(entry.minutes/60);
+      }
+    })
+  })
+  
+
+  const resultArray = Object.keys(hoursLoggedToProjectsOnly).map(projectId => {
+    const project = userProjects.projects.find(proj => proj.projectId === projectId);
+    return {
+      projectId,
+      projectName: project ? project.projectName : "Unknown", // Use "Unknown" if no matching project is found
+      totalTime: hoursLoggedToProjectsOnly[projectId]
+    };
+  });
+
+
+  
+  hoursLoggedToProjectsOnly = resultArray;
   const tasksWithLoggedHoursById = {};
   const displayedTasksWithLoggedHoursById = {};
   const projectsWithLoggedHoursById = {};
@@ -98,6 +121,7 @@ if(tasksWithLoggedHours.length > displayedTasksCount){
 
 
   return {
+    hoursLoggedToProjectsOnly,
     tasksWithLoggedHoursById,
     projectsWithLoggedHoursById,
     tasksLegend,
