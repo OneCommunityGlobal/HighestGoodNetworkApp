@@ -1,0 +1,295 @@
+.logo {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo img {
+  max-width: 20%;
+  height: auto;
+  min-width: 250px;
+}
+
+.outside-container {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #e0e0e0;
+  padding: 20px;
+}
+  
+  /* Container */
+.inside-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 20px;
+  background-color: #fff;
+}
+
+/* Navbar */
+.lb-navbar {
+  margin: 0 auto;
+  max-width: 1200px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 45px 20px;
+  background-color:#9dd425;
+  border-bottom: 1px solid #e0e0e0;
+  width: 100%;
+  height: 60px;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.village-filter {
+  padding: 8px 12px;
+  border: 1px solid #cccccc;
+  border-radius: 4px;
+  font-size: 14px;
+  width: 350px;
+}
+
+.go-button {
+  padding: 5px 10px;
+  background: #cccccc;
+  color: white;
+  border: 1px solid black;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.nav-right {
+  display: flex;
+  align-items: center;
+  gap: 25px;
+}
+
+.welcome-text {
+  color: #333333;
+  font-weight: 500;
+}
+
+.nav-icon {
+  font-size: 1.4rem;
+  color: #666666;
+  cursor: pointer;
+}
+
+.user-icon {
+  font-size: 1.6rem;
+}
+
+.notification-badge {
+  position: relative;
+}
+
+.badge {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #dc3545;
+  color: white;
+  border-radius: 100%;
+  padding: 3px 8px;
+  font-size: 0.8rem;
+}
+
+/* Content */
+.content-header {
+  position: relative;
+  width: 100%;
+  padding: 10px 20px;
+  margin-bottom: 10px;
+}
+
+/* Property Map - Positioned to Top Right */
+.property-map {
+  position: absolute;
+  top: 0;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.map-icon {
+  color: red;
+  font-size: 16px;
+}
+
+.map-text {
+  color: blue;
+  text-decoration: underline;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* Main Content Layout */
+.header-content {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 25px;
+  position: relative;
+}
+
+/* Filter Section on Left */
+.filter-section {
+  position: absolute;
+  left: 20px;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  gap: 5px;
+}
+
+.filter-icon {
+  font-size: 16px;
+}
+
+.filter-text {
+  font-weight: bold;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+/* Center Tabs Alignment */
+.tabs-section {
+  display: flex;
+  gap: 15px;
+  justify-content: center;
+  align-items: center;
+}
+
+.tab {
+  font-weight: bold;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.active-tab {
+  text-decoration: underline;
+  color: black;
+}
+
+.inactive-tab {
+  color: gray;
+}
+
+/* Properties */
+.properties-container.grid-view {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+}
+
+.properties-container.list-view {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.property-card {
+  background: #e0e0e0;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  overflow: hidden;
+}
+
+.grid-view .property-card {
+  padding: 15px;
+}
+
+.list-view .property-card {
+  display: flex;
+  padding: 15px;
+  gap: 20px;
+}
+
+.property-image {
+  background: #fff;
+  height: 200px;
+  border-radius: 4px;
+}
+
+.list-view .property-image {
+  width: 250px;
+  height: 150px;
+}
+
+.property-details {
+  padding: 10px 0;
+}
+
+.property-details h3 {
+  color: #2c4f3c;
+  margin-bottom: 5px;
+  font-size: 1.2rem;
+}
+
+.property-details p {
+  color: #666666;
+  margin-bottom: 10px;
+}
+
+.price {
+  color: #2c4f3c;
+  font-weight: bold;
+  font-size: 1.1rem;
+}
+
+.show-listings, .show-bidding {
+  display: inline-block;
+}
+
+.hide {
+  display: none !important;
+}
+
+/* View Toggle */
+.view-toggle {
+  position: absolute;
+  right: 20px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.view-btn {
+  padding: 5px 10px;
+  border: 1px solid #2c4f3c;
+  background: white;
+  color: #2c4f3c;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.view-btn.active {
+  background: #2c4f3c;
+  color: white;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .properties-container.grid-view {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 480px) {
+  .properties-container.grid-view {
+    grid-template-columns: 1fr;
+  }
+  
+  .list-view .property-image {
+    width: 100%;
+    height: 200px;
+  }
+  
+  .filters-tabs {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

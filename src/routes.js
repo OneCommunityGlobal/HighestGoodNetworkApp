@@ -47,6 +47,7 @@ import Collaboration from './components/Collaboration';
 // LB Dashboard
 import LBRegister from './components/LBDashboard/Auth/Register';
 import LBLogin from './components/LBDashboard/Auth/Login';
+import LBHome from './components/LBDashboard/Home/Home2';
 import ListOverview from './components/LBDashboard/ListOverview/ListOverview';
 
 // BM Dashboard
@@ -147,6 +148,17 @@ export default (
         </>
       )}
     />
+
+    <Route
+      path="/lbdashboard/listingshome"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <LBHome />
+        </>
+      )}
+    />
+    
     <Route
       path="/lbdashboard/login"
       render={() => (
