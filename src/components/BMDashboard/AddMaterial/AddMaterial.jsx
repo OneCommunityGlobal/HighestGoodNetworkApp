@@ -535,7 +535,7 @@ export default function AddMaterialForm() {
         className="navigation-modal"
       >
         <ModalHeader toggle={() => setShowNavigationModal(false)}>
-          Material Added Successfully - What's Next?
+          <p>{`Material Added Successfully - What's Next?`}</p>
         </ModalHeader>
         <ModalBody>
           <div className="navigation-options">
