@@ -251,24 +251,24 @@ function UserProfile(props) {
   };
 
   const getTimeOffStatus = personId => {
-    if (!allRequests[personId]) {
-      return false;
-    }
+    // if (!allRequests[personId]) {
+    //   return false;
+    // }
 
-    const sortedRequests = allRequests[personId].sort((a, b) =>
-      moment(a.startingDate).diff(moment(b.startingDate)),
-    );
+    // const sortedRequests = allRequests[personId].sort((a, b) =>
+    //   moment(a.startingDate).diff(moment(b.startingDate)),
+    // );
 
-    const mostRecentRequest =
-      sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
-      sortedRequests[0];
+    // const mostRecentRequest =
+    //   sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
+    //   sortedRequests[0];
 
-    const startOfWeek = moment().startOf('week');
-    const endOfWeek = moment().endOf('week');
+    // const startOfWeek = moment().startOf('week');
+    // const endOfWeek = moment().endOf('week');
 
-    const isCurrentlyOff =
-      moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
-      moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
+    // const isCurrentlyOff =
+    //   moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
+    //   moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
 
     // const isCurrentlyOff = moment().isBetween(
     //   moment(mostRecentRequest.startingDate),
@@ -284,6 +284,29 @@ function UserProfile(props) {
     //   moment(moment().startOf('week')),
     //   'weeks',
     // );
+
+    if (!allRequests[personId]) {
+      console.log('all requests was false');
+      return false;
+    }
+    let hasTimeOff = false;
+    // const hasTimeOff = true;
+    const sortedRequests = allRequests[personId].sort((a, b) =>
+      moment(a.startingDate).diff(moment(b.startingDate)),
+    );
+
+    const mostRecentRequest =
+      sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
+      sortedRequests[0];
+    console.log('most rcent request', mostRecentRequest);
+
+    const startOfWeek = moment().startOf('week');
+    const endOfWeek = moment().endOf('week');
+
+    const isCurrentlyOff =
+      moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
+      moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
+
     console.log('currentoff', isCurrentlyOff);
     return isCurrentlyOff;
     // weeks before time off
@@ -327,11 +350,10 @@ function UserProfile(props) {
           if (getTimeOffStatus(member._id)) {
             return `${member.firstName} ${member.lastName} off for the week`;
           } else {
+            // console.log('memberid', member._id);
             return `${member.firstName} ${member.lastName}`;
           }
         });
-
-      console.log('stronmg', activeMembers);
 
       const memberSubmittedString =
         memberSubmitted.length !== 0
@@ -384,6 +406,7 @@ function UserProfile(props) {
       setIsRehireable(newUserProfile.isRehireable); // Update isRehireable based on fetched data
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
+      // for future get all memebrs from the users teams including multiple teams as well
       const teamId = newUserProfile?.teams[0]?._id;
       await loadSummaryIntroDetails(teamId, response.data);
 
@@ -1030,8 +1053,8 @@ function UserProfile(props) {
                 userProfile?.profilePic == null ||
                 userProfile?.profilePic == '') &&
               userProfile?.suggestedProfilePics !== undefined &&
-                userProfile?.suggestedProfilePics !== null &&
-                userProfile?.suggestedProfilePics.length !== 0 ? (
+              userProfile?.suggestedProfilePics !== null &&
+              userProfile?.suggestedProfilePics.length !== 0 ? (
                 <Button color="primary" onClick={toggleModal}>
                   Suggested Profile Image
                 </Button>
