@@ -67,7 +67,7 @@ class ReportsPage extends Component {
     this.setAll = this.setAll.bind(this);
     this.setTeamMemberList = this.setTeamMemberList.bind(this);
     this.setAddTime = this.setAddTime.bind(this);
-    this.setRemainedTeams = this.setRemainedTeams.bind(this);
+    // this.setRemainedTeams = this.setRemainedTeams.bind(this);
     this.setFilterStatus = this.setFilterStatus.bind(this);
     this.onWildCardSearch = this.onWildCardSearch.bind(this);
     this.onDateChange = this.onDateChange.bind(this);

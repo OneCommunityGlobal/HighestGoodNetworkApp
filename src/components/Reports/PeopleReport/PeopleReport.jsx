@@ -29,7 +29,7 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import { updateRehireableStatus } from '../../../actions/userManagement'
+import { updateRehireableStatus } from '../../../actions/userManagement';
 
 class PeopleReport extends Component {
   constructor(props) {
@@ -568,7 +568,6 @@ class PeopleReport extends Component {
           </div>
           
           <PeopleTasksPieChart darkMode={darkMode} />
-          
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
               {this.state.isLoading ? (
@@ -598,7 +597,12 @@ class PeopleReport extends Component {
                     timeEntries={timeEntries}
                   />
                   <div className="visualizationDiv">
-                    <TimeEntriesViz timeEntries={timeEntries} fromDate={fromDate} toDate={toDate} darkMode={darkMode} />
+                    <TimeEntriesViz
+                      timeEntries={timeEntries}
+                      fromDate={fromDate}
+                      toDate={toDate}
+                      darkMode={darkMode}
+                    />
                   </div>
                   <div className="visualizationDiv">
                     <InfringementsViz
@@ -614,10 +618,15 @@ class PeopleReport extends Component {
                         authId={auth.user.userid}
                         userId={match.params.userId}
                         badges={userProfile.badgeCollection}
+                        personalBestMaxHrs={userProfile.personalBestMaxHrs}
                       />
                     </div>
                     <div className="BadgeSummaryPreviewDiv">
-                      <BadgeSummaryPreview badges={userProfile.badgeCollection} darkMode={darkMode} />
+                      <BadgeSummaryPreview
+                        badges={userProfile.badgeCollection}
+                        darkMode={darkMode}
+                        personalBestMaxHrs={userProfile.personalBestMaxHrs}
+                      />
                     </div>
                   </div>
                 </div>
