@@ -1,5 +1,5 @@
 import { React, useState, useEffect, useRef } from 'react';
-import { Button, Col, Tooltip, Input } from 'reactstrap';
+import { Button, Col, Input } from 'reactstrap';
 import './TeamsAndProjects.css';
 import hasPermission from '../../../utils/permissions';
 import styles from './UserTeamsTable.css';
@@ -10,6 +10,7 @@ import './TeamsAndProjects.css';
 import './UserTeamsTable.css';
 
 import { AutoCompleteTeamCode } from './AutoCompleteTeamCode';
+
 import ToggleSwitch from '../UserProfileEdit/ToggleSwitch';
 
 import './../../Teams/Team.css';
@@ -21,17 +22,11 @@ import { toast } from 'react-toastify';
 const UserTeamsTable = props => {
   const { darkMode } = props;
 
-  const [tooltipOpen, setTooltip] = useState(false);
-
-  const [teamCodeExplainTooltip, setTeamCodeExplainTooltip] = useState(false);
-
   const [showDropdown, setShowDropdown] = useState(false);
 
   const [autoComplete, setAutoComplete] = useState(false);
 
-
-
-  const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState([]);
+  const [arrayInputAutoComplete, setArrayInputAutoComplete] = useState(props.inputAutoComplete);
 
   const [teamCode, setTeamCode] = useState(
     props.userProfile ? props.userProfile.teamCode : props.teamCode,
@@ -48,9 +43,10 @@ const UserTeamsTable = props => {
 
   const refDropdown = useRef();
 
+  const refInput = useRef(null);
+
   const canAssignTeamToUsers = props.hasPermission('assignTeamToUsers');
   const fullCodeRegex = /^(|([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7}|.-[a-zA-Z0-9]{3}))$/;
-  const toggleTooltip = () => setTooltip(!tooltipOpen);
 
   useEffect(() => {
     if (props.userProfile?.teamCode) {
@@ -58,35 +54,48 @@ const UserTeamsTable = props => {
     }
   }, [props.userProfile?.teamCode]);
 
-  const handleCodeChange = (e, autoComplete) => {
-    setAutoComplete(autoComplete);
-    const regexTest = fullCodeRegex.test(autoComplete ? e : e.target.value);
-    if (regexTest) {
-      props.setCodeValid(true);
-      setTeamCode(autoComplete ? e : e.target.value);
-      if (props.userProfile) {
-        props.setUserProfile({ ...props.userProfile, teamCode: autoComplete ? e : e.target.value });
+  const handleCodeChange = async (e, autoComplete) => {
+    const validation = autoComplete ? e : e.target.value;
+    setTeamCode(validation);
+    // prettier-ignore
+    validationUpdateAutoComplete(validation, props.inputAutoComplete);
+    if (validation !== '') {
+      const regexTest = fullCodeRegex.test(validation);
+      refInput.current = validation;
+      if (regexTest) {
+        props.setCodeValid(true);
+        if (props.userProfile) {
+          try {
+            const url = ENDPOINTS.USER_PROFILE_PROPERTY(props.userProfile._id);
+            await axios.patch(url, { key: 'teamCode', value: refInput.current });
+            toast.success('Team code updated!');
+          } catch {
+            toast.error('It is not possible to save the team code.');
+          }
+        } else {
+          props.onAssignTeamCode(validation);
+        }
       } else {
-        props.onAssignTeamCode(autoComplete ? e : e.target.value);
+        setTeamCode(validation);
+        props.setCodeValid(false);
       }
-    } else {
-      setTeamCode(autoComplete ? e : e.target.value);
-      props.setCodeValid(false);
+      autoComplete ? setShowDropdown(false) : null;
+      autoComplete = false;
     }
-    autoComplete ? setShowDropdown(false) : null;
-    autoComplete = false;
   };
 
-  useEffect(() => {
-    if (teamCode !== '' && !props.isLoading && autoComplete === undefined) {
-      const isMatchingSearch = props.inputAutoComplete.filter(item =>
-        filterInputAutoComplete(item).includes(filterInputAutoComplete(teamCode)),
+  const validationUpdateAutoComplete = (e, autoComplete) => {
+    if (e !== '' && !props.isLoading) {
+      const isMatchingSearch = autoComplete.filter(item =>
+        filterInputAutoComplete(item).includes(filterInputAutoComplete(e)),
       );
       setArrayInputAutoComplete(isMatchingSearch);
-    } else {
-      setArrayInputAutoComplete(props.inputAutoComplete);
-    }
-  }, [teamCode, props.inputAutoComplete, autoComplete]);
+      //prettier-ignore
+      return isMatchingSearch.filter(item => filterInputAutoComplete(item) === filterInputAutoComplete(e));
+    } else setArrayInputAutoComplete(props.inputAutoComplete);
+  };
+  //prettier-ignore
+  useEffect(() => {setArrayInputAutoComplete(props.inputAutoComplete)}, [props.inputAutoStatus]);
 
   const filterInputAutoComplete = result => {
     return result
@@ -94,7 +103,6 @@ const UserTeamsTable = props => {
       .trim()
       .replace(/\s+/g, '');
   };
-
 
   const styleDefault = {
     cursor: !props.canEditTeamCode ? 'not-allowed' : 'pointer',
@@ -109,8 +117,6 @@ const UserTeamsTable = props => {
     cursor: !props.canEditTeamCode ? 'not-allowed' : 'pointer',
     opacity: !props.canEditTeamCode ? 0.6 : 0.9,
   };
-
-  const toggleTeamCodeExplainTooltip = () => setTeamCodeExplainTooltip(!teamCodeExplainTooltip);
 
   const fetchTeamSelected = async (teamId, teamName, isUpdate) => {
     const urlTeamData = ENDPOINTS.TEAM_BY_ID(teamId);
@@ -169,7 +175,6 @@ const UserTeamsTable = props => {
               }}
             >
               <ToggleSwitch
-
                 switchType="visible"
                 state={props.isVisible}
                 handleUserProfile={props.onUserVisibilitySwitch}
@@ -202,7 +207,7 @@ const UserTeamsTable = props => {
               disabled={!props.canEditTeamCode}
             />
           </Col>
-          <div className="row" style={{ display: 'flex', flexDirection: 'column' }} >
+          <div className="row" style={{ display: 'flex', flexDirection: 'column' }}>
             <AutoCompleteTeamCode
               refDropdown={refDropdown}
               showDropdown={showDropdown}
@@ -220,19 +225,28 @@ const UserTeamsTable = props => {
           <Col md="12" style={{ padding: '0' }}>
             {canAssignTeamToUsers ? (
               props.disabled ? (
-                <Button className="btn-addteam" color="primary" style={boxStyle} disabled>
-                  Assign Team
-                </Button>
-              ) : (
                 <Button
+                  id="teamCodeAssign"
                   className="btn-addteam"
                   color="primary"
-                  onClick={() => {
-                    props.onButtonClick();
-                  }}
+                  style={boxStyle}
+                  disabled
                 >
                   Assign Team
                 </Button>
+              ) : (
+                <>
+                  <Button
+                    id="teamCodeAssign"
+                    className="btn-addteam"
+                    color="primary"
+                    onClick={() => {
+                      props.onButtonClick();
+                    }}
+                  >
+                    Assign Team
+                  </Button>
+                </>
               )
             ) : (
               <></>
@@ -251,7 +265,7 @@ const UserTeamsTable = props => {
                   <>
                     <th className={darkMode ? 'bg-space-cadet' : ''}>Members</th>
                     <th style={{ flex: 2 }} className={darkMode ? 'bg-space-cadet' : ''}>
-                      { }
+                      {}
                     </th>
                   </>
                 ) : null}
@@ -266,7 +280,9 @@ const UserTeamsTable = props => {
                   <td>{`${team.teamName}`}</td>
                   {props.edit && props.role && (
                     <>
-                      <td>
+                      <td
+                        style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+                      >
                         <button
                           style={darkMode ? {} : boxStyle}
                           disabled={!canAssignTeamToUsers}
@@ -309,7 +325,6 @@ const UserTeamsTable = props => {
         </table>
       </div>
     </div>
-
   );
 };
 

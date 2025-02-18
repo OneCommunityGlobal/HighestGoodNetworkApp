@@ -20,6 +20,11 @@ import './TotalOrgSummary.css';
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
+import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
+import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
+import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
+import TeamStats from './TeamStats/TeamStats';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
@@ -103,11 +108,12 @@ const aggregateTimeEntries = userTimeEntries => {
 
 function TotalOrgSummary(props) {
   const { darkMode, loading, error, allUserProfiles, volunteerOverview } = props;
-
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
   const [taskProjectHours, setTaskProjectHours] = useState([]);
+  const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
+  const [volunteerStats, setVolunteerStats] = useState(null);
 
   const dispatch = useDispatch();
 
@@ -190,11 +196,20 @@ function TotalOrgSummary(props) {
   }, [fromDate, toDate, fromOverDate, toOverDate]);
 
   useEffect(() => {
-    props.getTotalOrgSummary(fromDate, toDate);
-    props.hasPermission('');
+    const fetchVolunteerStats = async () => {
+      try {
+        const volunteerStatsResponse = await props.getTotalOrgSummary(fromDate, toDate);
+        setVolunteerStats(volunteerStatsResponse.data);
+        await props.hasPermission('');
+      } catch (catchFetchError) {
+        setIsVolunteerFetchingError(true);
+      }
+    };
+
+    fetchVolunteerStats();
   }, [fromDate, toDate]);
 
-  if (error) {
+  if (error || isVolunteerFetchingError) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Row
@@ -221,6 +236,7 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
+
   return (
     <Container
       fluid
@@ -238,7 +254,10 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerStatus
+                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                totalHoursWorked={volunteerStats?.totalHoursWorked}
+              />
             </div>
           </Col>
         </Row>
@@ -247,7 +266,13 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerActivities
+                totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+                completedAssignedHours={volunteerStats?.completedAssignedHours}
+                totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+                tasksStats={volunteerStats?.tasksStats}
+                totalActiveTeams={volunteerStats?.totalActiveTeams}
+              />
             </div>
           </Col>
         </Row>
@@ -261,7 +286,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <VolunteerStatusChart volunteerNumberStats={volunteerStats?.volunteerNumberStats} />
             </div>
           </Col>
         </Row>
@@ -352,6 +377,20 @@ function TotalOrgSummary(props) {
               <RoleDistributionPieChart
                 roleDistributionStats={volunteerOverview?.roleDistributionStats}
               />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <TeamStats usersInTeamStats={volunteerStats?.usersInTeamStats} />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <BlueSquareStats blueSquareStats={volunteerStats?.blueSquareStats} />
             </div>
           </Col>
         </Row>
