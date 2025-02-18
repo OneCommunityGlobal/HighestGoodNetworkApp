@@ -49,10 +49,11 @@ const TINY_MCE_INIT_OPTIONS = {
   plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
   toolbar:
     // eslint-disable-next-line no-multi-str
-    'bold italic underline link removeformat | bullist numlist outdent indent |\
+    'bold italic underline link removeformat bullist numlist outdent indent |\
                     styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
                     subscript superscript charmap  | help',
   branding: false,
+  toolbar_mode: 'sliding',
   min_height: 180,
   max_height: 300,
   autoresize_bottom_margin: 1,

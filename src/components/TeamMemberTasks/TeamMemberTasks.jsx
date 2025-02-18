@@ -403,7 +403,7 @@ const TeamMemberTasks = React.memo(props => {
       await dispatch(fetchTeamMembersTask(displayUser._id));
     };
     initialFetching();
-  }, []);
+  }, [displayUser]);
 
   useEffect(() => {
     if (clickedToShowModal) {

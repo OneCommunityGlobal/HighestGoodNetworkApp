@@ -1,8 +1,6 @@
-import React, { Component, useEffect } from 'react';
+import { Component } from 'react';
 import { connect } from 'react-redux';
-import moment from 'moment';
 import { Container, Button } from 'reactstrap';
-import DatePicker from 'react-datepicker';
 import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { searchWithAccent } from 'utils/search';
@@ -13,7 +11,6 @@ import PeopleTable from './PeopleTable';
 import ProjectTable from './ProjectTable';
 import { getUserProfileBasicInfo } from '../../actions/userManagement';
 import { fetchAllTasks } from '../../actions/task';
-import ReportTableSearchPanel from './ReportTableSearchPanel';
 import 'react-datepicker/dist/react-datepicker.css';
 import './reportsPage.css';
 import projectsImage from './images/Projects.svg';
@@ -25,10 +22,11 @@ import TotalProjectReport from './TotalReport/TotalProjectReport';
 import AddLostTime from './LostTime/AddLostTime';
 import LostTimeHistory from './LostTime/LostTimeHistory';
 import '../Header/DarkMode.css'
-const DATE_PICKER_MIN_DATE = '01/01/2010';
 import ViewReportByDate from './ViewReportsByDate/ViewReportsByDate';
 import ReportFilter from './ReportFilter/ReportFilter';
 import Loading from '../common/Loading';
+
+const DATE_PICKER_MIN_DATE = '01/01/2010';
 
 class ReportsPage extends Component {
   constructor(props) {
@@ -45,48 +43,15 @@ class ReportsPage extends Component {
       showAddTeamHistory: false,
       showAddProjHistory: false,
       teamNameSearchText: '',
-      teamMembersPopupOpen: false,
-      deleteTeamPopupOpen: false,
-      createNewTeamPopupOpen: false,
-      teamStatusPopupOpen: false,
       wildCardSearchText: '',
-      selectedTeamId: 0,
-      selectedTeam: '',
       checkActive: '',
-      formElements: {
-        summary: '',
-        summaryLastWeek: '',
-        summaryBeforeLast: '',
-        mediaUrl: '',
-        weeklySummariesCount: 0,
-        mediaConfirm: false,
-      },
-      dueDate: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .toISOString(),
-      dueDateLastWeek: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .subtract(1, 'week')
-        .toISOString(),
-      dueDateBeforeLast: moment()
-        .tz('America/Los_Angeles')
-        .endOf('week')
-        .subtract(2, 'week')
-        .toISOString(),
-      activeTab: '1',
-      errors: {},
-      fetchError: null,
       loading: false,
       teamSearchData: {},
       peopleSearchData: [],
       projectSearchData: {},
-      users: {},
       startDate: new Date(DATE_PICKER_MIN_DATE),
       endDate: new Date(),
       teamMemberList: {},
-      remainedTeams: [],
     };
     this.showProjectTable = this.showProjectTable.bind(this);
     this.showPeopleTable = this.showPeopleTable.bind(this);
@@ -102,7 +67,7 @@ class ReportsPage extends Component {
     this.setAll = this.setAll.bind(this);
     this.setTeamMemberList = this.setTeamMemberList.bind(this);
     this.setAddTime = this.setAddTime.bind(this);
-    this.setRemainedTeams = this.setRemainedTeams.bind(this);
+    // this.setRemainedTeams = this.setRemainedTeams.bind(this);
     this.setFilterStatus = this.setFilterStatus.bind(this);
     this.onWildCardSearch = this.onWildCardSearch.bind(this);
     this.onDateChange = this.onDateChange.bind(this);
@@ -114,16 +79,61 @@ class ReportsPage extends Component {
     this.props.getUserProfileBasicInfo();
   }
 
+  onWildCardSearch(searchText) {
+    this.setState({ wildCardSearchText: searchText });
+  }
+
+  onDateChange(dates) {
+    this.setState({
+      startDate: dates.startDate,
+      endDate: dates.endDate,
+    });
+  }
+
   setFilterStatus(status) {
     this.setState({ checkActive: status });
   }
 
-  /**
-   * callback for search
-   */
-  onWildCardSearch(searchText) {
-    this.setState({ wildCardSearchText: searchText });
+
+  setActive() {
+    this.setState(() => ({
+      checkActive: 'true',
+    }));
   }
+
+  setAll() {
+    this.setState(() => ({
+      checkActive: '',
+    }));
+  }
+
+  setInActive() {
+    this.setState(() => ({
+      checkActive: 'false',
+    }));
+  }
+
+  setTeamMemberList(list) {
+    this.setState(() => ({
+      teamMemberList: list,
+    }));
+  }
+
+  setAddTime() {
+    this.setState(prevState => ({
+      showProjects: false,
+      showPeople: false,
+      showTeams: false,
+      showTotalProject: false,
+      showTotalTeam: false,
+      showTotalPeople: false,
+      showAddTimeForm: !prevState.showAddTimeForm,
+      showAddProjHistory: false,
+      showAddPersonHistory: false,
+      showAddTeamHistory: false,
+    }));
+  }
+
 
   filteredProjectList = projects => {
     const filteredList = projects.filter(project => {
@@ -187,51 +197,6 @@ class ReportsPage extends Component {
 
     return filteredList;
   };
-
-  setActive() {
-    this.setState(state => ({
-      checkActive: 'true',
-    }));
-  }
-
-  setAll() {
-    this.setState(state => ({
-      checkActive: '',
-    }));
-  }
-
-  setInActive() {
-    this.setState(() => ({
-      checkActive: 'false',
-    }));
-  }
-
-  setTeamMemberList(list) {
-    this.setState(() => ({
-      teamMemberList: list,
-    }));
-  }
-
-  setAddTime() {
-    this.setState(prevState => ({
-      showProjects: false,
-      showPeople: false,
-      showTeams: false,
-      showTotalProject: false,
-      showTotalTeam: false,
-      showTotalPeople: false,
-      showAddTimeForm: !prevState.showAddTimeForm,
-      showAddProjHistory: false,
-      showAddPersonHistory: false,
-      showAddTeamHistory: false,
-    }));
-  }
-
-  setRemainedTeams(teams) {
-    this.setState(() => ({
-      remainedTeams: teams,
-    }));
-  }
 
   showProjectTable() {
     this.setState(prevState => ({
@@ -399,16 +364,9 @@ class ReportsPage extends Component {
     }));
   }
 
-  onDateChange(dates) {
-    // Handle the date changes from DatePickerComponent
-    this.setState({
-      startDate: dates.startDate,
-      endDate: dates.endDate,
-    });
-  }
+
 
   render() {
-    const { loading, showTotalProject } = this.state;
     const { darkMode } = this.props.state.theme;
     const userRole = this.props.state.userProfile.role;
     const myRole = this.props.state.auth.user.role;
@@ -459,7 +417,7 @@ class ReportsPage extends Component {
               ? ''
               : 'no-active-selection'
           }`}
-        >
+        type="button">
           <div className="container-component-category">
             <h2 className="mt-3 mb-5">
                 {/* Loading spinner at the top */}
@@ -487,6 +445,7 @@ class ReportsPage extends Component {
             <div className="container-box-shadow">
               <div className="category-container">
                 <button
+                  type="button"
                   className={`card-category-item ${
                     this.state.showProjects ? 'selected' : ''
                   } ${isYinmnBlue}`}
@@ -497,9 +456,10 @@ class ReportsPage extends Component {
                   <h3 className="card-category-item-number">
                     {this.state.projectSearchData.length}{' '}
                   </h3>
-                  <img src={projectsImage} alt="Image that representes the projects" />
-                </button>
+                  <img src={projectsImage} alt="Projects" />
+                </button> 
                 <button
+                  type="button"
                   className={`card-category-item ${
                     this.state.showPeople ? 'selected' : ''
                   } ${isYinmnBlue}`}
@@ -510,9 +470,10 @@ class ReportsPage extends Component {
                   <h3 className="card-category-item-number">
                     {this.state.peopleSearchData.length}
                   </h3>
-                  <img src={peopleImage} alt="Image that representes the people" />
+                  <img src={peopleImage} alt="that representes the people" />
                 </button>
                 <button
+                  type="button"
                   className={`card-category-item ${
                     this.state.showTeams ? 'selected' : ''
                   } ${isYinmnBlue}`}
@@ -521,29 +482,8 @@ class ReportsPage extends Component {
                 >
                   <h3 className="card-category-item-title"> Teams </h3>
                   <h3 className="card-category-item-number">{this.state.teamSearchData?.length}</h3>
-                  <img src={teamsImage} alt="Image that representes the teams" />
+                  <img src={teamsImage} alt="that representes the teams" />
                 </button>
-                {/* <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showProjectTable}>
-                <i className="fa fa-folder" aria-hidden="true" />
-                {' '}
-                Projects
-                {' '}
-                {this.state.projectSearchData.length}
-              </button>
-              <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showPeopleTable}>
-                <i className="fa fa-user" aria-hidden="true" />
-                {' '}
-                People
-                {' '}
-                {this.state.peopleSearchData.length}
-              </button>
-              <button style={{ margin: '5px' }} exact className="btn btn-info btn-bg mt-3" onClick={this.showTeamsTable}>
-                <i className="fa fa-users" aria-hidden="true" />
-                {' '}
-                Teams
-                {' '}
-                {this.state.teamSearchData?.length}
-              </button> */}
               </div>
               <div
                 className={`mt-4 p-3 rounded-lg ${
@@ -565,7 +505,7 @@ class ReportsPage extends Component {
                 />
                 <div className="total-report-container">
                   <div className="total-report-item">
-                    <Button color="info" onClick={this.showTotalProject}>
+                    <Button type="button" color="info" onClick={this.showTotalProject}>
                       {this.state.showTotalProject
                         ? 'Hide Total Project Report'
                         : 'Show Total Project Report'}
@@ -582,7 +522,7 @@ class ReportsPage extends Component {
                     </div>
                   </div>
                   <div className="total-report-item">
-                    <Button color="info" onClick={this.showTotalPeople}>
+                    <Button type="button" color="info" onClick={this.showTotalPeople}>
                       {this.state.showTotalPeople
                         ? 'Hide Total People Report'
                         : 'Show Total People Report'}
@@ -598,9 +538,6 @@ class ReportsPage extends Component {
                       />
                     </div>
                   </div>
-                  
-                  
-                
                 <div>
           <div className="total-report-item">
   <Button color="info" onClick={this.showTotalProject}>
@@ -610,7 +547,7 @@ class ReportsPage extends Component {
 </div>
 </div>
 
-                {myRole != 'Owner' && (
+                {myRole !== 'Owner' && (
                   <div className="lost-time-container">
                     <div className="lost-time-item">
                       <Button color="info" onClick={this.showAddProjHistory}>
@@ -779,7 +716,7 @@ class ReportsPage extends Component {
               <TotalProjectReport
               startDate={this.state.startDate}
               endDate={this.state.endDate}
-              userProfiles={userProfiles}
+              userProfiles={userProfilesBasicInfo}
               projects={projects}
               darkMode={darkMode}
             />

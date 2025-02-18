@@ -8,10 +8,10 @@ import {
   ModalHeader,
   ModalFooter,
 } from 'reactstrap';
+import BadgeImage from 'components/Badge/BadgeImage';
 import { boxStyle, boxStyleDark } from '../../styles';
 import '../Badge/BadgeReport.css';
 import './BadgeSummaryPreview.css';
-import BadgeImage from 'components/Badge/BadgeImage';
 
 function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -32,7 +32,7 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
         setSortedBadges(sortBadges);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   }, [badges]);
 
@@ -61,8 +61,8 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
                             count={value.count}
                             badgeData={value.badge}
                             index={index}
-                            key={index}
-                            cssSuffix={'_preview'}
+                            // key={index}
+                            cssSuffix="_preview"
                           />
                         </div>
                       ),
@@ -82,8 +82,8 @@ function BadgeSummaryPreview({ badges, darkMode, personalBestMaxHrs }) {
                             count={value.count}
                             badgeData={value.badge}
                             index={index}
-                            key={index}
-                            cssSuffix={'_preview'}
+                            // key={index}
+                            cssSuffix="_preview"
                           />
                         </div>
                       ),
