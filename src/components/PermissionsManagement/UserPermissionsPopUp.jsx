@@ -47,7 +47,7 @@ function UserPermissionsPopUp({
   useEffect(() => {
     setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
     setUserRemovedDefaultPermissions(
-      actualUserProfile?.permissions?.removedDefaultPermissions?.front || [],
+      actualUserProfile?.permissions?.removedDefaultPermissions || [],
     );
   }, [actualUserProfile]);
 
@@ -89,7 +89,7 @@ function UserPermissionsPopUp({
       ...allUserInfo,
       permissions: {
         frontPermissions: userPermissions,
-        removedDefaultPermissions: { front: userRemovedDefaultPermissions },
+        removedDefaultPermissions: userRemovedDefaultPermissions,
       },
     };
 
