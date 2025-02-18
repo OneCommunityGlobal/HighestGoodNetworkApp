@@ -1,45 +1,69 @@
-.materialContainer {
-  padding: 0% !important;
-  min-height: 100vh;
-}
-
-.materialPage {
-  background-color: #E8F4F9;
+.add-material-form{
   width: 100%;
-  min-height: 100%;
-  margin: 0px;
-  padding: 1rem 2rem;
-  font-size: 15px;
 }
 
-.material {
-  background-color: white;
-  border-radius: 1rem;
-  padding: 1.5rem;
-  height: auto;
+.add-material-form Label{
+font-size: .8em;
 }
 
-.materialTitle {
-  font-weight: bold;
-  margin-bottom: 20px;
+.add-material-flex-group{
+  display: flex;  
+  gap: 2rem;
 }
 
-.materialImage {
-  height: 10rem;
-  width: 10rem;
-  margin-bottom: 1rem;
-}
-
-.materialFormField {
-  margin-bottom: .5rem;
-}
-
-.materialFormLabel {
-  font-weight: 500;
-  font-size: 15px;
-  color: #1C8BCC;
+.add-material-buttons{
   display: flex;
-  justify-content: flex-start;
+  gap: 1rem;
+  margin: 1rem auto 2rem;
+}
+
+.add-material-buttons button{
+  width: 50%;
+}
+
+.add-material-total-price{
+  display: flex;  
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #f5e6e6;
+  padding-left: 1em;
+}
+
+.add-material-total-price div{
+  width: 50%;
+}
+
+.total-price-calculated{
+  text-align: end;
+  padding-right: 1em;
+}
+
+.add-material-createdby{
+  display: flex;  
+  border-radius: 10px;
+  line-height: 3rem;
+  font-weight: bolder;
+  background-color: #add3ef;
+  padding-left: 1em;
+  margin-top: 1em;
+}
+
+.add-material-createdby div{
+  width: 50%;
+}
+
+.createdby{
+  text-align: end;
+  padding-right: 1em;
+}
+
+.file-preview-container{
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+  width: 100%;
+  margin-top: 1rem;
 }
 
 .materialFormError {
@@ -50,50 +74,37 @@
   justify-content: flex-start;
 }
 
-.materialFormTableError {
-  font-weight: 500;
-  font-size: 11px !important;
+.field-required{
   color: red;
 }
 
-.materialFormErrorClr {
-  color: red;
+@media screen and (max-width: 640px) {
+  .add-material-flex-group {
+    display: block;
+  }
+
+  .file-preview-container{
+    display: block;
+  }
 }
 
-.materialFormSmallText {
-  font-size: xx-small;
-  color: gray;
+.add-material-container{
+  width: 100%;
+  max-width: 800px;
+  margin: 1rem auto;
+  padding: 1rem 2rem;
+  border: 1px solid #ccc;
+  border-radius: 20px;
 }
 
-.materialFormText {
-  color: darkslategrey;
+.add-material-header h2{
+ font-size: clamp(1.5rem, 2.5vw, 2.5rem);
+ margin-left: 1rem;
 }
 
-.materialMargin {
-  margin-top: 10px;
-}
 
-.materialFormValue {
-  font-weight: 400;
-  font-size: 15px;
-  display: flex;
-  justify-content: flex-start;
-}
-
-.materialButtonOutline {
-  color: #2E5061 !important;
-}
-
-.materialButtonOutline:hover {
-  background-color: #2E5061 !important;
-  color: white !important
-}
-
-.materialButtonBg {
-  background-color: #2E5061 !important
-}
-
-.materialButtonBg:hover {
-  background-color: white !important;
-  color: #2E5061 !important;
+@media screen and (max-width: 800px) {
+  .add-material-container {
+    width: 95%;
+  }
 }
