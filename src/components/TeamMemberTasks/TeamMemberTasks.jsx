@@ -120,13 +120,13 @@ const TeamMemberTasks = React.memo(props => {
         userWithTasks.tasks.some(task => task._id === taskId)
           ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
             ? {
-                ...userWithTasks,
-                tasks: userWithTasks.tasks.map(task => (task._id === taskId ? updatedTask : task)),
-              }
+              ...userWithTasks,
+              tasks: userWithTasks.tasks.map(task => (task._id === taskId ? updatedTask : task)),
+            }
             : {
-                ...userWithTasks,
-                tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
-              }
+              ...userWithTasks,
+              tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
+            }
           : userWithTasks,
       );
       dispatch(
@@ -165,13 +165,13 @@ const TeamMemberTasks = React.memo(props => {
         userWithTasks.tasks.some(task => task._id === taskId)
           ? updatedTask.resources.some(resource => resource.userID === userWithTasks.personId)
             ? {
-                ...userWithTasks,
-                tasks: userWithTasks.tasks.map(task => (task._id === taskId ? updatedTask : task)),
-              }
+              ...userWithTasks,
+              tasks: userWithTasks.tasks.map(task => (task._id === taskId ? updatedTask : task)),
+            }
             : {
-                ...userWithTasks,
-                tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
-              }
+              ...userWithTasks,
+              tasks: userWithTasks.tasks.filter(task => task._id !== taskId),
+            }
           : userWithTasks,
       );
       dispatch(
@@ -500,9 +500,8 @@ const TeamMemberTasks = React.memo(props => {
 
   return (
     <div
-      className={`container team-member-tasks ${
-        darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
-      }`}
+      className={`container team-member-tasks ${darkMode ? ' bg-space-cadet border-left border-right border-secondary' : ''
+        }`}
     >
       <header className="header-box">
         <section className="d-flex flex-column">
@@ -524,11 +523,11 @@ const TeamMemberTasks = React.memo(props => {
                 onClick={handleshowWhoHasTimeOff}
               >
                 <FaCalendarAlt className={'show-time-off-calender-svg'}
-                               fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
-                               size="20px" />
+                  fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
+                  size="20px" />
                 <FaClock size={'12px'}
-                         fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
-                         className={'show-time-off-icon'} />
+                  fill={showWhoHasTimeOff ? 'white' : '#17a2b8'}
+                  className={'show-time-off-icon'} />
               </button>
               {Object.entries(hrsFilterBtnColorMap).map(([days, color], idx) => (
                 <button
@@ -553,9 +552,8 @@ const TeamMemberTasks = React.memo(props => {
                 </button>
               ))}
               <select
-                className={`m-1 mobile-view-select circle-border ${
-                  darkMode ? 'box-shadow-dark' : ''
-                }`}
+                className={`m-1 mobile-view-select circle-border ${darkMode ? 'box-shadow-dark' : ''
+                  }`}
                 onChange={e => selectPeriod(e.target.value)}
                 value={selectedPeriod || ''}
                 title={`Timelogs submitted in the past ${selectedPeriod} days`}
@@ -629,7 +627,7 @@ const TeamMemberTasks = React.memo(props => {
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
             <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Team</span>
             <MultiSelect
-              className={`multi-select-filter responsive-font-size ${darkMode ?'dark-mode' : ''}`}
+              className={`multi-select-filter responsive-font-size ${darkMode ? 'dark-mode' : ''}`}
               options={teamNames}
               value={selectedTeamNames}
               onChange={e => {
@@ -642,7 +640,7 @@ const TeamMemberTasks = React.memo(props => {
               Select Team Code
             </span>
             <MultiSelect
-              className={`multi-select-filter responsive-font-size ${darkMode ?'dark-mode' : ''}`}
+              className={`multi-select-filter responsive-font-size ${darkMode ? 'dark-mode' : ''}`}
               options={teamCodes}
               value={selectedCodes}
               onChange={e => {
@@ -653,7 +651,7 @@ const TeamMemberTasks = React.memo(props => {
           <Col lg={{ size: 4 }} xs={{ size: 12 }} className="ml-3">
             <span className={darkMode ? 'text-light responsive-font-size' : ''}>Select Color</span>
             <MultiSelect
-              className={`multi-select-filter responsive-font-size ${darkMode ?'dark-mode' : ''}`}
+              className={`multi-select-filter responsive-font-size ${darkMode ? 'dark-mode' : ''}`}
               options={colors}
               value={selectedColors}
               onChange={e => {
@@ -664,7 +662,7 @@ const TeamMemberTasks = React.memo(props => {
         </Row>
       )}
       <div className="task_table-container">
-      <Table className={`task-table ${darkMode ? 'dark-teammember-row' : 'light-teammember-row'}`}>
+        <Table className={`task-table ${darkMode ? 'dark-teammember-row' : 'light-teammember-row'}`}>
           <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
               <th colSpan={3} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
@@ -675,16 +673,14 @@ const TeamMemberTasks = React.memo(props => {
                         User Status
                       </th>
                       <th
-                        className={`team-member-tasks-headers team-member-tasks-user-name ${
-                          darkMode ? 'bg-space-cadet' : ''
-                        }`}
+                        className={`team-member-tasks-headers team-member-tasks-user-name ${darkMode ? 'bg-space-cadet' : ''
+                          }`}
                       >
                         Team Member
                       </th>
                       <th
-                        className={`team-member-tasks-headers team-clocks team-clocks-header ${
-                          darkMode ? 'bg-space-cadet' : ''
-                        }`}
+                        className={`team-member-tasks-headers team-clocks team-clocks-header ${darkMode ? 'bg-space-cadet' : ''
+                          }`}
                       >
                         <FontAwesomeIcon
                           style={{ color: darkMode ? 'lightgray' : '' }}
