@@ -6,6 +6,7 @@ import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -168,9 +169,10 @@ function Announcements({ title, email }) {
 
   const handleCreateFbPost = async () => {
     try {
-      const response = await axios.post('/api/createFbPost', {
+      const response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
         EmailContent: emailContent, // Send the email content (HTML)
       });
+      console.log('response', response.data)
       toast.success('Post successfully created on Facebook!');
     } catch (error) {
       console.error('Error posting to Facebook:', error);

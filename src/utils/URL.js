@@ -172,6 +172,7 @@ export const ENDPOINTS = {
   GET_ALL_FOLLOWUPS: () => `${APIEndpoint}/followup`,
   SET_USER_FOLLOWUP: (userId, taskId) => `${APIEndpoint}/followup/${userId}/${taskId}`,
   GET_PROJECT_BY_PERSON: searchName => `${APIEndpoint}/userProfile/projects/${searchName}`,
+  CREATE_FB_POST: () => `${APIEndpoint}/createFbPost`,
 
   // bm dashboard endpoints
   BM_LOGIN: `${APIEndpoint}/bm/login`,
