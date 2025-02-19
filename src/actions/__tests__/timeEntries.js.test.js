@@ -186,22 +186,22 @@ describe('timeEntries action creators', () => {
 
   // Test suite for getTimeEndDateEntriesByPeriod
   describe('getTimeEndDateEntriesByPeriod', () => {
-    it('should return the last entry date formatted as YYYY-MM-DD', async () => {
+    it('should return the last entry date', async () => {
       const dispatchMock = jest.fn(); // Mock dispatch function
       const userId = '123'; // Sample user ID
       const fromDate = moment().subtract(2, 'weeks').toISOString(); // Sample from date
       const toDate = moment().toISOString(); // Sample to date
       const formattedToDate = moment(toDate).endOf('day').format('YYYY-MM-DDTHH:mm:ss'); // Adjusted toDate
       const timeEntries = [
-        { dateOfWork: moment().subtract(1, 'days').toISOString() },
-        { dateOfWork: moment().subtract(2, 'days').toISOString() },
-      ]; // Sample time entries
+      { dateOfWork: moment().subtract(1, 'days').toISOString(), createdDateTime: moment().subtract(1, 'days').toISOString() },
+      { dateOfWork: moment().subtract(2, 'days').toISOString(), createdDateTime: moment().subtract(2, 'days').toISOString() },
+    ];  // Sample time entries
       axios.get.mockResolvedValue({ data: timeEntries }); // Mock axios get response
 
       const result = await getTimeEndDateEntriesByPeriod(userId, fromDate, toDate)(dispatchMock); // Call getTimeEndDateEntriesByPeriod
-
+      
       // Verify the result is the formatted date of the last entry
-      expect(result).toBe(moment(timeEntries[0].dateOfWork).format('YYYY-MM-DD'));
+      expect(result).toBe(timeEntries[0].createdDateTime);
       // Verify axios.get was called with the correct URL
       expect(axios.get).toHaveBeenCalledWith(ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, formattedToDate));
     });
