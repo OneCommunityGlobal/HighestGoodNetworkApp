@@ -358,7 +358,7 @@ function SetupHistoryPopup(props) {
                   />
                   {filteredSetupInvitationData.map((record, index) => {
                     return (
-                      <tr key={record}>
+                      <tr key={record.id || record.email || index}>
                         <td>{record.email}</td>
                         <td>{record.weeklyCommittedHours}</td>
                         <td>{formatDate(record.createdDate)}</td>
