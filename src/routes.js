@@ -8,11 +8,13 @@ import RoutePermissions from 'utils/routePermissions';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoModal';
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
+import ResourceUsage from 'components/CommunityPortal/ResourceUsage/ResourceUsage';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
+
 import Dashboard from './components/Dashboard';
 import Logout from './components/Logout/Logout';
 import Login from './components/Login';
@@ -415,6 +417,7 @@ export default (
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
         <ProtectedRoute path="/userprofileedit/:userId" component={UserProfileEdit} />
         <ProtectedRoute path="/updatepassword/:userId" component={UpdatePassword} />
+        <CPProtectedRoute path="/communityportal/reports/resourceusage" exact component={ResourceUsage}/>
         <Route path="/Logout" component={Logout} />
         <Route path="/forcePasswordUpdate/:userId" component={ForcePasswordUpdate} />
         <ProtectedRoute path="/" exact component={Dashboard} />
