@@ -137,38 +137,10 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
 
     expect(screen.getByText('Project 1')).toBeInTheDocument();
     const button = screen.queryByRole('button');
-    expect(button).not.toBeInTheDocument();
-  });
-
-  it('Test 6 : Verify if the  renderFilteredTask  render  button if the no of resources is greater than 2  ', () => {
-    const tasks = [
-      {
-        _id: '1',
-        taskName: 'Project 2',
-        priority: 'High',
-        status: 'Completed',
-        resources: [
-          [
-            { name: 'Resource 2', index: 2, profilepic: '' },
-            { name: 'Resource 3', index: 3, profilepic: '' },
-            { name: 'Resource 1', index: 1, profilepic: '' },
-          ],
-        ],
-        active: 'Yes',
-        assign: 'No',
-        estimatedHours: '5h',
-        startDate: '2022-01-01',
-        endDate: '2022-01-10',
-      },
-    ];
-    render(<PeopleTableDetails taskData={tasks} />);
-
-    expect(screen.getByText('Project 2')).toBeInTheDocument();
-    const button = screen.queryByRole('button');
     expect(button).toBeInTheDocument();
   });
 
-  it('Test 7 : Verify the button in the resource cell renders as expected when clicked ', () => {
+  it('Test 6 : Verify if the renderFilteredTask render button if the no of resources is greater than 2', () => {
     const tasks = [
       {
         _id: '1',
@@ -177,9 +149,9 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         status: 'Completed',
         resources: [
           [
-            { name: 'Resource 2', index: 2, profilepic: '' },
-            { name: 'Resource 3', index: 3, profilepic: '' },
-            { name: 'Resource 1', index: 1, profilepic: '' },
+            { name: 'Resource 2', index: 2, profilePic: '' },
+            { name: 'Resource 3', index: 3, profilePic: '' },
+            { name: 'Resource 1', index: 1, profilePic: '' },
           ],
         ],
         active: 'Yes',
@@ -189,17 +161,56 @@ describe(' Unit Test case for PeopleTableDetails component', () => {
         endDate: '2022-01-10',
       },
     ];
-
     render(<PeopleTableDetails taskData={tasks} />);
-    const toggleButton = screen.queryByRole('button');
+  
+    expect(screen.getByText('Project 2')).toBeInTheDocument();
+    
+    // The toggle button displays "1+" because there are 3 resources (3 - 2 = 1).
+    const toggleButton = screen.getByText('1+');
+    expect(toggleButton).toBeInTheDocument();
+  });
 
+  it('Test 7 : Verify the button in the resource cell renders as expected when clicked', () => {
+    const tasks = [
+      {
+        _id: '1',
+        taskName: 'Project 2',
+        priority: 'High',
+        status: 'Completed',
+        resources: [
+          [
+            { name: 'Resource 2', index: 2, profilePic: '' },
+            { name: 'Resource 3', index: 3, profilePic: '' },
+            { name: 'Resource 1', index: 1, profilePic: '' },
+          ],
+        ],
+        active: 'Yes',
+        assign: 'No',
+        estimatedHours: '5h',
+        startDate: '2022-01-01',
+        endDate: '2022-01-10',
+      },
+    ];
+  
+    render(<PeopleTableDetails taskData={tasks} />);
+  
+    // Instead of queryByRole('button') (which returns multiple), use getAllByRole and filter by class
+    const allButtons = screen.getAllByRole('button');
+    const toggleButton = allButtons.find(button =>
+      button.classList.contains('resourceMoreToggle')
+    );
+    expect(toggleButton).toBeInTheDocument();
+  
+    // Find the extra div within the parent element of the toggle button
     const extraDiv = toggleButton.parentElement.querySelector('.extra');
     expect(extraDiv).toBeInTheDocument();
-
+  
+    // Click the toggle button to display extra resources
     fireEvent.click(toggleButton);
     expect(extraDiv.style.display).toBe('table-cell');
+  
+    // Click again to hide extra resources
     fireEvent.click(toggleButton);
-
     expect(extraDiv.style.display).toBe('none');
   });
 
