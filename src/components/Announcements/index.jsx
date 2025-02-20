@@ -19,6 +19,13 @@ function Announcements({ title, email }) {
   const [testEmail, setTestEmail] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
 
+  //  Weekly Progress Update Content States
+  const [headerImage, setHeaderImage] = useState(null);
+  const [headingText, setHeadingText] = useState('');
+  const [introText, setIntroText] = useState('');
+  const [bodyImage, setBodyImage] = useState(null);
+  const [bodyText, setBodyText] = useState('');
+
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
     setShowEditor(false);
@@ -143,6 +150,22 @@ function Announcements({ title, email }) {
     return emailPattern.test(email);
   };
 
+  const handleHeaderImageDrop = (file) => {
+    fileToBase64(file, setHeaderImage);
+  };
+  const handleBodyImageDrop = (file) => {
+    fileToBase64(file, setBodyImage);
+  };
+
+  // Helper to convert file -> base64 string
+  const fileToBase64 = (file, setStateCallback) => {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setStateCallback(reader.result);
+    };
+    reader.readAsDataURL(file);
+  };
+
   const handleSendEmails = () => {
     const htmlContent = emailContent;
 
@@ -171,189 +194,321 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const renderWeeklyProgressView = () => (
+    <div className="email-update-container">
+      <div className="editor">
+        {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
+        <div className="tabs-container">
+          <button
+            className={`tab-button ${activeTab === 'weeklyProgress' ? 'active' : ''}`}
+            onClick={switchToWeeklyProgress}
+          >
+            Weekly Progress Update
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'nonFormatted' ? 'active' : ''}`}
+            onClick={switchToNonFormatted}
+          >
+            Non-Formatted
+          </button>
+        </div>
+        <br />
+
+        {/* 1) Drag & drop for header image */}
+        <h4>Header Image</h4>
+        <ImageUploader onFileUpload={handleHeaderImageDrop} />
+        {headerImage && (
+          <img
+            src={headerImage}
+            alt="Header Preview"
+            style={{ width: '100%', maxWidth: '100%', margin: '10px 0' }}
+          />
+        )}
+
+        {/* 2) Heading text */}
+        <label>Enter Heading Text:</label>
+        <input
+          type="text"
+          value={headingText}
+          onChange={e => setHeadingText(e.target.value)}
+          style={{ width: '100%', marginBottom: '10px', padding: '10px' }}
+        />
+
+        {/* 3) Introduction text */}
+        <label>Enter Introduction Text:</label>
+        <textarea
+          rows={3}
+          value={introText}
+          onChange={e => setIntroText(e.target.value)}
+          style={{ width: '100%', marginBottom: '10px' }}
+        />
+
+        {/* 4) Drag & drop for body image */}
+        <h4>Body Image</h4>
+        <ImageUploader onFileUpload={handleBodyImageDrop} />
+        {bodyImage && (
+          <img
+            src={bodyImage}
+            alt="Body Preview"
+            style={{ width: '100%', maxWidth: '100%', margin: '10px 0' }}
+          />
+        )}
+
+        {/* 5) Body text */}
+        <label>Enter Body Text:</label>
+        <textarea
+          rows={5}
+          value={bodyText}
+          onChange={e => setBodyText(e.target.value)}
+          style={{ width: '100%', marginBottom: '10px' }}
+        />
+
+        {
+          title ? (
+            ""
+          ) : (
+            <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
+              Broadcast Weekly Update
+            </button>
+          )
+        }
+
+      </div>
+      <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+        {
+          title ? (
+            <p>Email</p>
+          ) : (
+
+            <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Email List (comma-separated):
+            </label>
+          )
+        }
+        <input type="text" value={emailTo} id="email-list-input" onChange={handleEmailListChange} className='input-text-for-announcement' />
+        <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
+          {
+            title ? (
+              "Send Email"
+            ) : (
+              "Send mail to specific users"
+            )
+          }
+        </button>
+
+        <hr />
+        <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+          Insert header or image link:
+        </label>
+        <input
+          type="text"
+          id="header-content-input"
+          onChange={handleHeaderContentChange}
+          value={headerContent}
+          className="input-text-for-announcement"
+        />
+
+        <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
+          Insert
+        </button>
+        <hr />
+        <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
+          Upload Header (or footer):
+        </label>
+        <input
+          type="file"
+          id="upload-header-input"
+          onChange={addImageToEmailContent}
+          className="input-file-upload"
+        />
+
+      </div>
+    </div>
+    // <div className="email-update-container">
+    // <div className="editor">
+    //   {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
+    //   <div className="tabs-container">
+    //     <button
+    //       className={`tab-button ${activeTab === 'weeklyProgress' ? 'active' : ''}`}
+    //       onClick={switchToWeeklyProgress}
+    //     >
+    //       Weekly Progress Update
+    //     </button>
+    //     <button
+    //       className={`tab-button ${activeTab === 'nonFormatted' ? 'active' : ''}`}
+    //       onClick={switchToNonFormatted}
+    //     >
+    //       Non-Formatted
+    //     </button>
+    //   </div>
+    //   <br />
+    //     {showEditor && <Editor
+    //       tinymceScriptSrc="/tinymce/tinymce.min.js"
+    //       id="email-editor"
+    //       initialValue="<p>This is the initial content of the editor</p>"
+    //       init={editorInit}
+    //       onEditorChange={(content, editor) => {
+    //         setEmailContent(content);
+    //       }}
+    //     />}
+    //     {
+    //       title ? (
+    //         ""
+    //       ) : (
+    //         <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
+    //           Broadcast Weekly Update
+    //         </button>
+    //       )
+    //     }
+
+    //   </div>
+    //   <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+    //     {
+    //       title ? (
+    //         <p>Email</p>
+    //       ) : (
+
+    //         <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+    //           Email List (comma-separated):
+    //         </label>
+    //       )
+    //     }
+    //     <input type="text" value={emailTo} id="email-list-input" onChange={handleEmailListChange} className='input-text-for-announcement' />
+    //     <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
+    //       {
+    //         title ? (
+    //           "Send Email"
+    //         ) : (
+    //           "Send mail to specific users"
+    //         )
+    //       }
+    //     </button>
+
+    //     <hr />
+    //     <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+    //       Insert header or image link:
+    //     </label>
+    //     <input
+    //       type="text"
+    //       id="header-content-input"
+    //       onChange={handleHeaderContentChange}
+    //       value={headerContent}
+    //       className="input-text-for-announcement"
+    //     />
+
+    //     <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
+    //       Insert
+    //     </button>
+    //     <hr />
+    //     <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
+    //       Upload Header (or footer):
+    //     </label>
+    //     <input
+    //       type="file"
+    //       id="upload-header-input"
+    //       onChange={addImageToEmailContent}
+    //       className="input-file-upload"
+    //     />
+
+    //   </div>
+    // </div>
+  );
+
+  const renderNonFormattedView = () => (
+    <div className="email-update-container">
+      <div className="editor">
+        {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
+        <div className="tabs-container">
+          <button
+            className={`tab-button ${activeTab === 'weeklyProgress' ? 'active' : ''}`}
+            onClick={switchToWeeklyProgress}
+          >
+            Weekly Progress Update
+          </button>
+          <button
+            className={`tab-button ${activeTab === 'nonFormatted' ? 'active' : ''}`}
+            onClick={switchToNonFormatted}
+          >
+            Non-Formatted
+          </button>
+        </div>
+        <br />
+        {showEditor && <Editor
+          tinymceScriptSrc="/tinymce/tinymce.min.js"
+          id="email-editor"
+          initialValue="<p>This is the initial content of the editor</p>"
+          init={editorInit}
+          onEditorChange={(content, editor) => {
+            setEmailContent(content);
+          }}
+        />}
+        {
+          title ? (
+            ""
+          ) : (
+            <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
+              Broadcast Weekly Update
+            </button>
+          )
+        }
+
+      </div>
+      <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+        {
+          title ? (
+            <p>Email</p>
+          ) : (
+
+            <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
+              Email List (comma-separated):
+            </label>
+          )
+        }
+        <input type="text" value={emailTo} id="email-list-input" onChange={handleEmailListChange} className='input-text-for-announcement' />
+        <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
+          {
+            title ? (
+              "Send Email"
+            ) : (
+              "Send mail to specific users"
+            )
+          }
+        </button>
+
+        <hr />
+        <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+          Insert header or image link:
+        </label>
+        <input
+          type="text"
+          id="header-content-input"
+          onChange={handleHeaderContentChange}
+          value={headerContent}
+          className="input-text-for-announcement"
+        />
+
+        <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
+          Insert
+        </button>
+        <hr />
+        <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
+          Upload Header (or footer):
+        </label>
+        <input
+          type="file"
+          id="upload-header-input"
+          onChange={addImageToEmailContent}
+          className="input-file-upload"
+        />
+
+      </div>
+    </div>
+  );
+
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
-      {activeTab === 'weeklyProgress' && (
-        <div className="email-update-container">
-          <div className="editor">
-            {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
-            <div className="tabs-container">
-              <button
-                className={`tab-button ${activeTab === 'weeklyProgress' ? 'active' : ''}`}
-                onClick={switchToWeeklyProgress}
-              >
-                Weekly Progress Update
-              </button>
-              <button
-                className={`tab-button ${activeTab === 'nonFormatted' ? 'active' : ''}`}
-                onClick={switchToNonFormatted}
-              >
-                Non-Formatted
-              </button>
-            </div>
-            <br />
-            {showEditor && <Editor
-              tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"
-              initialValue="<p>This is the initial content of the editor</p>"
-              init={editorInit}
-              onEditorChange={(content, editor) => {
-                setEmailContent(content);
-              }}
-            />}
-            {
-              title ? (
-                ""
-              ) : (
-                <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
-                  Broadcast Weekly Update
-                </button>
-              )
-            }
-
-          </div>
-          <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
-            {
-              title ? (
-                <p>Email</p>
-              ) : (
-
-                <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                  Email List (comma-separated):
-                </label>
-              )
-            }
-            <input type="text" value={emailTo} id="email-list-input" onChange={handleEmailListChange} className='input-text-for-announcement' />
-            <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
-              {
-                title ? (
-                  "Send Email"
-                ) : (
-                  "Send mail to specific users"
-                )
-              }
-            </button>
-
-            <hr />
-            <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Insert header or image link:
-            </label>
-            <input
-              type="text"
-              id="header-content-input"
-              onChange={handleHeaderContentChange}
-              value={headerContent}
-              className="input-text-for-announcement"
-            />
-
-            <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
-              Insert
-            </button>
-            <hr />
-            <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Upload Header (or footer):
-            </label>
-            <input
-              type="file"
-              id="upload-header-input"
-              onChange={addImageToEmailContent}
-              className="input-file-upload"
-            />
-
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'nonFormatted' && (
-        <div className="email-update-container">
-          <div className="editor">
-            {title ? <h3>{title}</h3> : <h3>Weekly Progress Editor</h3>}
-            <div className="tabs-container">
-              <button
-                className={`tab-button ${activeTab === 'weeklyProgress' ? 'active' : ''}`}
-                onClick={switchToWeeklyProgress}
-              >
-                Weekly Progress Update
-              </button>
-              <button
-                className={`tab-button ${activeTab === 'nonFormatted' ? 'active' : ''}`}
-                onClick={switchToNonFormatted}
-              >
-                Non-Formatted
-              </button>
-            </div>
-            <br />
-            {showEditor && <Editor
-              tinymceScriptSrc="/tinymce/tinymce.min.js"
-              id="email-editor"
-              initialValue="<p>This is the initial content of the editor</p>"
-              init={editorInit}
-              onEditorChange={(content, editor) => {
-                setEmailContent(content);
-              }}
-            />}
-            {
-              title ? (
-                ""
-              ) : (
-                <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
-                  Broadcast Weekly Update
-                </button>
-              )
-            }
-
-          </div>
-          <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
-            {
-              title ? (
-                <p>Email</p>
-              ) : (
-
-                <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                  Email List (comma-separated):
-                </label>
-              )
-            }
-            <input type="text" value={emailTo} id="email-list-input" onChange={handleEmailListChange} className='input-text-for-announcement' />
-            <button type="button" className="send-button" onClick={handleSendEmails} style={darkMode ? boxStyleDark : boxStyle}>
-              {
-                title ? (
-                  "Send Email"
-                ) : (
-                  "Send mail to specific users"
-                )
-              }
-            </button>
-
-            <hr />
-            <label htmlFor="header-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Insert header or image link:
-            </label>
-            <input
-              type="text"
-              id="header-content-input"
-              onChange={handleHeaderContentChange}
-              value={headerContent}
-              className="input-text-for-announcement"
-            />
-
-            <button type="button" className="send-button" onClick={addHeaderToEmailContent} style={darkMode ? boxStyleDark : boxStyle}>
-              Insert
-            </button>
-            <hr />
-            <label htmlFor="upload-header-input" className={darkMode ? 'text-light' : 'text-dark'}>
-              Upload Header (or footer):
-            </label>
-            <input
-              type="file"
-              id="upload-header-input"
-              onChange={addImageToEmailContent}
-              className="input-file-upload"
-            />
-
-          </div>
-        </div>
-      )}
+      {activeTab === 'weeklyProgress' && renderWeeklyProgressView()}
+      {activeTab === 'nonFormatted' && renderNonFormattedView()}
     </div>
 
   );
