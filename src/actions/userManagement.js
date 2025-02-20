@@ -81,6 +81,33 @@ export const updateUserStatus = (user, status, reactivationDate) => {
 };
 
 /**
+ * update the user profile
+ * @param {*} user - the user to be updated
+ * @param {*} status  - Active/InActive
+ */
+export const updateUserPauseStatus = (user, status, reactivationDate) => {
+  const userProfile = { ...user};
+  userProfile.isActive = status === UserStatus.Active;
+  userProfile.reactivationDate = reactivationDate;
+  const patchData = {
+    status,
+    reactivationDate: status === UserStatus.Active ? undefined : reactivationDate
+  };
+
+  return async dispatch => {
+    try {
+      await axios.patch(ENDPOINTS.USER_PAUSE(user._id), patchData);
+      dispatch(userProfileUpdateAction(userProfile));
+    } catch (error) {
+      console.error("Error updating user pause status:", error);
+      throw error;
+    }
+  };
+};
+
+
+
+/**
  * Update the rehireable status of a user
  * @param{*} user - the user whose rehireable status is to be updated
  * @param{boolean} isRehireable - the new rehireable status
