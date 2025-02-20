@@ -265,31 +265,29 @@ export const updateTeamMemeberVisibility = (teamId, userId, visibility) => {
  * Set allTeamCode in store
  */
 
-export const fetchAllTeamCodeSucess = (payload) => ({
+export const fetchAllTeamCodeSucess = payload => ({
   type: FETCH_ALL_TEAM_CODE_SUCCESS,
   payload,
 });
 
 /**
- * 
- * @param {*} name 
- * @param {*} status 
- * @returns 
+ *
+ * @param {*} name
+ * @param {*} status
+ * @returns
  */
 
 export const getAllTeamCode = () => {
-  return async (dispatch) => {
+  return async dispatch => {
     try {
       const res = await axios.get(ENDPOINTS.USER_ALL_TEAM_CODE);
+      if (!res || !res.data) {
+        throw new Error('Invalid response from server');
+      }
       dispatch(fetchAllTeamCodeSucess(res.data));
-      const userProfilesRes = await axios.get(ENDPOINTS.GET_ALL_USER_PROFILES);
-      dispatch({
-        type: FETCH_ALL_TEAM_CODE_SUCCESS,
-        payload: userProfilesRes.data,
-      });
     } catch (error) {
       dispatch({
-        type: FETCH_ALL_TEAM_CODE_FAILURE
+        type: FETCH_ALL_TEAM_CODE_FAILURE,
       });
     }
     // const userTeamsPromise = axios.get(ENDPOINTS.GET_ALL_USER_PROFILES);
