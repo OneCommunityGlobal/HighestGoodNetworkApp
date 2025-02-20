@@ -23,6 +23,7 @@
 
 .teamtable-container .row,
 .projecttable-container .row {
+  width: 100%;
   margin: 0px;
 }
 
@@ -31,6 +32,7 @@
   width: 100%;
   margin-bottom: 10px;
   outline: none;
+  z-index: 10;
 }
 
 .teams-span,
@@ -45,7 +47,7 @@
 }
 
 .project-auto-complete:hover {
-  background: #1d62f0;
+  background: #ddebff;
 }
 
 .team-auto-complete {
@@ -54,16 +56,18 @@
 }
 
 .team-auto-complete:hover {
-  background: #1d62f0;
+  background: #ddebff;
 }
+
 #myTabContent {
   margin-top: 20px;
   padding-top: 4px;
-  border-color: #dee2e6 
+  border-color: #dee2e6;
 }
+
 @media (max-width: 1024px) {
   #myTabContent {
     padding-top: 0px;
-    border-color: #fff #dee2e6 #dee2e6 
+    border-color: #fff #dee2e6 #dee2e6;
   }
 }

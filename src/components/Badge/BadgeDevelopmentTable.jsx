@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+
 import {
   Container,
   Button,
@@ -19,10 +20,14 @@ import BadgeTableHeader from './BadgeTableHeader';
 import BadgeTableFilter from './BadgeTableFilter';
 import EditBadgePopup from './EditBadgePopup';
 import DeleteBadgePopup from './DeleteBadgePopup';
+import hasPermission from '../../utils/permissions';
 import './Badge.css';
 
 function BadgeDevelopmentTable(props) {
   const { darkMode } = props;
+
+  const canUpdateBadges = hasPermission('update:badges');
+  const canDeleteBadges = hasPermission('delete:badges');
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -34,6 +39,14 @@ function BadgeDevelopmentTable(props) {
 
   const [editBadgeValues, setEditBadgeValues] = useState('');
   const [editPopup, setEditPopup] = useState(false);
+
+  const [sortedBadges, setSortedBadges] = useState([]);
+  const [sortNameState, setSortNameState] = useState('default');
+  const [sortRankState, setSortRankState] = useState('default');
+
+  useEffect(() => {
+    setSortedBadges(props.allBadgeData);
+  }, [props.allBadgeData]);
 
   const detailsText = badegValue => {
     let returnText = '';
@@ -149,9 +162,52 @@ function BadgeDevelopmentTable(props) {
     return filteredList;
   };
 
-  const filteredBadges = filterBadges(props.allBadgeData);
+  
+  const handleSortName = () => {
+    console.log("here sort name");
+    setSortRankState('default');
+    setSortNameState(prevState => {
+      // change the icon
+      let newState = 'ascending';
+      if (prevState === 'ascending') newState = 'descending';
+      if (prevState === 'descending') newState = 'none';
 
-  // Badge Development checkbox
+      // Sort the badges by name
+      const sorted = [...sortedBadges].sort((a, b) => {
+        if (newState === 'ascending') return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
+        if (newState === 'descending') return a.badgeName.toLowerCase() < b.badgeName.toLowerCase() ? 1 : -1;
+        return 0;
+      });
+
+      setSortedBadges(sorted);
+      return newState;
+    });
+  };
+
+  const handleSortRank = () => {
+    setSortNameState('default');
+    console.log("sort rank");
+    setSortRankState(prevState => {
+      // Change the icon state
+      let newState = 'ascending';
+      if (prevState === 'ascending') newState = 'descending';
+      if (prevState === 'descending') newState = 'none';
+
+      // Sort the badges by ranking
+      const sorted = [...sortedBadges].sort((a, b) => {
+        if (newState === 'ascending') return a.ranking - b.ranking;
+        if (newState === 'descending') return b.ranking - a.ranking;
+        return 0;
+      });
+
+      setSortedBadges(sorted);
+      return newState;
+    });
+    
+  };
+
+  const filteredBadges = sortedBadges;
+
   const reportBadge = badgeValue => {
     // Returns true for all checked badges and false for all unchecked
     const checkValue = !!badgeValue.showReport;
@@ -180,27 +236,54 @@ function BadgeDevelopmentTable(props) {
     );
   };
 
+
+  const onNameSort = () => {
+    setSortNameState((prevState) => {
+      if (prevState === 'ascending') return 'descending';
+      if (prevState === 'descending') return 'default';
+      return 'ascending';
+    });
+  
+    const sortedBadges = [...props.allBadgeData].sort((a, b) => {
+      if (sortNameState === 'ascending') {
+        return a.badgeName.toLowerCase() > b.badgeName.toLowerCase() ? 1 : -1;
+      } else if (sortNameState === 'descending') {
+        return a.badgeName.toLowerCase() < b.badgeName.toLowerCase() ? 1 : -1;
+      }
+      return 0;
+    });
+  
+    return sortedBadges;
+  };
+  
+const onRankSort = () => {
+    setSortRankState((prevState) => {
+      if (prevState === 'ascending') return 'descending';
+      if (prevState === 'descending') return 'default';
+      return 'ascending';
+    });
+  
+  
+  };
+
   return (
     <Container fluid>
-      <table className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+      <table
+        className={`table table-bordered ${darkMode ? 'bg-yinmn-blue text-light dark-mode' : ''}`}
+      >
         <thead>
-          <BadgeTableHeader darkMode={darkMode} />
-          <BadgeTableFilter
-            onBadgeNameSearch={onBadgeNameSearch}
-            onBadgeDescriptionSearch={onBadgeDescriptionSearch}
-            onBadgeTypeSearch={onBadgeTypeSearch}
-            onBadgeRankingSort={onBadgeRankingSort}
-            resetFilters={resetFilters}
-            name={name}
-            description={description}
-            type={type}
-            order={order}
+        <BadgeTableHeader
             darkMode={darkMode}
+            sortNameState={sortNameState}
+            sortRankState={sortRankState}
+            onNameSort={handleSortName}
+            onRankSort={handleSortRank}
           />
+
         </thead>
         <tbody>
           {filteredBadges.map(value => (
-            <tr key={value._id} className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <tr key={value._id}>
               <td className="badge_image_sm">
                 {' '}
                 <img src={value.imageUrl} id={`popover_${value._id}`} alt="" />
@@ -233,6 +316,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="info"
+                    disabled = {!canUpdateBadges}
                     onClick={() => onEditButtonClick(value)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -243,6 +327,7 @@ function BadgeDevelopmentTable(props) {
                   <Button
                     outline
                     color="danger"
+                    disabled = {!canDeleteBadges}
                     onClick={() => onDeleteButtonClick(value._id, value.badgeName)}
                     style={darkMode ? {} : boxStyle}
                   >
@@ -269,12 +354,28 @@ function BadgeDevelopmentTable(props) {
         className={darkMode ? 'text-light' : ''}
       >
         <ModalBody
-          className={`badge-message-background-${props.color} ${darkMode ? 'bg-yinmn-blue' : ''}`}
+          className={`${darkMode ? 'bg-yinmn-blue' : `badge-message-background-${props.color}`} ${
+            props.color === 'success' ? 'border-success' : 'border-danger'
+          } border`}
         >
-          <p className={`badge-message-text-${props.color}`}>{props.message}</p>
+          <p
+            className={`${
+              props.color === 'success'
+                ? darkMode
+                  ? 'text-success'
+                  : 'text-success'
+                : darkMode
+                ? 'text-danger'
+                : 'text-danger'
+            } font-weight-bold mb-0`}
+          >
+            {props.message}
+          </p>
         </ModalBody>
         <ModalFooter
-          className={`badge-message-background-${props.color} ${darkMode ? 'bg-space-cadet' : ''}`}
+          className={`${darkMode ? 'bg-space-cadet' : `badge-message-background-${props.color}`} ${
+            props.color === 'success' ? 'border-success' : 'border-danger'
+          } border-top-0`}
         >
           <Button color="secondary" size="sm" onClick={() => props.closeAlert()}>
             OK
@@ -296,6 +397,7 @@ const mapDispatchToProps = dispatch => ({
   deleteBadge: badgeId => dispatch(deleteBadge(badgeId)),
   updateBadge: (badgeId, badgeData) => dispatch(updateBadge(badgeId, badgeData)),
   closeAlert: () => dispatch(closeAlert()),
+  hasPermission: permission => dispatch(hasPermission(permission)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeDevelopmentTable);
