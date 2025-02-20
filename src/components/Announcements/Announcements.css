@@ -14,16 +14,19 @@ label {
 }
 
 .text-light {
-  color: #fff; /* White text for dark mode */
+  color: #fff;
+  /* White text for dark mode */
 }
 
 .text-dark {
-  color: #333; /* Default dark text for light mode */
+  color: #333;
+  /* Default dark text for light mode */
 }
 
 .input-text-for-announcement,
 textarea {
-  margin-top: 5px;   /* Space above input fields */
+  margin-top: 5px;
+  /* Space above input fields */
   width: 100%;
   padding: 10px;
   border: 1px solid #ccc;
@@ -103,6 +106,26 @@ button.send-button:hover {
   color: #000;
   padding: 0 10px;
   font-size: 18px;
+}
+
+.tabs-container {
+  margin: 30px 0;
+}
+
+.tab-button {
+  background-color: #f1f1f1;
+  border: 1px solid #ccc;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-right: 10px;
+  border-radius: 4px;
+  font-weight: bold;
+}
+
+.tab-button.active {
+  background-color: #4285f4;
+  color: white;
+  border-color: #4285f4;
 }
 
 /* Responsive design: Adjusts the preview section on smaller screens. */
