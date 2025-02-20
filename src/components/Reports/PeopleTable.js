@@ -11,7 +11,7 @@ function PeopleTable({ userProfiles, darkMode }) {
     PeopleList = userProfiles
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
       .map((person, index) => (
-        <tr className={`teams__tr`} id={`tr_${person._id}`} key={person._id}>
+        <tr className="teams__tr" id={`tr_${person._id}`} key={person._id}>
           <th className={`teams__order--input ${darkMode ? 'text-light' : ''}`} scope="row">
             <div>{index + 1}</div>
           </th>
