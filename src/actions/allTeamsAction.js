@@ -278,17 +278,30 @@ export const fetchAllTeamCodeSucess = (payload) => ({
  */
 
 export const getAllTeamCode = () => {
-
-  const userTeamsPromise = axios.get(ENDPOINTS.USER_ALL_TEAM_CODE);
   return async (dispatch) => {
-        return userTeamsPromise
-          .then((res) => {
-              dispatch(fetchAllTeamCodeSucess(res.data));
-          })
-          .catch((err) => {
-            dispatch({
-                type: FETCH_ALL_TEAM_CODE_FAILURE, 
-            });
-          });
-        }
+    try {
+      const res = await axios.get(ENDPOINTS.USER_ALL_TEAM_CODE);
+      dispatch(fetchAllTeamCodeSucess(res.data));
+      const userProfilesRes = await axios.get(ENDPOINTS.GET_ALL_USER_PROFILES);
+      dispatch({
+        type: FETCH_ALL_TEAM_CODE_SUCCESS,
+        payload: userProfilesRes.data,
+      });
+    } catch (error) {
+      dispatch({
+        type: FETCH_ALL_TEAM_CODE_FAILURE
+      });
+    }
+    // const userTeamsPromise = axios.get(ENDPOINTS.GET_ALL_USER_PROFILES);
+    // return async (dispatch) => {
+    //   return userTeamsPromise
+    //     .then((res) => {
+    //       dispatch(fetchAllTeamCodeSucess(res.data));
+    //     })
+    //     .catch((err) => {
+    //       dispatch({
+    //         type: FETCH_ALL_TEAM_CODE_FAILURE,
+    //       });
+    //     });
+  };
 };

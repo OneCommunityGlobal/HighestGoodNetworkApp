@@ -28,7 +28,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { getAllUserTeams } from '../../actions/allTeamsAction';
+import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
@@ -109,7 +109,9 @@ export class WeeklySummariesReport extends Component {
       hasPermission,
       auth,
       setTeamCodes,
+      getAllTeamCode,
     } = this.props;
+    await getAllTeamCode();
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
@@ -684,6 +686,8 @@ export class WeeklySummariesReport extends Component {
           if (data?.data?.isUpdated) {
             this.handleTeamCodeChange('', replaceCode, userObjs);
 
+            await this.props.getAllTeamCode();
+
             const updatedSummaries = [...this.state.summaries];
             const teamCodeGroup = {};
 
@@ -1127,6 +1131,7 @@ const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
+  getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
 });
 
