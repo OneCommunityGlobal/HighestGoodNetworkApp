@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
+import { fetchAllMaterials, resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import ItemListView from '../ItemList/ItemListView';
 import UpdateMaterialModal from '../UpdateMaterials/UpdateMaterialModal';
 
@@ -20,24 +20,16 @@ function MaterialListView() {
 
   useEffect(() => {
     dispatch(fetchAllMaterials());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
-    if (postMaterialUpdateResult?.result != null) {
-      // Update only the changed material in the local state if possible
-      const updatedMaterial = postMaterialUpdateResult.result;
-      if (updatedMaterial && updatedMaterial._id) {
-        // If we have the updated material data, we can update it locally
-        dispatch({
-          type: 'SET_MATERIALS',
-          payload: materials.map(mat => (mat._id === updatedMaterial._id ? updatedMaterial : mat)),
-        });
-      } else {
-        // Fallback to full refresh only if necessary
-        fetchAllMaterials();
+    if (postMaterialUpdateResult?.result !== null && !postMaterialUpdateResult.loading) {
+      if (!postMaterialUpdateResult.error) {
+        dispatch(fetchAllMaterials());
+        dispatch(resetMaterialUpdate());
       }
     }
-  }, [postMaterialUpdateResult?.result, materials, dispatch, fetchAllMaterials]);
+  }, [postMaterialUpdateResult, dispatch]);
 
   const itemType = 'Materials';
 
