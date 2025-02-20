@@ -19,14 +19,12 @@ src/components/AutoReload/**
 src/components/Badge/**
 src/components/common/**
 src/components/Projects/**
-src/components/Reports/**
 src/components/SetupProfile/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/TeamLocations/**
-src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/Announcements/**
