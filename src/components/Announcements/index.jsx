@@ -5,11 +5,12 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import ImageUploader from './ImageUploader';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const dispatch = useDispatch();
-  const [activeTab, setActiveTab] = useState('nonFormatted'); // default to "Weekly Progress Update"
+  const [activeTab, setActiveTab] = useState('weeklyProgress'); // default to "Weekly Progress Update"
   const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
@@ -262,7 +263,6 @@ function Announcements({ title, email }) {
           </div>
         </div>
       )}
-      {/* MAKE BOTH CODE CONSISTENT */}
 
       {activeTab === 'nonFormatted' && (
         <div className="email-update-container">
