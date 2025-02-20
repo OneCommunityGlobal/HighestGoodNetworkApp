@@ -49,12 +49,12 @@ export const TaskEditSuggestions = () => {
   }, [])
 
   return (
-    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
+    <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
       <Container>
         <div className='task-edit-suggestions-title'>
           <h1>Task Edit Suggestions</h1>
           <button type='button' title='Refresh' onClick={handleLoadTaskEditSuggestions}>
-            <FaUndoAlt size={20} className={darkMode ? 'text-light' : ''}/>
+            <FaUndoAlt size={20} className={darkMode ? 'text-light' : ''} />
           </button>
         </div>
         {/* {isUserPermitted ? <h1>Task Edit Suggestions</h1> : <h1>{userRole} is not permitted to view this</h1>} */}
