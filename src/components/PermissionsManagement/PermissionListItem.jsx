@@ -23,7 +23,6 @@ function PermissionListItem(props) {
     depth,
     setPermissions,
     darkMode,
-    authUser,
     setRemovedDefaultPermissions,
     removedDefaultPermissions,
   } = props;
@@ -54,8 +53,7 @@ function PermissionListItem(props) {
     setinfoRoleModal(!infoRoleModal);
   };
   const togglePermission = permissionKey => {
-    // Default perms can only be managed by Owner role. if logged in user is Owner, default perms are editable
-    // Add/Delete buttons are only enabled for default perms if logged in user is Owner
+    // Default perms can only be managed (Add/Delete) by users with "putUserProfilePermissions" perm.
     if (immutablePermissions.includes(permissionKey)) {
       if (!removedDefaultPermissions?.includes(permissionKey)) {
         // deleteing default perm
@@ -225,7 +223,8 @@ function PermissionListItem(props) {
               }}
               disabled={
                 !props.hasPermission('putRole') ||
-                (immutablePermissions.includes(permission) && authUser.role !== 'Owner')
+                (immutablePermissions.includes(permission) &&
+                  !props.hasPermission('putUserProfilePermissions'))
               }
               style={darkMode ? boxStyleDark : boxStyle}
             >
@@ -278,7 +277,7 @@ function PermissionListItem(props) {
   );
 }
 
-const mapStateToProps = state => ({ roles: state.role.roles, authUser: state.auth.user });
+const mapStateToProps = state => ({ roles: state.role.roles });
 
 const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
