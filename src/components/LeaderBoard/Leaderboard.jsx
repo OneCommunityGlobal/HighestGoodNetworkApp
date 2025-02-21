@@ -542,10 +542,12 @@ function LeaderBoard({
         >
           <thead className="responsive-font-size">
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th>Status</th>
-              <th>
+              <th data-abbr="Stat.">
+                <span>Status</span>
+              </th>
+              <th data-abbr="Name">
                 <div className="d-flex align-items-center">
-                  <span className="mr-2">Name</span>
+                  <span>Name</span>
                   <EditableInfoModal
                     areaName="Leaderboard"
                     areaTitle="Team Members Navigation"
@@ -553,25 +555,26 @@ function LeaderBoard({
                     fontSize={18}
                     isPermissionPage
                     darkMode={darkMode}
-                    className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                    className="p-2"
                   />
                 </div>
               </th>
-              <th>Days Left</th>
-              <th>Time Off</th>
-              <th>
-                <span className="d-sm-none">Tan. Time</span>
-                <span className="d-none d-sm-block">Tangible Time</span>
+              <th data-abbr="Days Lft.">
+                <span>Days Left</span>
               </th>
-              <th>Progress</th>
-
-              <th style={{ textAlign: 'right' }}>
+              <th data-abbr="Time Off">
+                <span>Time Off</span>
+              </th>
+              <th data-abbr="Tan. Time">
+                <span>Tangible Time</span>
+              </th>
+              <th data-abbr="Prog.">
+                <span>Progress</span>
+              </th>
+              <th data-abbr="Tot. Time" style={{ textAlign: 'right' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ textAlign: 'left' }}>
-                    <span className="d-sm-none">Tot. Time</span>
-                    <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>
-                      Total Time{' '}
-                    </span>
+                    <span>Total Time</span>
                   </div>
                   {isOwner && (
                     <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
@@ -580,6 +583,7 @@ function LeaderBoard({
               </th>
             </tr>
           </thead>
+
           <tbody className="my-custome-scrollbar responsive-font-size">
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td aria-label="Placeholder" />
