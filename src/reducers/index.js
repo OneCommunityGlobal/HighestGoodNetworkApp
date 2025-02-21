@@ -35,6 +35,7 @@ import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer
 import { followUpReducer } from "./followUpReducer";
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
+import  formReducer  from './formReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
 
@@ -53,6 +54,7 @@ import dashboardReducer from '../reducers/dashboardReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
+
 
 const localReducers = {
   auth: authReducer,
