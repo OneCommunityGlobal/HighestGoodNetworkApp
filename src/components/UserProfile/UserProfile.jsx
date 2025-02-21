@@ -67,11 +67,7 @@ import {
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
 
-<<<<<<< HEAD
-import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
-=======
 import { getTimeEndDateEntriesByPeriod, getTimeStartDateEntriesByPeriod } from '../../actions/timeEntries.js';
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
 import ProfileImageModal from './UserProfileModal/suggestedProfileModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
@@ -129,15 +125,9 @@ function UserProfile(props) {
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
 
 
-<<<<<<< HEAD
-  const updateRemovedImage = async () =>{
-    try {
-      let response=await axios.put(ENDPOINTS.USERS_REMOVE_PROFILE_IMAGE,{'user_id':userProfile._id})
-=======
   const updateRemovedImage = async () => {
     try {
       let response = await axios.put(ENDPOINTS.USERS_REMOVE_PROFILE_IMAGE, { 'user_id': userProfile._id })
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
       await loadUserProfile()
       toast.success("Profile Image Removed")
     } catch (error) {
@@ -940,11 +930,7 @@ function UserProfile(props) {
           <Col md="4" id="profileContainer">
             <div className="profile-img">
               <Image
-<<<<<<< HEAD
-                src={profilePic!==undefined?profilePic : '/pfp-default.png'}
-=======
                 src={profilePic !== undefined ? profilePic : '/pfp-default.png'}
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
@@ -967,15 +953,6 @@ function UserProfile(props) {
                   />
                 </div>
               ) : null}
-<<<<<<< HEAD
-              
-            </div>
-            <div 
-            style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-              {(userProfile?.profilePic!==undefined)?
-                <Button color="danger" onClick={toggleRemoveModal} className="remove-button">
-                  Remove Image</Button>:<></>}
-=======
 
             </div>
             <div
@@ -984,7 +961,6 @@ function UserProfile(props) {
                 <Button color="danger" onClick={toggleRemoveModal} className="remove-button">
                   Remove Image</Button> : <></>}
               {/*                   
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
               {((userProfile?.profilePic==undefined || 
                 userProfile?.profilePic==null || 
                 userProfile?.profilePic=="")&& 
@@ -993,27 +969,6 @@ function UserProfile(props) {
                   userProfile?.suggestedProfilePics.length!==0
                 ))?
                 <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
-<<<<<<< HEAD
-                :null}
-                </div>
-
-                {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>}
-                <ConfirmRemoveModal
-                  isOpen={isRemoveModalOpen}
-                  toggleModal={toggleRemoveModal}
-                  confirmRemove={confirmRemoveImage}
-                />
-              
-              <QuickSetupModal
-                setSaved={setSaved}
-                handleSubmit={handleSubmit}
-                setUserProfile={setUserProfile}
-                userProfile={userProfile}
-                userTeams={teams || []}
-                teamsData={props?.allTeams?.allTeamsData || []}
-                projectsData={props?.allProjects?.projects || []}
-              />
-=======
                 :null} */}
             </div>
 
@@ -1033,7 +988,6 @@ function UserProfile(props) {
               teamsData={props?.allTeams?.allTeamsData || []}
               projectsData={props?.allProjects?.projects || []}
             />
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
           </Col>
           <Col md="8">
             {!isProfileEqual ||
@@ -1120,11 +1074,7 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
-<<<<<<< HEAD
-              {(canGetProjectMembers && teams.length !== 0) || ['Owner','Administrator','Manager'].includes(requestorRole) ? (
-=======
               {(canGetProjectMembers && teams.length !== 0) || ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);

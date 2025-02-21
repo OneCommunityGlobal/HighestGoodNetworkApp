@@ -242,11 +242,6 @@ export const TeamMembersPopup = React.memo(props => {
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
-<<<<<<< HEAD
-                <th>Active</th>
-                <th className='def-width'>#</th>
-                <th className="def-width">User Name</th>
-=======
               <th>
               <div className={styles.divContainer}>
               <div className={styles.sliderContainer}>
@@ -269,7 +264,6 @@ export const TeamMembersPopup = React.memo(props => {
                 </th>
                 <th>#</th>
                 <th>User Name</th>
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
                   Date Added <FontAwesomeIcon {...icons[sortOrder]} />
                 </th>
@@ -332,54 +326,11 @@ export const TeamMembersPopup = React.memo(props => {
                             <i className="fa fa-circle" aria-hidden="true" />
                           </div>
                         </td>
-<<<<<<< HEAD
-                        <td className="def-width">{index + 1}</td>
-                        <td className="def-width">
-                          {returnUserRole(user) ? (
-                            <b>
-                              {user.firstName} {user.lastName} ({user.role})
-                            </b>
-                          ) : (
-                            <span>
-                              {user.firstName} {user.lastName} ({user.role})
-                            </span>
-                          )}{' '}
-                          {hasVisibilityIconPermission && !user.isVisible && (  // Invisibility icon from 'Cillian'
-                            <i className="fa fa-eye-slash" title="User is invisible" />
-                          )}
-                        </td>
-                        {/* <td>{user}</td> */}
-                        <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
-                        <td>
-                          <ToggleSwitch
-                            key={`${props.selectedTeamName}-${user._id}`}
-                            switchType="limit-visibility"
-                            userId={user._id}
-                            choice={memberVisibility[user._id]}
-                            UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
-                          />
-                        </td>
-                        {canAssignTeamToUsers && (
-                          <td>
-                            <Button
-                              color="danger"
-                              onClick={() => handleDelete(user._id)}
-                              style={darkMode ? boxStyleDark : boxStyle}
-                            >
-                              Delete
-                            </Button>
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  })}
-=======
                       )}
                     </tr>
                   );
                 })
                 }
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
             </tbody>
           </table>
         </ModalBody>

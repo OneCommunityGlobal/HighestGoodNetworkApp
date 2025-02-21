@@ -48,14 +48,10 @@ const TINY_MCE_INIT_OPTIONS = {
   placeholder: 'Description (10-word minimum) and reference link',
   plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
   toolbar:
-    // eslint-disable-next-line no-multi-str
-<<<<<<< HEAD
-    'bold italic underline link removeformat | bullist numlist outdent indent |\
-=======
-    'bold italic underline link removeformat bullist numlist outdent indent |\
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
-                    styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                    subscript superscript charmap  | help',
+  'bold italic underline link removeformat bullist numlist outdent indent |\
+               styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+               subscript superscript charmap  | help',
+
   branding: false,
   toolbar_mode: 'sliding',
   min_height: 180,

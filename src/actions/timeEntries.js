@@ -75,12 +75,8 @@ export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //F
   toDate = moment(toDate)
     .endOf('day')
     .format('YYYY-MM-DDTHH:mm:ss');
-<<<<<<< HEAD
-  const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate,toDate);
-=======
   
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
   return async dispatch => {
     let loggedOut = false;
     try {
