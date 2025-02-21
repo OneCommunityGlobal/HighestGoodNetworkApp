@@ -68,6 +68,7 @@ function FormattedReport({
   canSeeBioHighlight,
   darkMode,
   handleTeamCodeChange,
+  handleSpecialColorDotClick,
 }) {
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
@@ -93,6 +94,7 @@ function FormattedReport({
             darkMode={darkMode}
             handleTeamCodeChange={handleTeamCodeChange}
             auth={auth}
+            handleSpecialColorDotClick={handleSpecialColorDotClick}
           />
         ))}
       </ListGroup>
@@ -207,6 +209,7 @@ function ReportDetails({
   darkMode,
   handleTeamCodeChange,
   auth,
+  handleSpecialColorDotClick,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -227,7 +230,13 @@ function ReportDetails({
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
         <ListGroupItem darkMode={darkMode}>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} auth={auth} />
+          <Index
+            summary={summary}
+            weekIndex={weekIndex}
+            allRoleInfo={allRoleInfo}
+            auth={auth}
+            handleSpecialColorDotClick={handleSpecialColorDotClick}
+          />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
@@ -346,13 +355,15 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
 function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^([a-zA-Z0-9]-[a-zA-Z0-9]{3,5}|[a-zA-Z0-9]{5,7})$/;
+  const fullCodeRegex = /^.{5,7}$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
-    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
+    const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
     try {
-      await axios.patch(url, { key: 'teamCode', value: newStatus });
-      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, userProfileSummary._id); // Update the team code dynamically
+      await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
+      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
+        [userProfileSummary._id]: true,
+      }); // Update the team code dynamically
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -375,6 +386,10 @@ function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
       }
     }
   };
+
+  useEffect(() => {
+    setTeamCode(summary?.teamCode);
+  }, [summary.teamCode]);
 
   return (
     <>
@@ -626,9 +641,10 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo, auth }) {
+function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotClick }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+  const colors = ['purple', 'green', 'navy'];
 
   const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
     if (currentElement.Name === 'Google Doc') {
@@ -669,6 +685,25 @@ function Index({ summary, weekIndex, allRoleInfo, auth }) {
             />
           )}
         </div>
+      </div>
+
+      <div style={{ display: 'inline-block', marginLeft: '10px' }}>
+        {colors.map(color => (
+          <span
+            key={color}
+            onClick={() => handleSpecialColorDotClick(summary._id, color)}
+            style={{
+              display: 'inline-block',
+              width: '15px',
+              height: '15px',
+              margin: '0 5px',
+              borderRadius: '50%',
+              backgroundColor: summary.filterColor === color ? color : 'transparent',
+              border: `3px solid ${color}`,
+              cursor: 'pointer',
+            }}
+          />
+        ))}
       </div>
 
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (

@@ -56,7 +56,7 @@ const BlueSquareLayout = ({
     });
     const blueSquares = Number(userProfile.infringements?.length) || 0;
     const infringementAndTimeOff = scheduledVacation + blueSquares;
-    const hasRolePermission = user && (user.role === 'Administrator' || user.role === 'Owner');
+    const hasRolePermission = user.role === 'Administrator' || user.role === 'Owner';
     if (infringementAndTimeOff >= 4 && !hasRolePermission && !canManageTimeOffRequests) {
       return false;
     }
@@ -131,7 +131,7 @@ const BlueSquareLayout = ({
                   >
                     Blue Square Email BCCs
                   </Button>
-                  <div className="Blue-Square-Email-BCC-tooltip">
+                  <div className={`Blue-Square-Email-BCC-tooltip ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
                     This designates who gets a copy of the blue square emails. It includes ONLY
                     sending to active team members, so we don’t have to remove people from the list
                     if they are made inactive. It doesn’t include getting copies of the time-off

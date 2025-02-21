@@ -1,17 +1,15 @@
-export const get_task_by_wbsId = (WbsTasksID, tasks) => {
-  const get_tasks = [];
-  if (WbsTasksID.length > 0) {
-    let i = 0;
-    while (i < WbsTasksID.length && tasks.fetched) {
-      const result = tasks.taskItems.filter(task => task.wbsId === WbsTasksID[i]);
-      get_tasks.push(result);
-      i += 1;
-    }
+export const getTaskByWbsId = (WbsTasksID, tasks) => {
+  const getTasks = [];
+  if (WbsTasksID.length > 0 && tasks.fetched) {
+    WbsTasksID.forEach(id => {
+      const result = tasks.taskItems.filter(task => task.wbsId === id);
+      getTasks.push(...result);
+    });
   }
 
-  return get_tasks[1];
+  return getTasks;
 };
 
-export const getTasksTableData = (state, { WbsTasksID }) => ({
-  get_tasks: get_task_by_wbsId(WbsTasksID, state.tasks) || [],
+export const getTasksTableData = (tasks, { WbsTasksID }) => ({
+  get_tasks: getTaskByWbsId(WbsTasksID, tasks) || [],
 });

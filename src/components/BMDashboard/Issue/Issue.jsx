@@ -4,6 +4,8 @@ import { toast } from 'react-toastify';
 import { useHistory } from 'react-router-dom';
 import './Issue.css';
 import { useEffect } from 'react';
+import axios from 'axios';
+import { ENDPOINTS } from '../../../utils/URL';
 
 function Issue() {
   const ISSUE_FORM_HEADER = 'ISSUE LOG';
@@ -20,6 +22,8 @@ function Issue() {
   const history = useHistory();
 
   const dropdownOptions = ['Safety', 'METs quality / functionality', 'Labor', 'Weather', 'Other'];
+  const userData = localStorage.getItem('token');
+  const userId = JSON.parse(atob(userData?.split('.')[1]))?.userid;
 
   const safetyCheckboxOptions = [
     'MET Damage/Waste',
@@ -138,10 +142,31 @@ function Issue() {
     return true;
   };
 
-  const handleSubmit = e => {
+  const handleSubmit = async e => {
     e.preventDefault();
 
     const isDataValid = validateData(formData);
+    const currentFormData = {
+      issueDate: formData.issueDate,
+      issueType: formData.dropdown,
+      issueConsequences: Array.from(formData.checkboxes),
+      issueResolved: formData.resolved === 'Yes',
+      issueDescription: formData.description,
+      createdBy: userId,
+    };
+    if (!isDataValid) {
+      return false;
+    }
+    await axios
+      .post(`${ENDPOINTS.BM_ISSUE_FORM}`, currentFormData)
+      .then(res => {
+        toast.success('Issue Form Submitted Successfully');
+        return true;
+      })
+      .catch(err => {
+        toast.error('Issue Form Submission Failed');
+        return false;
+      });
     return isDataValid;
   };
 
@@ -197,7 +222,10 @@ function Issue() {
         <FormGroup>
           <Row className="issue-date">
             <Col className="d-flex justify-content-center">
-              <Label className="sub-title-text">{ISSUE_DATE}</Label>
+              <Label className="sub-title-text">
+                <span className="red-asterisk">* </span>
+                {ISSUE_DATE}
+              </Label>
             </Col>
             <Col>
               <Input
@@ -205,6 +233,8 @@ function Issue() {
                 type="date"
                 name="issueDate"
                 id="issueDate"
+                required
+                max={new Date().toISOString().split('T')[0]}
                 onChange={e => setFormData({ ...formData, issueDate: e.target.value })}
               />
             </Col>
@@ -218,7 +248,10 @@ function Issue() {
         <FormGroup>
           <Row>
             <Col>
-              <Label className="sub-title-text">{ISSUE_TYPE}</Label>
+              <Label className="sub-title-text">
+                <span className="red-asterisk">* </span>
+                {ISSUE_TYPE}
+              </Label>
             </Col>
           </Row>
           <Row>
@@ -229,6 +262,7 @@ function Issue() {
                 name="dropdown"
                 value={formData.dropdown}
                 onChange={e => handleDropdownChange(e.target.value)}
+                required
               >
                 {dropdownOptions.map(option => (
                   <option key={option} value={option}>
@@ -242,7 +276,10 @@ function Issue() {
         <FormGroup>
           <Row>
             <Col>
-              <Label className="sub-title-text">{CONSEQUENCES_TITLE}</Label>
+              <Label className="sub-title-text">
+                <span className="red-asterisk">* </span>
+                {CONSEQUENCES_TITLE}
+              </Label>
             </Col>
           </Row>
           {checkboxOptions.map(pair => (
@@ -254,6 +291,7 @@ function Issue() {
                       type="checkbox"
                       checked={formData.checkboxes.has(option) || false}
                       onChange={() => handleCheckboxChange(option)}
+                      required
                     />
                     {option}
                   </Label>
@@ -265,6 +303,8 @@ function Issue() {
                       placeholder="If other is selected, please specify."
                       value={formData.other}
                       onChange={e => handleOtherInputChange(e, option)}
+                      required={formData.checkboxes.has(option)}
+                      disabled={!formData.checkboxes.has(option)}
                     />
                   )}
                 </Col>
@@ -275,7 +315,10 @@ function Issue() {
         <FormGroup>
           <Row>
             <Col>
-              <Label className="sub-title-text">{RESOLVED}</Label>
+              <Label className="sub-title-text">
+                <span className="red-asterisk">* </span>
+                {RESOLVED}
+              </Label>
             </Col>
           </Row>
           <Row className="issue-radio-buttons">
@@ -285,6 +328,7 @@ function Issue() {
                   type="radio"
                   name="radioOption"
                   onChange={() => setFormData({ ...formData, resolved: 'Yes' })}
+                  required
                 />
                 Yes
               </Label>
@@ -295,6 +339,7 @@ function Issue() {
                   type="radio"
                   name="radioOption"
                   onChange={() => setFormData({ ...formData, resolved: 'No' })}
+                  required
                 />
                 No
               </Label>
@@ -305,6 +350,7 @@ function Issue() {
           <Row>
             <Col>
               <Label for="description" className="sub-title-text">
+                <span className="red-asterisk">* </span>
                 {DESCRIPTION}
               </Label>
             </Col>
@@ -314,10 +360,12 @@ function Issue() {
               <Input
                 className="issue-form-override-css row-margin-bottom"
                 type="textarea"
+                id="description"
                 placeholder={DESCRIPTION_PLACEHOLDER}
                 value={formData.description}
                 rows="8"
                 onChange={e => handleDescriptionChange(e)}
+                required
               />
             </Col>
             <div className="character-counter-text">

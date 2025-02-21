@@ -4,7 +4,7 @@
  ******************************************************************************* */
 import axios from 'axios';
 import * as types from '../constants/projectMembership';
-
+import { searchWithAccent } from 'utils/search';
 import { ENDPOINTS } from '../utils/URL';
 /** *****************************************
  * ACTION CREATORS
@@ -110,17 +110,16 @@ export const findUserProfiles = keyword => {
  * Call API to get all members
  */
 export const fetchAllMembers = projectId => {
-  const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
+  // const request = axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
   return async dispatch => {
-    await dispatch(setMemberStart());
-    await dispatch(foundUsers([]));
-    request
-      .then(res => {
-        dispatch(setMembers(res.data));
-      })
-      .catch(err => {
-        dispatch(setMembersError(err));
-      });
+    dispatch(setMemberStart());
+    dispatch(foundUsers([])); // Clear found users
+    try {
+      const response = await axios.get(ENDPOINTS.PROJECT_MEMBER(projectId));
+      dispatch(setMembers(response.data));
+    } catch (err) {
+      dispatch(setMembersError(err));
+    }
   };
 };
 

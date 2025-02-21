@@ -16,7 +16,7 @@ function WeeklySummaryModal() {
           onClick={toggle}
           onKeyDown={toggle}
           tabIndex="0"
-          aria-label="Toggle button"
+          aria-label="Toggle Weekly Summary"
         >
           <WeeklySummary isModal />
         </div>

@@ -1,128 +1,155 @@
-import React, { useState } from 'react';
+/* eslint-disable import/prefer-default-export */
+import { useState, useEffect } from 'react';
 import { Button } from 'react-bootstrap';
+import Collapse from 'react-bootstrap/Collapse';
 import EditTaskModal from '../../Projects/WBS/WBSDetail/EditTask/EditTaskModal';
 import 'react-table/react-table.css';
-import Collapse from 'react-bootstrap/Collapse';
 import './TasksDetail.css';
 
-const ShowCollapse = props => {
+
+
+function ShowCollapse(props) {
   const [open, setOpen] = useState(false);
+
+
   return (
-    <div>
-      <Button onClick={() => setOpen(!open)} aria-expanded={open}>
-        {props.resources.length} ➤
+    <>
+      <div>
+        {props.resources[0].name}
+        {props.resources.length > 1 && ','}
+      </div>
+      {}
+      {open && (
+        <>
+          {props.resources.slice(1).map((resource, index) => (
+            <Collapse in={open} key={resource._id}>
+              <div>
+                {resource.name}
+                {index < props.resources.length - 2 && ','}
+              </div>
+            </Collapse>
+          ))}
+        </>
+      )}
+      {}
+      <Button onClick={() => setOpen(!open)} aria-expanded={open} size="sm">
+        {open ? 'Show less' : `Show more (${props.resources.length})`} ➤
       </Button>
-
-      <div>{props.resources[0].name}</div>
-
-      {props.resources.slice(1).map(resource => (
-        <Collapse in={open} key={resource._id}>
-          <div key={resource._id} className="new-line">
-            {resource.name}
-          </div>
-        </Collapse>
-      ))}
-    </div>
+    </>
   );
+}
+
+const formatDate = (datetime) => {
+  if(datetime){
+    const options = { year: 'numeric', month: 'short', day: 'numeric' };
+    return new Date(datetime).toLocaleDateString(undefined, options);
+  }
+  return 'N/A'
 };
 
-export const TasksDetail = props => {
-  const darkMode = props.darkMode;
-  let tasksList = [];
-  let tasks = [];
-  tasks = props.tasks_filter;
+const truncate = (str, n) => {
+  return str.length > n ? `${str.substring(0, n - 1)  }...` : str;
+};
 
-  if (props.tasks_filter.length > 0) {
-    tasks = ['priority', 'status', 'classification', 'isActive', 'isAssigned'].reduce(
-      (filteredTask, filter) => {
-        return props[filter]
-          ? filteredTask.filter(item => item[filter] === props[filter])
-          : filteredTask;
-      },
-      tasks,
-    );
+export function TasksDetail(props) {
+  const [filteredTasks, setFilteredTasks] = useState(props.tasks_filter);
+  const {darkMode} = props;
 
-    if (props.users) {
-      let test = [];
-      for (var i = 0; i < tasks.length; i++) {
-        for (var j = 0; j < tasks[i].resources.length; j++) {
-          if (tasks[i].resources[j].name === props.users) {
-            test.push(tasks[i]);
-          }
-        }
+  useEffect(() => {
+    let tasks = props.tasks_filter;
+
+    if (tasks.length > 0) {
+      tasks = ['priority', 'status', 'classification', 'isActive', 'isAssigned'].reduce(
+        (filteredTask, filter) => {
+          return props[filter]
+            ? filteredTask.filter(item => item[filter] === props[filter])
+            : filteredTask;
+        },
+        tasks
+      );
+
+      if (props.users) {
+        tasks = tasks.filter(task => task.resources.some(resource => resource.name === props.users));
       }
-      tasks = test;
     }
-  }
 
-  tasksList = tasks.map((task, index) => (
-    <div key={task._id} className="tasks-detail-table-row">
-      <div>
-        <EditTaskModal
-          key={`updateTask_${task._id}`}
-          parentNum={task.num}
-          taskId={task._id}
-          wbsId={task.wbsId}
-          parentId1={task.parentId1}
-          parentId2={task.parentId2}
-          parentId3={task.parentId3}
-          mother={task.mother}
-          level={task.level}
-        />
-      </div>
-      <div>
-        <div>{index + 1}</div>
-      </div>
-      <div className="tasks-detail-task-name">{task.taskName}</div>
-      <div>{task.priority}</div>
-      <div>{task.status}</div>
-      <div className="tasks-detail-center-cells">
+    setFilteredTasks(tasks);
+  }, [props.tasks_filter, props.priority, props.status, props.classification, props.isActive, props.isAssigned, props.users]);
+
+
+  const tasksList = filteredTasks.map((task, index) => (
+    <tr key={task._id} className={darkMode ? 'dark-mode-row' : ''}>
+      <td>{index + 1}</td>
+      <td className="tasks-detail-task-name">{truncate(task.taskName, 20)}</td>
+      <td className="collapse-column">{task.priority}</td>
+      <td>{task.status}</td>
+      <td className="tasks-detail-center-cells">
         {task.resources.length <= 2 ? (
-          task.resources.map(resource => <div key={resource._id}>{resource.name}</div>)
+          task.resources.map((resource) => <div key={resource._id}>{resource.name}</div>)
         ) : (
           <ShowCollapse resources={task.resources} />
         )}
-      </div>
+      </td>
+      <td className="tasks-detail-center-cells">
+  {task.resources.length <= 2 ? (
+    task.resources.map((resource, innerIndex) => (
+      <span key={resource._id}>
+        {resource.name}
+        {innerIndex < task.resources.length - 1 && ', '}
+      </span>
+    ))
+  ) : (
+    <ShowCollapse resources={task.resources} />
+  )}
+</td>
 
-      <div className="tasks-detail-center-cells">
-        {task.isActive ? (
-          <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true"></i>
-          </div>
-        ) : (
-          <div className="isNotActive">
-            <i className="fa fa-circle-o" aria-hidden="true"></i>
-          </div>
-        )}
-      </div>
-
-      <div className="tasks-detail-center-cells">
+      <td className="tasks-detail-center-cells collapse-column">
         {task.isAssigned ? <div>Assign</div> : <div>Not Assign</div>}
-      </div>
-      <div className="tasks-detail-center-cells">{task.classification}</div>
-      <div className="tasks-detail-center-cells">{task.estimatedHours.toFixed(2)}</div>
-      <div>{task.startedDatetime}</div>
-      <div>{task.dueDatetime}</div>
-    </div>
+      </td>
+      <td className="tasks-detail-center-cells collapse-column">{task.classification}</td>
+      <td className="tasks-detail-center-cells">{task.estimatedHours.toFixed(2)}</td>
+      <td className="collapse-column">{formatDate(task.startedDatetime)}</td>
+      <td className="collapse-column">{formatDate(task.dueDatetime)}</td>
+      <td>
+        {props.toggleEditTasks && (
+          <EditTaskModal
+            key={`updateTask_${task._id}`}
+            parentNum={task.num}
+            taskId={task._id}
+            wbsId={task.wbsId}
+            parentId1={task.parentId1}
+            parentId2={task.parentId2}
+            parentId3={task.parentId3}
+            mother={task.mother}
+            level={task.level}
+          />
+        )}
+      </td>
+    </tr>
   ));
 
   return (
     <div>
-      <div className="tasks-detail-total">Total: {tasksList.length}</div>
-      <div className={`tasks-detail-table-row tasks-detail-table-head ${darkMode ? 'bg-space-cadet' : ''}`}>        
-        <div>#</div>
-        <div>Task</div>
-        <div>Priority</div>
-        <div>Status</div>
-        <div className="tasks-detail-center-cells">Resources</div>
-        <div className="tasks-detail-center-cells">Active</div>
-        <div className="tasks-detail-center-cells">Assign</div>
-        <div className="tasks-detail-center-cells">Class</div>
-        <div className="tasks-detail-center-cells">Estimated Hours</div>
-        <div>Start Date</div>
-        <div>End Date</div>
-      </div>
-      <div>{tasksList}</div>
+      <div className={`tasks-detail-total ${darkMode ? 'text-light' : ''}`}>Total: {tasksList.length}</div>
+      <table className={`tasks-detail-table ${darkMode ? 'dark-mode-table' : ''}`}>
+        <thead className='tasks-detail-table-head'>
+          <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
+            <th>#</th>
+            <th>Task</th>
+            <th className="collapse-column">Priority</th>
+            <th>Status</th>
+            <th className="tasks-detail-center-cells">Resources</th>
+            <th className="tasks-detail-center-cells">Active</th>
+            <th className="tasks-detail-center-cells collapse-column">Assign</th>
+            <th className="tasks-detail-center-cells collapse-column">Class</th>
+            <th className="tasks-detail-center-cells">Estimated Hours</th>
+            <th className="collapse-column">Start Date</th>
+            <th className="collapse-column">End Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody className={darkMode ? 'dark-mode' : ''}>{tasksList}</tbody>
+      </table>
     </div>
   );
-};
+}

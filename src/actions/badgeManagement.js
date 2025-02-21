@@ -1,4 +1,6 @@
 import axios from 'axios';
+import moment from 'moment';
+import { formatDate } from 'utils/formatDate';
 import {
   GET_ALL_BADGE_DATA,
   ADD_SELECT_BADGE,
@@ -10,10 +12,11 @@ import {
   GET_MESSAGE,
   CLOSE_ALERT,
   GET_USER_ID,
+  GET_BADGE_COUNT,
+  RESET_BADGE_COUNT,
+  SET_ACTIVE_TAB,
 } from '../constants/badge';
 import { ENDPOINTS } from '../utils/URL';
-import moment from 'moment';
-import { formatDate } from 'utils/formatDate';
 
 const getAllBadges = allBadges => ({
   type: GET_ALL_BADGE_DATA,
@@ -31,6 +34,37 @@ export const fetchAllBadges = () => {
       return err.response.status;
     }
   };
+};
+
+const getBadgeCountSuccess = badgeCount => ({
+  type: GET_BADGE_COUNT,
+  payload: badgeCount,
+});
+
+export const getBadgeCount = userId => {
+  return async dispatch => {
+    try {
+      const response = await axios.get(ENDPOINTS.BADGE_COUNT(userId));
+      dispatch(getBadgeCountSuccess(response.data.count));
+    } catch (err) {
+      return err.response.status;
+    }
+  };
+};
+
+export const resetBadgeCount = userId => async dispatch => {
+  try {
+    const updatedBadgeCountResponse = await axios.put(ENDPOINTS.BADGE_COUNT_RESET(userId));
+    const updatedBadgeCount = updatedBadgeCountResponse.data.count;
+    if (updatedBadgeCountResponse.status === 201) {
+      dispatch({
+        type: RESET_BADGE_COUNT,
+        payload: updatedBadgeCount,
+      });
+    }
+  } catch (error) {
+    console.error('Failed to reset badge count', error);
+  }
 };
 
 export const closeAlert = () => {
@@ -77,6 +111,10 @@ export const getMessage = (message, color) => ({
   message,
   color,
 });
+export const setActiveTab = tab => ({
+  type: SET_ACTIVE_TAB,
+  payload: tab,
+});
 
 export const gotCloseAlert = () => ({ type: CLOSE_ALERT });
 
@@ -85,7 +123,7 @@ export const validateBadges = (firstName, lastName) => {
     if (!firstName || !lastName) {
       dispatch(
         getMessage(
-          'The Name Find function does not work without entering first and last name. Nice try though.',
+          'The Name Find function does not work without entering a name. Nice try though.',
           'danger',
         ),
       );
@@ -210,7 +248,7 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
       );
       setTimeout(() => {
         dispatch(closeAlert());
-      }, 6000);
+      }, 600000);
     } catch (e) {
       dispatch(getMessage('Oops, something is wrong!', 'danger'));
       setTimeout(() => {
@@ -222,51 +260,33 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 
 // Return updated badgeCollection
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
-  let newBadgeCollection = Array.from(badgeCollection);
+  const personalMaxBadge = '666b78265bca0bcb94080605'; // backend id for Personal Max badge
+  const badgeMap = new Map(badgeCollection?.map(badge => [badge.badge, badge]));
 
-  // object to track updated or newly added badges to prevent duplicates
-  let updatedOrAddedBadges = {};
-
+  const currentTs = Date.now();
+  const currentDate = formatDate();
   selectedBadgesId.forEach(originalBadgeId => {
-    let badgeId = originalBadgeId;
-    // Remove "assign-badge-" from badgeId
-    if (badgeId.includes('assign-badge-')) badgeId = badgeId.replace('assign-badge-', '');
-
-    if (!updatedOrAddedBadges[badgeId]) {
-      let included = false;
-      let currentTs = Date.now();
-      let currentDate = formatDate();
-
-      newBadgeCollection.forEach(badgeObj => {
-        if (badgeId === badgeObj.badge) {
-          if (!included) { 
-            // Only update the first instance
-            // Increment count only for the first instance found
-            badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1;
-            badgeObj.lastModified = currentTs;
-            badgeObj.earnedDate.push(currentDate);
-            included = true;
-          }
-          // Note this badge ID as updated so it's not added again
-          updatedOrAddedBadges[badgeId] = true;
-        }
-      });
-
-      // Add the new badge record to badgeCollection if not included already
-      if (!included) {
-        newBadgeCollection.push({
-          badge: badgeId,
-          count: 1,
-          lastModified: currentTs,
-          earnedDate: [currentDate],
-        });
-        // Note this badge ID as added
-        updatedOrAddedBadges[badgeId] = true;
+    const badgeId = originalBadgeId.replace('assign-badge-', '');
+    if (badgeMap.has(badgeId)) {
+      // Update the existing badge record
+      if (badgeId != personalMaxBadge) {
+        const badge = badgeMap.get(badgeId);
+        badge.count = (badge.count || 0) + 1;
+        badge.lastModified = currentTs;
+        badge.earnedDate.push(currentDate);
       }
+    } else {
+      // Add the new badge record
+      badgeMap.set(badgeId, {
+        badge: badgeId,
+        count: 1,
+        lastModified: currentTs,
+        earnedDate: [currentDate],
+      });
     }
   });
 
-  return newBadgeCollection;
+  return Array.from(badgeMap.values());
 };
 
 // Make API call to update badgeCollection
@@ -293,7 +313,6 @@ export const sendUpdatedBadgeCollectionReq = async (
       dispatch(closeAlert());
     }, 6000);
   }
-  return;
 };
 
 export const changeBadgesByUserID = (userId, badgeCollection) => {
