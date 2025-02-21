@@ -28,6 +28,9 @@ function QuickSetupModal(props) {
   const [adminLinks, setAdminLinks] = useState([]);
   const [editModal, showEditModal] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [qstTeamCodes, setqstTeamCodes] = useState([])
+
+  const stateTeamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
   useEffect(() => {
     getAllTitle()
@@ -49,6 +52,18 @@ function QuickSetupModal(props) {
     }
   };
 
+  useEffect(()=>{
+    let teamCodes = [];
+    if(stateTeamCodes.length) {
+      teamCodes = [...stateTeamCodes];
+    }else if (props.teamsData?.allTeams) {
+      if( props.teamsData?.allTeamCode?.distinctTeamCodes ) {
+        teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+      }
+    }
+    setqstTeamCodes(teamCodes);
+  },[stateTeamCodes])
+
   return (
     <div>
       {canAssignTitle || canEditTitle || canAddTitle ? (
@@ -62,6 +77,7 @@ function QuickSetupModal(props) {
           editMode={editMode}
           assignMode={canAssignTitle}
           setShowAddTitle={setShowAddTitle}
+          teamCodes={qstTeamCodes}
         />
       ) : (
         ''
@@ -147,6 +163,7 @@ function QuickSetupModal(props) {
           setShowMessage={setShowMessage}
           editMode={editMode}
           title={curtitle}
+          qstTeamCodes={qstTeamCodes}
         />
       ) : (
         ''

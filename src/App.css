@@ -138,7 +138,11 @@ body {
   background-color: #007BFF !important;
 }
 
-.text-oxford-blue{
+.pdrl-1 {
+  padding: 0 1em !important;
+}
+
+.text-oxford-blue {
   color: #1B2A41 !important;
 }
 

@@ -1,5 +1,3 @@
-import { useSelector } from 'react-redux';
-
 function QuickSetupCodes({
   titles,
   setShowAssignModal,
@@ -7,8 +5,8 @@ function QuickSetupCodes({
   setShowAddTitle,
   editMode,
   assignMode,
+  teamCodes
 }) {
-  const teamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
   return (
     <div className="blueSquares mt-3" id="qsc-outer-wrapper">
