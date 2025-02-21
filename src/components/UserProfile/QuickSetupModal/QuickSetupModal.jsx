@@ -12,6 +12,7 @@ import { getAllTitle } from '../../../actions/title';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css';
 
+
 function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const canEditTitle = props.hasPermission('editTitle');
@@ -48,7 +49,6 @@ function QuickSetupModal(props) {
       console.error(err);
     }
   };
-
   return (
     <div>
       {canAssignTitle || canEditTitle || canAddTitle ? (

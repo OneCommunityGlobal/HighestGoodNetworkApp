@@ -35,7 +35,6 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard, personalBestMaxHrs
             const rankingB = b.badge?.ranking ?? Infinity;
             const nameA = a.badge?.badgeName ?? '';
             const nameB = b.badge?.badgeName ?? '';
-
             if (rankingA === 0) return 1;
             if (rankingB === 0) return -1;
             if (rankingA > rankingB) return 1;

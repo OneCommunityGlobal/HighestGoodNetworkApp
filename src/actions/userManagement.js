@@ -228,7 +228,7 @@ export const updateUserFinalDayStatusIsSet = (user, status, finalDayDate, isSet)
   if (finalDayDate === undefined) {
     patchData.endDate = undefined;
     userProfile.endDate = undefined;
-  } else {
+p  } else {
     userProfile.endDate = moment(finalDayDate).add(1, 'days').format('YYYY-MM-DD');
     patchData.endDate = moment(finalDayDate).add(1, 'days').format('YYYY-MM-DD');
   }
