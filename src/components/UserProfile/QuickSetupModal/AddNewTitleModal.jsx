@@ -60,7 +60,7 @@ function AddNewTitleModal({
       setTitleData({
         id: title._id,
         titleName: title.titleName,
-        titleCode: title.titleCode || title.titleName.slice(0, 5),
+        titleCode: title.titleCode || title.titleName.slice(0, 7),
         mediaFolder: title.mediaFolder,
         teamCode: title.teamCode,
         projectAssigned: title.projectAssigned,
@@ -79,7 +79,7 @@ function AddNewTitleModal({
   }, [editMode, title]);
 
   useEffect(() => {
-    const titleCode = titleData.titleName.slice(0, 5);
+    const titleCode = titleData?.titleCode ? titleData.titleCode : titleData.titleName.slice(0, 7);
     setTitleData(prev => ({
       ...prev,
       titleCode,
@@ -290,7 +290,7 @@ function AddNewTitleModal({
                 e.persist();
                 setTitleData({ ...titleData, titleCode: e.target.value });
               }}
-              maxLength={5}
+              maxLength={7}
             />
             <Label className={fontColor}>
               Media Folder<span className="qsm-modal-required">*</span>:{' '}
@@ -306,7 +306,7 @@ function AddNewTitleModal({
               }}
               placeholder="Enter a valid URL"
             />
-            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) &&
+            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder.trim()) &&
               titleData.mediaFolder !== '' && (
                 <small style={{ color: 'red', marginTop: '5px', display: 'block' }}>
                   Please enter a valid URL that starts with http:// or https://
@@ -358,7 +358,7 @@ function AddNewTitleModal({
           color="primary"
           onClick={() => confirmOnClick()}
           disabled={
-            !/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) || titleData.mediaFolder === ''
+            !/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder.trim()) || titleData.mediaFolder === ''
           }
         >
           Confirm
