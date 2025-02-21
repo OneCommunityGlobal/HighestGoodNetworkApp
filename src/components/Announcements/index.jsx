@@ -23,8 +23,10 @@ function Announcements({ title, email }) {
   const [headerImage, setHeaderImage] = useState(null);
   const [headingText, setHeadingText] = useState('');
   const [introText, setIntroText] = useState('');
+  const [blogUrl, setBlogUrl] = useState('');
   const [bodyImage, setBodyImage] = useState(null);
   const [bodyText, setBodyText] = useState('');
+  const [videoLink, setVideoLink] = useState('');
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -219,7 +221,7 @@ function Announcements({ title, email }) {
           Additional details such as social media links and disclaimers will be automatically included.
         </p>
 
-        {/* 1) Drag & drop for header image */}
+        {/* Drag & drop for header image */}
         <h4>Header Image</h4>
         <ImageUploader onFileUpload={handleHeaderImageDrop} />
         {headerImage && (
@@ -230,7 +232,7 @@ function Announcements({ title, email }) {
           />
         )}
 
-        {/* 2) Heading text */}
+        {/* Heading text */}
         <label>Enter Heading Text:</label>
         <input
           type="text"
@@ -239,8 +241,8 @@ function Announcements({ title, email }) {
           style={{ width: '100%', marginBottom: '10px', padding: '10px' }}
         />
 
-        {/* 3) Introduction text */}
-        <label>Enter Introduction Text:</label>
+        {/* Introduction text */}
+        <label>Enter Introduction Paragraph:</label>
         <textarea
           rows={3}
           value={introText}
@@ -248,8 +250,17 @@ function Announcements({ title, email }) {
           style={{ width: '100%', marginBottom: '10px' }}
         />
 
-        {/* 4) Drag & drop for body image */}
-        <h4>Body Image</h4>
+        {/* Blog URL Field */}
+        <label>Enter Blog URL:</label>
+        <input
+          type="url"
+          value={blogUrl}
+          onChange={e => setBlogUrl(e.target.value)}
+          style={{ width: '100%', marginBottom: '10px', padding: '10px' }}
+        />
+
+        {/* Drag & drop for body image */}
+        <h4>Blog Summary Image</h4>
         <ImageUploader onFileUpload={handleBodyImageDrop} />
         {bodyImage && (
           <img
@@ -259,13 +270,22 @@ function Announcements({ title, email }) {
           />
         )}
 
-        {/* 5) Body text */}
-        <label>Enter Body Text:</label>
+        {/* Body text */}
+        <label>Enter Blog Summary Paragraph:</label>
         <textarea
           rows={5}
           value={bodyText}
           onChange={e => setBodyText(e.target.value)}
           style={{ width: '100%', marginBottom: '10px' }}
+        />
+
+        {/* Video Link Field */}
+        <label>Enter Video Link:</label>
+        <input
+          type="url"
+          value={videoLink}
+          onChange={e => setVideoLink(e.target.value)}
+          style={{ width: '100%', marginBottom: '10px', padding: '10px' }}
         />
 
         {
