@@ -108,6 +108,16 @@ button.send-button:hover {
   font-size: 18px;
 }
 
+.image-preview {
+  display: block;
+  max-width: 300px;
+  height: 100px;
+  margin: 10px 0;
+  padding: 10px;
+  object-fit: contain;
+  border: 0.5px solid #ccc;
+}
+
 .tabs-container {
   margin: 30px 0;
 }

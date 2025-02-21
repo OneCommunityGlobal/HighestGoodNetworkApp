@@ -5,6 +5,7 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import logo2 from '../../assets/images/logo2.png';
 import ImageUploader from './ImageUploader';
 
 function Announcements({ title, email }) {
@@ -20,7 +21,7 @@ function Announcements({ title, email }) {
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
 
   //  Weekly Progress Update Content States
-  const [headerImage, setHeaderImage] = useState(null);
+  const [headerImage, setHeaderImage] = useState(logo2);
   const [headingText, setHeadingText] = useState('');
   const [introText, setIntroText] = useState('');
   const [blogUrl, setBlogUrl] = useState('');
@@ -223,14 +224,19 @@ function Announcements({ title, email }) {
 
         {/* Drag & drop for header image */}
         <h4>Header Image</h4>
-        <ImageUploader onFileUpload={handleHeaderImageDrop} />
         {headerImage && (
-          <img
-            src={headerImage}
-            alt="Header Preview"
-            style={{ width: '100%', maxWidth: '100%', margin: '10px 0' }}
-          />
+          <>
+            <p style={{ fontStyle: 'italic', marginBottom: '5px' }}>
+              A default header image is currently set. You can replace it by dragging or clicking below.
+            </p>
+            <img
+              className="image-preview"
+              src={headerImage}
+              alt="Header Preview"
+            />
+          </>
         )}
+        <ImageUploader onFileUpload={handleHeaderImageDrop} />
 
         {/* Heading text */}
         <label>Enter Heading Text:</label>
@@ -261,14 +267,14 @@ function Announcements({ title, email }) {
 
         {/* Drag & drop for body image */}
         <h4>Blog Summary Image</h4>
-        <ImageUploader onFileUpload={handleBodyImageDrop} />
         {bodyImage && (
           <img
+            className="image-preview"
             src={bodyImage}
             alt="Body Preview"
-            style={{ width: '100%', maxWidth: '100%', margin: '10px 0' }}
           />
         )}
+        <ImageUploader onFileUpload={handleBodyImageDrop} />
 
         {/* Body text */}
         <label>Enter Blog Summary Paragraph:</label>
