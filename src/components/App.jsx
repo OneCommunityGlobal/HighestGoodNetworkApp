@@ -56,7 +56,7 @@ function UpdateDocumentTitle() {
     { pattern: /^\/project\/members\/[^/]+$/, title: 'Project Members' },
     { pattern: /^\/timelog\/?$/, title: `Timelog - ${fullName}` },
     { pattern: /^\/timelog\/[^/]+$/, title: `Timelog - ${fullName}` },
-    { pattern: /^\/peoplereport\/[^/]+$/, title: `People Report- ${fullName}` },
+    { pattern: /^\/peoplereport\/[^/]+$/, title: `People Report - ${fullName}` },
     { pattern: /^\/projectreport\/[^/]+$/, title: 'Project Report' },
     { pattern: /^\/teamreport\/[^/]+$/, title: 'Team Report' },
     { pattern: /^\/taskeditsuggestions$/, title: 'Task Edit Suggestions' },
@@ -110,8 +110,8 @@ function UpdateDocumentTitle() {
     { pattern: /^\/email-subscribe$/, title: 'Email Subscribe' },
     { pattern: /^\/email-unsubscribe$/, title: 'Unsubscribe' },
     { pattern: /^\/infoCollections$/, title: 'Info Collections' },
-    { pattern: /^\/userprofile\/[^/]+$/, title: `User Profile- ${fullName}` },
-    { pattern: /^\/userprofileedit\/[^/]+$/, title: `Edit User Profile- ${fullName}` },
+    { pattern: /^\/userprofile\/[^/]+$/, title: `User Profile - ${fullName}` },
+    { pattern: /^\/userprofileedit\/[^/]+$/, title: `Edit User Profile - ${fullName}` },
     { pattern: /^\/updatepassword\/[^/]+$/, title: 'Update Password' },
     { pattern: /^\/Logout$/, title: 'Logout' },
     { pattern: /^\/forcePasswordUpdate\/[^/]+$/, title: 'Force Password Update' },
@@ -123,7 +123,7 @@ function UpdateDocumentTitle() {
     // Find the first matching route and set the document title
     const match = routes.find(route => route.pattern.test(location.pathname));
     document.title = match.title;
-  }, [location, fullName]);
+  }, [location, authUser]);
 
   return null;
 }
