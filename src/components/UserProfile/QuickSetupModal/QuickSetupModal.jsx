@@ -49,7 +49,11 @@ function QuickSetupModal(props) {
       console.error(err);
     }
   };
+<<<<<<< HEAD
   
+=======
+
+>>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
   return (
     <div>
       {canAssignTitle || canEditTitle || canAddTitle ? (
@@ -116,7 +120,11 @@ function QuickSetupModal(props) {
         ) : (
           ''
         )}
+<<<<<<< HEAD
         <EditTitlesModal 
+=======
+        <EditTitlesModal
+>>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
           isOpen={editModal}
           toggle={() => showEditModal(false)}
           titles={titles}

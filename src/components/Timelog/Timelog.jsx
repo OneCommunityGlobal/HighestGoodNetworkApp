@@ -160,6 +160,18 @@ function Timelog(props) {
     }
   };
 
+  const doesUserHaveTaskWithWBS = userHaveTask => {
+    return userHaveTask.reduce((acc, item) => {
+      const hasIncompleteTask = item.resources.some(
+        val =>
+          (viewingUser.userId === val.userID || val.userID === userprofileId) &&
+          val.completedTask === false,
+      );
+      if (hasIncompleteTask) acc.push(item);
+      return acc;
+    }, []);
+  };
+
   const [displayUserId, setDisplayUserId] = useState(getUserId());
   const isAuthUser = authUser.userid === displayUserId;
   const fullName = `${displayUserProfile.firstName} ${displayUserProfile.lastName}`;

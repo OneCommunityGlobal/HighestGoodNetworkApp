@@ -366,11 +366,11 @@ function LeaderBoard({
     toast.error('Please wait for the users to appear in the Leaderboard table.');
 
   useEffect(() => {
-    setFilteredUsers(teamsUsers);
+    setFilteredUsers(leaderBoardData);
     return () => {
       setSearchInput('');
     };
-  }, [teamsUsers]);
+  }, [leaderBoardData]);
 
   const debouncedFilterUsers = useCallback(
     debounce(query => {
