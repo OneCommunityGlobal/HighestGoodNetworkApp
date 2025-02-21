@@ -130,22 +130,10 @@ function Timelog(props) {
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
 
   const { userId: urlId } = useParams();
+  const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [userprofileId, setUserProfileId] = useState(urlId || authUser.userid);
 
-  const doesUserHaveTaskWithWBS = userHaveTask => {
-    return userHaveTask.reduce((acc, item) => {
-      const hasIncompleteTask = item.resources.some(
-        val =>
-          (viewingUser.userId === val.userID || val.userID === userprofileId) &&
-          val.completedTask === false,
-      );
-      if (hasIncompleteTask) acc.push(item);
-      return acc;
-    }, []);
-  };
-
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
-  const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const getUserId = () => {
     try {
       if (viewingUser) {
