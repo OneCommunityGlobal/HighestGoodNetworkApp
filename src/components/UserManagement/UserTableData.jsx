@@ -15,7 +15,7 @@ import hasPermission from '../../utils/permissions';
 import { boxStyle } from '../../styles';
 import { formatDateLocal } from '../../utils/formatDate';
 import { cantUpdateDevAdminDetails } from '../../utils/permissions';
-import { formatDate, formatDateYYYYMMDD } from '../../utils/formatDate';
+import { formatDate, formatDateUtcYYYYMMDD } from '../../utils/formatDate';
 /**
  * The body row of the user table
  */
@@ -36,8 +36,8 @@ const UserTableData = React.memo(props => {
     jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
-    startDate: formatDate(props.user.startDate),
-    endDate: formatDate(props.user.endDate),
+    startDate: formatDateLocal(props.user.startDate),
+    endDate: formatDateLocal(props.user.endDate),
   });
   const dispatch = useDispatch();
   const { roles } = useSelector(state => state.role);
@@ -81,8 +81,8 @@ const UserTableData = React.memo(props => {
       jobTitle:props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
-      startDate: formatDateYYYYMMDD(props.user.startDate),
-      endDate: formatDateYYYYMMDD(props.user.endDate),
+      startDate: formatDateUtcYYYYMMDD(props.user.startDate),
+      endDate: formatDateUtcYYYYMMDD(props.user.endDate),
     });
   }, [props.user]);
 
@@ -389,7 +389,7 @@ const UserTableData = React.memo(props => {
       <td>
         {editUser?.startDate ? (
           <span>
-            {props.user.startDate ? formatDate(formData.startDate) : 'N/A'}
+            { props.user.startDate ? formatDateLocal(formData.startDate) : 'N/A' }
             {/* {formData.startDate},{props.user.startDate} */}
           </span>
         ) : (
@@ -407,13 +407,13 @@ const UserTableData = React.memo(props => {
       <td className="email_cell">
         {editUser?.endDate ? (
           <div>
-            {props.user.endDate ? formatDate(formData.endDate) : 'N/A'}
+            {props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A'}
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
               onClick={() => {
                 navigator.clipboard.writeText(
-                  props.user.endDate ? formatDate(formData.endDate) : 'N/A',
+                  props.user.endDate ? formatDateLocal(formData.endDate) : 'N/A',
                 );
                 toast.success('End Date Copied!');
               }}
