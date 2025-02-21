@@ -154,6 +154,9 @@ function Issue() {
       issueDescription: formData.description,
       createdBy: userId,
     };
+    if (!isDataValid) {
+      return false;
+    }
     await axios
       .post(`${ENDPOINTS.BM_ISSUE_FORM}`, currentFormData)
       .then(res => {
