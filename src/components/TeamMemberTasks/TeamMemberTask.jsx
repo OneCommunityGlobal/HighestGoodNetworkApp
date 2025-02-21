@@ -253,7 +253,7 @@ const TeamMemberTask = React.memo(
                               <Link
                                 to= {`/peoplereport/${user?.personId}`}
                                >
-                                <span class="team-member-tasks-number">{completedTasks.length}</span>
+                                <span className="team-member-tasks-number">{completedTasks.length}</span>
                               </Link>
                             }
                           <Warning
