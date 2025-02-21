@@ -27,10 +27,11 @@ function AddNewTitleModal({
   setShowMessage,
   editMode,
   title,
+  QSTTeamCodes
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const teamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
-
+  
   const [titleData, setTitleData] = useState(() => {
     if (editMode && Object.keys(title).length !== 0) {
       return {
@@ -88,13 +89,13 @@ function AddNewTitleModal({
 
   useEffect(() => {
     setIsValidTeamCode(
-      titleData.teamCode === '' || teamCodes.some(code => code.value === titleData.teamCode),
+      titleData.teamCode === '' || QSTTeamCodes.some(code => code.value === titleData.teamCode),
     );
-  }, [titleData.teamCode, teamCodes]);
+  }, [titleData.teamCode, QSTTeamCodes]);
 
   let existTeamCodes = new Set();
   let existTeamName = new Set();
-
+  
   if (teamsData?.allTeams) {
     const codes = teamsData.allTeams.map(team => team.teamCode);
     const names = teamsData.allTeams.map(team => team.teamName);
@@ -109,7 +110,7 @@ function AddNewTitleModal({
   const [selectedTeamCode, onSelectTeamCode] = useState(undefined);
   const [isValidProject, onValidation] = useState(false);
   const [searchText, setSearchText] = useState(''); // For addTeamAutoComplete
-
+  
   const selectProject = project => {
     onSelectProject(project);
     setTitleData({
@@ -177,7 +178,7 @@ function AddNewTitleModal({
   // confirm and save
   const confirmOnClick = () => {
     const isValidTeamName = onTeamNameValidation(titleData.teamAssiged);
-
+    
     if (!isValidTeamName) {
       return;
     }
@@ -246,7 +247,7 @@ function AddNewTitleModal({
   };
 
   const fontColor = darkMode ? 'text-light' : '';
-
+  
   return (
     <Modal
       isOpen={isOpen}
@@ -316,7 +317,7 @@ function AddNewTitleModal({
               Team Code<span className="qsm-modal-required">*</span>:
             </Label>
             <AssignTeamCodeField
-              teamCodeData={teamCodes}
+              teamCodeData={QSTTeamCodes}
               onDropDownSelect={selectTeamCode}
               selectedTeamCode={selectedTeamCode}
               cleanTeamCodeAssign={cleanTeamCodeAssign}
