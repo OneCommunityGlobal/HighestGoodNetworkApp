@@ -29,7 +29,7 @@ function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, aut
   };
 
   useEffect(() => {
-    setUserPermissions(actualUserProfile?.permissions?.frontPermissions);
+    setUserPermissions(actualUserProfile?.permissions?.frontPermissions || []);
   }, [actualUserProfile]);
 
   const refInput = useRef();
@@ -37,6 +37,7 @@ function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, aut
     const url = ENDPOINTS.USER_PROFILE(userId);
     const allUserInfo = await axios.get(url).then(res => res.data);
     setActualUserProfile(allUserInfo);
+    console.log('Fetched user data:', allUserInfo);
   };
 
   useEffect(() => {
@@ -67,9 +68,11 @@ function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, aut
     const allUserInfo = await axios.get(url).then(res => res.data);
     const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
 
+    console.log('Submitting updated user info:', newUserInfo);
+
     await axios
       .put(url, newUserInfo)
-      .then(() => {
+      .then(async () => {
         const SUCCESS_MESSAGE = `
         Permission has been updated successfully. Be sure to tell them that you are changing these
         permissions and for that they need to log out and log back in for their new permissions to take
@@ -77,6 +80,8 @@ function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, aut
         toast.success(SUCCESS_MESSAGE, {
           autoClose: 10000,
         });
+        await getUserData(userId); // Fetch updated user data
+        console.log('Updated user profile after PUT request:', actualUserProfile);
         toggle();
       })
       .catch(err => {
@@ -88,6 +93,8 @@ function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, aut
         });
       });
     getAllUsers();
+    console.log('user profile:', actualUserProfile);
+    console.log('user permissions:', userPermissions);
   };
   useEffect(() => {
     refInput.current.focus();
@@ -184,6 +191,10 @@ function UserPermissionsPopUp({ toggle, allUserProfiles, getAllUsers, roles, aut
             setPermissions={setUserPermissions}
             darkMode={darkMode}
             userProfile={actualUserProfile}
+            onChange={updatedPermissions => {
+              console.log('Updated permissions in PermissionList:', updatedPermissions);
+              setUserPermissions(updatedPermissions);
+            }}
           />
         </ul>
       </div>
