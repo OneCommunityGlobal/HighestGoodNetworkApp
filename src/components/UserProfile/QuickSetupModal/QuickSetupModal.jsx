@@ -62,7 +62,7 @@ function QuickSetupModal(props) {
       }
     }
     setQSTTeamCodes(teamCodes);
-  },[stateTeamCodes])
+  },[stateTeamCodes.length])
 
   return (
     <div>
