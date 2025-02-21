@@ -22,7 +22,7 @@
 .navbar {
   z-index: 100;
   white-space: nowrap;
-  margin-bottom: 20px;
+  /* margin-bottom: 20px; */
 }
 
 .timer-message-section {
@@ -92,13 +92,21 @@
 }
 
 @media screen and (min-width: 1400px) and (max-width: 1700px) {
-  .owner-message {
+  /* .owner-message {
     display: none;
-  }
+  } */
 }
 
 @media screen and (max-width: 769px) {
   .responsive-spacing{
     margin-right: 5px;
   }
+}
+.header-margin{
+  height : 20px;
+  background-color: #1B2A41 ;
+}
+.header-margin-light{
+  height : 20px;
+  background-color: #fff;
 }
