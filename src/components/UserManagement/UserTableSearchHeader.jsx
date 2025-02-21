@@ -59,6 +59,7 @@ const UserTableSearchHeader = React.memo(props => {
         <TextSearchBox
           id="title_search"
           searchCallback={onTitleSearch}
+          className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
           style={{ width: '100%' }}
           placeholder=" Search Title"
         />

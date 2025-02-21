@@ -19,7 +19,7 @@ const UserTableFooter = React.memo(props => {
         pageSize={props.pageSize}
         datacount={props.datacount}
       />
-      <PageSizeDropDown onSelectPageSize={onSelectPageSize} />
+      <PageSizeDropDown onSelectPageSize={onSelectPageSize}  darkMode={darkMode}/>
       <div id="ember745" className="table-nav col-md-6 col-sm-6 col-xs-6 ember-view">
         <div role="toolbar" className="btn-toolbar pull-right">
           <div role="group" className="btn-group">
@@ -68,7 +68,7 @@ const PageSizeDropDown = React.memo(props => {
         <div id="ember738" className="ember-view">
           <select
             id="ember739"
-            className="changePageSize form-control ember-view"
+            className={`changePageSize form-control ember-view ${props.darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
             onChange={e => {
               props.onSelectPageSize(parseInt(e.target.value, 10));
             }}
