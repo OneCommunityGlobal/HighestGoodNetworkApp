@@ -9,6 +9,10 @@
   justify-content: center;
 }
 
+.red-asterisk {
+  color: #e00000;
+}
+
 .issue-title-text {
   text-align: center;
   padding-top: 3.5vh;
@@ -22,6 +26,8 @@
 }
 
 .sub-title-text {
+  display: flex;
+  flex-direction: row;
   color: #2e5061;
   font-weight: bold;
 }
