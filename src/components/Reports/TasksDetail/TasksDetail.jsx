@@ -7,17 +7,11 @@ import 'react-table/react-table.css';
 import './TasksDetail.css';
 
 
-<<<<<<< HEAD
-const ShowCollapse = (props) => {
-  const [open, setOpen] = useState(false);
-
-=======
 
 function ShowCollapse(props) {
   const [open, setOpen] = useState(false);
 
 
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
   return (
     <>
       <div>
@@ -98,17 +92,10 @@ export function TasksDetail(props) {
       </td>
       <td className="tasks-detail-center-cells">
   {task.resources.length <= 2 ? (
-<<<<<<< HEAD
-    task.resources.map((resource, index) => (
-      <span key={resource._id}>
-        {resource.name}
-        {index < task.resources.length - 1 && ', '}
-=======
     task.resources.map((resource, innerIndex) => (
       <span key={resource._id}>
         {resource.name}
         {innerIndex < task.resources.length - 1 && ', '}
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
       </span>
     ))
   ) : (

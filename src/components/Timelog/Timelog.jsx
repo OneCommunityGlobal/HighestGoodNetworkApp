@@ -130,10 +130,10 @@ function Timelog(props) {
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
 
   const { userId: urlId } = useParams();
+  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage());
   const [userprofileId, setUserProfileId] = useState(urlId || authUser.userid);
 
-  const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const getUserId = () => {
     try {
       if (viewingUser) {

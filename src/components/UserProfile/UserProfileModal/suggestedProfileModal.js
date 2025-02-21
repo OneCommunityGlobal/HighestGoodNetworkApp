@@ -13,11 +13,6 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
     setSelectedImage(image);  // Store the selected image info
   };
 
-<<<<<<< HEAD
-  const updateProfileImage= async ()=>{
-    try {
-      let image=selectedImage.nitro_src!==undefined && selectedImage.nitro_src!==null?selectedImage.nitro_src:selectedImage.src;
-=======
   function getImageSource(image) {
     if (image.nitro_src !== null && image.nitro_src !== undefined) {
       return image.nitro_src;
@@ -32,7 +27,6 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
   const updateProfileImage= async ()=>{
     try {
       let image=getImageSource(selectedImage);
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
       await axios.put(ENDPOINTS.USERS_UPDATE_PROFILE_FROM_WEBSITE,{'selectedImage':image,'user_id':userProfile._id})
       toast.success("Profile Image Updated")
     }    
@@ -53,11 +47,7 @@ const ProfileImageModal = ({ isOpen, toggleModal, userProfile }) => {
               className={`suggestedProfileTile ${selectedImage === image ? 'selected' : ''}`}
               onClick={() => handleImageSelect(image)}
             >
-<<<<<<< HEAD
-              <img src={image.nitro_src!==undefined && image.nitro_src!==null?image.nitro_src:image.src} alt={image.alt} />
-=======
               <img src={getImageSource(image)} alt={image.alt} />
->>>>>>> d7a6cdf1f4be691e47486562ab67fed6f89cf1fc
             </div>
           ))}
         </div>
