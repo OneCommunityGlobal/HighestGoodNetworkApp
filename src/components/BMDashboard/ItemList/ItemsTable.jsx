@@ -3,6 +3,7 @@ import { Table, Button } from 'reactstrap';
 import { BiPencil } from 'react-icons/bi';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSortDown, faSort, faSortUp } from '@fortawesome/free-solid-svg-icons';
+import moment from 'moment';
 import RecordsModal from './RecordsModal';
 
 export default function ItemsTable({
@@ -15,7 +16,7 @@ export default function ItemsTable({
   const [sortedData, setData] = useState(filteredItems);
   const [modal, setModal] = useState(false);
   const [record, setRecord] = useState(null);
-  const [recordType, setRecordType] = useState('');
+  // const [recordType, setRecordType] = useState('');
   const [updateModal, setUpdateModal] = useState(false);
   const [updateRecord, setUpdateRecord] = useState(null);
   const [projectNameCol, setProjectNameCol] = useState({
@@ -32,6 +33,15 @@ export default function ItemsTable({
   }, [filteredItems]);
 
   useEffect(() => {
+    const newSortedData = sortedData.map(obj => ({
+      ...obj,
+      usageTable: false,
+      purchaseTable: false,
+    }));
+    setData(newSortedData);
+  }, []);
+
+  useEffect(() => {
     setInventoryItemTypeCol({ iconsToDisplay: faSort, sortOrder: 'default' });
     setProjectNameCol({ iconsToDisplay: faSort, sortOrder: 'default' });
   }, [selectedProject, selectedItem]);
@@ -43,10 +53,23 @@ export default function ItemsTable({
     }
   };
 
-  const handleViewRecordsClick = (data, type) => {
-    setModal(true);
-    setRecord(data);
-    setRecordType(type);
+  const handleViewRecordsClick = data => {
+    // console.log(data._id);
+    const updatedArray = sortedData.map(obj =>
+      obj._id === data._id ? { ...obj, usageTable: !obj.usageTable } : obj,
+    );
+    setData(updatedArray);
+    // setModal(true);
+    // setRecord(data);
+    // setRecordType(type);
+  };
+
+  const handlePurchaseRecordsClick = data => {
+    // console.log(data._id);
+    const updatedArray = sortedData.map(obj =>
+      obj._id === data._id ? { ...obj, purchaseTable: !obj.purchaseTable } : obj,
+    );
+    setData(updatedArray);
   };
 
   const sortData = columnName => {
@@ -93,7 +116,7 @@ export default function ItemsTable({
         setModal={setModal}
         record={record}
         setRecord={setRecord}
-        recordType={recordType}
+        // recordType={recordType}
       />
       <UpdateItemModal modal={updateModal} setModal={setUpdateModal} record={updateRecord} />
       <div className="items_table_container">
@@ -117,7 +140,8 @@ export default function ItemsTable({
               {dynamicColumns.map(({ label }) => (
                 <th key={label}>{label}</th>
               ))}
-              <th>Updates</th>
+              <th>Usage Record</th>
+              <th>Update Record</th>
               <th>Purchases</th>
             </tr>
           </thead>
@@ -126,40 +150,146 @@ export default function ItemsTable({
             {sortedData && sortedData.length > 0 ? (
               sortedData.map(el => {
                 return (
-                  <tr key={el._id}>
-                    <td>{el.project?.name}</td>
-                    <td>{el.itemType?.name}</td>
-                    {dynamicColumns.map(({ label, key }) => (
-                      <td key={label}>{getNestedValue(el, key)}</td>
-                    ))}
-                    <td className="items_cell">
-                      <button
-                        type="button"
-                        onClick={() => handleEditRecordsClick(el, 'Update')}
-                        aria-label="Edit Record"
-                      >
-                        <BiPencil />
-                      </button>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el, 'Update')}
-                      >
-                        View
-                      </Button>
-                    </td>
-                    <td>
-                      <Button
-                        color="primary"
-                        outline
-                        size="sm"
-                        onClick={() => handleViewRecordsClick(el.purchaseRecord, 'Purchase')}
-                      >
-                        View
-                      </Button>
-                    </td>
-                  </tr>
+                  <>
+                    <tr key={el._id}>
+                      <td>{el.project?.name}</td>
+                      <td>{el.itemType?.name}</td>
+                      {dynamicColumns.map(({ label, key }) => (
+                        <td key={label}>{getNestedValue(el, key)}</td>
+                      ))}
+                      <td className="items_cell">
+                        <button
+                          type="button"
+                          onClick={() => handleEditRecordsClick(el, 'Update')}
+                          aria-label="Edit Record"
+                        >
+                          <BiPencil />
+                        </button>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'Update')}
+                        >
+                          View
+                        </Button>
+                      </td>
+                      <td className="items_cell">
+                        <button
+                          type="button"
+                          onClick={() => handleEditRecordsClick(el, 'Update')}
+                          aria-label="Edit Record"
+                        >
+                          <BiPencil />
+                        </button>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handleViewRecordsClick(el, 'Update')}
+                        >
+                          View
+                        </Button>
+                      </td>
+                      <td>
+                        <Button
+                          color="primary"
+                          outline
+                          size="sm"
+                          onClick={() => handlePurchaseRecordsClick(el, 'Purchase')}
+                        >
+                          View
+                        </Button>
+                      </td>
+                    </tr>
+                    {el.usageTable && (
+                      <tr>
+                        <td colSpan={11}>
+                          <table className="subtable">
+                            <thead>
+                              <tr>
+                                <th>Date</th>
+                                <th>Used</th>
+                                <th>Wasted</th>
+                                {/* <th>Cause</th> */}
+                                <th>Responsible</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {el.updateRecord.length ? (
+                                el.updateRecord.map(data => {
+                                  return (
+                                    <tr key={data._id}>
+                                      <td>{moment.utc(data.date).format('LL')}</td>
+                                      <td>{data.quantityUsed || '-'}</td>
+                                      <td>{data.quantityWasted || '-'}</td>
+                                      <td>
+                                        <a href={`/userprofile/${data.createdBy._id}`}>
+                                          {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
+                                        </a>
+                                      </td>
+                                    </tr>
+                                  );
+                                })
+                              ) : (
+                                <tr>
+                                  <td colSpan={4} style={{ fontWeight: 'bold' }}>
+                                    There are no updates for this item.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    )}
+                    {el.purchaseTable && (
+                      <tr>
+                        <td colSpan={11}>
+                          <table className="subtable">
+                            <thead>
+                              <tr>
+                                <th>Date</th>
+                                <th>Quantity</th>
+                                <th>Brand</th>
+                                <th>Requested By</th>
+                                <th>Status</th>
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {el.purchaseRecord.length ? (
+                                el.purchaseRecord.map(data => {
+                                  return (
+                                    <tr key={data._id}>
+                                      <td>{moment.utc(data.date).format('LL')}</td>
+                                      <td>{data.quantity || '-'}</td>
+                                      <td>{data.brandPref || '-'}</td>
+                                      <td>
+                                        <a href={`/userprofile/${data.createdBy._id}`}>
+                                          {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
+                                        </a>
+                                      </td>
+                                      <td>{data.status || '-'}</td>
+                                    </tr>
+                                  );
+                                })
+                              ) : (
+                                <tr>
+                                  <td colSpan={4} style={{ fontWeight: 'bold' }}>
+                                    There are no updates for this item.
+                                  </td>
+                                </tr>
+                              )}
+                            </tbody>
+                          </table>
+                        </td>
+                      </tr>
+                    )}
+                  </>
+                  // subtable && <tr>
+                  //   <table>
+                  //   </table>
+                  // </tr>
                 );
               })
             ) : (

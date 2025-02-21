@@ -46,3 +46,7 @@
   width: 300px;
   column-gap: 1rem;
 }
+
+.subtable {
+  background-color: #f2f4f5;
+}
