@@ -54,12 +54,14 @@ const UserTableSearchHeader = React.memo(props => {
         <DropDownSearchBox id="role_search" items={props.roles} searchCallback={onRoleSearch} />
       </td>
       <td id="user_title">
-        <TextSearchBox
-          id="title_search"
-          searchCallback={onTitleSearch}
-          style={{ width: '100%' }}
-          placeholder=" Search Title"
-        />
+        <div>
+          <TextSearchBox
+            id="title_search"
+            searchCallback={onTitleSearch}
+            style={{ width: '100%' }}
+            placeholder=" Search Title"
+          />
+        </div>
       </td>
       <td id="user_email">
         <TextSearchBox

@@ -37,6 +37,24 @@ thead {
   text-align: center;
 }
 
+#usermanagement_title>div {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#user_title>div {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .usermanagement_overview--top {
   background: gray;
 }
@@ -89,14 +107,25 @@ thead {
 
 }
 
-#usermanagement_role, 
-#user_role, 
+.fixed-width-container {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+}
+
+.fixed-width-container input {
+  width: 100%;
+  max-width: 180px;
+}
+
+#usermanagement_role,
+#user_role,
 td#usermanagement_role {
   width: 100px;
-  max-width: 180px; 
+  max-width: 180px;
   overflow: hidden;
-  text-overflow: ellipsis; 
-  white-space: nowrap; 
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .copy_icon {
@@ -346,7 +375,7 @@ tr:hover {
   margin: auto;
 }
 
-td{
+td {
   text-align: center;
 }
 
