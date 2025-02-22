@@ -479,7 +479,7 @@ export default function EventDashboard() {
                       background: '#4A90E2',
                       width: `${(event.registered / 75) * 100}%`,
                     }}
-                  ></div>
+                  />
                 </div>
                 <span
                   style={{
