@@ -1,3 +1,5 @@
+'use client';
+
 import { useState } from 'react';
 import {
   PieChart,
@@ -9,9 +11,10 @@ import {
   YAxis,
   Tooltip,
   ResponsiveContainer,
+  Legend,
 } from 'recharts';
 
-function AttendanceStatistics() {
+export default function AttendanceStatistics() {
   const [selectedMonth, setSelectedMonth] = useState('January');
   const attendanceData = {
     January: {
@@ -165,7 +168,7 @@ function AttendanceStatistics() {
   const mostPopularEvent = {
     month: selectedMonth,
     total: currentData.virtual + currentData.inPerson + currentData.recorded,
-    name: currentData.events[0].name, // Accessing name from the updated events array
+    name: currentData.events[0].name,
     virtual: currentData.virtual,
     inPerson: currentData.inPerson,
   };
@@ -193,7 +196,7 @@ function AttendanceStatistics() {
           }}
         >
           <h3>Peak attendance times</h3>
-          <ResponsiveContainer width="100%" height={250}>
+          <ResponsiveContainer width="100%" height={300}>
             <PieChart>
               <Pie
                 data={currentData.breakdown}
@@ -202,15 +205,20 @@ function AttendanceStatistics() {
                 cx="50%"
                 cy="50%"
                 outerRadius={80}
-                label
+                label={({ name, percent }) => `${name} ${(percent * 100).toFixed(0)}%`}
               >
                 {currentData.breakdown.map(entry => (
-                  <Cell key={`cell-${entry.label}`} fill={entry.color} />
+                  <Cell key={`cell-${entry}`} fill={entry.color} />
                 ))}
               </Pie>
+              <Tooltip />
+              <Legend />
             </PieChart>
           </ResponsiveContainer>
-          <div style={{ fontSize: '32px', fontWeight: 'bold', margin: '20px 0' }}>{totalValue}</div>
+          <div style={{ margin: '20px 0', textAlign: 'center' }}>
+            <div style={{ fontSize: '16px', color: '#666' }}>Total Number of Attendees</div>
+            <div style={{ fontSize: '32px', fontWeight: 'bold' }}>{totalValue}</div>
+          </div>
         </div>
 
         {/* Class Type Preferences */}
@@ -223,7 +231,7 @@ function AttendanceStatistics() {
               <Tooltip />
               <Bar dataKey="value">
                 {barData.map(entry => (
-                  <Cell key={`cell-${entry.label}`} fill={entry.color} />
+                  <Cell key={`cell-${entry}`} fill={entry.color} />
                 ))}
               </Bar>
             </BarChart>
@@ -270,7 +278,7 @@ function AttendanceStatistics() {
         <ul style={{ listStyle: 'none', padding: 0 }}>
           {currentData.events.map((event, index) => (
             <li
-              key={event.index}
+              key={event}
               style={{
                 padding: '10px',
                 marginBottom: '5px',
@@ -303,5 +311,3 @@ function AttendanceStatistics() {
     </div>
   );
 }
-
-export default AttendanceStatistics;
