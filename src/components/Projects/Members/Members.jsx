@@ -66,9 +66,11 @@ const Members = props => {
   // ADDED: State for toggling display of active members only
   const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
 
-  const displayedMembers = showActiveMembersOnly
-    ? membersList.filter(member => member.isActive)
-    : membersList;
+  // avoid re-filtering the netire list on every render
+  const displayedMembers = useMemo(
+    () => (showActiveMembersOnly ? membersList.filter(member => member.isActive) : membersList),
+    [membersList, showActiveMembersOnly]
+  );
 
   const handleToggle = async () => {
     setShowActiveMembersOnly(prevState => !prevState);
