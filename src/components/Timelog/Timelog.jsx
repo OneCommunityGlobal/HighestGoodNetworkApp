@@ -701,8 +701,11 @@ function Timelog(props) {
                                     monthly management team reviews and Welcome Team Calls, and
                                     non-action-item-related research, classes, and other learning,
                                     meetings, etc., that benefit or relate to the project but are
-                                    not related to a specific action item in the
-                                    <a href="https://www.tinyurl.com/oc-os-wbs">
+                                    not related to a specific action item in the{' '}
+                                    <a 
+                                      href="https://www.tinyurl.com/oc-os-wbs"
+                                      onClick={(e) => e.stopPropagation()}
+                                    >
                                       One Community Work Breakdown Structure.
                                     </a>
                                     <br />
