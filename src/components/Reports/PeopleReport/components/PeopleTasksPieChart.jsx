@@ -13,8 +13,6 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
     showTasksPieChart,
     showProjectsPieChart,
     tasksLegend,
-    projectsWithLoggedHoursById,
-    projectsWithLoggedHoursLegend,
     displayedTasksLegend,
     showViewAllTasksButton,
     hoursLoggedToProjectsOnly,
@@ -32,7 +30,7 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
 
   return (
     <div className={`people-pie-charts-wrapper ${darkMode ? 'text-light' : ''}`}>
-      {showProjectsPieChart && (
+      {hoursLoggedToProjectsOnly.length!==0 && (
         <ReportPage.ReportBlock darkMode={darkMode}>
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
           {hoursLoggedToProjectsOnly.length!==0 && <UserProjectPieChart
@@ -50,20 +48,17 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
           }Tasks With Completed Hours`}</h5>
           <PieChart
             pieChartId={'tasksPieChart'}
-            data={tasksWithLoggedHoursById}
-            dataLegend={showAllTasks ? tasksLegend : displayedTasksLegend}
-            chartLegend={tasksLegend}
-            dataLegendHeader="Hours"
             darkMode={darkMode}
-            project={false}
+            data={tasksWithLoggedHoursById}
+            projectsData={tasksLegend}
           />
-          {showViewAllTasksButton && (
+          {/* {showViewAllTasksButton && (
             <div>
               <div onClick={handleViewAll} className="show-all-tasks-button">
                 {showAllTasks ? 'Collapse' : 'View all'}
               </div>
             </div>
-          )}
+          )} */}
         </ReportPage.ReportBlock>
       )}
     </div>

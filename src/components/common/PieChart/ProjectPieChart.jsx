@@ -11,8 +11,8 @@ export const UserProjectPieChart = ({
   dataLegendHeader,
   darkMode,
 }) => {
-
-    if(projectsData.length===0) return <div>Loading</div>
+// console.log(projectsData)
+if(projectsData.length===0) return <div>Loading</div>
   const [totalHours, setTotalHours] = useState(0);
   const colors = useMemo(() => generateArrayOfUniqColors(projectsData.length), [projectsData]);
   const color = useMemo(() => d3.scaleOrdinal().range(colors), [colors]);
@@ -155,29 +155,7 @@ export const UserProjectPieChart = ({
   return (
    projectsData.length===0? <div>Loading</div> :<div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
-      {/* <div className="pie-chart-legend-container">
-        <div className="pie-chart-legend-header">
-          <div>Project Name</div>
-          <div>{dataLegendHeader}</div>
-        </div>
-        {projectsData.map(project => (
-          <div key={project.projectId} className="pie-chart-legend-item">
-            <div className="data-legend-color" style={{ backgroundColor: color(project.projectId) }} />
-            <div className="data-legend-info">
-              <div className={`data-legend-info-part ${darkMode ? 'text-light' : ''}`}>
-                {project.projectName} {project.totalTime.toFixed(2)} hours
-              </div>
-            </div>
-          </div>
-        ))}
-        <div className="data-total-value">Total Hours: {totalHours.toFixed(2)}</div>
-      </div> */}
 <div className="pie-chart-legend-container">
-  {/* <div className="pie-chart-legend-header">
-    <div>Project Name</div>
-    <div>{dataLegendHeader}</div>
-  </div>
-   */}
   <div className="pie-chart-legend-table-wrapper">
     <table className="pie-chart-legend-table">
       <thead>

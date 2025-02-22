@@ -267,7 +267,7 @@ class PeopleReport extends Component {
       };
     });
   }
-
+  
   // eslint-disable-next-line class-methods-use-this
   endOfWeek(offset) {
     return moment()
@@ -426,7 +426,7 @@ class PeopleReport extends Component {
         />
       );
     };
-
+    
     const renderProfileInfo = () => {
       const { isRehireable, bioStatus, authRole } = this.state;
       const { profilePic, role, jobTitle, endDate, _id, createdDate, startDate } = userProfile;
@@ -522,7 +522,7 @@ class PeopleReport extends Component {
     return (
       <div className={`container-people-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <ReportPage renderProfile={renderProfileInfo} darkMode={darkMode}>
-          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 ? "auto-width-report-time-logs-wrapper" : ""}`}>
+          <div className={`people-report-time-logs-wrapper ${tangibleHoursReportedThisWeek === 0 && !isNaN(tangibleHoursReportedThisWeek)? "auto-width-report-time-logs-wrapper" : ""}`}>
             <ReportPage.ReportBlock
               firstColor="#ff5e82"
               secondColor="#e25cb2"
@@ -542,7 +542,7 @@ class PeopleReport extends Component {
                 className="people-report-time-log-block"
                 darkMode={darkMode}
               >
-                <h3 className="text-light">{tangibleHoursReportedThisWeek}</h3>
+                <h3 className="text-light">{!isNaN(tangibleHoursReportedThisWeek)?tangibleHoursReportedThisWeek:""}</h3>
                 <p>Hours Logged This Week</p>
               </ReportPage.ReportBlock>
             )}
@@ -572,12 +572,12 @@ class PeopleReport extends Component {
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
               {this.state.isLoading ? (
-                <p
+                <div
                   className={`${darkMode ? 'text-light' : ''}
                    d-flex align-items-center flex-row justify-content-center`}
                 >
                   Loading tasks: &nbsp; <Spinner color={`${darkMode ? 'light' : 'dark'}`} />
-                </p>
+                </div>
               ) : activeTasks.length > 0 ? (
                 <>
                   <div className={`intro_date ${darkMode ? 'text-light' : ''}`}>

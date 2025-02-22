@@ -256,7 +256,7 @@ function PeopleTableDetails(props) {
                   if (index < 2) {
                     return (
                       <img
-                        key={resource.index}
+                        key={`${value._id}-${resource.name}-${index}`}
                         alt={resource.name}
                         src={resource.profilePic || '/pfp-default.png'}
                         className="img-circle"
@@ -365,7 +365,7 @@ function PeopleTableDetails(props) {
   );
 
   // const renderFilteredTask = () => (
-
+    
   // )
   return (
     <Container fluid className={`wrapper ${darkMode ? 'text-light' : ''}`}>
@@ -408,7 +408,7 @@ function PeopleTableDetails(props) {
       </div>
       <div className="people-table">
         {filteredTasks.map(value => (
-          <NewModal header="Task info" trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
+          <NewModal key={value._id} header="Task info" trigger={() => <> {(windowWidth <= 1020) ? renderMobileFilteredTask(value) : renderFilteredTask(value)}</>}>
             <div>Why This Task is important</div>
             <textarea className="rectangle" type="text" value={value.whyInfo} />
             <div>Design Intent</div>
