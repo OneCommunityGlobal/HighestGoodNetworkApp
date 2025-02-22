@@ -29,6 +29,7 @@ function UserPermissionsPopUp({
   reminderModal,
   modalStatus,
   darkMode,
+  getChangeLogs,
 }) {
   const [searchText, onInputChange] = useState('');
   const [actualUserProfile, setActualUserProfile] = useState();
@@ -83,7 +84,7 @@ function UserPermissionsPopUp({
     const allUserInfo = await axios.get(url).then(res => res.data);
     const newUserInfo = { ...allUserInfo, permissions: { frontPermissions: userPermissions } };
 
-    await axios
+    axios
       .put(url, newUserInfo)
       .then(() => {
         if (!toastShown) {
@@ -96,6 +97,8 @@ function UserPermissionsPopUp({
           setToastShown(true);
         }
         toggle();
+        getAllUsers();
+        getChangeLogs();
       })
       .catch(err => {
         const ERROR_MESSAGE = `
@@ -105,7 +108,6 @@ function UserPermissionsPopUp({
           autoClose: 10000,
         });
       });
-    getAllUsers();
   };
   useEffect(() => {
     refInput.current.focus();
@@ -115,6 +117,7 @@ function UserPermissionsPopUp({
       setToastShown(false);
     }
   }, [modalStatus]);
+
   return (
     <>
       {modalStatus && (
