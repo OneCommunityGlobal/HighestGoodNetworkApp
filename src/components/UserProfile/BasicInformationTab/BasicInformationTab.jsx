@@ -462,8 +462,12 @@ const BasicInformationTab = props => {
             'editInfringements', 
             'deleteInfringements', 
             'getProjectMembers',
+            // testing these
+            'deleteTask',
+            'resolveTask',
             // temporary for testing
-            'putRole'
+            'putRole',
+            'putUserProfilePermissions'
           ];
           break;
         case 'Mentor':
@@ -756,8 +760,8 @@ const BasicInformationTab = props => {
       }
     }
     // return testPerms;
-    // Add 'putRole' and 'putUserProfile' permissions for testing purposes
-    const updatedPermissions = [...new Set([...testPerms, 'putRole', 'putUserProfile'])];
+    // Add 'putRole', 'putUserProfile', and 'putUserProfilePermissions' permissions for testing purposes
+    const updatedPermissions = [...new Set([...testPerms, 'putRole', 'putUserProfile', 'putUserProfilePermissions'])];
     return updatedPermissions;
   }, [dispatch, permissionLabelPermissions, userProfile.role]);
   
