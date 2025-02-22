@@ -34,6 +34,40 @@
   .leaderboard thead th[data-abbr] span {
     display: none; 
   }
+
+  .leaderboard thead th[data-abbr="Name"] {
+    width: auto !important;
+    min-width: 120px; 
+    text-align: left; 
+  }
+
+  .leaderboard thead th[data-abbr="Name"] > div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    gap: 6px; /* Adds space between "Name" and the icon */
+    width: 100%;
+    white-space: nowrap; 
+  }
+
+  .leaderboard thead th[data-abbr="Name"]::before {
+    content: none; 
+  }
+
+  .leaderboard thead th[data-abbr="Name"] span {
+    flex-grow: 0; /* Pushes the icon to the right */
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .leaderboard thead th[data-abbr="Name"] .p-2 {
+    margin-left: 0; /* Moves "i" icon to the right */
+    display: flex;
+    align-items: center;
+    white-space: nowrap; 
+  }
+
+  
 }
 
 
