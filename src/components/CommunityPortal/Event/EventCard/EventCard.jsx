@@ -58,8 +58,6 @@ function EventCard({ event }) {
   const handleConfirmation = async () => {
     // TODO: Replace with actual registration endpoint once available
     // Will use: POST /api/register/create
-    console.log('Attendance confirmation clicked - awaiting registration endpoint');
-    alert('Registration functionality coming soon');
   };
 
   return (

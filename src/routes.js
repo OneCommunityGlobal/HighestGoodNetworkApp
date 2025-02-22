@@ -55,7 +55,7 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-import EventList from 'components/CommunityPortal/Event/EventList/EventList';
+import EventList from './components/CommunityPortal/Event/EventList/EventList';
 
 
 

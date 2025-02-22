@@ -50,7 +50,6 @@ function EventList() {
         });
 
         const response = await axios.get(`${ENDPOINTS.EVENTS}?${params}`);
-        console.log('Events data:', response.data);
         setEvents(response.data.events);
         setPagination(prev => ({
           ...prev,
@@ -58,7 +57,6 @@ function EventList() {
         }));
       } catch (err) {
         setError('Failed to fetch events');
-        console.error('Fetch error:', err);
       } finally {
         setIsLoading(false);
       }
@@ -78,8 +76,7 @@ function EventList() {
         setEventTypes(typesRes.data.types);
         setLocationTypes(locationsRes.data.locations);
       } catch (err) {
-        // We might want to show an error, but not block the whole component
-        console.error('Failed to load filter options:', err);
+        setError('Failed to fetch filter');
       }
     };
 
@@ -179,13 +176,19 @@ function EventList() {
                   </PaginationLink>
                 </PaginationItem>
 
-                {[...Array(pagination.totalPages)].map((_, index) => (
-                  <PaginationItem key={index + 1} active={pagination.currentPage === index + 1}>
-                    <PaginationLink onClick={() => handlePageChange(index + 1)}>
-                      {index + 1}
-                    </PaginationLink>
-                  </PaginationItem>
-                ))}
+                {Array.from({ length: pagination.totalPages }, (_, i) => {
+                  const pageNumber = i + 1;
+                  return (
+                    <PaginationItem
+                      key={`page-${pageNumber}`}
+                      active={pagination.currentPage === pageNumber}
+                    >
+                      <PaginationLink onClick={() => handlePageChange(pageNumber)}>
+                        {pageNumber}
+                      </PaginationLink>
+                    </PaginationItem>
+                  );
+                })}
 
                 <PaginationItem disabled={pagination.currentPage === pagination.totalPages}>
                   <PaginationLink onClick={() => handlePageChange(pagination.currentPage + 1)}>
