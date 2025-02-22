@@ -242,3 +242,7 @@ input[type="checkbox"]:not([disabled]):hover {
   margin-left: -1px !important;
   padding: 4px !important;
 }
+
+.pdrl-1 {
+  padding: 0 1em !important;
+}

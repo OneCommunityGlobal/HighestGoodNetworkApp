@@ -27,6 +27,7 @@ function AddNewTitleModal({
   setShowMessage,
   editMode,
   title,
+  QSTTeamCodes
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const teamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
@@ -88,9 +89,9 @@ function AddNewTitleModal({
 
   useEffect(() => {
     setIsValidTeamCode(
-      titleData.teamCode === '' || teamCodes.some(code => code.value === titleData.teamCode),
+      titleData.teamCode === '' || QSTTeamCodes.some(code => code.value === titleData.teamCode),
     );
-  }, [titleData.teamCode, teamCodes]);
+  }, [titleData.teamCode, QSTTeamCodes]);
 
   let existTeamCodes = new Set();
   let existTeamName = new Set();
@@ -316,7 +317,7 @@ function AddNewTitleModal({
               Team Code<span className="qsm-modal-required">*</span>:
             </Label>
             <AssignTeamCodeField
-              teamCodeData={teamCodes}
+              teamCodeData={QSTTeamCodes}
               onDropDownSelect={selectTeamCode}
               selectedTeamCode={selectedTeamCode}
               cleanTeamCodeAssign={cleanTeamCodeAssign}
