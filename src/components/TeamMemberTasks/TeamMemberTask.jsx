@@ -170,6 +170,7 @@ const TeamMemberTask = React.memo(
               </div>
             )}
             <Table className="no-bottom-margin">
+            <tbody>
               <tr className="remove-child-borders">
                 {/* green if member has met committed hours for the week, red if not */}
                 <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
@@ -469,6 +470,7 @@ const TeamMemberTask = React.memo(
                   </div>
                 </td>
               </tr>
+              </tbody>
             </Table>
           </div>
         </td>
