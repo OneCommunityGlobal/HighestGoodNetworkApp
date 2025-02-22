@@ -24,11 +24,19 @@ import './TotalOrgSummary.css';
 // components
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
+import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
+import VolunteerActivities from './VolunteerActivities/VolunteerActivities';
+import VolunteerStatusChart from './VolunteerStatus/VolunteerStatusChart';
+import BlueSquareStats from './BlueSquareStats/BlueSquareStats';
+import TeamStats from './TeamStats/TeamStats';
 import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
-import DateRangeSelector from './DateRangeSelector';
+
+import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
+import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
+import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -122,14 +130,14 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
-  // const [comparisonOptions,setcomparisonOptions] = useState(option[0]);
 
-  const { darkMode, loading, error, allUserProfiles } = props;
-
+  const { darkMode, loading, error, allUserProfiles, volunteerOverview } = props;
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
   const [taskProjectHours, setTaskProjectHours] = useState([]);
+  const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
+  const [volunteerStats, setVolunteerStats] = useState(null);
 
   const [comparisonWeek, setComparisonWeek] = useState({ startDate: null, endDate: null });
 
@@ -207,10 +215,18 @@ function TotalOrgSummary(props) {
 
   useEffect(() => {
     async function fetchData() {
-      const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
+      // const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
+      // const {
+      //   taskHours: lastTaskHours,
+      //   projectHours: lastProjectHours,
+      // } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
       const {
-        taskHours: lastTaskHours,
-        projectHours: lastProjectHours,
+        taskHours: { count: taskHours },
+        projectHours: { count: projectHours },
+      } = await props.getTaskAndProjectStats(fromDate, toDate);
+      const {
+        taskHours: { count: lastTaskHours },
+        projectHours: { count: lastProjectHours },
       } = await props.getTaskAndProjectStats(fromOverDate, toOverDate);
 
       if (taskHours && projectHours) {
@@ -225,74 +241,21 @@ function TotalOrgSummary(props) {
     fetchData();
   }, [fromDate, toDate, fromOverDate, toOverDate]);
 
-  // useEffect(() => {
-  //   props.getTotalOrgSummary(
-  //     selectedDateRange.startDate,
-  //     selectedDateRange.endDate,
-  //     comparisionWeek.startDate,
-  //     comparisionWeek.endDate,
-  //   );
-  //   props.hasPermission('');
-  // }, [selectedDateRange]);
-
   useEffect(() => {
-    // props.hasPermission('');
-  }, [selectedDateRange]);
+    const fetchVolunteerStats = async () => {
+      try {
+        const volunteerStatsResponse = await props.getTotalOrgSummary(fromDate, toDate);
+        setVolunteerStats(volunteerStatsResponse.data);
+        await props.hasPermission('');
+      } catch (catchFetchError) {
+        setIsVolunteerFetchingError(true);
+      }
+    };
 
-  useEffect(() => {
-    // console.log('API Call Params:', {
-    //   startDate: selectedDateRange.startDate,
-    //   endDate: selectedDateRange.endDate,
-    //   comparisonStartDate: comparisonWeek.startDate,
-    //   comparisonEndDate: comparisonWeek.endDate,
-    // });
+    fetchVolunteerStats();
+  }, [fromDate, toDate]);
 
-    // if (comparisonWeek.startDate && comparisonWeek.endDate) {
-
-    // }
-    props.getTotalOrgSummary(
-      selectedDateRange.startDate,
-      selectedDateRange.endDate,
-      comparisonWeek.startDate,
-      comparisonWeek.endDate,
-    );
-  }, [selectedDateRange, comparisonWeek]);
-
-  const handleComparisonPeriodChange = option => {
-    const { startDate, endDate } = selectedDateRange;
-    let commonStartDate = moment(startDate);
-    let commonEndDate = moment(endDate);
-
-    switch (option.value) {
-      case 'lastweek':
-        commonStartDate = commonStartDate.subtract(1, 'week').startOf('week');
-        commonEndDate = commonEndDate.subtract(1, 'week').endOf('week');
-        break;
-      case 'lastmonth':
-        commonStartDate = commonStartDate.subtract(1, 'month').startOf('month');
-        commonEndDate = commonEndDate.subtract(1, 'month').endOf('month');
-        break;
-      case 'lastyear':
-        commonStartDate = commonStartDate.subtract(1, 'year').startOf('year');
-        commonEndDate = commonEndDate.subtract(1, 'year').endOf('year');
-        break;
-      case 'nocomparison':
-      default:
-        setComparisonWeek({ startDate: null, endDate: null });
-        return;
-    }
-
-    setComparisonWeek({
-      startDate: commonStartDate.format('YYYY-MM-DD'),
-      endDate: commonEndDate.format('YYYY-MM-DD'),
-    });
-    // console.log('Comparison Week Set:', {
-    //   startDate: commonStartDate.format('YYYY-MM-DD'),
-    //   endDate: commonEndDate.format('YYYY-MM-DD'),
-    // });
-  };
-
-  if (error) {
+  if (error || isVolunteerFetchingError) {
     return (
       <Container className={`container-wsr-wrapper ${darkMode ? 'bg-oxford-blue' : ''}`}>
         <Row
@@ -319,6 +282,7 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
+
   return (
     <Container
       fluid
@@ -365,7 +329,10 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerStatus
+                volunteerNumberStats={volunteerStats?.volunteerNumberStats}
+                totalHoursWorked={volunteerStats?.totalHoursWorked}
+              />
             </div>
           </Col>
         </Row>
@@ -374,7 +341,13 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 12 }}>
             <div className="component-container">
-              <VolunteerHoursDistribution />
+              <VolunteerActivities
+                totalSummariesSubmitted={volunteerStats?.totalSummariesSubmitted}
+                completedAssignedHours={volunteerStats?.completedAssignedHours}
+                totalBadgesAwarded={volunteerStats?.totalBadgesAwarded}
+                tasksStats={volunteerStats?.tasksStats}
+                totalActiveTeams={volunteerStats?.totalActiveTeams}
+              />
             </div>
           </Col>
         </Row>
@@ -388,7 +361,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <VolunteerStatusChart volunteerNumberStats={volunteerStats?.volunteerNumberStats} />
             </div>
           </Col>
         </Row>
@@ -442,12 +415,19 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <h4 className="text-center">Volunteer Trends by time</h4>
+              <span className="text-center"> Work in progres...</span>
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <AnniversaryCelebrated
+                fromDate={fromDate}
+                toDate={toDate}
+                fromOverDate={fromOverDate}
+                toOverDate={toOverDate}
+                darkMode={darkMode}
+              />
             </div>
           </Col>
         </Row>
@@ -456,12 +436,36 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className="role-distribution-title">
+                <p>Work Distribution</p>
+              </div>
+              <WorkDistributionBarChart
+                workDistributionStats={volunteerOverview?.workDistributionStats}
+              />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <VolunteerHoursDistribution />
+              <div className="role-distribution-title">
+                <p>Role Distribution</p>
+              </div>
+              <RoleDistributionPieChart
+                roleDistributionStats={volunteerOverview?.roleDistributionStats}
+              />
+            </div>
+          </Col>
+        </Row>
+      </AccordianWrapper>
+      <AccordianWrapper title="Volunteer Roles and Team Dynamics">
+        <Row>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <TeamStats usersInTeamStats={volunteerStats?.usersInTeamStats} />
+            </div>
+          </Col>
+          <Col lg={{ size: 6 }}>
+            <div className="component-container component-border">
+              <BlueSquareStats blueSquareStats={volunteerStats?.blueSquareStats} />
             </div>
           </Col>
         </Row>
@@ -473,7 +477,9 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
-  volunteerstats: state.totalOrgSummary.volunteerstats,
+
+  volunteerOverview: state.totalOrgSummary.volunteerOverview,
+
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
@@ -481,7 +487,9 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  // getTotalOrgSummary: () => dispatch(getTotalOrgSummary(fromDate, toDate)),
+
+  getTotalOrgSummary: (startDate, endDate) => dispatch(getTotalOrgSummary(startDate, endDate)),
+
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),

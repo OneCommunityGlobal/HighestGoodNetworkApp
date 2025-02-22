@@ -3,7 +3,8 @@ import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
-import { allUserProfilesReducer } from './allUserProfilesReducer';
+import { allUserProfilesBasicInfoReducer } from './allUserProfilesBasicInfoReducer';
+import { allUserProfilesReducer, changeUserPageStatusReducer, enableUserInfoEditReducer, updateUserInfoReducer } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
@@ -35,6 +36,9 @@ import { followUpReducer } from './followUpReducer';
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 
+import teamCodesReducer from './teamCodesReducer';
+import { projectByIdReducer } from './projectByIdReducer';
+
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
 import { reusablesReducer } from './bmdashboard/reusablesReducer';
@@ -46,7 +50,9 @@ import { bmInvUnitReducer } from './bmdashboard/inventoryUnitReducer';
 import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
-import { timeOffRequestsReducer } from './timeOffRequestReducer';
+
+import dashboardReducer from '../reducers/dashboardReducer';
+import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 
@@ -77,9 +83,12 @@ const localReducers = {
   notification: notificationReducer,
   userFollowUp: followUpReducer,
   userProjectsByUserNameReducer: userProjectsByUserNameReducer,
-  blueSquareEmailAssignment : BlueSquareEmailAssignment,
+  teamCodes: teamCodesReducer,
+  blueSquareEmailAssignment: BlueSquareEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,
   allUsersTimeEntries: allUsersTimeEntriesReducer,
+  allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
+  projectById: projectByIdReducer,
 
   // bmdashboard
   materials: materialsReducer,
@@ -94,9 +103,13 @@ const localReducers = {
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
+
+  dashboard: dashboardReducer
 };
 
 const sessionReducers = {
+  userPagination: changeUserPageStatusReducer,
+  userProfileEdit: enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,
   userTask: userTaskByIdReducer,
   leaderBoardData: leaderboardDataReducer,
