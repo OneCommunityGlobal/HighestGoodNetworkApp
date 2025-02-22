@@ -12,7 +12,6 @@ import { getAllTitle } from '../../../actions/title';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css';
 
-
 function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const canEditTitle = props.hasPermission('editTitle');
@@ -29,6 +28,9 @@ function QuickSetupModal(props) {
   const [adminLinks, setAdminLinks] = useState([]);
   const [editModal, showEditModal] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [QSTTeamCodes, setQSTTeamCodes] = useState([])
+
+  const stateTeamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
   useEffect(() => {
     getAllTitle()
@@ -49,7 +51,19 @@ function QuickSetupModal(props) {
       console.error(err);
     }
   };
-  
+
+  useEffect(()=>{
+    let teamCodes = [];
+    if(stateTeamCodes.length) {
+      teamCodes = [...stateTeamCodes];
+    }else if (props.teamsData?.allTeams) {
+      if( props.teamsData?.allTeamCode?.distinctTeamCodes ) {
+        teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+      }
+    }
+    setQSTTeamCodes(teamCodes);
+  },[stateTeamCodes.length])
+
   return (
     <div>
       {canAssignTitle || canEditTitle || canAddTitle ? (
@@ -63,6 +77,7 @@ function QuickSetupModal(props) {
           editMode={editMode}
           assignMode={canAssignTitle}
           setShowAddTitle={setShowAddTitle}
+          teamCodes={QSTTeamCodes}
         />
       ) : (
         ''
@@ -116,7 +131,7 @@ function QuickSetupModal(props) {
         ) : (
           ''
         )}
-        <EditTitlesModal 
+        <EditTitlesModal
           isOpen={editModal}
           toggle={() => showEditModal(false)}
           titles={titles}
@@ -148,6 +163,7 @@ function QuickSetupModal(props) {
           setShowMessage={setShowMessage}
           editMode={editMode}
           title={curtitle}
+          QSTTeamCodes={QSTTeamCodes}
         />
       ) : (
         ''
