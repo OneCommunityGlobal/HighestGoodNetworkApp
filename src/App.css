@@ -206,3 +206,43 @@ input[type="radio"]:hover {
 input[type="checkbox"]:not([disabled]):hover {
   cursor: pointer;
 }
+
+.tox .tox-toolbar__group {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  gap: 4px !important;
+}
+
+.tox .tox-tbtn {
+  min-width: auto !important;
+  padding: 4px 6px !important;
+  font-size: 14px !important;
+}
+
+.tox-tbtn {
+  padding: 2px 4px !important;
+}
+
+.tox .tox-toolbar {
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+}
+
+.tox .tox-split-button {
+  display: flex !important;
+  align-items: center !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.tox .tox-split-button__chevron {
+  display: inline-block !important;
+  min-width: auto !important;
+  width: auto !important;
+  margin-left: -1px !important;
+  padding: 4px !important;
+}
+
+.pdrl-1 {
+  padding: 0 1em !important;
+}
