@@ -234,8 +234,8 @@ export const ENDPOINTS = {
 
   // event endpoint
   EVENTS: `${APIEndpoint}/events`,
-  EVENT_TYPES: `${APIEndpoint}/communityportal/database/design/events/types`, 
-  EVENT_LOCATIONS: `${APIEndpoint}/communityportal/database/design/events/locations`,
+  EVENT_TYPES: `${APIEndpoint}/events/types`,
+  EVENT_LOCATIONS: `${APIEndpoint}/events/locations`,
 };
 
 export const ApiEndpoint = APIEndpoint;

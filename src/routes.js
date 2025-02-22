@@ -55,7 +55,7 @@ import CPDashboard from './components/CommunityPortal';
 import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 // import AddActivities from './components/CommunityPortal/Activities/AddActivities';
 // import ActvityDetailPage from './components/CommunityPortal/Activities/ActivityDetailPage';
-
+import EventList from 'components/CommunityPortal/Event/EventList/EventList';
 
 
 
@@ -115,7 +115,7 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
-const EventList = lazy(() => import('./components/CommunityPortal/Event/EventList/EventList'));
+// const EventList = lazy(() => import('./components/CommunityPortal/Event/EventList/EventList'));
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}

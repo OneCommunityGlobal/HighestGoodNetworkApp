@@ -15,14 +15,14 @@ import './EventCard.css';
 function EventCard({ event }) {
   const [expanded, setExpanded] = useState(false);
   const {
-    title,
-    description,
-    type,
-    location,
-    startTime,
-    endTime,
-    date,
-    status,
+    title = '',
+    description = '',
+    type = '',
+    location = '',
+    startTime = '',
+    endTime = '',
+    date = '',
+    status = 'New',
     resources = [],
     currentAttendees = 0,
     maxAttendees = 0,
@@ -44,13 +44,28 @@ function EventCard({ event }) {
   };
 
   const getLocationTag = locationType => {
-    return locationType?.toLowerCase() === 'virtual' ? 'virtual-tag' : 'in-person-tag';
+    return (locationType?.toLowerCase() || '') === 'virtual' ? 'virtual-tag' : 'in-person-tag';
+  };
+
+  const formatDateTime = dateString => {
+    try {
+      return format(new Date(dateString), 'h:mm a');
+    } catch (error) {
+      return 'Time not set';
+    }
+  };
+
+  const handleConfirmation = async () => {
+    // TODO: Replace with actual registration endpoint once available
+    // Will use: POST /api/register/create
+    console.log('Attendance confirmation clicked - awaiting registration endpoint');
+    alert('Registration functionality coming soon');
   };
 
   return (
     <Card className="event-card">
       <div className="cover-section">
-        <span className="display-4">cover</span>
+        <img src={event.coverImage} alt={event.title} className="event-cover-image" />
       </div>
 
       <div className="p-3">
@@ -91,7 +106,7 @@ function EventCard({ event }) {
           <div className="d-flex align-items-center mb-2">
             <FontAwesomeIcon icon={faClock} className="me-2" />
             <span>
-              {format(new Date(startTime), 'h:mm a')} - {format(new Date(endTime), 'h:mm a')}
+              {formatDateTime(startTime)} - {formatDateTime(endTime)}
             </span>
           </div>
         </div>
@@ -114,7 +129,7 @@ function EventCard({ event }) {
             </span>
           </div>
 
-          {resources.slice(0, expanded ? undefined : 3).map(resource => (
+          {(resources || []).slice(0, expanded ? undefined : 3).map(resource => (
             <div
               key={`${resource.name}-${resource.location}-${resource.userID || ''}`}
               className="d-flex justify-content-between align-items-center py-2"
@@ -146,7 +161,11 @@ function EventCard({ event }) {
 
         {/* Action Buttons */}
         <div className="mt-3">
-          <button type="button" className="action-button primary-button">
+          <button
+            type="button"
+            className="action-button primary-button"
+            onClick={handleConfirmation}
+          >
             Confirm attendance
           </button>
           <button type="button" className="action-button secondary-button">
