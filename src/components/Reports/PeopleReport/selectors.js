@@ -68,7 +68,7 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects }) => {
 
   const displayedTasksCount = Math.max(4, Object.keys(projectsWithLoggedHoursById).length);
 
-    //create minimized chart
+    // create minimized chart
     tasksWithLoggedHours
       .slice(0, displayedTasksCount)
       .forEach(({ _id, hoursLogged, taskName }) => {
@@ -78,9 +78,9 @@ export const peopleTasksPieChartViewData = ({ userTask, allProjects }) => {
 
       
 if(tasksWithLoggedHours.length > displayedTasksCount){
-  //if the number of tasks with hours logged is greater than 4, these tasks should still be accounted for in the total hours calculation on the minized chart
+  // if the number of tasks with hours logged is greater than 4, these tasks should still be accounted for in the total hours calculation on the minized chart
   if(tasksWithLoggedHours.length === displayedTasksCount + 1){
-    //edge case for when the number of tasks is exactly 5. The fifth task should be added to the chart and the legend
+    // edge case for when the number of tasks is exactly 5. The fifth task should be added to the chart and the legend
     const remainder = tasksWithLoggedHours.slice(displayedTasksCount)
     remainder.forEach(({ _id, hoursLogged, taskName }) => {
       displayedTasksWithLoggedHoursById[_id] = hoursLogged;
@@ -88,10 +88,10 @@ if(tasksWithLoggedHours.length > displayedTasksCount){
     });
   }else{
     // when the number of tasks is greater than 5, the hours get summed up and added to the chart as "Other Tasks"
-    let totalOtherHours = tasksWithLoggedHours.slice(displayedTasksCount).reduce((acc, val)=> acc + val.hoursLogged, 0)  
-    let numberOtherTasks = tasksWithLoggedHours.length - displayedTasksCount; 
-    displayedTasksWithLoggedHoursById["otherTasksTotalHours"] = totalOtherHours;
-    displayedTasksLegend["otherTasksTotalHours"] = [`${numberOtherTasks} other tasks`, totalOtherHours]
+    const totalOtherHours = tasksWithLoggedHours.slice(displayedTasksCount).reduce((acc, val)=> acc + val.hoursLogged, 0)  
+    const numberOtherTasks = tasksWithLoggedHours.length - displayedTasksCount; 
+    displayedTasksWithLoggedHoursById.otherTasksTotalHours = totalOtherHours;
+    displayedTasksLegend.otherTasksTotalHours = [`${numberOtherTasks} other tasks`, totalOtherHours]
   }
   }
   

@@ -107,7 +107,8 @@ export default function Warning({ personId, username, userRole, displayUser }) {
       ));
 
   return (
-    isAllowedToTracking && (
+    isAllowedToTracking &&
+    (userRole === 'Administrator' || userRole === 'Owner' || userRole === 'Manager') && (
       <div className="warnings-container">
         <div className="button__container">
           <Button
