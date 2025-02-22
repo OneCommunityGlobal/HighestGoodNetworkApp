@@ -3,63 +3,62 @@ import hasPermission from 'utils/permissions';
 import { connect } from 'react-redux';
 import { formatCreatedDate, formatDate } from 'utils/formatDate';
 
-const BlueSquare = props => {
-  const isInfringementAuthorizer = props.hasPermission('infringementAuthorizer');
-  const canPutUserProfileImportantInfo = props.hasPermission('putUserProfileImportantInfo');
-  const { blueSquares, handleBlueSquare, darkMode } = props;
+
+const BlueSquare = (props) => {
+  const {
+    blueSquares,
+    handleBlueSquare,
+    hasPermission
+  } = props;
+
+  const canAddInfringements = hasPermission('addInfringements');
+  const canEditInfringements = hasPermission('editInfringements');
+  const canDeleteInfringements = hasPermission('deleteInfringements');
+  const isInfringementAuthorizer = canAddInfringements || canEditInfringements || canDeleteInfringements;
+
+  const handleOnClick = (blueSquare) => {
+    if (!blueSquare._id) {
+      handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
+    } else if (canEditInfringements || canDeleteInfringements) {
+      handleBlueSquare(true, 'modBlueSquare', blueSquare._id);
+    } else {
+      handleBlueSquare(true, 'viewBlueSquare', blueSquare._id);
+    }
+  };
 
   return (
-    <div className={`blueSquareContainer ${darkMode ? 'bg-space-cadet' : ''}`}>
-      <div className={`blueSquares ${blueSquares?.length > 0 ? '' : 'NoBlueSquares'}`}>
-        {blueSquares?.length > 0
-          ? blueSquares
-              .sort((a, b) => (a.date > b.date ? 1 : -1))
-              .map((blueSquare, index) => (
-                <div
-                  key={index}
-                  role="button"
-                  id="wrapper"
-                  data-testid="blueSquare"
-                  className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
-                  onClick={() => {
-                    if (!blueSquare._id) {
-                      handleBlueSquare(isInfringementAuthorizer, 'message', 'none');
-                    } else if (canPutUserProfileImportantInfo) {
-                      handleBlueSquare(
-                        canPutUserProfileImportantInfo,
-                        'modBlueSquare',
-                        blueSquare._id,
-                      );
-                    } else {
-                      handleBlueSquare(
-                        !canPutUserProfileImportantInfo,
-                        'viewBlueSquare',
-                        blueSquare._id,
-                      );
-                    }
-                  }}
-                >
-                  <div className={`report ${darkMode ? 'bg-space-cadet' : ''}`} data-testid="report">
-                    <div className="title">{formatDate(blueSquare.date)}</div>
-                    {blueSquare.description !== undefined && (
-                      <div className="summary">
-                        {blueSquare.createdDate !== undefined && blueSquare.createdDate !== null
-                          ? `Added on ${formatCreatedDate(blueSquare.createdDate)}: ${
-                              blueSquare.description
-                            }`
-                          : blueSquare.description}
-                      </div>
-                    )}
-                  </div>
+    <div className="blueSquareContainer">
+      <div className={`blueSquares ${blueSquares?.length ? '' : 'NoBlueSquares'}`}>
+        {blueSquares?.length ? (
+          blueSquares
+            .sort((a, b) => (a.date > b.date ? 1 : -1))
+            .map((blueSquare, index) => (
+              <div
+                key={index}
+                role="button"
+                id="wrapper"
+                data-testid="blueSquare"
+                className="blueSquareButton"
+                onClick={() => handleOnClick(blueSquare)}
+              >
+                <div className="report" data-testid="report">
+                  <div className="title">{formatDate(blueSquare.date)}</div>
+                  {blueSquare.description && (
+                    <div className="summary">
+                      {blueSquare.createdDate ? `${formatCreatedDate(blueSquare.createdDate)}: ` : ''}
+                      {blueSquare.description}
+                    </div>
+                  )}
                 </div>
-              ))
-          : <div>No blue squares.</div>}
-        {isInfringementAuthorizer && (
+              </div>
+            ))
+        ) : (
+          <div>No blue squares.</div>
+        )}
+        {canAddInfringements && (
           <div
-            onClick={() => {
-              handleBlueSquare(true, 'addBlueSquare', '');
-            }}
-            className={darkMode ? "blueSquareButtonDark" : "blueSquareButton"}
+            onClick={() => handleBlueSquare(true, 'addBlueSquare', '')}
+            className="blueSquareButton"
             color="primary"
             data-testid="addBlueSquare"
           >
@@ -70,5 +69,7 @@ const BlueSquare = props => {
     </div>
   );
 };
+
+
 
 export default connect(null, { hasPermission })(BlueSquare);

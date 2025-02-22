@@ -4,9 +4,10 @@ import { ENDPOINTS } from "utils/URL";
 import {
   SET_MATERIALS, POST_UPDATE_MATERIAL_START, POST_UPDATE_MATERIAL_END, RESET_UPDATE_MATERIAL,
   POST_UPDATE_MATERIAL_ERROR, POST_UPDATE_MATERIAL_START_BULK, POST_UPDATE_MATERIAL_END_BULK,
-  RESET_UPDATE_MATERIAL_BULK, POST_UPDATE_MATERIAL_ERROR_BULK
+  RESET_UPDATE_MATERIAL_BULK, POST_UPDATE_MATERIAL_ERROR_BULK, UPDATE_MATERIAL_STATUS_END, UPDATE_MATERIAL_STATUS_ERROR, UPDATE_MATERIAL_STATUS_START,
 } from "constants/bmdashboard/materialsConstants";
 import { GET_ERRORS } from "constants/errors";
+import { toast } from 'react-toastify';
 
 export const setMaterials = payload => {
   return {
@@ -70,6 +71,24 @@ export const resetMaterialUpdateBulk = () => {
   return { type: RESET_UPDATE_MATERIAL_BULK }
 }
 
+export const statusUpdateStart = () => {
+  return { type: UPDATE_MATERIAL_STATUS_START };
+};
+
+export const statusUpdateEnd = payload => {
+  return {
+    type: UPDATE_MATERIAL_STATUS_END,
+    payload,
+  };
+};
+
+export const statusUpdateError = payload => {
+  return {
+    type: UPDATE_MATERIAL_STATUS_ERROR,
+    payload,
+  };
+};
+
 
 export const fetchAllMaterials = () => {
   return async dispatch => {
@@ -131,3 +150,45 @@ export const purchaseMaterial = async (body) => {
     })
 }
 
+export const approvePurchase = (purchaseId, quantity) => {
+  return async dispatch => {
+    dispatch(statusUpdateStart());
+    try {
+      const res = await axios.post(ENDPOINTS.BM_UPDATE_MATERIAL_STATUS, {
+        purchaseId,
+        status: 'Approved',
+        quantity,
+      });
+      dispatch(statusUpdateEnd(res.data));
+      toast.success('Item has been approved!', { toastId: 'approveSuccess' });
+      dispatch(fetchAllMaterials());
+      return res;
+    } catch (error) {
+      const errorPayload = error.response ? error.response.data : error.message;
+      dispatch(statusUpdateError(errorPayload));
+      toast.error('Failed to approve item.');
+      return null;
+    }
+  };
+};
+
+export const rejectPurchase = purchaseId => {
+  return async dispatch => {
+    dispatch(statusUpdateStart());
+    try {
+      const res = await axios.post(ENDPOINTS.BM_UPDATE_MATERIAL_STATUS, {
+        purchaseId,
+        status: 'Rejected',
+      });
+      dispatch(statusUpdateEnd(res.data));
+      toast.success('Item has been rejected!');
+      dispatch(fetchAllMaterials());
+      return res;
+    } catch (error) {
+      const errorPayload = error.response ? error.response.data : error.message;
+      dispatch(statusUpdateError(errorPayload));
+      toast.error('Failed to reject item.', { toastId: 'approveError' });
+      return null;
+    }
+  };
+};

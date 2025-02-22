@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
@@ -37,7 +37,7 @@ export function ProjectReport({ match }) {
   };
   const canViewWBS = isAdmin || checkAnyPermission(viewWBSpermissionsRequired);
 
-  const { wbs, projectMembers, isActive, projectName, wbsTasksID } = useSelector(
+  const { wbs, projectMembers, isActive, projectName} = useSelector(
     projectReportViewData
   );
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -59,12 +59,8 @@ export function ProjectReport({ match }) {
     .then(response => {
       if (response && Array.isArray(response)) {
         setProjectUsers(response);
-      } else {
-        console.log('error on fetching data');
       }
-    }).catch(() => {
-      console.log('error on fetching data');
-    });
+    })
   }, [projectId]);
 
   useEffect(() => {
@@ -76,7 +72,7 @@ export function ProjectReport({ match }) {
       }
       return acc;
     }, {});
-    setMergedProjectUsersArray(Object.values(mergedProjectUsers));   
+    setMergedProjectUsersArray(Object.values(mergedProjectUsers));
   }, [projectUsers]);
 
   useEffect(() => {
@@ -87,10 +83,9 @@ export function ProjectReport({ match }) {
     setHoursCommitted(0);
 
     if (match) {
-      const { projectId } = match.params;
-      dispatch(getProjectDetail(projectId));
-      dispatch(fetchAllWBS(projectId));
-      dispatch(fetchAllMembers(projectId));
+      dispatch(getProjectDetail(match.params.projectId));
+      dispatch(fetchAllWBS(match.params.projectId));
+      dispatch(fetchAllMembers(match.params.projectId));
       setTasks([]);
     }
   }, [match?.params.projectId]);
@@ -110,15 +105,17 @@ export function ProjectReport({ match }) {
     }
 
     return setHoursCommitted(0);
-    
+
   }, [tasksState, wbs]);
 
   useEffect(() => {
     if (projectMembers.members) {
       dispatch(getProjectActiveUser());
-      const { activeCount, nonActiveCount } = projectMembers.members.reduce((counts, member) => {
-        member.isActive ? counts.activeCount++ : counts.nonActiveCount++;
-        return counts;
+      const { activeCount, nonActiveCount } = projectMembers.members.reduce((acc, member) => {
+        if (member.isActive) {
+          return { ...acc, activeCount: acc.activeCount + 1 };
+        } 
+        return { ...acc, nonActiveCount: acc.nonActiveCount + 1 };
       }, { activeCount: 0, nonActiveCount: 0 });
 
       setActiveMemberCount(activeCount);
@@ -138,14 +135,14 @@ export function ProjectReport({ match }) {
           isActive={isActive}
           avatar={<FiBox />}
           name={projectName}
-          counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
+          counts={{ activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
           hoursCommitted={hoursCommitted.toFixed(0)}
           darkMode={darkMode}
         />
       )}
       darkMode={darkMode}
     >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div> 
+      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
@@ -158,7 +155,7 @@ export function ProjectReport({ match }) {
               projectMembers={projectMembers}
               handleMemberCount={handleMemberCount}
               darkMode={darkMode}
-              counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
+              counts={{ activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
             />
           </Paging>
         </ReportPage.ReportBlock>
@@ -168,7 +165,7 @@ export function ProjectReport({ match }) {
         </ReportPage.ReportBlock>
         <ReportPage.ReportBlock darkMode={darkMode}>
           <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>
-          <div style={{ marginTop: '40px' }}></div>
+          <hr />
           <WbsPieChart projectMembers={projectMembers} projectName={projectName} darkMode={darkMode}/>
         </ReportPage.ReportBlock>
       </ReportPage>

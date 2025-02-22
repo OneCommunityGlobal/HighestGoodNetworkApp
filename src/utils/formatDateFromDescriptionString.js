@@ -12,22 +12,31 @@ replaces every occurence present in a string no matter how large it is.
 formatDate.js on Steroids ~ Kurtis
 */
 
-export const formatDateFromDescriptionString = input => input.replace(/(\d{4}-\d{2}-\d{2})/g, date => {
-  const [year, month, day] = date.split('-');
-  const months = [
-    "Jan", "Feb", "Mar", "Apr",
-    "May", "Jun", "Jul", "Aug",
-    "Sep", "Oct", "Nov", "Dec"
-  ];
-  return `${months[parseInt(month) - 1]}-${day}-${year.slice(-2)}`;
-});
-
+export const formatDateFromDescriptionString = input =>
+  input.replace(/(\d{4}-\d{2}-\d{2})/g, date => {
+    const [year, month, day] = date.split('-');
+    const months = [
+      'Jan',
+      'Feb',
+      'Mar',
+      'Apr',
+      'May',
+      'Jun',
+      'Jul',
+      'Aug',
+      'Sep',
+      'Oct',
+      'Nov',
+      'Dec',
+    ];
+    return `${months[parseInt(month, 10) - 1]}-${day}-${year.slice(-2)}`;
+  });
 
 export const formatTimeOffRequests = inputString => {
-  const searchTerm = 'Notice:'
+  const searchTerm = 'Notice:';
   if (inputString.includes(searchTerm)) {
     const parts = inputString.split(searchTerm);
-    return parts
+    return parts;
   }
   return [];
-}
+};

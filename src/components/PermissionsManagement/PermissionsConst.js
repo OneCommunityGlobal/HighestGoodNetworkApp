@@ -23,6 +23,11 @@ export const permissionLabels = [
         description:
           'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
       },
+      {
+        label: 'Edit Header Message',
+        key: 'editHeaderMessage',
+        description: 'Gives the user permission to edit the message displayed in the header',
+      },
     ],
   },
   {
@@ -93,10 +98,25 @@ export const permissionLabels = [
           'Gives the user permission to change the status of any user on the user profile page or User Management Page. "User Profile" -> "Green round button"',
       },
       {
-        label: 'Handle Blue Squares',
-        key: 'infringementAuthorizer',
+        label: 'Toggle Invisibility Permission Self and Others',
+        key: 'toggleInvisibility',
         description:
-          'Gives the user permission to Create/Edit/Delete any blue square and assign them to any user.',
+          'Gives the user permission to change the invisibility toggle for themselves and others',
+      },
+      {
+        label: 'Assign Blue Squares',
+        key: 'addInfringements',
+        description: 'Gives the user permission to add blue squares to any user.',
+      },
+      {
+        label: 'Edit Blue Squares',
+        key: 'editInfringements',
+        description: 'Gives the user permission to edit any blue square.',
+      },
+      {
+        label: 'Delete Blue Squares',
+        key: 'deleteInfringements',
+        description: 'Gives the user permission to delete any blue square.',
       },
       {
         label: 'Modify Important User Info',
@@ -243,6 +263,12 @@ export const permissionLabels = [
                   'Gives the user permission to suggest changes on a task. "Dashboard" -> "Tasks tab" -> "Click on any task" -> "Suggest button"',
               },
               {
+                label: 'Unassign Team Members from Tasks',
+                key: 'removeUserFromTask',
+                description:
+                  'Gives the user permission to UNASSIGN tasks from only their TEAM members through the Dashboard -> task -> red X.',
+              },
+              {
                 label: 'Interact with Task "Ready for Review"',
                 key: 'putReviewStatus',
                 description:
@@ -298,6 +324,18 @@ export const permissionLabels = [
           'Gives the user permission to toggle the Tangible check when editing their own time entry.',
       },
       {
+        label: 'Timelog Management (Own)',
+        description: 'Category for all permissions related to timelog management',
+        subperms: [
+          {
+            label: 'Delete Time Entry (Own)',
+            key: 'deleteTimeEntryOwn',
+            description:
+              'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
+          },
+        ],
+      },
+      {
         label: 'Timelog Management (Others)',
         description: 'Category for all permissions related to timelog management',
         subperms: [
@@ -309,7 +347,7 @@ export const permissionLabels = [
           },
           {
             label: 'Delete Time Entry (Others)',
-            key: 'deleteTimeEntry',
+            key: 'deleteTimeEntryOthers',
             description:
               'Gives the user permission to Delete time entry from others users "Dashboard" -> "Leaderboard" -> "Dot By the side of user\'s name" -> "Current Time Log" -> "Trash button on bottom right"',
           },
@@ -343,6 +381,17 @@ export const permissionLabels = [
             ],
           },
         ],
+      },
+    ],
+  },
+  {
+    label: 'Announcements',
+    description: 'Category to communicate',
+    subperms: [
+      {
+        label: 'Send Emails',
+        key: 'sendEmails',
+        description: 'Gives the user permission to send email communications to other users. ',
       },
     ],
   },
@@ -393,6 +442,58 @@ export const permissionLabels = [
       //   description: 'WIP - not implemented',
       // },
     ],
+  },
+  {
+    label: 'Quick Setup Functions',
+    description: 'Category for permissions related to Quick Setup functions.',
+    subperms: [
+      {
+        label: 'Add New Title',
+        key: 'addNewTitle',
+        description: 'Gives user permission to add new title in quick setup functions.',
+      },
+      {
+        label: 'Assign Title',
+        key: 'assignTitle',
+        description: 'Gives user permission to edit existing title in quick setup functions.',
+      },
+      {
+        label: 'Edit Titles',
+        key: 'editTitle',
+        description: 'Gives user permission to view existing title in quick setup functions.',
+      },
+    ],
+  },
+  {
+    label: 'Misc/Unsorted',
+    description: 'Category for all permissions not related to other categories',
+    subperms: [
+      {
+        label: 'Edit Team 4-Digit Codes',
+        key: 'editTeamCode',
+        description:
+          'Gives the user permission to edit 4-digit team codes on profile page and weekly summaries report page.',
+      },
+      {
+        label: 'See All Users in Dashboard and Leaderboard',
+        key: 'seeUsersInDashboard',
+        description:
+          'Lets the user see all users in the dashboard as if they were on the same team. Requires "See All Users" to function',
+      },
+    ],
+  },
+];
+
+export const roleOperationLabels = [
+  {
+    label: 'Save',
+    key: 'save',
+    description: 'Save current changes',
+  },
+  {
+    label: 'Delete',
+    key: 'delete',
+    description: 'Delete the role',
   },
 ];
 
