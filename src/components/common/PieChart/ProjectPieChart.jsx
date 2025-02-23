@@ -8,10 +8,9 @@ import './UserProjectPieChart.css';
 export const UserProjectPieChart = ({
   projectsData, // New array format: [{ projectId: "123", projectName: "Project A", totalTime: 10.5 }, ...]
   pieChartId,
-  dataLegendHeader,
+  tasksData,
   darkMode,
 }) => {
-// console.log(projectsData)
 if(projectsData.length===0) return <div>Loading</div>
   const [totalHours, setTotalHours] = useState(0);
   const colors = useMemo(() => generateArrayOfUniqColors(projectsData.length), [projectsData]);
@@ -40,6 +39,12 @@ if(projectsData.length===0) return <div>Loading</div>
     }
   };
 
+  const calculateTotalHours = (projectsData, tasksData) => {
+    const totalTaskTime = tasksData.reduce((sum, project) => sum + project.totalTime, 0);
+    const projectsDataTime= projectsData.reduce((sum, project) => sum + project.totalTime, 0);
+    return totalTaskTime+projectsDataTime;
+  }
+
   const getCreateSvgPie = totalValue => {
     if(totalValue === 0) return;
     const svg = d3
@@ -51,12 +56,14 @@ if(projectsData.length===0) return <div>Loading</div>
       .append('g')
       .attr('transform', `translate(${CHART_SIZE / 2}, ${CHART_SIZE / 2})`);
   
-    const displayValue = togglePercentage
-      ? (selectedProjects.reduce((sum, projectId) => {
-          const project = projectsData.find(p => p.projectId === projectId);
-          return sum + (project ? project.totalTime : 0);
-        }, 0) / totalValue) * 100
-      : totalValue;
+      const displayValue = togglePercentage
+      // ? (selectedProjects.reduce((sum, projectId) => {
+      //     const project = tasksData.find(p => p.projectId === projectId);
+      //     return sum + (project ? project.totalTime : 0);
+      //   }, 0) / totalValue) * 100
+      // : totalValue;
+      ? (totalValue / calculateTotalHours(projectsData, tasksData)) * 100
+    : totalValue;
   
     svg
       .append('text')
@@ -64,7 +71,7 @@ if(projectsData.length===0) return <div>Loading</div>
       .style('fill', darkMode ? 'white' : 'black')
       .text(
         togglePercentage
-          ? `${displayValue.toFixed(2)}% of ${totalValue.toFixed(2)}`
+          ? `${displayValue.toFixed(2)}% of ${calculateTotalHours(projectsData,tasksData).toFixed(2)}`
           : totalValue.toFixed(2),
       );
   
@@ -155,34 +162,34 @@ if(projectsData.length===0) return <div>Loading</div>
   return (
    projectsData.length===0? <div>Loading</div> :<div className={`pie-chart-wrapper ${darkMode ? 'text-light' : ''}`}>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
-<div className="pie-chart-legend-container">
-  <div className="pie-chart-legend-table-wrapper">
-    <table className="pie-chart-legend-table">
-      <thead>
-        <tr>
-          <th>Color</th>
-          <th>Project Name</th>
-          <th>Hours</th>
-        </tr>
-      </thead>
-      <tbody>
-        {projectsData.map(project => (
-          <tr key={project.projectId}>
-            <td>
-              <div id="project-chart-legend" style={{ backgroundColor: `${color(project.projectId)}`}}></div>
-            </td>
-            <td>{project.projectName}</td>
-            <td>{project.totalTime.toFixed(2)} </td>
-          </tr>
-        ))}
-      </tbody>
-    </table>
-  </div>
+        <div className="pie-chart-legend-container">
+          <div className="pie-chart-legend-table-wrapper">
+            <table className="pie-chart-legend-table">
+              <thead>
+                <tr>
+                  <th>Color</th>
+                  <th>Project Name</th>
+                  <th>Hours</th>
+                </tr>
+              </thead>
+              <tbody>
+                {projectsData.map(project => (
+                  <tr key={project.projectId}>
+                    <td>
+                      <div id="project-chart-legend" style={{ backgroundColor: `${color(project.projectId)}`}}></div>
+                    </td>
+                    <td>{project.projectName}</td>
+                    <td>{project.totalTime.toFixed(2)} </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
 
-  <div className="data-total-value">
-    <strong>Total Hours:</strong> {totalHours.toFixed(2)}
-  </div>
-</div>
+          <div className="data-total-value">
+            <strong>Total Hours:</strong> {totalHours.toFixed(2)}
+          </div>
+        </div>
     </div>
   );
 };

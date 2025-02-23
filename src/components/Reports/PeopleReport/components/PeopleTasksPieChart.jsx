@@ -13,7 +13,6 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
     showTasksPieChart,
     showProjectsPieChart,
     tasksLegend,
-    displayedTasksLegend,
     showViewAllTasksButton,
     hoursLoggedToProjectsOnly,
   } = useSelector(peopleTasksPieChartViewData);
@@ -35,9 +34,9 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
           {hoursLoggedToProjectsOnly.length!==0 && <UserProjectPieChart
             pieChartId={'projectsPieChart'}
-            dataLegendHeader="Hours"
             darkMode={darkMode}
-            projectsData={hoursLoggedToProjectsOnly}       
+            projectsData={hoursLoggedToProjectsOnly}
+            tasksData={tasksLegend}       
           />}
         </ReportPage.ReportBlock>
       )}
@@ -50,7 +49,8 @@ export const PeopleTasksPieChart = ({ darkMode }) => {
             pieChartId={'tasksPieChart'}
             darkMode={darkMode}
             data={tasksWithLoggedHoursById}
-            projectsData={tasksLegend}
+            tasksData={tasksLegend}
+            projectsData={hoursLoggedToProjectsOnly}
           />
           {/* {showViewAllTasksButton && (
             <div>

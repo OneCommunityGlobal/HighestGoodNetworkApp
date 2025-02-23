@@ -293,12 +293,14 @@ class PeopleReport extends Component {
     const { tangibleHoursReportedThisWeek, auth, match, darkMode } = this.props;
 
     let totalTangibleHrsRound = 0;
-    if (hoursByCategory) {
-      const hours = hoursByCategory
-        ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0)
-        : 0;
-      totalTangibleHrsRound = hours.toFixed(2);
-    }
+    timeEntries.period?.map(entry => totalTangibleHrsRound += (entry.hours + (entry.minutes / 60)));
+    totalTangibleHrsRound = totalTangibleHrsRound.toFixed(2);
+    // if (hoursByCategory) {
+    //   const hours = hoursByCategory
+    //     ? Object.values(hoursByCategory).reduce((prev, curr) => prev + curr, 0)
+    //     : 0;
+    //   totalTangibleHrsRound = hours.toFixed(2);
+    // }
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
     const UserProject = props => {
