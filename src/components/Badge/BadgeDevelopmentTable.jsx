@@ -43,7 +43,6 @@ function BadgeDevelopmentTable(props) {
   const [sortedBadges, setSortedBadges] = useState([]);
   const [sortNameState, setSortNameState] = useState('default');
   const [sortRankState, setSortRankState] = useState('default');
-  const [isUpdateCheckbox, setIsUpdateCheckbox] = useState(false);
 
   useEffect(() => {
     setSortedBadges(props.allBadgeData);
