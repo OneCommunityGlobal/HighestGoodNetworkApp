@@ -10,11 +10,13 @@ import {
   PaginationItem,
   PaginationLink,
 } from 'reactstrap';
+import { connect } from 'react-redux';
 import axios from 'axios';
 import { ENDPOINTS } from 'utils/URL';
 import EventCard from '../EventCard/EventCard';
 
-function EventList() {
+function EventList(props) {
+  const { darkMode } = props;
   // State for events and pagination
   const [events, setEvents] = useState([]);
   const [eventTypes, setEventTypes] = useState([]);
@@ -26,13 +28,12 @@ function EventList() {
     limit: 9,
   });
 
-  // State for filters - starting empty to show all events
+  // State for filters(starting empty to show all events)
   const [filters, setFilters] = useState({
     type: '',
     location: '',
   });
 
-  // Loading and error states
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -91,7 +92,7 @@ function EventList() {
     }));
   };
 
-  // Handle filter changes - resets to page 1
+  // Handle filter changes
   const handleFilterChange = (filterName, value) => {
     setFilters(prev => ({
       ...prev,
@@ -104,18 +105,19 @@ function EventList() {
   };
 
   return (
-    <div className="container-fluid p-3">
+    <div className={`container-fluid p-3 ${darkMode ? 'event-dark-mode' : ''}`}>
       {error && <div className="alert alert-danger">{error}</div>}
 
       {/* Optional Filter Section */}
       <Row className="mb-4">
         <Col md={6}>
           <FormGroup>
-            <Label>Event Type</Label>
+            <Label className={darkMode ? 'text-light' : ''}>Event Type</Label>
             <Input
               type="select"
               value={filters.type}
               onChange={e => handleFilterChange('type', e.target.value)}
+              className={darkMode ? 'bg-yinmn-blue text-light' : ''}
             >
               <option value="">All Types</option>
               {eventTypes.map(type => (
@@ -128,11 +130,12 @@ function EventList() {
         </Col>
         <Col md={6}>
           <FormGroup>
-            <Label>Location</Label>
+            <Label className={darkMode ? 'text-light' : ''}>Location</Label>
             <Input
               type="select"
               value={filters.location}
               onChange={e => handleFilterChange('location', e.target.value)}
+              className={darkMode ? 'bg-yinmn-blue text-light' : ''}
             >
               <option value="">All Locations</option>
               {locationTypes.map(location => (
@@ -148,19 +151,21 @@ function EventList() {
       {/* Events Display */}
       {isLoading ? (
         <div className="d-flex justify-content-center">
-          <Spinner color="primary" />
+          <Spinner color={darkMode ? 'light' : 'primary'} />
         </div>
       ) : (
         <>
           <Row>
             {events.length === 0 ? (
               <Col>
-                <div className="alert alert-info">No events found</div>
+                <div className={`alert ${darkMode ? 'alert-dark' : 'alert-info'}`}>
+                  No events found
+                </div>
               </Col>
             ) : (
               events.map(event => (
                 <Col key={event._id} lg={4} md={6} className="mb-4">
-                  <EventCard event={event} />
+                  <EventCard event={event} darkMode={darkMode} />
                 </Col>
               ))
             )}
@@ -169,7 +174,7 @@ function EventList() {
           {/* Pagination Controls */}
           {events.length > 0 && (
             <div className="d-flex justify-content-center mt-4">
-              <Pagination>
+              <Pagination className={darkMode ? 'pagination-dark' : ''}>
                 <PaginationItem disabled={pagination.currentPage === 1}>
                   <PaginationLink onClick={() => handlePageChange(pagination.currentPage - 1)}>
                     Previous
@@ -204,4 +209,8 @@ function EventList() {
   );
 }
 
-export default EventList;
+const mapStateToProps = state => ({
+  darkMode: state.theme.darkMode,
+});
+
+export default connect(mapStateToProps)(EventList);

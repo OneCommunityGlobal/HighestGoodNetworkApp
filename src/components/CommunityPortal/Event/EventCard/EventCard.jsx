@@ -12,7 +12,8 @@ import {
 import { format } from 'date-fns';
 import './EventCard.css';
 
-function EventCard({ event }) {
+function EventCard(props) {
+  const { event, darkMode } = props;
   const [expanded, setExpanded] = useState(false);
   const {
     title = '',
@@ -61,7 +62,7 @@ function EventCard({ event }) {
   };
 
   return (
-    <Card className="event-card">
+    <Card className={`event-card ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
       <div className="cover-section">
         <img src={event.coverImage} alt={event.title} className="event-cover-image" />
       </div>
@@ -80,7 +81,10 @@ function EventCard({ event }) {
         {/* Event Details */}
         <div className="event-details mt-3">
           <div className="d-flex align-items-center mb-2">
-            <FontAwesomeIcon icon={faTag} className="me-2 text-muted" />
+            <FontAwesomeIcon
+              icon={faTag}
+              className={`me-2 ${darkMode ? 'text-light' : 'text-muted'}`}
+            />
             <span className="text-muted">Type:</span>
             <span className="ms-2">{type}</span>
           </div>

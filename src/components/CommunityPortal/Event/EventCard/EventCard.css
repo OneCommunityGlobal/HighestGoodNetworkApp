@@ -164,3 +164,46 @@
     height: 12rem;
   }
 }
+
+.bg-space-cadet {
+  background-color: #1B2A41;
+}
+
+.event-card.bg-space-cadet .event-details,
+.event-card.bg-space-cadet .attendees-section {
+  background-color: #2C3E58; 
+  color: white;
+}
+
+.event-card.bg-space-cadet .text-muted {
+  color: #A9B4C4 !important;
+}
+
+.event-card.bg-space-cadet .event-description p {
+  color: #FFFFFF;
+}
+
+.event-card.bg-space-cadet .btn-link {
+  color: #FFFFFF;
+}
+
+.event-dark-mode {
+  background-color: #1B2A41 !important; 
+}
+
+.event-dark-mode .form-control,
+.event-dark-mode .form-select,
+.event-dark-mode .input-group {
+  background-color: white !important;
+  color: #333 !important;
+}
+
+.event-dark-mode .event-card {
+  background-color: #1B2A41;
+}
+
+
+.event-dark-mode .event-details,
+.event-dark-mode .attendees-section {
+  background-color: #2C3E58;
+}
