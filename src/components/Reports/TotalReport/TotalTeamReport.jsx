@@ -1,11 +1,9 @@
 import React, { useEffect, useState, useMemo, Suspense } from 'react';
-import { useDispatch } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
-import { getTeamMembers } from '../../../actions/allTeamsAction';
 import Loading from '../../common/Loading';
 
 const LazyTotalReportBarGraph = React.lazy(() => import('./TotalReportBarGraph'));
@@ -15,7 +13,6 @@ function TotalTeamReport(props) {
   const [totalTeamReportDataReady, setTotalTeamReportDataReady] = useState(false);
   const [showTotalTeamTable, setShowTotalTeamTable] = useState(false);
   const [allTimeEntries, setAllTimeEntries] = useState([]);
-  const [teamTimeEntries, setTeamTimeEntries] = useState([]);
   const [allTeams, setAllTeams] = useState([]);
   const [teamInMonth, setTeamInMonth] = useState([]);
   const [teamInYear, setTeamInYear] = useState([]);
@@ -32,47 +29,40 @@ function TotalTeamReport(props) {
 
 
   // Fetch and cache team members
-  const matchTeamUser = async teamList => {
+  const matchTeamUser = async oldTeamList => {
     const cachedTeamMembers = localStorage.getItem('teamMembers');
     if (cachedTeamMembers) {
       setAllTeamsMembers(JSON.parse(cachedTeamMembers));
     } else {
       // const allTeamMembersPromises = teamList.map(team => dispatch(getTeamMembers(team._id)));
       // const allTeamMembers = await Promise.all(allTeamMembersPromises);
-      try {
-        if(teamList.length==0 || teamList===undefined || teamList ===null){
-          return;
-        }
-        const allTeamsMembers=await axios.post(process.env.REACT_APP_APIENDPOINT+'/team/reports',teamList);
-        const teamUserList = allTeamsMembers.data.map((team) => ({
-          teamId: team._id,
-          teamName: team.teamName,
-          createdDatetime: team.createdDatetime,
-          members: team.members.map(user => user.userId),
-        }));
-        // const teamUserList = allTeamMembers.map((team, i) => ({
-          //   teamId: teamList[i]._id,
-          //   teamName: teamList[i].teamName,
-          //   createdDatetime: teamList[i].createdDatetime,
-          //   members: team.map(user => user._id),
-          // }));
-          setAllTeamsMembers(teamUserList);
-          localStorage.setItem('teamMembers', JSON.stringify(teamUserList));
-        } catch (error) {
-          console.log(error);
-        }
+    if(oldTeamList.length===0 || oldTeamList===undefined || oldTeamList ===null){
+      return;
+    }
+    const allTeamsMembersData=await axios.post(`${process.env.REACT_APP_APIENDPOINT}/team/reports`,teamList);
+    const teamUserList = allTeamsMembersData.data.map((team) => ({
+      teamId: team._id,
+      teamName: team.teamName,
+      createdDatetime: team.createdDatetime,
+      members: team.members.map(user => user.userId),
+    }));
+    // const teamUserList = allTeamMembers.map((team, i) => ({
+      //   teamId: teamList[i]._id,
+      //   teamName: teamList[i].teamName,
+      //   createdDatetime: teamList[i].createdDatetime,
+      //   members: team.map(user => user._id),
+      // }));
+      setAllTeamsMembers(teamUserList);
+      localStorage.setItem('teamMembers', JSON.stringify(teamUserList));
     }
   };
 
   // Filter teams and fetch time entries in parallel
   const loadTimeEntriesForPeriod = async () => {
     // i think we need to cache timeentries data
-    try{
-    let tientry = localStorage.getItem('TimeEntry')
-    let tmentry = localStorage.getItem("TeamEntry")
-    if(tientry && tmentry && JSON.parse(tientry).length!==0 && JSON.parse(tientry).length!==0){
-      setAllTimeEntries(JSON.parse(tientry))
-      setTeamTimeEntries(JSON.parse(tmentry))
+    const tientry = localStorage.getItem('TimeEntry');
+    if (tientry && JSON.parse(tientry).length !== 0) {
+      setAllTimeEntries(JSON.parse(tientry));
       return;
     }
     const [timeEntries, teamEntries] = await Promise.all([
@@ -86,7 +76,7 @@ function TotalTeamReport(props) {
       const entryDate = new Date(entry.dateOfWork); 
       return entryDate >= startDateObj && entryDate <= endDateObj;  // Filter to only include entries within the range
     });
-    var filteredTime=filteredTimeEntries.map(entry => ({
+    const filteredTime=filteredTimeEntries.map(entry => ({
       userId: entry.personId,
       hours: entry.hours,
       minutes: entry.minutes,
@@ -99,7 +89,7 @@ function TotalTeamReport(props) {
       const entryDate = new Date(entry.dateOfWork);  
       return entryDate >= startDateObj && entryDate <= endDateObj;  // Filter to only include entries within the range
     });
-    var filteredTeam=filteredTeamEntries.map(entry => ({
+    const filteredTeam=filteredTeamEntries.map(entry => ({
       teamId: entry.teamId,
       hours: entry.hours,
       minutes: entry.minutes,
@@ -108,10 +98,6 @@ function TotalTeamReport(props) {
       teamName: entry.teamName,
     }))
     localStorage.setItem('TeamEntry',JSON.stringify(filteredTeam))
-    setTeamTimeEntries(filteredTeam);
-  }catch(error){
-    console.log(error)
-  }
   };
   
   // Function to sum time entries by user
@@ -138,10 +124,10 @@ function TotalTeamReport(props) {
   };
 
   // Group time entries by team
-  const groupByTeam = (userTimeSum, teamList) => {
+  const groupByTeam = (userTimeSum, teams) => {
     const accTeam = {};
     
-    teamList.forEach(team => {
+    teams.forEach(team => {
       const key = team.teamId;
       if (!accTeam[key]) {
         accTeam[key] = {
@@ -192,13 +178,13 @@ const groupByTimeRange = (objectArray, timeRange) => {
   return objectArray.reduce((acc, obj) => {
     const entryDate = new Date(obj.date);
     
-    if (isNaN(entryDate.getTime())) {
+    if (Number.isNaN(entryDate.getTime())) {
       return acc;  // Skip invalid dates
     }
 
     // Limit logging to prevent browser freeze
     if (logCount < maxLogs) {
-      logCount++;
+      logCount += 1;
     }
 
     const entryYear = entryDate.getFullYear();
@@ -228,13 +214,13 @@ const groupedDate = useMemo(() => {
       if (entryYear === startDateObj.getFullYear()) {
         // Only include months after the start date in the start year for 'month'
         return timeRange === 'month' ? new Date(date) >= startDateObj : true;
-      } else if (entryYear === endDateObj.getFullYear()) {
+      } if (entryYear === endDateObj.getFullYear()) {
         // Only include months before the end date in the end year for 'month'
         return timeRange === 'month' ? new Date(date) <= endDateObj : true;
-      } else {
+      } 
         // Include whole years between start and end year
         return entryYear > startDateObj.getFullYear() && entryYear < endDateObj.getFullYear();
-      }
+      
     });
   
     return filteredGroupedEntries.reduce((acc, [date, entries]) => {
@@ -249,8 +235,8 @@ const groupedDate = useMemo(() => {
     }, []);
   };
   
-  const generateBarData = (groupedDate, isYear = false) => {
-    return groupedDate.map(range => ({
+  const generateBarData = (groupedData) => {
+    return groupedData.map(range => ({
       label:  `${range.timeRange}`,
       value: range.teamsOfTime.length,
     }));
@@ -275,13 +261,13 @@ const groupedDate = useMemo(() => {
       if (entryYear === startDateObj.getFullYear()) {
         // Only include months after the start date in the start year
         return new Date(date) >= startDateObj;
-      } else if (entryYear === endDateObj.getFullYear()) {
+      } if (entryYear === endDateObj.getFullYear()) {
         // Only include months before the end date in the end year
         return new Date(date) <= endDateObj;
-      } else {
+      } 
         // Include whole years between start and end year
         return entryYear > startDateObj.getFullYear() && entryYear < endDateObj.getFullYear();
-      }
+      
     });
     return filteredGroupedEntries.map(([date, entries]) => {
       const groupedUsers = Object.values(sumByUser(entries, 'userId'));
@@ -398,7 +384,7 @@ const groupedDate = useMemo(() => {
         </div>
         {totalTeam.length ? (
           <div className="total-detail">
-              {/* eslint-disable-next-line no-unused-vars */}
+              {/* eslint-disable-next-line no-unused-vars, no-use-before-define */}
                 <Button onClick={e => onClickTotalTeamDetail()}>
                 {showTotalTeamTable ? 'Hide Details' : 'Show Details'}
                 </Button>
@@ -448,9 +434,9 @@ const groupedDate = useMemo(() => {
   };
 
   const totalTeamTable = (totalTeam, userNameList2) => {
-    let teamList = [];
+    let teamTableList = [];
     if (totalTeam.length > 0) {
-      teamList = totalTeam
+      teamTableList = totalTeam
         .sort((a, b) => a.teamName.localeCompare(b.teamName))
         .map((team, index) => {
           const nameList = getMemberName(team.teamId, userNameList2);
@@ -502,12 +488,12 @@ const groupedDate = useMemo(() => {
             <th scope="col">Total Logged Time (Hrs)</th>
           </tr>
         </thead>
-        {teamList}
+        {teamTableList}
       </table>
     );
   };
 
-  var condition= !totalTeamReportDataReady && !allTeams && !teamList && !allTeams.length==0 && !teamList.length==0 && !allTeamsData && !userProfiles && !allTimeEntries.length==0
+  const condition= !totalTeamReportDataReady && !allTeams && !teamList && allTeams.length === 0 && teamList.length === 0 && !allTeamsData && !userProfiles && allTimeEntries.length === 0
   return (
     <div>
       {condition

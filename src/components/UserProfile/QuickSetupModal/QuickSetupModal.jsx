@@ -7,6 +7,7 @@ import AssignSetUpModal from './AssignSetupModal';
 import QuickSetupCodes from './QuickSetupCodes';
 import SaveButton from '../UserProfileEdit/SaveButton';
 import AddNewTitleModal from './AddNewTitleModal';
+import EditTitlesModal from './EditTitlesModal';
 import { getAllTitle } from '../../../actions/title';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css';
@@ -25,6 +26,11 @@ function QuickSetupModal(props) {
   const [showMessage, setShowMessage] = useState(false);
   const [warningMessage, setWarningMessage] = useState({});
   const [adminLinks, setAdminLinks] = useState([]);
+  const [editModal, showEditModal] = useState(false);
+  const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [QSTTeamCodes, setQSTTeamCodes] = useState([])
+
+  const stateTeamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
   useEffect(() => {
     getAllTitle()
@@ -32,29 +38,31 @@ function QuickSetupModal(props) {
         setTitles(res.data);
       })
       .catch(err => console.log(err));
-  }, []);
+  }, [editModal, refreshTrigger]);
 
   // refresh the QSCs after CREATE/DELETE operations on titles
-  const refreshModalTitles = () => {
-    getAllTitle()
-      .then(res => {
-        setTitles(res.data);
-        props.setUserProfile(props.userProfile);
-        props.setUserProfile(prev => ({ ...prev, adminLinks }));
-      })
-      .catch(err => console.log(err));
+  const refreshModalTitles = async () => {
+    try {
+      setRefreshTrigger(prev => prev + 1);
+      const response = await getAllTitle();
+      const sortedData = response.data.sort((a, b) => a.order - b.order);
+      setTitles(sortedData);
+    } catch (err) {
+      console.error(err);
+    }
   };
 
-  // handle save changes
-  const handleSaveChanges = () => {
-    handleSubmit()
-      .then(() => {
-        setTitleOnSet(true);
-      })
-      .catch(e => {
-        console.log(e);
-      });
-  };
+  useEffect(()=>{
+    let teamCodes = [];
+    if(stateTeamCodes.length) {
+      teamCodes = [...stateTeamCodes];
+    }else if (props.teamsData?.allTeams) {
+      if( props.teamsData?.allTeamCode?.distinctTeamCodes ) {
+        teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+      }
+    }
+    setQSTTeamCodes(teamCodes);
+  },[stateTeamCodes.length])
 
   return (
     <div>
@@ -69,6 +77,7 @@ function QuickSetupModal(props) {
           editMode={editMode}
           assignMode={canAssignTitle}
           setShowAddTitle={setShowAddTitle}
+          teamCodes={QSTTeamCodes}
         />
       ) : (
         ''
@@ -84,6 +93,19 @@ function QuickSetupModal(props) {
             title="Click this to add a new Quick Setup Title"
           >
             Add New QST
+          </Button>
+        ) : (
+          ''
+        )}
+        {canAddTitle ? (
+          <Button
+            color="primary mx-2"
+            onClick={() => showEditModal(true)}
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={editMode == true}
+            title="Click this to change the order of QST codes"
+          >
+            Change Order
           </Button>
         ) : (
           ''
@@ -109,6 +131,13 @@ function QuickSetupModal(props) {
         ) : (
           ''
         )}
+        <EditTitlesModal
+          isOpen={editModal}
+          toggle={() => showEditModal(false)}
+          titles={titles}
+          refreshModalTitles={refreshModalTitles}
+          darkMode={darkMode}
+        />
       </div>
       <div className="col text-center mt-3">
         {canAssignTitle ? (
@@ -134,6 +163,7 @@ function QuickSetupModal(props) {
           setShowMessage={setShowMessage}
           editMode={editMode}
           title={curtitle}
+          QSTTeamCodes={QSTTeamCodes}
         />
       ) : (
         ''
