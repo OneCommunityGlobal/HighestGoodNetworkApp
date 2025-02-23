@@ -23,7 +23,6 @@ src/components/Projects/**
 src/components/Reports/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
-src/components/TeamLocations/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/UserManagement/**
