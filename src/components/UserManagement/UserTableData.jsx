@@ -204,34 +204,34 @@ const UserTableData = React.memo(props => {
       </td>
 
 
-      <td className="email_cell" title={formData.jobTitle}>
-        <div className="fixed-width-container">
-          {editUser?.jobTitle ? (
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
-              <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
-                {formData.jobTitle}
-              </span>
-              <FontAwesomeIcon
-                className="copy_icon"
-                icon={faCopy}
-                onClick={() => {
-                  navigator.clipboard.writeText(formData.jobTitle);
-                  toast.success('Title Copied!');
-                }}
-              />
-            </div>
-          ) : (
-            <input
-              type="text"
-              className="edituser_input"
-              value={formData.jobTitle}
-              onChange={e => {
-                updateFormData({ ...formData, jobTitle: e.target.value });
-                addUserInformation('jobTitle', e.target.value, props.user._id);
+      <td className="title_cell"
+        title={formData.jobTitle}>
+        {editUser?.jobTitle ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {formData.jobTitle}
+            </span>
+            <FontAwesomeIcon
+              className="copy_icon"
+              icon={faCopy}
+              onClick={() => {
+                navigator.clipboard.writeText(formData.jobTitle);
+                toast.success('Title Copied!');
               }}
             />
-          )}
-        </div>
+          </div>
+        ) : (
+          <input
+            type="text"
+            className="edituser_input"
+            value={formData.jobTitle}
+            onChange={e => {
+              updateFormData({ ...formData, jobTitle: e.target.value });
+              addUserInformation('jobTitle', e.target.value, props.user._id);
+            }}
+          />
+        )}
+
       </td>
 
 
