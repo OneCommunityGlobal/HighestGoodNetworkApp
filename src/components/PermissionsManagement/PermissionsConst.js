@@ -140,6 +140,11 @@ export const permissionLabels = [
         key: 'changeUserRehireableStatus',
         description: 'Gives the user permission to change the user status of rehireable or not.',
       },
+      {
+        label: 'Pause / Resume User',
+        key: 'pauseResumeUser',
+        description: 'Gives the user permission to pause or resume any user.',
+      },
     ],
   },
   {

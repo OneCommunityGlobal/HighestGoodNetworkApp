@@ -669,6 +669,7 @@ const BasicInformationTab = props => {
     </>
   );
 
+  const canPauseResumeUser = props.hasPermission('pauseResumeUser');
   const statusComponent = (
     <>
       {desktopDisplay ? (
@@ -685,7 +686,7 @@ const BasicInformationTab = props => {
                 : 'Inactive'}
             </Label>
             &nbsp;
-            {canEdit && (
+            {(canPauseResumeUser) && (
               <PauseAndResumeButton
                 setUserProfile={setUserProfile}
                 loadUserProfile={loadUserProfile}

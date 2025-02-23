@@ -94,7 +94,8 @@ export function Header(props) {
     props.hasPermission('postUserProfile', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('deleteUserProfile', !isAuthUser && canInteractWithViewingUser) ||
     props.hasPermission('changeUserStatus', !isAuthUser && canInteractWithViewingUser) ||
-    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser);
+    props.hasPermission('getUserProfiles', !isAuthUser && canInteractWithViewingUser) ||
+    props.hasPermission('pauseResumeUser', !isAuthUser && canInteractWithViewingUser);
 
   // Badges
   const canAccessBadgeManagement =
