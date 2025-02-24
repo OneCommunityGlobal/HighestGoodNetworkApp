@@ -29,6 +29,8 @@ function Announcements({ title, email }) {
   const [bodyText, setBodyText] = useState('');
   const [videoLink, setVideoLink] = useState('');
 
+  const [errors, setErrors] = useState({});
+
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
     setShowEditor(false);
@@ -169,7 +171,36 @@ function Announcements({ title, email }) {
     reader.readAsDataURL(file);
   };
 
+  // Validate required fields for Weekly Progress Update
+  const validateFields = () => {
+    const editorErrors = {};
+    if (!headingText.trim()) {
+      editorErrors.headingText = "Heading Text is required.";
+    }
+    if (!introText.trim()) {
+      editorErrors.introText = "Introduction Paragraph is required.";
+    }
+    if (!blogUrl.trim()) {
+      editorErrors.blogUrl = "Blog URL is required.";
+    }
+    if (!bodyText.trim()) {
+      editorErrors.bodyText = "Blog Summary Paragraph is required.";
+    }
+    if (!videoLink.trim()) {
+      editorErrors.videoLink = "Video Link is required.";
+    }
+    if (!bodyImage) {
+      editorErrors.bodyImage = "Body Image upload is required.";
+    }
+    setErrors(editorErrors);
+    return Object.keys(editorErrors).length === 0;
+  };
+
   const handleSendEmails = () => {
+    if (activeTab === 'weeklyProgress' && !validateFields()) { // Do not send emails if any field in 'Weekly Progress' tab is invalid
+      return;
+    }
+
     const htmlContent = emailContent;
 
     if (emailList.length === 0 || emailList.every(email => !email.trim())) {
@@ -189,6 +220,10 @@ function Announcements({ title, email }) {
 
 
   const handleBroadcastEmails = () => {
+    if (activeTab === 'weeklyProgress' && !validateFields()) { // Do not broadcast emails if any field in 'Weekly Progress' tab is invalid
+      return;
+    }
+
     const htmlContent = `
     <div style="max-width: 900px; width: 100%; margin: auto;">
       ${emailContent}
@@ -246,6 +281,9 @@ function Announcements({ title, email }) {
           onChange={e => setHeadingText(e.target.value)}
           style={{ width: '100%', marginBottom: '10px', padding: '10px' }}
         />
+        {errors.headingText && <div style={{ color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px' }}>
+          {errors.headingText}
+        </div>}
 
         {/* Introduction text */}
         <label>Enter Introduction Paragraph:</label>
@@ -255,6 +293,9 @@ function Announcements({ title, email }) {
           onChange={e => setIntroText(e.target.value)}
           style={{ width: '100%', marginBottom: '10px' }}
         />
+        {errors.introText && <div style={{ color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px' }}>
+          {errors.introText}
+        </div>}
 
         {/* Blog URL Field */}
         <label>Enter Blog URL:</label>
@@ -264,6 +305,9 @@ function Announcements({ title, email }) {
           onChange={e => setBlogUrl(e.target.value)}
           style={{ width: '100%', marginBottom: '10px', padding: '10px' }}
         />
+        {errors.blogUrl && <div style={{ color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px' }}>
+          {errors.blogUrl}
+        </div>}
 
         {/* Drag & drop for body image */}
         <h4>Blog Summary Image</h4>
@@ -275,6 +319,9 @@ function Announcements({ title, email }) {
           />
         )}
         <ImageUploader onFileUpload={handleBodyImageDrop} />
+        {errors.bodyImage && <div style={{ color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px' }}>
+          {errors.bodyImage}
+        </div>}
 
         {/* Body text */}
         <label>Enter Blog Summary Paragraph:</label>
@@ -284,6 +331,9 @@ function Announcements({ title, email }) {
           onChange={e => setBodyText(e.target.value)}
           style={{ width: '100%', marginBottom: '10px' }}
         />
+        {errors.bodyText && <div style={{ color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px' }}>
+          {errors.bodyText}
+        </div>}
 
         {/* Video Link Field */}
         <label>Enter Video Link:</label>
@@ -293,6 +343,9 @@ function Announcements({ title, email }) {
           onChange={e => setVideoLink(e.target.value)}
           style={{ width: '100%', marginBottom: '10px', padding: '10px' }}
         />
+        {errors.videoLink && <div style={{ color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px' }}>
+          {errors.videoLink}
+        </div>}
 
         {
           title ? (
