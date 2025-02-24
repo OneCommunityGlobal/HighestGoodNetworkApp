@@ -40,7 +40,7 @@ thead {
 .usermanagement__tr td {
   overflow: hidden;
   vertical-align: middle;
-  padding: 6px;
+  padding: 2px;
 }
 
 .usermanagement__tr .edituser_input,
