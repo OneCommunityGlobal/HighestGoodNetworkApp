@@ -118,6 +118,7 @@ export default function RoleDistributionPieChart({ roleDistributionStats }) {
             startAngle={-270}
             endAngle={90}
             stroke="none"
+            dataKey="value"
           >
             {data.map(entry => (
               <Cell key={`cell-${entry.name}`} fill={entry.color} />
