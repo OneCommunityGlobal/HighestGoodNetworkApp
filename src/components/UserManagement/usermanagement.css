@@ -37,6 +37,22 @@ thead {
   text-align: center;
 }
 
+.usermanagement__tr td {
+  overflow: hidden;
+  vertical-align: middle;
+  padding: 6px;
+}
+
+.usermanagement__tr .edituser_input,
+.usermanagement__tr .btn,
+.usermanagement__tr .copy_icon,
+.usermanagement__tr svg {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 .usermanagement_overview--top {
   background: gray;
 }
@@ -89,14 +105,14 @@ thead {
 
 }
 
-#usermanagement_role, 
-#user_role, 
+#usermanagement_role,
+#user_role,
 td#usermanagement_role {
   width: 100px;
-  max-width: 180px; 
+  max-width: 180px;
   overflow: hidden;
-  text-overflow: ellipsis; 
-  white-space: nowrap; 
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .copy_icon {
@@ -105,6 +121,8 @@ td#usermanagement_role {
   top: 0;
   right: 0;
   margin: 2px 2px;
+  height: 100%;
+  max-height: 31px;
 }
 
 .usermanagement__order--input div {
@@ -346,8 +364,10 @@ tr:hover {
   margin: auto;
 }
 
-td{
+td {
   text-align: center;
+  padding: 4px;
+  vertical-align: middle;
 }
 
 /* custom-toast.css */
