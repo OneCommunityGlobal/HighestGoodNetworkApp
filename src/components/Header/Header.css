@@ -4,14 +4,12 @@
 }
 
 .close-button {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px; 
+  height : 2vh;
+  width : 99%;
 }
 
 .card-content {
-  padding: 5px; 
+  padding: 5px; /* Add padding around the card content */
   padding-left: 40px;
   padding-right: 40px;
   white-space: pre-line;
@@ -20,7 +18,7 @@
 }
 
 .navbar {
-  z-index: 100;
+  /* z-index: 100; */
   white-space: nowrap;
   /* margin-bottom: 20px; */
 }
@@ -59,12 +57,12 @@
   align-items: center;
 }
 
-.dropdown-item-hover:hover{
+.dropdown-item-hover:hover {
   background-color: #2f4157 !important;
 }
 
 @media (max-width: 1400px) {
-  .nav-links{
+  .nav-links {
     flex-direction: column !important;
   }
 }
@@ -98,7 +96,7 @@
 }
 
 @media screen and (max-width: 769px) {
-  .responsive-spacing{
+  .responsive-spacing {
     margin-right: 5px;
   }
 }
