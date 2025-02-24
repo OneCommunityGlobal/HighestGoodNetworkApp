@@ -93,16 +93,14 @@ export const statusUpdateError = payload => {
 export const fetchAllMaterials = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_MATERIALS)
+    // .then(res => {
+      //   dispatch(setMaterials(res.data))
+      // })
       .then(res => {
-        // Calculate stockAvailable for all materials
         const updatedMaterials = res.data.map(material => ({
           ...material,
           stockAvailable: material.stockBought - material.stockUsed - material.stockWasted
         }));
-
-        // Log each material to see where the issue is
-        console.log("Updated Materials Data:", updatedMaterials);
-
         dispatch(setMaterials(updatedMaterials));
       })
       .catch(err => {
