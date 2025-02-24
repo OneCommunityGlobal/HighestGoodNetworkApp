@@ -47,19 +47,29 @@ export const peopleTasksPieChartViewData = ({
   const tasksLegend = {};
   const projectsWithLoggedHoursLegend = {};
 
-  // We rely on `timeEntries.period` to accumulate actual hourss
+  // We rely on `timeEntries.period` to accumulate actual hours
   if (Array.isArray(timeEntries.period)) {
     timeEntries.period.forEach(({ taskId, projectId, hours }) => {
-      // Accumulate task hours
-      if (taskId) {
-        tasksWithLoggedHoursById[taskId] =
-          (tasksWithLoggedHoursById[taskId] || 0) + hours;
-      }
+      
+      const taskKey = (() => {
+        if (!taskId) return null;
+        return typeof taskId === 'object' ? taskId._id : taskId;
+      })();
 
+      const projectKey = (() => {
+        if (!projectId) return null;
+        return typeof projectId === 'object' ? projectId._id : projectId;
+      })();
+      
+      // Accumulate task hours
+      if (taskKey) {
+        tasksWithLoggedHoursById[taskKey] =
+          (tasksWithLoggedHoursById[taskKey] || 0) + hours;
+      }
       // Accumulate project hours
-      if (projectId) {
-        projectsWithLoggedHoursById[projectId] =
-          (projectsWithLoggedHoursById[projectId] || 0) + hours;
+      if (projectKey) {
+        projectsWithLoggedHoursById[projectKey] =
+          (projectsWithLoggedHoursById[projectKey] || 0) + hours;
       }
     });
   }
