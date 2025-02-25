@@ -6,11 +6,12 @@ import { boxStyle, boxStyleDark } from 'styles';
 
 function PeopleTable({ userProfiles, darkMode }) {
   let PeopleList = [];
+  
   if (userProfiles.length > 0) {
     PeopleList = userProfiles
       .sort((a, b) => a.firstName.localeCompare(b.firstName))
       .map((person, index) => (
-        <tr className={`teams__tr`} id={`tr_${person._id}`} key={person._id}>
+        <tr className="teams__tr" id={`tr_${person._id}`} key={person._id}>
           <th className={`teams__order--input ${darkMode ? 'text-light' : ''}`} scope="row">
             <div>{index + 1}</div>
           </th>
@@ -20,19 +21,7 @@ function PeopleTable({ userProfiles, darkMode }) {
               {person.lastName.length > 15 ? `${person.lastName.slice(0, 15)}...` : person.lastName}
             </Link>
           </td>
-          <td className="teams__active--input">
-            <div
-              onClick={() => {
-                person.onStatusClick(person.firstName, person._id, person.isActive);
-              }}
-              role="button"
-              tabIndex={0}
-              onKeyDown={e => {
-                if (e.key === 'Enter') {
-                  person.onStatusClick(person.firstName, person._id, person.isActive);
-                }
-              }}
-            >
+          <td>
               {person.isActive ? (
                 <div className="isActive">
                   <i className="fa fa-circle" aria-hidden="true" />
@@ -42,7 +31,6 @@ function PeopleTable({ userProfiles, darkMode }) {
                   <i className="fa fa-circle-o" aria-hidden="true" />
                 </div>
               )}
-            </div>
           </td>
           <td className={`${darkMode ? 'text-light' : ''}`} style={{ width: '110px' }}>
             {/* Format the start date in Coordinated Universal Time (UTC) to 'MM-DD-YY' format */}

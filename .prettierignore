@@ -12,25 +12,19 @@ src/routes.js
 src/setupTests.js
 src/store.js
 src/styles.js
-src/utils/**
 src/__tests__/**
 
 
 src/components/App.jsx
 src/components/AutoReload/**
-src/components/Header/**
 src/components/Inventory/**
 src/components/Memberships/**
 src/components/Projects/**
 src/components/Reports/**
-src/components/SetupProfile/**
-src/components/SummaryBar/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
-src/components/TeamLocations/**
 src/components/TeamMemberTasks/**
 src/components/Teams/**
-src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/Announcements/**
