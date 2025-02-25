@@ -196,6 +196,130 @@ function Announcements({ title, email }) {
     return Object.keys(editorErrors).length === 0;
   };
 
+  // Email HTML Format
+  const constructEmailContent = () => {
+    // Start of email container
+    let content = `
+      <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+        <!-- Default Header (Logo) -->
+        <div style="text-align: center; margin-bottom: 20px;">
+          <img src="/Users/michaellambo/Desktop/how-to-install/HighestGoodNetworkApp/HighestGoodNetworkApp/src/assets/images/logo2.png" alt="One Community Logo" style="max-width: 200px; height: auto;" />
+        </div>
+    `;
+
+    // Heading Text
+    if (headingText) {
+      content += `
+        <h2 style="text-align: center; margin-bottom: 20px;">
+          ${headingText}
+        </h2>
+      `;
+    }
+
+    // Intro Text
+    if (introText) {
+      content += `<p>${introText}</p>`;
+    }
+
+    // Blog URL
+    if (blogUrl) {
+      content += `
+        <p>
+          <a href="${blogUrl}" target="_blank" rel="noopener">
+            ${blogUrl}
+          </a>
+        </p>
+      `;
+    }
+
+    content += `
+      <h3 style="text-align: left; margin: 30px 0 10px;">
+        This Week’s Video Topic:
+      </h3>
+    `;
+
+    // Body Image
+    if (bodyImage) {
+      content += `
+        <div style="text-align: center; margin: 20px 0;">
+          <img src="${bodyImage}" alt="Blog Summary Image" style="max-width: 100%; height: auto;" />
+        </div>
+      `;
+    }
+
+    // Blog Summary Paragraph
+    if (bodyText) {
+      content += `<p>${bodyText}</p>`;
+    }
+
+    // "Click here for the video on this topic:" + video link
+    content += `
+      <p>
+        Click here for the video on this topic:
+        <a href="${videoLink}" target="_blank" rel="noopener">
+          ${videoLink}
+        </a>
+      </p>
+    `;
+
+    // Hardcoded CTA
+    content += `
+      <p>
+        Love what we're doing and want to help? Click
+        <a href="https://google.com" target="_blank" rel="noopener">here</a>
+        to learn what we're currently raising money for and to donate. Even $5 dollars helps!
+      </p>
+    `;
+
+    // Social Media Links
+    // TODO: Change text to icons
+    content += `
+      <hr style="margin: 30px 0;" />
+      <div style="text-align: center;">
+        <p style="margin: 0 auto; display: inline-block;">
+          <a href="https://facebook.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">Facebook</a> |
+          <a href="https://twitter.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">Twitter</a> |
+          <a href="https://instagram.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">Instagram</a> |
+          <a href="https://linkedin.com/company/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">LinkedIn</a> |
+          <a href="https://youtube.com/@OneCommunityGlobal" target="_blank" rel="noopener" style="margin: 0 5px;">YouTube</a> |
+          <a href="https://pinterest.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">Pinterest</a> |
+          <a href="https://tiktok.com/@OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">TikTok</a> |
+          <a href="mailto:info@onecommunityglobal.org" style="margin: 0 5px;">Email</a>
+        </p>
+      </div>
+    `;
+
+    // Footer
+    content += `
+      <hr style="margin: 30px 0;" />
+      <p style="font-size: 12px; color: #666; text-align: center;">
+        Our mailing address is: <br />
+        One Community Inc.<br />
+        8954 Camino real<br />
+        San Gabriel, CA 91775-1932<br />
+        Add us to your address book
+      </p>
+    `;
+
+    content += `</div>`;
+
+    return content;
+  };
+
+  const handlePreview = () => {
+    const content = constructEmailContent();
+
+    const htmlDoc = `<!DOCTYPE html>
+    <html>
+      <head><title>Email Preview</title></head>
+      <body>${content}</body>
+    </html>`;
+
+    const blob = new Blob([htmlDoc], { type: 'text/html' });
+    const url = URL.createObjectURL(blob);
+    window.open(url, '_blank');
+  };
+
   const handleSendEmails = () => {
     if (activeTab === 'weeklyProgress' && !validateFields()) { // Do not send emails if any field in 'Weekly Progress' tab is invalid
       return;
@@ -356,6 +480,9 @@ function Announcements({ title, email }) {
             </button>
           )
         }
+        <button type="button" onClick={handlePreview}>
+          Preview Email
+        </button>
 
       </div>
     </div>
