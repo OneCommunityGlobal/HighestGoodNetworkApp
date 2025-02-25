@@ -164,12 +164,12 @@ export class WeeklySummariesReport extends Component {
       const code = summary.teamCode || 'noCodeLabel';
       if (teamCodeGroup[code]) {
         teamCodeGroup[code].push(summary);
-      } else {
+            } else {
         teamCodeGroup[code] = [summary];
-      }
+          }
 
-      if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
-    });
+        if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
+      });
 
     Object.keys(teamCodeGroup).forEach(code => {
       if (code !== 'noCodeLabel') {
@@ -390,40 +390,40 @@ export class WeeklySummariesReport extends Component {
       tableData,
       COLORS,
     } = this.state;
-  
+
     const chartData = [];
     let temptotal = 0;
     const structuredTeamTableData = [];
-  
+
     const selectedCodesArray = selectedCodes.map((e) => e.value);
     const selectedColorsArray = selectedColors.map((e) => e.value);
-  
+
     
     const temp = summaries.filter((summary) => {
       const { activeTab } = this.state;
       const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
-  
+
       const isMeetCriteria =
         summary.totalTangibleHrs > 80 && summary.daysInTeam > 60 && summary.bioPosted !== "posted";
-  
+
       const isBio = !selectedBioStatus || isMeetCriteria;
-  
+
       const isOverHours =
         !selectedOverTime ||
         (summary.weeklycommittedHours > 0 &&
           hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
-  
-      
-      const isLastWeekTab = activeTab === "last week";
-      const isDeactivated = !summary.isActive; 
-  
+
+      const isLastWeekTab = activeTab === 'last week';
+      const isDeactivated = !summary.isActive;
+      const updateSummary = { ...summary };
+
       if (isLastWeekTab && isDeactivated) {
-        summary.name = `FINAL WEEK REPORTING: ${summary.name}`;
-        summary.role = `${summary.role} (No longer active)`;
+        updateSummary.name = `FINAL WEEK REPORTING: ${summary.name}`;
+        updateSummary.role = `${summary.role} (No longer active)`;
         return true;
       }
-  
+
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
@@ -432,7 +432,7 @@ export class WeeklySummariesReport extends Component {
         isBio
       );
     });
-  
+
     
     if (selectedCodes[0]?.value === "" || selectedCodes.length >= 52) {
       if (selectedCodes.length >= 52) {
@@ -482,7 +482,7 @@ export class WeeklySummariesReport extends Component {
             value: val,
           });
         }
-  
+
         const team = tableData[code.value];
         const index = selectedCodesArray.indexOf(code.value);
         const color = COLORS[index % COLORS.length];
@@ -499,15 +499,6 @@ export class WeeklySummariesReport extends Component {
         }
       });
     }
-  
-    chartData.sort();
-    temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
-    structuredTeamTableData.sort();
-    this.setState({ total: temptotal });
-    this.setState({ filteredSummaries: temp });
-    this.setState({ chartData });
-    this.setState({ structuredTableData: structuredTeamTableData });
-  };
 
     chartData.sort();
     temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
@@ -516,6 +507,14 @@ export class WeeklySummariesReport extends Component {
     this.setState({ filteredSummaries: temp });
     this.setState({ chartData });
     this.setState({ structuredTableData: structuredTeamTableData });
+
+    // chartData.sort();
+    // temptotal = chartData.reduce((acc, entry) => acc + entry.value, 0);
+    // structuredTeamTableData.sort();
+    // this.setState({ total: temptotal });
+    // this.setState({ filteredSummaries: temp });
+    // this.setState({ chartData });
+    // this.setState({ structuredTableData: structuredTeamTableData });
   };
 
   handleSelectCodeChange = event => {
@@ -745,8 +744,8 @@ export class WeeklySummariesReport extends Component {
       <Container
         fluid
         className={`container-wsr-wrapper py-3 mb-5 ${
-          darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
-        }`}
+            darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
+          }`}
       >
         {this.passwordInputModalToggle()}
         {this.popUpElements()}
@@ -770,18 +769,18 @@ export class WeeklySummariesReport extends Component {
         </Row>
         {(authEmailWeeklySummaryRecipient === authorizedUser1 ||
           authEmailWeeklySummaryRecipient === authorizedUser2) && (
-          <Row className="d-flex justify-content-center mb-3">
-            <Button
-              color="primary"
-              className="permissions-management__button"
-              type="button"
-              onClick={() => this.onClickRecepients()}
-              style={darkMode ? boxStyleDark : boxStyle}
-            >
-              Weekly Summary Report Recipients
-            </Button>
-          </Row>
-        )}
+            <Row className="d-flex justify-content-center mb-3">
+              <Button
+                color="primary"
+                className="permissions-management__button"
+                type="button"
+                onClick={() => this.onClickRecepients()}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Weekly Summary Report Recipients
+              </Button>
+            </Row>
+          )}
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <div className="filter-container-teamcode">
@@ -987,7 +986,15 @@ export class WeeklySummariesReport extends Component {
                   <Row>
                     <Col>
                       <FormattedReport
-                        summaries={filteredSummaries}
+                        summaries={filteredSummaries.map(summary => ({
+                          ...summary,
+                          name: summary.isActive
+                            ? summary.name
+                            : `FINAL WEEK REPORTING: ${summary.name}`,
+                          role: summary.isActive
+                            ? summary.role
+                            : `${summary.role} (No longer active)`,
+                        }))}
                         weekIndex={index}
                         bioCanEdit={this.bioEditPermission}
                         canEditSummaryCount={this.canEditSummaryCount}
