@@ -20,11 +20,14 @@
   min-width: 250px;
 }
 .content-container {
+  display: flex;
+  flex-direction: column;
   background-color: white;
   border: 1px solid #ccc;
   border-radius: 8px;
   width: 85%;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  height: max-content;
 }
 
 .container-top {
@@ -45,13 +48,19 @@
   padding: 20px 0px 20px 0px;
   width: auto;
   min-height: 560px;
+  height: auto;
 }
 
-.container-main h2 {
-  font-size: 28px;
-  text-align: center;
-  margin-bottom: 30px;
-  color: #202020;
+.details-left{
+  width: 50%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.details-right{
+  width: 50%;
+  height: 100%;
 }
 
 .image-carousel {
@@ -59,7 +68,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  height: 100%;
+  height: 65%;
 }
 
 .amenities {
@@ -71,9 +80,41 @@
 
 .amenities h2 {
   font-size: 16px;
-  text-align: center;
-  margin-bottom: 30px;
-  color: #202020;
+  text-align: left;
+  color: #060606;
+  font-weight: bold;
+}
+
+.amenities div {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+ol {
+  display: flex;
+  flex-direction: column;
+  list-style-position: inside;
+}
+li {
+  margin: 0;
+}
+
+.location {
+  display: flex;
+  width: 100%;
+  height: 30px;
+  align-items: flex-end;
+}
+
+.location img {
+  width: 30px;
+  height: 30px;
+}
+
+.location a {
+  text-decoration: underline;
+  cursor: pointer;
 }
 
 .rent-form {
