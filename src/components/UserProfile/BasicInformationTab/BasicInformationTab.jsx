@@ -17,7 +17,7 @@ import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import { isString } from 'lodash';
 import { toast } from 'react-toastify';
-
+import { useDispatch } from 'react-redux';
 
 const Name = props => {
   const { userProfile, setUserProfile, formValid, setFormValid, canEdit, desktopDisplay, darkMode } = props;
@@ -304,11 +304,19 @@ const BasicInformationTab = props => {
     roles,
     role,
     loadUserProfile,
-    darkMode
+    darkMode,
   } = props;
   const [timeZoneFilter, setTimeZoneFilter] = useState('');
   const [desktopDisplay, setDesktopDisplay] = useState(window.innerWidth > 1024);
   const [errorOccurred, setErrorOccurred] = useState(false);
+  const dispatch = useDispatch();
+  const rolesAllowedToEditStatusFinalDay = ['Administrator', 'Owner'];
+  const canEditStatus =
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('pauseUserActivity'));
+
+  const canEditEndDate =
+  rolesAllowedToEditStatusFinalDay.includes(role) || dispatch(hasPermission('setUserFinalDay'));
+
 
   let topMargin = '6px';
   if (isUserSelf) {
@@ -645,7 +653,7 @@ const BasicInformationTab = props => {
             ? 'End Date ' + formatDateLocal(userProfile.endDate)
             : 'End Date ' + 'N/A'}
         </Label>
-        {canEdit && !desktopDisplay && (
+        {canEdit && canEditEndDate &&!desktopDisplay && (
           <SetUpFinalDayButton
             loadUserProfile={loadUserProfile}
             setUserProfile={setUserProfile}
@@ -655,7 +663,7 @@ const BasicInformationTab = props => {
           />
         )}
       </Col>
-      {desktopDisplay && canEdit && (
+      {desktopDisplay && canEdit && canEditEndDate && (
         <Col>
           <SetUpFinalDayButton
             loadUserProfile={loadUserProfile}
@@ -685,7 +693,7 @@ const BasicInformationTab = props => {
                 : 'Inactive'}
             </Label>
             &nbsp;
-            {canEdit && (
+            {canEdit && canEditStatus && (
               <PauseAndResumeButton
                 setUserProfile={setUserProfile}
                 loadUserProfile={loadUserProfile}
@@ -709,7 +717,7 @@ const BasicInformationTab = props => {
                   : 'Inactive'}
               </Label>
               &nbsp;
-              {canEdit && (
+              {canEdit && canEditStatus && (
                 <PauseAndResumeButton
                   setUserProfile={setUserProfile}
                   loadUserProfile={loadUserProfile}
