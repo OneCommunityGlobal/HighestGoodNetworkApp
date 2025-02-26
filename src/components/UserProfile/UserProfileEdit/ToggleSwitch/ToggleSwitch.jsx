@@ -108,7 +108,7 @@ const ToggleSwitch = ({
       if (state) {
         return (
           <div className="blueSqare">
-            <div className={style.switchSectionProfile}>
+            <div className={style.switchSection}>
               <div className="icon">
                 <i
                   className="fa fa-envelope-o"
