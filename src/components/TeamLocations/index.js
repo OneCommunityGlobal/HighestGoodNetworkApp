@@ -1,1 +1,3 @@
-export { default } from './TeamLocations';
+import TeamLocations from './TeamLocations';
+
+export default TeamLocations;
