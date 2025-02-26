@@ -251,9 +251,9 @@ function Announcements({ title, email }) {
     }
 
     content += `
-      <h3 style="text-align: left; margin: 30px 0 10px;">
-        This Week’s Video Topic:
-      </h3>
+      <p style="text-align: left; margin: 10px 0;">
+        This Week's Video Topic:
+      </p>
     `;
 
     // Body Image
@@ -342,8 +342,18 @@ function Announcements({ title, email }) {
     // Footer
     content += `
       <hr style="margin: 30px 0;" />
+      <div style="font-size: 12px; color: #666;  font-style: italic; text-align: center; margin: 0 auto; max-width: 600px;">
+        <p style="font-style: italic; margin: 0;">
+          "In order to change an existing paradigm you do not struggle to try and change the problematic model. 
+          You create a new model and make the old one obsolete. That, in essence, is the higher service to which 
+          we are all being called."
+        </p>
+        <p style="margin-top: 0;">
+          ~ Buckminster Fuller ~
+        </p>
+      </div>
       <p style="font-size: 12px; color: #666; text-align: center;">
-        Our mailing address is: <br />
+        <strong>Our mailing address is:</strong> <br />
         One Community Inc.<br />
         8954 Camino real<br />
         San Gabriel, CA 91775-1932<br />
