@@ -1,5 +1,5 @@
-// eslint-disable-next-line no-unused-vars
-import React, { Component, useState } from 'react';
+/* eslint-disable no-nested-ternary */
+import { Component } from 'react';
 import '../../Teams/Team.css';
 import './PeopleReport.css';
 import { Link } from 'react-router-dom';
@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import { Spinner, Alert } from 'reactstrap';
 import { formatDate } from '../../../utils/formatDate';
 import {
   updateUserProfileProperty,
@@ -88,7 +89,7 @@ class PeopleReport extends Component {
   }
 
   async componentDidMount() {
-    const { match, userProfile, userTask, userProjects, timeEntries, auth } = this.props;
+    const { match } = this.props;
     const { fromDate, toDate } = this.state;
 
     if (match) {
@@ -301,12 +302,12 @@ class PeopleReport extends Component {
     }
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
-    const UserProject = props => {
+    function UserProject(props) {
       const userProjectList = [];
       return <div>{userProjectList}</div>;
-    };
+    }
     // eslint-disable-next-line react/no-unstable-nested-components
-    const Infringements = props => {
+    function Infringements(props) {
       const dict = {};
 
       // aggregate infringements
@@ -340,10 +341,10 @@ class PeopleReport extends Component {
           <div />
         </div>
       );
-    };
+    }
 
     // eslint-disable-next-line react/no-unstable-nested-components,no-unused-vars
-    const PeopleDataTable = props => {
+    function PeopleDataTable(props) {
       const peopleData = {
         alertVisible: false,
         taskData: [],
@@ -425,7 +426,7 @@ class PeopleReport extends Component {
           darkMode={darkMode}
         />
       );
-    };
+    }
 
 
     const { isRehireable, bioStatus, authRole } = this.state;
