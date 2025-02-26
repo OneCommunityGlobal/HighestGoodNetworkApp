@@ -56,24 +56,25 @@
   height: 100%;
   display: flex;
   flex-direction: column;
+  align-items: center;
+  padding: 2.5%;
 }
 
 .details-right{
   width: 50%;
   height: 100%;
+  padding: 2.5%;
+
 }
 
 .image-carousel {
-  display: flex;
-  justify-content: center;
-  align-items: center;
   width: 100%;
-  height: 65%;
+  margin-bottom: 2.5%;
 }
 
 .amenities {
   display: flex;
-  justify-content: space-evenly;
+  justify-content: center;
   width: 100%;
   gap: 10px;
 }
@@ -89,6 +90,7 @@
   display: flex;
   flex-direction: column;
   width: 100%;
+  padding-left: 5%;
 }
 
 ol {
@@ -105,6 +107,9 @@ li {
   width: 100%;
   height: 30px;
   align-items: flex-end;
+  margin: 2%;
+  padding-left: 5%;
+
 }
 
 .location img {
@@ -117,6 +122,10 @@ li {
   cursor: pointer;
 }
 
+.listing-details h1,p{
+ color: #000;
+}
+
 .rent-form {
   display: flex;
   flex-direction: column;
@@ -126,11 +135,55 @@ li {
 
 .rent-form label {
   display: flex;
+  width: 150px;
   flex-direction: column;
 }
 
 .rent-form button {
-  background: #25d437;
+  background: #13ae5c;
+  color: white;
   padding: 10px;
   border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
 }
+
+.rent-form button:hover {
+  background: #0f9a50;
+  transform: scale(1.01);
+}
+
+.rent-form button:active {
+  transform: scale(0.99);
+}
+.rent-form input[type="date"] {
+  padding: 5% 10%;
+  border: 1px solid #ccc;
+  margin-top: 2.5%;
+  width: 100%;
+}
+
+.chat-host{
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  margin-top: 2.5%;
+}
+
+.chat-host button {
+  background: #d1d1d1;
+  padding: 2.5%;
+  border-radius: 998px;
+  border: none;
+  width: 33%;
+  display: flex;
+  justify-content: center;
+  min-width: 180px;
+  gap: 10%;
+  align-items: center;
+  cursor: pointer;
+  transition: background 0.3s ease, transform 0.2s ease;
+}
+
+

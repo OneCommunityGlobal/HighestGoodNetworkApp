@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import './Listoverview.css';
 import logo from '../../../assets/images/logo2.png';
 import mapIcon from '../../../assets/images/mapIcon.png';
+import ImageCarousel from './ImageCarousel';
 
 function ListOverview() {
   const [listing, setListing] = React.useState({});
@@ -33,11 +34,8 @@ function ListOverview() {
         <div className="container-main">
           <div className="details-left">
             <div className="image-carousel">
-              {listing.images?.map(image => (
-                <img key={image} src={image} alt={image} />
-              ))}
+              <ImageCarousel images={listing.images} />
             </div>
-
             <div className="amenities">
               <div>
                 <h2>Available amenities in this unit:</h2>
@@ -62,7 +60,7 @@ function ListOverview() {
             </div>
           </div>
           <div className="details-right">
-            <div>
+            <div className="listing-details">
               <h1>{listing.title}</h1>
               <p>{listing.description}</p>
             </div>
@@ -76,6 +74,21 @@ function ListOverview() {
                 <input type="date" name="to" id="to" />
               </label>
               <button type="button">Proceed to submit with details</button>
+            </div>
+            <div className="error-message">
+              <h6>The Dates you picked are not available</h6>
+              <a href="/">Click here to see available dates</a>
+            </div>
+            <div className="chat-host">
+              <button type="button">
+                <img
+                  width="24"
+                  height="24"
+                  src="https://img.icons8.com/material-outlined/24/chat.png"
+                  alt="chat"
+                />
+                Chat with the
+              </button>
             </div>
           </div>
         </div>
