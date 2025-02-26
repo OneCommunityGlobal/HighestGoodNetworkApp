@@ -37,7 +37,9 @@ import { useDispatch } from 'react-redux';
 import { boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
+import { connect } from 'react-redux';
 import { ENDPOINTS } from '../../utils/URL';
+import { updateLeaderBoardData } from '../Dashboard/actions';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -83,6 +85,7 @@ function LeaderBoard({
   darkMode,
   getWeeklySummaries,
   setFilteredUserTeamIds,
+  isTimeLogged,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
@@ -371,6 +374,32 @@ function LeaderBoard({
       setSearchInput('');
     };
   }, [teamsUsers]);
+
+  useEffect(() => {
+    if (isTimeLogged) {
+      if (!timeEntries?.weeks || !timeEntries.weeks[0].length) return;
+      const weekData = timeEntries.weeks[0][0];
+      if (!weekData) return;
+      setFilteredUsers(
+        teamsUsers.map(user => {
+          if (user.personId === weekData.personId) {
+            const key = weekData.isTangible ? 'intangibletime' : 'tangibletime';
+            return {
+              ...user,
+              [key]:
+                (user[key] || 0) + Number(weekData.hours) + (Number(weekData.minutes) || 0) / 60,
+            };
+          }
+          return user;
+        }),
+      );
+      dispatch(
+        updateLeaderBoardData({
+          isTimeLogged: false,
+        }),
+      );
+    }
+  }, [isTimeLogged]);
 
   const debouncedFilterUsers = useCallback(
     debounce(query => {
@@ -851,5 +880,8 @@ function LeaderBoard({
     </div>
   );
 }
+const mapStateToProps = state => ({
+  isTimeLogged: state.isTimeLogged,
+});
 
-export default LeaderBoard;
+export default connect(mapStateToProps)(LeaderBoard);

@@ -27,6 +27,7 @@ import { getUserProfile } from 'actions/userProfile';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
+import { useDispatch } from 'react-redux';
 import { postTimeEntry, editTimeEntry, getTimeEntriesForWeek } from '../../../actions/timeEntries';
 import AboutModal from './AboutModal';
 import TangibleInfoModal from './TangibleInfoModal';
@@ -34,6 +35,7 @@ import ReminderModal from './ReminderModal';
 import TimeLogConfirmationModal from './TimeLogConfirmationModal';
 import { ENDPOINTS } from '../../../utils/URL';
 import '../../Header/DarkMode.css';
+import { updateLeaderBoardData } from '../../Dashboard/actions';
 
 // Images are not allowed in timelog
 const customImageUploadHandler = () =>
@@ -144,6 +146,8 @@ function TimeEntryForm(props) {
   const [isTimelogConfirmationModalVisible, setTimelogConfirmationModalVisible] = useState(false);
   const [projectsAndTasksOptions, setProjectsAndTasksOptions] = useState([]);
   const [submitting, setSubmitting] = useState(false);
+
+  const dispatch = useDispatch();
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
@@ -360,6 +364,11 @@ function TimeEntryForm(props) {
         await props.postTimeEntry(timeEntry);
       }
 
+      dispatch(
+        updateLeaderBoardData({
+          isTimeLogged: true,
+        }),
+      );
       await handlePostSubmitActions();
       handleFormReset();
     } catch (error) {
