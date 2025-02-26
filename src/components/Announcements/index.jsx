@@ -6,6 +6,12 @@ import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import logo2 from '../../assets/images/logo2.png';
+import facebook from '../../assets/images/Facebook_Logo_Primary.png';
+import instagram from '../../assets/images/Instagram_Glyph_Gradient.png';
+import twitter from '../../assets/images/logo-white.png';
+import pinterest from '../../assets/images/P-Badge-Red-RGB.png';
+import youtube from '../../assets/images/youtube_social_circle_red.png';
+import linkedin from '../../assets/images/LI-In-Bug.png';
 import ImageUploader from './ImageUploader';
 
 function Announcements({ title, email }) {
@@ -289,14 +295,46 @@ function Announcements({ title, email }) {
       <hr style="margin: 30px 0;" />
       <div style="text-align: center;">
         <p style="margin: 0 auto; display: inline-block;">
-          <a href="https://facebook.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">Facebook</a> |
-          <a href="https://twitter.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">Twitter</a> |
-          <a href="https://instagram.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">Instagram</a> |
-          <a href="https://linkedin.com/company/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">LinkedIn</a> |
-          <a href="https://youtube.com/@OneCommunityGlobal" target="_blank" rel="noopener" style="margin: 0 5px;">YouTube</a> |
-          <a href="https://pinterest.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">Pinterest</a> |
-          <a href="https://tiktok.com/@OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">TikTok</a> |
-          <a href="mailto:info@onecommunityglobal.org" style="margin: 0 5px;">Email</a>
+          <a href="https://tiktok.com/@OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+            <img src={instagram} 
+            alt="Copy Link" 
+            style="width: 24px; height: 24px; vertical-align: middle;" />
+          </a> |
+          <a href="https://facebook.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+            <img src='{facebook} '
+            alt="Facebook" 
+            style="width: 24px; height: 24px; vertical-align: middle;" />
+          </a> |
+          <a href="https://twitter.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+            <img src={twitter} 
+            alt="Twitter" 
+            style="width: 24px; height: 24px; vertical-align: middle;" />
+          </a> |
+          <a href="https://instagram.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+            <img src={instagram} 
+            alt="Instagram" 
+            style="width: 24px; height: 24px; vertical-align: middle;" />
+          </a> |
+          <a href="https://linkedin.com/company/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+            <img src={linkedin} 
+            alt="LinkedIn" 
+            style="width: 24px; height: 24px; vertical-align: middle;" />
+          </a> |
+          <a href="https://youtube.com/@OneCommunityGlobal" target="_blank" rel="noopener" style="margin: 0 5px;">
+            <img src={youtube} 
+            alt="YouTube" 
+            style="width: 24px; height: 24px; vertical-align: middle;" />
+          </a> |
+          <a href="https://pinterest.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+            <img src={pinterest} 
+            alt="Pinterest" 
+            style="width: 24px; height: 24px; vertical-align: middle;" />
+          </a> |
+          <a href="mailto:info@onecommunityglobal.org" style="margin: 0 5px;">
+            <img src={facebook} 
+            alt="Email" 
+            style="width: 24px; height: 24px; vertical-align: middle;" />
+          </a>
         </p>
       </div>
     `;
