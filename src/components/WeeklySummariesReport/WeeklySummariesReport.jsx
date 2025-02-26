@@ -164,12 +164,12 @@ export class WeeklySummariesReport extends Component {
       const code = summary.teamCode || 'noCodeLabel';
       if (teamCodeGroup[code]) {
         teamCodeGroup[code].push(summary);
-            } else {
+      } else {
         teamCodeGroup[code] = [summary];
-          }
+      }
 
-        if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
-      });
+      if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
+    });
 
     Object.keys(teamCodeGroup).forEach(code => {
       if (code !== 'noCodeLabel') {
@@ -398,7 +398,7 @@ export class WeeklySummariesReport extends Component {
     const selectedCodesArray = selectedCodes.map((e) => e.value);
     const selectedColorsArray = selectedColors.map((e) => e.value);
 
-    
+
     const temp = summaries.filter((summary) => {
       const { activeTab } = this.state;
       const hoursLogged = (summary.totalSeconds[navItems.indexOf(activeTab)] || 0) / 3600;
@@ -433,7 +433,7 @@ export class WeeklySummariesReport extends Component {
       );
     });
 
-    
+
     if (selectedCodes[0]?.value === "" || selectedCodes.length >= 52) {
       if (selectedCodes.length >= 52) {
         selectedCodes.forEach((code) => {
@@ -743,8 +743,7 @@ export class WeeklySummariesReport extends Component {
     return (
       <Container
         fluid
-        className={`container-wsr-wrapper py-3 mb-5 ${
-            darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
+        className={`container-wsr-wrapper py-3 mb-5 ${darkMode ? 'bg-oxford-blue text-light' : 'bg--white-smoke'
           }`}
       >
         {this.passwordInputModalToggle()}
@@ -866,7 +865,7 @@ export class WeeklySummariesReport extends Component {
               )}
               {hasPermissionToFilter && (
                 <div className="filter-style">
-                  <span>Filter by Over Hours {}</span>
+                  <span>Filter by Over Hours { }</span>
                   <div className="switch-toggle-control">
                     <input
                       type="checkbox"
@@ -988,12 +987,8 @@ export class WeeklySummariesReport extends Component {
                       <FormattedReport
                         summaries={filteredSummaries.map(summary => ({
                           ...summary,
-                          name: summary.isActive
-                            ? summary.name
-                            : `FINAL WEEK REPORTING: ${summary.name}`,
-                          role: summary.isActive
-                            ? summary.role
-                            : `${summary.role} (No longer active)`,
+                          name: summary.name,
+                          role: summary.role
                         }))}
                         weekIndex={index}
                         bioCanEdit={this.bioEditPermission}
