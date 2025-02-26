@@ -29,7 +29,6 @@ import { getPeopleReportData } from './selectors';
 import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
-import { Spinner, Alert } from 'reactstrap';
 import { updateRehireableStatus } from '../../../actions/userManagement'
 import { Row, Col } from 'reactstrap';
 class PeopleReport extends Component {
