@@ -230,7 +230,14 @@ function TimeEntryForm(props) {
 
   const handleEditorChange = (content, editor) => {
     const { wordcount } = editor.plugins;
-    const hasLink = content.indexOf('http://') > -1 || content.indexOf('https://') > -1;
+    // const hasLink = content.indexOf('http://') > -1 || content.indexOf('https://') > -1;
+    // Starts with "https://"
+    // Negative lookahead to exclude "www.dropbox.com/home"
+    // Followed by any subdomain and domain
+    // Optionally followed by any path
+    // Case insensitive
+    const regex = /^https:\/\/(?!www\.dropbox\.com\/home)[\w.-]+\.[\w.-]+\.com(\/\S*)?$/i;
+    const hasLink = regex.test(content);
     const enoughWords = wordcount.body.getWordCount() > 10;
     setFormValues(fv => ({ ...fv, [editor.id]: content }));
     setReminder(r => ({
