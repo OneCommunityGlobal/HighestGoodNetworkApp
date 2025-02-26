@@ -182,12 +182,24 @@ function Announcements({ title, email }) {
     }
     if (!blogUrl.trim()) {
       editorErrors.blogUrl = "Blog URL is required.";
+    } else {
+      try {
+        new URL(blogUrl);
+      } catch (e) {
+        editorErrors.blogUrl = "Enter a valid blog URL.";
+      }
     }
     if (!bodyText.trim()) {
       editorErrors.bodyText = "Blog Summary Paragraph is required.";
     }
     if (!videoLink.trim()) {
       editorErrors.videoLink = "Video Link is required.";
+    } else {
+      try {
+        new URL(videoLink);
+      } catch (e) {
+        editorErrors.videoLink = "Enter a valid video link.";
+      }
     }
     if (!bodyImage) {
       editorErrors.bodyImage = "Body Image upload is required.";
