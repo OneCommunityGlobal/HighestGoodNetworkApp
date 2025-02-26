@@ -23,13 +23,16 @@ import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
+
+
+
 export function TeamReport({ match }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
   // const {team}=useSelector(getTeamReportData);
-  const [team, setTeam] = useState({});
-  const [teamDataLoading, setTeamDataLoading] = useState(false);
+const [team,setTeam] = useState({});
+const [teamDataLoading,setTeamDataLoading] = useState(false);
   const user = useSelector(state => state.auth.user);
   const [teamMembers, setTeamMembers] = useState([]);
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
@@ -53,28 +56,28 @@ export function TeamReport({ match }) {
     // Update the selectedInput state variable with the value of the selected radio input
     setSelectedInput(event.target.value);
   };
-
-  const getTeamDetails = async teamId => {
-    try {
-      if (
-        teamDataLoading ||
-        (team && team._id === match.params.teamId) ||
-        hasFetchIds.current.has(teamId)
-      ) {
+ 
+  const getTeamDetails = async (teamId)=>{
+     try {
+      
+       if (teamDataLoading ||(team && team._id === match.params.teamId) || hasFetchIds.current.has(teamId)) {
         return; // Prevent repeated calls if data is already loading or loaded
-      }
-      setTeamDataLoading(true);
-      const url = ENDPOINTS.TEAM_BY_ID(teamId);
-      const res = await axios.get(url);
-      setTeam(res.data);
-      hasFetchIds.current.add(teamId);
-      setTeamDataLoading(false);
-    } catch (error) {
-      setTeam(null);
-    } finally {
-      setTeamDataLoading(false);
-    }
-  };
+       }
+        setTeamDataLoading(true);
+        const url =  ENDPOINTS.TEAM_BY_ID(teamId);
+        const res = await axios.get(url);
+        setTeam(res.data);
+        hasFetchIds.current.add(teamId);
+        setTeamDataLoading(false);
+     } catch (error) {
+        setTeam(null);
+     }
+     finally{
+        setTeamDataLoading(false);
+     }
+  }
+
+
 
   const debounceSearchByName = debounce(value => {
     setSearchParams(prevParams => ({
@@ -114,47 +117,48 @@ export function TeamReport({ match }) {
     }
   }
 
-  useEffect(() => {
-    if (match && match.params && match.params.teamId) {
+
+
+  useEffect(()=>{
+    if(match&&match.params&&match.params.teamId){
       getTeamDetails(match.params.teamId);
     }
-  }, []);
+  },[])
 
+  
   useEffect(() => {
     let isMounted = true; // flag to check component mount status
-    const fetchTeamDetails = async teamId => {
+    const fetchTeamDetails = async (teamId)=>{
       if (teamDataLoading || (team && team._id === match.params.teamId)) {
         return; // Prevent repeated calls if data is already loading or loaded
-      }
-      await getTeamDetails(teamId);
-    };
+        }
+        await getTeamDetails(teamId);
+    }
 
-    const fetchTeamMembers = async teamId => {
+    const fetchTeamMembers = async (teamId)=>{
       await dispatch(getTeamMembers(teamId)).then(result => {
-        if (isMounted) {
-          // Only update state if component is still mounted
+        if (isMounted) { // Only update state if component is still mounted
           setTeamMembers([...result]);
         }
       });
-    };
+    }
 
-    const fetchAllUserTeams = async () => {
-      if (isMounted) {
-        dispatch(getAllUserTeams())
-          .then(result => {
-            return result;
-          })
-          .then(result => {
-            const allTeamMembersPromises = result.map(t => dispatch(getTeamMembers(t._id)));
-            Promise.all(allTeamMembersPromises).then(results => {
-              if (isMounted) {
-                // Only update state if component is still mounted
-                setAllTeamsMembers([...results]);
-              }
-            });
-          });
-      }
-    };
+    const fetchAllUserTeams = async () =>{
+             if(isMounted){
+              dispatch(getAllUserTeams())
+              .then(result => {
+                return result;
+              })
+              .then(result => {
+                const allTeamMembersPromises = result.map(t => dispatch(getTeamMembers(t._id)));
+                Promise.all(allTeamMembersPromises).then(results => {
+                  if (isMounted) { // Only update state if component is still mounted
+                    setAllTeamsMembers([...results]);
+                  }
+                });
+              });
+             }
+    }
     if (match && match.params && match.params.teamId) {
       fetchTeamDetails(match.params.teamId);
       fetchTeamMembers(match.params.teamId);
@@ -164,8 +168,8 @@ export function TeamReport({ match }) {
     return () => {
       isMounted = false; // Set the flag as false when the component unmounts
     };
-  }, [match?.params?.teamId]); // include all dependencies in the dependency array
-  //
+  }, [match?.params?.teamId]); // include all dependencies in the dependency array  
+//
   // Get Total Tangible Hours this week [main TEAM]
   const [teamMembersWeeklyEffort, setTeamMembersWeeklyEffort] = useState([]);
   const [totalTeamWeeklyWorkedHours, setTotalTeamWeeklyWorkedHours] = useState('');
@@ -282,12 +286,7 @@ export function TeamReport({ match }) {
       contentClassName="team-report-blocks"
       darkMode={darkMode}
       renderProfile={() => (
-        <ReportPage.ReportHeader
-          isActive={team?.isActive}
-          avatar={<FiUsers />}
-          name={team?.teamName}
-          darkMode={darkMode}
-        >
+        <ReportPage.ReportHeader isActive={team?.isActive} avatar={<FiUsers />} name={team?.teamName} darkMode={darkMode}>
           <div className={darkMode ? 'text-light' : ''}>
             <h5>{moment(team?.createdDatetime).format('MMM-DD-YY')}</h5>
             <p>Created Date</p>
@@ -317,7 +316,7 @@ export function TeamReport({ match }) {
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
         allTeamsMembers={allTeamsMembers}
         darkMode={darkMode}
-        teamDataLoading={teamDataLoading}
+        teamDataLoading ={teamDataLoading}
       />
       <div className="table-mobile">
         <ReportPage.ReportBlock darkMode={darkMode}>
