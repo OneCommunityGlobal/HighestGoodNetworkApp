@@ -78,7 +78,7 @@ const UserTableData = React.memo(props => {
       lastName: props.user.lastName,
       id: props.user._id,
       role: props.user.role,
-      jobTitle:props.user.jobTitle,
+      jobTitle: props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
       startDate: formatDateYYYYMMDD(props.user.startDate),
@@ -204,10 +204,13 @@ const UserTableData = React.memo(props => {
       </td>
 
 
-      <td className="email_cell">
+      <td className="title_cell"
+        title={formData.jobTitle}>
         {editUser?.jobTitle ? (
-          <div>
-            {formData.jobTitle}
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {formData.jobTitle}
+            </span>
             <FontAwesomeIcon
               className="copy_icon"
               icon={faCopy}
@@ -228,7 +231,9 @@ const UserTableData = React.memo(props => {
             }}
           />
         )}
+
       </td>
+
 
       <td className="email_cell">
         {editUser?.email ? (
@@ -310,9 +315,8 @@ const UserTableData = React.memo(props => {
       <td className="centered-td">
         <button
           type="button"
-          className={`btn btn-outline-primary btn-sm${
-            props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
-          }`}
+          className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
+            }`}
           onClick={() => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
           style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
