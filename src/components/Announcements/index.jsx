@@ -6,12 +6,14 @@ import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import logo2 from '../../assets/images/logo2.png';
+import link from '../../assets/images/link.png';
 import facebook from '../../assets/images/Facebook_Logo_Primary.png';
 import instagram from '../../assets/images/Instagram_Glyph_Gradient.png';
 import twitter from '../../assets/images/logo-white.png';
 import pinterest from '../../assets/images/P-Badge-Red-RGB.png';
 import youtube from '../../assets/images/youtube_social_circle_red.png';
 import linkedin from '../../assets/images/LI-In-Bug.png';
+import email from '../../assets/images/email.png';
 import ImageUploader from './ImageUploader';
 
 function Announcements({ title, email }) {
@@ -295,43 +297,43 @@ function Announcements({ title, email }) {
       <hr style="margin: 30px 0;" />
       <div style="text-align: center;">
         <p style="margin: 0 auto; display: inline-block;">
-          <a href="https://tiktok.com/@OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src={instagram} 
-            alt="Copy Link" 
+          <a href="https://onecommunityglobal.org/overview/" target="_blank" rel="noopener" style="margin: 0 5px;">
+            <img src={link} 
+            alt="Overview" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
-          <a href="https://facebook.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://www.facebook.com/onecommunityfans" target="_blank" rel="noopener" style="margin: 0 5px;">
             <img src='{facebook} '
             alt="Facebook" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
-          <a href="https://twitter.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://x.com/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 5px;">
             <img src={twitter} 
             alt="Twitter" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
-          <a href="https://instagram.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src={instagram} 
-            alt="Instagram" 
-            style="width: 24px; height: 24px; vertical-align: middle;" />
-          </a> |
-          <a href="https://linkedin.com/company/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://www.linkedin.com/company/one-community-global/" target="_blank" rel="noopener" style="margin: 0 5px;">
             <img src={linkedin} 
             alt="LinkedIn" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
-          <a href="https://youtube.com/@OneCommunityGlobal" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://www.youtube.com/user/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 5px;">
             <img src={youtube} 
             alt="YouTube" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
-          <a href="https://pinterest.com/OneCommunity" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://www.instagram.com/onecommunityglobal/" target="_blank" rel="noopener" style="margin: 0 5px;">
+            <img src={instagram} 
+            alt="Instagram" 
+            style="width: 24px; height: 24px; vertical-align: middle;" />
+          </a> |
+          <a href="https://www.pinterest.com/onecommunityorg/one-community/" target="_blank" rel="noopener" style="margin: 0 5px;">
             <img src={pinterest} 
             alt="Pinterest" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
-          <a href="mailto:info@onecommunityglobal.org" style="margin: 0 5px;">
-            <img src={facebook} 
+          <a href="mailto:onecommunityupdates@gmail.com" style="margin: 0 5px;">
+            <img src={email} 
             alt="Email" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a>
@@ -342,22 +344,38 @@ function Announcements({ title, email }) {
     // Footer
     content += `
       <hr style="margin: 30px 0;" />
-      <div style="font-size: 12px; color: #666;  font-style: italic; text-align: center; margin: 0 auto; max-width: 600px;">
+      <div style="font-size: 12px; color: #666;  font-style: italic; text-align: center; margin: 0 auto; max-width: 500px;">
         <p style="font-style: italic; margin: 0;">
           "In order to change an existing paradigm you do not struggle to try and change the problematic model. 
           You create a new model and make the old one obsolete. That, in essence, is the higher service to which 
           we are all being called."
         </p>
-        <p style="margin-top: 0;">
+        <p style="margin-block: 0;">
           ~ Buckminster Fuller ~
         </p>
       </div>
-      <p style="font-size: 12px; color: #666; text-align: center;">
+      <br />
+      <p style="font-size: 12px; color: #666; text-align: center; margin-block: 0;">
         <strong>Our mailing address is:</strong> <br />
         One Community Inc.<br />
         8954 Camino real<br />
         San Gabriel, CA 91775-1932<br />
+        <br />
         Add us to your address book
+      </p>
+      <br />
+
+      <p style="font-size: 12px; color: #666; text-align: center; margin-block: 0;">
+        Want to change how you receive these emails?<br /> 
+        You can 
+        <a href="https://onecommunityglobal.us1.list-manage.com/profile?u=1b1ba36facf96dc45b6697f82&id=0b0702fa07&e=dfcc422eb9&c=6b96ac6858" target="_blank" rel="noopener" style="color: #666;">
+          update your preferences
+        </a>
+        or 
+        <a href="https://onecommunityglobal.us1.list-manage.com/unsubscribe?u=1b1ba36facf96dc45b6697f82&id=0b0702fa07&t=b&e=dfcc422eb9&c=6b96ac6858" target="_blank" rel="noopener" style="color: #666;">
+          unsubscribe from this list
+        </a>.
+        <br />
       </p>
     `;
 
