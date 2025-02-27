@@ -71,7 +71,7 @@ import {
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
 
-import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
+import { getTimeEndDateEntriesByPeriod, getTimeEntriesForWeek } from '../../actions/timeEntries.js';
 import ProfileImageModal from './UserProfileModal/suggestedProfileModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
@@ -286,7 +286,7 @@ function UserProfile(props) {
     // );
 
     if (!allRequests[personId]) {
-      console.log('all requests was false');
+      // console.log('all requests was false');
       return false;
     }
     let hasTimeOff = false;
@@ -298,7 +298,7 @@ function UserProfile(props) {
     const mostRecentRequest =
       sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
       sortedRequests[0];
-    console.log('most rcent request', mostRecentRequest);
+    // console.log('most rcent request', mostRecentRequest);
 
     const startOfWeek = moment().startOf('week');
     const endOfWeek = moment().endOf('week');
@@ -307,7 +307,6 @@ function UserProfile(props) {
       moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
       moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
 
-    console.log('currentoff', isCurrentlyOff);
     return isCurrentlyOff;
     // weeks before time off
     // } else if (moment().isBefore(moment(mostRecentRequest.startingDate))) {
@@ -340,17 +339,51 @@ function UserProfile(props) {
       //   return [];
       // });
 
-      const memberSubmitted = activeMembers
-        .filter(member => member.weeklySummaries[0].summary !== '')
-        .map(member => `${member.firstName} ${member.lastName}`);
+      // const memberSubmitted = await activeMembers
+      //   .filter(member => member.weeklySummaries[0].summary !== '')
+      //   .map(async member => {
+      //     const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
+      //     console.log('results', results);
+      //     if (results.length > 0) {
+      //       const returnData = results.data.map(time => {
+      //         return calculateTotalTime(time, true);
+      //       });
+      //       console.log('returndata', returnData);
+      //       return returnData;
+      //     } else {
+      //       return `${member.firstName} ${member.lastName}`;
+      //     }
+      //   });
 
+      //finalize this method as
+      //const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
+      //calls the backend but i returnr res as it doesn't reutrn anything when caleld
+      //check to see an alternative for this as i shouldn't return from the function
+      //look into the timelog again and see how i can get the hours the user has commited for this tweek.
+
+      //submitted a summary, maybe didn't complete their hours just yet
+      const memberSubmitted = await Promise.all(
+        activeMembers
+          .filter(member => member.weeklySummaries[0].summary !== '')
+          .map(async member => {
+            const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
+
+            const returnData = calculateTotalTime(results.data, true);
+
+            return returnData < member.weeklycommittedHours
+              ? `${member.firstName} ${member.lastName} hasn't completed hours`
+              : `${member.firstName} ${member.lastName}`;
+          }),
+      );
+
+      // no summary maybe off for the week?
+      //check their hours as well, mayeb they almost done?
       const memberNotSubmitted = activeMembers
         .filter(member => member.weeklySummaries[0].summary === '')
         .map(member => {
           if (getTimeOffStatus(member._id)) {
             return `${member.firstName} ${member.lastName} off for the week`;
           } else {
-            // console.log('memberid', member._id);
             return `${member.firstName} ${member.lastName}`;
           }
         });
@@ -371,6 +404,11 @@ function UserProfile(props) {
     } catch (error) {
       console.error('Error fetching team users:', error);
     }
+  };
+  const calculateTotalTime = (data, isTangible) => {
+    const filteredData = data.filter(entry => entry.isTangible === isTangible);
+    const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
+    return filteredData.reduce(reducer, 0);
   };
   const loadUserTasks = async () => {
     const userId = props?.match?.params?.userId;

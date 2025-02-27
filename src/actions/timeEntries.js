@@ -10,6 +10,7 @@ import { ENDPOINTS } from '../utils/URL';
  */
 export const getTimeEntriesForWeek = (userId, offset) => {
   // TODO: Environment variable for server timezone
+  console.log('user,ud', userId);
 
   const fromDate = moment()
     .tz('America/Los_Angeles')
@@ -32,6 +33,8 @@ export const getTimeEntriesForWeek = (userId, offset) => {
         loggedOut = true;
       }
     });
+    return res;
+    // console.log('res inside time entries', res);
     if (!loggedOut || !res || !res.data) {
       const filteredEntries = res.data.filter(entry => {
         const entryDate = moment(entry.dateOfWork); // Convert the entry date to a moment object
@@ -71,38 +74,39 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
   };
 };
 
-export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //Find last week of work in date
+export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => {
+  //Find last week of work in date
   toDate = moment(toDate)
     .endOf('day')
     .format('YYYY-MM-DDTHH:mm:ss');
-  const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate,toDate);
+  const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
-    try{
+    try {
       const res = await axios.get(url);
-      if (!res || !res.data){
-        console.log("Request failed or no data");
-        return "N/A";
+      if (!res || !res.data) {
+        console.log('Request failed or no data');
+        return 'N/A';
       }
       const filteredEntries = res.data.filter(entry => {
         const entryDate = moment(entry.dateOfWork);
         return entryDate.isBetween(fromDate, toDate, 'day', '[]');
       });
-      filteredEntries.sort((a,b) => {
+      filteredEntries.sort((a, b) => {
         return moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf();
       });
       const lastEntry = filteredEntries[0];
-      if(!lastEntry){
-        return "N/A";
+      if (!lastEntry) {
+        return 'N/A';
       }
       const formattedLastEntryDate = moment(lastEntry.dateOfWork).format('YYYY-MM-DD');
       return formattedLastEntryDate;
     } catch (error) {
-      console.error("Error fetching time entries:", error);
+      console.error('Error fetching time entries:', error);
       if (error.response && error.response.status === 401) {
         loggedOut = true;
       }
-      return "N/A"; // Return "N/A" in case of error
+      return 'N/A'; // Return "N/A" in case of error
     }
   };
 };
@@ -111,7 +115,7 @@ export const postTimeEntry = timeEntry => {
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      if(timeEntry.entryType == 'default'){
+      if (timeEntry.entryType == 'default') {
         dispatch(updateTimeEntries(timeEntry));
       }
       return res.status;
