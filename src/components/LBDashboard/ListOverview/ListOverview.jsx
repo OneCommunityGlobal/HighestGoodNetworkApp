@@ -33,6 +33,9 @@ function ListOverview() {
         <div className="container-top" />
         <div className="container-main">
           <div className="details-left">
+            <div className="listing-details mobile-display">
+              <h1>{listing.title}</h1>
+            </div>
             <div className="image-carousel">
               <ImageCarousel images={listing.images} />
             </div>
@@ -61,7 +64,7 @@ function ListOverview() {
           </div>
           <div className="details-right">
             <div className="listing-details">
-              <h1>{listing.title}</h1>
+              <h1 className='desktop-display'>{listing.title}</h1>
               <p>{listing.description}</p>
             </div>
             <div className="rent-form">
@@ -87,7 +90,7 @@ function ListOverview() {
                   src="https://img.icons8.com/material-outlined/24/chat.png"
                   alt="chat"
                 />
-                Chat with the
+                Chat with the Host
               </button>
             </div>
           </div>

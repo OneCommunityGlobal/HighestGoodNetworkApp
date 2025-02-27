@@ -51,7 +51,7 @@
   height: auto;
 }
 
-.details-left{
+.details-left {
   width: 50%;
   height: 100%;
   display: flex;
@@ -60,11 +60,14 @@
   padding: 2.5%;
 }
 
-.details-right{
+.details-right {
   width: 50%;
   height: 100%;
   padding: 2.5%;
+}
 
+.mobile-display {
+  display: none;
 }
 
 .image-carousel {
@@ -109,7 +112,6 @@ li {
   align-items: flex-end;
   margin: 2%;
   padding-left: 5%;
-
 }
 
 .location img {
@@ -122,8 +124,9 @@ li {
   cursor: pointer;
 }
 
-.listing-details h1,p{
- color: #000;
+.listing-details h1,
+p {
+  color: #000;
 }
 
 .rent-form {
@@ -157,14 +160,14 @@ li {
 .rent-form button:active {
   transform: scale(0.99);
 }
-.rent-form input[type="date"] {
+.rent-form input[type='date'] {
   padding: 5% 10%;
   border: 1px solid #ccc;
   margin-top: 2.5%;
   width: 100%;
 }
 
-.chat-host{
+.chat-host {
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -179,11 +182,67 @@ li {
   width: 33%;
   display: flex;
   justify-content: center;
-  min-width: 180px;
+  min-width: 200px;
   gap: 10%;
   align-items: center;
   cursor: pointer;
   transition: background 0.3s ease, transform 0.2s ease;
 }
 
+@media (max-width: 990px) {
+  .container-main {
+    flex-direction: column;
+    align-items: center;
+  }
+  .details-left {
+    width: 98%;
+  }
+  .details-right {
+    width: 98%;
+  }
 
+  .mobile-display {
+    display: block;
+  }
+  .desktop-display {
+    display: none;
+  }
+  .chat-host button {
+    background: #d1d1d1;
+    padding: 2.5%;
+    border-radius: 998px;
+    border: none;
+    width: 45%;
+    display: flex;
+    justify-content: center;
+  }
+}
+
+@media (max-width: 580px) {
+  .amenities {
+    flex-direction: column;
+    align-items: center;
+  }
+  .rent-form label {
+    display: flex;
+    width: 150px;
+    flex-direction: column;
+  }
+  .rent-form input[type='date'] {
+    padding: 3% 3%;
+    border: 1px solid #ccc;
+    margin-top: 2.5%;
+    width: 90%;
+  }
+  .chat-host button {
+    background: #d1d1d1;
+    padding: 2.5%;
+    border-radius: 998px;
+    border: none;
+    width: 60%;
+    display: flex;
+    justify-content: center;
+    min-width: 90px;
+    font-size: 12px;
+  }
+}
