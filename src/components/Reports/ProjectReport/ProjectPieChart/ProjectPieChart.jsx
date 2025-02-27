@@ -10,7 +10,9 @@ const generateRandomHexColor = () => {
   return hexColor;
 }
 
-const renderActiveShape = (props, darkMode) => {
+
+const renderActiveShape = (props, darkMode, showAllValues, accumulatedValues) => {
+
   const hexColor = generateRandomHexColor()
   const RADIAN = Math.PI / 180;
   const { cx, cy, midAngle, innerRadius, outerRadius, startAngle, endAngle, fill, payload, percent, value } = props;
@@ -27,9 +29,38 @@ const renderActiveShape = (props, darkMode) => {
 
   return (
     <g>
-      <text x={cx} y={cy} dy={8} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
-        {payload.lastName.substring(0, 5)} {payload.value.toFixed(1)} of {payload.totalHoursCalculated.toFixed(1)}hrs
-      </text>
+      {!showAllValues ? (
+        <>
+        <svg
+        className="flex flex-column justify-content-center align-items-center"
+        >
+          <text x={cx} y={cy} dy={-32} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
+          Selected values
+          </text>
+          <text x={cx} y={cy} dy={-14} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
+          {accumulatedValues.toFixed(2)}hrs.
+          </text>
+          <text x={cx} y={cy} dy={4} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
+          Total hrs.({payload.totalHoursCalculated.toFixed(2)})
+          </text>
+        </svg>
+          <text x={ex * .94 + (cos >= 0 ? 1 : -1) * 12} y={ey} textAnchor={textAnchor} fill={darkMode ? 'white' : '#333'}>
+              {`${payload.name.substring(0, 14)}`} {`${payload.lastName.substring(0, 1)}`} {`${value.toFixed(2)}hrs`} ({`${(percent * 100).toFixed(2)}%`})
+          </text>
+        </>
+
+      ) : (
+        <>
+        <text x={cx} y={cy} dy={-30} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
+          All Members
+        </text>
+        <text x={cx} y={cy} dy={0} textAnchor="middle" fill={darkMode ? 'white' : fill}  >
+        Total hrs: {payload.totalHoursCalculated.toFixed(2)}
+        </text>
+
+        </>
+      )
+      }
       <Sector
         cx={cx}
         cy={cy}
@@ -62,10 +93,29 @@ const renderActiveShape = (props, darkMode) => {
 };
 
 export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
-  const [activeIndex, setActiveIndex] = useState(0);
 
-  const onPieEnter = (_, index) => {
-    setActiveIndex(index);
+  const [activeIndices, setActiveIndices] = useState([]);
+  const [showAllValues, setShowAllValues] = useState(false);
+  const [accumulatedValues, setAccumulatedValues] = useState(0);
+
+  const onPieEnter = (data, index, event) => {
+    if (event.ctrlKey) {
+      setActiveIndices(prevIndices => {
+        if (prevIndices.includes(index)) {
+          const newIndices = prevIndices.filter(i => i !== index);
+          const newAccumulatedValues = newIndices.reduce((acc, i) => acc + userData[i].value, 0);
+          setAccumulatedValues(newAccumulatedValues);
+          return newIndices;
+        } else {
+          const newAccumulatedValues = accumulatedValues + userData[index].value;
+          setAccumulatedValues(newAccumulatedValues);
+          return [...prevIndices, index];
+        }
+      });
+    } else {
+      setActiveIndices([index]);
+      setAccumulatedValues(userData[index].value);
+    }
   };
 
   let circleSize = 30;
@@ -78,8 +128,8 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
       <ResponsiveContainer maxWidth={640} maxHeight={640} minWidth={350} minHeight={350}>
         <PieChart>
           <Pie
-            activeIndex={activeIndex}
-            activeShape={(props) => renderActiveShape(props, darkMode)}
+            activeIndex={activeIndices}
+            activeShape={(props) => renderActiveShape(props, darkMode, showAllValues, accumulatedValues)}
             data={userData}
             cx="50%"
             cy="50%"
@@ -87,11 +137,11 @@ export function ProjectPieChart  ({ userData, windowSize, darkMode }) {
             outerRadius={120 + circleSize}
             fill="#8884d8"
             dataKey="value"
-            onMouseEnter={onPieEnter}
+            onMouseEnter={showAllValues ? null : (data, index, event) => onPieEnter(data, index, event.nativeEvent)}
             darkMode={darkMode}
             />
           </PieChart>
         </ResponsiveContainer>
       </div>
-  );
+  )
 }
