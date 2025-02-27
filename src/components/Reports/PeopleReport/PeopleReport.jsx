@@ -7,6 +7,7 @@ import { connect } from 'react-redux';
 import { FiUser } from 'react-icons/fi';
 import moment from 'moment';
 import { toast } from 'react-toastify';
+import { Row, Col, Spinner, Alert } from 'reactstrap';
 import { formatDate } from '../../../utils/formatDate';
 import {
   updateUserProfileProperty,
@@ -28,7 +29,6 @@ import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
 import { updateRehireableStatus } from '../../../actions/userManagement'
-import { Row, Col, Spinner, Alert } from 'reactstrap';
 class PeopleReport extends Component {
   constructor(props) {
     super(props);
@@ -429,15 +429,14 @@ class PeopleReport extends Component {
     const { isRehireable, bioStatus, authRole } = this.state;
     const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
     const onChangeBioPosted = async bio => {
-      let bioStatus = bio;
       this.setState(() => {
         return {
-          bioStatus,
+          bioStatus: bio,
         };
       });
 
       try {
-        await updateUserProfileProperty(userProfile, 'bioPosted', bioStatus);
+        await updateUserProfileProperty(userProfile, 'bioPosted', bio);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
         // eslint-disable-next-line no-alert
