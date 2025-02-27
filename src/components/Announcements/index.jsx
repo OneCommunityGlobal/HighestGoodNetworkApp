@@ -12,8 +12,8 @@ import instagram from '../../assets/images/Instagram_Glyph_Gradient.png';
 import twitter from '../../assets/images/logo-white.png';
 import pinterest from '../../assets/images/P-Badge-Red-RGB.png';
 import youtube from '../../assets/images/youtube_social_circle_red.png';
-import linkedin from '../../assets/images/LI-In-Bug.png';
-import email from '../../assets/images/email.png';
+import linkedin from '../../assets/images/linkedin-logo.png';
+import emailIcon from '../../assets/images/email.png';
 import ImageUploader from './ImageUploader';
 
 function Announcements({ title, email }) {
@@ -223,7 +223,7 @@ function Announcements({ title, email }) {
       <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <!-- Default Header (Logo) -->
         <div style="text-align: center; margin-bottom: 20px;">
-          <img src="/Users/michaellambo/Desktop/how-to-install/HighestGoodNetworkApp/HighestGoodNetworkApp/src/assets/images/logo2.png" alt="One Community Logo" style="max-width: 200px; height: auto;" />
+          <img src="${logo2}" alt="One Community Logo" style="max-width: 200px; height: auto;" />
         </div>
     `;
 
@@ -272,7 +272,6 @@ function Announcements({ title, email }) {
       content += `<p>${bodyText}</p>`;
     }
 
-    // "Click here for the video on this topic:" + video link
     content += `
       <p>
         Click here for the video on this topic:
@@ -282,7 +281,6 @@ function Announcements({ title, email }) {
       </p>
     `;
 
-    // Hardcoded CTA
     content += `
       <p>
         Love what we're doing and want to help? Click
@@ -292,48 +290,47 @@ function Announcements({ title, email }) {
     `;
 
     // Social Media Links
-    // TODO: Change text to icons
     content += `
       <hr style="margin: 30px 0;" />
       <div style="text-align: center;">
         <p style="margin: 0 auto; display: inline-block;">
           <a href="https://onecommunityglobal.org/overview/" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src={link} 
+            <img src="${link}"
             alt="Overview" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
           <a href="https://www.facebook.com/onecommunityfans" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src='{facebook} '
+            <img src="${facebook}"
             alt="Facebook" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
           <a href="https://x.com/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src={twitter} 
+            <img src="${twitter}"
             alt="Twitter" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
           <a href="https://www.linkedin.com/company/one-community-global/" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src={linkedin} 
+            <img src="${linkedin}"
             alt="LinkedIn" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
           <a href="https://www.youtube.com/user/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src={youtube} 
+            <img src="${youtube}"
             alt="YouTube" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
           <a href="https://www.instagram.com/onecommunityglobal/" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src={instagram} 
+            <img src="${instagram}"
             alt="Instagram" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
           <a href="https://www.pinterest.com/onecommunityorg/one-community/" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src={pinterest} 
+            <img src="${pinterest}"
             alt="Pinterest" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a> |
           <a href="mailto:onecommunityupdates@gmail.com" style="margin: 0 5px;">
-            <img src={email} 
+            <img src="${emailIcon}"
             alt="Email" 
             style="width: 24px; height: 24px; vertical-align: middle;" />
           </a>
