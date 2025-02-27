@@ -53,7 +53,8 @@ thead {
   color: white;
 }
 
-#card_active {
+#card_active,
+.card#card_non_active {
   background: #fbad4c;
   color: white;
 }

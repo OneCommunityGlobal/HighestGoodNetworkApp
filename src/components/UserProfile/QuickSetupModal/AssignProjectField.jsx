@@ -31,7 +31,7 @@ const AssignProjectField = React.memo(props => {
       <Input
         type="text"
         value={searchText}
-        autoFocus={true}
+        onFocus={() => toggle(true)}
         onChange={e => {
           onInputChange(e.target.value);
           toggle(true);
@@ -39,7 +39,7 @@ const AssignProjectField = React.memo(props => {
         className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
       />
 
-      {searchText !== '' && props.projectsData && props.projectsData.length > 0 ? (
+      {props.projectsData && props.projectsData.length > 0 ? (
         <div
           tabIndex="-1"
           role="menu"

@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button } from 'reactstrap';
 import { toast } from 'react-toastify';
-import { PAUSE, RESUME } from '../../languages/en/ui';
+import { PAUSE, RESUME, PROCESSING } from '../../languages/en/ui';
 import { UserStatus } from '../../utils/enums';
 import ActivationDatePopup from './ActivationDatePopup';
 import { updateUserStatus } from '../../actions/userManagement';
@@ -18,6 +18,7 @@ function PauseAndResumeButton(props) {
   const { darkMode } = props;
   const [activationDateOpen, setActivationDateOpen] = useState(false);
   const [isActive, setIsActive] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Added loading state
 
   const activationDatePopupClose = () => {
     setActivationDateOpen(false);
@@ -33,13 +34,21 @@ function PauseAndResumeButton(props) {
    * Call back on Pause confirmation button click to trigger the action to update user status
    */
   const pauseUser = async reActivationDate => {
-    await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
-    setIsActive(false);
-    setActivationDateOpen(false);
-    setTimeout(async () => {
-      await props.loadUserProfile();
+    setIsLoading(true); // Start loading indicator
+    try {
+      await updateUserStatus(props.userProfile, UserStatus.InActive, reActivationDate)(dispatch);
+      setIsActive(false);
+      setActivationDateOpen(false);
+
+      // Optimistically update the UI
       toast.success('Your Changes were saved successfully.');
-    }, 1000);
+    } catch (error) {
+      toast.error('Failed to update the user status.');
+      console.error(error);
+    } finally {
+      setIsLoading(false); // Stop loading indicator
+      await props.loadUserProfile(); // Ensure state sync
+    }
   };
 
   /**
@@ -47,12 +56,20 @@ function PauseAndResumeButton(props) {
    */
   const onPauseResumeClick = async (user, status) => {
     if (status === UserStatus.Active) {
-      await updateUserStatus(user, status, Date.now())(dispatch);
-      setIsActive(status);
-      setTimeout(async () => {
-        await props.loadUserProfile();
+      setIsLoading(true); // Start loading indicator
+      try {
+        await updateUserStatus(user, status, Date.now())(dispatch);
+        setIsActive(true);
+
+        // Optimistically update the UI
         toast.success('Your Changes were saved successfully.');
-      }, 1000);
+      } catch (error) {
+        toast.error('Failed to update the user status.');
+        console.error(error);
+      } finally {
+        setIsLoading(false); // Stop loading indicator
+        await props.loadUserProfile(); // Ensure state sync
+      }
     } else {
       setActivationDateOpen(true);
     }
@@ -67,6 +84,7 @@ function PauseAndResumeButton(props) {
       <Button
         outline={!darkMode}
         color={isActive ? 'warning' : 'success'}
+        disabled={isLoading} // Disable the button while loading
         className={`btn ${darkMode ? '' : `btn-outline-${isActive ? 'warning' : 'success'}`} ${
           props.isBigBtn ? '' : 'btn-sm'
         }  mr-1`}
@@ -76,7 +94,7 @@ function PauseAndResumeButton(props) {
         style={darkMode ? boxStyleDark : boxStyle}
         data-testid="pause-resume-button"
       >
-        {isActive ? PAUSE : RESUME}
+        {isLoading ? PROCESSING : isActive ? PAUSE : RESUME} {/* Show loading state */}
       </Button>
     </>
   );

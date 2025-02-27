@@ -146,6 +146,7 @@ export const Badges = (props) => {
                         isUserSelf={props.isUserSelf}
                         isRecordBelongsToJaeAndUneditable={isRecordBelongsToJaeAndUneditable}
                         darkMode={darkMode}
+                        personalBestMaxHrs={props.userProfile.personalBestMaxHrs}
                       />
                     </ModalBody>
                   </Modal>

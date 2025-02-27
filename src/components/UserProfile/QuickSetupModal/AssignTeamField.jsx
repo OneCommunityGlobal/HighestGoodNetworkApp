@@ -5,16 +5,13 @@ import { useSelector } from 'react-redux';
 
 const AssignTeamField = React.memo(props => {
   const [isOpen, toggle] = React.useState(false);
-  const [searchText,setSearchText]=useState(()=>{
-    if(props.editMode){
-      return (props.value==undefined?"":props.value.teamName)
-    }else{
+  const [searchText, setSearchText] = useState(() => {
+    if (props.editMode) {
+      return (props.value == undefined ? "" : props.value.teamName)
+    } else {
       return props.searchText
     }
   })
- 
-  const darkMode = useSelector(state => state.theme.darkMode);
- 
   React.useEffect(() => {
     if (props.selectedTeam && props.selectedTeam.teamName !== searchText) {
       props.onSelectTeam(undefined);
@@ -30,7 +27,7 @@ const AssignTeamField = React.memo(props => {
   if (sTeam) {
     // console.log('sTeam', sTeam);
   }
-  
+
   return (
     <Dropdown
       isOpen={isOpen}
@@ -42,14 +39,16 @@ const AssignTeamField = React.memo(props => {
       <Input
         type="text"
         value={searchText}
-        autoFocus={true}
+        onFocus={() => {
+          toggle(true);
+        }}
         onChange={e => {
           setSearchText(e.target.value);
           toggle(true);
         }}
       />
 
-      {searchText !== '' && props.teamsData && props.teamsData.allTeams.length > 0 ? (
+      {props.teamsData && props.teamsData.allTeams.length > 0 ? (
         <div
           tabIndex="-1"
           role="menu"
@@ -66,7 +65,7 @@ const AssignTeamField = React.memo(props => {
               }
             })
             .slice(0, 10)
-            .map((item,index) => (
+            .map((item, index) => (
               <div
                 key={index}
                 className="team-auto-complete"

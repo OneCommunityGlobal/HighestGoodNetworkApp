@@ -185,7 +185,7 @@ function AssignSetUpModal({ isOpen, setIsOpen, title, userProfile, setUserProfil
           ) : (
             ''
           )}
-          <div className="container ml-1">
+          <div className="container ml-1 pdrl-1">
             <Input
               type="checkbox"
               required

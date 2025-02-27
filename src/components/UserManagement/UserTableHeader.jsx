@@ -145,31 +145,34 @@ const UserTableHeader = React.memo(
           </div>
         </th>
         <th scope="col" id="usermanagement_title">
-          <div className="text-center">
-            <span className="m-auto">{TITLE}</span>
-            {(() => {
-              if (authRole === 'Owner') {
-                if (editFlag.jobTitle === 1) {
+          <div>
+            <div className="text-center">
+              <span className="m-auto">{TITLE}</span>
+              {(() => {
+                if (authRole === 'Owner') {
+                  if (editFlag.jobTitle === 1) {
+                    return (
+                      <FontAwesomeIcon
+                        icon={faEdit}
+                        className="editbutton"
+                        onClick={() => enableEdit({ ...editFlag, jobTitle: 0 })}
+                      />
+                    );
+                  }
                   return (
                     <FontAwesomeIcon
-                      icon={faEdit}
+                      icon={faSave}
                       className="editbutton"
-                      onClick={() => enableEdit({ ...editFlag, jobTitle: 0 })}
+                      onClick={() => disableEdit({ ...editFlag, jobTitle: 1 })}
                     />
                   );
                 }
-                return (
-                  <FontAwesomeIcon
-                    icon={faSave}
-                    className="editbutton"
-                    onClick={() => disableEdit({ ...editFlag, jobTitle: 1 })}
-                  />
-                );
-              }
-              return <> </>;
-            })()}
+                return <> </>;
+              })()}
+            </div>
           </div>
         </th>
+
         <th scope="col" id="usermanagement_email">
           <div className="text-center">
             <span className="m-auto text-center">{EMAIL}</span>

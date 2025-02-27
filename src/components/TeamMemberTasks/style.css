@@ -88,6 +88,11 @@
   width: 50%;
 }
 
+.team-member-tasks-user-report-link  .team-member-tasks-user-report-link-image{
+   width: 20px;
+   height: 20px;
+   margin: 0 0 5px 5px;
+}
 .deadlineCount {
   position: absolute;
   text-align: center;
@@ -106,6 +111,7 @@
   display: flex;
   justify-content: space-around;
 }
+
 
 .dashboard-team-clocks {
   color: #339CFF !important;

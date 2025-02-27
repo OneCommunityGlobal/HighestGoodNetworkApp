@@ -27,8 +27,11 @@ function AddNewTitleModal({
   setShowMessage,
   editMode,
   title,
+  QSTTeamCodes
 }) {
   const darkMode = useSelector(state => state.theme.darkMode);
+  const teamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
+
   const [titleData, setTitleData] = useState(() => {
     if (editMode && Object.keys(title).length !== 0) {
       return {
@@ -38,8 +41,7 @@ function AddNewTitleModal({
         mediaFolder: title.mediaFolder,
         teamCode: title.teamCode,
         projectAssigned: title.projectAssigned,
-        teamAssiged:
-          title.teamAssiged === undefined ? { teamName: '', _id: '' } : title.teamAssiged,
+        teamAssiged: title.teamAssiged == undefined ? { teamName: '', _id: '' } : title.teamAssiged,
       };
     }
     return {
@@ -51,18 +53,21 @@ function AddNewTitleModal({
       teamAssiged: {},
     };
   });
+
+  const [isValidTeamCode, setIsValidTeamCode] = useState(true);
+
   useEffect(() => {
     if (editMode && Object.keys(title).length !== 0) {
       setTitleData({
         id: title._id,
         titleName: title.titleName,
-        titleCode: title.titleCode || title.titleName.slice(0, 5),
+        titleCode: title.titleCode || title.titleName.slice(0, 7),
         mediaFolder: title.mediaFolder,
         teamCode: title.teamCode,
         projectAssigned: title.projectAssigned,
         teamAssiged: title.teamAssiged,
       });
-    } else
+    } else {
       setTitleData({
         titleName: '',
         titleCode: '',
@@ -71,15 +76,22 @@ function AddNewTitleModal({
         projectAssigned: '',
         teamAssiged: {},
       });
-  }, [title]);
+    }
+  }, [editMode, title]);
 
   useEffect(() => {
-    const titleCode = titleData.titleName.slice(0, 5);
+    const titleCode = titleData?.titleCode ? titleData.titleCode : titleData.titleName.slice(0, 7);
     setTitleData(prev => ({
       ...prev,
       titleCode,
     }));
   }, [titleData.titleName]);
+
+  useEffect(() => {
+    setIsValidTeamCode(
+      titleData.teamCode === '' || QSTTeamCodes.some(code => code.value === titleData.teamCode),
+    );
+  }, [titleData.teamCode, QSTTeamCodes]);
 
   let existTeamCodes = new Set();
   let existTeamName = new Set();
@@ -92,7 +104,7 @@ function AddNewTitleModal({
     existTeamCodes = new Set(teamsData?.allTeamCode?.distinctTeamCodes);
     existTeamName = new Set(names);
   }
-  
+
   const [selectedTeam, onSelectTeam] = useState(undefined);
   const [selectedProject, onSelectProject] = useState(undefined);
   const [selectedTeamCode, onSelectTeamCode] = useState(undefined);
@@ -267,7 +279,6 @@ function AddNewTitleModal({
                 setTitleData({ ...titleData, titleName: e.target.value });
               }}
             />
-
             <Label className={fontColor}>
               Title Code<span className="qsm-modal-required">*</span>:{' '}
             </Label>
@@ -280,9 +291,8 @@ function AddNewTitleModal({
                 e.persist();
                 setTitleData({ ...titleData, titleCode: e.target.value });
               }}
-              maxLength={5}
+              maxLength={7}
             />
-
             <Label className={fontColor}>
               Media Folder<span className="qsm-modal-required">*</span>:{' '}
             </Label>
@@ -297,34 +307,25 @@ function AddNewTitleModal({
               }}
               placeholder="Enter a valid URL"
             />
-            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) && titleData.mediaFolder !== '' && (
-              <small style={{ color: 'red', marginTop: '5px', display: 'block' }}>
-                Please enter a valid URL that starts with http:// or https://
-              </small>
-            )}
+            {!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder.trim()) &&
+              titleData.mediaFolder !== '' && (
+                <small style={{ color: 'red', marginTop: '5px', display: 'block' }}>
+                  Please enter a valid URL that starts with http:// or https://
+                </small>
+              )}
             <Label className={fontColor}>
               Team Code<span className="qsm-modal-required">*</span>:
             </Label>
-            {/* <Input
-              type="text"
-              placeholder="X-XXX OR XXXXX"
-              onChange={e => {
-                e.persist();
-                setTitleData(prev => ({ ...prev, teamCode: e.target.value }));
-              }}
-              onBlur={(e) => onTeamCodeValidation(e.target.value)}
-            /> */}
-
             <AssignTeamCodeField
-              teamCodeData={existTeamCodes}
+              teamCodeData={QSTTeamCodes}
               onDropDownSelect={selectTeamCode}
               selectedTeamCode={selectedTeamCode}
               cleanTeamCodeAssign={cleanTeamCodeAssign}
               onSelectTeamCode={onSelectTeamCode}
               editMode={editMode}
               value={titleData.teamCode}
+              isError={!isValidTeamCode}
             />
-
             <Label className={fontColor}>
               Project Assignment<span className="qsm-modal-required">*</span>:
             </Label>
@@ -353,12 +354,13 @@ function AddNewTitleModal({
           </FormGroup>
         </Form>
       </ModalBody>
-
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button 
-          color="primary" 
+        <Button
+          color="primary"
           onClick={() => confirmOnClick()}
-          disabled={!/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder) || titleData.mediaFolder === ''}
+          disabled={
+            !/^(https?:\/\/[^\s]+)$/.test(titleData.mediaFolder.trim()) || titleData.mediaFolder === ''
+          }
         >
           Confirm
         </Button>

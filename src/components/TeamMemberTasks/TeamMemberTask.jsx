@@ -76,6 +76,13 @@ const TeamMemberTask = React.memo(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
 
+   const completedTasks = user.tasks.filter(
+    task =>
+      task.resources?.some(
+        resource => resource.userID === user.personId && resource.completedTask,
+      ),
+  );
+  console.log(completedTasks,"completedtasks");
     const thisWeekHours = user.totaltangibletime_hrs;
 
     // these need to be changed to actual permissions...
@@ -87,6 +94,7 @@ const TeamMemberTask = React.memo(
     // ^^^
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
+    const canSeeReports = rolesAllowedToResolveTasks.includes(userRole)||dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
@@ -194,6 +202,7 @@ const TeamMemberTask = React.memo(
                     </div>
                   </td>
                   <td colSpan={2} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
+
                     <Table borderless className="team-member-tasks-subtable">
                       <tbody>
                         <tr>
