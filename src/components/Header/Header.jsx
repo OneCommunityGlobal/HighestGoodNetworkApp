@@ -149,6 +149,8 @@ export function Header(props) {
   const dispatch = useDispatch();
   const history = useHistory();
 
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
+
   useEffect(() => {
     const handleStorageEvent = () => {
       const sessionStorageData = JSON.parse(window.sessionStorage.getItem('viewingUser'));
@@ -291,6 +293,10 @@ export function Header(props) {
     }
   }, [lastDismissed, userId, userDashboardProfile]);
 
+  useEffect(() => {
+    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+  }, [location.pathname]);
+
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
   if (location.pathname === '/login') return null;
@@ -337,6 +343,59 @@ export function Header(props) {
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
+
+                {showProjectDropdown && (
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                    <DropdownToggle nav caret>
+                      <span className="dashboard-text-link">{PROJECTS}</span>
+                    </DropdownToggle>
+                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/materials/add"
+                        className={fontColor}
+                      >
+                        Add Material
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={fontColor}>
+                        Log Material
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/materials" className={fontColor}>
+                        Material List
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/add"
+                        className={fontColor}
+                      >
+                        Add Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/:equipmentId"
+                        className={fontColor}
+                      >
+                        Log Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/tools/:equipmentId/update"
+                        className={fontColor}
+                      >
+                        Update Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor}>
+                        Equipment/Tool List
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/Issue" className={fontColor}>
+                        Issue
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
+                        Lesson
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
@@ -368,7 +427,7 @@ export function Header(props) {
                 ) : (
                   <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/teamlocations">
-                      {TEAM_LOCATIONS}
+                      <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
                     </NavLink>
                   </NavItem>
                 )}
@@ -528,6 +587,7 @@ export function Header(props) {
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}
+      <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
     </div>
   );
 }

@@ -3,9 +3,11 @@
  * Stores all variables that display texts on the UI
  ******************************************************************************* */
 export const ACTIVE = 'Active';
+export const TITLE = 'Title'
 export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
 export const BM_DASHBOARD = 'BM Dashboard';
+export const CP_DASHBOARD = 'CP Dashboard';
 export const BM_PROJECT = 'Project';
 export const ADD_MATERIAL = 'Add Material';
 export const LOG_MATERIAL = 'Log Material';
@@ -54,6 +56,7 @@ export const SEARCH = 'Search';
 export const SHOW = 'Show';
 export const PAUSE = 'Pause';
 export const RESUME = 'Resume';
+export const PROCESSING = 'Processing...';
 export const CLOSE = 'Close';
 export const ID = 'Id';
 export const TEAM_NAME = 'Team Names';
