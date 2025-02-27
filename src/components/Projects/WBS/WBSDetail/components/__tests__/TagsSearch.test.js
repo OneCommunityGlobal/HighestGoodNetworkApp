@@ -22,7 +22,6 @@ const mockFunctions = mockResourceItems => {
     mockResourceItems.push({
       userID,
       name: `${firstName} ${lastName}`,
-      undefined,
     });
   });
 
@@ -94,18 +93,19 @@ describe('Tags Search component', () => {
       const userOneElement = screen.getByText('aaa volunteer');
       const userTwoElement = screen.getByText('aaa owner');
 
-      fireEvent.click(userOneElement);
-      fireEvent.click(userTwoElement);
+      fireEvent.mouseDown(userOneElement);
+      fireEvent.mouseDown(userTwoElement);
     });
 
     //
-    const assignedUserElement = container.querySelectorAll(
-      '.rounded-pill.badge.bg-primary.text-wrap',
-    );
-    expect(assignedUserElement.length).toEqual(resourceItems.length);
-    expect(assignedUserElement[0].textContent).toBe('aaa volunteer');
-    expect(assignedUserElement[1].textContent).toBe('aaa owner');
-
+    await waitFor(() => {
+      const assignedUserElement = container.querySelectorAll(
+        '.rounded-pill.badge.bg-primary.text-wrap',
+      );
+      expect(assignedUserElement.length).toEqual(resourceItems.length);
+      expect(assignedUserElement[0].textContent).toBe('aaa volunteer');
+      expect(assignedUserElement[1].textContent).toBe('aaa owner');
+    });
     expect(addResources).toHaveBeenCalledWith(
       allMembers[0]._id,
       allMembers[0].firstName,
@@ -165,11 +165,14 @@ describe('Tags Search component', () => {
       const userOneElement = screen.getByText('aaa volunteer');
       const userTwoElement = screen.getByText('aaa owner');
   
-      fireEvent.click(userOneElement);
-      fireEvent.click(userTwoElement);
+      fireEvent.mouseDown(userOneElement);
+      fireEvent.mouseDown(userTwoElement);
     });
   
-    expect(resourceItems.length).toBe(2);
+    await waitFor(() => {
+      expect(resourceItems.length).toBe(2);
+    });
+
   
     const removeUserOneElement = container.querySelectorAll(
       '.rounded-pill.badge.bg-primary.text-wrap',
