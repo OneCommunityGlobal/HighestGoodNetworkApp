@@ -29,6 +29,7 @@ import { PeopleTasksPieChart } from './components';
 import ToggleSwitch from '../../UserProfile/UserProfileEdit/ToggleSwitch';
 import { Checkbox } from '../../common/Checkbox';
 import { updateRehireableStatus } from '../../../actions/userManagement'
+
 class PeopleReport extends Component {
   constructor(props) {
     super(props);
