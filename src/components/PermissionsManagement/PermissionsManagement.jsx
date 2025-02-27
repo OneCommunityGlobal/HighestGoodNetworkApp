@@ -115,6 +115,7 @@ function PermissionsManagement({ roles, auth, getUserRole, userProfile, darkMode
                       <ul>
                         <li>Reports: 📊 Viewing and editing analytics and summaries.</li>
                         <li>User Management: 👤 Managing user accounts, statuses, and blue squares.</li>
+                        <li>Tracking Management: 🕵️‍♂️  Managing user activity, warnings, and tracking settings.</li>
                         <li>Badge Management: 🏅 Creating, editing, and assigning badges.</li>
                         <li>Project Management: 🛠️ Adding, editing, and assigning projects.</li>
                         <li>Work Breakdown Structures: 🗂️ Adding and deleting WBS.</li>
