@@ -3,7 +3,7 @@
  * Author: Henry Ng - 01/25/20
  * Display members of the project
  ********************************************************************************/
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
