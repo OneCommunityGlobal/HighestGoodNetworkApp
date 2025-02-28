@@ -107,7 +107,7 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
-  const { darkMode, loading, error, allUserProfiles, volunteerOverview } = props;
+  const { darkMode, error, allUserProfiles, volunteerOverview } = props;
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
   const [usersOverTimeEntries, setUsersOverTimeEntries] = useState([]);
@@ -116,6 +116,7 @@ function TotalOrgSummary(props) {
   const [volunteerStats, setVolunteerStats] = useState(null);
   const comparisonStartDate = '2025-01-16';
   const comparisonEndDate = '2025-01-26';
+  const [isLoading, setIsLoading] = useState(true);
 
   const dispatch = useDispatch();
 
@@ -232,7 +233,7 @@ function TotalOrgSummary(props) {
       </Container>
     );
   }
-  if (loading) {
+  if (isLoading) {
     return (
       <Container fluid style={{ backgroundColor: darkMode ? '#1B2A41' : '#f3f4f6' }}>
         <Row className="text-center" data-testid="loading">
