@@ -57,6 +57,20 @@ const UserProfileModal = props => {
 
   const [dateStamp, setDateStamp] = useState(blueSquare[0]?.date || '');
   const [summary, setSummary] = useState(blueSquare[0]?.description || '');
+  const [reasons, setReasons] = useState(
+    type === 'addBlueSquare' ? [] : blueSquare[0]?.reasons || []
+  );
+  
+  const reasonsList = ['Time not met', 'Missing summary', 'Missing pictures', 'Missed scheduled call', 'Edited time entries'];
+
+  const handleReasonChange = (event) => {
+    const { value, checked } = event.target;
+    setReasons(prevReasons => 
+      checked ? [...prevReasons, value] : prevReasons.filter(reasons => reasons !== value)
+    );
+  };
+  
+
 
   const [addButton, setAddButton] = useState(true);
   const [summaryFieldView, setSummaryFieldView] = useState(true);
@@ -320,6 +334,34 @@ const UserProfileModal = props => {
               <Label className={fontColor} for="date">Date</Label>
               <Input type="date" name="date" id="date" onChange={handleChange} />
             </FormGroup>
+            <FormGroup>
+              <Label className={fontColor} for="report">Select Reasons:</Label>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '8px',
+                paddingLeft: '20px'
+              }}>
+                {reasonsList.map((reason, index) => (
+                <div key={index} style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '16px',  
+                  padding: '5px 0' 
+                }}>
+                  <Input
+                    type="checkbox"
+                    value={reason}
+                    checked={reasons.includes(reason)}
+                    onChange={handleReasonChange}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <Label style={{ marginBottom: '0px', cursor: 'pointer', fontSize: '14px' }}>
+                      {reason}
+                  </Label>
+                  </div>
+                ))}
+                </div>
+            </FormGroup>
 
             <FormGroup hidden={summaryFieldView}>
               <Label className={fontColor} for="report">Summary</Label>
@@ -347,6 +389,34 @@ const UserProfileModal = props => {
                 Created Date:
                 <span>{blueSquare[0]?.createdDate}</span>
               </Label>
+            </FormGroup>
+            <FormGroup>
+              <Label className={fontColor} for="report">Select Reasons:</Label>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '8px',
+                paddingLeft: '20px'
+              }}>
+                {reasonsList.map((reason, index) => (
+                <div key={index} style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '16px',  
+                  padding: '5px 0' 
+                }}>
+                  <Input
+                    type="checkbox"
+                    value={reason}
+                    checked={reasons.includes(reason)}
+                    onChange={handleReasonChange}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <Label style={{ marginBottom: '0px', cursor: 'pointer', fontSize: '14px' }}>
+                      {reason}
+                  </Label>
+                  </div>
+                ))}
+                </div>
             </FormGroup>
             <FormGroup>
               <Label className={fontColor} for="report">Summary</Label>
@@ -378,6 +448,34 @@ const UserProfileModal = props => {
               </Label>
             </FormGroup>
             <FormGroup>
+              <Label className={fontColor} for="report">Select Reasons:</Label>
+              <div style={{ 
+                display: 'flex', 
+                flexDirection: 'column', 
+                gap: '8px',
+                paddingLeft: '20px'
+              }}>
+                {reasonsList.map((reason, index) => (
+                <div key={index} style={{ 
+                  display: 'flex', 
+                  alignItems: 'center', 
+                  gap: '16px',  
+                  padding: '5px 0' 
+                }}>
+                  <Input
+                    type="checkbox"
+                    value={reason}
+                    checked={reasons.includes(reason)}
+                    onChange={handleReasonChange}
+                    style={{ width: '18px', height: '18px', cursor: 'pointer' }} />
+                  <Label style={{ marginBottom: '0px', cursor: 'pointer', fontSize: '14px' }}>
+                      {reason}
+                  </Label>
+                  </div>
+                ))}
+                </div>
+              </FormGroup>
+            <FormGroup>
               <Label className={fontColor} for="description">Summary</Label>
               <p className={fontColor}>{blueSquare[0]?.description}</p>
             </FormGroup>
@@ -398,7 +496,7 @@ const UserProfileModal = props => {
             id="addBlueSquare"
             disabled={addButton}
             onClick={() => {
-              modifyBlueSquares('', dateStamp, summary, 'add');
+              modifyBlueSquares('', dateStamp, summary, reasons, 'add');
             }}
             style={boxStyling}
           >
@@ -412,7 +510,7 @@ const UserProfileModal = props => {
               <Button
                 color="info"
                 onClick={() => {
-                  modifyBlueSquares(id, dateStamp, summary, 'update');
+                  modifyBlueSquares(id, dateStamp, summary, reasons, 'update');
                 }}
                 style={boxStyling}
               >
@@ -423,7 +521,7 @@ const UserProfileModal = props => {
               <Button
                 color="danger"
                 onClick={() => {
-                  modifyBlueSquares(id, dateStamp, summary, 'delete');
+                  modifyBlueSquares(id, dateStamp, summary, reasons, 'delete');
                 }}
                 style={boxStyling}
               >
