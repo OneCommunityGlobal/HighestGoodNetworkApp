@@ -1,0 +1,130 @@
+.email-template-container {
+    max-width: 600px;
+    margin: auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 2px 2px 12px rgba(0, 0, 0, 0.1);
+    background-color: #ffffff;
+  }
+  
+  .email-logo {
+    display: block;
+    margin: 0 auto;
+    max-width: 150px;
+  }
+  
+  h2 {
+    text-align: left;
+    color: #333;
+  }
+  
+  p {
+    font-size: 16px;
+    color: #555;
+    margin: 5px 0;
+    line-height: 1.3;
+  }
+  
+  .feedback-link {
+    display: inline-block;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px 15px;
+    background-color: #007bff; 
+    color: white;
+    font-size: 16px;
+    text-align: center;
+    text-decoration: none;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+  }
+
+  .feedback-link:hover {
+    background-color: #3399ff; 
+    box-shadow: 0px 4px 10px rgba(0, 123, 255, 0.2);
+    text-decoration: none;
+  }
+  
+  .feedback-link:active {
+    background-color: #0056b3;
+    box-shadow: none;
+  }
+  
+  ul {
+    padding-left: 20px;
+  }
+  
+  ul li {
+    margin-bottom: 5px;
+  }
+  
+  /* Social Media Icons */
+  .social-icons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin: 10px 0;
+  }
+  
+  .social-icon {
+    font-size: 28px;
+    color: #333;
+    transition: color 0.3s ease;
+  }
+  
+  .social-icon.linkedin:hover {
+    color: #0077b5;
+  }
+  
+  .social-icon.instagram:hover {
+    color: #e4405f;
+  }
+
+  .social-icon.facebook:hover {
+    color: #07a3db;
+  }
+
+  .email-logo {
+    display: block;
+    margin: 0 auto;
+    max-width: 150px;
+    height: auto;
+  }
+  
+  .footer-links-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .footer-links {
+    font-size: 12px;
+    font-weight: bold;
+    color: #555;
+    margin: 5px 0;
+  }
+  
+  .footer-links a {
+    text-decoration: none;
+    color: #007bff;
+    padding: 0 8px;
+  }
+  
+  .footer-links a:hover {
+    text-decoration: underline;
+  }
+  
+  .email-divider {
+    width: 95%;
+    height: 1px;
+    background-color: #ddd;
+    border: none;
+    margin: 10px auto;
+  }
+    
