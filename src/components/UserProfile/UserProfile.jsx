@@ -919,18 +919,16 @@ function UserProfile(props) {
 
       <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
+        id='containerProfile'
       >
-        <Row>
-          <Col md="4" id="profileContainer">
+          {/* <div className='containerProfile' > */}
+
+
+          <div className='left-top' >
+            
             <div className="profile-img">
               <Image
-                src={profilePic !== undefined ? profilePic : '/pfp-default.png'}
+                src={profilePic !== undefined && profilePic!==null? profilePic : '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
@@ -988,8 +986,10 @@ function UserProfile(props) {
               teamsData={props?.allTeams?.allTeamsData || []}
               projectsData={props?.allProjects?.projects || []}
             />
-          </Col>
-          <Col md="8">
+
+          </div>
+          
+          <div className='right-column'>
             {!isProfileEqual ||
               !isTasksEqual ||
               !isProjectsEqual ? (
@@ -1145,34 +1145,10 @@ function UserProfile(props) {
               isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable}
               darkMode={darkMode}
             />
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4">
-            <div className="profile-work">
-              <UserLinkLayout
-                isUserSelf={isUserSelf}
-                userProfile={userProfile}
-                updateLink={updateLink}
-                handleLinkModel={props.handleLinkModel}
-                handleSubmit={handleSubmit}
-                role={requestorRole}
-                canEdit={canEdit || canManageAdminLinks}
-                darkMode={darkMode}
-              />
-              <BlueSquareLayout
-                userProfile={userProfile}
-                handleUserProfile={handleUserProfile}
-                handleSaveError={props.handleSaveError}
-                handleBlueSquare={handleBlueSquare}
-                user={props.auth.user}
-                isUserSelf={isUserSelf}
-                canEdit={canEdit}
-                darkMode={darkMode}
-              />
-            </div>
-          </Col>
-          <Col md="8" className="profile-functions-desktop">
+          
+
+  
+          <div  className="profile-functions-desktop">
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
@@ -1417,8 +1393,8 @@ function UserProfile(props) {
                 </>
               )}
             </div>
-          </Col>
-          <Col md="8" className="profile-functions-tablet">
+         </div>
+          <div  className="profile-functions-tablet">
             <List className="profile-functions-list">
               <Button
                 className="list-button"
@@ -1883,13 +1859,40 @@ function UserProfile(props) {
                 </ModalFooter>
               </Modal>
             </List>
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4" />
-          {/* <Col md="8" className="desktop-panel">
-          </Col> */}
-        </Row>
+          </div>
+
+          </div>
+
+            <div className='left-bottom'>
+              <div className="profile-work">
+              <UserLinkLayout
+                isUserSelf={isUserSelf}
+                userProfile={userProfile}
+                updateLink={updateLink}
+                handleLinkModel={props.handleLinkModel}
+                handleSubmit={handleSubmit}
+                role={requestorRole}
+                canEdit={canEdit || canManageAdminLinks}
+                darkMode={darkMode}
+              />
+              <BlueSquareLayout
+                userProfile={userProfile}
+                handleUserProfile={handleUserProfile}
+                handleSaveError={props.handleSaveError}
+                handleBlueSquare={handleBlueSquare}
+                user={props.auth.user}
+                isUserSelf={isUserSelf}
+                canEdit={canEdit}
+                darkMode={darkMode}
+              />
+            </div>
+
+            
+            </div>
+         <div className='left-dummy'></div>
+         
+         
+          {/* </div> */}
       </Container>
     </div>
   );

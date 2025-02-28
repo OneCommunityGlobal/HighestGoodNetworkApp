@@ -51,6 +51,22 @@ thead {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+#usermanagement_title>div {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#user_title>div {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .usermanagement_overview--top {
@@ -103,6 +119,18 @@ thead {
 .email_cell {
   position: relative;
 
+}
+
+
+.title_cell {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+}
+
+.fixed-width-container input {
+  width: 100%;
+  max-width: 180px;
 }
 
 #usermanagement_role,

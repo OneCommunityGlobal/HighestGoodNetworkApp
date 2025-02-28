@@ -38,7 +38,7 @@ const AssignTeamCodeField = React.memo(props => {
       <Input
         type="text"
         value={searchText}
-        autoFocus
+        onFocus={() => toggle(true)}
         onChange={e => {
           onInputChange(e.target.value);
           toggle(true);
@@ -49,7 +49,7 @@ const AssignTeamCodeField = React.memo(props => {
         }}
       />
 
-      {searchText !== '' && teamCodeData?.length > 0 ? (
+      {teamCodeData?.length > 0 ? (
         <div
           tabIndex="-1"
           role="menu"
