@@ -1,5 +1,7 @@
 import axios from 'axios';
 import moment from 'moment';
+import { FETCH_ALL_BADGES, FETCH_BADGES_FAILURE } from './actionTypes';
+
 import { formatDate } from 'utils/formatDate';
 import {
   GET_ALL_BADGE_DATA,
@@ -24,7 +26,6 @@ const getAllBadges = allBadges => ({
 });
 
 export const fetchAllBadges = () => {
-  const url = ENDPOINTS.BADGE();
   return async dispatch => {
     try {
       const response = await axios.get(ENDPOINTS.BADGE());
