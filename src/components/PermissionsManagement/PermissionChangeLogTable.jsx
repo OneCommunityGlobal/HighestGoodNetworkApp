@@ -3,6 +3,9 @@ import { useState } from 'react';
 import './PermissionChangeLogTable.css';
 import { FiChevronLeft, FiChevronRight, FiChevronDown, FiChevronUp } from 'react-icons/fi';
 import { formatDate, formattedAmPmTime } from 'utils/formatDate';
+import permissionLabels, { generatePermissionLabelKeyMapping } from './PermissionsConst';
+
+const permissionLabelKeyMappingObj = generatePermissionLabelKeyMapping(permissionLabels, 0);
 
 function PermissionChangeLogTable({ changeLogs, darkMode }) {
   const [currentPage, setCurrentPage] = useState(1);
@@ -15,7 +18,6 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
   const fontColor = darkMode ? 'text-light' : '';
   const bgYinmnBlue = darkMode ? 'bg-yinmn-blue' : '';
   const addDark = darkMode ? '-dark' : '';
-
   const paginate = pageNumber => {
     if (pageNumber > 0 && pageNumber <= totalPages) {
       setCurrentPage(pageNumber);
@@ -74,7 +76,9 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
 
   const renderPermissions = (permissions, rowId) => {
     // Filter out empty or falsy values before joining the permissions
-    const filteredPermissions = permissions.filter(permission => permission);
+    const filteredPermissions = permissions
+      .map(permission => permissionLabelKeyMappingObj?.[permission])
+      .filter(e => e);
 
     return (
       <div className="permissions-cell">
