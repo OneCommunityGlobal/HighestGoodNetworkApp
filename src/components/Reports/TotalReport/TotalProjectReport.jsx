@@ -53,9 +53,7 @@ function TotalProjectReport(props) {
       }
     } catch (err) {
       if (axios.isCancel(err)) {
-        console.log('Request canceled', err.message);
       } else {
-        console.error("API error:", err.message);
       }
     }
   }, [fromDate, toDate, userList, projectList]);
@@ -159,7 +157,6 @@ function TotalProjectReport(props) {
       })
       .catch(error => {
         if (!controller.signal.aborted) {
-          console.error("Error loading time entries:", error);
           setTotalProjectReportDataLoading(false);
         }
       });

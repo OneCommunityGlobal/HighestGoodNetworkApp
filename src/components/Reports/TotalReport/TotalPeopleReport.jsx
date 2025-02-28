@@ -29,7 +29,6 @@ function TotalPeopleReport(props) {
     const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
     
     if (!url) {
-      console.error('URL is undefined:', ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT);
       setTotalPeopleReportDataLoading(false);
       return;
     }
@@ -45,7 +44,6 @@ function TotalPeopleReport(props) {
       }));
       setAllTimeEntries(timeEntries);
     } catch (error) {
-      console.error('Error loading time entries:', error);
       setTotalPeopleReportDataLoading(false);
     }
   }, [fromDate, toDate, userList]);
