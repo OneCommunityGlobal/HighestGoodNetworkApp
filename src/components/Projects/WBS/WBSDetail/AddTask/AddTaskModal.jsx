@@ -259,6 +259,11 @@ function AddTaskModal(props) {
   };
 
   const paste = () => {
+    if (!copiedTask) {
+      // Handle the case where no task has been copied
+      alert("No task has been copied to paste");
+      return;
+    }
     setTaskName(copiedTask.taskName)
 
     setPriority(copiedTask.priority);
