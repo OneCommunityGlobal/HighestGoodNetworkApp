@@ -52,9 +52,6 @@ function TotalProjectReport(props) {
         setAllTimeEntries([...timeEntries, ...projTimeEntries]);
       }
     } catch (err) {
-      if (axios.isCancel(err)) {
-      } else {
-      }
     }
   }, [fromDate, toDate, userList, projectList]);
 
@@ -155,11 +152,6 @@ function TotalProjectReport(props) {
           setTotalProjectReportDataReady(true);
         }
       })
-      .catch(error => {
-        if (!controller.signal.aborted) {
-          setTotalProjectReportDataLoading(false);
-        }
-      });
     
     return () => {
       controller.abort();
