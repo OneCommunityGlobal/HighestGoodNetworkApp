@@ -12,8 +12,9 @@ import {
 } from 'reactstrap';
 import { useSelector } from 'react-redux';
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+import { useState } from 'react';
 
-const TimelogNavbar = ({ userId }) => {
+function TimelogNavbar({ userId }) {
   const { firstName, lastName } = useSelector(state => state.userProfile);
   const [collapsed, setCollapsed] = useState(true);
 
@@ -34,7 +35,16 @@ const TimelogNavbar = ({ userId }) => {
         <NavbarToggler onClick={toggleNavbar} />
         <Collapse isOpen={!collapsed} className="ml-auto flex-column" id="timelogsnapshot" navbar>
           <Nav navbar className="navbar-nav w-100">
-            <NavItem className="nav-item navbar-text w-80" id="timelogweeklychart">
+            <NavItem
+              className="nav-item navbar-text w-80"
+              id="timelogweeklychart"
+              style={{
+                whiteSpace: 'nowrap',
+                minWidth: 'max-content',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
               <div>
                 Current Week : {totalEffort.toFixed(2)} / {weeklycommittedHours.toFixed(2)}
               </div>
@@ -79,6 +89,6 @@ const TimelogNavbar = ({ userId }) => {
       </Navbar>
     </div>
   );
-};
+}
 
 export default TimelogNavbar;
