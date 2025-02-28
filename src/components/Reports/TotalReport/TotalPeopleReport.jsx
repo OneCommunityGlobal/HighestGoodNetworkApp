@@ -26,16 +26,28 @@ function TotalPeopleReport(props) {
   const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
 
   const loadTimeEntriesForPeriod = useCallback(async (controller) => {
-    const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT;
-    const res = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal });
-    const timeEntries = res.data.map(entry => ({
-      userId: entry.personId,
-      hours: entry.hours,
-      minutes: entry.minutes,
-      isTangible: entry.isTangible,
-      date: entry.dateOfWork,
-    }));
-    setAllTimeEntries(timeEntries);
+    const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
+    
+    if (!url) {
+      console.error('URL is undefined:', ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PEOPLE_REPORT);
+      setTotalPeopleReportDataLoading(false);
+      return;
+    }
+    
+    try {
+      const res = await axios.post(url, { users: userList, fromDate, toDate }, { signal: controller.signal });
+      const timeEntries = res.data.map(entry => ({
+        userId: entry.personId,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      }));
+      setAllTimeEntries(timeEntries);
+    } catch (error) {
+      console.error('Error loading time entries:', error);
+      setTotalPeopleReportDataLoading(false);
+    }
   }, [fromDate, toDate, userList]);
 
   const sumByUser = useCallback((objectArray, property) => {
