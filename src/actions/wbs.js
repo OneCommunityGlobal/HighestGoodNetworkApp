@@ -43,9 +43,7 @@ export const deleteWbs = wbsId => {
       dispatch(removeWBS(wbsId));
       return response;
     } catch (err) {
-      console.error("Error deleting WBS:", err.message);
       dispatch(setWBSError(err));
-      throw err;
     }
   };
 };
