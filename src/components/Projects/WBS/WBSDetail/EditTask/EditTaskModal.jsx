@@ -9,6 +9,7 @@ import 'react-day-picker/lib/style.css';
 import dateFnsFormat from 'date-fns/format';
 import dateFnsParse from 'date-fns/parse';
 import parseISO from 'date-fns/parseISO';
+import {isValid } from 'date-fns';
 import { updateTask } from 'actions/task';
 import { Editor } from '@tinymce/tinymce-react';
 import hasPermission from 'utils/permissions';
@@ -213,7 +214,7 @@ function EditTaskModal(props) {
     };
 
     const updateTaskDirectly = (currentMode === "Edit");
-    console.log({canSuggestTask, canUpdateTask, updateTaskDirectly});
+    // console.log({canSuggestTask, canUpdateTask, updateTaskDirectly});
 
     props.setIsLoading?.(true);
     await props.updateTask(
@@ -234,9 +235,30 @@ function EditTaskModal(props) {
     }
   };
 
+
+
   const convertDate = (date) => {
-    if(date){
-      return dateFnsFormat(new Date(date), FORMAT);
+    try {
+      if(!isValid(parseISO(date))){
+        return;
+      }
+      var correctDate = date;
+      if(date.includes("T")) {
+        const [datePart, timePart] = date.split('T');
+        const [year, month, day] = datePart.split('-');
+        const correctedDatePart = [
+          year,
+          month,
+          day.padStart(2, '0'),
+        ].join('-');
+        correctDate= `${correctedDatePart}T${timePart}`;
+      }
+      if(correctDate){
+        return dateFnsFormat(new Date(correctDate), FORMAT);
+      }
+    } catch (error) {
+      console.log(error);
+      return ;
     }
 }
   /*
