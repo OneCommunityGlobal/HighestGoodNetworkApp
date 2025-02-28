@@ -128,16 +128,13 @@ class UserProfileAdd extends Component {
 
   // Replace fetchTeamCodeAllUsers with a method that dispatches getAllTeamCode
   fetchTeamCodeAllUsers = async() => {
-    const url = ENDPOINTS.WEEKLY_SUMMARIES_REPORT();
+    const url = ENDPOINTS.USER_ALL_TEAM_CODE;
     try {
       this.setState({isLoading:true})
      
       const response = await axios.get(url);
-      const stringWithValue = response.data.map(item => item.teamCode).filter(Boolean);
-      const stringNoRepeat = stringWithValue
-        .map(item => item)
-        .filter((item, index, array) => array.indexOf(item) === index);
-      this.setState({inputAutoComplete:stringNoRepeat})
+      const teamCodes = response.data.distinctTeamCodes;
+      this.setState({inputAutoComplete:teamCodes})
       
       this.setState({inputAutoStatus:response.status})
       this.setState({isLoading:false})
