@@ -13,6 +13,7 @@ import {
   RESET_BADGE_COUNT,
   SET_ACTIVE_TAB,
 } from '../constants/badge';
+import { FETCH_ALL_BADGES, FETCH_BADGES_FAILURE } from '../actions/actionTypes';
 
 const badgeInitial = {
   allBadgeData: [],
@@ -25,6 +26,8 @@ const badgeInitial = {
   alertVisible: false,
   badgeCount: 0,
   activeTab: '1',
+  loading:false,
+  error:null,
 };
 
 export const badgeReducer = (state = badgeInitial, action) => {
@@ -36,6 +39,18 @@ export const badgeReducer = (state = badgeInitial, action) => {
         ...state,
         selectedBadges: [...state.selectedBadges, action.badgeId],
       };
+      case FETCH_ALL_BADGES:
+        return {
+          ...state,
+          allBadgeData: action.payload,
+          loading: false,
+        };
+      case FETCH_BADGES_FAILURE:
+        return {
+          ...state,
+          error: action.payload,
+          loading: false,
+        };
     case REMOVE_SELECT_BADGE:
       return {
         ...state,
