@@ -114,6 +114,8 @@ function TotalOrgSummary(props) {
   const [taskProjectHours, setTaskProjectHours] = useState([]);
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
+  const comparisonStartDate = '2025-01-16';
+  const comparisonEndDate = '2025-01-26';
 
   const dispatch = useDispatch();
 
@@ -198,7 +200,13 @@ function TotalOrgSummary(props) {
   useEffect(() => {
     const fetchVolunteerStats = async () => {
       try {
-        const volunteerStatsResponse = await props.getTotalOrgSummary(fromDate, toDate);
+        const volunteerStatsResponse = await props.getTotalOrgSummary(
+          fromDate,
+          toDate,
+          comparisonStartDate,
+          comparisonEndDate,
+        );
+        setIsLoading(false);
         setVolunteerStats(volunteerStatsResponse.data);
         await props.hasPermission('');
       } catch (catchFetchError) {
@@ -410,7 +418,8 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
-  getTotalOrgSummary: (startDate, endDate) => dispatch(getTotalOrgSummary(startDate, endDate)),
+  getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
+    dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
