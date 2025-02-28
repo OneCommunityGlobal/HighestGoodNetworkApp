@@ -524,8 +524,9 @@ function UserProfile(props) {
    * @param {String} dateStamp
    * @param {String} summary
    * @param {String} operation 'add' | 'update' | 'delete'
+   * @param {List[String]} reasons 
    */
-  const modifyBlueSquares = async (id, dateStamp, summary, operation) => {
+  const modifyBlueSquares = async (id, dateStamp, summary, reasons = [], operation) => {
     setShowModal(false);
     if (operation === 'add') {
       /* peizhou: check that the date of the blue square is not future or empty. */
@@ -543,6 +544,7 @@ function UserProfile(props) {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
+          reasons: reasons.length ? reasons : [], 
           // createdDate: moment
           //   .tz('America/Los_Angeles')
           //   .toISOString()
@@ -569,15 +571,18 @@ function UserProfile(props) {
       }
     } else if (operation === 'update') {
       const currentBlueSquares = [...userProfile?.infringements] || [];
+      const blueSquareToUpdate = currentBlueSquares.find(bs => bs._id === id);
       if (dateStamp != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).date = dateStamp;
       }
       if (summary != null && currentBlueSquares.length !== 0) {
         currentBlueSquares.find(blueSquare => blueSquare._id === id).description = summary;
       }
+      if (reasons != null) blueSquareToUpdate.reasons = reasons;  
       await axios.put(ENDPOINTS.MODIFY_BLUE_SQUARE(userProfile._id, id), {
         dateStamp,
         summary,
+        reasons
       }).catch(error => {
         toast.error('Failed to update Blue Square!');
       });

@@ -47,6 +47,7 @@ const BlueSquare = (props) => {
                     <div className="summary">
                       {blueSquare.createdDate ? `${formatCreatedDate(blueSquare.createdDate)}: ` : ''}
                       {blueSquare.description}
+                      {blueSquare.reasons}
                     </div>
                   )}
                 </div>
