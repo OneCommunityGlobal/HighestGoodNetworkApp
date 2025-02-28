@@ -663,7 +663,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
         style={{
           color:
             currentDate.isSameOrAfter(moment(summary.timeOffFrom, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
-            currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
+              currentDate.isBefore(moment(summary.timeOffTill, 'YYYY-MM-DDTHH:mm:ss.SSSZ'))
               ? 'rgba(128, 128, 128, 0.5)'
               : '#007BFF',
         }}
@@ -676,7 +676,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
         <div style={{ display: 'flex' }}>
           <GoogleDocIcon link={googleDocLink} />
           <span>
-            <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+            <b>&nbsp;&nbsp;{((summary.role && summary.isDeactivated) || (summary.role !== 'Volunteer' && !summary.isDeactivated)) && `(${summary.role})`}</b>
           </span>
           {summary.role !== 'Volunteer' && (
             <RoleInfoModal
@@ -704,6 +704,13 @@ function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotCli
             }}
           />
         ))}
+      </div>
+      <div>
+        {summary.isDeactivated && weekIndex === 1 && (
+          <span style={{ color: 'red', fontWeight: 'bold'}}>
+            FINAL WEEK REPORTING: This team member is no longer active
+          </span>
+        )}
       </div>
 
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
