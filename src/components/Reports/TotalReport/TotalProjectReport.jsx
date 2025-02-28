@@ -52,6 +52,7 @@ function TotalProjectReport(props) {
         setAllTimeEntries([...timeEntries, ...projTimeEntries]);
       }
     } catch (err) {
+      // console.log(err);
     }
   }, [fromDate, toDate, userList, projectList]);
 
