@@ -396,63 +396,75 @@ function EditTaskModal(props) {
                 <td scope="col">Status</td>
                   <td>
                     {ReadOnlySectionWrapper(
-                      <div className="flex-row  d-inline align-items-center">
-                        <div className="form-check form-check-inline">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              id="active"
-                              name="status"
-                              value="Active"
-                              checked={status === 'Active' || status === 'Started'}
-                              onChange={(e) => setStatus(e.target.value)}
-                            />
-                            <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="active">
-                              Active
-                            </label>
+                      <div className="container">
+                        <div className="row">
+                          <div className="col-6 pl-0">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                id="active"
+                                name="status"
+                                value="Active"
+                                checked={status === 'Active' || status === 'Started'}
+                                onChange={(e) => setStatus(e.target.value)}
+                              />
+                              <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="active">
+                                Active
+                              </label>
+                            </div>
                           </div>
-                          <div className="form-check form-check-inline">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              id="notStarted"
-                              name="status"
-                              value="Not Started"
-                              checked={status === 'Not Started'}
-                              onChange={(e) => setStatus(e.target.value)}
-                            />
-                            <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="notStarted">
-                              Not Started
-                            </label>
+                          <div className="col-6 pl-0">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                id="notStarted"
+                                name="status"
+                                value="Not Started"
+                                checked={status === 'Not Started'}
+                                onChange={(e) => setStatus(e.target.value)}
+                              />
+                              <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="notStarted">
+                                Not Started
+                              </label>
+                            </div>
                           </div>
-                          <div className="form-check form-check-inline">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              id="paused"
-                              name="status"
-                              value="Paused"
-                              checked={status === 'Paused'}
-                              onChange={(e) => setStatus(e.target.value)}
-                            />
-                            <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="paused">
-                              Paused
-                            </label>
+                        </div>
+                        <div className="row">
+                          <div className="col-6 pl-0">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                id="paused"
+                                name="status"
+                                value="Paused"
+                                checked={status === 'Paused'}
+                                onChange={(e) => setStatus(e.target.value)}
+                              />
+                              <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="paused">
+                                Paused
+                              </label>
+                            </div>
                           </div>
-                          <div className="form-check form-check-inline">
-                            <input
-                              className="form-check-input"
-                              type="radio"
-                              id="complete"
-                              name="status"
-                              value="Complete"
-                              checked={status === 'Complete'}
-                              onChange={(e) => setStatus(e.target.value)}
-                            />
-                            <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="complete">
-                              Complete
-                            </label>
+                          <div className="col-6 pl-0">
+                            <div className="form-check">
+                              <input
+                                className="form-check-input"
+                                type="radio"
+                                id="complete"
+                                name="status"
+                                value="Complete"
+                                checked={status === 'Complete'}
+                                onChange={(e) => setStatus(e.target.value)}
+                              />
+                              <label className={`form-check-label ${darkMode ? 'text-light' : ''}`} htmlFor="complete">
+                                Complete
+                              </label>
+                            </div>
                           </div>
+                        </div>
                       </div>,
                       editable,
                       status
@@ -464,7 +476,7 @@ function EditTaskModal(props) {
                   Hours
                 </td>
                 <td scope="col" className="w-100">
-                  <div className="py-1 flex-responsive">
+                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label htmlFor="bestCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Best-case
                     </label>
@@ -477,7 +489,7 @@ function EditTaskModal(props) {
                         onChange={e => setHoursBest(e.target.value)}
                         onBlur={() => calHoursEstimate()}
                         id="bestCase"
-                        className="m-auto"
+                        className="w-20%"
                       />,
                       editable,
                       hoursBest,
@@ -490,19 +502,19 @@ function EditTaskModal(props) {
                       ? 'The number of hours must be less than other cases'
                       : ''}
                   </div>)}
-                  <div className="py-1 flex-responsive">
+                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label htmlFor="worstCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Worst-case
                     </label>
                     {ReadOnlySectionWrapper(
                       <input
                         type="number"
-                        min={hoursBest}
+                        min={hoursBest? hoursBest : "0"}
                         max="500"
-                        value={hoursWorst}
+                        value={hoursWorst} 
                         onChange={e => setHoursWorst(e.target.value)}
                         onBlur={() => calHoursEstimate('hoursWorst')}
-                        className="m-auto"
+                        className="w-20%"
                       />,
                       editable,
                       hoursWorst,
@@ -515,7 +527,7 @@ function EditTaskModal(props) {
                       ? 'The number of hours must be higher than other cases'
                       : ''}
                   </div>)}
-                  <div className="py-1 flex-responsive">
+                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label htmlFor="mostCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Most-case
                     </label>
@@ -527,7 +539,7 @@ function EditTaskModal(props) {
                         value={hoursMost}
                         onChange={e => setHoursMost(e.target.value)}
                         onBlur={() => calHoursEstimate('hoursMost')}
-                        className="m-auto"
+                        className="w-20%"
                       />,
                       editable,
                       hoursMost,
@@ -540,7 +552,7 @@ function EditTaskModal(props) {
                       ? 'The number of hours must range between best and worst cases'
                       : ''}
                   </div>)}
-                  <div className="py-1 flex-responsive">
+                  <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label htmlFor="Estimated" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Estimated
                     </label>
@@ -551,7 +563,7 @@ function EditTaskModal(props) {
                         max="500"
                         value={hoursEstimate}
                         onChange={e => setHoursEstimate(e.target.value)}
-                        className="m-auto"
+                        className="w-20%"
                       />,
                       editable,
                       hoursEstimate,
