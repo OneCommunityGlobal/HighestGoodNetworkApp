@@ -51,6 +51,8 @@ thead {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+}
+
 #usermanagement_title>div {
   width: 180px;
   min-width: 180px;
