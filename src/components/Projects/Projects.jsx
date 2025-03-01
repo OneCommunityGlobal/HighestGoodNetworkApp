@@ -5,6 +5,7 @@ import {
   clearError,
 } from '../../actions/projects';
 import {getProjectsByUsersName, getUserByAutocomplete } from '../../actions/userProfile';
+import { fetchProjectsWithActiveUsers } from '../../actions/projectMembers';
 import { getPopupById } from '../../actions/popupEditorAction';
 import Overview from './Overview';
 import AddProject from './AddProject';
@@ -152,6 +153,7 @@ const Projects = function(props) {
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
+    const activeMemberCounts = props.state.projectMembers.activeMemberCounts;
     const filteredProjects = projects.filter(project => !project.isArchived)
     .filter(project => {
       if (categorySelectedForSort && showStatus){
@@ -172,6 +174,10 @@ const Projects = function(props) {
         return a.projectName[0].toLowerCase() < b.projectName[0].toLowerCase() ? 1 : -1;
       } else if (sortedByName === "SortingByRecentEditedMembers") {
         return a.membersModifiedDatetime < b.membersModifiedDatetime ? 1 : -1;
+      } else if (sortedByName === "SortingByMostActiveMembers") {
+        const lenA = activeMemberCounts[a._id] || 0;
+        const lenB = activeMemberCounts[b._id] || 0;
+        return lenB - lenA; // Most active first
       } else {
         return 0;
       }
@@ -194,6 +200,10 @@ const Projects = function(props) {
 
   useEffect(() => {
     props.fetchAllProjects();
+  }, []);
+
+  useEffect(() => {
+    props.fetchProjectsWithActiveUsers();
   }, []);
 
   useEffect(() => {
@@ -277,5 +287,6 @@ export default connect(mapStateToProps, {
   getPopupById,
   hasPermission,
   getProjectsByUsersName,
-  getUserByAutocomplete
+  getUserByAutocomplete,
+  fetchProjectsWithActiveUsers
 })(Projects);

@@ -75,7 +75,7 @@ const ProjectTableHeader = props => {
       <th scope="col" id="projects__members" className='align-middle'>
         <span className='d-flex'>
           {MEMBERS}
-          <Button size='sm' className='ml-2' id='SortingByRecentEditedMembers' onClick={props.handleSort}>
+          <Button size='sm' className='ml-2' id='SortingByMostActiveMembers' onClick={props.handleSort} title="Sort by most active members">
           <FontAwesomeIcon 
             icon={props.sorted === 'SortingByRecentEditedMembers' ? faSort : faSortDown} 
             pointerEvents="none"
