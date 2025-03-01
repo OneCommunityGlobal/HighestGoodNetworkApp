@@ -12,6 +12,28 @@ const getAllSubpermissionKeys = permissions => {
   return keys;
 };
 
+export const generatePermissionLabelKeyMapping = (permissionLabels, start) => {
+  if (start >= permissionLabels.length) {
+    return {};
+  }
+  if (!permissionLabels?.length) {
+    return {};
+  }
+  const firstEle = permissionLabels[start];
+  const { label, key, subperms } = firstEle;
+  // console.log('label', label);
+  let currentVal;
+  if (subperms) {
+    currentVal = generatePermissionLabelKeyMapping(subperms, 0);
+  } else {
+    currentVal = { [key]: label };
+  }
+  return {
+    ...currentVal,
+    ...generatePermissionLabelKeyMapping(permissionLabels, start + 1),
+  };
+};
+
 export const permissionLabels = [
   {
     label: 'General',
