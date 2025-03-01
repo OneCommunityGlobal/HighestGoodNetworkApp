@@ -1,0 +1,46 @@
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: #363940;
+  padding: 10px 20px;
+  color: white;
+}
+
+.logo {
+  max-height: 50px;
+}
+
+.nav {
+  display: flex;
+  gap: 10px;
+  margin-right: 20px;
+}
+
+.nav a {
+  color: white;
+  text-decoration: none;
+  padding: 8px 12px;
+}
+
+.nav a:hover {
+  background-color: #555;
+  border-radius: 5px;
+}
+
+.nav-user-container {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  color: white;
+}
+
+.user-icon {
+  margin-right: 15px;
+  height: 30px;
+}
