@@ -31,7 +31,7 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
 }
 
 export function Record({ record, recordType, setRecord }) {
-  const handleUndefined = (value) => {
+  const handleUndefined = value => {
     return value !== undefined && value !== null ? value : 'N/A';
   };
 
@@ -108,7 +108,9 @@ export function Record({ record, recordType, setRecord }) {
                 <tr key={data._id}>
                   <td>{moment.utc(data.date).format('LL')}</td>
                   <td>{`${handleUndefined(data.quantityUsed)} ${record.itemType?.unit || ''}`}</td>
-                  <td>{`${handleUndefined(data.quantityWasted)} ${record.itemType?.unit || ''}`}</td>
+                  <td>
+                    {`${handleUndefined(data.quantityWasted)} ${record.itemType?.unit || ''}`}
+                  </td>
                   <td>
                     <a href={`/userprofile/${data.createdBy._id}`}>
                       {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
