@@ -31,7 +31,6 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
 }
 
 export function Record({ record, recordType, setRecord }) {
-
   const handleUndefined = (value) => {
     return value !== undefined && value !== null ? value : 'N/A';
   };
