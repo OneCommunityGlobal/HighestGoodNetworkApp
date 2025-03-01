@@ -153,7 +153,7 @@ const Projects = function(props) {
 
   const generateProjectList = (categorySelectedForSort, showStatus, sortedByName) => {
     const { projects } = props.state.allProjects;
-    const activeMemberCounts = props.state.projectMembers.activeMemberCounts;
+    const activeMemberCounts = props.state.projectMembers?.activeMemberCounts || {};;
     const filteredProjects = projects.filter(project => !project.isArchived)
     .filter(project => {
       if (categorySelectedForSort && showStatus){
