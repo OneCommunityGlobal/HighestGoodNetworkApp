@@ -7,12 +7,13 @@ import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
+
 import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from 'utils/formatDate';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
 
-const startEndDateValidation = props => {
+export const startEndDateValidation = props => {
   return (
     props.userProfile.startDate > props.userProfile.endDate && props.userProfile.endDate !== ''
   );
@@ -28,6 +29,7 @@ const StartDate = props => {
       </p>
     );
   }
+
   return (
     <FormGroup>
       <Input
@@ -49,10 +51,12 @@ const StartDate = props => {
         <FormFeedback style={{ display: 'block' }}>{startDateAlert}</FormFeedback>
       )}
     </FormGroup>
+
   );
 };
 
 const EndDate = props => {
+
   const { darkMode, endDateAlert } = props;
 
   if (!props.canEdit) {
@@ -93,7 +97,9 @@ const EndDate = props => {
   );
 };
 
+
 const WeeklySummaryOptions = props => {
+
   const { darkMode } = props;
 
   if (!props.canEdit) {
@@ -151,7 +157,7 @@ const WeeklySummaryOptions = props => {
   );
 };
 
-const WeeklyCommittedHours = props => {
+export const WeeklyCommittedHours = props => {
   //Do Not change the property name "weeklycommittedHours"
   //Otherwise it will not update in the backend.
 
@@ -193,7 +199,9 @@ const WeeklyCommittedHours = props => {
   );
 };
 
+
 const MissedHours = props => {
+
   const { darkMode } = props;
 
   if (!props.canEdit) {
@@ -216,6 +224,7 @@ const MissedHours = props => {
     />
   );
 };
+
 
 const TotalIntangibleHours = props => {
   const { darkMode } = props;
@@ -261,6 +270,7 @@ const ViewTab = props => {
   const [endDateAlert, setEndDateAlert] = useState('');
 
   const handleStartDates = async startDate => {
+
     // if(!userProfile.isFirstTimelog) {
     //   alert('This user has already logged time in the system. Are you sure you want to change the start date?');
     // }
@@ -379,6 +389,7 @@ const ViewTab = props => {
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
         </Col>
         <Col md="6">
+
           <p className={darkMode ? 'text-azure' : ''}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
         </Col>
       </Row>
@@ -550,6 +561,7 @@ const ViewTab = props => {
                     placeholder={`Total Tangible ${capitalize(key)} Hours`}
                   />
                 ) : (
+
                   <p className={darkMode ? 'text-azure' : ''}>
                     {userProfile.hoursByCategory[key]?.toFixed(2)}
                   </p>
