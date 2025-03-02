@@ -123,8 +123,6 @@
   display: flex;
   justify-content: flex-start;
   padding: 16px 0;
-  flex-wrap: wrap;
-  gap: 16px;
 }
 
 .date-picker-item {
@@ -253,10 +251,6 @@
   }
 
   .category-container {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
-    gap: 1rem;
-    margin: 0;
   }
 
   .card-category-item {
@@ -285,10 +279,6 @@
     padding: 16px;
   }
 
-  .category-data-container {
-    grid-template-columns: 1fr;
-  }
-
   .container-component-category {
     width: 100%;
     max-width: 100%;
@@ -298,15 +288,7 @@
     padding: 16px;
   }
 
-  .table-data-container {
-    max-width: 100%;
-  }
 
-  .card-category-item {
-    width: 100%;
-    max-width: none;
-  }
-  
   .card-category-item img {
     width: 72px;
     height: 72px;
