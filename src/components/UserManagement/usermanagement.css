@@ -37,6 +37,22 @@ thead {
   text-align: center;
 }
 
+.usermanagement__tr td {
+  overflow: hidden;
+  vertical-align: middle;
+  padding: 2px;
+}
+
+.usermanagement__tr .edituser_input,
+.usermanagement__tr .btn,
+.usermanagement__tr .copy_icon,
+.usermanagement__tr svg {
+  height: 100%;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
 #usermanagement_title>div {
   width: 180px;
   min-width: 180px;
@@ -107,6 +123,7 @@ thead {
 
 }
 
+
 .title_cell {
   width: 180px;
   min-width: 180px;
@@ -134,6 +151,8 @@ td#usermanagement_role {
   top: 0;
   right: 0;
   margin: 2px 2px;
+  height: 100%;
+  max-height: 31px;
 }
 
 .usermanagement__order--input div {
@@ -377,6 +396,8 @@ tr:hover {
 
 td {
   text-align: center;
+  padding: 4px;
+  vertical-align: middle;
 }
 
 /* custom-toast.css */
