@@ -355,13 +355,7 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
-              <AnniversaryCelebrated
-                fromDate={fromDate}
-                toDate={toDate}
-                fromOverDate={fromOverDate}
-                toOverDate={toOverDate}
-                darkMode={darkMode}
-              />
+              <AnniversaryCelebrated data={volunteerStats?.anniversaryStats} darkMode={darkMode} />
             </div>
           </Col>
         </Row>
