@@ -2,7 +2,10 @@ import { connect } from 'react-redux';
 import { useDispatch, useSelector } from 'react-redux';
 import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
+// import { MultiSelect } from 'react-multi-select-component';
+
 import 'moment-timezone';
+import moment from 'moment';
 
 import hasPermission from 'utils/permissions';
 
@@ -13,6 +16,7 @@ import { getAllUsersTimeEntries } from 'actions/allUsersTimeEntries';
 import { getTimeEntryForOverDate } from 'actions/index';
 import { getTaskAndProjectStats } from 'actions/totalOrgSummary';
 
+import Select from 'react-select';
 import SkeletonLoading from '../common/SkeletonLoading';
 import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
@@ -29,6 +33,7 @@ import HoursCompletedBarChart from './HoursCompleted/HoursCompletedBarChart';
 import HoursWorkList from './HoursWorkList/HoursWorkList';
 import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWorked';
 import Loading from '../common/Loading';
+
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
@@ -73,6 +78,24 @@ const fromDate = calculateFromDate();
 const toDate = calculateToDate();
 const fromOverDate = calculateFromOverDate();
 const toOverDate = calculateToOverDate();
+const comparisonOptions = [
+  {
+    label: 'Week over week',
+    value: 'lastweek',
+  },
+  {
+    label: 'Same week last month',
+    value: 'lastmonth',
+  },
+  {
+    label: 'Same week last year',
+    value: 'lastyear',
+  },
+  {
+    label: 'Do not show comparison data',
+    value: 'nocomparsion',
+  },
+];
 
 const aggregateTimeEntries = userTimeEntries => {
   const aggregatedEntries = {};
@@ -107,6 +130,7 @@ const aggregateTimeEntries = userTimeEntries => {
 };
 
 function TotalOrgSummary(props) {
+
   const { darkMode, loading, error, allUserProfiles, volunteerOverview } = props;
   const [usersId, setUsersId] = useState([]);
   const [usersTimeEntries, setUsersTimeEntries] = useState([]);
@@ -115,9 +139,30 @@ function TotalOrgSummary(props) {
   const [isVolunteerFetchingError, setIsVolunteerFetchingError] = useState(false);
   const [volunteerStats, setVolunteerStats] = useState(null);
 
+  const [comparisonWeek, setComparisonWeek] = useState({ startDate: null, endDate: null });
+
   const dispatch = useDispatch();
 
   const allUsersTimeEntries = useSelector(state => state.allUsersTimeEntries);
+
+  // State to hold the selected date range
+  const [selectedDateRange, setSelectedDateRange] = useState({
+    startDate: moment()
+      .startOf('week')
+      .format('YYYY-MM-DD'),
+    endDate: moment()
+      .endOf('week')
+      .format('YYYY-MM-DD'),
+  });
+
+  const handleDateRangeChange = ({ startDate, endDate }) => {
+    // console.log('Selected Date Range:', startDate, endDate);
+
+    setSelectedDateRange({
+      startDate: moment(startDate).format('YYYY-MM-DD'),
+      endDate: moment(endDate).format('YYYY-MM-DD'),
+    });
+  };
 
   useEffect(() => {
     dispatch(getAllUserProfile());
@@ -167,6 +212,7 @@ function TotalOrgSummary(props) {
         });
     }
   }, [allUsersTimeEntries, usersId, fromOverDate, toOverDate]);
+
   useEffect(() => {
     async function fetchData() {
       // const { taskHours, projectHours } = await props.getTaskAndProjectStats(fromDate, toDate);
@@ -241,14 +287,43 @@ function TotalOrgSummary(props) {
     <Container
       fluid
       className={`container-total-org-wrapper py-3 mb-5 ${
-        darkMode ? 'bg-oxford-blue text-light' : 'cbg--white-smoke'
+        darkMode ? 'bg-oxford-blue' : 'cbg--white-smoke'
       }`}
     >
-      <Row>
-        <Col lg={{ size: 12 }}>
-          <h3 className="mt-3 mb-5">Total Org Summary</h3>
+      <Row className="d-flex align-items-center justify-content-between">
+        <Col xs={12} sm={12} md={4} lg={4} className="d-flex align-items-center mb-sm-3 mb-md-0">
+          <h3>Weekly Volunteer Summary</h3>
+        </Col>
+
+        <Col
+          xs={12}
+          sm={12}
+          md={8}
+          lg={8}
+          className="d-flex justify-content-end align-items-center mb-0"
+        >
+          <div style={{ marginRight: '15px', width: '250px' }}>
+            <DateRangeSelector onDateRangeChange={handleDateRangeChange} />
+          </div>
+
+          <div style={{ marginRight: '15px', width: '250px' }}>
+            <Select
+              options={comparisonOptions}
+              onChange={handleComparisonPeriodChange}
+              defaultValue={comparisonOptions.find(option => option.value === 'nocomparsion')}
+            />
+          </div>
+
+          <button
+            className={darkMode ? 'btn btn-outline-light' : 'btn btn-dark'}
+            type="button"
+            style={{ whiteSpace: 'nowrap' }}
+          >
+            Share PDF
+          </button>
         </Col>
       </Row>
+
       <hr />
       <AccordianWrapper title="Volunteer Status">
         <Row>
@@ -402,7 +477,9 @@ function TotalOrgSummary(props) {
 const mapStateToProps = state => ({
   error: state.error,
   loading: state.loading,
+
   volunteerOverview: state.totalOrgSummary.volunteerOverview,
+
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
@@ -410,10 +487,14 @@ const mapStateToProps = state => ({
 });
 
 const mapDispatchToProps = dispatch => ({
+
   getTotalOrgSummary: (startDate, endDate) => dispatch(getTotalOrgSummary(startDate, endDate)),
+
   getTaskAndProjectStats: () => dispatch(getTaskAndProjectStats(fromDate, toDate)),
   hasPermission: permission => dispatch(hasPermission(permission)),
   getAllUserProfile: () => dispatch(getAllUserProfile()),
+  getTotalOrgSummary: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
+    dispatch(getTotalOrgSummary(startDate, endDate, comparisonStartDate, comparisonEndDate)),
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(TotalOrgSummary);
