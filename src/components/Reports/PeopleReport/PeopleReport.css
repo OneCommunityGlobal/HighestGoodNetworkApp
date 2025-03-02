@@ -299,3 +299,7 @@ body {
     align-items: flex-start;
   }
 }
+
+.report-page-container {
+  margin-top: 25px;
+}

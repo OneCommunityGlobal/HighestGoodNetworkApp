@@ -33,29 +33,32 @@ export function PeopleTasksPieChart({ darkMode }) {
       {showProjectsPieChart && (
         <ReportPage.ReportBlock darkMode={darkMode}>
           <h5 className="people-pie-charts-header">Projects With Completed Hours</h5>
-          <PieChart
-            pieChartId="projectsPieChart"
-            data={projectsWithLoggedHoursById}
-            dataLegend={projectsWithLoggedHoursLegend}
-            chartLegend={projectsWithLoggedHoursLegend}
-            dataLegendHeader="Hours"
-            darkMode={darkMode}
-          />
+          <div className="pie-chart-container">
+            <PieChart
+              pieChartId="projectsPieChart"
+              data={projectsWithLoggedHoursById}
+              dataLegend={projectsWithLoggedHoursLegend}
+              chartLegend={projectsWithLoggedHoursLegend}
+              dataLegendHeader="Hours"
+              darkMode={darkMode}
+            />
+          </div>
         </ReportPage.ReportBlock>
       )}
       {showTasksPieChart && (
         <ReportPage.ReportBlock darkMode={darkMode}>
-          <h5 className="people-pie-charts-header">{`${
-            showViewAllTasksButton ? 'Last ' : ''
-          }Tasks With Completed Hours`}</h5>
-          <PieChart
-            pieChartId="tasksPieChart"
-            data={tasksWithLoggedHoursById}
-            dataLegend={showAllTasks ? tasksLegend : displayedTasksLegend}
-            chartLegend={tasksLegend}
-            dataLegendHeader="Hours"
-            darkMode={darkMode}
-          />
+          <h5 className="people-pie-charts-header">{`${showViewAllTasksButton ? 'Last ' : ''
+            }Tasks With Completed Hours`}</h5>
+          <div className="pie-chart-container">
+            <PieChart
+              pieChartId="tasksPieChart"
+              data={tasksWithLoggedHoursById}
+              dataLegend={showAllTasks ? tasksLegend : displayedTasksLegend}
+              chartLegend={tasksLegend}
+              dataLegendHeader="Hours"
+              darkMode={darkMode}
+            />
+          </div>
           {showViewAllTasksButton && (
             <div>
               <div onClick={handleViewAll} className="show-all-tasks-button">

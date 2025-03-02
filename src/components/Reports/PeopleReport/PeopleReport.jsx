@@ -432,66 +432,68 @@ class PeopleReport extends Component {
       const { profilePic, role, jobTitle, endDate, _id, startDate } = userProfile;
 
       return (
-        <ReportPage.ReportHeader
-          src={profilePic}
-          avatar={profilePic ? undefined : <FiUser />}
-          isActive={isActive}
-          darkMode={darkMode}
-        >
-          <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
-            <p>
-              <Link to={`/userProfile/${_id}`}
-                title="View Profile"
-                className={darkMode ? 'text-light font-weight-bold' : ''}
-                style={{ fontSize: "24px" }}>
-                {firstName} {lastName}
-              </Link>
-            </p>
-            <p>Role: {role}</p>
-            <p>Title: {jobTitle}</p>
+        <div className="report-page-container">
+          <ReportPage.ReportHeader
+            src={profilePic}
+            avatar={profilePic ? undefined : <FiUser />}
+            isActive={isActive}
+            darkMode={darkMode}
+          >
+            <div className={`report-stats ${darkMode ? 'text-light' : ''}`}>
+              <p>
+                <Link to={`/userProfile/${_id}`}
+                  title="View Profile"
+                  className={darkMode ? 'text-light font-weight-bold' : ''}
+                  style={{ fontSize: "24px" }}>
+                  {firstName} {lastName}
+                </Link>
+              </p>
+              <p>Role: {role}</p>
+              <p>Title: {jobTitle}</p>
 
-            {/* {endDate ? ( */}
-            <div className="rehireable">
-              <Checkbox
-                value={isRehireable}
-                onChange={() => this.setRehireable(!isRehireable)}
-                label="Rehireable"
-                darkMode={darkMode}
-                backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
-                textColorCN={darkMode ? "text-light" : ""}
-              />
-            </div>
-            {/* ) : (
-              ''
-            )} */}
+              {/* {endDate ? ( */}
+              <div className="rehireable">
+                <Checkbox
+                  value={isRehireable}
+                  onChange={() => this.setRehireable(!isRehireable)}
+                  label="Rehireable"
+                  darkMode={darkMode}
+                  backgroundColorCN={darkMode ? "bg-yinmn-blue" : ""}
+                  textColorCN={darkMode ? "text-light" : ""}
+                />
+              </div>
+              {/* ) : (
+                ''
+              )} */}
 
-            <div className="stats">
-              <div>
-                <h4>{formatDate(startDate)}</h4>
-                <p>Start Date</p>
-              </div>
-              <div>
-                <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
-                <p>End Date</p>
-              </div>
-              {bioStatus ? (
+              <div className="stats">
                 <div>
-                  <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
-                  {authRole === 'Administrator' || authRole === 'Owner' ? (
-                    <ToggleSwitch
-                      fontSize="13px"
-                      fontColor="#007BFF"
-                      switchType="bio"
-                      state={bioStatus}
-                      /* eslint-disable-next-line no-use-before-define */
-                      handleUserProfile={bio => onChangeBioPosted(bio)}
-                    />
-                  ) : null}
+                  <h4>{formatDate(startDate)}</h4>
+                  <p>Start Date</p>
                 </div>
-              ) : null}
+                <div>
+                  <h4>{endDate ? formatDate(endDate) : 'N/A'}</h4>
+                  <p>End Date</p>
+                </div>
+                {bioStatus ? (
+                  <div>
+                    <h5>Bio {bioStatus === 'default' ? 'not requested' : bioStatus}</h5>{' '}
+                    {authRole === 'Administrator' || authRole === 'Owner' ? (
+                      <ToggleSwitch
+                        fontSize="13px"
+                        fontColor="#007BFF"
+                        switchType="bio"
+                        state={bioStatus}
+                        /* eslint-disable-next-line no-use-before-define */
+                        handleUserProfile={bio => onChangeBioPosted(bio)}
+                      />
+                    ) : null}
+                  </div>
+                ) : null}
+              </div>
             </div>
-          </div>
-        </ReportPage.ReportHeader>
+          </ReportPage.ReportHeader>
+        </div>
       );
     };
 
