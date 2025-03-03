@@ -13,7 +13,7 @@ import axios from 'axios';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import { toggleUserBio } from 'actions/weeklySummariesReport';
 import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
@@ -524,7 +524,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
+    const res = await dispatch(toggleUserBio(userId, bioStatus));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
     }
