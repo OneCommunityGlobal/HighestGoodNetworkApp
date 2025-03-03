@@ -8,8 +8,8 @@ import { toast } from 'react-toastify';
 import logo2 from '../../assets/images/logo2.png';
 import link from '../../assets/images/link.png';
 import facebook from '../../assets/images/Facebook_Logo_Primary.png';
-import instagram from '../../assets/images/Instagram_Glyph_Gradient.png';
-import twitter from '../../assets/images/logo-white.png';
+import instagram from '../../assets/images/ig-logo.png';
+import twitter from '../../assets/images/twitter-logo.png';
 import pinterest from '../../assets/images/P-Badge-Red-RGB.png';
 import youtube from '../../assets/images/youtube_social_circle_red.png';
 import linkedin from '../../assets/images/linkedin-logo.png';
@@ -38,6 +38,53 @@ function Announcements({ title, email }) {
   const [videoLink, setVideoLink] = useState('');
 
   const [errors, setErrors] = useState({});
+
+  let logoBase64 = '';
+  let linkBase64 = '';
+  let facebookBase64 = '';
+  let instagramBase64 = '';
+  let twitterBase64 = '';
+  let pinterestBase64 = '';
+  let youtubeBase64 = '';
+  let linkedinBase64 = '';
+  let emailBase64 = '';
+
+  // Convert imported images to base64 string
+  urlToBase64(logo2, (base64) => {
+    logoBase64 = base64;
+  });
+
+  urlToBase64(link, (base64) => {
+    linkBase64 = base64;
+  });
+
+  urlToBase64(facebook, (base64) => {
+    facebookBase64 = base64;
+  });
+
+  urlToBase64(instagram, (base64) => {
+    instagramBase64 = base64;
+  });
+
+  urlToBase64(twitter, (base64) => {
+    twitterBase64 = base64;
+  });
+
+  urlToBase64(pinterest, (base64) => {
+    pinterestBase64 = base64;
+  });
+
+  urlToBase64(youtube, (base64) => {
+    youtubeBase64 = base64;
+  });
+
+  urlToBase64(linkedin, (base64) => {
+    linkedinBase64 = base64;
+  });
+
+  urlToBase64(emailIcon, (base64) => {
+    emailBase64 = base64;
+  });
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -179,6 +226,23 @@ function Announcements({ title, email }) {
     reader.readAsDataURL(file);
   };
 
+  // Helper to convert image url to base64 string
+  function urlToBase64(url, callback) {
+    fetch(url)
+      .then(response => response.blob())
+      .then(blob => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          callback(reader.result);
+        };
+        reader.readAsDataURL(blob);
+      })
+      .catch(error => {
+        console.error('Error fetching image:', error);
+        callback(null);
+      });
+  }
+
   // Validate required fields for Weekly Progress Update
   const validateFields = () => {
     const editorErrors = {};
@@ -216,6 +280,20 @@ function Announcements({ title, email }) {
     return Object.keys(editorErrors).length === 0;
   };
 
+
+
+  urlToBase64(link, (base64) => {
+    linkBase64 = base64;
+  });
+
+  urlToBase64(facebook, (base64) => {
+    facebookBase64 = base64;
+  });
+
+  urlToBase64(twitter, (base64) => {
+    twitterBase64 = base64;
+  });
+
   // Email HTML Format
   const constructEmailContent = () => {
     // Start of email container
@@ -223,7 +301,7 @@ function Announcements({ title, email }) {
       <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <!-- Default Header (Logo) -->
         <div style="text-align: center; margin-bottom: 20px;">
-          <img src="${logo2}" alt="One Community Logo" style="max-width: 200px; height: auto;" />
+          <img src="${logoBase64}" alt="One Community Logo" style="max-width: 200px; height: auto;" />
         </div>
     `;
 
@@ -291,56 +369,47 @@ function Announcements({ title, email }) {
 
     // Social Media Links
     content += `
-      <hr style="margin: 30px 0;" />
-      <div style="text-align: center;">
+      <div style="text-align: center; margin-top: 30px;">
         <p style="margin: 0 auto; display: inline-block;">
           <a href="https://onecommunityglobal.org/overview/" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src="${link}"
+            <img src="${linkBase64}"
             alt="Overview" 
-            style="width: 24px; height: 24px; vertical-align: middle;" />
-          </a> |
+            style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.facebook.com/onecommunityfans" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src="${facebook}"
+            <img src="${facebookBase64}"
             alt="Facebook" 
-            style="width: 24px; height: 24px; vertical-align: middle;" />
-          </a> |
+            style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://x.com/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src="${twitter}"
+            <img src="${twitterBase64}"
             alt="Twitter" 
-            style="width: 24px; height: 24px; vertical-align: middle;" />
-          </a> |
+            style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.linkedin.com/company/one-community-global/" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src="${linkedin}"
+            <img src="${linkedinBase64}"
             alt="LinkedIn" 
-            style="width: 24px; height: 24px; vertical-align: middle;" />
-          </a> |
+            style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.youtube.com/user/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src="${youtube}"
+            <img src="${youtubeBase64}"
             alt="YouTube" 
-            style="width: 24px; height: 24px; vertical-align: middle;" />
-          </a> |
+            style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.instagram.com/onecommunityglobal/" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src="${instagram}"
+            <img src="${instagramBase64}"
             alt="Instagram" 
-            style="width: 24px; height: 24px; vertical-align: middle;" />
-          </a> |
+            style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.pinterest.com/onecommunityorg/one-community/" target="_blank" rel="noopener" style="margin: 0 5px;">
-            <img src="${pinterest}"
+            <img src="${pinterestBase64}"
             alt="Pinterest" 
-            style="width: 24px; height: 24px; vertical-align: middle;" />
-          </a> |
+            style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="mailto:onecommunityupdates@gmail.com" style="margin: 0 5px;">
-            <img src="${emailIcon}"
+            <img src="${emailBase64}"
             alt="Email" 
-            style="width: 24px; height: 24px; vertical-align: middle;" />
-          </a>
+            style="width: 24px; height: 24px; vertical-align: middle;" /></a>
         </p>
       </div>
     `;
 
     // Footer
     content += `
-      <hr style="margin: 30px 0;" />
+      <hr style="margin: 30px 0; border: none; border-top: 1px solid #ccc;" />
       <div style="font-size: 12px; color: #666;  font-style: italic; text-align: center; margin: 0 auto; max-width: 500px;">
         <p style="font-style: italic; margin: 0;">
           "In order to change an existing paradigm you do not struggle to try and change the problematic model. 
