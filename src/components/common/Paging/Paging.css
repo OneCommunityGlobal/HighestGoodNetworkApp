@@ -12,6 +12,13 @@
   margin: auto;
 }
 
+@media (max-width: 1353px) {
+  .pagination-buttons-wrapper {
+    bottom: -65px;
+    padding-bottom: 5px;
+  }
+}
+
 .pagination-buttons {
   display: flex;
   align-items: baseline;
