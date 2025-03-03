@@ -18,7 +18,8 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import TagsSearch from '../components/TagsSearch';
 import ReadOnlySectionWrapper from './ReadOnlySectionWrapper';
-import '../../../../Header/DarkMode.css'
+import '../../../../Header/DarkMode.css';
+import './EditTaskModal.css';
 
 function EditTaskModal(props) {
   /*
@@ -497,11 +498,11 @@ function EditTaskModal(props) {
                     )}
                   </div>
                   {hoursWarning && (
-                  <div className="warning mb-3">
-                    {hoursWarning
-                      ? 'The number of hours must be less than other cases'
-                      : ''}
-                  </div>)}
+                    <div className="warning">
+                      {hoursWarning
+                        ? 'The number of hours must be less than other cases'
+                        : ''}
+                    </div>)}
                   <div className="py-2 d-flex align-items-center justify-content-sm-around">
                     <label htmlFor="worstCase" style={{ width: '100px', marginRight: '2px' }} className={`text-nowrap ${darkMode ? 'text-light' : ''}`}>
                       Worst-case
@@ -522,7 +523,7 @@ function EditTaskModal(props) {
                     )}
                   </div>
                   {hoursWarning && (
-                  <div className="warning mb-3">
+                  <div className="warning">
                     {hoursWarning
                       ? 'The number of hours must be higher than other cases'
                       : ''}
@@ -547,7 +548,7 @@ function EditTaskModal(props) {
                     )}
                   </div>
                   {hoursWarning && (
-                  <div className="warning mb-3">
+                  <div className="warning">
                     {hoursWarning
                       ? 'The number of hours must range between best and worst cases'
                       : ''}
