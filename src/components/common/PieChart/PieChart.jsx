@@ -163,7 +163,7 @@ if(tasksData.length===0) return <div>Loading</div>
       <div id={`pie-chart-container-${pieChartId}`} className="pie-chart" />
     <div className="pie-chart-legend-container">
       <div className="pie-chart-legend-table-wrapper">
-        <table className="pie-chart-legend-table">
+        <table className={darkMode ?"pie-chart-legend-table-dark":"pie-chart-legend-table"}>
           <thead>
             <tr>
               <th>Color</th>

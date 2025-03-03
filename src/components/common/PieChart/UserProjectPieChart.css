@@ -152,20 +152,47 @@
     border-collapse: collapse;
     height: 80%;
   }
-  
+
   .pie-chart-legend-table th,
   .pie-chart-legend-table td {
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    
   }
   
+ 
   .pie-chart-legend-table th {
     font-weight: bold;
     background: none;
     color: inherit;
   }
   .pie-chart-legend-table tr{
+    background-color: white;
+  }
+
+  .pie-chart-legend-table-dark {
+    width: 100%;
+    table-layout: auto;
+    border-collapse: collapse;
+    height: 80%;
+  }
+
+  .pie-chart-legend-table-dark th,
+  .pie-chart-legend-table-dark td {
+    padding: 8px;
+    text-align: left;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    color:black
+  }
+  
+ 
+  .pie-chart-legend-table-dark th {
+    font-weight: bold;
+    background: none;
+    /* color: inherit; */
+  }
+  .pie-chart-legend-table-dark tr{
     background-color: white;
   }
 
