@@ -145,6 +145,33 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
   };
 };
 
+/**
+ * Call API to find project members
+ */
+export const findProjectMembers = (projectId, query) => {
+  // Escape special characters in the query
+  const queryRegex = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+  return async (dispatch, getState) => {
+    try {
+      // Dispatch loading action immediately
+      dispatch(findProjectMembersStart());
+      const response = await axios.get(ENDPOINTS.PROJECT_MEMBER_SEARCH(projectId, queryRegex));
+
+      if (query !== '') {
+        const members = response.data;
+
+        dispatch(foundProjectMembers(members));
+      } else {
+        dispatch(foundProjectMembers([]));
+      }
+    } catch (error) {
+      dispatch(foundProjectMembers([]));
+      dispatch(findProjectMembersError(error));
+    }
+  };
+};
+
 /** *****************************************
  * PLAIN OBJ ACTIONS
  ****************************************** */
@@ -251,6 +278,37 @@ export const removeFoundUser = userId => {
 export const addNewMemberError = err => {
   return {
     type: types.ADD_NEW_MEMBER_ERROR,
+    err,
+  };
+};
+
+/**
+ * Set a flag that finding project members
+ */
+export const findProjectMembersStart = () => {
+  return {
+    type: types.FIND_PROJECT_MEMBERS_START,
+  };
+};
+
+/**
+ * Set project members in store
+ * @param payload : Project members []
+ */
+export const foundProjectMembers = members => {
+  return {
+    type: types.FOUND_PROJECT_MEMBERS,
+    members,
+  };
+};
+
+/**
+ * Error when finding project members
+ * @param payload : error status code
+ */
+export const findProjectMembersError = err => {
+  return {
+    type: types.FIND_PROJECT_MEMBERS_ERROR,
     err,
   };
 };

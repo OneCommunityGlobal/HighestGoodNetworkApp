@@ -6,6 +6,7 @@ const allMembershipInital = {
   fetched: false,
   members: [],
   foundUsers: [],
+  foundProjectMembers: [],
   error: '',
 };
 
@@ -31,6 +32,18 @@ export const projectMembershipReducer = (allMembership = allMembershipInital, ac
       return {
         ...allMembership,
         foundUsers: action.users,
+        fetched: true,
+        fetching: false,
+        error: 'none',
+      };
+    case types.FIND_PROJECT_MEMBERS_START:
+      return { ...allMembership, fetched: false, fetching: true, error: 'none' };
+    case types.FIND_PROJECT_MEMBERS_ERROR:
+      return { ...allMembership, fetched: true, fetching: false, error: action.err };
+    case types.FOUND_PROJECT_MEMBERS:
+      return {
+        ...allMembership,
+        foundProjectMembers: action.members,
         fetched: true,
         fetching: false,
         error: 'none',

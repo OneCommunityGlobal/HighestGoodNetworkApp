@@ -8,6 +8,7 @@ describe('projectMembershipReducer', () => {
     fetched: false,
     members: [],
     foundUsers: [],
+    foundProjectMembers: [],
     error: '',
   };
 
@@ -93,5 +94,30 @@ describe('projectMembershipReducer', () => {
     const action = { type: types.REMOVE_FOUND_USER, userId: '5' };
     const expectedState = { ...initialStateWithFoundUsers, foundUsers: [] };
     expect(projectMembershipReducer(initialStateWithFoundUsers, action)).toEqual(expectedState);
+  });
+
+  it('should handle FIND_PROJECT_MEMBERS_START', () => {
+    const action = { type: types.FIND_PROJECT_MEMBERS_START };
+    const expectedState = { ...initialState, fetching: true, fetched: false, error: 'none' };
+    expect(projectMembershipReducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should handle FIND_PROJECT_MEMBERS_ERROR', () => {
+    const action = { type: types.FIND_PROJECT_MEMBERS_ERROR, err: 'Error finding project members' };
+    const expectedState = { ...initialState, fetching: false, fetched: true, error: action.err };
+    expect(projectMembershipReducer(initialState, action)).toEqual(expectedState);
+  });
+
+  it('should handle FOUND_PROJECT_MEMBERS', () => {
+    const members = [{ _id: '6', name: 'Project Member' }];
+    const action = { type: types.FOUND_PROJECT_MEMBERS, members };
+    const expectedState = {
+      ...initialState,
+      foundProjectMembers: members,
+      fetching: false,
+      fetched: true,
+      error: 'none',
+    };
+    expect(projectMembershipReducer(initialState, action)).toEqual(expectedState);
   });
 });
