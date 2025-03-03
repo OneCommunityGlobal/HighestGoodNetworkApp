@@ -40,6 +40,7 @@ const Name = props => {
               type="text"
               name="firstName"
               id="firstName"
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               value={firstName}
               // className={styleProfile.profileText}
               onChange={e => {
@@ -59,6 +60,7 @@ const Name = props => {
               name="lastName"
               id="lastName"
               value={lastName}
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               // className={styleProfile.profileText}
               onChange={e => {
                 setUserProfile({ ...userProfile, lastName: e.target.value.trim() });
@@ -101,6 +103,7 @@ const Title = props => {
               name="title"
               id="jobTitle"
               value={jobTitle}
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
                 setUserProfile({ ...userProfile, jobTitle: e.target.value });
               }}
@@ -230,7 +233,8 @@ const Phone = props => {
         <Col md={desktopDisplay ? '6' : ''}>
           <FormGroup>
             <PhoneInput
-              inputClass="phone-input-style"
+              buttonClass={`${darkMode ? 'bg-darkmode-liblack' : ''}`}
+              inputClass={`phone-input-style ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               country={'us'}
               value={phoneNumber}
               onChange={phoneNumber => {
@@ -542,6 +546,7 @@ const BasicInformationTab = props => {
               name="collaborationPreference"
               id="collaborationPreference"
               value={userProfile.collaborationPreference}
+              className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
               onChange={e => {
                 setUserProfile({ ...userProfile, collaborationPreference: e.target.value });
               }}
@@ -574,7 +579,7 @@ const BasicInformationTab = props => {
               }}
               id="role"
               name="role"
-              className="form-control"
+              className={`form-control ${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
             >
               {roles.map(({ roleName }) => {
                 if (roleName === 'Owner') return;
@@ -627,6 +632,7 @@ const BasicInformationTab = props => {
                   <Input
                     onChange={handleLocation}
                     value={locationCheckValue(userProfile.location || '')}
+                    className={`${darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}`}
                   />
                 </Col>
                 <Col>
@@ -677,6 +683,7 @@ const BasicInformationTab = props => {
               setUserProfile({ ...userProfile, timeZone: e.target.value });
             }}
             selected={userProfile.timeZone}
+            darkMode={darkMode}
           />
         )}
       </Col>

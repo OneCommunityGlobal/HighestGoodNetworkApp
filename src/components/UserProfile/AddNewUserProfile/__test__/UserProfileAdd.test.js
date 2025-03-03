@@ -23,6 +23,7 @@ describe('AddUserProfile page structure', () => {
       userProfile: userProfileMock,
       role: rolesMock.role,
       allProjects: allProjectsMock,
+      theme: { darkMode: false },
     };
 
     const mockStore = configureMockStore([thunk]);

@@ -275,7 +275,7 @@ const UserTeamsTable = props => {
           <tbody className={darkMode ? 'text-light' : ''}>
             {props.userTeamsById.length > 0 ? (
               props.userTeamsById.map((team, index) => (
-                <tr key={index} className="tr">
+                <tr key={index} className={`tr ${darkMode ? 'dark-mode' : ''}`}>
                   <td>{index + 1}</td>
                   <td>{`${team.teamName}`}</td>
                   {props.edit && props.role && (
