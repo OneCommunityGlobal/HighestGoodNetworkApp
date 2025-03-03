@@ -1,0 +1,279 @@
+/* General Styling */
+body {
+  font-family: 'Arial', sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+}
+
+.participation-landing-page {
+  max-width: 90%;
+  margin: 0 auto;
+}
+
+header h1 {
+  font-size: 24px;
+  color: #333;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+header {
+  margin-bottom: 30px;
+}
+
+/* My Cases Section */
+.my-cases {
+  margin-bottom: 40px;
+}
+
+.my-cases-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.my-cases-header h2 {
+  font-size: 20px;
+  color: #333;
+}
+
+.my-cases-header button {
+  padding: 8px 15px;
+  background-color: #007bff;
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.my-cases-header button:hover {
+  background-color: #0056b3;
+}
+
+.my-cases-list {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.my-case-item {
+  padding: 15px;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Analytics Section */
+.analytics-section {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 20px;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-top: 20px;
+}
+
+.tracking-container,
+.insights {
+  flex: 1;
+  min-width: 48%;
+  background-color: #ffffff;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .analytics-section {
+    flex-wrap: wrap;
+  }
+
+  .tracking-container,
+  .insights {
+    width: 100%;
+  }
+}
+
+/* Tracking Section */
+.tracking-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.tracking-header h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+}
+
+.tracking-filters select {
+  margin-left: 10px;
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.tracking-summary {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.tracking-rate {
+  background: #f8f9fa;
+  border-radius: 10px;
+  width: 48%;
+  padding: 10px;
+}
+
+.tracking-rate-value {
+  font-size: 0.9rem;
+  color: #f44336;
+  display: inline-block;
+}
+
+.tracking-rate-value span {
+  font-size: 0.9rem;
+  color: #777;
+  display: inline-block;
+}
+
+.tracking-list-container {
+  max-height: 600px;
+  overflow-y: auto;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+}
+
+.tracking-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.tracking-table thead th {
+  text-align: left;
+  padding: 10px;
+  background: #f4f4f4;
+}
+
+.tracking-table tbody td {
+  padding: 5px;
+  border-bottom: 1px solid #eee;
+}
+
+.tracking-rate-green {
+  color: green;
+}
+
+.tracking-rate-red {
+  color: red;
+}
+
+/* Insights Section */
+.insights-header {
+  font-weight: bold;
+  color: #444;
+  margin-bottom: 15px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.insights-header h3 {
+  font-size: 1.3rem;
+  color: #333;
+  margin: 0;
+}
+
+.insights-filters select {
+  margin-left: 10px;
+  padding: 8px;
+  font-size: 0.8rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+.insights-tabs {
+  display: flex;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  overflow: hidden;
+  max-width: 60%;
+}
+
+.insights-tab {
+  flex: 1;
+  text-align: center;
+  padding: 10px 0;
+  font-size: 0.9rem;
+  color: #555;
+  background-color: #f8f9fa;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+.insights-tab:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.insights-tab.active-tab {
+  border-radius: 4px;
+  background-color: #007bff;
+  color: #fff;
+  font-weight: bold;
+}
+
+.insights-tab:hover {
+  background-color: #e0e0e0;
+}
+
+.insights-content {
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  gap: 15px;
+}
+
+.insight-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.insight-label {
+  flex: 1;
+  font-size: 0.9rem;
+  color: #555;
+  margin-right: 10px;
+}
+
+.insight-bar {
+  flex: 2;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  overflow: hidden;
+  position: relative;
+  margin-right: 10px;
+}
+
+.insight-fill {
+  height: 100%;
+  background: #007bff;
+  border-radius: 4px;
+  transition: width 0.3s ease-in-out;
+}
+
+.insight-percentage {
+  font-size: 0.9rem;
+  font-weight: bold;
+  color: #333;
+}
