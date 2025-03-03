@@ -1,13 +1,13 @@
 import { useState } from 'react';
 import { useDispatch } from 'react-redux';
 import { Button, Alert } from 'react-bootstrap';
+import hasPermission from 'utils/permissions';
 import {
   getWarningsByUserId,
   postWarningByUserId,
   deleteWarningsById,
 } from '../../actions/warnings';
 import WarningTrackerModal from './modals/WarningTrackerModal';
-
 import WarningItem from './WarningItem';
 import './Warnings.css';
 // Better Descriptions (“i” = ,ltd = Please be more specific in your time log descriptions.)
@@ -23,6 +23,14 @@ export default function Warning({ personId, username, userRole, displayUser }) {
   const [toggleWarningTrackerModal, setToggleWarningTrackerModal] = useState(false);
   const [toggle, setToggle] = useState(false);
   const [error, setError] = useState(null);
+  const rolesAllowedToTracking = ['Administrator', 'Owner'];
+  const isAllowedToTracking =
+    rolesAllowedToTracking.includes(userRole) || dispatch(hasPermission('viewTrackingOverview'));
+  const canViewTrackerButton =
+    rolesAllowedToTracking.includes(userRole) ||
+    dispatch(hasPermission('addWarningTracker')) ||
+    dispatch(hasPermission('deactivateWarningTracker')) ||
+    dispatch(hasPermission('deleteWarningTracker'));
 
   const fetchUsersWarningsById = async () => {
     dispatch(getWarningsByUserId(personId)).then(res => {
@@ -94,10 +102,12 @@ export default function Warning({ personId, username, userRole, displayUser }) {
           username={username}
           submitWarning={handlePostWarningDetails}
           handleDeleteWarning={handleDeleteWarning}
+          userRole={userRole}
         />
       ));
 
   return (
+    isAllowedToTracking &&
     (userRole === 'Administrator' || userRole === 'Owner' || userRole === 'Manager') && (
       <div className="warnings-container">
         <div className="button__container">
@@ -109,7 +119,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
             {toggle ? 'Hide' : 'Tracking'}
           </Button>
 
-          {userRole === 'Owner' && (
+          {canViewTrackerButton && (
             <Button
               className="btn"
               size="sm"
@@ -126,6 +136,7 @@ export default function Warning({ personId, username, userRole, displayUser }) {
             personId={personId}
             setToggleWarningTrackerModal={setToggleWarningTrackerModal}
             getUsersWarnings={fetchUsersWarningsById}
+            userRole={userRole}
           />
         )}
 

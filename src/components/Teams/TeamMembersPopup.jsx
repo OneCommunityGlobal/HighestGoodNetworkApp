@@ -11,12 +11,12 @@ import MembersAutoComplete from './MembersAutoComplete';
 
 import ToggleSwitch from './ToggleSwitch/ToggleSwitch';
 import InfoModal from './InfoModal';
+import styles from './ToggleSwitch/ToggleSwitch.module.scss';
 
 export const TeamMembersPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
-
-  const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon');
-
+  const [isChecked, setIsChecked] = useState(1); // 0 = false, 1 = true, 2 = all
+  const [checkedStatus, setCheckedStatus] = useState('Active'); // 0 = false, 1 = true, 2 = all
   const [selectedUser, setSelectedUser] = useState(undefined);
   const [isValidUser, setIsValidUser] = useState(true);
   const [searchText, setSearchText] = useState('');
@@ -24,6 +24,7 @@ export const TeamMembersPopup = React.memo(props => {
   const [memberList, setMemberList] = useState([]);
   const [sortOrder, setSortOrder] = useState(0);
   const [deletedPopup, setDeletedPopup] = useState(false);
+  const trackColor = isChecked === 0 ? '#ccc' : isChecked === 1 ? 'limegreen' : 'dodgerblue';
 
   const closeDeletedPopup = () => {
     setDeletedPopup(!deletedPopup);
@@ -32,6 +33,11 @@ export const TeamMembersPopup = React.memo(props => {
   const handleDelete = id => {
     props.onDeleteClick(`${id}`);
     setDeletedPopup(true);
+  };
+
+  const handleToggle = () => {
+    setIsChecked(parseInt(event.target.value));
+    setCheckedStatus(parseInt(event.target.value) == 0 ? 'Inactive' : (parseInt(event.target.value)  == 1 ? 'Active' : 'See All'))
   };
 
   const [infoModal, setInfoModal] = useState(false);
@@ -44,6 +50,8 @@ export const TeamMembersPopup = React.memo(props => {
     setMemberList([]);
     props.onClose();
     setSortOrder(0);
+    setIsChecked(true);
+    setCheckedStatus('Active');
   };
   const onAddUser = () => {
     if (selectedUser) {
@@ -234,9 +242,28 @@ export const TeamMembersPopup = React.memo(props => {
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                <th>Active</th>
-                <th className='def-width'>#</th>
-                <th className="def-width">User Name</th>
+              <th>
+              <div className={styles.divContainer}>
+              <div className={styles.sliderContainer}>
+                <input
+                  type="range"
+                  min="0"
+                  max="2"
+                  step="1"
+                  value={isChecked}
+                  onChange={handleToggle}
+                  className={styles.slider}
+                  title="Move Slider for Status change. Left: Inactive, Middle: Active, Right: See All"
+                  // Dynamic inline style for background color based on status
+                  style={{'--track-color': trackColor, 
+                          '--thumb-color': trackColor,}}
+                />
+                <span>{checkedStatus}</span>
+              </div>
+            </div>
+                </th>
+                <th>#</th>
+                <th>User Name</th>
                 <th style={{ cursor: 'pointer' }} onClick={toggleOrder}>
                   Date Added <FontAwesomeIcon {...icons[sortOrder]} />
                 </th>
@@ -256,64 +283,54 @@ export const TeamMembersPopup = React.memo(props => {
               </tr>
             </thead>
             <tbody>
-              {props.fetching ?
-                <tr><td align='center' colSpan={6}><Spinner  color={`${darkMode ? 'light' : 'dark'}`} animation="border" size="sm" /></td></tr> :
-                !memberList.length ?
-                  emptyState :
-                  ((Array.isArray(props.members.teamMembers) &&
-                    props.members.teamMembers.length > 0) ||
-                    (typeof props.members.fetching === 'boolean' &&
-                      !props.members.fetching &&
-                      props.members.teamMembers) ||
-                    (Array.isArray(props.members) && props.members.length > 0)) &&
-                  memberList.toSorted().map((user, index) => {
-                    return (
-                      <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
+              {((Array.isArray(props.members.teamMembers) &&
+                props.members.teamMembers.length > 0) ||
+                (typeof props.members.fetching === 'boolean' &&
+                  !props.members.fetching &&
+                  props.members.teamMembers) ||
+                (Array.isArray(props.members) && props.members.length > 0)) && 
+                memberList.toSorted().filter(e=>{if(isChecked != 2) { return e.isActive == isChecked} else return true}).map((user, index) => {
+                  return (
+                    <tr key={`${props.selectedTeamName}-${user.id}-${index}`}>
+                      <td>
+                        <span className={user.isActive ? 'isActive' : 'isNotActive'}>
+                          <i className="fa fa-circle" aria-hidden="true" />
+                        </span>
+                      </td>
+                      <td>{index + 1}</td>
+                      <td>
+                        {returnUserRole(user) ? (
+                          <b>
+                            {user.firstName} {user.lastName} ({user.role})
+                          </b>
+                        ) : (
+                          <span>
+                            {user.firstName} {user.lastName} ({user.role})
+                          </span>
+                        )}{' '}
+                      </td>
+                      {/* <td>{user}</td> */}
+                      <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
+                      <td>
+                        <ToggleSwitch
+                          key={`${props.selectedTeamName}-${user._id}`}
+                          switchType="limit-visibility"
+                          userId={user._id}
+                          choice={memberVisibility[user._id]}
+                          UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
+                        />
+                      </td>
+                      {canAssignTeamToUsers && (
                         <td>
                           <div className={user.isActive ? 'isActive' : 'isNotActive'}>
                             <i className="fa fa-circle" aria-hidden="true" />
                           </div>
                         </td>
-                        <td className="def-width">{index + 1}</td>
-                        <td className="def-width">
-                          {returnUserRole(user) ? (
-                            <b>
-                              {user.firstName} {user.lastName} ({user.role})
-                            </b>
-                          ) : (
-                            <span>
-                              {user.firstName} {user.lastName} ({user.role})
-                            </span>
-                          )}{' '}
-                          {hasVisibilityIconPermission && !user.isVisible && (  // Invisibility icon from 'Cillian'
-                            <i className="fa fa-eye-slash" title="User is invisible" />
-                          )}
-                        </td>
-                        {/* <td>{user}</td> */}
-                        <td>{moment(user.addDateTime).format('MMM-DD-YY')}</td>
-                        <td>
-                          <ToggleSwitch
-                            key={`${props.selectedTeamName}-${user._id}`}
-                            switchType="limit-visibility"
-                            userId={user._id}
-                            choice={memberVisibility[user._id]}
-                            UpdateTeamMembersVisibility={UpdateTeamMembersVisibility}
-                          />
-                        </td>
-                        {canAssignTeamToUsers && (
-                          <td>
-                            <Button
-                              color="danger"
-                              onClick={() => handleDelete(user._id)}
-                              style={darkMode ? boxStyleDark : boxStyle}
-                            >
-                              Delete
-                            </Button>
-                          </td>
-                        )}
-                      </tr>
-                    );
-                  })}
+                      )}
+                    </tr>
+                  );
+                })
+                }
             </tbody>
           </table>
         </ModalBody>

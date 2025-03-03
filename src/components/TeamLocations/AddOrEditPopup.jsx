@@ -3,12 +3,12 @@ import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Form } from 'reacts
 import Input from 'components/common/Input';
 import { createLocation, editLocation } from 'services/mapLocationsService';
 import axios from 'axios';
-import CustomInput from './CustomInput.jsx';
 import { ENDPOINTS } from 'utils/URL';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
+import '../Header/DarkMode.css';
 import { toast } from 'react-toastify';
 import { useSelector } from 'react-redux';
+import CustomInput from './CustomInput';
 
 const initialLocationData = {
   firstName: '',
@@ -33,10 +33,11 @@ function AddOrEditPopup({
   editProfile,
   submitText,
 }) {
-  const darkMode = useSelector(state => state.theme.darkMode)
+  const darkMode = useSelector(state => state.theme.darkMode);
 
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
+  const [formSubmitted, setFormSubmitted] = useState(false);
   const [errors, setErrors] = useState({
     firstName: null,
     lastName: null,
@@ -55,18 +56,21 @@ function AddOrEditPopup({
       setErrors(prev => ({ ...prev, location: null }));
     }
 
-    axios.get(ENDPOINTS.TIMEZONE_LOCATION(location)).then(res => {
-      if (res.status === 200) {
-        const { timezone, currentLocation } = res.data;
-        setLocationData(prev => ({
-          ...prev,
-          location: currentLocation,
-        }));
-        setTimeZone(timezone);
-      }
-    }).catch(err => {
-      toast.error(`An error occurred : ${err.response.data}`);
-    });
+    axios
+      .get(ENDPOINTS.TIMEZONE_LOCATION(location))
+      .then(res => {
+        if (res.status === 200) {
+          const { timezone, currentLocation } = res.data;
+          setLocationData(prev => ({
+            ...prev,
+            location: currentLocation,
+          }));
+          setTimeZone(timezone);
+        }
+      })
+      .catch(err => {
+        toast.error(`An error occurred : ${err.response.data}`);
+      });
   };
   useEffect(() => {
     if (isEdit) {
@@ -200,7 +204,6 @@ function AddOrEditPopup({
   }
 
   const firstNameRef = useRef(null);
-  const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
     if (open) {
@@ -214,8 +217,16 @@ function AddOrEditPopup({
   }, [open, formSubmitted]);
 
   return (
-    <Modal isOpen={open} toggle={onClose} className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={onClose} cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}>
+    <Modal
+      isOpen={open}
+      toggle={onClose}
+      className={`modal-dialog modal-lg ${darkMode ? 'text-light dark-mode' : ''}`}
+    >
+      <ModalHeader
+        className={darkMode ? 'bg-space-cadet' : ''}
+        toggle={onClose}
+        cssModule={{ 'modal-title': 'w-100 text-center my-auto pl-2' }}
+      >
         {title}
       </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -296,14 +307,19 @@ function AddOrEditPopup({
             {errors.location && <div className="alert alert-danger mt-1">{errors.location}</div>}
           </div>
           <div className="text-center">
-            <Button className="btn btn-primary mt-5" type="submit" color="primary" style={darkMode ? boxStyleDark : boxStyle}>
+            <Button
+              className="btn btn-primary mt-5"
+              type="submit"
+              color="primary"
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
               {submitText}
             </Button>
           </div>
         </Form>
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-        <Button style={darkMode ? boxStyleDark : boxStyle } color="secondary" onClick={onClose}>
+        <Button style={darkMode ? boxStyleDark : boxStyle} color="secondary" onClick={onClose}>
           Close
         </Button>
       </ModalFooter>

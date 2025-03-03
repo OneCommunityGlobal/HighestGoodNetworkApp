@@ -143,6 +143,52 @@ export const permissionLabels = [
     ],
   },
   {
+    label: 'Tracking Management',
+    description: 'Permissions for managing tracking-related activities.',
+    subperms: [
+      {
+        label: 'View Tracking Overview',
+        key: 'viewTrackingOverview',
+        description: 'Allows user to view an overview of tracking activities for all users.',
+      },
+      {
+        label: 'Issue a Tracking Warnings',
+        key: 'issueTrackingWarnings',
+        description: 'Allows the user to issue warnings for violations of tracking activities.',
+      },
+      {
+        label: 'Issue a Blue Square',
+        key: 'issueBlueSquare',
+        description: 'Allows the user to issue a blue square for viloations of tracking activity.',
+      },
+      {
+        label: 'Delete a Warning',
+        key: 'deleteWarning',
+        description: 'Gives the user permission to delete existing tracking warnings.',
+      },
+      {
+        label: 'Add a New Warning Tracker',
+        key: 'addWarningTracker',
+        description: 'Allows user to add a new warning tracker to the system.',
+      },
+      {
+        label: 'Deactivate a Warning Tracker',
+        key: 'deactivateWarningTracker',
+        description: 'Allows user to deactivate an existing warning tracker.',
+      },
+      {
+        label: 'Reactivate a Warning Tracker',
+        key: 'reactivateWarningTracker',
+        description: 'Allows user to reactivate an existing warning tracker.',
+      },
+      {
+        label: 'Delete a Warning Tracker',
+        key: 'deleteWarningTracker',
+        description: 'Gives user permission to delete a warning tracker from the system.',
+      },
+    ],
+  },
+  {
     label: 'Badge Management',
     description: 'Category for all permissions related to badge management',
     subperms: [

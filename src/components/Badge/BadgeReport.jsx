@@ -5,18 +5,12 @@ import {
   Button,
   ButtonGroup,
   Input,
-  Card,
-  CardTitle,
-  CardBody,
-  CardImg,
-  CardText,
   DropdownToggle,
   Modal,
   ModalBody,
   ModalFooter,
   FormGroup,
   UncontrolledDropdown,
-  UncontrolledPopover,
   DropdownMenu,
   DropdownItem,
   UncontrolledTooltip,
@@ -36,6 +30,7 @@ import { changeBadgesByUserID } from '../../actions/badgeManagement';
 import './BadgeReport.css';
 import { getUserProfile } from '../../actions/userProfile';
 import { PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE } from 'utils/constants';
+import BadgeImage from './BadgeImage';
 
 pdfMake.vfs = pdfFonts.pdfMake.vfs;
 function BadgeReport(props) {
@@ -394,26 +389,15 @@ function BadgeReport(props) {
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <BadgeImage
+                        personalBestMaxHrs={props.personalBestMaxHrs}
+                        count={value.count}
+                        badgeData={value.badge}
+                        index={index}
+                        key={index}
+                        cssSuffix={'_report'}
+                      />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                      <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                        <CardBody>
-                          <CardTitle
-                            style={{
-                              fontWeight: 'bold',
-                              fontSize: 18,
-                              color: '#285739',
-                              marginBottom: 15,
-                            }}
-                          >
-                            {value.badge?.badgeName}
-                          </CardTitle>
-                          <CardText>{value.badge?.description}</CardText>
-                        </CardBody>
-                      </Card>
-                    </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
@@ -576,26 +560,15 @@ function BadgeReport(props) {
                   <tr key={index}>
                     <td className="badge_image_sm">
                       {' '}
-                      <img src={value.badge.imageUrl} id={'popover_' + index.toString()} />
+                      <BadgeImage
+                        personalBestMaxHrs={props.personalBestMaxHrs}
+                        count={value.count}
+                        badgeData={value.badge}
+                        index={index}
+                        key={index}
+                        cssSuffix={'_report'}
+                      />
                     </td>
-                    <UncontrolledPopover trigger="hover" target={'popover_' + index.toString()}>
-                      <Card className="text-center">
-                        <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
-                        <CardBody>
-                          <CardTitle
-                            style={{
-                              fontWeight: 'bold',
-                              fontSize: 18,
-                              color: '#285739',
-                              marginBottom: 15,
-                            }}
-                          >
-                            {value.badge?.badgeName}
-                          </CardTitle>
-                          <CardText>{value.badge?.description}</CardText>
-                        </CardBody>
-                      </Card>
-                    </UncontrolledPopover>
                     <td>{value.badge.badgeName}</td>
                     <td>
                       {typeof value.lastModified == 'string'
