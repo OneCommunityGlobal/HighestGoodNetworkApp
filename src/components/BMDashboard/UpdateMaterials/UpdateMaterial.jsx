@@ -7,8 +7,6 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useEffect } from 'react';
 import { postMaterialUpdate } from 'actions/bmdashboard/materialsActions';
 import { toast } from 'react-toastify';
-import { resetMaterialUpdate } from 'actions/bmdashboard/materialsActions';
-import { fetchAllMaterials } from 'actions/bmdashboard/materialsActions';
 
 function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
   const dispatch = useDispatch();
@@ -97,11 +95,9 @@ function UpdateMaterial({ record, bulk, sendUpdatedRecord, cancel, setModal }) {
     if (bulk === true) sendUpdatedRecord(updateRecord, validations);
   };
 
-  const submitHandler = e => {
+  const submitHandler = async e => {
     e.preventDefault();
-    dispatch(postMaterialUpdate(updateRecord));
-    dispatch(resetMaterialUpdate());
-    dispatch(fetchAllMaterials());
+    await dispatch(postMaterialUpdate(updateRecord));
   };
 
   const changeRecordHandler = e => {
