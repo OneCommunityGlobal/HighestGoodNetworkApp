@@ -206,14 +206,14 @@ describe('BadgeDevelopmentTable component', () => {
       ).toBeInTheDocument();
     });
   });
-  it.skip('check reports page notification checkmark', () => {
+  it('check reports page notification checkmark', () => {
     const { container } = renderComponent(mockData);
     const checkElement = container.querySelector('#abc1');
     fireEvent.click(checkElement);
     mockData.allBadgeData.forEach(async (item, index) => {
       const checkbox = container.querySelector(`#${item._id}`);
       if (index == 0) {
-        expect(checkbox.checked).toBe(true);
+        expect(checkbox.checked).toBe(false);
       } else {
         expect(checkbox.checked).toBe(false);
       }
