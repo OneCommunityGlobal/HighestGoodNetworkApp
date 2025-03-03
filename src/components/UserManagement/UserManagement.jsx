@@ -318,7 +318,7 @@ class UserManagement extends React.PureComponent {
       return (
         nameMatches &&
         user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
-        user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
+       // user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
         user.email.toLowerCase().includes(this.state.emailSearchText.toLowerCase()) &&
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
