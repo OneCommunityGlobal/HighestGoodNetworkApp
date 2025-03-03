@@ -301,7 +301,7 @@ function Announcements({ title, email }) {
       <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <!-- Default Header (Logo) -->
         <div style="text-align: center; margin-bottom: 20px;">
-          <img src="${logoBase64}" alt="One Community Logo" style="max-width: 200px; height: auto;" />
+          <img src="${logoBase64}" alt="One Community Logo" style="max-width: 500px; height: auto;" />
         </div>
     `;
 
@@ -371,35 +371,35 @@ function Announcements({ title, email }) {
     content += `
       <div style="text-align: center; margin-top: 30px;">
         <p style="margin: 0 auto; display: inline-block;">
-          <a href="https://onecommunityglobal.org/overview/" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://onecommunityglobal.org/overview/" target="_blank" rel="noopener" style="margin: 0 14px;">
             <img src="${linkBase64}"
             alt="Overview" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
-          <a href="https://www.facebook.com/onecommunityfans" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://www.facebook.com/onecommunityfans" target="_blank" rel="noopener" style="margin: 0 14px;">
             <img src="${facebookBase64}"
             alt="Facebook" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
-          <a href="https://x.com/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://x.com/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 14px;">
             <img src="${twitterBase64}"
             alt="Twitter" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
-          <a href="https://www.linkedin.com/company/one-community-global/" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://www.linkedin.com/company/one-community-global/" target="_blank" rel="noopener" style="margin: 0 14px;">
             <img src="${linkedinBase64}"
             alt="LinkedIn" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
-          <a href="https://www.youtube.com/user/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://www.youtube.com/user/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 14px;">
             <img src="${youtubeBase64}"
             alt="YouTube" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
-          <a href="https://www.instagram.com/onecommunityglobal/" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://www.instagram.com/onecommunityglobal/" target="_blank" rel="noopener" style="margin: 0 14px;">
             <img src="${instagramBase64}"
             alt="Instagram" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
-          <a href="https://www.pinterest.com/onecommunityorg/one-community/" target="_blank" rel="noopener" style="margin: 0 5px;">
+          <a href="https://www.pinterest.com/onecommunityorg/one-community/" target="_blank" rel="noopener" style="margin: 0 14px;">
             <img src="${pinterestBase64}"
             alt="Pinterest" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
-          <a href="mailto:onecommunityupdates@gmail.com" style="margin: 0 5px;">
+          <a href="mailto:onecommunityupdates@gmail.com" style="margin: 0 14px;">
             <img src="${emailBase64}"
             alt="Email" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
