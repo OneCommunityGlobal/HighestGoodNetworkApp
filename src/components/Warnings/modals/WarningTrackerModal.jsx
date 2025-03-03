@@ -206,6 +206,7 @@ function WarningTrackerModal({
         setWarningDescriptions(res.newWarnings);
         getUsersWarnings();
         setError(null);
+        setToggeleWarningInput(false);
       },
     );
   };
