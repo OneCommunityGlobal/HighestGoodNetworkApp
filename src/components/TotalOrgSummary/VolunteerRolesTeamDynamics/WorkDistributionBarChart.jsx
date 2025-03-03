@@ -1,3 +1,4 @@
+import Loading from 'components/common/Loading';
 import { ResponsiveContainer, BarChart, XAxis, YAxis, Tooltip, Legend, Bar, Cell } from 'recharts';
 
 const COLORS = [
@@ -30,7 +31,17 @@ function CustomizedLabel(props) {
   );
 }
 
-export default function WorkDistributionBarChart({ workDistributionStats }) {
+export default function WorkDistributionBarChart({ isLoading, workDistributionStats }) {
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+
   // TODO: workDistributionStats should not require a filter. Backend api needs a fix to not return a null _id field.
   const data = workDistributionStats
     .filter(item => item._id)

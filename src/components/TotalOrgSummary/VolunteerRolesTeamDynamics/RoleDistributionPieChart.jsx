@@ -1,3 +1,4 @@
+import Loading from 'components/common/Loading';
 import { useState, useEffect } from 'react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
@@ -18,7 +19,7 @@ const COLORS = [
   '#46d130',
 ];
 
-export default function RoleDistributionPieChart({ roleDistributionStats }) {
+export default function RoleDistributionPieChart({ isLoading, roleDistributionStats }) {
   const [roleDistributionData, setRoleDistributionData] = useState([]);
 
   useEffect(() => {
@@ -29,6 +30,16 @@ export default function RoleDistributionPieChart({ roleDistributionStats }) {
 
   if (!roleDistributionData || roleDistributionData.length === 0) {
     return <p>Loading...</p>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   roleDistributionStats.sort((a, b) => b.count - a.count);

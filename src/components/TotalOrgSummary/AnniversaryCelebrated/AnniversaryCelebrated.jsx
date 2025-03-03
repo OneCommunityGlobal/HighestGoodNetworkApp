@@ -1,13 +1,14 @@
 import { useHistory } from 'react-router-dom';
 import { IoPersonOutline } from 'react-icons/io5';
 import { SiGmail } from 'react-icons/si';
+import Loading from 'components/common/Loading';
 import sixMonthsAward from '../images/sixMonthsAward.svg';
 import oneYearAward from '../images/oneYearAward.svg';
 
-export default function AnniversaryCelebrated({ data, darkMode }) {
+export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
   const history = useHistory();
-  const sixMonthsData = data['6Months'];
-  const oneYearData = data['1Year'];
+  const sixMonthsData = data?.['6Months'] || { comparisonPercentage: 0 };
+  const oneYearData = data?.['1Year'] || { comparisonPercentage: 0 };
   const sixMonthsPercent = sixMonthsData.comparisonPercentage;
   const oneYearPercent = oneYearData.comparisonPercentage;
   const is6MonthsPositive = sixMonthsPercent.toString().charAt(0) !== '-';
@@ -63,36 +64,46 @@ export default function AnniversaryCelebrated({ data, darkMode }) {
       <h4 className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold text-center`}>
         Anniversary Celebrated
       </h4>
-
-      <span
-        style={{
-          fontWeight: 'bold',
-          display: 'grid',
-          justifyContent: 'center',
-          justifyItems: 'center',
-          fontSize: '20px',
-          marginBottom: '5px',
-        }}
-      >
-        <p style={{ display: 'flex', gap: '5px', marginBottom: '5px' }}>
-          <span style={{ color: 'gray' }}>6 months: </span>
-          <span className={`text-center ${is6MonthsPositive ? 'text-success' : 'text-danger'}`}>
-            {`${is6MonthsPositive ? '+' : ''}${sixMonthsPercent}%`}
+      {isLoading ? (
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="w-100vh">
+            <Loading />
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Comparison percentages */}
+          <span
+            style={{
+              fontWeight: 'bold',
+              display: 'grid',
+              justifyContent: 'center',
+              justifyItems: 'center',
+              fontSize: '20px',
+              marginBottom: '5px',
+            }}
+          >
+            <p style={{ display: 'flex', gap: '5px', marginBottom: '5px' }}>
+              <span style={{ color: 'gray' }}>6 months: </span>
+              <span className={`text-center ${is6MonthsPositive ? 'text-success' : 'text-danger'}`}>
+                {`${is6MonthsPositive ? '+' : ''}${sixMonthsPercent}%`}
+              </span>
+            </p>
+            <p style={{ display: 'flex', gap: '5px' }}>
+              <span style={{ color: 'gray' }}>1 year: </span>
+              <span className={`text-center ${isOneYearPositive ? 'text-success' : 'text-danger'}`}>
+                {`${isOneYearPositive ? '+' : ''}${oneYearPercent}%`}
+              </span>
+            </p>
           </span>
-        </p>
-        <p style={{ display: 'flex', gap: '5px' }}>
-          <span style={{ color: 'gray' }}>1 year: </span>
-          <span className={`text-center ${isOneYearPositive ? 'text-success' : 'text-danger'}`}>
-            {`${isOneYearPositive ? '+' : ''}${oneYearPercent}%`}
-          </span>
-        </p>
-      </span>
 
-      {/* List of users with anniversaries */}
-      <ul className="w-90 overflow-auto" style={{ maxHeight: '220px' }}>
-        {sixMonthsData.users.map(item => getAnniversaryListItem(item, 6))}
-        {oneYearData.users.map(item => getAnniversaryListItem(item, 12))}
-      </ul>
+          {/* List of anniversaries */}
+          <ul className="w-90 overflow-auto" style={{ maxHeight: '220px' }}>
+            {sixMonthsData.users.map(item => getAnniversaryListItem(item, 6))}
+            {oneYearData.users.map(item => getAnniversaryListItem(item, 12))}
+          </ul>
+        </>
+      )}
     </div>
   );
 }
