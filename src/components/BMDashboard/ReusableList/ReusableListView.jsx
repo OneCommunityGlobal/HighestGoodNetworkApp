@@ -11,12 +11,19 @@ function ReusableListView() {
   const postReusableUpdateResult = useSelector(state => state.bmReusables.updateReusables);
 
   const reusablesWithId = reusables
-    ? reusables.map(item => ({
-        ...item,
-        id:
-          parseInt(item._id?.substring(item._id?.length - 6), 16) ||
-          Math.floor(Math.random() * 1000000),
-      }))
+    ? reusables.map(item => {
+        let numericId;
+        if (item._id && typeof item._id === 'string' && item._id.length >= 6) {
+          numericId = parseInt(item._id.substring(item._id.length - 6), 16);
+        } else {
+          numericId = Math.floor(Math.random() * 1000000);
+        }
+
+        return {
+          ...item,
+          id: numericId,
+        };
+      })
     : [];
 
   useEffect(() => {
