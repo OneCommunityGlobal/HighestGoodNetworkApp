@@ -10,6 +10,15 @@ function ReusableListView() {
   const errors = useSelector(state => state.errors);
   const postReusableUpdateResult = useSelector(state => state.bmReusables.updateReusables);
 
+  const reusablesWithId = reusables
+    ? reusables.map(item => ({
+        ...item,
+        id:
+          parseInt(item._id?.substring(item._id?.length - 6), 16) ||
+          Math.floor(Math.random() * 1000000),
+      }))
+    : [];
+
   useEffect(() => {
     dispatch(fetchAllReusables());
   }, []);
@@ -30,7 +39,7 @@ function ReusableListView() {
   return (
     <ItemListView
       itemType={itemType}
-      items={reusables}
+      items={reusablesWithId}
       errors={errors}
       UpdateItemModal={UpdateReusableModal}
       dynamicColumns={dynamicColumns}
