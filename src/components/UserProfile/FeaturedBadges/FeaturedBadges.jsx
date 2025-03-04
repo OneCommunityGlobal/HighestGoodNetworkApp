@@ -36,8 +36,8 @@ const FeaturedBadges = props => {
       {filteredBadges.map((value, index) => (
         <BadgeImage 
           personalBestMaxHrs={props.personalBestMaxHrs} 
-          count={value.count} 
-          badgeData={value.badge} 
+          count={value?.count} 
+          badgeData={value?.badge} 
           index={index} 
           key={value.badge?._id || index} 
         />
