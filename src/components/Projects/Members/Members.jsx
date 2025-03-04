@@ -64,7 +64,7 @@ const Members = props => {
   }, [props.state.projectMembers.members, isLoading]);
 
   // ADDED: State for toggling display of active members only
-  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
+  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(true);
 
   // avoid re-filtering the netire list on every render
   const displayedMembers = useMemo(
