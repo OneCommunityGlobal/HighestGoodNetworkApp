@@ -27,67 +27,61 @@ export const getUserTeamMembers = userId => {
   };
 };
 
-export const fetchAllManagingTeams = (userId, managingTeams) => {
+export const fetchAllManagingTeams = (userId, managingTeams) => async dispatch => {
   const allManagingTeams = [];
   let allMembers = [];
   const teamMembersPromises = [];
   const memberTimeEntriesPromises = [];
+
   managingTeams.forEach(team => {
     teamMembersPromises.push(httpService.get(ENDPOINTS.TEAM_MEMBERS(team._id)));
   });
 
-  Promise.all(teamMembersPromises).then(data => {
+  try {
+    const teamMembersResponses = await Promise.all(teamMembersPromises);
+
     for (let i = 0; i < managingTeams.length; i++) {
       allManagingTeams[i] = {
         ...managingTeams[i],
-        members: data[i].data,
+        members: teamMembersResponses[i].data,
       };
-      allMembers = allMembers.concat(data[i].data);
+      allMembers = allMembers.concat(teamMembersResponses[i].data);
     }
+
     console.log('allManagingTeams:', allManagingTeams);
     const uniqueMembers = uniqBy(allMembers, '_id');
-    uniqueMembers.forEach(async member => {
-      const fromDate = moment()
-        .startOf('week')
-        .subtract(0, 'weeks');
-      const toDate = moment()
-        .endOf('week')
-        .subtract(0, 'weeks');
+    uniqueMembers.forEach(member => {
+      const fromDate = moment().startOf('week').subtract(0, 'weeks');
+      const toDate = moment().endOf('week').subtract(0, 'weeks');
       memberTimeEntriesPromises.push(
-        httpService
-          .get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, fromDate, toDate))
-          .catch(err => {}),
+        httpService.get(ENDPOINTS.TIME_ENTRIES_PERIOD(member._id, fromDate, toDate)).catch(err => {})
       );
     });
 
-    Promise.all(memberTimeEntriesPromises).then(data => {
-      for (let i = 0; i < uniqueMembers.length; i++) {
-        uniqueMembers[i] = {
-          ...uniqueMembers[i],
-          timeEntries: data[i].data,
-        };
-      }
+    const memberTimeEntriesResponses = await Promise.all(memberTimeEntriesPromises);
 
-      for (let i = 0; i < allManagingTeams.length; i++) {
-        for (let j = 0; j < allManagingTeams[i].members.length; j++) {
-          const memberDataWithTimeEntries = uniqueMembers.find(
-            member => member._id === allManagingTeams[i].members[j]._id,
-          );
-          allManagingTeams[i].members[j] = memberDataWithTimeEntries;
-        }
-      }
-    });
-  });
-
-  return async dispatch => {
-    await dispatch(setTeamsStart());
-    try {
-      dispatch(setTeams(allManagingTeams));
-    } catch (err) {
-      console.error(err);
-      dispatch(setTeamsError(err));
+    for (let i = 0; i < uniqueMembers.length; i++) {
+      uniqueMembers[i] = {
+        ...uniqueMembers[i],
+        timeEntries: memberTimeEntriesResponses[i]?.data || [],
+      };
     }
-  };
+
+    for (let i = 0; i < allManagingTeams.length; i++) {
+      for (let j = 0; j < allManagingTeams[i].members.length; j++) {
+        const memberDataWithTimeEntries = uniqueMembers.find(
+          member => member._id === allManagingTeams[i].members[j]._id
+        );
+        allManagingTeams[i].members[j] = memberDataWithTimeEntries;
+      }
+    }
+
+    await dispatch(setTeamsStart());
+    dispatch(setTeams(allManagingTeams));
+  } catch (err) {
+    console.error(err);
+    dispatch(setTeamsError(err));
+  }
 };
 
 const setTeamsStart = () => ({
