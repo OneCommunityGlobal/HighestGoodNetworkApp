@@ -466,6 +466,7 @@ function Announcements({ title, email }) {
 
   const handleSendEmails = () => {
     if (activeTab === 'weeklyProgress' && !validateFields()) { // Do not send emails if any field in 'Weekly Progress' tab is invalid
+      toast.error('Error: Please fill in all required fields before sending a test email.');
       return;
     }
 
@@ -489,6 +490,7 @@ function Announcements({ title, email }) {
 
   const handleBroadcastEmails = () => {
     if (activeTab === 'weeklyProgress' && !validateFields()) { // Do not broadcast emails if any field in 'Weekly Progress' tab is invalid
+      toast.error('Error: Please fill in all required fields before sending a test email.');
       return;
     }
 
