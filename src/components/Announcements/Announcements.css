@@ -51,6 +51,20 @@ button.send-button:hover {
   background-color: #357ae8;
 }
 
+button.send-button-green {
+  background-color: #20b12a;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  padding: 10px 20px;
+  cursor: pointer;
+  margin-top: 20px;
+}
+
+button.send-button-green:hover {
+  background-color: #1ca426;
+}
+
 .ck-editor__editable {
   min-height: 500px;
 }

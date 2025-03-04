@@ -39,6 +39,11 @@ function Announcements({ title, email }) {
 
   const [errors, setErrors] = useState({});
 
+  // Predefined email addresses for sending test emails
+  const testEmailAddresses = [
+    'lambomichael7@gmail.com',
+  ];
+
   let logoBase64 = '';
   let linkBase64 = '';
   let facebookBase64 = '';
@@ -502,6 +507,24 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const handleSendTestEmail = () => {
+    if (activeTab === 'weeklyProgress' && !validateFields()) {
+      toast.error('Error: Please fill in all required fields before sending a test email.');
+      return;
+    }
+
+    const htmlContent = constructEmailContent();
+
+    // Validate test email addresses
+    const invalidTestEmails = testEmailAddresses.filter(email => !validateEmail(email.trim()));
+    if (invalidTestEmails.length > 0) {
+      toast.error(`Error: Invalid test email addresses: ${invalidTestEmails.join(', ')}`);
+      return;
+    }
+
+    dispatch(sendEmail(testEmailAddresses.join(','), 'Test Email: Weekly Progress Update', htmlContent));
+  };
+
   const renderWeeklyProgressView = () => (
     <div className="email-update-container">
       <div className="editor">
@@ -621,14 +644,18 @@ function Announcements({ title, email }) {
           title ? (
             ""
           ) : (
-            <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
+            <button type="button" className="send-button" onClick={handleBroadcastEmails} style={{ ... (darkMode ? boxStyleDark : boxStyle), marginRight: '20px' }}>
               Broadcast Weekly Update
             </button>
           )
         }
-        <button type="button" onClick={handlePreview}>
-          Preview Email
+
+        <button type="button" className="send-button-green" onClick={handleSendTestEmail} style={darkMode ? boxStyleDark : boxStyle}>
+          Send Test Email
         </button>
+        {/* <button type="button" onClick={handlePreview}>
+          Preview Email
+        </button> */}
 
       </div>
     </div>
