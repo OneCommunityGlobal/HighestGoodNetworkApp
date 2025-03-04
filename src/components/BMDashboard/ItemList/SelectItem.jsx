@@ -8,14 +8,24 @@ export default function SelectItem({
   label,
 }) {
   let itemSet = [];
-  if (items.length) {
-    if (selectedProject === 'all') itemSet = [...new Set(items.map(m => m.itemType?.name))];
-    else
+  if (items?.length) {
+    if (selectedProject === 'all') {
       itemSet = [
         ...new Set(
-          items.filter(mat => mat.project?.name === selectedProject).map(m => m.itemType?.name),
+          items
+            .filter(m => m.itemType?.name) // Filter out items with null/undefined names
+            .map(m => m.itemType.name),
         ),
       ];
+    } else {
+      itemSet = [
+        ...new Set(
+          items
+            .filter(mat => mat.project?.name === selectedProject && mat.itemType?.name)
+            .map(m => m.itemType.name),
+        ),
+      ];
+    }
   }
 
   return (

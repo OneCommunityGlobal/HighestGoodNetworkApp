@@ -87,13 +87,32 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
 ItemListView.propTypes = {
   items: PropTypes.arrayOf(
     PropTypes.shape({
-      id: PropTypes.number.isRequired,
-      name: PropTypes.string,
+      id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
+      itemType: PropTypes.shape({
+        name: PropTypes.string,
+        unit: PropTypes.string,
+      }),
+      project: PropTypes.shape({
+        _id: PropTypes.string,
+        name: PropTypes.string,
+      }),
+      stockAvailable: PropTypes.number,
+      stockBought: PropTypes.number,
+      stockUsed: PropTypes.number,
+      stockWasted: PropTypes.number,
     }),
   ).isRequired,
   errors: PropTypes.shape({
     message: PropTypes.string,
   }),
+  itemType: PropTypes.string.isRequired,
+  UpdateItemModal: PropTypes.elementType.isRequired,
+  dynamicColumns: PropTypes.arrayOf(
+    PropTypes.shape({
+      label: PropTypes.string.isRequired,
+      key: PropTypes.string.isRequired,
+    }),
+  ).isRequired,
 };
 
 ItemListView.defaultProps = {
