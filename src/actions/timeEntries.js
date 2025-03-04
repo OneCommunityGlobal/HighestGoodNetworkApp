@@ -33,8 +33,6 @@ export const getTimeEntriesForWeek = (userId, offset) => {
         loggedOut = true;
       }
     });
-    return res;
-    // console.log('res inside time entries', res);
     if (!loggedOut || !res || !res.data) {
       const filteredEntries = res.data.filter(entry => {
         const entryDate = moment(entry.dateOfWork); // Convert the entry date to a moment object
@@ -43,6 +41,7 @@ export const getTimeEntriesForWeek = (userId, offset) => {
       await dispatch(setTimeEntriesForWeek(filteredEntries, offset));
       // await dispatch(setTimeEntriesForWeek(res.data, offset));
     }
+    return res;
   };
 };
 
