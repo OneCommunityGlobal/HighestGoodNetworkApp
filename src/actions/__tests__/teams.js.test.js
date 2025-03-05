@@ -115,14 +115,23 @@ describe('fetchAllManagingTeams', () => {
       ],
     }; // Define the mock response for team members
 
+    const mockTimeEntriesResponse = {
+      data: [
+        { _id: 'entry1', hours: 5 },
+        { _id: 'entry2', hours: 3 },
+      ],
+    }; // Define the mock response for time entries
+
     httpService.get
       .mockResolvedValueOnce(mockTeamMembersResponse) // Mock the HTTP GET request for team members of team1
-      .mockResolvedValueOnce(mockTeamMembersResponse); // Mock the HTTP GET request for team members of team2
+      .mockResolvedValueOnce(mockTeamMembersResponse) // Mock the HTTP GET request for team members of team2
+      .mockResolvedValueOnce(mockTimeEntriesResponse) // Mock the HTTP GET request for time entries of member1
+      .mockResolvedValueOnce(mockTimeEntriesResponse) // Mock the HTTP GET request for time entries of member2
 
     const dispatch = jest.fn(); // Create a mock dispatch function
 
     await fetchAllManagingTeams(userId, managingTeams)(dispatch); // Call the fetchAllManagingTeams action creator with the user ID, managing teams, and dispatch function
 
-    expect(httpService.get).toHaveBeenCalledTimes(2); // Assert that the HTTP GET request was called 6 times
+    expect(httpService.get).toHaveBeenCalledTimes(4); // Assert that the HTTP GET request was called 6 times
   });
 });
