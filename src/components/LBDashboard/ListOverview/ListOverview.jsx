@@ -64,7 +64,7 @@ function ListOverview() {
           </div>
           <div className="details-right">
             <div className="listing-details">
-              <h1 className='desktop-display'>{listing.title}</h1>
+              <h1 className="desktop-display">{listing.title}</h1>
               <p>{listing.description}</p>
             </div>
             <div className="rent-form">

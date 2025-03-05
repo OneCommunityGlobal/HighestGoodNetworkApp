@@ -1,3 +1,7 @@
+// Delete these two lines:
+import FormEditor from 'components/Forms/FormEditor';
+import FormViewer from 'components/Forms/FormViewer';
+
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
@@ -119,6 +123,7 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -153,6 +158,8 @@ export default (
         </>
       )}
     />
+    <Route path="/form" component={FormEditor} />
+    <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
