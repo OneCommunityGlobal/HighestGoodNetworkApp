@@ -94,24 +94,13 @@ export const fetchAllMaterials = () => {
   return async dispatch => {
     axios.get(ENDPOINTS.BM_MATERIALS)
       .then(res => {
-        // Calculate stockAvailable for all materials
-        const updatedMaterials = res.data.map(material => ({
-          ...material,
-          stockAvailable: material.stockBought - material.stockUsed - material.stockWasted
-        }));
-
-        // Log each material to see where the issue is
-        console.log("Updated Materials Data:", updatedMaterials);
-
-        dispatch(setMaterials(updatedMaterials));
+        dispatch(setMaterials(res.data))
       })
       .catch(err => {
-        dispatch(setErrors(err));
-      });
+        dispatch(setErrors(err))
+      })
   }
-};
-
-
+}
 
 export const postMaterialUpdate = (payload) => {
   return async dispatch => {
