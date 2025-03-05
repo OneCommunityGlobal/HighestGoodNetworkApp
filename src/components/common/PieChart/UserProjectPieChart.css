@@ -128,6 +128,7 @@
   .pie-chart-legend-container {
     margin-top: 20px;
     height: 100%;
+    width: 100%;
   }
   
   .pie-chart-legend-header {
@@ -139,7 +140,7 @@
   
   .pie-chart-legend-table-wrapper {
     max-height: 350px;
-    max-width: 400px;
+    max-width: 50%;
     border: 1px solid rgba(0, 0, 0, 0.1);
     /* width: 100%; */
     overflow-y: auto;
