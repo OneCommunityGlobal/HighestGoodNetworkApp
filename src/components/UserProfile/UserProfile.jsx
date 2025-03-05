@@ -251,46 +251,10 @@ function UserProfile(props) {
   };
 
   const getTimeOffStatus = personId => {
-    // if (!allRequests[personId]) {
-    //   return false;
-    // }
-
-    // const sortedRequests = allRequests[personId].sort((a, b) =>
-    //   moment(a.startingDate).diff(moment(b.startingDate)),
-    // );
-
-    // const mostRecentRequest =
-    //   sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
-    //   sortedRequests[0];
-
-    // const startOfWeek = moment().startOf('week');
-    // const endOfWeek = moment().endOf('week');
-
-    // const isCurrentlyOff =
-    //   moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
-    //   moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
-
-    // const isCurrentlyOff = moment().isBetween(
-    //   moment(mostRecentRequest.startingDate),
-    //   moment(mostRecentRequest.endingDate),
-    //   null,
-    //   '[]',
-    // );
-
-    // let additionalWeeks = 0;
-    // additional weeks until back
-    // if (isCurrentlyOff) {
-    // additionalWeeks = moment(mostRecentRequest.endingDate).diff(
-    //   moment(moment().startOf('week')),
-    //   'weeks',
-    // );
-
     if (!allRequests[personId]) {
-      // console.log('all requests was false');
       return false;
     }
     let hasTimeOff = false;
-    // const hasTimeOff = true;
     const sortedRequests = allRequests[personId].sort((a, b) =>
       moment(a.startingDate).diff(moment(b.startingDate)),
     );
@@ -298,7 +262,6 @@ function UserProfile(props) {
     const mostRecentRequest =
       sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
       sortedRequests[0];
-    // console.log('most rcent request', mostRecentRequest);
 
     const startOfWeek = moment().startOf('week');
     const endOfWeek = moment().endOf('week');
@@ -308,10 +271,6 @@ function UserProfile(props) {
       moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
 
     return isCurrentlyOff;
-    // weeks before time off
-    // } else if (moment().isBefore(moment(mostRecentRequest.startingDate))) {
-    //   additionalWeeks = moment(mostRecentRequest.startingDate).diff(moment(), 'weeks') + 1;
-    // }
   };
 
   const loadSummaryIntroDetails = async (teamId, user) => {

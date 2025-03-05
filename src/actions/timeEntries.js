@@ -10,8 +10,6 @@ import { ENDPOINTS } from '../utils/URL';
  */
 export const getTimeEntriesForWeek = (userId, offset) => {
   // TODO: Environment variable for server timezone
-  console.log('user,ud', userId);
-
   const fromDate = moment()
     .tz('America/Los_Angeles')
     .startOf('week')
