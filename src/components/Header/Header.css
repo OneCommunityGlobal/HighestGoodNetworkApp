@@ -3,11 +3,9 @@
   width: clamp(100vw, 0.1rem + 1vw, 100%);
 }
 
-close-button {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px; /* Add some padding for easier clicking */
+.close-button {
+  height : 2vh;
+  width : 99%;
 }
 
 .card-content {

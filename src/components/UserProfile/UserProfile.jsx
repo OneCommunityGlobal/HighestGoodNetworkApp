@@ -67,10 +67,11 @@ import {
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
 
-import { getTimeEndDateEntriesByPeriod } from '../../actions/timeEntries.js';
+import { getTimeEndDateEntriesByPeriod, getTimeStartDateEntriesByPeriod } from '../../actions/timeEntries.js';
 import ProfileImageModal from './UserProfileModal/suggestedProfileModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
+import { use } from 'react';
 
 function UserProfile(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -124,9 +125,9 @@ function UserProfile(props) {
   const toggleRemoveModal = () => setIsRemoveModalOpen(!isRemoveModalOpen);
 
 
-  const updateRemovedImage = async () =>{
+  const updateRemovedImage = async () => {
     try {
-      let response=await axios.put(ENDPOINTS.USERS_REMOVE_PROFILE_IMAGE,{'user_id':userProfile._id})
+      let response = await axios.put(ENDPOINTS.USERS_REMOVE_PROFILE_IMAGE, { 'user_id': userProfile._id })
       await loadUserProfile()
       toast.success("Profile Image Removed")
     } catch (error) {
@@ -248,6 +249,16 @@ function UserProfile(props) {
 
   const loadSummaryIntroDetails = async (teamId, user) => {
     const currentManager = user;
+
+    if (!teamId) {
+      setSummaryIntro(
+        `This week’s summary was managed by ${currentManager.firstName} ${currentManager.lastName} and includes . 
+         These people did NOT provide a summary . 
+         <Insert the proofread and single-paragraph summary created by ChatGPT>`,
+      );
+      return;
+    }
+
     try {
       const res = await axios.get(ENDPOINTS.TEAM_USERS(teamId));
       const { data } = res;
@@ -316,11 +327,15 @@ function UserProfile(props) {
       newUserProfile.totalIntangibleHrs = Number(newUserProfile.totalIntangibleHrs.toFixed(2));
 
       const teamId = newUserProfile?.teams[0]?._id;
-      if (teamId) {
-        await loadSummaryIntroDetails(teamId, response.data);
-      }
+      await loadSummaryIntroDetails(teamId, response.data);
 
-      const startDate = newUserProfile?.startDate.split('T')[0];
+      const startDate = await dispatch(
+        getTimeStartDateEntriesByPeriod(userId, newUserProfile.createdDate, newUserProfile.toDate),
+      );
+  
+      if (startDate !== 'N/A') {
+        newUserProfile.startDate = startDate.split('T')[0];
+      }
       // Validate team and project data. Remove incorrect data which may lead to page crash. E.g teams: [null]
       const createdDate = newUserProfile?.createdDate ? newUserProfile.createdDate.split('T')[0] : null;
 
@@ -415,7 +430,7 @@ function UserProfile(props) {
   const onAssignProject = assignedProject => {
     setProjects(prevProjects => [...prevProjects, assignedProject]);
   };
-  
+
   const onUpdateTask = (taskId, updatedTask) => {
     const newTask = {
       updatedTask,
@@ -528,10 +543,11 @@ function UserProfile(props) {
         const newBlueSquare = {
           date: dateStamp,
           description: summary,
-          createdDate: moment
-            .tz('America/Los_Angeles')
-            .toISOString()
-            .split('T')[0],
+          // createdDate: moment
+          //   .tz('America/Los_Angeles')
+          //   .toISOString()
+          //   .split('T')[0],
+          createdDate: moment().format('YYYY-MM-DD'),
         };
         setModalTitle('Blue Square');
         await axios
@@ -657,6 +673,7 @@ function UserProfile(props) {
       if (endDate == 'N/A') {
         endDate = userProfile.createdDate;
       }
+      endDate = moment(endDate).format('YYYY-MM-DDTHH:mm:ss');
     }
     const newUserProfile = {
       ...userProfile,
@@ -672,6 +689,7 @@ function UserProfile(props) {
       );
       setUserProfile(newUserProfile);
       setOriginalUserProfile(newUserProfile);
+      window.location.reload();
     } catch (error) {
       console.error('Failed to update user status:', error);
     }
@@ -680,7 +698,7 @@ function UserProfile(props) {
 
   const activeInactivePopupClose = () => {
     setActiveInactivePopupOpen(false);
-  };  
+  };
 
   const handleRehireableChange = () => {
     const newRehireableStatus = !isRehireable;
@@ -781,9 +799,9 @@ function UserProfile(props) {
     setOriginalUserProfile(newUserProfile);
   };
 
-  const handleCloseConfirmVisibilityModal = () =>{
+  const handleCloseConfirmVisibilityModal = () => {
     setShowToggleVisibilityModal(false)
-  } 
+  }
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
@@ -901,18 +919,16 @@ function UserProfile(props) {
 
       <Container
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          alignItems: 'center',
-          flexDirection: 'column',
-        }}
+        id='containerProfile'
       >
-        <Row>
-          <Col md="4" id="profileContainer">
+          {/* <div className='containerProfile' > */}
+
+
+          <div className='left-top' >
+            
             <div className="profile-img">
               <Image
-                src={profilePic!==undefined?profilePic : '/pfp-default.png'}
+                src={profilePic !== undefined && profilePic!==null? profilePic : '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
@@ -935,13 +951,14 @@ function UserProfile(props) {
                   />
                 </div>
               ) : null}
-              
+
             </div>
-            <div 
-            style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-              {(userProfile?.profilePic!==undefined)?
+            <div
+              style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+              {(userProfile?.profilePic !== undefined) ?
                 <Button color="danger" onClick={toggleRemoveModal} className="remove-button">
-                  Remove Image</Button>:<></>}
+                  Remove Image</Button> : <></>}
+              {/*                   
               {((userProfile?.profilePic==undefined || 
                 userProfile?.profilePic==null || 
                 userProfile?.profilePic=="")&& 
@@ -950,27 +967,29 @@ function UserProfile(props) {
                   userProfile?.suggestedProfilePics.length!==0
                 ))?
                 <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
-                :null}
-                </div>
+                :null} */}
+            </div>
 
-                {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>}
-                <ConfirmRemoveModal
-                  isOpen={isRemoveModalOpen}
-                  toggleModal={toggleRemoveModal}
-                  confirmRemove={confirmRemoveImage}
-                />
-              
-              <QuickSetupModal
-                setSaved={setSaved}
-                handleSubmit={handleSubmit}
-                setUserProfile={setUserProfile}
-                userProfile={userProfile}
-                userTeams={teams || []}
-                teamsData={props?.allTeams?.allTeamsData || []}
-                projectsData={props?.allProjects?.projects || []}
-              />
-          </Col>
-          <Col md="8">
+            {/* {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>} */}
+            <ConfirmRemoveModal
+              isOpen={isRemoveModalOpen}
+              toggleModal={toggleRemoveModal}
+              confirmRemove={confirmRemoveImage}
+            />
+
+            <QuickSetupModal
+              setSaved={setSaved}
+              handleSubmit={handleSubmit}
+              setUserProfile={setUserProfile}
+              userProfile={userProfile}
+              userTeams={teams || []}
+              teamsData={props?.allTeams?.allTeamsData || []}
+              projectsData={props?.allProjects?.projects || []}
+            />
+
+          </div>
+          
+          <div className='right-column'>
             {!isProfileEqual ||
               !isTasksEqual ||
               !isProjectsEqual ? (
@@ -1055,7 +1074,7 @@ function UserProfile(props) {
               >
                 {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
               </Button>
-              {(canGetProjectMembers && teams.length !== 0) || ['Owner','Administrator','Manager'].includes(requestorRole) ? (
+              {(canGetProjectMembers && teams.length !== 0) || ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
                 <Button
                   onClick={() => {
                     navigator.clipboard.writeText(summaryIntro);
@@ -1126,34 +1145,10 @@ function UserProfile(props) {
               isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable}
               darkMode={darkMode}
             />
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4">
-            <div className="profile-work">
-              <UserLinkLayout
-                isUserSelf={isUserSelf}
-                userProfile={userProfile}
-                updateLink={updateLink}
-                handleLinkModel={props.handleLinkModel}
-                handleSubmit={handleSubmit}
-                role={requestorRole}
-                canEdit={canEdit || canManageAdminLinks}
-                darkMode={darkMode}
-              />
-              <BlueSquareLayout
-                userProfile={userProfile}
-                handleUserProfile={handleUserProfile}
-                handleSaveError={props.handleSaveError}
-                handleBlueSquare={handleBlueSquare}
-                user={props.auth.user}
-                isUserSelf={isUserSelf}
-                canEdit={canEdit}
-                darkMode={darkMode}
-              />
-            </div>
-          </Col>
-          <Col md="8" className="profile-functions-desktop">
+          
+
+  
+          <div  className="profile-functions-desktop">
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
@@ -1398,8 +1393,8 @@ function UserProfile(props) {
                 </>
               )}
             </div>
-          </Col>
-          <Col md="8" className="profile-functions-tablet">
+         </div>
+          <div  className="profile-functions-tablet">
             <List className="profile-functions-list">
               <Button
                 className="list-button"
@@ -1864,13 +1859,40 @@ function UserProfile(props) {
                 </ModalFooter>
               </Modal>
             </List>
-          </Col>
-        </Row>
-        <Row>
-          <Col md="4" />
-          {/* <Col md="8" className="desktop-panel">
-          </Col> */}
-        </Row>
+          </div>
+
+          </div>
+
+            <div className='left-bottom'>
+              <div className="profile-work">
+              <UserLinkLayout
+                isUserSelf={isUserSelf}
+                userProfile={userProfile}
+                updateLink={updateLink}
+                handleLinkModel={props.handleLinkModel}
+                handleSubmit={handleSubmit}
+                role={requestorRole}
+                canEdit={canEdit || canManageAdminLinks}
+                darkMode={darkMode}
+              />
+              <BlueSquareLayout
+                userProfile={userProfile}
+                handleUserProfile={handleUserProfile}
+                handleSaveError={props.handleSaveError}
+                handleBlueSquare={handleBlueSquare}
+                user={props.auth.user}
+                isUserSelf={isUserSelf}
+                canEdit={canEdit}
+                darkMode={darkMode}
+              />
+            </div>
+
+            
+            </div>
+         <div className='left-dummy'></div>
+         
+         
+          {/* </div> */}
       </Container>
     </div>
   );
