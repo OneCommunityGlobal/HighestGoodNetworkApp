@@ -50,7 +50,7 @@ const ReviewButton = ({
   }
 
   const handleLink = (e) => {
-    const url = e.target.value;
+    const url = e.target.value.trim();
     setLink(url);
     if (!url) { 
       setLinkError("A valid URL is required for review"); 
