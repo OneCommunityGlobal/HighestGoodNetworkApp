@@ -332,35 +332,6 @@ function UserProfile(props) {
       const activeMembers = data.filter(
         member => member._id !== currentManager._id && member.isActive,
       );
-
-      // const sortedArray = activeMembers.map(member => {
-      //   console.log('id', member._id);
-      //   console.log('resu;ts', allRequests[member._id]);
-      //   return [];
-      // });
-
-      // const memberSubmitted = await activeMembers
-      //   .filter(member => member.weeklySummaries[0].summary !== '')
-      //   .map(async member => {
-      //     const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
-      //     console.log('results', results);
-      //     if (results.length > 0) {
-      //       const returnData = results.data.map(time => {
-      //         return calculateTotalTime(time, true);
-      //       });
-      //       console.log('returndata', returnData);
-      //       return returnData;
-      //     } else {
-      //       return `${member.firstName} ${member.lastName}`;
-      //     }
-      //   });
-
-      //finalize this method as
-      //const results = await dispatch(getTimeEntriesForWeek(member._id, 0));
-      //calls the backend but i returnr res as it doesn't reutrn anything when caleld
-      //check to see an alternative for this as i shouldn't return from the function
-      //look into the timelog again and see how i can get the hours the user has commited for this tweek.
-
       //submitted a summary, maybe didn't complete their hours just yet
       const memberSubmitted = await Promise.all(
         activeMembers
