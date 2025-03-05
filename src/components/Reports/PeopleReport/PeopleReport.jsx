@@ -373,7 +373,7 @@ class PeopleReport extends Component {
           intentInfo: '',
         };
         const resourcesName = [];
-
+        
         if (userTask[i].isActive) {
           task.active = 'Yes';
         } else {
@@ -405,12 +405,15 @@ class PeopleReport extends Component {
         }
         task._id = userTask[i]._id;
         task.resources.push(resourcesName);
-        if (userTask[i].startedDatetime == null) {
+        // startedDatetime
+        if (userTask[i].startedDatetime === null && userTask[i].startedDatetime !== "") {
           task.startDate = 'null';
         }
-        if (userTask[i].endedDatime == null) {
+        if (userTask[i].dueDatetime === null && userTask[i].dueDatetime !== "") {
           task.endDate = 'null';
         }
+        task.startDate = userTask[i].startedDatetime.split('T')[0];
+        task.endDate = userTask[i].dueDatetime.split('T')[0];
         task.hoursBest = userTask[i].hoursBest;
         task.hoursMost = userTask[i].hoursMost;
         task.hoursWorst = userTask[i].hoursWorst;

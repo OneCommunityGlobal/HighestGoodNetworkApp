@@ -18,7 +18,7 @@ function PeopleTableDetails(props) {
   const [startDate] = useState('');
   const [endDate] = useState('');
   const [isMobile, setisMobile] = useState(false);
-
+  
   const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   // useEffect(() => {
   //   function handleResize() {

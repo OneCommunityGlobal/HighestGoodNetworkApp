@@ -138,11 +138,12 @@
   }
   
   .pie-chart-legend-table-wrapper {
-    max-height: 500px;
+    max-height: 350px;
+    max-width: 400px;
     border: 1px solid rgba(0, 0, 0, 0.1);
-    width: 100%;
+    /* width: 100%; */
     overflow-y: auto;
-    overflow-x: auto; /* Enable horizontal scrolling when necessary */
+    /* overflow-x: auto;  */
     display: block;
   }
   
@@ -150,7 +151,8 @@
     width: 100%;
     table-layout: auto;
     border-collapse: collapse;
-    height: 80%;
+    height: 300px;
+    /* overflow-y: auto; */
   }
 
   .pie-chart-legend-table th,
@@ -158,7 +160,6 @@
     padding: 8px;
     text-align: left;
     border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-    
   }
   
  
