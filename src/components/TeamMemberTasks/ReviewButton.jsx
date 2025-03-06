@@ -439,11 +439,19 @@ const ReviewButton = ({ user, task, updateTask }) => {
           </p>
           <div className="mt-3">
             <strong>Acceptable link types:</strong>
-            <ul className="mt-2">
-              <li>Google Doc (docs.google.com)</li>
-              <li>Dropbox shared link (must contain /s/ or /scl/)</li>
-              <li>GitHub PR link (must contain /pull/)</li>
-              <li>One Community webpage (onecommunityglobal.org)</li>
+            <ul className="mt-2" style={{ paddingLeft: '25px' }}>
+              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
+                Google Doc (docs.google.com)
+              </li>
+              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
+                Dropbox shared link (must contain /s/ or /scl/)
+              </li>
+              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
+                GitHub PR link (must contain /pull/)
+              </li>
+              <li style={{ paddingLeft: '8px', marginBottom: '4px' }}>
+                One Community webpage (onecommunityglobal.org)
+              </li>
             </ul>
           </div>
         </ModalBody>
