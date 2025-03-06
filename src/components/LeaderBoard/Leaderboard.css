@@ -3,14 +3,10 @@
 } /*1rem = 16px*/
 
 .my-custom-scrollbar {
-  max-height: 1000px;
-  overflow-y: scroll;
+  overflow-y: auto;
   margin-bottom: 1rem;
 }
 
-.table-wrapper-scroll-y {
-  display: relative;
-}
 
 .leaderboard thead th {
   top: 0;
@@ -20,6 +16,62 @@
   border-top-color: rgb(222, 226, 230);
 }
 
+@media screen and (max-width: 768px) {
+  .leaderboard thead th {
+    font-size: 0.75rem; 
+    white-space: nowrap; 
+    line-height: 1.2; 
+    text-overflow: ellipsis; /* Add ellipsis for overflow */
+    overflow: hidden; 
+    max-height: 2.4em; 
+  }
+
+  .leaderboard thead th[data-abbr]::before {
+    content: attr(data-abbr); /* Display the abbreviated version */
+    font-weight: bold;
+  }
+
+  .leaderboard thead th[data-abbr] span {
+    display: none; 
+  }
+
+  .leaderboard thead th[data-abbr="Name"] {
+    width: auto !important;
+    min-width: 120px; 
+    text-align: left; 
+  }
+
+  .leaderboard thead th[data-abbr="Name"] > div {
+    display: flex;
+    align-items: center;
+    justify-content: flex-start; 
+    gap: 6px; /* Adds space between "Name" and the icon */
+    width: 100%;
+    white-space: nowrap; 
+  }
+
+  .leaderboard thead th[data-abbr="Name"]::before {
+    content: none; 
+  }
+
+  .leaderboard thead th[data-abbr="Name"] span {
+    flex-grow: 0; /* Pushes the icon to the right */
+    display: inline-block;
+    white-space: nowrap;
+  }
+
+  .leaderboard thead th[data-abbr="Name"] .p-2 {
+    margin-left: 0; /* Moves "i" icon to the right */
+    display: flex;
+    align-items: center;
+    white-space: nowrap; 
+  }
+
+  
+}
+
+
+
 /* Small devices (landscape phones, 544px and up) */
 @media (max-width: 544px) {
   .leaderboard {
@@ -27,13 +79,9 @@
   } /*1rem = 16px*/
 
   .my-custom-scrollbar {
-    height: 300px;
+    max-height: 500px;
     overflow: scroll;
     margin-bottom: 1rem;
-  }
-
-  .table-wrapper-scroll-y {
-    display: relative;
   }
 
   .leaderboard thead th {
@@ -51,8 +99,10 @@
 .table-fixed tbody td {
   white-space: normal; /* Allow text wrapping within cells */
 }
+
 .table-fixed {
   font-size: 0.93rem;
+  word-break: break-word;
 }
 
 .animation {
@@ -68,7 +118,7 @@
 }
 
 .leaderboard-totals-title {
-  color: #007bff;
+  color: #339CFF;
   font-weight: bold;
 }
 

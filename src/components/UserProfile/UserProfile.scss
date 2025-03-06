@@ -2,18 +2,6 @@
   z-index: -100;
 }
 
-.profileContainer {
-  display: flex;
-  flex-direction: row;
-  justify-content: center;
-  padding: 10px;
-  padding-bottom: 50px;
-  margin-left: 10vw;
-  margin-right: 10vw;
-  font-weight: bold;
-  background-color: white;
-}
-
 .row {
   display: flex;
 }
@@ -77,6 +65,7 @@
   align-items: center;
   flex-wrap: wrap;
   gap: 4px;
+  margin-bottom: 10px;
 }
 
 .profile-edit-btn {
@@ -115,15 +104,10 @@
   border-bottom: 2px solid #0062cc;
 }
 
-.profile-work {
-  padding: 5% 14% 14% 14%;
-}
-
 .profile-work p {
   font-size: 12px;
   color: #818182;
   font-weight: 600;
-  margin-top: 10%;
 }
 
 .profile-work a {
@@ -139,6 +123,7 @@
 
 .profile-tab label {
   font-weight: 600;
+  margin : 0;
 }
 
 .profile-tab p {
@@ -150,7 +135,7 @@
   font-size: 12px;
   color: #818182;
   font-weight: 600;
-  margin-top: 16px;
+  padding: 10px;
 }
 
 .iconContainer {
@@ -189,6 +174,13 @@
   width: auto;
   height: auto;
   margin: auto;
+}
+
+@media only screen and (max-width: 991px) {
+  .profilePicture {
+    max-width: 180px;
+    max-height: 180px;
+  }
 }
 
 .whoSection {
@@ -381,9 +373,6 @@
 }
 
 @media only screen and (max-height: 650px) {
-  .profileContainer {
-    justify-content: space-around;
-  }
   .whoSection {
     width: 240px;
   }
@@ -398,4 +387,67 @@
 
 button.btn.btn-outline-primary {
   margin-right:5px;
+}
+
+
+#containerProfile {
+  display: grid;
+  grid-template-columns: 1fr 2fr; /* Left = 1fr, Right = 2fr */
+  grid-template-rows: auto auto 1fr;/* Forces left columns to take only the required height */
+  grid-auto-rows: min-content; 
+  gap: 10px; 
+  align-items: start; 
+}
+
+.left-top {
+  grid-column: 1;
+  grid-row: 1;
+  padding: 10px;
+}
+
+.left-bottom {
+  grid-column: 1;
+  grid-row: 2;
+  padding: 10px;
+}
+
+.right-column {
+  grid-column: 2;
+  grid-row: 1 / 4; /* Stretches across all three rows */
+  padding: 10px;
+  height: 100%;
+  align-self: stretch;
+}
+
+.left-dummy { /* This is the new empty space filler */
+  grid-column: 1;
+  grid-row: 3;
+  background-color: transparent; 
+}
+
+/* Mobile & Tablet Layout */
+@media (max-width: 767px) { 
+  #containerProfile {
+    grid-template-columns: 1fr; /* Single-column layout */
+    grid-template-rows: auto auto auto; /* Three stacked rows */
+  }
+
+  .left-top {
+    grid-column: 1;
+    grid-row: 1; 
+  }
+
+  .right-column {
+    grid-column: 1;
+    grid-row: 2; 
+  }
+
+  .left-bottom {
+    grid-column: 1;
+    grid-row: 3; 
+  }
+
+  .left-dummy {
+    display: none; 
+  }
 }

@@ -2,6 +2,10 @@
   display: none;
 }
 
+.desktop {
+  display: block;
+}
+
 @media (max-width: 1024px) {
   .desktop {
     display: none;
@@ -12,8 +16,77 @@
   }
 }
 
+ /* Adjust column widths */
+ .tablet th:nth-child(2), /* Name column */
+ .tablet th:nth-child(3), /* Modified column */
+ .tablet td:nth-child(2), /* Name cell */
+ .tablet td:nth-child(3) /* Modified cell */ {
+   width: 80px; 
+   padding: 0 8px; 
+ }
+
+ /* Apply dark background */
+ .dark-mode .tablet thead {
+   background-color: #1C2541 !important;
+ }
+
 .badge_dropdown {
-  height: 25vh;
-  overflow-y: scroll;
-  overflow: auto;
+  max-height: 150px; /* Limits the dropdown height */
+  overflow-y: auto;  /* Allows scrolling if needed */
+  height: auto;      /* Allows height to adjust based on content */
+}
+
+/* Show "Earned Dates" for all screen sizes */
+th[data-testid="desktop-earned-dates"] {
+  display: table-cell;
+}
+
+/* Adjust layout for smaller screens */
+@media (max-width: 1024px) {
+  th[data-testid="desktop-earned-dates"] {
+    display: table-cell; /* adjust width or alignment here */
+  }
+}
+
+.badge_count_report {
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 15px Arial, sans-serif;
+  position: absolute;
+  right: 26px;
+  bottom: 2px;
+  z-index: 10;
+}
+
+.badge_count_personalmax_report {
+	padding-top: 4px;
+	border-radius: 45%;
+	width: 19px;
+	height: 19px;
+	background: #800080;
+	color: #fff;
+	text-align: center;
+	font: 11px Arial, sans-serif;
+	position: absolute;
+	right: 26px;
+	bottom: 3px;
+	z-index: 10;
+}
+
+.badge_count_3_digit_report {
+  border-radius: 50%;
+  width: 20px;
+  height: 15px;
+  background: #007bff;
+  color: #fff;
+  text-align: center;
+  font: 11px Arial, sans-serif;
+  position: absolute;
+  right: 26px;
+  bottom: 2px;
+  z-index: 10;
 }
