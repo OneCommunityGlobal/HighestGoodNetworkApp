@@ -6,14 +6,6 @@ import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import logo2 from '../../assets/images/logo2.png';
-import link from '../../assets/images/link.png';
-import facebook from '../../assets/images/Facebook_Logo_Primary.png';
-import instagram from '../../assets/images/ig-logo.png';
-import twitter from '../../assets/images/twitter-logo.png';
-import pinterest from '../../assets/images/P-Badge-Red-RGB.png';
-import youtube from '../../assets/images/youtube_social_circle_red.png';
-import linkedin from '../../assets/images/linkedin-logo.png';
-import emailIcon from '../../assets/images/email.png';
 import ImageUploader from './ImageUploader';
 
 function Announcements({ title, email }) {
@@ -43,53 +35,6 @@ function Announcements({ title, email }) {
   const testEmailAddresses = [
     'lambomichael7@gmail.com',
   ];
-
-  let logoBase64 = '';
-  let linkBase64 = '';
-  let facebookBase64 = '';
-  let instagramBase64 = '';
-  let twitterBase64 = '';
-  let pinterestBase64 = '';
-  let youtubeBase64 = '';
-  let linkedinBase64 = '';
-  let emailBase64 = '';
-
-  // Convert imported images to base64 string
-  urlToBase64(logo2, (base64) => {
-    logoBase64 = base64;
-  });
-
-  urlToBase64(link, (base64) => {
-    linkBase64 = base64;
-  });
-
-  urlToBase64(facebook, (base64) => {
-    facebookBase64 = base64;
-  });
-
-  urlToBase64(instagram, (base64) => {
-    instagramBase64 = base64;
-  });
-
-  urlToBase64(twitter, (base64) => {
-    twitterBase64 = base64;
-  });
-
-  urlToBase64(pinterest, (base64) => {
-    pinterestBase64 = base64;
-  });
-
-  urlToBase64(youtube, (base64) => {
-    youtubeBase64 = base64;
-  });
-
-  urlToBase64(linkedin, (base64) => {
-    linkedinBase64 = base64;
-  });
-
-  urlToBase64(emailIcon, (base64) => {
-    emailBase64 = base64;
-  });
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -377,35 +322,35 @@ function Announcements({ title, email }) {
       <div style="text-align: center; margin-top: 30px;">
         <p style="margin: 0 auto; display: inline-block;">
           <a href="https://onecommunityglobal.org/overview/" target="_blank" rel="noopener" style="margin: 0 14px;">
-            <img src="${linkBase64}"
+            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-link-48.png"
             alt="Overview" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.facebook.com/onecommunityfans" target="_blank" rel="noopener" style="margin: 0 14px;">
-            <img src="${facebookBase64}"
+            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-facebook-48.png"
             alt="Facebook" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://x.com/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 14px;">
-            <img src="${twitterBase64}"
+            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-twitter-48.png"
             alt="Twitter" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.linkedin.com/company/one-community-global/" target="_blank" rel="noopener" style="margin: 0 14px;">
-            <img src="${linkedinBase64}"
+            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-linkedin-48.png"
             alt="LinkedIn" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.youtube.com/user/onecommunityorg" target="_blank" rel="noopener" style="margin: 0 14px;">
-            <img src="${youtubeBase64}"
+            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-youtube-48.png"
             alt="YouTube" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.instagram.com/onecommunityglobal/" target="_blank" rel="noopener" style="margin: 0 14px;">
-            <img src="${instagramBase64}"
+            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-instagram-48.png"
             alt="Instagram" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="https://www.pinterest.com/onecommunityorg/one-community/" target="_blank" rel="noopener" style="margin: 0 14px;">
-            <img src="${pinterestBase64}"
+            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-pinterest-48.png"
             alt="Pinterest" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
           <a href="mailto:onecommunityupdates@gmail.com" style="margin: 0 14px;">
-            <img src="${emailBase64}"
+            <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-forwardtofriend-48.png"
             alt="Email" 
             style="width: 24px; height: 24px; vertical-align: middle;" /></a>
         </p>
