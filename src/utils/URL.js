@@ -221,6 +221,7 @@ export const ENDPOINTS = {
   // social media poster api
   POST_TWEETS: `${APIEndpoint}/createTweet`,
   SCHEDULE_TWEETS: `${APIEndpoint}/scheduleTweet`,
+  SOCIAL_MEDIA_POSTS: `${APIEndpoint}/posts`,
 };
 
 export const ApiEndpoint = APIEndpoint;

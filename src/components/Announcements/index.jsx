@@ -3,12 +3,15 @@ import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import { sendTweet, scheduleTweet } from '../../actions/sendSocialMediaPosts';
+import { sendTweet, scheduleTweet, fetchPosts, deletePost } from '../../actions/sendSocialMediaPosts';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import { Link } from 'react-router-dom';
+
 import {
   Label,
   Input,
+  Button
 } from 'reactstrap';
 
 function Announcements({title, email}) {
@@ -26,6 +29,8 @@ function Announcements({title, email}) {
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+
+  const [posts, setPosts] = useState([]);
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -97,6 +102,15 @@ function Announcements({title, email}) {
       setEmailList(trimmedEmail.split(','));
     }
   }, [email]);
+
+  useEffect(() => {
+    getAllPosts();
+  }, []);
+
+  const getAllPosts = async () => {
+    const data = await fetchPosts(); // Call API
+    setPosts(data); // Set state with fetched posts
+  };
 
   const handleEmailListChange = e => {
     const emails = e.target.value.split(',');
@@ -180,17 +194,36 @@ function Announcements({title, email}) {
     dispatch(sendTweet(htmlContent));
   };
 
-  const handleScheduleTweets = () => {
+  const handleScheduleTweets = async () => {
     const htmlContent = `${emailContent}`;
     const scheduleDate = `${dateContent}`;
     const scheduleTime = `${timeContent}`;
 
     dispatch(scheduleTweet(scheduleDate, scheduleTime, htmlContent));
+    await getAllPosts();
   };
 
   const handleDateContentChange = e => {
     setDateContent(e.target.value);    
   }  
+
+  const handleDeletePost = async (postId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this post?");
+    if (!confirmDelete) return;
+
+    try {
+      const result = await deletePost(postId);
+      if (result) {
+        toast.success("Post deleted successfully!");
+        setPosts((prevPosts) => prevPosts.filter(post => post._id !== postId));
+      } else {
+        toast.error("Failed to delete post.");
+      }
+    } catch (error) {
+      console.error("Error deleting post:", error);
+      toast.error("Error deleting post.");
+    }
+  };
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{minHeight: "100%"}}>
@@ -264,6 +297,40 @@ function Announcements({title, email}) {
           </div>
           )
         }
+        <br />
+        <br />
+        
+        <div>
+          <h2>Scheduled Posts</h2>
+          <ul>
+            {posts.map((post) => (
+              <li key={post._id} style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                <div>
+                  <Link 
+                    to={`/socialMediaPosts/${post._id}`} 
+                    title="View Post"
+                    style={{
+                      color: '#007BFF',
+                      textDecoration: 'none',
+                      fontWeight: 'bold',
+                      marginRight: '10px',
+                    }}
+                  >
+                    {post.textContent.length > 50
+                      ? post.textContent.slice(0, 50) + '...'
+                      : post.textContent}
+                  </Link> 
+                  <br />
+                  <em>Scheduled Time:</em> {post.scheduledTime} <br />
+                  <em>Platform:</em> {post.platform} <br />
+                </div>
+                <Button color="danger" size="sm" onClick={() => handleDeletePost(post._id)}>
+                  Delete
+                </Button>
+              </li>
+            ))}
+          </ul>
+        </div>
 
         </div>
         <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`}  style={darkMode ? boxStyleDark : boxStyle}>
@@ -314,8 +381,9 @@ function Announcements({title, email}) {
               className="input-file-upload"
             />
 
-            </div>
+            </div>          
           </div>
+          
         </div>
       
   );
