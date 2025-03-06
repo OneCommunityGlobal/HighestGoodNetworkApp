@@ -11,26 +11,22 @@ describe('TeamsOverview', () => {
 
   it('displays the correct number of teams', () => {
     renderWithProvider(<TeamsOverview numberOfTeams={10} numberOfActiveTeams={0} />);
-    expect(screen.getByText(/10/)).toBeInTheDocument();
+    expect(screen.getByText(/Total Teams\s*:\s*10/)).toBeInTheDocument();
   });
 
   it('displays the correct number of active teams', () => {
     renderWithProvider(<TeamsOverview numberOfTeams={0} numberOfActiveTeams={5} />);
-    expect(screen.getByText(/5/)).toBeInTheDocument();
+    expect(screen.getByText(/Active Teams\s*:\s*5/)).toBeInTheDocument();
   });
 
   it('has a card for total teams', () => {
     renderWithProvider(<TeamsOverview numberOfTeams={0} numberOfActiveTeams={0} />);
-    expect(screen.getByText((content, element) => {
-      return element.tagName.toLowerCase() === 'h6' && content.includes(TOTAL_TEAMS);
-    })).toBeInTheDocument();
+    expect(screen.getByTestId('total_teams')).toBeInTheDocument();
   });
 
   it('has a card for active teams', () => {
     renderWithProvider(<TeamsOverview numberOfTeams={0} numberOfActiveTeams={0} />);
-    expect(screen.getByText((content, element) => {
-      return element.tagName.toLowerCase() === 'h6' && content.includes(ACTIVE_TEAMS);
-    })).toBeInTheDocument();
+    expect(screen.getByTestId('active_teams')).toBeInTheDocument();
   });
 
   it('displays the user icon', () => {
@@ -45,15 +41,11 @@ describe('TeamsOverview', () => {
 
   it('displays the correct localization for total teams', () => {
     renderWithProvider(<TeamsOverview numberOfTeams={0} numberOfActiveTeams={0} />);
-    expect(screen.getByText((content, element) => {
-      return element.tagName.toLowerCase() === 'h6' && content.includes(TOTAL_TEAMS);
-    })).toBeInTheDocument();
+    expect(screen.getByTestId('total_teams')).toBeInTheDocument();
   });
 
   it('displays the correct localization for active teams', () => {
     renderWithProvider(<TeamsOverview numberOfTeams={0} numberOfActiveTeams={0} />);
-    expect(screen.getByText((content, element) => {
-      return element.tagName.toLowerCase() === 'h6' && content.includes(ACTIVE_TEAMS);
-    })).toBeInTheDocument();
+    expect(screen.getByTestId('active_teams')).toBeInTheDocument();
   });
 });
