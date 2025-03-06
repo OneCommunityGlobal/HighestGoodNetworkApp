@@ -30,6 +30,7 @@ import MouseoverTextTotalTimeEditButton from 'components/mouseoverText/Mouseover
 import { toast } from 'react-toastify';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import moment from 'moment-timezone';
+import { Tooltip } from 'reactstrap';
 import { boxStyle } from 'styles';
 import axios from 'axios';
 import { getUserProfile } from 'actions/userProfile';
@@ -83,11 +84,17 @@ function LeaderBoard({
   darkMode,
   getWeeklySummaries,
   setFilteredUserTeamIds,
+  userOnTimeOff,
+  usersOnFutureTimeOff,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
+  const allowedRoles = ['Administrator', 'Manager', 'Mentor', 'Core Team', 'Assistant Manager'];
+  const isAllowedOtherThanOwner = allowedRoles.includes(loggedInUser.role);
+  const [currentTimeOfftooltipOpen, setCurrentTimeOfftooltipOpen] = useState({});
+  const [futureTimeOfftooltipOpen, setFutureTimeOfftooltipOpen] = useState({});
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
@@ -299,13 +306,6 @@ function LeaderBoard({
       moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
       moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
 
-    // const isCurrentlyOff = moment().isBetween(
-    //   moment(mostRecentRequest.startingDate),
-    //   moment(mostRecentRequest.endingDate),
-    //   null,
-    //   '[]',
-    // );
-
     let additionalWeeks = 0;
     // additional weeks until back
     if (isCurrentlyOff) {
@@ -319,6 +319,20 @@ function LeaderBoard({
     }
     return { hasTimeOff, isCurrentlyOff, additionalWeeks };
   };
+
+  // const currentTimeOfftoggle = personId => {
+  //   setCurrentTimeOfftooltipOpen(prevState => ({
+  //     ...prevState,
+  //     [personId]: !prevState[personId],
+  //   }));
+  // };
+
+  // const futureTimeOfftoggle = personId => {
+  //   setFutureTimeOfftooltipOpen(prevState => ({
+  //     ...prevState,
+  //     [personId]: !prevState[personId],
+  //   }));
+  // };
 
   const teamName = (name, maxLength) =>
     setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
@@ -745,6 +759,9 @@ function LeaderBoard({
                     >
                       {item.name}
                     </Link>
+                    {isAllowedOtherThanOwner || isOwner || item.personId === userId
+                      ? timeOffIndicator(item.personId)
+                      : null}
                     &nbsp;&nbsp;&nbsp;
                     {hasVisibilityIconPermission && !item.isVisible && (
                       <i className="fa fa-eye-slash" title="User is invisible" />
