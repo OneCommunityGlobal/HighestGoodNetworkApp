@@ -695,7 +695,7 @@ class UserProfileAdd extends Component {
 
   fieldsAreValid = () => {
     const { firstName, lastName, email, phoneNumber, jobTitle, weeklyCommittedHours } = this.state.userProfile;
-    const emailPattern = /^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i;
+    const emailPattern = /^[\w.%+-]+@[a-zA-Z\d]+(\.[a-zA-Z]{2,})+$/i;
 
     if (!firstName.trim()) {
       toast.error('First Name is required');
