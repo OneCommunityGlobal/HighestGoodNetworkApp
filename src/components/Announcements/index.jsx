@@ -237,7 +237,7 @@ function Announcements({ title, email }) {
       <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
         <!-- Default Header (Logo) -->
         <div style="text-align: center; margin-bottom: 20px;">
-          <img src="${logoBase64}" alt="One Community Logo" style="max-width: 500px; height: auto;" />
+          <img src="${logo2}" alt="One Community Logo" style="max-width: 500px; height: auto;" />
         </div>
     `;
 
