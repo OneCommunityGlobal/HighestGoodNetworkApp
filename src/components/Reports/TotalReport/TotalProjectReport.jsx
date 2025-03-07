@@ -6,12 +6,9 @@ import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
-import Loading from '../../common/Loading';
-import { set } from 'lodash';
 
 function TotalProjectReport(props) {
   const { startDate, endDate, userProfiles, projects, darkMode } = props;
-
   const [totalProjectReportDataLoading, setTotalProjectReportDataLoading] = useState(true);
   const [totalProjectReportDataReady, setTotalProjectReportDataReady] = useState(false);
   const [showTotalProjectTable, setShowTotalProjectTable] = useState(false);
@@ -28,31 +25,27 @@ function TotalProjectReport(props) {
   const projectList = useMemo(() => projects.map(proj => proj._id), [projects]);
 
   const loadTimeEntriesForPeriod = useCallback(async () => {
-    try {
-      const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT;
-      const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
-        projectId: entry.projectId,
-        projectName: entry.projectName,
-        hours: entry.hours,
-        minutes: entry.minutes,
-        isTangible: entry.isTangible,
-        date: entry.dateOfWork,
-      })));
+    const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT;
+    const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
+      projectId: entry.projectId,
+      projectName: entry.projectName,
+      hours: entry.hours,
+      minutes: entry.minutes,
+      isTangible: entry.isTangible,
+      date: entry.dateOfWork,
+    })));
 
-      const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
-      const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }).then(res => res.data.map(entry => ({
-        projectId: entry.projectId,
-        projectName: entry.projectName,
-        hours: entry.hours,
-        minutes: entry.minutes,
-        isTangible: entry.isTangible,
-        date: entry.dateOfWork,
-      })));
+    const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+    const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }).then(res => res.data.map(entry => ({
+      projectId: entry.projectId,
+      projectName: entry.projectName,
+      hours: entry.hours,
+      minutes: entry.minutes,
+      isTangible: entry.isTangible,
+      date: entry.dateOfWork,
+    })));
 
-      setAllTimeEntries([...timeEntries, ...projTimeEntries]);
-    } catch (err) {
-      console.error("API error:", err.message);
-    }
+    setAllTimeEntries([...timeEntries, ...projTimeEntries]);
   }, [fromDate, toDate, userList, projectList]);
 
   const sumByProject = useCallback((objectArray, property) => {
@@ -246,7 +239,7 @@ function TotalProjectReport(props) {
     <div>
       {!totalProjectReportDataReady ? (
         <div style={{ textAlign: 'center' }}>
-          <Loading align="center" darkMode={darkMode}/>
+          &quot;&quot;
           <div
             style={{
               width: '50%',
