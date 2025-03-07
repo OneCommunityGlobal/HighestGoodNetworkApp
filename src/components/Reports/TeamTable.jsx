@@ -8,23 +8,24 @@ import hasPermission from 'utils/permissions';
 import { updateTeam } from 'actions/allTeamsAction';
 import { boxStyle, boxStyleDark } from 'styles';
 
-function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
+function TeamTable({ allTeams, auth, darkMode }) {
   // Display project lists
   let TeamsList = [];
-  const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role == 'Owner';
+  const canEditTeamCode = hasPermission('editTeamCode') || auth.user.role === 'Owner';
 
-  const EditTeamCode = ({team}) => {
+  // eslint-disable-next-line react/no-unstable-nested-components
+  function EditTeamCode({team}) {
 
     const [teamCode, setTeamCode] = useState(team.teamCode);
     const [hasError, setHasError] = useState(false);
-    const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+    const fullCodeRegex = /^.{5,7}$/;
 
-    const handleOnChange = (value, team) => {
-      updateTeam(team.teamName, team._id, team.isActive, value);
+    const handleOnChange = (value, teamData) => {
+      updateTeam(teamData.teamName, teamData._id, teamData.isActive, value);
     };
   
     const handleCodeChange = e => {
-      let value = e.target.value;
+      const {value} = e.target;
   
       const regexTest = fullCodeRegex.test(value);
       if (regexTest) {
@@ -38,7 +39,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
     };
   
     return (
-      <>
+      <div className='team-code-form-field'>
         {canEditTeamCode ?
           <div style={{paddingRight: "5px"}}>
             <FormGroup>
@@ -46,7 +47,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
                 id='codeInput'
                 value={teamCode}
                 onChange={e => {
-                  if(e.target.value != teamCode){
+                  if(e.target.value !== teamCode){
                     handleCodeChange(e);
                   }
                 }}
@@ -54,20 +55,20 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
                 invalid={hasError}
               />
               <FormFeedback>
-              The code format must be A-AAA or AAAAA.
+                 NOT SAVED! The code must be between 5 and 7 characters long
               </FormFeedback>
             </FormGroup>
           </div>
         : 
-          `${teamCode == ''? "No assigned code!": teamCode}`
+          `${teamCode === ''? "No assigned code!": teamCode}`
         }
-      </>
+        </div>
     )
-  };
+  }
 
   if (allTeams.length > 0) {
     TeamsList = allTeams.map((team, index) => (
-      <tr id={`tr_${team._id}`} key={team._id} className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <tr id={`tr_${team._id}`} key={team._id}>
         <th scope="row">
           <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
         </th>
@@ -95,8 +96,8 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
     <table 
       className={`table ${darkMode ? 'bg-yinmn-blue' : 'table-bordered'}`}
       style={darkMode ? boxStyleDark : boxStyle}>
-      <thead className={darkMode ? "bg-space-cadet text-light" : ""}>
-        <tr className={darkMode ? 'hover-effect-reports-page-dark-mode' : ''}>
+      <thead>
+        <tr className={darkMode ? 'bg-space-cadet text-light' : ''}>
           <th scope="col" id="projects__order">
             #
           </th>
@@ -107,7 +108,7 @@ function TeamTable({ allTeams, auth, hasPermission, darkMode }) {
           <th style={{width: '30%'}} scope="col">Team Code</th>
         </tr>
       </thead>
-      <tbody>{TeamsList}</tbody>
+      <tbody className={darkMode ? 'dark-mode' : ''}>{TeamsList}</tbody>
     </table>
   );
 }

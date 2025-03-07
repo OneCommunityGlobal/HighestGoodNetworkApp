@@ -109,12 +109,12 @@ export const getTeamDetail = teamId => {
   return async dispatch => {
     let loggedOut = false;
     const res = await axios.get(url).catch(error => {
-      if (error.status === 401) {
+      if (error.response && error.response.status === 401) {
         // logout error
         loggedOut = true;
       }
     });
-    if (!loggedOut) {
+    if (!loggedOut && res) {
       await dispatch(setTeamDetail(res.data));
     }
   };

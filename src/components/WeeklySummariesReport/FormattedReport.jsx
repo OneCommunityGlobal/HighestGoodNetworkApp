@@ -14,7 +14,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
-import RoleInfoModal from 'components/UserProfile/EditableModal/roleInfoModal';
+import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
   ListGroup,
@@ -67,8 +67,9 @@ function FormattedReport({
   auth,
   canSeeBioHighlight,
   darkMode,
+  handleTeamCodeChange,
+  handleSpecialColorDotClick,
 }) {
-  // if (auth?.user?.role){console.log(auth.user.role)}
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
   const dispatch = useDispatch();
@@ -91,6 +92,9 @@ function FormattedReport({
             loadBzadges={loadBadges}
             canSeeBioHighlight={canSeeBioHighlight}
             darkMode={darkMode}
+            handleTeamCodeChange={handleTeamCodeChange}
+            auth={auth}
+            handleSpecialColorDotClick={handleSpecialColorDotClick}
           />
         ))}
       </ListGroup>
@@ -179,6 +183,18 @@ function EmailsList({ summaries, auth }) {
   return null;
 }
 
+function getTextColorForHoursLogged(hoursLogged, promisedHours) {
+  const percentage = (hoursLogged / promisedHours) * 100;
+
+  if (percentage < 50) {
+    return 'red';
+  }
+  if (percentage < 100) {
+    return '#0B6623';
+  }
+  return 'black';
+}
+
 function ReportDetails({
   summary,
   weekIndex,
@@ -191,6 +207,9 @@ function ReportDetails({
   canSeeBioHighlight,
   loggedInUserEmail,
   darkMode,
+  handleTeamCodeChange,
+  auth,
+  handleSpecialColorDotClick,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -211,7 +230,13 @@ function ReportDetails({
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
         <ListGroupItem darkMode={darkMode}>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} />
+          <Index
+            summary={summary}
+            weekIndex={weekIndex}
+            allRoleInfo={allRoleInfo}
+            auth={auth}
+            handleSpecialColorDotClick={handleSpecialColorDotClick}
+          />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
@@ -219,6 +244,7 @@ function ReportDetails({
               <TeamCodeRow
                 canEditTeamCode={canEditTeamCode && !cantEditJaeRelatedRecord}
                 summary={summary}
+                handleTeamCodeChange={handleTeamCodeChange}
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
@@ -238,18 +264,17 @@ function ReportDetails({
               />
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
-              {hoursLogged < summary.promisedHoursByWeek[weekIndex] && (
-                <p style={{ color: 'red' }}>
-                  Hours logged: {''}
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              )}
-              {hoursLogged >= summary.promisedHoursByWeek[weekIndex] && (
-                <p>
-                  Hours logged: {''}
-                  {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
-                </p>
-              )}
+              <p
+                style={{
+                  color: getTextColorForHoursLogged(
+                    hoursLogged,
+                    summary.promisedHoursByWeek[weekIndex],
+                  ),
+                  fontWeight: 'bold',
+                }}
+              >
+                Hours logged: {hoursLogged.toFixed(2)} / {summary.promisedHoursByWeek[weekIndex]}
+              </p>
             </ListGroupItem>
             <ListGroupItem darkMode={darkMode}>
               <WeeklySummaryMessage summary={summary} weekIndex={weekIndex} />
@@ -327,15 +352,18 @@ function WeeklySummaryMessage({ summary, weekIndex }) {
   );
 }
 
-function TeamCodeRow({ canEditTeamCode, summary }) {
+function TeamCodeRow({ canEditTeamCode, summary, handleTeamCodeChange }) {
   const [teamCode, setTeamCode] = useState(summary.teamCode);
   const [hasError, setHasError] = useState(false);
-  const fullCodeRegex = /^([a-zA-Z]-[a-zA-Z]{3}|[a-zA-Z]{5})$/;
+  const fullCodeRegex = /^.{5,7}$/;
 
   const handleOnChange = async (userProfileSummary, newStatus) => {
-    const url = ENDPOINTS.USER_PROFILE_PROPERTY(userProfileSummary._id);
+    const url = ENDPOINTS.USERS_ALLTEAMCODE_CHANGE;
     try {
-      await axios.patch(url, { key: 'teamCode', value: newStatus });
+      await axios.patch(url, { userIds: [userProfileSummary._id], replaceCode: newStatus });
+      handleTeamCodeChange(userProfileSummary.teamCode, newStatus, {
+        [userProfileSummary._id]: true,
+      }); // Update the team code dynamically
     } catch (err) {
       // eslint-disable-next-line no-alert
       alert(
@@ -346,8 +374,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
 
   const handleCodeChange = e => {
     const { value } = e.target;
-
-    if (value.length <= 5) {
+    if (value.length <= 7) {
       const regexTest = fullCodeRegex.test(value);
       if (regexTest) {
         setHasError(false);
@@ -359,6 +386,10 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
       }
     }
   };
+
+  useEffect(() => {
+    setTeamCode(summary?.teamCode);
+  }, [summary.teamCode]);
 
   return (
     <>
@@ -386,7 +417,7 @@ function TeamCodeRow({ canEditTeamCode, summary }) {
       </div>
       {hasError ? (
         <Alert className="code-alert" color="danger">
-          NOT SAVED! The code format must be A-AAA or AAAAA.
+          NOT SAVED! The code must be between 5 and 7 characters long.
         </Alert>
       ) : null}
     </>
@@ -610,9 +641,10 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo }) {
+function Index({ summary, weekIndex, allRoleInfo, auth, handleSpecialColorDotClick }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+  const colors = ['purple', 'green', 'navy'];
 
   const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
     if (currentElement.Name === 'Google Doc') {
@@ -640,13 +672,40 @@ function Index({ summary, weekIndex, allRoleInfo }) {
         {summary.firstName} {summary.lastName}
       </Link>
 
-      <GoogleDocIcon link={googleDocLink} />
-      <span>
-        <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
-      </span>
-      {summary.role !== 'Volunteer' && (
-        <RoleInfoModal info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)} />
-      )}
+      <div style={{ display: 'inline-block' }}>
+        <div style={{ display: 'flex' }}>
+          <GoogleDocIcon link={googleDocLink} />
+          <span>
+            <b>&nbsp;&nbsp;{summary.role !== 'Volunteer' && `(${summary.role})`}</b>
+          </span>
+          {summary.role !== 'Volunteer' && (
+            <RoleInfoModal
+              info={allRoleInfo.find(item => item.infoName === `${summary.role}Info`)}
+              auth={auth}
+            />
+          )}
+        </div>
+      </div>
+
+      <div style={{ display: 'inline-block', marginLeft: '10px' }}>
+        {colors.map(color => (
+          <span
+            key={color}
+            onClick={() => handleSpecialColorDotClick(summary._id, color)}
+            style={{
+              display: 'inline-block',
+              width: '15px',
+              height: '15px',
+              margin: '0 5px',
+              borderRadius: '50%',
+              backgroundColor: summary.filterColor === color ? color : 'transparent',
+              border: `3px solid ${color}`,
+              cursor: 'pointer',
+            }}
+          />
+        ))}
+      </div>
+
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (
         <i
           className="fa fa-star"

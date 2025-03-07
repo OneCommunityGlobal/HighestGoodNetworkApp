@@ -1,7 +1,7 @@
 .permissions-management {
-  padding: 1.5rem 3rem;
+  padding: 0.5rem 1rem;
   width: 40%;
-  min-width: 400px;
+  min-width: 350px;
   margin: 1.5rem auto;
   box-shadow: 1px 1px 8px rgb(158, 158, 158);
   display: flex;
@@ -10,16 +10,8 @@
   border-radius: 8px;
 }
 
-.permissions-management-dark {
-  padding: 1.5rem 3rem;
-  width: 40%;
-  min-width: 400px;
-  margin: 1.5rem auto;
+.dark-box-shadow {
   box-shadow: 1px 1px 8px black;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  border-radius: 8px;
 }
 
 .permissions-management__header {
@@ -37,6 +29,7 @@
 }
 
 #modal-content__new-role {
+  position: relative;
   width: 100%;
   max-width: 700px;
 }
@@ -71,8 +64,16 @@
   align-items: flex-end;
   padding-bottom: 5px;
   padding-top: 5px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
 }
-
+.permission-label {
+  word-break: break-word;
+  white-space: normal;
+  max-width: calc(100% - 60px);
+  margin-right: 10px;
+}
 #info-icon__permissions {
   cursor: pointer;
   align-self: flex-end;
@@ -114,13 +115,13 @@
   border-radius: 8px;
 }
 
-.role-name{
+.role-name {
   margin: 0;
   padding-top: 0.5rem;
   padding-bottom: 0.5rem;
   font-size: 1.2rem;
   font-weight: 500;
-  cursor: pointer; 
+  cursor: pointer;
   display: flex;
   align-items: center;
 }
@@ -130,29 +131,173 @@
   flex-grow: 1;
 }
 
-.infos{
+.infos {
   margin-left: auto;
   text-align: center;
   align-items: center;
   padding-bottom: 8px;
 }
 
-
 .role-name:hover {
   background-color: lightgrey;
 }
 
 .role-name-dark:hover {
-  background-color: #1C2541;
+  background-color: #2f4157;
 }
-
 
 .loading-message {
   font-size: 30px;
 }
 
-@media only screen and (max-width: 1199px) {
+.ContainerReminder{
+  width: 90%;
+  max-width: 400px;
+  padding: 20px;
+  margin: 0 auto;
+  position: fixed;
+  top: 30%;
+  right: 10%;
+  transform: translate(50%, -50%);
+  background-color: white;
+  z-index: 1000;
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  box-shadow: 0px 2px 10px black;
+}
+
+.ReminderTitle{
+  display: flex;
+  justify-content: center;
+  flex: 1;
+}
+.ReminderTitle h2{
+  color: black;
+  font-size: 22px;
+  align-items: center;
+  display: flex;
+}
+
+.ReminderBody{
+  padding: 10px 0;
+  border-bottom: 1px solid #ccc;
+  border-top: 1px solid #ccc;
+  text-align: center;
+  margin-bottom: 10px;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+}
+
+.ReminderButton{
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  width: 100%;
+  padding-top: 10px;
+}
+.ReminderButton button:first-child{
+  height: 80%;
+  width: 140px;
+  background-color: #007bff;
+  color: #fff;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+.ReminderButton button:nth-child(2){
+  background-color: red;
+  color: #fff;
+  height: 80%;
+  width: 70px;
+  margin-right: 25px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-weight: 500;
+}
+
+ 
+@media only screen and (max-width: 1110px) {
   .permissions-management__header {
     flex-direction: column;
+  }
+}
+
+@media only screen and (min-width: 300px) {
+  .ContainerReminder {
+    position: absolute;
+    width: 400px;
+    top: 100%;
+    right: 50%;
+  }
+}
+
+@media only screen and (min-width: 1200px) {
+  .ContainerReminder {
+    position: fixed;
+    width: 200px;
+    top: 35%;
+    right: 11%;
+  }
+  .ReminderTitle{
+    display: flex;
+    justify-content: center;
+    flex: 10;
+    padding-left: 10px;
+  }
+  .ReminderButton button:first-child{
+    height: 100%;
+    width: 140px;
+    background-color: #007bff;
+    color: #fff;
+    border-radius: 5px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  
+}
+
+@media only screen and (min-width: 1400px) {
+  .ContainerReminder {
+    width: 300px;
+    right: 13%;
+  }
+  .ReminderTitle{
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    padding-left: 20px;
+  }
+}
+
+@media only screen and (min-width: 1600px) {
+  .ContainerReminder {
+    width: 400px;
+    right: 15%;
+  }
+
+  .ReminderTitle{
+    display: flex;
+    justify-content: center;
+    flex: 1;
+    padding-left: 1px;
+  }
+}
+
+@media only screen and (min-width: 1900px) {
+  .ContainerReminder {
+    right: 20%;
+  }
+}
+@media (max-width: 600px) {
+  .ContainerReminder {
+    width: 95%;
+    max-width: none; 
+    padding: 15px; 
+    margin: 20px auto;
+    position: relative;
   }
 }

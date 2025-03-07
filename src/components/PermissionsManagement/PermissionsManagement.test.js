@@ -7,6 +7,13 @@ import { screen } from '@testing-library/react';
 import { renderWithRouterMatch } from '../../__tests__/utils';
 import configureMockStore from 'redux-mock-store';
 import userEvent from '@testing-library/user-event';
+import { ModalProvider } from 'context/ModalContext';
+import axios from 'axios';
+jest.mock('axios');
+// Mock API call to prevent real network requests during tests, avoiding ECONNREFUSED errors 
+// and ensuring consistent, fast, and reliable test execution.
+axios.get.mockResolvedValue({ data: [] }); 
+
 
 jest.mock('actions/role.js');
 
@@ -32,7 +39,9 @@ describe('permissions management page structure', () => {
     store.dispatch = jest.fn();
 
     renderWithRouterMatch(
-      <Route path="/permissionsmanagement">{props => <PermissionsManagement {...props} infoCollections={mockInfoCollections} areaName={'testInfo'} role={'Owner'} fontSiz={24} />}</Route>,
+      <ModalProvider>
+      <Route path="/permissionsmanagement">{props => <PermissionsManagement {...props} infoCollections={mockInfoCollections} areaName={'testInfo'} role={'Owner'} fontSiz={24} />}</Route>
+      </ModalProvider>,
       {
         route: `/permissionsmanagement`,
         store,

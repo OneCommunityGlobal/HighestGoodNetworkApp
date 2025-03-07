@@ -133,7 +133,11 @@ export default function ItemsTable({
                       <td key={label}>{getNestedValue(el, key)}</td>
                     ))}
                     <td className="items_cell">
-                      <button type="button" onClick={() => handleEditRecordsClick(el, 'Update')}>
+                      <button
+                        type="button"
+                        onClick={() => handleEditRecordsClick(el, 'Update')}
+                        aria-label="Edit Record"
+                      >
                         <BiPencil />
                       </button>
                       <Button
@@ -150,7 +154,7 @@ export default function ItemsTable({
                         color="primary"
                         outline
                         size="sm"
-                        onClick={() => handleViewRecordsClick(el.purchaseRecord, 'Purchase')}
+                        onClick={() => handleViewRecordsClick(el, 'Purchase')}
                       >
                         View
                       </Button>

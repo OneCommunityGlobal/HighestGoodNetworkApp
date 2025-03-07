@@ -124,7 +124,11 @@ export const taskReducer = (allTasks = allTasksInital, action) => {
       };
     case types.COPY_TASK:
       const copiedTask = allTasks.taskItems.find(item => item._id === action.taskId);
-      console.log(copiedTask);
+      copiedTask.resources = copiedTask?.resources?.map(resource=>{
+        const {completedTask, ...otherDetails} = resource
+        // Exclude the "completedTask" status to ensure tasks created by pasting are displayed.
+        return otherDetails
+      }) 
       return { ...allTasks, copiedTask };
     case types.ADD_NEW_TASK_ERROR:
       const error = action.err;

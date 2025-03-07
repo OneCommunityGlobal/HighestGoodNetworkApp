@@ -2,9 +2,11 @@ import { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
+import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
 import { getProjectDetail } from '../../../actions/project';
+import {getTimeEntryByProjectSpecifiedPeriod} from '../../../actions/index'
 import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
-import { fetchAllTasks } from 'actions/task';
+import { fetchAllTasks} from '../../../actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
 import { ReportPage } from '../sharedComponents/ReportPage';
@@ -16,15 +18,17 @@ import viewWBSpermissionsRequired from '../../../utils/viewWBSpermissionsRequire
 import { projectReportViewData } from './selectors';
 import '../../Teams/Team.css';
 import './ProjectReport.css';
-import { boxStyle, boxStyleDark } from 'styles';
+import { boxStyle, boxStyleDark } from '../../../styles';
+import { PieChartByProject } from './PiechartByProject/PieChartByProject';
+
 
 // eslint-disable-next-line import/prefer-default-export
 export function ProjectReport({ match }) {
-  const darkMode = useSelector(state => state.theme.darkMode);
   const [memberCount, setMemberCount] = useState(0);
   const [activeMemberCount, setActiveMemberCount] = useState(0);
   const [nonActiveMemberCount, setNonActiveMemberCount] = useState(0);
   const [hoursCommitted, setHoursCommitted] = useState(0);
+  const [tasks, setTasks] = useState([]);
   const dispatch = useDispatch();
 
   const isAdmin = useSelector(state => state.auth.user.role) === 'Administrator';
@@ -33,45 +37,91 @@ export function ProjectReport({ match }) {
   };
   const canViewWBS = isAdmin || checkAnyPermission(viewWBSpermissionsRequired);
 
-  const { wbs, projectMembers, isActive, projectName, wbsTasksID } = useSelector(
-    projectReportViewData,
+  const { wbs, projectMembers, isActive, projectName} = useSelector(
+    projectReportViewData
   );
-  const tasks = useSelector(state => state.tasks);
+  const darkMode = useSelector(state => state.theme.darkMode);
+  const tasksState = useSelector(state => state.tasks);
+
+  let projectId = '';
+  if (match && match.params) {
+  projectId = match.params.projectId;
+  }
+
+  const [projectUsers, setProjectUsers] = useState([]);
+  const [mergedProjectUsersArray, setMergedProjectUsersArray] = useState([]);
+
+  const fromDate = '2016-01-01';
+  const toDate = new Date().toISOString().split('T')[0];
 
   useEffect(() => {
+    dispatch(getTimeEntryByProjectSpecifiedPeriod(projectId, fromDate, toDate))
+    .then(response => {
+      if (response && Array.isArray(response)) {
+        setProjectUsers(response);
+      }
+    })
+  }, [projectId]);
+
+  useEffect(() => {
+    const mergedProjectUsers = projectUsers.reduce((acc, curr) => {
+      if (curr.personId && !acc[curr.personId._id]) {
+        acc[curr.personId._id] = {...curr};
+      } else if (curr.personId) {
+        acc[curr.personId._id].totalSeconds += curr.totalSeconds;
+      }
+      return acc;
+    }, {});
+    setMergedProjectUsersArray(Object.values(mergedProjectUsers));
+  }, [projectUsers]);
+
+  useEffect(() => {
+
+    setMemberCount(0);
+    setActiveMemberCount(0);
+    setNonActiveMemberCount(0);
+    setHoursCommitted(0);
+
     if (match) {
       dispatch(getProjectDetail(match.params.projectId));
       dispatch(fetchAllWBS(match.params.projectId));
       dispatch(fetchAllMembers(match.params.projectId));
+      setTasks([]);
     }
-  }, []);
+  }, [match?.params.projectId]);
 
   useEffect(() => {
     if (wbs.fetching === false) {
-      wbs.WBSItems.forEach(wbs => {
-        dispatch(fetchAllTasks(wbs._id));
+      wbs.WBSItems.forEach(wbsItem => {
+        dispatch(fetchAllTasks(wbsItem._id));
       });
     }
-  }, [wbs]);
+  }, [dispatch, wbs]);
 
   useEffect(() => {
-    if (tasks.taskItems.length > 0) {
-      setHoursCommitted(tasks.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
+    if (tasksState.taskItems.length > 0) {
+      setTasks(tasksState.taskItems);
+      return setHoursCommitted(tasksState.taskItems.reduce((total, task) => total + task.estimatedHours, 0));
     }
-  }, [tasks]);
+
+    return setHoursCommitted(0);
+
+  }, [tasksState, wbs]);
 
   useEffect(() => {
     if (projectMembers.members) {
       dispatch(getProjectActiveUser());
-      const { activeCount, nonActiveCount } = projectMembers.members.reduce((counts, member) => {
-        member.isActive ? counts.activeCount++ : counts.nonActiveCount++;
-        return counts;
+      const { activeCount, nonActiveCount } = projectMembers.members.reduce((acc, member) => {
+        if (member.isActive) {
+          return { ...acc, activeCount: acc.activeCount + 1 };
+        } 
+        return { ...acc, nonActiveCount: acc.nonActiveCount + 1 };
       }, { activeCount: 0, nonActiveCount: 0 });
 
       setActiveMemberCount(activeCount);
       setNonActiveMemberCount(nonActiveCount);
     }
-  }, [projectMembers.members]);
+  }, [dispatch, projectMembers.members]);
 
   const handleMemberCount = elementCount => {
     setMemberCount(elementCount);
@@ -85,14 +135,14 @@ export function ProjectReport({ match }) {
           isActive={isActive}
           avatar={<FiBox />}
           name={projectName}
-          counts={{ activeMemberCount: activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
+          counts={{ activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
           hoursCommitted={hoursCommitted.toFixed(0)}
           darkMode={darkMode}
         />
       )}
       darkMode={darkMode}
     >
-      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div> 
+      <div className={`project-header ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>{projectName}</div>
       <div className="wbs-and-members-blocks-wrapper">
         <ReportPage.ReportBlock className="wbs-and-members-blocks" darkMode={darkMode}>
           <Paging totalElementsCount={wbs.WBSItems.length} darkMode={darkMode}>
@@ -105,16 +155,20 @@ export function ProjectReport({ match }) {
               projectMembers={projectMembers}
               handleMemberCount={handleMemberCount}
               darkMode={darkMode}
+              counts={{ activeMemberCount, memberCount: nonActiveMemberCount + activeMemberCount }}
             />
           </Paging>
         </ReportPage.ReportBlock>
       </div>
-      <div className="tasks-block">
         <ReportPage.ReportBlock darkMode={darkMode}>
-          <TasksTable WbsTasksID={wbsTasksID} darkMode={darkMode}/>
+          <TasksTable darkMode={darkMode} tasks={tasks}/>
         </ReportPage.ReportBlock>
-      </div>
-    </ReportPage>
+        <ReportPage.ReportBlock darkMode={darkMode}>
+          <PieChartByProject mergedProjectUsersArray={mergedProjectUsersArray} projectName={projectName} darkMode={darkMode}/>
+          <hr />
+          <WbsPieChart projectMembers={projectMembers} projectName={projectName} darkMode={darkMode}/>
+        </ReportPage.ReportBlock>
+      </ReportPage>
     </div>
   );
 }

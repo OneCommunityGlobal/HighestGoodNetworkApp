@@ -1,74 +1,148 @@
-import React, { useState, useEffect } from 'react';
-import { DELETE } from './../../../languages/en/ui';
+import { useState, useEffect } from 'react';
+import { ARCHIVE } from './../../../languages/en/ui';
 import './../projects.css';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
+import { toast } from 'react-toastify';  
+import { modifyProject, clearError } from '../../../actions/projects';
+import ModalTemplate from './../../common/Modal';
+import { CONFIRM_ARCHIVE } from './../../../languages/en/messages';
 
 const Project = props => {
-  const {darkMode} = props;
-
-  const [originName] = useState(props.name);
-  const [originCategory, setOriginCategory] = useState(props.category);
-  const [name, setName] = useState(props.name);
-  const [category, setCategory] = useState(props.category);
-  const [active, setActive] = useState(props.active);
+  const { darkMode, index } = props;
   const [firstLoad, setFirstLoad] = useState(true);
+  const [projectData, setProjectData] = useState(props.projectData);
+  const { projectName, isActive,isArchived, _id: projectId } = projectData;
+  const [displayName, setDisplayName] = useState(projectName);
+  const initialModalData = {
+    showModal: false,
+    modalMessage: "",
+    modalTitle: "",
+    hasConfirmBtn: false,
+    hasInactiveBtn: false,
+  };
+
+  const [modalData, setModalData] = useState(initialModalData);
+
+  const onCloseModal = () => {
+    setModalData(initialModalData);
+    props.clearError();
+  };  const [category, setCategory] = useState(props.category || 'Unspecified'); // Initialize with props or default
 
   const canPutProject = props.hasPermission('putProject');
   const canDeleteProject = props.hasPermission('deleteProject');
 
-  const updateActive = () => {
-    props.onClickActive(props.projectId, name, category, active);
-    setActive(!active);
+  const canSeeProjectManagementFullFunctionality = props.hasPermission('seeProjectManagement');
+  const canEditCategoryAndStatus = props.hasPermission('editProject');
+
+   const updateProject = ({ updatedProject, status }) => async dispatch => {
+    try {
+      dispatch(updateProject({ updatedProject, status }));
+    } catch (err) {
+      const status = err?.response?.status || 500;
+      const error = err?.response?.data || { message: 'An error occurred' };
+      dispatch(updateProject({ status, error }));
+    }
+  };
+
+  const onDisplayNameChange = (e) => {
+    setDisplayName(e.target.value);
+  }
+
+  const onUpdateProjectName = () => {
+    if (displayName.length < 3) {
+      toast.error('Project name must be at least 3 characters long');
+      setDisplayName(displayName);
+    } else if (displayName !== projectName) {
+      updateProject('projectName', displayName);
+    } 
+  };
+
+  const onUpdateProjectActive = () => {
+    updateProject('isActive', !isActive);
+  }
+
+  const onUpdateProjectCategory = (e) => {
+    setCategory(e.target.value);
+    updateProject('category', e.target.value); // Update the projectData state
+  };
+
+  const onArchiveProject = () => {
+    setModalData({
+      showModal: true,
+      modalMessage: `<p>Do you want to archive ${projectData.projectName}?</p>`,
+      modalTitle: CONFIRM_ARCHIVE,
+      hasConfirmBtn: true,
+      hasInactiveBtn: isActive,
+    });
+  }
+  
+  const setProjectInactive = () => {
+    updateProject('isActive', !isActive);
+    onCloseModal(); 
+  }
+  const confirmArchive = () => {
+    updateProject('isArchived', !isArchived);
+    props.onProjectArchived();
+    onCloseModal(); 
   };
 
   useEffect(() => {
-    if (!firstLoad) {
-      updateProject();
-    }
-    setFirstLoad(false);
-  }, [category]);
+    const onUpdateProject = async () => {
+      if (firstLoad) {
+        setFirstLoad(false);
+      } else {
+        await props.modifyProject(projectData);
+      }
+      if (props.projectData.category) {
+        setCategory(props.projectData.category);
+      }
+    };
 
-  const updateProject = () => {
-    if (name.length < 3) {
-      setName(originName);
-    } else if (originName !== name || category != originCategory) {
-      props.onUpdateProjectName(props.projectId, name, category, active);
-      setOriginCategory(category);
-    }
-  };
+    onUpdateProject();
+  }, [projectData]);
 
   return (
-    <tr className={`projects__tr ${darkMode ? 'bg-yinmn-blue text-light' : ''}`} id={'tr_' + props.projectId}>
+    <>
+    <tr className="projects__tr" id={'tr_' + props.projectId}>
+
       <th className="projects__order--input" scope="row">
-        <div>{props.index + 1}</div>
+        <div className={darkMode ? 'text-light' : ''}>{index + 1}</div>
       </th>
-      <td className="projects__name--input">
-        {(canPutProject) ? (
+
+
+      <td data-testid="projects__name--input" className="projects__name--input">
+        {(canPutProject || canSeeProjectManagementFullFunctionality) ? (
+
+
           <input
             type="text"
             className={`form-control ${darkMode ? 'bg-yinmn-blue border-0 text-light' : ''}`}
-            value={name}
-            onChange={e => setName(e.target.value)}
-            onBlur={updateProject}
+            value={displayName}
+            onChange={onDisplayNameChange}
+            onBlur={() => onUpdateProjectName(displayName)}
           />
         ) : (
-          name
+          projectName
         )}
       </td>
       <td className="projects__category--input">
-        {(canPutProject) ? (
+
+        {canEditCategoryAndStatus || canPutProject ? (
+
           <select
-            value={props.category}
+
+            data-testid="projects__category--input" //added for unit test
+            value={category}
             onChange={e => {
-              setCategory(e.target.value);
+              onUpdateProjectCategory(e);
             }}
-            className={darkMode ? 'bg-yinmn-blue border-primary text-light' : ''}
+
           >
-            <option default value="Unspecified">Unspecified</option>
+            <option value="Unspecified">Unspecified</option>
             <option value="Food">Food</option>
             <option value="Energy">Energy</option>
             <option value="Housing">Housing</option>
@@ -82,8 +156,10 @@ const Project = props => {
           category
         )}
       </td>
-      <td className="projects__active--input" onClick={canPutProject ? updateActive : null}>
-        {props.active ? (
+      {/* <td className="projects__active--input" data-testid="project-active" onClick={canPutProject ? updateActive : null}>
+        {props.active ? ( */}
+          <td className="projects__active--input" data-testid="project-active" onClick={canEditCategoryAndStatus || canPutProject ? onUpdateProjectActive : null}>
+              {isActive ? (
           <div className="isActive">
             <i className="fa fa-circle" aria-hidden="true"></i>
           </div>
@@ -94,7 +170,7 @@ const Project = props => {
         )}
       </td>
       <td>
-        <NavItem tag={Link} to={`/inventory/${props.projectId}`}>
+        <NavItem tag={Link} to={`/inventory/${projectId}`}>
           <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
             {' '}
             <i className="fa fa-archive" aria-hidden="true"></i>
@@ -102,7 +178,7 @@ const Project = props => {
         </NavItem>
       </td>
       <td>
-        <NavItem tag={Link} to={`/project/members/${props.projectId}`}>
+        <NavItem tag={Link} to={`/project/members/${projectId}`}>
           <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
             {' '}
             <i className="fa fa-users" aria-hidden="true"></i>
@@ -111,27 +187,40 @@ const Project = props => {
       </td>
 
       <td>
-        <NavItem tag={Link} to={`/project/wbs/${props.projectId}`}>
+        <NavItem tag={Link} to={`/project/wbs/${projectId}`}>
           <button type="button" className="btn btn-outline-info" style={darkMode ? {} : boxStyle}>
             <i className="fa fa-tasks" aria-hidden="true"></i>
           </button>
         </NavItem>
       </td>
 
+
       {(canDeleteProject) ? (
+
         <td>
           <button
+            data-testid="delete-button"
             type="button"
             className="btn btn-outline-danger"
-            onClick={e => props.onClickDelete(props.projectId, props.active, props.name, props.category)}
+            onClick={onArchiveProject}
             style={darkMode ? {} : boxStyle}
+            disabled = {isArchived}
           >
-            {DELETE}
+            {ARCHIVE}
           </button>
         </td>
       ) : null}
     </tr>
+      <ModalTemplate
+          isOpen={modalData.showModal}
+          closeModal={onCloseModal}
+          confirmModal={modalData.hasConfirmBtn ? confirmArchive : null}
+          setInactiveModal={modalData.hasInactiveBtn ? setProjectInactive : null}
+          modalMessage={modalData.modalMessage}
+          modalTitle={modalData.modalTitle}
+        />
+    </>
   );
 };
 const mapStateToProps = state => state;
-export default connect(mapStateToProps, { hasPermission })(Project);
+export default connect(mapStateToProps, { hasPermission, modifyProject, clearError })(Project);

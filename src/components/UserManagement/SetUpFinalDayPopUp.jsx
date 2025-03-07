@@ -1,15 +1,18 @@
 import moment from 'moment';
 import React, { useState } from 'react';
+import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
-import { boxStyle } from 'styles';
+import { boxStyleDark, boxStyle } from '../../styles';
+import '../Header/DarkMode.css';
 /**
  * Modal popup to show the user profile in create mode
  */
 const SetUpFinalDayPopUp = React.memo(props => {
+  const darkMode = useSelector(state => state.theme.darkMode);
   const [finalDayDate, onDateChange] = useState(Date.now());
   const [dateError, setDateError] = useState(false);
 
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
 
@@ -22,9 +25,16 @@ const SetUpFinalDayPopUp = React.memo(props => {
   };
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} autoFocus={false}>
-      <ModalHeader toggle={closePopup}>Set Your Final Day</ModalHeader>
-      <ModalBody>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      autoFocus={false}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        Set Your Final Day
+      </ModalHeader>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Input
           autoFocus
           type="date"
@@ -37,13 +47,13 @@ const SetUpFinalDayPopUp = React.memo(props => {
           }}
           data-testid="date-input"
         />
-        {dateError && <Alert color="danger">{'Please choose a future date.'}</Alert>}
+        {dateError && <Alert color="danger">Please choose a future date.</Alert>}
       </ModalBody>
-      <ModalFooter>
-        <Button color="primary" onClick={deactiveUser} style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button color="primary" onClick={deactiveUser} style={darkMode ? boxStyleDark : boxStyle}>
           Save
         </Button>
-        <Button color="secondary" onClick={closePopup} style={boxStyle}>
+        <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
       </ModalFooter>
