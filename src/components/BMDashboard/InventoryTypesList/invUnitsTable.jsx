@@ -15,20 +15,20 @@ export function UnitsTable(props) {
   const [newUnit, setNewUnit] = useState('');
 
   useEffect(() => {
-    if (postInvUnitsResult.error) {
+    if (postInvUnitsResult?.error) {
       toast.error(`Error creating unit.`);
       dispatch(resetPostInvUnitResult());
-    } else if (postInvUnitsResult.success) {
+    } else if (postInvUnitsResult?.success) {
       toast.success(`New unit created.`);
       dispatch(resetPostInvUnitResult());
     }
   }, [postInvUnitsResult]);
 
   useEffect(() => {
-    if (deleteInvUnitResult.error) {
+    if (deleteInvUnitResult?.error) {
       toast.error(`Error deleting unit.`);
       dispatch(resetDeleteInvUnitResult());
-    } else if (deleteInvUnitResult.success) {
+    } else if (deleteInvUnitResult?.success) {
       toast.success(`Unit deleted.`);
       dispatch(resetDeleteInvUnitResult());
     }
@@ -88,9 +88,11 @@ export function UnitsTable(props) {
   );
 }
 
-const mapStateToProps = state => ({
-  invUnits: state.bmInvUnits.list,
-  postInvUnitsResult: state.bmInvUnits.postedResult,
-  deleteInvUnitResult: state.bmInvUnits.deletedResult,
-});
+const mapStateToProps = state => {
+  return {
+    invUnits: state.bmInvUnits.list,
+    postInvUnitsResult: state.bmInvUnits.postedResult,
+    deleteInvUnitResult: state.bmInvUnits.deletedResult,
+  };
+};
 export default connect(mapStateToProps)(UnitsTable);

@@ -35,22 +35,22 @@ export function InventoryTypesList(props) {
   }, []);
 
   useEffect(() => {
-    if (deleteInvTypeResult.error) {
+    if (deleteInvTypeResult?.error) {
       // trigger error according to the error object
-      toast.error(deleteInvTypeResult.result.error || `Error deleting type.`);
+      toast.error(deleteInvTypeResult?.result.error || `Error deleting type.`);
       dispatch(resetDeleteInvTypeResult());
-    } else if (deleteInvTypeResult.success) {
+    } else if (deleteInvTypeResult?.success) {
       toast.success(`Type deleted.`);
       dispatch(resetDeleteInvTypeResult());
     }
   }, [deleteInvTypeResult]);
 
   useEffect(() => {
-    if (updateInvTypeResult.error) {
+    if (updateInvTypeResult?.error) {
       // trigger error according to the error object
-      toast.error(updateInvTypeResult.result.error || `Error updating type.`);
+      toast.error(updateInvTypeResult?.result.error || `Error updating type.`);
       dispatch(resetUpdateInvTypeResult());
-    } else if (updateInvTypeResult.success) {
+    } else if (updateInvTypeResult?.success) {
       toast.success(`Type updated.`);
       dispatch(resetUpdateInvTypeResult());
     }
@@ -126,10 +126,12 @@ export function InventoryTypesList(props) {
   );
 }
 
-const mapStateToProps = state => ({
-  errors: state.errors,
-  deleteInvTypeResult: state.bmInvTypes.deletedResult,
-  updateInvTypeResult: state.bmInvTypes.updatedResult,
-});
+const mapStateToProps = state => {
+  return {
+    errors: state.errors,
+    deleteInvTypeResult: state.bmInvTypes.deletedResult,
+    updateInvTypeResult: state.bmInvTypes.updatedResult,
+  };
+};
 
 export default connect(mapStateToProps)(InventoryTypesList);
