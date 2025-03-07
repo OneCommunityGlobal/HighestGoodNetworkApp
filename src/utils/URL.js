@@ -153,6 +153,9 @@ export const ENDPOINTS = {
   CONFIRM_EMAIL_SUBSCRIPTION: `${APIEndpoint}/confirm-non-hgn-email-subscription`,
   REMOVE_EMAIL_SUBSCRIPTION: `${APIEndpoint}/remove-non-hgn-email-subscription`,
 
+  // Imgur endpoint
+  POST_IMGUR: `${APIEndpoint}/postToImgur`,
+
   // reasons endpoints
   CREATEREASON: () => {
     return `${APIEndpoint}/reason/`;

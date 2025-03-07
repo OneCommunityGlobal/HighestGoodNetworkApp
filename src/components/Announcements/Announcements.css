@@ -112,3 +112,13 @@ button.send-button:hover {
     /* Reduce margin top on smaller screens */
   }
 }
+
+.imgur-button{
+  background-color: white;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-top: 10px;
+}

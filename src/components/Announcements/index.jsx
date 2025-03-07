@@ -3,8 +3,10 @@ import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
+import { postToImgur } from '../../actions/postToImgur';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
+import { SiImgur } from 'react-icons/si';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -16,6 +18,9 @@ function Announcements({ title, email }) {
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
   const [showEditor, setShowEditor] = useState(true); // State to control rendering of the editor
+
+  const [toggleImgur, setToggleImgur] = useState(false);
+  const [ImageFile, setImageFile] = useState(null);
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -119,6 +124,7 @@ function Announcements({ title, email }) {
   };
 
   const addImageToEmailContent = e => {
+    setImageFile(e.target.files[0]);
     const imageFile = document.querySelector('input[type="file"]').files[0];
     convertImageToBase64(imageFile, base64Image => {
       const imageTag = `<img src="${base64Image}" alt="Header Image" style="width: 100%; max-width: 100%; height: auto;">`;
@@ -158,12 +164,25 @@ function Announcements({ title, email }) {
 
 
   const handleBroadcastEmails = () => {
+    toggleImgur && handlePostToImgur(); // only post to imgur if the toggle is true
     const htmlContent = `
     <div style="max-width: 900px; width: 100%; margin: auto;">
       ${emailContent}
     </div>
   `;
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
+  };
+
+  const handlePostToImgur = async () => {
+    const title = 'Test Title from frontend button';
+    const description = 'Test Description from frontend button';
+
+    if (!ImageFile) {
+      alert('Please upload an image file first');
+      console.log('Please upload an image file first', ImageFile);
+      return;
+    }
+    dispatch(postToImgur(ImageFile, emailContent));
   };
 
   return (
@@ -175,8 +194,11 @@ function Announcements({ title, email }) {
           )
             : (<h3>Weekly Progress Editor</h3>)
           }
-
+          <button className="imgur-button" onClick={() => setToggleImgur(!toggleImgur)}>
+            <SiImgur color={toggleImgur ? "green" : "gray"} opacity={toggleImgur ? 1 : 0.5} size="2em"/>
+          </button>
           <br />
+          
           {showEditor && <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
             id="email-editor"

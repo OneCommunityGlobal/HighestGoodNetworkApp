@@ -33,6 +33,6 @@ const RoutePermissions = {
     'putReviewStatus',
     'suggestTask',
   ],
-  announcements: ['sendEmails'],
+  announcements: ['sendEmails', 'postToImgur'],
 };
 export default RoutePermissions;
