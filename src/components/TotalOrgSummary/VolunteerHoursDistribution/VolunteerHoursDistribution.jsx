@@ -86,20 +86,15 @@ export default function VolunteerHoursDistribution({
 
   return (
     <div>
-      <div>
-        <h6 className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold text-center`}>
-          Volunteer Hours Distribution
-        </h6>
-        {isLoading ? (
-          <div className="d-flex justify-content-center align-items-center">
-            <div className="w-100vh">
-              <Loading />
-            </div>
+      {isLoading ? (
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="w-100vh">
+            <Loading />
           </div>
-        ) : (
-          <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
-        )}
-      </div>
+        </div>
+      ) : (
+        <HoursWorkedPieChart darkmode={darkMode} windowSize={windowSize} userData={userData} />
+      )}
     </div>
   );
 }

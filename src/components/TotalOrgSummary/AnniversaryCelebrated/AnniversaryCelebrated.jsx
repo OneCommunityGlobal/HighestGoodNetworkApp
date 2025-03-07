@@ -60,10 +60,7 @@ export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
   };
 
   return (
-    <div>
-      <h4 className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold text-center`}>
-        Anniversary Celebrated
-      </h4>
+    <div className="mt-3">
       {isLoading ? (
         <div className="d-flex justify-content-center align-items-center">
           <div className="w-100vh">

@@ -108,9 +108,6 @@ export default function HoursCompletedBarChart({ isLoading, data, darkMode }) {
 
   return (
     <div style={{ height: cardSize.height }}>
-      <h6 className={`${darkMode ? 'text-light' : 'text-dark'} fw-bold text-center`}>
-        Hours Completed
-      </h6>
       {isLoading ? (
         <div className="d-flex justify-content-center align-items-center">
           <div className="w-100vh">

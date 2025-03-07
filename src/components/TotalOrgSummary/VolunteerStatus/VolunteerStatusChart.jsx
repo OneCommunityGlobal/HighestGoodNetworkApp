@@ -27,8 +27,7 @@ function VolunteerStatusChart({ isLoading, volunteerNumberStats }) {
   }, [volunteerNumberStats]);
 
   return (
-    <section>
-      <h3 style={{ textAlign: 'center', color: 'black' }}>Volunteer Status</h3>
+    <section className="mt-4">
       {isLoading ? (
         <div className="d-flex justify-content-center align-items-center">
           <div className="w-100vh">

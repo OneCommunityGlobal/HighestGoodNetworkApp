@@ -277,10 +277,18 @@ function TotalOrgSummary(props) {
       <AccordianWrapper title="Global Distribution and Volunteer Status Overview">
         <Row>
           <Col lg={{ size: 6 }}>
-            <div className="component-container component-border">In progress...</div>
+            <div className="component-container component-border">
+              <div className="chart-title">
+                <p>Global Volunteer Network: Uniting Communities Worldwide</p>
+              </div>
+              In progress...
+            </div>
           </Col>
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
+              <div className="chart-title">
+                <p>Volunteer Status</p>
+              </div>
               <VolunteerStatusChart
                 isLoading={isLoading}
                 volunteerNumberStats={volunteerStats?.volunteerNumberStats}
@@ -295,7 +303,10 @@ function TotalOrgSummary(props) {
         >
           <Col lg={{ size: 6 }}>
             <div className="component-container component-border">
-              <div className="d-flex flex-row justify-content-center flex-wrap">
+              <div className="chart-title">
+                <p>Volunteer Hours Distribution</p>
+              </div>
+              <div className="d-flex flex-row justify-content-center flex-wrap my-4">
                 <VolunteerHoursDistribution
                   isLoading={isLoading}
                   darkMode={darkMode}
@@ -315,16 +326,23 @@ function TotalOrgSummary(props) {
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <span className="fw-bold"> Task Completed</span>
+              <div className="chart-title">
+                <p>Task Completed</p>
+              </div>
             </div>
           </Col>
           <Col lg={{ size: 3 }}>
             <div className="component-container component-border">
-              <HoursCompletedBarChart
-                isLoading={isLoading}
-                data={taskProjectHours}
-                darkMode={darkMode}
-              />
+              <div className="chart-title">
+                <p>Hours Completed</p>
+              </div>
+              <div className="mt-4">
+                <HoursCompletedBarChart
+                  isLoading={isLoading}
+                  data={taskProjectHours}
+                  darkMode={darkMode}
+                />
+              </div>
             </div>
           </Col>
         </Row>
@@ -333,12 +351,17 @@ function TotalOrgSummary(props) {
         <Row>
           <Col lg={{ size: 7 }}>
             <div className="component-container component-border">
-              <h4 className="text-center">Volunteer Trends by time</h4>
+              <div className="chart-title">
+                <p>Volunteer Trends by Time</p>
+              </div>
               <span className="text-center"> Work in progres...</span>
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
             <div className="component-container component-border">
+              <div className="chart-title">
+                <p>Anniversary Celebrated</p>
+              </div>
               <AnniversaryCelebrated
                 isLoading={isLoading}
                 data={volunteerStats?.anniversaryStats}
