@@ -14,6 +14,7 @@ function Announcements({ title, email }) {
   const [emailTo, setEmailTo] = useState('');
   const [emailList, setEmailList] = useState([]);
   const [emailContent, setEmailContent] = useState('');
+  const [accessToken, setAccessToken] = useState('');
   const [headerContent, setHeaderContent] = useState('');
   const [emailSubject, setEmailSubject] = useState('');
   const [testEmail, setTestEmail] = useState('');
@@ -167,12 +168,86 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
+  const loadFacebookSDK = () => {
+    return new Promise((resolve, reject) => {
+      // Check if Facebook SDK is already loaded
+      if (window.FB) {
+        resolve(window.FB);
+        return;
+      }
+
+      // Create a script element and set up the SDK URL
+      const script = document.createElement('script');
+      script.src = "https://connect.facebook.net/en_US/sdk.js";
+      script.async = true;
+      script.defer = true;
+      script.crossOrigin = "anonymous";
+
+      // Load the script and resolve the promise when it's loaded
+      script.onload = () => {
+        // Initialize the SDK
+        window.fbAsyncInit = function () {
+          window.FB.init({
+            appId: '1335318524566163',  // Replace with your Facebook App ID
+            cookie: true,
+            xfbml: true,
+            version: 'v15.0',
+            //config_id: 1738940933337346,
+            //response_type: 'code',
+            //override_default_response_type: true
+          });
+          resolve(window.FB); // Resolve the promise with the FB object
+        };
+      };
+
+      // Handle errors when loading the SDK
+      script.onerror = (error) => {
+        reject(error);
+      };
+
+      // Append the script to the document's head to load it
+      document.head.appendChild(script);
+    });
+  };
+
+  //const FacebookLogin = () => {
+  useEffect(() => {
+    // Load the Facebook SDK when the component mounts
+    loadFacebookSDK()
+      .then((FB) => {
+        console.log("Facebook SDK Loaded", FB);
+        // You can now use FB object (e.g., to login or call Facebook Graph API)
+      })
+      .catch((error) => {
+        console.error("Error loading Facebook SDK:", error);
+      });
+  }, [])
+  //};
+
+  const handleFacebookLogin = () => {
+    //FacebookLogin()
+    window.FB.login(response => {
+      if (response.authResponse) {
+        const { accessToken } = response.authResponse;
+        setAccessToken(accessToken);
+        console.log('User Access Token:', accessToken);
+        // You can send the accessToken to your backend now
+      } else {
+        console.error('User cancelled the login or did not fully authorize.');
+      }
+    }, { scope: 'public_profile,email,pages_show_list,pages_manage_posts', redirect_uri: 'https://localhost:3000/auth/facebook/callback' });  // Adjust permissions as needed
+  };
+
   const handleCreateFbPost = async () => {
+    const EmailContent = emailContent;
     try {
       const response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
-        EmailContent: emailContent, // Send the email content (HTML)
+        //EmailContent // Send the email content (HTML)
+        emailContent: EmailContent,  // Send the email content (HTML)
+        accessToken: accessToken,
       });
       console.log('response', response.data)
+      //console.log('emailcontent', EmailContent)
       toast.success('Post successfully created on Facebook!');
     } catch (error) {
       console.error('Error posting to Facebook:', error);
@@ -284,6 +359,14 @@ function Announcements({ title, email }) {
               <button type="button" className="send-button" onClick={handleCreateFbPost} style={darkMode ? boxStyleDark : boxStyle}>
                 Facebook
               </button>
+
+            )
+          }
+          {
+            title ? (
+              ""
+            ) : (
+              <button type="button" className="send-button" onClick={handleFacebookLogin} style={darkMode ? boxStyleDark : boxStyle}>Login with Facebook</button>
             )
           }
         </div>
