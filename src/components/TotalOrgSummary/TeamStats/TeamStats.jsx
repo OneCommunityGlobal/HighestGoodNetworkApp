@@ -5,15 +5,15 @@ import Loading from 'components/common/Loading';
 import TeamStatsBarChart from './TeamStatsBarChart';
 import './TeamStats.css';
 
-const endDate = '2023-12-02';
 const activeMembersMinimumDropDownOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30];
 
-function TeamStats({ isLoading, usersInTeamStats }) {
+function TeamStats({ isLoading, usersInTeamStats, endDate }) {
   const [activeMembersMinimum, setActiveMembersMinimum] = useState(
     activeMembersMinimumDropDownOptions[0],
   );
   const [teamsWithActiveMembers, setTeamsWithActiveMembers] = useState(null);
   const [teamsStatsFetchingError, setTeamsStatsFetchingError] = useState(null);
+
   useEffect(() => {
     const fetchTeamsData = async () => {
       try {
@@ -26,7 +26,6 @@ function TeamStats({ isLoading, usersInTeamStats }) {
         setTeamsStatsFetchingError(error);
       }
     };
-
     fetchTeamsData();
   }, [activeMembersMinimum]);
 
@@ -64,7 +63,6 @@ function TeamStats({ isLoading, usersInTeamStats }) {
   function handleActiveMembersMinimumChange(event) {
     const selectedActiveMembersMinimum = event.target.value;
     if (!selectedActiveMembersMinimum) return;
-
     setActiveMembersMinimum(selectedActiveMembersMinimum);
   }
 

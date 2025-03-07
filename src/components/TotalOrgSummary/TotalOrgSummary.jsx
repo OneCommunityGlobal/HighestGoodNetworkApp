@@ -407,6 +407,7 @@ function TotalOrgSummary(props) {
               <TeamStats
                 isLoading={isLoading}
                 usersInTeamStats={volunteerStats?.usersInTeamStats}
+                endDate={toDate}
               />
             </div>
           </Col>
