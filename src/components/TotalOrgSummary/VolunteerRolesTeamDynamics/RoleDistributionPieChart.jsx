@@ -1,5 +1,4 @@
 import Loading from 'components/common/Loading';
-import { useState, useEffect } from 'react';
 import { ResponsiveContainer, PieChart, Pie, Cell, Legend } from 'recharts';
 
 const COLORS = [
@@ -20,18 +19,6 @@ const COLORS = [
 ];
 
 export default function RoleDistributionPieChart({ isLoading, roleDistributionStats }) {
-  const [roleDistributionData, setRoleDistributionData] = useState([]);
-
-  useEffect(() => {
-    if (roleDistributionStats) {
-      setRoleDistributionData(roleDistributionStats);
-    }
-  }, [roleDistributionStats]);
-
-  if (!roleDistributionData || roleDistributionData.length === 0) {
-    return <p>Loading...</p>;
-  }
-
   if (isLoading) {
     return (
       <div className="d-flex justify-content-center align-items-center">
