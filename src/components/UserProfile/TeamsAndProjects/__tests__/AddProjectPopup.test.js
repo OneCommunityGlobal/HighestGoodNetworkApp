@@ -1,4 +1,6 @@
 import { render, fireEvent, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 import AddProjectPopup from '../AddProjectPopup';
 
 /** TEST DATA **/
@@ -11,6 +13,12 @@ const handleSubmitMock = jest.fn();
 const projectsMock = [{ _id: 'proj1', projectName: 'Project 1' }];
 const userProjectsByIdMock = [];
 
+const mockStore = configureStore([]);
+const initialState = {
+  theme: { darkMode: false },
+};
+const store = mockStore(initialState);
+
 
 const props = {
     open: true,
@@ -19,13 +27,12 @@ const props = {
     userProjectsById: userProjectsByIdMock,
     projects: projectsMock,
     handleSubmit: handleSubmitMock,
-
-  };
+};
 
   const renderComponent=(props)=>
   {
     return(
-      render(<AddProjectPopup {...props} />)
+      render(<Provider store={store}><AddProjectPopup {...props} /></Provider>)
     );
   };
 

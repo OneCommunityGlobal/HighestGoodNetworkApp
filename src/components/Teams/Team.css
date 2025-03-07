@@ -112,6 +112,10 @@ tr:hover {
   background: #e9f6ff;
 }
 
+tr.dark-mode:hover {
+  background: #2f4157;
+}
+
 .user-auto-cpmplete {
   cursor: pointer;
   padding: 5px;

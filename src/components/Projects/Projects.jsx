@@ -216,7 +216,7 @@ const Projects = function(props) {
   return (
     <>
       <div className={darkMode ? 'bg-oxford-blue text-light' : ''}>
-        <div className="container py-3">
+        <div className={`container py-3 ${darkMode ? 'bg-yinmn-blue-light text-light' : ''}`}>
           {fetching || !fetched ? <Loading align="center" /> : null}
           <div className="d-flex align-items-center">
             <h3 style={{ display: 'inline-block', marginRight: 10 }}>Projects</h3>
@@ -226,6 +226,7 @@ const Projects = function(props) {
               fontSize={30}
               isPermissionPage={true}
               role={role}
+              darkMode={darkMode}
             />
             <Overview numberOfProjects={numberOfProjects} numberOfActive={numberOfActive} />
 
@@ -262,6 +263,7 @@ const Projects = function(props) {
           closeModal={onCloseModal}
           modalMessage={modalData.modalMessage}
           modalTitle={modalData.modalTitle}
+          darkMode={darkMode}
         />
     </>
   );

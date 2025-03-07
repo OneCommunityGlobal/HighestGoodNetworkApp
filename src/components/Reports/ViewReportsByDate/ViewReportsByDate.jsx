@@ -43,7 +43,7 @@ class ViewReportByDate extends Component {
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onStartDateChange}
-            className="form-control"
+            className={`form-control ${darkMode ? "bg-darkmode-liblack text-light border-0" : ''}`}
             popperPlacement="top-start"
           />
         </div>
@@ -56,7 +56,7 @@ class ViewReportByDate extends Component {
             minDate={minDate}
             maxDate={maxDate}
             onChange={this.onEndDateChange}
-            className="form-control"
+            className={`form-control ${darkMode ? "bg-darkmode-liblack text-light border-0" : ''}`}
             popperPlacement="top"
           />
         </div>

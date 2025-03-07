@@ -45,6 +45,7 @@ const store = mockStore({
   fetched: true,
   fetching: false,
   status: '200',
+  theme: { darkMode: false },
 });
 
 const onAddTeamPopupClose = jest.fn();

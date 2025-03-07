@@ -87,13 +87,12 @@ function BadgeReport(props) {
   const FormatReportForPdf = (badges, callback) => {
     const bgReport = [];
     bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
-  <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-      props.lastName
-    }</h4></div>
+  <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${props.lastName
+      }</h4></div>
   <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
 
     for (let i = 0; i < badges.length; i += 1) {
-      imageToUri(badges[i].badge.imageUrl, function(uri) {
+      imageToUri(badges[i].badge.imageUrl, function (uri) {
         bgReport[i + 1] = `
       <table>
         <thead>
@@ -115,17 +114,15 @@ function BadgeReport(props) {
           </tr>
         </tbody>
       </table>
-      ${
-        (i + 1) % 4 === 0 && i + 1 !== badges.length
-          ? `</br></br></br>
+      ${(i + 1) % 4 === 0 && i + 1 !== badges.length
+            ? `</br></br></br>
       <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(badges.length / 4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-              props.lastName
+    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${props.lastName
             }</h4></div>
     <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
       `
-          : ''
-      }`;
+            : ''
+          }`;
         if (i === badges.length - 1) {
           setTimeout(() => {
             callback(bgReport.join('\n'));
@@ -144,7 +141,7 @@ function BadgeReport(props) {
       });
       let docDefinition = {
         content: [html],
-        pageBreakBefore: function(currentNode) {
+        pageBreakBefore: function (currentNode) {
           return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
         },
         styles: {
@@ -173,7 +170,7 @@ function BadgeReport(props) {
       const html = htmlToPdfmake(formattedReport, { tableAutoSize: true });
       let docDefinition = {
         content: [html],
-        pageBreakBefore: function(currentNode) {
+        pageBreakBefore: function (currentNode) {
           return currentNode.style && currentNode.style.indexOf('pdf-pagebreak-before') > -1;
         },
         styles: {
@@ -353,7 +350,7 @@ function BadgeReport(props) {
 
       props.handleSubmit();
       // Close the modal
-      if(!openModal)
+      if (!openModal)
         props.close();
     } catch (error) {
       // Handle errors and display error message
@@ -376,8 +373,8 @@ function BadgeReport(props) {
               <tr style={{ zIndex: '10' }}>
                 <th style={{ width: '90px' }}>Badge</th>
                 <th>Name</th>
-                <th style={{ width: '110px' }}>Modified</th>                             
-                <th style={{ width: '110px' }} data-testid="desktop-earned-dates">Earned Dates</th> {/* Earned dates for desktop view */}
+                <th style={{ width: '110px' }}>Modified</th>
+                <th style={{ width: '110px' }} data-testid="desktop-earned-dates">Earned Dates</th>{/* Earned dates for desktop view */}
                 <th style={{ width: '90px' }}>Count</th>
                 {canDeleteBadges ? <th>Delete</th> : []}
                 <th style={{ width: '70px', zIndex: '1' }}>Featured</th>
@@ -402,10 +399,10 @@ function BadgeReport(props) {
                     <td>
                       {typeof value.lastModified == 'string'
                         ? // ? formatDate(value.lastModified.substring(0, 10))
-                          formatDate(value.lastModified)
+                        formatDate(value.lastModified)
                         : value.lastModified.toLocaleString('en-US', {
-                            timeZone: 'America/Los_Angeles',
-                          })}
+                          timeZone: 'America/Los_Angeles',
+                        })}
                     </td>
                     <td style={{ display: 'flex', alignItems: 'center' }}>
                       <>
@@ -504,7 +501,7 @@ function BadgeReport(props) {
           style={darkMode ? { ...boxStyleDark, margin: 5 } : { ...boxStyle, margin: 5 }}
           disabled={savingChanges}
           onClick={e => {
-            saveChanges(sortBadges,false);
+            saveChanges(sortBadges, false);
           }}
         >
           Save Changes
@@ -550,8 +547,8 @@ function BadgeReport(props) {
                 <th style={{ width: '93px' }}>Badge</th>
                 <th>Name</th>
                 <th style={{ width: '110px' }}>Modified</th>
-                <th style={{ width: '110px' }} data-testid="tablet-earned-dates">Earned Dates</th> {/*Earned dates for tablet view*/}
-                <th style={{ width: '80px' }}></th> {/* Ensure Options column is included here */}
+                <th style={{ width: '110px' }} data-testid="tablet-earned-dates">Earned Dates</th>{/*Earned dates for tablet view*/}
+                <th style={{ width: '80px' }}></th>{/* Ensure Options column is included here */}
               </tr>
             </thead>
             <tbody>
@@ -574,11 +571,11 @@ function BadgeReport(props) {
                       {typeof value.lastModified == 'string'
                         ? formatDate(value.lastModified)
                         : value.lastModified.toLocaleString('en-US', {
-                            timeZone: 'America/Los_Angeles',
-                          })}
+                          timeZone: 'America/Los_Angeles',
+                        })}
                     </td>
 
-                    <td> {/* Add Dates */}
+                    <td>{/* Add Dates */}
                       <UncontrolledDropdown className="me-2" direction="down">
                         <DropdownToggle
                           caret
@@ -598,7 +595,7 @@ function BadgeReport(props) {
                           ))}
                         </DropdownMenu>
                       </UncontrolledDropdown>
-                    </td> {/* Add dates */}
+                    </td>{/* Add dates */}
 
                     <td>
                       <ButtonGroup style={{ marginLeft: '8px' }}>
@@ -712,7 +709,7 @@ function BadgeReport(props) {
               if (props.isRecordBelongsToJaeAndUneditable) {
                 alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
               }
-              saveChanges(sortBadges,false);
+              saveChanges(sortBadges, false);
             }}
           >
             <span>Save Changes</span>
@@ -736,8 +733,8 @@ function BadgeReport(props) {
         <Modal isOpen={showModal} className={darkMode ? 'text-light dark-mode' : ''}>
           <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
             <p>Woah, easy tiger! Are you sure you want to delete this badge?</p>
-            
-            
+
+
           </ModalBody>
           <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
             <Button onClick={() => handleCancel()} style={darkMode ? boxStyleDark : boxStyle}>

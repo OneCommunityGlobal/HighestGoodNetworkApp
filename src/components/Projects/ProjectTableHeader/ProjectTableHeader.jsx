@@ -48,10 +48,10 @@ const ProjectTableHeader = props => {
        <span className='d-flex justify-content-between align-middle mt-1'>
         {PROJECT_CATEGORY}
         <DropdownButton id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.selectedValue} onSelect={props.onChange} menuAlign="right">
-          <Dropdown.Item default eventKey="" disabled={!props.selectedValue}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
+          <Dropdown.Item default eventKey="" disabled={!props.selectedValue} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.selectedValue ? 'Clear filter' : 'Choose category'}</Dropdown.Item>
           <Dropdown.Divider />
           {categoryList.map((category, index) => 
-            <Dropdown.Item key={index} eventKey={category} active={props.selectedValue === category}>{category}</Dropdown.Item>
+            <Dropdown.Item key={index} eventKey={category} active={props.selectedValue === category} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{category}</Dropdown.Item>
           )}
         </DropdownButton>
        </span> 
@@ -60,9 +60,9 @@ const ProjectTableHeader = props => {
       <span className='d-flex justify-content-between align-middle mt-1'>
         {ACTIVE}
         <DropdownButton className='ml-2 align-middle' id="" title="" size='sm'style={darkMode ? {} : boxStyle} variant='info' value={props.showStatus} onSelect={props.selectStatus}  menuAlign="right" >
-        <Dropdown.Item default value="" disabled={!props.showStatus}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
+        <Dropdown.Item default value="" disabled={!props.showStatus} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{props.showStatus ? 'Clear filter' : 'Choose Status'}</Dropdown.Item>
           {statusList.map((status, index) => 
-            <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status}>{status}</Dropdown.Item>
+            <Dropdown.Item key={index} eventKey={status} active={props.showStatus === status} className={darkMode ? 'bg-darkmode-liblack text-light border-0' : ''}>{status}</Dropdown.Item>
           )}
         </DropdownButton>
        </span> 

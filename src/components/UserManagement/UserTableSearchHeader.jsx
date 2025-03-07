@@ -41,6 +41,7 @@ const UserTableSearchHeader = React.memo(props => {
           id="firts_name_search"
           searchCallback={onFirstNameSearch}
           placeholder=" Search First Name"
+          className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
         />
       </td>
       <td id="user_last_name">
@@ -48,10 +49,11 @@ const UserTableSearchHeader = React.memo(props => {
           id="last_name_search"
           searchCallback={onLastNameSearch}
           placeholder=" Search Last Name"
+          className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
         />
       </td>
       <td id="user_role">
-        <DropDownSearchBox id="role_search" items={props.roles} searchCallback={onRoleSearch} />
+        <DropDownSearchBox className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''} id="role_search" items={props.roles} searchCallback={onRoleSearch} />
       </td>
       <td id="user_title">
         <div>
@@ -69,6 +71,7 @@ const UserTableSearchHeader = React.memo(props => {
           searchCallback={onEmailSearch}
           style={{ width: '100%' }}
           placeholder=" Search Email"
+          className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
         />
       </td>
       <td id="user_hrs" style={{ display: 'flex' }}>
@@ -76,6 +79,7 @@ const UserTableSearchHeader = React.memo(props => {
           id="hrs_search"
           style={{ maxWidth: '75px', margin: '0 auto' }}
           searchCallback={onWeeklyHrsSearch}
+          className={darkMode ? 'bg-darkmode-liblack border-0 text-light' : ''}
         />
       </td>
       <td id="user_pause" />
