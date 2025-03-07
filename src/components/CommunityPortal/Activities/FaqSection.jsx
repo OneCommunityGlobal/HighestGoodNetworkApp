@@ -49,7 +49,7 @@ function FaqSection() {
   };
 
   const handleContactClick = () => {
-    const email = 'contact@onecommunity.com';
+    const email = 'onecommunityglobal@gmail.com';
     navigator.clipboard
       .writeText(email)
       .then(() => setCopied(true))
