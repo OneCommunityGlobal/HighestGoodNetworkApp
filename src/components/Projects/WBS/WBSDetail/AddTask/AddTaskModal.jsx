@@ -460,69 +460,75 @@ function AddTaskModal(props) {
               <div className="add_new_task_form-group">
                 <span className= {`add_new_task_form-label ${fontColor}`}>Status</span>
                 <span className="add_new_task_form-input_area">
-                 <div className="d-flex align-items-center flex-wrap"> 
-                  <span className="form-check form-check-inline mr-5">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="active"
-                        name="status"
-                        value="Active"
-                        checked={status === 'Active' || status === 'Started'}
-                        onChange={(e) => setStatus(e.target.value)}
-                      />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="active">
-                        Active
-                      </label>
-                    </span>
-                  <span className="form-check">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="notStarted"
-                        name="status"
-                        value="Not Started"
-                        checked={status === 'Not Started'}
-                        onChange={(e) => setStatus(e.target.value)}
-                      />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="notStarted">
-                        Not Started
-                      </label>
-                  </span>
-                 </div>
-                 <div className="d-flex align-items-center flex-wrap">
-                  <span className="form-check form-check-inline mr-5">
-                        <input
+                  <div className="container">
+                    <div className='row'>
+                      <div className='col-6 pl-0'>
+                        <div className='form-check'>
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            id="active"
+                            name="status"
+                            value="Active"
+                            checked={status === 'Active' || status === 'Started'}
+                            onChange={(e) => setStatus(e.target.value)}
+                          />
+                          <label className={`form-check-label ${fontColor}`} htmlFor="active">
+                            Active
+                          </label>
+                        </div>
+                      </div>
+                      <div className='col-6 pl-0'>
+                        <div className='form-check'>
+                          <input
                           className="form-check-input"
                           type="radio"
-                          id="paused"
+                          id="notStarted"
                           name="status"
-                          value="Paused"
-                          checked={status === 'Paused'}
+                          value="Not Started"
+                          checked={status === 'Not Started'}
                           onChange={(e) => setStatus(e.target.value)}
                         />
-                        <label className={`form-check-label ${fontColor}`} htmlFor="paused">
-                          Paused
+                        <label className={`form-check-label ${fontColor}`} htmlFor="notStarted">
+                          Not Started
                         </label>
-                    
-                  </span>
-                  <span className="form-check form-check-inline">
-                      <input
-                        className="form-check-input"
-                        type="radio"
-                        id="complete"
-                        name="status"
-                        value="Complete"
-                        checked={status === 'Complete'}
-                        onChange={(e) => setStatus(e.target.value)}
-                      />
-                      <label className={`form-check-label ${fontColor}`} htmlFor="complete">
-                        Complete
-                      </label>
-                   
-                  </span>
-                 </div>
-                </span>
+                        </div>
+                      </div>
+                      <div className='col-6 pl-0'>
+                        <div className='form-check'>
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            id="paused"
+                            name="status"
+                            value="Paused"
+                            checked={status === 'Paused'}
+                            onChange={(e) => setStatus(e.target.value)}
+                          />
+                          <label className={`form-check-label ${fontColor}`} htmlFor="paused">
+                            Paused
+                          </label>
+                        </div>
+                      </div>
+                      <div className='col-6 pl-0'>
+                        <div className='form-check'>
+                          <input
+                            className="form-check-input"
+                            type="radio"
+                            id="complete"
+                            name="status"
+                            value="Complete"
+                            checked={status === 'Complete'}
+                            onChange={(e) => setStatus(e.target.value)}
+                          />
+                          <label className={`form-check-label ${fontColor}`} htmlFor="complete">
+                            Complete
+                          </label>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </span>              
               </div>
               <div className="add_new_task_form-group">
                 <span className={`add_new_task_form-label ${fontColor}`}>
