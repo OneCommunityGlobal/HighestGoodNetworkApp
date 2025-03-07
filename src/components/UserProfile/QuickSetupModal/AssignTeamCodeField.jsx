@@ -1,20 +1,29 @@
 import React, { useEffect, useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
 
-
 const AssignTeamCodeField = React.memo(props => {
-  const [searchText, onInputChange] = useState(()=>{
-    if(props.editMode){
-      return props.value
-    }else{
-      return ''
+  const {
+    isError = false,
+    teamCodeData,
+    selectedTeamCode,
+    onSelectTeamCode,
+    cleanTeamCodeAssign,
+    onDropDownSelect,
+    editMode,
+    value,
+  } = props;
+
+  const [searchText, onInputChange] = useState(() => {
+    if (editMode) {
+      return value;
     }
+    return '';
   });
   const [isOpen, toggle] = useState(false);
   useEffect(() => {
-    if (props.selectedTeamCode && props.selectedTeamCode !== searchText) {
-      props.onSelectTeamCode(undefined);
-      props.cleanTeamCodeAssign();
+    if (selectedTeamCode && selectedTeamCode !== searchText) {
+      onSelectTeamCode(undefined);
+      cleanTeamCodeAssign();
     }
   }, [searchText]);
 
@@ -29,14 +38,18 @@ const AssignTeamCodeField = React.memo(props => {
       <Input
         type="text"
         value={searchText}
-        autoFocus={true}
+        onFocus={() => toggle(true)}
         onChange={e => {
           onInputChange(e.target.value);
           toggle(true);
         }}
+        style={{
+          borderColor: isError ? 'red' : '',
+          borderWidth: isError ? '2px' : '',
+        }}
       />
 
-      {searchText !== '' && props.teamCodeData?.size > 0 ? (
+      {teamCodeData?.length > 0 ? (
         <div
           tabIndex="-1"
           role="menu"
@@ -44,28 +57,25 @@ const AssignTeamCodeField = React.memo(props => {
           className={`dropdown-menu${isOpen ? ' show' : ''}`}
           style={{ marginTop: '0px', width: '100%' }}
         >
-          {[...props.teamCodeData]
-                      .filter(teamCode => {
-              if (teamCode.toLowerCase().indexOf(searchText.toLowerCase()) > -1) {
-                return teamCode;
-              }
+          {teamCodeData
+            .filter(teamCode => {
+              return teamCode.value.toLowerCase().includes(searchText.toLowerCase());
             })
             .slice(0, 10)
-            .map((item,index) => (
+            .map((teamCode, index) => (
               <div
                 className="project-auto-complete"
                 key={index}
                 onClick={() => {
-                  onInputChange(item);
+                  onInputChange(teamCode.value);
                   toggle(false);
-                  props.onDropDownSelect(item);
+                  onDropDownSelect(teamCode.value);
                 }}
               >
-                {item}
+                {teamCode.value}
               </div>
             ))}
-              </div>
-
+        </div>
       ) : null}
     </Dropdown>
   );
