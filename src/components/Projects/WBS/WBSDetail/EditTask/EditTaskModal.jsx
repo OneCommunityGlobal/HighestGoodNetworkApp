@@ -146,7 +146,7 @@ function EditTaskModal(props) {
   
   const changeDateEnd = dueDate => {
     if (!startedDate) {
-      const newDate = dateFnsFormat(new Date(), FORMAT);
+      const newDate = dateFnsFormat(new Date(), 'America/Los_Angeles',FORMAT);
       setStartedDate(newDate);
     }
     setDueDate(dueDate);
