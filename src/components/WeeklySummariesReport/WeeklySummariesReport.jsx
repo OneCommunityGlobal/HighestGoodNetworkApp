@@ -28,7 +28,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
-import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
+import { getAllUserTeams } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
 import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
@@ -40,7 +40,7 @@ import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 import SelectTeamPieChart from './SelectTeamPieChart';
-import { setTeamCodes } from '../../actions/teamCodes';
+import CustomTeamCodeModal from './CustomTeamCodeModal';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -94,8 +94,66 @@ export class WeeklySummariesReport extends Component {
         green: false,
         navy: false,
       },
+      customTeamCodeModalOpen: false,
     };
   }
+
+  toggleCustomTeamCodeModal = () => {
+    this.setState(prevState => ({
+      customTeamCodeModalOpen: !prevState.customTeamCodeModalOpen,
+    }));
+
+    // If we're closing the modal, refresh the teams data
+    if (this.state.customTeamCodeModalOpen) {
+      this.refreshTeamCodes();
+    }
+  };
+
+  refreshTeamCodes = async () => {
+    const { getAllUserTeams } = this.props;
+    try {
+      const res = await getAllUserTeams();
+      if (res) {
+        // Process the teams data similar to componentDidMount
+        const teamCodeGroup = {};
+        const teamCodes = [];
+
+        res.forEach(team => {
+          const code = team.teamCode || 'noCodeLabel';
+          if (teamCodeGroup[code]) {
+            teamCodeGroup[code].push(team);
+          } else {
+            teamCodeGroup[code] = [team];
+          }
+        });
+
+        Object.keys(teamCodeGroup).forEach(code => {
+          if (code !== 'noCodeLabel') {
+            teamCodes.push({
+              value: code,
+              label: `${code} (${teamCodeGroup[code].length})`,
+              _ids: teamCodeGroup[code]?.map(item => item._id),
+            });
+          }
+        });
+
+        teamCodes
+          .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+          .push({
+            value: '',
+            label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+            _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
+          });
+
+        this.setState({
+          teamCodes,
+          tableData: teamCodeGroup,
+        });
+      }
+    } catch (error) {
+      console.error('Error refreshing team codes:', error);
+    }
+  };
 
   async componentDidMount() {
     const {
@@ -108,10 +166,7 @@ export class WeeklySummariesReport extends Component {
       getInfoCollections,
       hasPermission,
       auth,
-      setTeamCodes,
-      getAllTeamCode,
     } = this.props;
-    await getAllTeamCode();
     // 1. fetch report
     const res = await getWeeklySummariesReport();
     // eslint-disable-next-line react/destructuring-assignment
@@ -125,9 +180,6 @@ export class WeeklySummariesReport extends Component {
       auth.user.role === 'Owner' ||
       auth.user.role === 'Administrator';
     this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
-
-    const teamCodeGroup = {};
-    const teamCodes = [];
 
     // 2. shallow copy and sort
     let summariesCopy = [...summaries];
@@ -145,6 +197,8 @@ export class WeeklySummariesReport extends Component {
     /*
      * refactor logic of commentted codes above
      */
+    const teamCodeGroup = {};
+    const teamCodes = [];
     const colorOptionGroup = new Set();
     const colorOptions = [];
     const COLORS = [
@@ -190,9 +244,6 @@ export class WeeklySummariesReport extends Component {
         });
       }
     });
-
-    setTeamCodes(teamCodes);
-
     colorOptionGroup.forEach(option => {
       colorOptions.push({
         value: option,
@@ -612,7 +663,7 @@ export class WeeklySummariesReport extends Component {
           }
           return acc;
         }, {});
-
+        // console.log(Object.entries(teamCodeCounts), 'teamCodecounts');
         // Update teamCodes by filtering out those with zero count
         teamCodes = Object.entries(teamCodeCounts)
           .filter(([code, count]) => code.length > 0 && count > 0)
@@ -685,28 +736,6 @@ export class WeeklySummariesReport extends Component {
           }, {});
           if (data?.data?.isUpdated) {
             this.handleTeamCodeChange('', replaceCode, userObjs);
-
-            await this.props.getAllTeamCode();
-
-            const updatedSummaries = [...this.state.summaries];
-            const teamCodeGroup = {};
-
-            updatedSummaries.forEach(summary => {
-              const code = summary.teamCode || 'noCodeLabel';
-              if (teamCodeGroup[code]) {
-                teamCodeGroup[code].push(summary);
-              } else {
-                teamCodeGroup[code] = [summary];
-              }
-            });
-
-            const updatedTeamCodes = Object.keys(teamCodeGroup).map(code => ({
-              value: code,
-              label: `${code} (${teamCodeGroup[code].length})`,
-              _ids: teamCodeGroup[code]?.map(item => item._id),
-            }));
-
-            this.props.setTeamCodes(updatedTeamCodes);
             this.setState({ replaceCode: '', replaceCodeError: null });
             this.filterWeeklySummaries();
           } else {
@@ -859,15 +888,29 @@ export class WeeklySummariesReport extends Component {
         </Row>
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
-            <MultiSelect
-              className="multi-select-filter text-dark"
-              options={teamCodes}
-              value={selectedCodes}
-              onChange={e => {
-                this.handleSelectCodeChange(e);
-              }}
-              labelledBy="Select"
-            />
+            <div className="mb-2">
+              <MultiSelect
+                className="multi-select-filter text-dark"
+                options={teamCodes}
+                value={selectedCodes}
+                onChange={e => {
+                  this.handleSelectCodeChange(e);
+                }}
+                labelledBy="Select"
+              />
+            </div>
+            {/* Add this Button after the MultiSelect */}
+            {hasPermissionToFilter && (
+              <Button
+                color="primary"
+                size="sm"
+                className="mt-1 mb-3"
+                onClick={this.toggleCustomTeamCodeModal}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                <i className="fas fa-cog mr-1"></i> Manage Custom Team Codes
+              </Button>
+            )}
           </Col>
           <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
             <MultiSelect
@@ -1099,6 +1142,13 @@ export class WeeklySummariesReport extends Component {
             </TabContent>
           </Col>
         </Row>
+        {this.state.customTeamCodeModalOpen && (
+          <CustomTeamCodeModal
+            isOpen={this.state.customTeamCodeModalOpen}
+            toggle={this.toggleCustomTeamCodeModal}
+            darkMode={darkMode}
+          />
+        )}
       </Container>
     );
   }
@@ -1109,7 +1159,6 @@ WeeklySummariesReport.propTypes = {
   loading: PropTypes.bool.isRequired,
   summaries: PropTypes.array.isRequired,
   infoCollections: PropTypes.array,
-  setTeamCodes: PropTypes.func.isRequired,
 };
 
 const mapStateToProps = state => ({
@@ -1121,7 +1170,6 @@ const mapStateToProps = state => ({
   role: state.auth.user.role,
   auth: state.auth,
   darkMode: state.theme.darkMode,
-  teamCodes: state.teamCodes.teamCodes,
   authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
 });
 
@@ -1131,8 +1179,6 @@ const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
-  getAllTeamCode: () => dispatch(getAllTeamCode()),
-  setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
