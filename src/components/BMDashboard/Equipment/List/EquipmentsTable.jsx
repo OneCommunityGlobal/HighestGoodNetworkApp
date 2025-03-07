@@ -164,7 +164,11 @@ function EquipmentsTable({ equipment, project }) {
                     <td>{new Date(rec.rentalDueDate).toLocaleDateString()}</td>
 
                     <td className="materials_cell">
-                      <button type="button" onClick={() => handleOpenModal(rec, 'UpdatesEdit')}>
+                      <button
+                        type="button"
+                        aria-label="Edit Updates"
+                        onClick={() => handleOpenModal(rec, 'UpdatesEdit')}
+                      >
                         <BiPencil />
                       </button>
                       <Button
