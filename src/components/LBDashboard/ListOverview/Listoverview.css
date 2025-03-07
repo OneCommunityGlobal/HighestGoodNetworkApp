@@ -190,6 +190,9 @@ p {
 }
 
 @media (max-width: 990px) {
+  .main-container {
+    padding: 0;
+  }
   .container-main {
     flex-direction: column;
     align-items: center;
@@ -219,6 +222,11 @@ p {
 }
 
 @media (max-width: 580px) {
+  
+  .container-main {
+    padding: 10px;
+    margin: 10px;
+  }
   .amenities {
     flex-direction: column;
     align-items: center;
