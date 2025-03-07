@@ -23,16 +23,13 @@ import './TeamReport.css';
 import { ReportPage } from '../sharedComponents/ReportPage';
 import UserLoginPrivileges from './components/UserLoginPrivileges';
 
-
-
-
 export function TeamReport({ match }) {
   const darkMode = useSelector(state => state.theme.darkMode);
 
   const dispatch = useDispatch();
   // const {team}=useSelector(getTeamReportData);
-const [team,setTeam] = useState({});
-const [teamDataLoading,setTeamDataLoading] = useState(false);
+  const [team, setTeam] = useState({});
+  const [teamDataLoading, setTeamDataLoading] = useState(false);
   const user = useSelector(state => state.auth.user);
   const [teamMembers, setTeamMembers] = useState([]);
   const [allTeamsMembers, setAllTeamsMembers] = useState([]);
@@ -56,28 +53,28 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
     // Update the selectedInput state variable with the value of the selected radio input
     setSelectedInput(event.target.value);
   };
- 
-  const getTeamDetails = async (teamId)=>{
-     try {
-      
-       if (teamDataLoading ||(team && team._id === match.params.teamId) || hasFetchIds.current.has(teamId)) {
+
+  const getTeamDetails = async teamId => {
+    try {
+      if (
+        teamDataLoading ||
+        (team && team._id === match.params.teamId) ||
+        hasFetchIds.current.has(teamId)
+      ) {
         return; // Prevent repeated calls if data is already loading or loaded
-       }
-        setTeamDataLoading(true);
-        const url =  ENDPOINTS.TEAM_BY_ID(teamId);
-        const res = await axios.get(url);
-        setTeam(res.data);
-        hasFetchIds.current.add(teamId);
-        setTeamDataLoading(false);
-     } catch (error) {
-        setTeam(null);
-     }
-     finally{
-        setTeamDataLoading(false);
-     }
-  }
-
-
+      }
+      setTeamDataLoading(true);
+      const url = ENDPOINTS.TEAM_BY_ID(teamId);
+      const res = await axios.get(url);
+      setTeam(res.data);
+      hasFetchIds.current.add(teamId);
+      setTeamDataLoading(false);
+    } catch (error) {
+      setTeam(null);
+    } finally {
+      setTeamDataLoading(false);
+    }
+  };
 
   const debounceSearchByName = debounce(value => {
     setSearchParams(prevParams => ({
@@ -117,48 +114,47 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
     }
   }
 
-
-
-  useEffect(()=>{
-    if(match&&match.params&&match.params.teamId){
+  useEffect(() => {
+    if (match && match.params && match.params.teamId) {
       getTeamDetails(match.params.teamId);
     }
-  },[])
+  }, []);
 
-  
   useEffect(() => {
     let isMounted = true; // flag to check component mount status
-    const fetchTeamDetails = async (teamId)=>{
+    const fetchTeamDetails = async teamId => {
       if (teamDataLoading || (team && team._id === match.params.teamId)) {
         return; // Prevent repeated calls if data is already loading or loaded
-        }
-        await getTeamDetails(teamId);
-    }
+      }
+      await getTeamDetails(teamId);
+    };
 
-    const fetchTeamMembers = async (teamId)=>{
+    const fetchTeamMembers = async teamId => {
       await dispatch(getTeamMembers(teamId)).then(result => {
-        if (isMounted) { // Only update state if component is still mounted
+        if (isMounted) {
+          // Only update state if component is still mounted
           setTeamMembers([...result]);
         }
       });
-    }
+    };
 
-    const fetchAllUserTeams = async () =>{
-             if(isMounted){
-              dispatch(getAllUserTeams())
-              .then(result => {
-                return result;
-              })
-              .then(result => {
-                const allTeamMembersPromises = result.map(t => dispatch(getTeamMembers(t._id)));
-                Promise.all(allTeamMembersPromises).then(results => {
-                  if (isMounted) { // Only update state if component is still mounted
-                    setAllTeamsMembers([...results]);
-                  }
-                });
-              });
-             }
-    }
+    const fetchAllUserTeams = async () => {
+      if (isMounted) {
+        dispatch(getAllUserTeams())
+          .then(result => {
+            return result;
+          })
+          .then(result => {
+            const allTeamMembersPromises = result.map(t => dispatch(getTeamMembers(t._id)));
+            Promise.all(allTeamMembersPromises).then(results => {
+              if (isMounted) {
+                // Only update state if component is still mounted
+                setAllTeamsMembers([...results]);
+              }
+            });
+          });
+      }
+    };
     if (match && match.params && match.params.teamId) {
       fetchTeamDetails(match.params.teamId);
       fetchTeamMembers(match.params.teamId);
@@ -168,8 +164,8 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
     return () => {
       isMounted = false; // Set the flag as false when the component unmounts
     };
-  }, [match?.params?.teamId]); // include all dependencies in the dependency array  
-//
+  }, [match?.params?.teamId]); // include all dependencies in the dependency array
+  //
   // Get Total Tangible Hours this week [main TEAM]
   const [teamMembersWeeklyEffort, setTeamMembersWeeklyEffort] = useState([]);
   const [totalTeamWeeklyWorkedHours, setTotalTeamWeeklyWorkedHours] = useState('');
@@ -286,7 +282,12 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
       contentClassName="team-report-blocks"
       darkMode={darkMode}
       renderProfile={() => (
-        <ReportPage.ReportHeader isActive={team?.isActive} avatar={<FiUsers />} name={team?.teamName} darkMode={darkMode}>
+        <ReportPage.ReportHeader
+          isActive={team?.isActive}
+          avatar={<FiUsers />}
+          name={team?.teamName}
+          darkMode={darkMode}
+        >
           <div className={darkMode ? 'text-light' : ''}>
             <h5>{moment(team?.createdDatetime).format('MMM-DD-YY')}</h5>
             <p>Created Date</p>
@@ -316,105 +317,97 @@ const [teamDataLoading,setTeamDataLoading] = useState(false);
         selectedTeamsWeeklyEffort={selectedTeamsWeeklyEffort}
         allTeamsMembers={allTeamsMembers}
         darkMode={darkMode}
-        teamDataLoading ={teamDataLoading}
+        teamDataLoading={teamDataLoading}
       />
       <div className="table-mobile">
         <ReportPage.ReportBlock darkMode={darkMode}>
-          <div className="input-group input-group-sm d-flex flex-nowrap justify-content-between active-inactive-container">
-            <div className="d-flex align-items-center">
-              <div className="d-flex flex-column">
-                {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                <label
-                  htmlFor="search-by-name"
-                  className={`text-left ${darkMode ? 'text-light' : ''}`}
-                >
-                  Name
-                </label>
-                <input
-                  type="text"
-                  className="form-control rounded-1 mr-3 w-auto"
-                  placeholder="Search team name"
-                  id="search-by-name"
-                  onChange={event => handleSearchByName(event)}
-                />
-              </div>
-              <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
-                <div id="task_startDate" className="date-picker-item">
-                  <div className="d-flex flex-column">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label
-                      htmlFor="search-by-startDate"
-                      className={`text-left ${darkMode ? 'text-light' : ''}`}
-                    >
-                      Created After
-                    </label>
-                    <DatePicker
-                      selected={searchParams.createdAt}
-                      onChange={date =>
-                        setSearchParams(prevParams => ({
-                          ...prevParams,
-                          createdAt: new Date(date),
-                        }))
-                      }
-                      className="form-control w-auto"
-                      id="search-by-startDate"
-                    />
-                  </div>
-                </div>
-                <div id="task_EndDate" className="date-picker-item">
-                  <div className="d-flex flex-column">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label
-                      htmlFor="search-by-endDate"
-                      className={`text-left ${darkMode ? 'text-light' : ''}`}
-                    >
-                      Modified After
-                    </label>
-                    <DatePicker
-                      selected={searchParams.modifiedAt}
-                      onChange={date =>
-                        setSearchParams(prevParams => ({
-                          ...prevParams,
-                          modifiedAt: new Date(date),
-                        }))
-                      }
-                      className="form-control  w-auto"
-                      id="search-by-endDate"
-                    />
-                  </div>
-                </div>
-                <div className="active-inactive-container">
-                  <div className="active-inactive-container-item mr-2">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="active" className={darkMode ? 'text-light' : ''}>
-                      Active
-                    </label>
-                    <input
-                      onChange={event => handleCheckboxChange(event)}
-                      type="checkbox"
-                      placeholder="Search team name"
-                      id="active"
-                      checked={searchParams.isActive}
-                    />
-                  </div>
-                  <div className="active-inactive-container-item">
-                    {/* eslint-disable-next-line jsx-a11y/label-has-associated-control */}
-                    <label htmlFor="inactive" className={darkMode ? 'text-light' : ''}>
-                      Inactive
-                    </label>
-                    <input
-                      onChange={event => handleCheckboxChange(event)}
-                      type="checkbox"
-                      placeholder="Search team name"
-                      id="inactive"
-                      checked={searchParams.isInactive}
-                    />
-                  </div>
-                </div>
-              </div>
+          <div className="input-group input-group-sm d-flex flex-row flex-nowrap justify-content-between align-items-center active-inactive-container gap-3">
+            {/* Name Search */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label
+                htmlFor="search-by-name"
+                className={`text-left ${darkMode ? 'text-light' : ''}`}
+              >
+                Name
+              </label>
+              <input
+                type="text"
+                className="form-control rounded-1 w-auto"
+                placeholder="Search team name"
+                id="search-by-name"
+                onChange={event => handleSearchByName(event)}
+              />
+            </div>
+
+            {/* Created After Date Picker */}
+            <div className={`d-flex flex-column flex-shrink-0 ${darkMode ? 'dark-mode' : ''}`}>
+              <label
+                htmlFor="search-by-startDate"
+                className={`text-left ${darkMode ? 'text-light' : ''}`}
+              >
+                Created After
+              </label>
+              <DatePicker
+                selected={searchParams.createdAt}
+                onChange={date =>
+                  setSearchParams(prevParams => ({
+                    ...prevParams,
+                    createdAt: new Date(date),
+                  }))
+                }
+                className="form-control w-auto"
+                id="search-by-startDate"
+              />
+            </div>
+
+            {/* Modified After Date Picker */}
+            <div className={`d-flex flex-column flex-shrink-0 ${darkMode ? 'dark-mode' : ''}`}>
+              <label
+                htmlFor="search-by-endDate"
+                className={`text-left ${darkMode ? 'text-light' : ''}`}
+              >
+                Modified After
+              </label>
+              <DatePicker
+                selected={searchParams.modifiedAt}
+                onChange={date =>
+                  setSearchParams(prevParams => ({
+                    ...prevParams,
+                    modifiedAt: new Date(date),
+                  }))
+                }
+                className="form-control w-auto"
+                id="search-by-endDate"
+              />
+            </div>
+
+            {/* Active Checkbox */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label htmlFor="active" className={darkMode ? 'text-light' : ''}>
+                Active
+              </label>
+              <input
+                onChange={event => handleCheckboxChange(event)}
+                type="checkbox"
+                id="active"
+                checked={searchParams.isActive}
+              />
+            </div>
+
+            {/* Inactive Checkbox */}
+            <div className="d-flex flex-column flex-shrink-0">
+              <label htmlFor="inactive" className={darkMode ? 'text-light' : ''}>
+                Inactive
+              </label>
+              <input
+                onChange={event => handleCheckboxChange(event)}
+                type="checkbox"
+                id="inactive"
+                checked={searchParams.isInactive}
+              />
             </div>
           </div>
-          <table className="table tableHeader">
+          <table className="table tableHeader" style={{ marginTop: '10px' }}>
             <thead className={`table table-hover ${darkMode ? 'text-light table-hover-dark' : ''}`}>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
                 <td>
