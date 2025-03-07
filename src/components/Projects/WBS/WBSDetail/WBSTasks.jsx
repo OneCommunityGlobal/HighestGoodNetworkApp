@@ -409,6 +409,8 @@ function WBSTasks(props) {
                 pageLoadTime={pageLoadTime}
                 setIsLoading={setIsLoading}
                 darkMode={darkMode}
+                
+                tasks={tasks}
               />
             ))}
           </tbody>

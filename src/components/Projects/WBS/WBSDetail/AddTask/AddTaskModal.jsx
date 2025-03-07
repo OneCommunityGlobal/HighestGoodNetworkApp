@@ -330,8 +330,8 @@ function AddTaskModal(props) {
 
   useEffect(() => {
     if (error === 'outdated') {
-      alert('Database changed since your page loaded , click OK to get the newest data!');
-      props.load();
+      
+      clear()
     } else {
       clear();
     }
@@ -377,13 +377,13 @@ function AddTaskModal(props) {
         <ModalBody className={darkMode ? 'bg-yinmn-blue dark-mode no-hover' : ''}>
           <div className="table table-bordered responsive">
             <div>
-              <div className="add_new_task_form-group">
+              {/* <div className="add_new_task_form-group">
                 <span className={`add_new_task_form-label ${fontColor}`} data-tip="WBS ID">
                   WBS #
                 </span>
 
                 <span className={`add_new_task_form-input_area ${fontColor}`}>{newTaskNum}</span>
-              </div>
+              </div> */}
               <div className="add_new_task_form-group" >
                 <span className={`add_new_task_form-label ${fontColor}`}>Task Name</span>
                 <span className="add_new_task_form-input_area">
