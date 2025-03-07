@@ -9,7 +9,7 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
   const [allMemberList, setAllMemberList] = useState([]);
   const [activeMemberList, setActiveMemberList] = useState([]);
   const [memberFilter, setMemberFilter] = useState('active');
-  const { fetched, foundUsers, members } = projectMembers;
+  const { fetched, foundUsers, members, allTimeMembers } = projectMembers;
 
   useEffect(() => {
     handleMemberCount(activeMemberList.length);
@@ -25,14 +25,35 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
           currentActive.add(member._id);
         });
       }
-      members.forEach(member => {
-        if (currentActive.has(member._id)) {
-          memberList.push({ ...member, active: true });
-          activeList.push({ ...member, active: true });
-        } else {
-          memberList.push({ ...member, active: false });
-        }
-      });
+      try {
+        members.forEach(member => {
+          if (currentActive.has(member._id)) {
+            //memberList.push({ ...member, active: true });
+            activeList.push({ ...member, active: true });
+          } else {
+            //memberList.push({ ...member, active: false });
+          }
+        });
+        allTimeMembers.forEach(member => {
+          if (currentActive.has(member._id)) {
+            memberList.push({ ...member, active: member.isActive });
+            //activeList.push({ ...member, active: true });
+          } else {
+            memberList.push({ ...member, active: member.isActive });
+          }
+        });
+      }
+      catch (error) {
+        members.forEach(member => {
+          if (currentActive.has(member._id)) {
+            memberList.push({ ...member, active: true });
+            activeList.push({ ...member, active: true });
+          } else {
+            memberList.push({ ...member, active: false });
+          }
+        });
+      }
+
       setAllMemberList(memberList);
       setActiveMemberList(activeList);
     }
@@ -110,11 +131,11 @@ export function ProjectMemberTable({ projectMembers, skip, take, handleMemberCou
       >
         <input type="radio" name="memberFilter" value="active" id="active" defaultChecked />
         <label htmlFor="active" id="project-active-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ACTIVE: {counts.activeMemberCount}
+          ACTIVE: {activeMemberList.length}
         </label>
         <input type="radio" name="memberFilter" value="all-time" id="all-time" />
         <label htmlFor="all-time" id="project-all-member-count" className={`project-member-count ${darkMode ? 'text-light' : ''}`}>
-          ALL-TIME: {counts.memberCount}
+          ALL-TIME: {allMemberList.length}
         </label>
       </div>
       </div>

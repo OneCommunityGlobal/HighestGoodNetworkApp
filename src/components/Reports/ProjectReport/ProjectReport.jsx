@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react';
 import 'react-datepicker/dist/react-datepicker.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { FiBox } from 'react-icons/fi';
-import {WbsPieChart}  from './WbsPiechart/WbsPieChart';
+import { WbsPieChart }  from './WbsPiechart/WbsPieChart';
 import { getProjectDetail } from '../../../actions/project';
-import {getTimeEntryByProjectSpecifiedPeriod} from '../../../actions/index'
-import { fetchAllMembers, getProjectActiveUser } from '../../../actions/projectMembers';
+import { getTimeEntryByProjectSpecifiedPeriod } from '../../../actions/index'
+import { fetchAllMembers, getProjectActiveUser, fetchAllTimeMembers } from '../../../actions/projectMembers';
 import { fetchAllTasks} from '../../../actions/task';
 import { fetchAllWBS } from '../../../actions/wbs';
 import { ProjectMemberTable } from '../ProjectMemberTable';
@@ -83,9 +83,11 @@ export function ProjectReport({ match }) {
     setHoursCommitted(0);
 
     if (match) {
-      dispatch(getProjectDetail(match.params.projectId));
-      dispatch(fetchAllWBS(match.params.projectId));
-      dispatch(fetchAllMembers(match.params.projectId));
+      const { projectId } = match.params;
+      dispatch(getProjectDetail(projectId));
+      dispatch(fetchAllWBS(projectId));
+      dispatch(fetchAllMembers(projectId));
+      dispatch(fetchAllTimeMembers(projectId));
       setTasks([]);
     }
   }, [match?.params.projectId]);
