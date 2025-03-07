@@ -40,6 +40,7 @@ import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 import SelectTeamPieChart from './SelectTeamPieChart';
+import CustomTeamCodeModal from './CustomTeamCodeModal';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -93,8 +94,66 @@ export class WeeklySummariesReport extends Component {
         green: false,
         navy: false,
       },
+      customTeamCodeModalOpen: false,
     };
   }
+
+  toggleCustomTeamCodeModal = () => {
+    this.setState(prevState => ({
+      customTeamCodeModalOpen: !prevState.customTeamCodeModalOpen,
+    }));
+
+    // If we're closing the modal, refresh the teams data
+    if (this.state.customTeamCodeModalOpen) {
+      this.refreshTeamCodes();
+    }
+  };
+
+  refreshTeamCodes = async () => {
+    const { getAllUserTeams } = this.props;
+    try {
+      const res = await getAllUserTeams();
+      if (res) {
+        // Process the teams data similar to componentDidMount
+        const teamCodeGroup = {};
+        const teamCodes = [];
+
+        res.forEach(team => {
+          const code = team.teamCode || 'noCodeLabel';
+          if (teamCodeGroup[code]) {
+            teamCodeGroup[code].push(team);
+          } else {
+            teamCodeGroup[code] = [team];
+          }
+        });
+
+        Object.keys(teamCodeGroup).forEach(code => {
+          if (code !== 'noCodeLabel') {
+            teamCodes.push({
+              value: code,
+              label: `${code} (${teamCodeGroup[code].length})`,
+              _ids: teamCodeGroup[code]?.map(item => item._id),
+            });
+          }
+        });
+
+        teamCodes
+          .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+          .push({
+            value: '',
+            label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+            _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
+          });
+
+        this.setState({
+          teamCodes,
+          tableData: teamCodeGroup,
+        });
+      }
+    } catch (error) {
+      console.error('Error refreshing team codes:', error);
+    }
+  };
 
   async componentDidMount() {
     const {
@@ -829,15 +888,29 @@ export class WeeklySummariesReport extends Component {
         </Row>
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
-            <MultiSelect
-              className="multi-select-filter text-dark"
-              options={teamCodes}
-              value={selectedCodes}
-              onChange={e => {
-                this.handleSelectCodeChange(e);
-              }}
-              labelledBy="Select"
-            />
+            <div className="mb-2">
+              <MultiSelect
+                className="multi-select-filter text-dark"
+                options={teamCodes}
+                value={selectedCodes}
+                onChange={e => {
+                  this.handleSelectCodeChange(e);
+                }}
+                labelledBy="Select"
+              />
+            </div>
+            {/* Add this Button after the MultiSelect */}
+            {hasPermissionToFilter && (
+              <Button
+                color="primary"
+                size="sm"
+                className="mt-1 mb-3"
+                onClick={this.toggleCustomTeamCodeModal}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                <i className="fas fa-cog mr-1"></i> Manage Custom Team Codes
+              </Button>
+            )}
           </Col>
           <Col lg={{ size: 5 }} md={{ size: 6, offset: -1 }} xs={{ size: 6, offset: -1 }}>
             <MultiSelect
@@ -1069,6 +1142,13 @@ export class WeeklySummariesReport extends Component {
             </TabContent>
           </Col>
         </Row>
+        {this.state.customTeamCodeModalOpen && (
+          <CustomTeamCodeModal
+            isOpen={this.state.customTeamCodeModalOpen}
+            toggle={this.toggleCustomTeamCodeModal}
+            darkMode={darkMode}
+          />
+        )}
       </Container>
     );
   }
