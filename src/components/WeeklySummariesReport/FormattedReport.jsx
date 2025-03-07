@@ -89,7 +89,7 @@ function FormattedReport({
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
-            loadBzadges={loadBadges}
+            loadBadges={loadBadges}
             canSeeBioHighlight={canSeeBioHighlight}
             darkMode={darkMode}
             handleTeamCodeChange={handleTeamCodeChange}
@@ -211,7 +211,6 @@ function ReportDetails({
   auth,
   handleSpecialColorDotClick,
 }) {
-  const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
   const cantEditJaeRelatedRecord = cantUpdateDevAdminDetails(summary.email, loggedInUserEmail);
 
@@ -221,10 +220,6 @@ function ReportDetails({
     summary.totalTangibleHrs > 80 &&
     summary.daysInTeam > 60 &&
     summary.bioPosted !== 'posted';
-
-  useEffect(() => {
-    setFilteredBadges(badges.filter(badge => badge.showReport === true));
-  }, []);
 
   return (
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
@@ -282,7 +277,7 @@ function ReportDetails({
           </Col>
           <Col xs="6">
             {loadBadges && summary.badgeCollection?.length > 0 && (
-              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={filteredBadges} />
+              <WeeklyBadge summary={summary} weekIndex={weekIndex} badges={badges} />
             )}
           </Col>
         </Row>
