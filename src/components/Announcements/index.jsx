@@ -230,20 +230,6 @@ function Announcements({ title, email }) {
     return Object.keys(editorErrors).length === 0;
   };
 
-
-
-  urlToBase64(link, (base64) => {
-    linkBase64 = base64;
-  });
-
-  urlToBase64(facebook, (base64) => {
-    facebookBase64 = base64;
-  });
-
-  urlToBase64(twitter, (base64) => {
-    twitterBase64 = base64;
-  });
-
   // Email HTML Format
   const constructEmailContent = () => {
     // Start of email container
