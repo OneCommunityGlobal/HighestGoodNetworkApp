@@ -35,7 +35,11 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const canReview = dispatch(hasPermission('putReviewStatus'));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
-  const [InvalidDomainTypeModal, setInvalidDomainTypeModal] = useState(false);
+  const [invalidDomainModal, setInvalidDomainModal] = useState({
+    isOpen: false,
+    errorType: null,
+    errorMessage: '',
+  });
 
   const toggleModal = () => {
     setModal(!modal);
@@ -57,8 +61,28 @@ const ReviewButton = ({ user, task, updateTask }) => {
     setConfirmSubmitModal(!confirmSubmitModal); // Toggle for second confirmation modal
   };
 
-  const toggleInvalidDomainType = () => {
-    setInvalidDomainTypeModal(!InvalidDomainTypeModal);
+  const toggleInvalidDomainModal = (errorType = null) => {
+    if (!invalidDomainModal.isOpen && errorType) {
+      let errorMessage =
+        'Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR link, Google Doc, Dropbox folder, or One Community webpage.';
+
+      if (errorType === 'invalid_dropbox_link') {
+        errorMessage =
+          'Oops! That link\'s about as helpful as a screen door on a submarine. Please use the "Share" or "Copy link to" option to create a DropBox link that works for people other than just you.';
+      }
+
+      setInvalidDomainModal({
+        isOpen: true,
+        errorType,
+        errorMessage,
+      });
+    } else {
+      setInvalidDomainModal({
+        isOpen: false,
+        errorType: null,
+        errorMessage: '',
+      });
+    }
   };
 
   const handleLink = e => {
@@ -86,65 +110,59 @@ const ReviewButton = ({ user, task, updateTask }) => {
   };
 
   /**
-   * Validates if the provided URL is one of the accepted domain types:
-   * 1. Google Doc
-   * 2. Functional Dropbox shared link
-   * 3. GitHub PR link
-   * 4. One Community Webpage
-   *
+   * Validates if the provided URL is one of the accepted domain types
    * @param {string} url - The URL to validate
-   * @returns {boolean} - True if valid, false otherwise
+   * @returns {object} - { isValid: boolean, errorType: string|null }
    */
   const validateAllowedDomainTypes = url => {
     if (!url) {
-      return false;
+      return { isValid: false, errorType: 'missing_url' };
     }
 
-    // Normalize the URL (convert to lowercase for comparison)
+    // Normalize the URL
     const normalizedUrl = url.toLowerCase();
 
     // 1. Google Doc check
     if (normalizedUrl.includes('docs.google.com')) {
-      // Check for specific Google Doc patterns
       if (
         normalizedUrl.includes('/document/d/') ||
         normalizedUrl.includes('/spreadsheets/d/') ||
         normalizedUrl.includes('/presentation/d/') ||
         normalizedUrl.includes('/forms/d/')
       ) {
-        return true;
+        return { isValid: true, errorType: null };
       }
+      return { isValid: false, errorType: 'general_invalid' };
     }
 
-    // 2. Dropbox shared link check
+    // 2. Dropbox check
     if (normalizedUrl.includes('dropbox.com')) {
-      // Shared links contain /s/ or /scl/ in the path
       if (normalizedUrl.includes('dropbox.com/s/') || normalizedUrl.includes('dropbox.com/scl/')) {
-        return true;
+        return { isValid: true, errorType: null };
       }
-      return false;
+      return { isValid: false, errorType: 'invalid_dropbox_link' };
     }
 
-    // 3. GitHub PR link check
+    // 3. GitHub PR check
     if (normalizedUrl.includes('github.com')) {
-      // PR links contain /pull/ in the path
       if (normalizedUrl.includes('/pull/')) {
-        return true;
+        return { isValid: true, errorType: null };
       }
+      return { isValid: false, errorType: 'general_invalid' };
     }
 
-    // 4. One Community Webpage check
+    // 4. One Community check
     if (
       normalizedUrl.includes('onecommunityglobal.org') ||
       normalizedUrl.includes('onecommunityglobal.com') ||
       normalizedUrl.includes('onecommunity.org') ||
       normalizedUrl.includes('onecommunity.com')
     ) {
-      return true;
+      return { isValid: true, errorType: null };
     }
 
-    // If we get here, the URL didn't match any of the patterns
-    return false;
+    // Generic invalid domain
+    return { isValid: false, errorType: 'general_invalid' };
   };
 
   const reviewStatus = useMemo(() => {
@@ -189,19 +207,17 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const submitReviewRequest = event => {
     event.preventDefault();
 
-    // First check basic URL validity
     if (!validURL(link)) {
       setLinkError('Please enter a valid URL of at least 20 characters');
       return;
     }
 
-    // Then check if it's an accepted link type - now returns boolean
-    if (!validateAllowedDomainTypes(link)) {
-      toggleInvalidDomainType();
+    const validationResult = validateAllowedDomainTypes(link);
+    if (!validationResult.isValid) {
+      toggleInvalidDomainModal(validationResult.errorType);
       return;
     }
 
-    // If all checks pass, show confirmation modal
     toggleConfirmSubmitModal();
   };
 
@@ -395,8 +411,9 @@ const ReviewButton = ({ user, task, updateTask }) => {
                 return;
               }
 
-              if (!validateAllowedDomainTypes(link)) {
-                toggleInvalidDomainType();
+              const validationResult = validateAllowedDomainTypes(link);
+              if (!validationResult.isValid) {
+                toggleInvalidDomainModal(validationResult.errorType);
                 return;
               }
 
@@ -418,13 +435,16 @@ const ReviewButton = ({ user, task, updateTask }) => {
         </ModalFooter>
       </Modal>
 
-      {/* Invalid Domain Type Warning Modal */}
+      {/* Dynamic Invalid Domain Type Warning Modal */}
       <Modal
-        isOpen={InvalidDomainTypeModal}
-        toggle={toggleInvalidDomainType}
+        isOpen={invalidDomainModal.isOpen}
+        toggle={() => toggleInvalidDomainModal()}
         className={darkMode ? 'text-light dark-mode' : ''}
       >
-        <ModalHeader toggle={toggleInvalidDomainType} className={darkMode ? 'bg-space-cadet' : ''}>
+        <ModalHeader
+          toggle={() => toggleInvalidDomainModal()}
+          className={darkMode ? 'bg-space-cadet' : ''}
+        >
           Invalid Domain Type
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -433,10 +453,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
               ⚠️
             </span>
           </div>
-          <p>
-            Nice try, but that link is about as useful as a chocolate teapot! We need a GitHub PR
-            link, Google Doc, Dropbox folder, or One Community webpage.
-          </p>
+          <p>{invalidDomainModal.errorMessage}</p>
           <div className="mt-3">
             <strong>Acceptable link types:</strong>
             <ul className="mt-2" style={{ paddingLeft: '25px' }}>
@@ -458,7 +475,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             color="primary"
-            onClick={toggleInvalidDomainType}
+            onClick={() => toggleInvalidDomainModal()}
             style={darkMode ? boxStyleDark : boxStyle}
           >
             Got it!
