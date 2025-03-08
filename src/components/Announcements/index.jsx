@@ -226,6 +226,10 @@ function Announcements({ title, email }) {
   };
 
   const handleCreateFbPost = async () => {
+    if (!emailContent || emailContent.trim() === '') {
+      toast.error('Error: No content to post. Please add some content in Weekly progress editor');
+      return; // Exit the function if no content is provided
+    }
     const EmailContent = emailContent;
     try {
       const response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
