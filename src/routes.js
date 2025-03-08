@@ -63,6 +63,7 @@ import ActivityList from './components/CommunityPortal/Activities/ActivityList';
 import EPProtectedRoute from './components/common/EPDashboard/EPProtectedRoute';
 import EPLogin from './components/EductionPortal/Login';
 import EPDashboard from './components/EductionPortal';
+import MaterialSummary from './components/MaterialSummary/MaterialSummary'
 
 
 
@@ -147,6 +148,7 @@ export default (
         </>
       )}
     />
+    <Route path="/MaterialSummary" component={MaterialSummary} />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
