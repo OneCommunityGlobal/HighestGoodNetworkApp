@@ -170,13 +170,11 @@ function Announcements({ title, email }) {
 
   const loadFacebookSDK = () => {
     return new Promise((resolve, reject) => {
-      // Check if Facebook SDK is already loaded
+      // Check if Facebook SDK is already loaded on console
       if (window.FB) {
         resolve(window.FB);
         return;
       }
-
-      // Create a script element and set up the SDK URL
       const script = document.createElement('script');
       script.src = "https://connect.facebook.net/en_US/sdk.js";
       script.async = true;
@@ -187,7 +185,7 @@ function Announcements({ title, email }) {
       script.onload = () => {
         window.fbAsyncInit = function () {
           window.FB.init({
-            appId: '1335318524566163',  // Replace with your Facebook App ID
+            appId: '1335318524566163',  // Replace with required Facebook App ID
             cookie: true,
             xfbml: true,
             version: 'v15.0',
@@ -211,7 +209,6 @@ function Announcements({ title, email }) {
         console.error("Error loading Facebook SDK:", error);
       });
   }, [])
-  //};
 
   const handleFacebookLogin = () => {
     window.FB.login(response => {
@@ -228,7 +225,7 @@ function Announcements({ title, email }) {
   const handleCreateFbPost = async () => {
     if (!emailContent || emailContent.trim() === '') {
       toast.error('Error: No content to post. Please add some content in Weekly progress editor');
-      return; // Exit the function if no content is provided
+      return;
     }
     const EmailContent = emailContent;
     try {
