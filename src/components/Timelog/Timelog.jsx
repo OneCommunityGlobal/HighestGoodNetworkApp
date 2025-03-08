@@ -128,8 +128,6 @@ function Timelog(props) {
   const [periodEntries, setPeriodEntries] = useState(null);
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
-  const { userId: paramsUserId } = useParams();
-  const [dataLoaded, setDataLoaded] = useState(false);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
   const [userTasksData, setUserTasksData] = useState([]);
   const { userId: urlId } = useParams();
@@ -180,37 +178,37 @@ function Timelog(props) {
   const defaultTab = data => {
     let tab = 1;
     // if(displayUserProfile.teams && displayUserProfile.teams.length > 0) {
-      const userHaveTask = doesUserHaveTaskWithWBS(data);
-      // change default to time log tab(1) in the following cases:
-      const { role } = authUser;
-      /* To set the Task tab as defatult this.userTask is being watched.
+    const userHaveTask = doesUserHaveTaskWithWBS(data);
+    // change default to time log tab(1) in the following cases:
+    const { role } = authUser;
+    /* To set the Task tab as defatult this.userTask is being watched.
       Accounts with no tasks assigned to it return an empty array.
       Accounts assigned with tasks with no wbs return and empty array.
       Accounts assigned with tasks with wbs return an array with that wbs data.
       The problem: even after unassigning tasks the array keeps the wbs data.
       That breaks this feature. Necessary to check if this array should keep data or be reset when unassinging tasks. */
 
-      // if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
-      if (role === 'Volunteer' && userHaveTask.length > 0) {
-        tab = 0;
-      } else if (role === 'Volunteer' && userHaveTask.length === 0) {
-        tab = 1;
-      } else {
-        tab = null;
-      }
+    // if user role is volunteer or core team and they don't have tasks assigned, then default tab is timelog.
+    if (role === 'Volunteer' && userHaveTask.length > 0) {
+      tab = 0;
+    } else if (role === 'Volunteer' && userHaveTask.length === 0) {
+      tab = 1;
+    } else {
+      tab = null;
+    }
 
-      // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
-      if (!props.isDashboard) {
-        tab = 1;
-      }
+    // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
+    if (!props.isDashboard) {
+      tab = 1;
+    }
 
-      if (location.hash) {
-        const redirectToTab = tabMapping[location.hash];
-        if (redirectToTab !== undefined) {
-          tab = redirectToTab;
-        }
+    if (location.hash) {
+      const redirectToTab = tabMapping[location.hash];
+      if (redirectToTab !== undefined) {
+        tab = redirectToTab;
       }
-// }
+    }
+    // }
     return tab;
   };
 
@@ -264,7 +262,7 @@ function Timelog(props) {
 
   const loadAsyncData = async uid => {
     // load the timelog data
-    setTimeLogState((prevState) => ({ ...prevState, isTimeEntriesLoading: true }));
+    setTimeLogState(prevState => ({ ...prevState, isTimeEntriesLoading: true }));
     try {
       await Promise.all([
         props.getUserProfile(uid),
@@ -283,7 +281,7 @@ function Timelog(props) {
       const data = res.data.length > 0 ? res.data : [];
       setUserTasksData(data);
       const defaultTabValue = defaultTab(data);
-      setTimeLogState((prevState)=> ({ ...prevState, isTimeEntriesLoading: false }));
+      setTimeLogState(prevState => ({ ...prevState, isTimeEntriesLoading: false }));
       setInitialTab(defaultTabValue);
     } catch (e) {
       console.log(e);
@@ -345,7 +343,7 @@ function Timelog(props) {
       window.location.hash = '';
     }
 
-    setTimeLogState((prevState)=>({
+    setTimeLogState(prevState => ({
       ...prevState,
       activeTab: tab,
     }));
@@ -514,7 +512,7 @@ function Timelog(props) {
   useEffect(() => {
     setTimeLogState({ ...timeLogState, isTimeEntriesLoading: false });
     setInitialTab(defaultTab(userTasksData));
-  },[displayUserProfile]);
+  }, [displayUserProfile]);
 
   // Update user ID if it changes in the URL
   useEffect(() => {
