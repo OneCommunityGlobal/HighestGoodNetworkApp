@@ -17,7 +17,7 @@ import './reviewButton.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
 import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
@@ -35,6 +35,8 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const canReview = dispatch(hasPermission('putReviewStatus'));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
+  const [editLinkModal, setEditLinkModal] = useState(false);
+  const [editLink, setEditLink] = useState('');
   const [invalidDomainModal, setInvalidDomainModal] = useState({
     isOpen: false,
     errorType: null,
@@ -59,6 +61,16 @@ const ReviewButton = ({ user, task, updateTask }) => {
 
   const toggleConfirmSubmitModal = () => {
     setConfirmSubmitModal(!confirmSubmitModal); // Toggle for second confirmation modal
+  };
+
+  const toggleEditLinkModal = () => {
+    setEditLinkModal(!editLinkModal);
+    if (!editLinkModal) {
+      // When opening the modal, find the link associated with this user
+      const userLink = task.relatedWorkLinks?.[task.relatedWorkLinks.length - 1] || '';
+      setEditLink(userLink);
+      setLinkError(null);
+    }
   };
 
   const toggleInvalidDomainModal = (errorType = null) => {
@@ -236,6 +248,49 @@ const ReviewButton = ({ user, task, updateTask }) => {
     httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
   };
 
+  const handleEditLink = () => {
+    if (!validURL(editLink)) {
+      setLinkError('Please enter a valid URL of at least 20 characters');
+      return;
+    }
+
+    const validationResult = validateAllowedDomainTypes(editLink);
+    if (!validationResult.isValid) {
+      toggleInvalidDomainModal(validationResult.errorType);
+      return;
+    }
+
+    // Update the task with the new link
+    const updatedTask = { ...task };
+
+    // If there are related work links, replace the last one (assuming it's the one for this user)
+    if (Array.isArray(updatedTask.relatedWorkLinks) && updatedTask.relatedWorkLinks.length > 0) {
+      updatedTask.relatedWorkLinks[updatedTask.relatedWorkLinks.length - 1] = editLink;
+    } else {
+      // If no related work links exist yet, add this one
+      updatedTask.relatedWorkLinks = [editLink];
+    }
+
+    updateTask(task._id, updatedTask);
+    setEditLinkModal(false);
+
+    // Notify that the link has been updated
+    sendEditLinkNotification();
+  };
+
+  const sendEditLinkNotification = () => {
+    var data = {};
+    data['myUserId'] = myUserId;
+    data['name'] = user.name;
+    data['taskName'] = task.taskName;
+    data['isLinkUpdate'] = true;
+    httpService.post(`${ApiEndpoint}/tasks/reviewreq/${myUserId}`, data);
+  };
+
+  const handleEditLinkChange = e => {
+    setEditLink(e.target.value);
+  };
+
   const buttonFormat = () => {
     if (user.personId === myUserId && reviewStatus === 'Unsubmitted') {
       return (
@@ -302,9 +357,19 @@ const ReviewButton = ({ user, task, updateTask }) => {
         );
       } else if (user.personId === myUserId) {
         return (
-          <Button className="reviewBtn" color="info" disabled>
-            Work Submitted and Awaiting Review
-          </Button>
+          <div className="d-flex">
+            <Button className="reviewBtn mr-2" color="info" disabled>
+              Work Submitted and Awaiting Review
+            </Button>
+            <Button
+              className="edit-link-btn"
+              color="secondary"
+              onClick={toggleEditLinkModal}
+              title="Edit submitted link"
+            >
+              <FontAwesomeIcon icon={faPencilAlt} />
+            </Button>
+          </div>
         );
       } else {
         return (
@@ -430,6 +495,35 @@ const ReviewButton = ({ user, task, updateTask }) => {
             {reviewStatus === 'Unsubmitted' ? `Submit` : `Complete`}
           </Button>
           <Button onClick={modalCancelButtonHandler} style={darkMode ? boxStyleDark : boxStyle}>
+            Cancel
+          </Button>
+        </ModalFooter>
+      </Modal>
+
+      {/* Edit Link Modal */}
+      <Modal
+        isOpen={editLinkModal}
+        toggle={toggleEditLinkModal}
+        className={darkMode ? 'text-light dark-mode' : ''}
+      >
+        <ModalHeader toggle={toggleEditLinkModal} className={darkMode ? 'bg-space-cadet' : ''}>
+          Edit Submitted Link
+        </ModalHeader>
+        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <p>Update the link to your submitted work:</p>
+          <Input type="text" required value={editLink} onChange={handleEditLinkChange} />
+          {linkError && <div className="text-danger">{linkError}</div>}
+        </ModalBody>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+          <Button
+            onClick={handleEditLink}
+            color="primary"
+            className="float-left"
+            style={darkMode ? boxStyleDark : boxStyle}
+          >
+            Update Link
+          </Button>
+          <Button onClick={toggleEditLinkModal} style={darkMode ? boxStyleDark : boxStyle}>
             Cancel
           </Button>
         </ModalFooter>
