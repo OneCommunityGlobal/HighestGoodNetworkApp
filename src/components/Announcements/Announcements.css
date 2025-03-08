@@ -63,25 +63,45 @@ button.send-button:hover {
   align-items: flex-start;
 }
 
+
 .social-media-container {
   padding: 70px;
   display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
+  gap: 10px;
+  flex-wrap: wrap;
+
+  justify-content: flex-start;
 }
 
 .social-media {
   flex: 1;
-  /* Editor takes up remaining space */
+
   margin-right: 20px;
-  /* Add some spacing between editor and email inputs */
+}
+
+.social-buttons-container {
+  display: flex;
+  gap: 10px;
+  justify-content: flex-start;
+
+}
+
+.social-buttons-container button:hover {
+  background-color: #35508f;
+}
+
+.social-buttons-container button:nth-child(2) {
+  background-color: #34b7f1;
+}
+
+.social-buttons-container button:nth-child(2):hover {
+  background-color: #1f9dd6;
 }
 
 .editor {
   flex: 1;
-  /* Editor takes up remaining space */
+
   margin-right: 20px;
-  /* Add some spacing between editor and email inputs */
 }
 
 .editor h2 {

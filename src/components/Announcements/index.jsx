@@ -183,40 +183,29 @@ function Announcements({ title, email }) {
       script.defer = true;
       script.crossOrigin = "anonymous";
 
-      // Load the script and resolve the promise when it's loaded
+
       script.onload = () => {
-        // Initialize the SDK
         window.fbAsyncInit = function () {
           window.FB.init({
             appId: '1335318524566163',  // Replace with your Facebook App ID
             cookie: true,
             xfbml: true,
             version: 'v15.0',
-            //config_id: 1738940933337346,
-            //response_type: 'code',
-            //override_default_response_type: true
           });
-          resolve(window.FB); // Resolve the promise with the FB object
+          resolve(window.FB);
         };
       };
-
-      // Handle errors when loading the SDK
       script.onerror = (error) => {
         reject(error);
       };
-
-      // Append the script to the document's head to load it
       document.head.appendChild(script);
     });
   };
 
-  //const FacebookLogin = () => {
   useEffect(() => {
-    // Load the Facebook SDK when the component mounts
     loadFacebookSDK()
       .then((FB) => {
         console.log("Facebook SDK Loaded", FB);
-        // You can now use FB object (e.g., to login or call Facebook Graph API)
       })
       .catch((error) => {
         console.error("Error loading Facebook SDK:", error);
@@ -225,13 +214,11 @@ function Announcements({ title, email }) {
   //};
 
   const handleFacebookLogin = () => {
-    //FacebookLogin()
     window.FB.login(response => {
       if (response.authResponse) {
         const { accessToken } = response.authResponse;
         setAccessToken(accessToken);
         console.log('User Access Token:', accessToken);
-        // You can send the accessToken to your backend now
       } else {
         console.error('User cancelled the login or did not fully authorize.');
       }
@@ -242,12 +229,10 @@ function Announcements({ title, email }) {
     const EmailContent = emailContent;
     try {
       const response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
-        //EmailContent // Send the email content (HTML)
-        emailContent: EmailContent,  // Send the email content (HTML)
+        emailContent: EmailContent,
         accessToken: accessToken,
       });
       console.log('response', response.data)
-      //console.log('emailcontent', EmailContent)
       toast.success('Post successfully created on Facebook!');
     } catch (error) {
       console.error('Error posting to Facebook:', error);
@@ -337,40 +322,44 @@ function Announcements({ title, email }) {
         </div>
       </div>
       <div className="social-media-container">
-        <div classname="social-media">
+        <div className="social-media">
           {title ? (
-            <h3> {title} </h3>
-          )
-            : (<h3>Social Media Post</h3>)
-          }
-          {
-            title ? (
-              ""
-            ) : (
-              <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
-                Click on below social media to post
-              </label>
-            )
-          }
-          {
-            title ? (
-              ""
-            ) : (
-              <button type="button" className="send-button" onClick={handleCreateFbPost} style={darkMode ? boxStyleDark : boxStyle}>
-                Facebook
+            <h3>{title}</h3>
+          ) : (
+            <h3>Social Media Post</h3>
+          )}
+
+          {title ? null : (
+            <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
+              Click on below social media to post
+            </label>
+          )}
+
+          {title ? null : (
+            <div className="social-buttons-container">
+              <button
+                type="button"
+                className="send-button"
+                onClick={handleFacebookLogin}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Login with Facebook
+              </button>
+              <button
+                type="button"
+                className="send-button"
+                onClick={handleCreateFbPost}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Post on Facebook
               </button>
 
-            )
-          }
-          {
-            title ? (
-              ""
-            ) : (
-              <button type="button" className="send-button" onClick={handleFacebookLogin} style={darkMode ? boxStyleDark : boxStyle}>Login with Facebook</button>
-            )
-          }
+            </div>
+          )}
+
         </div>
       </div>
+
     </div>
 
   );
