@@ -312,6 +312,7 @@ function TotalOrgSummary(props) {
                   darkMode={darkMode}
                   usersTimeEntries={usersTimeEntries}
                   usersOverTimeEntries={usersOverTimeEntries}
+                  hoursData={volunteerStats?.volunteerHoursStats}
                 />
                 <div className="d-flex flex-column align-items-center justify-content-center">
                   <HoursWorkList darkMode={darkMode} usersTimeEntries={usersTimeEntries} />
