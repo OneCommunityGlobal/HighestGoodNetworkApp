@@ -60,7 +60,7 @@ Member.defaultProps = {
 
 // Define prop types
 Member.propTypes = {
-  index: PropTypes.number.isRequired
+  index: PropTypes.number.isRequiredç
 };
 
 const mapStateToProps = state => {
