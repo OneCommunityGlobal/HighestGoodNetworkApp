@@ -320,19 +320,66 @@ function LeaderBoard({
     return { hasTimeOff, isCurrentlyOff, additionalWeeks };
   };
 
-  // const currentTimeOfftoggle = personId => {
-  //   setCurrentTimeOfftooltipOpen(prevState => ({
-  //     ...prevState,
-  //     [personId]: !prevState[personId],
-  //   }));
-  // };
+  const currentTimeOfftoggle = personId => {
+    setCurrentTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
 
-  // const futureTimeOfftoggle = personId => {
-  //   setFutureTimeOfftooltipOpen(prevState => ({
-  //     ...prevState,
-  //     [personId]: !prevState[personId],
-  //   }));
-  // };
+  const futureTimeOfftoggle = personId => {
+    setFutureTimeOfftooltipOpen(prevState => ({
+      ...prevState,
+      [personId]: !prevState[personId],
+    }));
+  };
+
+  const timeOffIndicator = personId => {
+    if (userOnTimeOff[personId]?.isInTimeOff === true) {
+      if (userOnTimeOff[personId]?.weeks > 0) {
+        return (
+          <>
+            <sup style={{ color: 'rgba(128, 128, 128, 0.5)' }} id={`currentTimeOff-${personId}`}>
+              {' '}
+              +{userOnTimeOff[personId].weeks}
+            </sup>
+            <Tooltip
+              placement="top"
+              isOpen={currentTimeOfftooltipOpen[personId]}
+              target={`currentTimeOff-${personId}`}
+              toggle={() => currentTimeOfftoggle(personId)}
+            >
+              Number with + indicates additional weeks the user will be on a time off excluding the
+              current week.
+            </Tooltip>
+          </>
+        );
+      }
+
+      return null;
+    }
+
+    if (usersOnFutureTimeOff[personId]?.weeks > 0) {
+      return (
+        <>
+          <sup style={{ color: '#007bff' }} id={`futureTimeOff-${personId}`}>
+            {' '}
+            {usersOnFutureTimeOff[personId].weeks}
+          </sup>
+          <Tooltip
+            placement="top"
+            isOpen={futureTimeOfftooltipOpen[personId]}
+            target={`futureTimeOff-${personId}`}
+            toggle={() => futureTimeOfftoggle(personId)}
+          >
+            This number indicates number of weeks from now user has scheduled a time off.
+          </Tooltip>
+        </>
+      );
+    }
+
+    return null;
+  };
 
   const teamName = (name, maxLength) =>
     setSelectedTeamName(maxLength > 15 ? `${name.substring(0, 15)}...` : name);
@@ -752,9 +799,12 @@ function LeaderBoard({
                       to={`/userprofile/${item.personId}`}
                       title="View Profile"
                       style={{
-                        color: isCurrentlyOff
-                          ? 'rgba(128, 128, 128, 0.5)' // Gray out the name if on time off
-                          : '#007BFF', // Default color
+                        color:
+                          isCurrentlyOff ||
+                          ((isAllowedOtherThanOwner || isOwner || item.personId === userId) &&
+                            userOnTimeOff[item.personId]?.isInTimeOff === true)
+                            ? 'rgba(128, 128, 128, 0.5)' // Gray out the name if on time off
+                            : '#007BFF', // Default color
                       }}
                     >
                       {item.name}
