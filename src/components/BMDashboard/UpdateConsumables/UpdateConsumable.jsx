@@ -34,42 +34,6 @@ function UpdateConsumable({ record, setModal }) {
   const [availableCount, setAvailableCount] = useState(undefined);
   const [changeOccured, setChangeOccured] = useState(false);
 
-  useEffect(() => {
-    setUpdateRecord({ ...recordInitialState });
-    setValidations({ ...validationsInitialState });
-  }, []);
-
-  useEffect(() => {
-    if (postConsumableUpdateResult.loading === false && postConsumableUpdateResult.error === true) {
-      toast.error(`${postConsumableUpdateResult.result}`);
-      setModal(false);
-    } else if (
-      postConsumableUpdateResult.loading === false &&
-      postConsumableUpdateResult.result !== null
-    ) {
-      toast.success(`Updated ${record?.itemType?.name} successfully`);
-      setModal(false);
-    }
-  }, [postConsumableUpdateResult]);
-
-  useEffect(() => {
-    const qtyUsedFloat = parseFloat(updateRecord.quantityUsed);
-    const qtyWastedFloat = parseFloat(updateRecord.quantityWasted);
-
-    if (qtyUsedFloat || qtyWastedFloat) {
-      setChangeOccured(true);
-    } else {
-      setChangeOccured(false);
-    }
-
-    validate(
-      updateRecord.quantityUsed,
-      updateRecord.quantityWasted,
-      updateRecord.qtyUsedLogUnit,
-      updateRecord.qtyWastedLogUnit,
-    );
-  }, [updateRecord]);
-
   const validate = (_qtyUsed, _qtyWasted, qtyUsedLogUnit, qtyWastedLogUnit) => {
     let unitsUsed = _qtyUsed === '' ? 0 : parseFloat(_qtyUsed);
     let unitsWasted = _qtyWasted === '' ? 0 : parseFloat(_qtyWasted);
@@ -115,6 +79,42 @@ function UpdateConsumable({ record, setModal }) {
       setAvailableCount(undefined);
     }
   };
+
+  useEffect(() => {
+    setUpdateRecord({ ...recordInitialState });
+    setValidations({ ...validationsInitialState });
+  }, []);
+
+  useEffect(() => {
+    if (postConsumableUpdateResult.loading === false && postConsumableUpdateResult.error === true) {
+      toast.error(`${postConsumableUpdateResult.result}`);
+      setModal(false);
+    } else if (
+      postConsumableUpdateResult.loading === false &&
+      postConsumableUpdateResult.result !== null
+    ) {
+      toast.success(`Updated ${record?.itemType?.name} successfully`);
+      setModal(false);
+    }
+  }, [postConsumableUpdateResult]);
+
+  useEffect(() => {
+    const qtyUsedFloat = parseFloat(updateRecord.quantityUsed);
+    const qtyWastedFloat = parseFloat(updateRecord.quantityWasted);
+
+    if (qtyUsedFloat || qtyWastedFloat) {
+      setChangeOccured(true);
+    } else {
+      setChangeOccured(false);
+    }
+
+    validate(
+      updateRecord.quantityUsed,
+      updateRecord.quantityWasted,
+      updateRecord.qtyUsedLogUnit,
+      updateRecord.qtyWastedLogUnit,
+    );
+  }, [updateRecord]);
 
   const submitHandler = () => {
     if (
