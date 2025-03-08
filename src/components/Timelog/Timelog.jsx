@@ -193,8 +193,6 @@ function Timelog(props) {
       tab = 0;
     } else if (role === 'Volunteer' && userHaveTask.length === 0) {
       tab = 1;
-    } else {
-      tab = null;
     }
 
     // Sets active tab to "Current Week Timelog" when the Progress bar in Leaderboard is clicked
