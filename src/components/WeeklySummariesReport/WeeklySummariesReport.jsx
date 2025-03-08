@@ -37,6 +37,7 @@ import { getInfoCollections } from '../../actions/information';
 import { fetchAllBadges } from '../../actions/badgeManagement';
 import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
+import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -75,6 +76,7 @@ export class WeeklySummariesReport extends Component {
       auth: [],
       selectedOverTime: false,
       selectedBioStatus: false,
+      selectedTrophies: false,
       replaceCode: '',
       replaceCodeError: null,
       replaceCodeLoading: false,
@@ -380,10 +382,14 @@ export class WeeklySummariesReport extends Component {
       summaries,
       selectedOverTime,
       selectedBioStatus,
+      selectedTrophies,
+      activeTab,
     } = this.state;
 
     const selectedCodesArray = selectedCodes.map(e => e.value);
     const selectedColorsArray = selectedColors.map(e => e.value);
+
+    const weekIndex = navItems.indexOf(activeTab);
 
     const temp = summaries.filter(summary => {
       const { activeTab } = this.state;
@@ -399,12 +405,23 @@ export class WeeklySummariesReport extends Component {
         (hoursLogged > 0 &&
           hoursLogged >= summary.promisedHoursByWeek[navItems.indexOf(activeTab)] * 1.25);
 
+      const summarySubmissionDate = moment()
+        .tz('America/Los_Angeles')
+        .endOf('week')
+        .subtract(weekIndex, 'week')
+        .format('YYYY-MM-DD');
+
+      const hasTrophy =
+        !selectedTrophies ||
+        showTrophyIcon(summarySubmissionDate, summary?.createdDate?.split('T')[0]);
+
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&
         (selectedColorsArray.length === 0 ||
           selectedColorsArray.includes(summary.weeklySummaryOption)) &&
         isOverHours &&
-        isBio
+        isBio &&
+        hasTrophy
       );
     });
     this.setState({ filteredSummaries: temp });
@@ -433,6 +450,17 @@ export class WeeklySummariesReport extends Component {
     this.setState(
       prevState => ({
         selectedBioStatus: !prevState.selectedBioStatus,
+      }),
+      () => {
+        this.filterWeeklySummaries();
+      },
+    );
+  };
+
+  handleTrophyToggleChange = () => {
+    this.setState(
+      prevState => ({
+        selectedTrophies: !prevState.selectedTrophies,
       }),
       () => {
         this.filterWeeklySummaries();
@@ -712,6 +740,22 @@ export class WeeklySummariesReport extends Component {
                       onChange={this.handleBioStatusToggleChange}
                     />
                     <label className="custom-control-label" htmlFor="bio-status-toggle">
+                      {}
+                    </label>
+                  </div>
+                </div>
+              )}
+              {hasPermissionToFilter && (
+                <div className="filter-style margin-right">
+                  <span>Filter by Trophies</span>
+                  <div className="custom-control custom-switch custom-control-smaller">
+                    <input
+                      type="checkbox"
+                      className="custom-control-input"
+                      id="trophy-toggle"
+                      onChange={this.handleTrophyToggleChange}
+                    />
+                    <label className="custom-control-label" htmlFor="trophy-toggle">
                       {}
                     </label>
                   </div>
