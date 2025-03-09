@@ -112,6 +112,13 @@ export const addNewTask = (newTask, wbsId, pageLoadTime) => async (dispatch, get
     const wbs = await axios.get(ENDPOINTS.TASK_WBS(wbsId));
     if (Date.parse(wbs.data.modifiedDatetime) > pageLoadTime) {
       dispatch(setAddTaskError('outdated'));
+      const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
+      dispatch(postNewTask(res.data, status));
+      _id = res.data._id;
+      status = res.status;
+      task = res.data;
+      const userIds = task.resources.map(resource => resource.userID);
+      await createOrUpdateTaskNotificationHTTP(task._id, {}, userIds);
     } else {
       const res = await axios.post(ENDPOINTS.TASK(wbsId), newTask);
       dispatch(postNewTask(res.data, status));
