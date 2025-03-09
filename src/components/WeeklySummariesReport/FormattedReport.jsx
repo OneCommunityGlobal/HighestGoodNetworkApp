@@ -64,6 +64,7 @@ function FormattedReport({
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   auth,
   canSeeBioHighlight,
@@ -89,7 +90,8 @@ function FormattedReport({
             allRoleInfo={allRoleInfo}
             canEditTeamCode={canEditTeamCode}
             badges={badges}
-            loadBzadges={loadBadges}
+            loadBadges={loadBadges}
+            loadTrophies={loadTrophies}
             canSeeBioHighlight={canSeeBioHighlight}
             darkMode={darkMode}
             handleTeamCodeChange={handleTeamCodeChange}
@@ -202,6 +204,7 @@ function ReportDetails({
   allRoleInfo,
   badges,
   loadBadges,
+  loadTrophies,
   canEditTeamCode,
   canSeeBioHighlight,
   loggedInUserEmail,
@@ -228,7 +231,13 @@ function ReportDetails({
     <li className={`list-group-item px-0 ${darkMode ? 'bg-yinmn-blue' : ''}`} ref={ref}>
       <ListGroup className="px-0" flush>
         <ListGroupItem darkMode={darkMode}>
-          <Index summary={summary} weekIndex={weekIndex} allRoleInfo={allRoleInfo} auth={auth} />
+          <Index
+            summary={summary}
+            weekIndex={weekIndex}
+            allRoleInfo={allRoleInfo}
+            auth={auth}
+            loadTrophies={loadTrophies}
+          />
         </ListGroupItem>
         <Row className="flex-nowrap">
           <Col xs="6" className="flex-grow-0">
@@ -633,7 +642,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo, auth }) {
+function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
 
@@ -696,13 +705,14 @@ function Index({ summary, weekIndex, allRoleInfo, auth }) {
               auth={auth}
             />
           )}
-          {showTrophyIcon(summarySubmissionDate, summary?.createdDate.split('T')[0]) && (
-            <i className="fa fa-trophy" style={{ marginLeft: '10px', fontSize: '25px' }}>
-              <p style={{ fontSize: '10px', marginLeft: '5px' }}>
-                {handleIconContent(durationSinceStarted)}
-              </p>
-            </i>
-          )}
+          {loadTrophies &&
+            showTrophyIcon(summarySubmissionDate, summary?.createdDate.split('T')[0]) && (
+              <i className="fa fa-trophy" style={{ marginLeft: '10px', fontSize: '25px' }}>
+                <p style={{ fontSize: '10px', marginLeft: '5px' }}>
+                  {handleIconContent(durationSinceStarted)}
+                </p>
+              </i>
+            )}
         </div>
       </div>
 

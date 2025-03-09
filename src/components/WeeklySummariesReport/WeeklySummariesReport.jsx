@@ -68,6 +68,7 @@ export class WeeklySummariesReport extends Component {
       badges: [],
       loadBadges: false,
       hasSeeBadgePermission: false,
+      loadTrophies: false,
       selectedCodes: [],
       selectedColors: [],
       filteredSummaries: [],
@@ -605,6 +606,7 @@ export class WeeklySummariesReport extends Component {
       allRoleInfo,
       badges,
       loadBadges,
+      loadTrophies,
       hasSeeBadgePermission,
       selectedCodes,
       selectedColors,
@@ -857,8 +859,9 @@ export class WeeklySummariesReport extends Component {
                       <Button
                         className="btn--dark-sea-green"
                         style={darkMode ? boxStyleDark : boxStyle}
+                        onClick={() => this.setState({ loadTrophies: !loadTrophies })}
                       >
-                        Load Trophies
+                        {loadTrophies ? 'Hide Trophies' : 'Load Trophies'}
                       </Button>
                     </Col>
                   </Row>
@@ -877,6 +880,7 @@ export class WeeklySummariesReport extends Component {
                         allRoleInfo={allRoleInfo}
                         badges={badges}
                         loadBadges={loadBadges}
+                        loadTrophies={loadTrophies}
                         canEditTeamCode={this.codeEditPermission}
                         auth={auth}
                         canSeeBioHighlight={this.canSeeBioHighlight}
