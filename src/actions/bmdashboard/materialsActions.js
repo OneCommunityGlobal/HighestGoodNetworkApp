@@ -104,12 +104,10 @@ export const fetchAllMaterials = () => {
         dispatch(setMaterials(updatedMaterials));
       })
       .catch(err => {
-        dispatch(setErrors(err));
-      });
+        dispatch(setErrors(err))
+      })
   }
-};
-
-
+}
 
 export const postMaterialUpdate = (payload) => {
   return async dispatch => {
