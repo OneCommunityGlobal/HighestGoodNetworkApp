@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { Form, FormGroup, Label, Input, Button } from 'reactstrap';
 import { toast } from 'react-toastify';
 import { useDispatch, useSelector } from 'react-redux';
@@ -20,9 +20,9 @@ export default function EquipmentUpdateForm() {
   const dispatch = useDispatch();
 
   // Fetch dropdown data
-  const projects = useSelector(state => state.projects?.data || []);
-  const tools = useSelector(state => state.tools?.data || []);
-  const equipments = useSelector(state => state.equipments?.data || []);
+  const projects = useSelector(state => state.bmProjects || []);
+  const tools = useSelector(state => state.bmTools.toolslist || []);
+  const equipments = useSelector(state => state.bmEquipments.equipmentslist || []);
 
   useEffect(() => {
     dispatch(fetchBMProjects());
@@ -30,16 +30,44 @@ export default function EquipmentUpdateForm() {
     dispatch(fetchAllEquipments());
   }, [dispatch]);
 
+  // Extract list of valid tools and equipment (only where name is present)
+  const toolList = useMemo(
+    () =>
+      tools
+        .filter(tool => tool.itemType && tool.itemType.name)
+        .map(tool => ({ id: tool.itemType._id, name: tool.itemType.name })),
+    [tools],
+  );
+
+  const equipmentList = useMemo(
+    () =>
+      equipments
+        .filter(equip => equip.itemType && equip.itemType.name)
+        .map(equip => ({ id: equip.itemType._id, name: equip.itemType.name })),
+    [equipments],
+  );
+
   // Update form validity
   useEffect(() => {
     const { project, toolOrEquipment, name, number } = formData;
-    setIsFormValid(project && toolOrEquipment && name && number);
+    setIsFormValid(!!(project && toolOrEquipment && name && number));
   }, [formData]);
 
   // Handle input change
+  // Handle input change
   const handleChange = e => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+
+    // Allow only numbers in the "number" field
+    if (name === 'number' && value !== '' && !/^\d+$/.test(value)) {
+      return; // Ignore invalid input (non-numeric values)
+    }
+
+    setFormData(prev => ({
+      ...prev,
+      [name]: value,
+      ...(name === 'toolOrEquipment' ? { name: '', number: '' } : {}), // Reset name and number on change
+    }));
   };
 
   // Reset form
@@ -50,10 +78,15 @@ export default function EquipmentUpdateForm() {
   // Submit form
   const handleSubmit = e => {
     e.preventDefault();
+
+    // Log formData including name and id for each field
+    console.log('Form Data Submitted:', formData);
+
     if (!isFormValid) {
       toast.error('Please complete all fields before updating.');
       return;
     }
+    setFormData(initialFormState);
     toast.success('Tool/Equipment updated successfully!');
   };
 
@@ -112,11 +145,18 @@ export default function EquipmentUpdateForm() {
             disabled={!formData.toolOrEquipment}
           >
             <option value="">Select Name</option>
-            {(formData.toolOrEquipment === 'Tool' ? tools : equipments).map(item => (
-              <option key={item.id} value={item.name}>
-                {item.name}
-              </option>
-            ))}
+            {formData.toolOrEquipment === 'Tool' &&
+              toolList.map(item => (
+                <option key={item.id} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
+            {formData.toolOrEquipment === 'Equipment' &&
+              equipmentList.map(item => (
+                <option key={item.id} value={item.name}>
+                  {item.name}
+                </option>
+              ))}
           </Input>
           {!formData.name && <div className="toolFormError">Please select a name</div>}
         </FormGroup>
