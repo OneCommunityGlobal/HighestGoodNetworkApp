@@ -54,6 +54,7 @@ import dashboardReducer from '../reducers/dashboardReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
+import { HGNFormReducer } from './hgnFormReducers';
 
 
 const localReducers = {
@@ -107,8 +108,9 @@ const localReducers = {
 };
 
 const sessionReducers = {
-  userPagination: changeUserPageStatusReducer,
-  userProfileEdit: enableUserInfoEditReducer,
+  hgnForm:HGNFormReducer,
+  userPagination:changeUserPageStatusReducer,
+  userProfileEdit:enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,
   userTask: userTaskByIdReducer,
   leaderBoardData: leaderboardDataReducer,
