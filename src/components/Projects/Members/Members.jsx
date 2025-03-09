@@ -3,7 +3,7 @@
  * Author: Henry Ng - 01/25/20
  * Display members of the project
  ********************************************************************************/
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { NavItem } from 'reactstrap';
 import { connect } from 'react-redux';
@@ -64,11 +64,13 @@ const Members = props => {
   }, [props.state.projectMembers.members, isLoading]);
 
   // ADDED: State for toggling display of active members only
-  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(false);
+  const [showActiveMembersOnly, setShowActiveMembersOnly] = useState(true);
 
-  const displayedMembers = showActiveMembersOnly
-    ? membersList.filter(member => member.isActive)
-    : membersList;
+  // avoid re-filtering the netire list on every render
+  const displayedMembers = useMemo(
+    () => (showActiveMembersOnly ? membersList.filter(member => member.isActive) : membersList),
+    [membersList, showActiveMembersOnly]
+  );
 
   const handleToggle = async () => {
     setShowActiveMembersOnly(prevState => !prevState);

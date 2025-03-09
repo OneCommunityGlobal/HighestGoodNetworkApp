@@ -156,7 +156,7 @@ function WBSTasks(props) {
   useEffect(() => {
     const initialLoad = async () => {
       await load();
-      props.fetchAllMembers(projectId);
+      // props.fetchAllMembers(projectId);
       setShowImport(tasks.length === 0);
       setIsLoading(false);
     };
