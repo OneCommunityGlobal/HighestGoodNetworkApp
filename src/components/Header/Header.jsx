@@ -448,55 +448,51 @@ export function Header(props) {
                   canAccessPopups ||
                   canAccessSendEmails ||
                   canAccessPermissionsManagement) && (
-                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
-                    <DropdownToggle nav caret>
-                      <span className="dashboard-text-link">{OTHER_LINKS}</span>
-                    </DropdownToggle>
-                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
-                      {canAccessUserManagement ? (
-                        <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
-                          {USER_MANAGEMENT}
-                        </DropdownItem>
-                      ) : (
-                        `null`
-                      )}
-                      {canAccessBadgeManagement ? (
-                        <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
-                          {BADGE_MANAGEMENT}
-                        </DropdownItem>
-                      ) : (
-                        `null`
-                      )}
-                      {canAccessProjects && (
-                        <DropdownItem tag={Link} to="/projects" className={fontColor}>
-                          {PROJECTS}
-                        </DropdownItem>
-                      )}
-                      {canAccessTeams && (
-                        <DropdownItem tag={Link} to="/teams" className={fontColor}>
-                          {TEAMS}
-                        </DropdownItem>
-                      )}
-                      {canAccessSendEmails && (
-                        <DropdownItem tag={Link} to="/announcements" className={fontColor}>
-                          {SEND_EMAILS}
-                        </DropdownItem>
-                      )}
-                      {canAccessPermissionsManagement && (
-                        <>
-                          <DropdownItem divider />
-                          <DropdownItem
-                            tag={Link}
-                            to="/permissionsmanagement"
-                            className={fontColor}
-                          >
-                            {PERMISSIONS_MANAGEMENT}
+                    <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                      <DropdownToggle nav caret>
+                        <span className="dashboard-text-link">{OTHER_LINKS}</span>
+                      </DropdownToggle>
+                      <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                        {canAccessUserManagement && (
+                          <DropdownItem tag={Link} to="/usermanagement" className={fontColor}>
+                            {USER_MANAGEMENT}
                           </DropdownItem>
-                        </>
-                      )}
-                    </DropdownMenu>
-                  </UncontrolledDropdown>
-                )}
+                        )}
+                        {canAccessBadgeManagement && (
+                          <DropdownItem tag={Link} to="/badgemanagement" className={fontColor}>
+                            {BADGE_MANAGEMENT}
+                          </DropdownItem>
+                        )}
+                        {canAccessProjects && (
+                          <DropdownItem tag={Link} to="/projects" className={fontColor}>
+                            {PROJECTS}
+                          </DropdownItem>
+                        )}
+                        {canAccessTeams && (
+                          <DropdownItem tag={Link} to="/teams" className={fontColor}>
+                            {TEAMS}
+                          </DropdownItem>
+                        )}
+                        {canAccessSendEmails && (
+                          <DropdownItem tag={Link} to="/announcements" className={fontColor}>
+                            {SEND_EMAILS}
+                          </DropdownItem>
+                        )}
+                        {canAccessPermissionsManagement && (
+                          <>
+                            <DropdownItem divider />
+                            <DropdownItem
+                              tag={Link}
+                              to="/permissionsmanagement"
+                              className={fontColor}
+                            >
+                              {PERMISSIONS_MANAGEMENT}
+                            </DropdownItem>
+                          </>
+                        )}
+                      </DropdownMenu>
+                    </UncontrolledDropdown>
+                  )}
                 <NavItem className="responsive-spacing">
                   <NavLink tag={Link} to={`/userprofile/${displayUserId}`}>
                     <img
@@ -529,14 +525,14 @@ export function Header(props) {
                       props.userProfile.email,
                       props.userProfile.email,
                     ) && (
-                      <DropdownItem
-                        tag={Link}
-                        to={`/updatepassword/${displayUserId}`}
-                        className={fontColor}
-                      >
-                        {UPDATE_PASSWORD}
-                      </DropdownItem>
-                    )}
+                        <DropdownItem
+                          tag={Link}
+                          to={`/updatepassword/${displayUserId}`}
+                          className={fontColor}
+                        >
+                          {UPDATE_PASSWORD}
+                        </DropdownItem>
+                      )}
                     <DropdownItem className={fontColor}>
                       <DarkModeButton />
                     </DropdownItem>
