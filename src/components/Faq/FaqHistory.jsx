@@ -28,45 +28,77 @@ function FaqHistory() {
   if (!faq) return <p>FAQ not found</p>;
 
   return (
-    <div>
-      <h2>FAQ History</h2>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', textAlign: 'center' }}>
+      <h2 style={{ marginBottom: '20px', borderBottom: 'px solid #ddd', paddingBottom: '10px' }}>
+        FAQ History
+      </h2>
 
-      <h3>Current Question:</h3>
-      <p>
-        <strong>Question:</strong> {faq.question}
-      </p>
-      <p>
-        <strong>Answer:</strong> {faq.answer}
-      </p>
+      <div
+        style={{
+          padding: '15px',
+          border: '1px solid #ddd',
+          borderRadius: '5px',
+          backgroundColor: '#f9f9f9',
+          marginBottom: '20px',
+        }}
+      >
+        <h3 style={{ color: '#007bff' }}>Current Question:</h3>
+        <p>
+          <strong>Question:</strong> {faq.question}
+        </p>
+        <p>
+          <strong>Answer:</strong> {faq.answer}
+        </p>
+      </div>
 
-      <h4>Created By:</h4>
-      <p>
-        <strong>User:</strong> {faq.createdBy ? faq.createdBy : 'Unknown'}
-      </p>
-      <p>
-        <strong>Date:</strong> {new Date(faq.createdAt).toLocaleString()}
-      </p>
-      <h4>Change History:</h4>
+      <div
+        style={{
+          padding: '15px',
+          border: '1px solid #ddd',
+          borderRadius: '5px',
+          backgroundColor: '#fff',
+          marginBottom: '20px',
+        }}
+      >
+        <h4 style={{ color: '#28a745' }}>Created By:</h4>
+        <p>
+          <strong>User:</strong> {faq.createdBy ? faq.createdBy : 'Unknown'}
+        </p>
+        <p>
+          <strong>Date:</strong> {new Date(faq.createdAt).toLocaleString()}
+        </p>
+      </div>
+
+      <h4 style={{ borderBottom: '2px', paddingBottom: '5px' }}>Change History:</h4>
       {faq.changeHistory && faq.changeHistory.length > 0 ? (
-        <ul>
+        <ul style={{ listStyle: 'none', padding: 0 }}>
           {faq.changeHistory.map((change, index) => (
-            <li key={index}>
+            <li
+              key={index}
+              style={{
+                marginBottom: '15px',
+                padding: '15px',
+                border: '1px solid #ddd',
+                borderRadius: '5px',
+                backgroundColor: '#fff',
+              }}
+            >
               <p>
                 <strong>Updated By:</strong> {change.updatedBy ? change.updatedBy : 'Unknown'}
               </p>
               <p>
                 <strong>Updated At:</strong> {new Date(change.updatedAt).toLocaleString()}
               </p>
-              <p>
+              <p style={{ color: '#dc3545' }}>
                 <strong>Previous Question:</strong> {change.previousQuestion}
               </p>
-              <p>
+              <p style={{ color: '#dc3545' }}>
                 <strong>Previous Answer:</strong> {change.previousAnswer}
               </p>
-              <p>
+              <p style={{ color: '#007bff' }}>
                 <strong>Updated Question:</strong> {change.updatedQuestion}
               </p>
-              <p>
+              <p style={{ color: '#007bff' }}>
                 <strong>Updated Answer:</strong> {change.updatedAnswer}
               </p>
             </li>
