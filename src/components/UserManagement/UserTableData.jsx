@@ -60,6 +60,7 @@ const UserTableData = React.memo(props => {
   const resetPasswordStatus = props.hasPermission('resetPassword');
   const updatePasswordStatus = props.hasPermission('updatePassword');
   const canChangeUserStatus = props.hasPermission('changeUserStatus');
+  const canSetFinalDay = props.hasPermission('setFinalDay');
   const toggleDeleteTooltip = () => setTooltipDelete(!tooltipDeleteOpen);
   const togglePauseTooltip = () => setTooltipPause(!tooltipPauseOpen);
   const toggleFinalDayTooltip = () => setTooltipFinalDay(!tooltipFinalDayOpen);
@@ -348,7 +349,7 @@ const UserTableData = React.memo(props => {
       <td>
         {!isCurrentUser && (
           <>
-            {!canChangeUserStatus ? (
+            {!canSetFinalDay ? (
               <Tooltip
                 placement="bottom"
                 isOpen={tooltipFinalDayOpen}
@@ -378,7 +379,7 @@ const UserTableData = React.memo(props => {
               }}
               style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
               id={`btn-final-day-${props.user._id}`}
-              disabled={!canChangeUserStatus}
+              disabled={!canSetFinalDay}
             >
               {props.user.endDate ? CANCEL : SET_FINAL_DAY}
             </button>

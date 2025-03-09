@@ -314,9 +314,8 @@ const TimeZoneDifference = props => {
     <>
       <Col md={desktopDisplay ? '6' : ''}>
         <p
-          className={`${darkMode ? 'text-light' : ''} ${
-            desktopDisplay ? 'text-right' : 'text-left'
-          }`}
+          className={`${darkMode ? 'text-light' : ''} ${desktopDisplay ? 'text-right' : 'text-left'
+            }`}
         >
           This is your own profile page
         </p>
@@ -704,6 +703,7 @@ const BasicInformationTab = props => {
     </>
   );
 
+  const canSetFinalDay = props.hasPermission('setFinalDay');
   const endDateComponent = (
     <>
       {desktopDisplay ? (
@@ -729,7 +729,7 @@ const BasicInformationTab = props => {
                 : 'End Date ' + 'N/A'}
             </Label>
           </Col>
-          {canEdit && (
+          {canEdit && canSetFinalDay && (
             <Col
               style={{
                 display: 'flex',
@@ -756,7 +756,7 @@ const BasicInformationTab = props => {
                 ? 'End Date ' + formatDateLocal(userProfile.endDate)
                 : 'End Date ' + 'N/A'}
             </Label>
-            {canEdit && !desktopDisplay && (
+            {canEdit && !desktopDisplay && canSetFinalDay && (
               <SetUpFinalDayButton
                 loadUserProfile={loadUserProfile}
                 setUserProfile={setUserProfile}
@@ -766,7 +766,7 @@ const BasicInformationTab = props => {
               />
             )}
           </Col>
-          {desktopDisplay && canEdit && (
+          {desktopDisplay && canEdit && canSetFinalDay && (
             <Col>
               <SetUpFinalDayButton
                 loadUserProfile={loadUserProfile}
@@ -820,8 +820,8 @@ const BasicInformationTab = props => {
               {userProfile.isActive
                 ? 'Active'
                 : userProfile.reactivationDate
-                ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
-                : 'Inactive'}
+                  ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+                  : 'Inactive'}
             </Label>
             &nbsp; &nbsp;
             {canEdit && (
@@ -845,8 +845,8 @@ const BasicInformationTab = props => {
                 {userProfile.isActive
                   ? 'Active'
                   : userProfile.reactivationDate
-                  ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
-                  : 'Inactive'}
+                    ? 'Paused until ' + formatDateLocal(userProfile.reactivationDate)
+                    : 'Inactive'}
               </Label>
               &nbsp;
               {canEdit && (
