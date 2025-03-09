@@ -79,14 +79,19 @@ const Members = props => {
   // Waits for user to finsh typing before calling API
   const handleInputChange = event => {
     const currentValue = event.target.value;
-
+  
     if (lastTimeoutId !== null) clearTimeout(lastTimeoutId);
-
+  
     const timeoutId = setTimeout(() => {
-      props.findUserProfiles(currentValue);
-      setShowFindUserList(true);
+      // Only call findUserProfiles if there's actual search text
+      if (currentValue && currentValue.trim() !== '') {
+        props.findUserProfiles(currentValue);
+        setShowFindUserList(true);
+      } else {
+        setShowFindUserList(false);
+      }
     }, 300);
-
+  
     setLastTimeoutId(timeoutId);
   };
 
