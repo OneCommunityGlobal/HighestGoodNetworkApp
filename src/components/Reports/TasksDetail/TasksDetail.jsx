@@ -122,6 +122,7 @@ export function TasksDetail(props) {
             parentId3={task.parentId3}
             mother={task.mother}
             level={task.level}
+            projectId={props.projectId}
           />
         )}
       </td>
