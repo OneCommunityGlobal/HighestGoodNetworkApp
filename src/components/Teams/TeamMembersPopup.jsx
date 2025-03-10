@@ -46,7 +46,13 @@ export const TeamMembersPopup = React.memo(props => {
 
   const handleToggle = () => {
     setIsChecked(parseInt(event.target.value));
-    setCheckedStatus(parseInt(event.target.value) == 0 ? 'Inactive' : (parseInt(event.target.value)  == 1 ? 'Active' : 'See All'))
+    setCheckedStatus(
+      parseInt(event.target.value) == 0
+        ? 'Inactive'
+        : parseInt(event.target.value) == 1
+        ? 'Active'
+        : 'See All',
+    );
   };
 
   const [infoModal, setInfoModal] = useState(false);
@@ -265,25 +271,24 @@ export const TeamMembersPopup = React.memo(props => {
           >
             <thead>
               <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th>
-              <div className={styles.divContainer}>
-              <div className={styles.sliderContainer}>
-                <input
-                  type="range"
-                  min="0"
-                  max="2"
-                  step="1"
-                  value={isChecked}
-                  onChange={handleToggle}
-                  className={styles.slider}
-                  title="Move Slider for Status change. Left: Inactive, Middle: Active, Right: See All"
-                  // Dynamic inline style for background color based on status
-                  style={{'--track-color': trackColor, 
-                          '--thumb-color': trackColor,}}
-                />
-                <span>{checkedStatus}</span>
-              </div>
-            </div>
+                <th>
+                  <div className={styles.divContainer}>
+                    <div className={styles.sliderContainer}>
+                      <input
+                        type="range"
+                        min="0"
+                        max="2"
+                        step="1"
+                        value={isChecked}
+                        onChange={handleToggle}
+                        className={styles.slider}
+                        title="Move Slider for Status change. Left: Inactive, Middle: Active, Right: See All"
+                        // Dynamic inline style for background color based on status
+                        style={{ '--track-color': trackColor, '--thumb-color': trackColor }}
+                      />
+                      <span>{checkedStatus}</span>
+                    </div>
+                  </div>
                 </th>
                 <th>#</th>
                 <th>User Name</th>
