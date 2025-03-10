@@ -6,6 +6,7 @@ const initialState = {
   error: null,
 };
 
+// eslint-disable-next-line default-param-last
 export const allUsersTimeEntriesReducer = (state = initialState, action) => {
   switch (action.type) {
     case actions.FETCH_ALL_USERS_TIME_ENTRIES_BEGIN:
@@ -33,3 +34,5 @@ export const allUsersTimeEntriesReducer = (state = initialState, action) => {
       return state;
   }
 };
+
+export default allUsersTimeEntriesReducer;

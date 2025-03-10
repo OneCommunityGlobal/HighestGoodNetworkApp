@@ -4,9 +4,11 @@ const initialState = {
   taskCounts: {},
 };
 
+// eslint-disable-next-line default-param-last
 const dashboardReducer = (state = initialState, action) => {
   switch (action.type) {
-    case INCREMENT_DASHBOARD_TASK_COUNT:
+    case INCREMENT_DASHBOARD_TASK_COUNT: {
+      // Wrap case block in braces to avoid scoping issues
       const { taskId } = action.payload;
       const previousCount = state.taskCounts[taskId] || 0;
       const newCount = previousCount + 1;
@@ -17,8 +19,10 @@ const dashboardReducer = (state = initialState, action) => {
           [taskId]: newCount,
         },
       };
-    default:
+    }
+    default: {
       return state;
+    }
   }
 };
 
