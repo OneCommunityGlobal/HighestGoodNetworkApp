@@ -21,10 +21,8 @@ src/components/Inventory/**
 src/components/Memberships/**
 src/components/Projects/**
 src/components/Reports/**
-src/components/SetupProfile/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
-src/components/TeamLocations/**
 src/components/TeamMemberTasks/**
 src/components/Timelog/**
 src/components/UserManagement/**

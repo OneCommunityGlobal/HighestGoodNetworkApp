@@ -21,7 +21,7 @@ function DarkModeButton() {
   return (
     <>
       <Tooltip
-        placement="auto"
+        placement="bottom"
         isOpen={tooltipOpen}
         target="darkModeTooltip"
         toggle={toggleTooltip}
