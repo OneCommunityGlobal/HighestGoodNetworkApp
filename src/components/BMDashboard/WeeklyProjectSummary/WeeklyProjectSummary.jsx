@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import './WeeklyProjectSummary.css';
 import { useSelector } from 'react-redux';
+import { v4 as uuidv4 } from 'uuid';
 import WeeklyProjectSummaryHeader from './WeeklyProjectSummaryHeader';
 
 export default function WeeklyProjectSummary() {
@@ -22,11 +23,14 @@ export default function WeeklyProjectSummary() {
       className: 'full',
       content: (
         <div className="project-status-grid">
-          {Array.from({ length: 12 }).map((_, index) => (
-            <div key={index} className="weekly-project-summary-card small-card">
-              📊 Card {index + 1}
-            </div>
-          ))}
+          {Array.from({ length: 12 }).map(() => {
+            const uniqueId = uuidv4();
+            return (
+              <div key={uniqueId} className="weekly-project-summary-card small-card">
+                📊 Card
+              </div>
+            );
+          })}
         </div>
       ),
     },
@@ -34,11 +38,14 @@ export default function WeeklyProjectSummary() {
       title: 'Material Consumption',
       key: 'Material Consumption',
       className: 'large',
-      content: [1, 2, 3].map(num => (
-        <div key={num} className="weekly-project-summary-card normal-card">
-          📊 Card {num}
-        </div>
-      )),
+      content: [1, 2, 3].map(() => {
+        const uniqueId = uuidv4();
+        return (
+          <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>
+        );
+      }),
     },
     {
       title: 'Issue Tracking',
@@ -50,21 +57,27 @@ export default function WeeklyProjectSummary() {
       title: 'Tools and Equipment Tracking',
       key: 'Tools and Equipment Tracking',
       className: 'half',
-      content: [1, 2].map(num => (
-        <div key={num} className="weekly-project-summary-card normal-card">
-          📊 Card {num}
-        </div>
-      )),
+      content: [1, 2].map(() => {
+        const uniqueId = uuidv4();
+        return (
+          <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>
+        );
+      }),
     },
     {
       title: 'Lessons Learned',
       key: 'Lessons Learned',
       className: 'half',
-      content: [1, 2].map(num => (
-        <div key={num} className="weekly-project-summary-card normal-card">
-          📊 Card {num}
-        </div>
-      )),
+      content: [1, 2].map(() => {
+        const uniqueId = uuidv4();
+        return (
+          <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>
+        );
+      }),
     },
     {
       title: 'Financials',
@@ -72,11 +85,15 @@ export default function WeeklyProjectSummary() {
       className: 'large',
       content: (
         <>
-          {Array.from({ length: 4 }).map((_, index) => (
-            <div key={index} className="weekly-project-summary-card financial-small">
-              📊 Card {index + 1}
-            </div>
-          ))}
+          {Array.from({ length: 4 }).map(() => {
+            const uniqueId = uuidv4();
+            return (
+              <div key={uniqueId} className="weekly-project-summary-card financial-small">
+                📊 Card
+              </div>
+            );
+          })}
+
           <div className="weekly-project-summary-card financial-big">📊 Big Card</div>
         </>
       ),
@@ -102,11 +119,14 @@ export default function WeeklyProjectSummary() {
       title: 'Labor and Time Tracking',
       key: 'Labor and Time Tracking',
       className: 'half',
-      content: [1, 2].map(num => (
-        <div key={num} className="weekly-project-summary-card normal-card">
-          📊 Card {num}
-        </div>
-      )),
+      content: [1, 2].map(() => {
+        const uniqueId = uuidv4();
+        return (
+          <div key={uniqueId} className="weekly-project-summary-card normal-card">
+            📊 Card
+          </div>
+        );
+      }),
     },
   ];
 
