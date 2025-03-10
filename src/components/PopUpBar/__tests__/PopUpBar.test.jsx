@@ -21,7 +21,7 @@ describe('Test Suite for PopUpBar', () => {
 
   it('Test Case 2: Renders with correct text', () => {
     renderComponent();
-    const expectedText = `You are currently viewing the header for ${viewingUser.firstName} ${viewingUser.lastName}`;
+    const expectedText = `You are currently viewing the dashboard for ${viewingUser.firstName} ${viewingUser.lastName}`;
     const actualText = screen.getByText(expectedText);
     expect(actualText).toBeInTheDocument();
   });
