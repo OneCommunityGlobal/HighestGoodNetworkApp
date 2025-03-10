@@ -1,0 +1,11 @@
+export const GET_FORM_STATE = 'GET_FORM_STATE';
+export const RESET_FORM_STATE = 'RESET_FORM_STATE';
+export const SET_FORM_STATE = 'SET_FORM_STATE';
+
+export const ADD_QUESTION = 'ADD_QUESTION';
+export const UPDATE_QUESTION = 'UPDATE_QUESTION';
+export const DELETE_QUESTION = 'DELETE_QUESTION';
+
+export const ADD_OPTION = 'ADD_OPTION';
+export const UPDATE_OPTION = 'UPDATE_OPTION';
+export const DELETE_OPTION = 'DELETE_OPTION';

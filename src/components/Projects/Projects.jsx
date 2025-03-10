@@ -128,8 +128,10 @@ const Projects = function(props) {
         return project.category === categorySelectedForSort && project.isActive === showStatus;
       } else if (categorySelectedForSort) {
         return project.category === categorySelectedForSort;
-      } else if (showStatus) {
-        return project.isActive === showStatus;
+      } else if (showStatus === 'Active') {
+        return project.isActive === true;
+      } else if (showStatus === 'Inactive') {
+        return project.isActive === false;
       } else {
         return true;
       }

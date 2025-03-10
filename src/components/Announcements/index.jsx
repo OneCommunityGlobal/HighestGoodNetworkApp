@@ -237,6 +237,7 @@ function Announcements({ title, email }) {
             type="text"
             id="header-content-input"
             onChange={handleHeaderContentChange}
+            value={headerContent}
             className="input-text-for-announcement"
           />
           <button

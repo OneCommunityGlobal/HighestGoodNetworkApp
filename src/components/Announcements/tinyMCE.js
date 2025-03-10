@@ -24,7 +24,6 @@ export default function TinyMCEEditor() {
       <Editor
         tinymceScriptSrc="/tinymce/tinymce.min.js"
         licenseKey="gpl"
-        // apiKey="rpfrv9z58kbaoauzv9dncv73jeqv7c5lo73gqlk9rx5p726p"
         onEditorChange={onEditorChange}
         value={content}
         onInit={(evt, editor) => {
