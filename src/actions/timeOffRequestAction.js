@@ -8,6 +8,7 @@ import {
   DELETE_TIME_OF_REQUEST,
   ADD_IS_ON_TIME_OFF_REQUESTS,
   ADD_GOING_ON_TIME_OFF_REQUESTS,
+  ADD_FUTURE_TIME_OFF,
   TIME_OFF_REQUEST_DETAIL_MODAL_OPEN,
   TIME_OFF_REQUEST_DETAIL_MODAL_CLOSE,
 } from '../constants/timeOffRequestConstants';
@@ -35,6 +36,11 @@ const addIsOnTimeOffRequests = request => ({
 
 const addGoingOnTimeOffRequests = request => ({
   type: ADD_GOING_ON_TIME_OFF_REQUESTS,
+  payload: request,
+});
+
+const addFutureTimeOffRequests = request => ({
+  type: ADD_FUTURE_TIME_OFF,
   payload: request,
 });
 
@@ -121,18 +127,41 @@ export const getAllTimeOffRequests = () => async dispatch => {
     const keys = Object.keys(requests);
     let onVacation = {};
     let goingOnVacation = {};
+    let futureTimeOff = {};
+    const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     keys.forEach( key => {
       const arrayOfRequests = requests[key];
       const isUserOff = isUserOnVacation(arrayOfRequests);
       const isUserGoingOff = isUserGoingOnVacation(arrayOfRequests);
+      const isUserTakingFutureTimeOff = isUserGoingOnFutureTimeOff(arrayOfRequests);
       if (isUserOff) {
-        onVacation = { ...onVacation, [key]: { ...isUserOff } };
+        const additionalWeeks = Math.floor(
+          moment(isUserOff.endingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')
+            .subtract(1, 'day')
+            .diff(moment(isUserOff.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'), 'weeks'),
+        );
+
+        onVacation = { ...onVacation, [key]: { ...isUserOff, isInTimeOff: true, weeks: additionalWeeks } };
       } else if (isUserGoingOff) {
         goingOnVacation = { ...goingOnVacation, [key]: { ...isUserGoingOff } };
+      }
+
+      if (isUserTakingFutureTimeOff) {
+        const futureWeeks = Math.ceil(
+          moment(isUserTakingFutureTimeOff.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(
+            moment(currentDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ'),
+            'days',
+          ) / 7,
+        );
+        futureTimeOff = {
+          ...futureTimeOff,
+          [key]: { ...isUserTakingFutureTimeOff, weeks: futureWeeks },
+        };
       }
     })
     dispatch(addIsOnTimeOffRequests(onVacation));
     dispatch(addGoingOnTimeOffRequests(goingOnVacation));
+    dispatch(addFutureTimeOffRequests(futureTimeOff));
   } catch (error) {
     dispatch(fetchTimeOffRequestsFailure(error.message));
   }
@@ -167,4 +196,30 @@ export const deleteTimeOffRequestThunk = id => async dispatch => {
   } catch (error) {
     console.log(error);
   }
+};
+
+const isUserGoingOnFutureTimeOff = requests => {
+  let closestStartDate = null;
+  let minDifference = Infinity;
+
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+
+  for (const request of requests) {
+    if (
+      currentDate.isBefore(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ')) &&
+      Math.floor(moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate)) <
+        minDifference
+    ) {
+      closestStartDate = request;
+      minDifference = Math.floor(
+        moment(request.startingDate, 'YYYY-MM-DDTHH:mm:ss.SSSZ').diff(currentDate),
+      );
+    }
+  }
+
+  if (closestStartDate) {
+    return closestStartDate;
+  }
+
+  return null;
 };
