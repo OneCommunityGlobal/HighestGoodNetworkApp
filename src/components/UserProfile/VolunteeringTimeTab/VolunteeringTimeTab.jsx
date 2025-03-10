@@ -7,7 +7,7 @@ import axios from 'axios';
 import HistoryModal from './HistoryModal';
 import './timeTab.css';
 import { boxStyle, boxStyleDark } from 'styles';
-import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA  } from 'utils/formatDate';
+import { formatDate, formatDateYYYYMMDD, formatDateMMDDYYYY, CREATED_DATE_CRITERIA } from 'utils/formatDate';
 
 const MINIMUM_WEEK_HOURS = 0;
 const MAXIMUM_WEEK_HOURS = 168;
@@ -19,7 +19,7 @@ const startEndDateValidation = props => {
 };
 
 const StartDate = props => {
-  const {darkMode, startDateAlert} = props;
+  const { darkMode, startDateAlert } = props;
 
   if (!props.canEdit) {
     return (
@@ -53,7 +53,7 @@ const StartDate = props => {
 };
 
 const EndDate = props => {
-  const {darkMode, endDateAlert} = props;
+  const { darkMode, endDateAlert } = props;
 
   if (!props.canEdit) {
     return (
@@ -355,17 +355,17 @@ const ViewTab = props => {
   };
 
   useEffect(() => {
-    if (userProfile.startDate === ''){
+    if (userProfile.startDate === '') {
       setStartDateAlert("Invalid date");
-    } else if (userProfile.createdDate >= CREATED_DATE_CRITERIA && userProfile.startDate < userProfile.createdDate){
+    } else if (userProfile.createdDate >= CREATED_DATE_CRITERIA && userProfile.startDate < userProfile.createdDate) {
       setStartDateAlert("The start date is before the account created date");
-    } else{
+    } else {
       setStartDateAlert('')
     }
   }, [userProfile.startDate, userProfile.createdDate]);
 
   useEffect(() => {
-    if (userProfile.endDate !== '' && userProfile.endDate < userProfile.startDate){
+    if (userProfile.endDate !== '' && userProfile.endDate < userProfile.startDate) {
       setEndDateAlert("The end date is before the start date");
     } else {
       setEndDateAlert('');
@@ -379,7 +379,7 @@ const ViewTab = props => {
           <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>Account Created Date</Label>
         </Col>
         <Col md="6">
-        <p className={darkMode ? 'text-azure' : ''}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
+          <p className={darkMode ? 'text-azure' : ''}>{formatDateMMDDYYYY(userProfile.createdDate)}</p>
         </Col>
       </Row>
       <Row className="volunteering-time-row">
@@ -526,38 +526,38 @@ const ViewTab = props => {
       </Row>
       {props?.userProfile?.hoursByCategory
         ? Object.keys(userProfile.hoursByCategory).map(key => (
-            <React.Fragment key={'hours-by-category-' + key}>
-              <Row className="volunteering-time-row">
-                <Col md="6">
-                  <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
-                    {key !== 'unassigned' ? (
-                      <>Total Tangible {capitalize(key)} Hours</>
-                    ) : (
-                      <>Total Unassigned Category Hours</>
-                    )}
-                  </Label>
-                </Col>
-                <Col md="6">
-                  {canEdit ? (
-                    <Input
-                      type="number"
-                      pattern="^\d*\.?\d{0,2}$"
-                      id={`${key}Hours`}
-                      step=".01"
-                      min="0"
-                      value={roundToTwo(userProfile.hoursByCategory[key])}
-                      onChange={e => handleOnChangeHours(e, key)}
-                      placeholder={`Total Tangible ${capitalize(key)} Hours`}
-                    />
+          <React.Fragment key={'hours-by-category-' + key}>
+            <Row className="volunteering-time-row">
+              <Col md="6">
+                <Label className={`hours-label ${darkMode ? 'text-light' : ''}`}>
+                  {key !== 'unassigned' ? (
+                    <>Total Tangible {capitalize(key)} Hours</>
                   ) : (
-                    <p className={darkMode ? 'text-azure' : ''}>
-                      {userProfile.hoursByCategory[key]?.toFixed(2)}
-                    </p>
+                    <>Total Unassigned Category Hours</>
                   )}
-                </Col>
-              </Row>
-            </React.Fragment>
-          ))
+                </Label>
+              </Col>
+              <Col md="6">
+                {canEdit ? (
+                  <Input
+                    type="number"
+                    pattern="^\d*\.?\d{0,2}$"
+                    id={`${key}Hours`}
+                    step=".01"
+                    min="0"
+                    value={roundToTwo(userProfile.hoursByCategory[key])}
+                    onChange={e => handleOnChangeHours(e, key)}
+                    placeholder={`Total Tangible ${capitalize(key)} Hours`}
+                  />
+                ) : (
+                  <p className={darkMode ? 'text-azure' : ''}>
+                    {userProfile.hoursByCategory[key]?.toFixed(2)}
+                  </p>
+                )}
+              </Col>
+            </Row>
+          </React.Fragment>
+        ))
         : []}
     </div>
   );

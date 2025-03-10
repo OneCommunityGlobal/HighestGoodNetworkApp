@@ -77,6 +77,13 @@ const TeamMemberTask = React.memo(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
 
+   const completedTasks = user.tasks.filter(
+    task =>
+      task.resources?.some(
+        resource => resource.userID === user.personId && resource.completedTask,
+      ),
+  );
+  console.log(completedTasks,"completedtasks");
     const thisWeekHours = user.totaltangibletime_hrs;
 
     // these need to be changed to actual permissions...
@@ -88,6 +95,7 @@ const TeamMemberTask = React.memo(
     // ^^^
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
+    const canSeeReports = rolesAllowedToResolveTasks.includes(userRole)||dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
 
@@ -237,7 +245,28 @@ const TeamMemberTask = React.memo(
                           )}
 
                           {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
-
+                           
+                           {
+                            canSeeReports &&
+                            <Link
+                              className='team-member-tasks-user-report-link'
+                              to= {`/peoplereport/${user?.personId}`}
+                            >
+                               <img 
+                                  src ="/report_icon.png"
+                                  alt='reportsicon'
+                                  className='team-member-tasks-user-report-link-image'
+                               />
+                            </Link>
+                            }
+                            {
+                              canSeeReports &&
+                              <Link
+                                to= {`/peoplereport/${user?.personId}`}
+                               >
+                                <span class="team-member-tasks-number">{completedTasks.length}</span>
+                              </Link>
+                            }
                           <Warning
                             username={user.name}
                             userId={userId}
