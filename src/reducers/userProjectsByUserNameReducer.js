@@ -6,7 +6,7 @@ const initialUserProject = {
 };
 
 // eslint-disable-next-line default-param-last
-const userProjectsByUserNameReducer = (state = initialUserProject, action) => {
+export const userProjectsByUserNameReducer = (state = initialUserProject, action) => {
   switch (action.type) {
     case GET_PROJECT_BY_USER_NAME:
       return {
