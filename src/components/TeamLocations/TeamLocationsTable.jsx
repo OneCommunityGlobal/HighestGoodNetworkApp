@@ -85,7 +85,7 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
       <table className={`team-locations-table ${darkMode ? 'text-light bg-yinmn-blue' : ''}`}>
         <thead>
           <tr className={darkMode ? 'bg-space-cadet' : ''}>
-            <th className="team-locations-table-header small-column">
+            <th className="team-locations-table-header small-column" aria-label="Active Users">
               <div className="cursor-pointer" onClick={() => toggleSortOrder('setActiveUsers')}>
                 <i className="cursor-pointer fa fa-user-o" aria-hidden="true" />
               </div>
@@ -102,7 +102,7 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
                 <i className={`fa fa-caret-${locationSortOrder === 'asc' ? 'down' : 'up'}`} />
               </div>
             </th>
-            <th className="team-locations-table-header small-column">
+            <th className="team-locations-table-header small-column" aria-label="Search">
               <div className="cursor-pointer">
                 <i onClick={toggleShowSearchBar} className="fa fa-search" aria-hidden="true" />
               </div>
@@ -110,7 +110,7 @@ function TeamLocationsTable({ visible, filteredMapMarkers, setCurrentUser, darkM
           </tr>
           {showSearchBar && (
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th colSpan="4" className="team-locations-table-header">
+              <th colSpan="4" className="team-locations-table-header" aria-label="Search">
                 <div className={`search-bar ${showSearchBar ? 'visible' : ''}`}>
                   <input
                     type="text"

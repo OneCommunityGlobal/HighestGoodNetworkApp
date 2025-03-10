@@ -236,6 +236,7 @@ function TeamLocations() {
             id="toggle-table-button"
             disabled={filteredMapMarkers.length === 0}
             onClick={toggleTableVisibility}
+            aria-label="Toggle table visibility"
           >
             <i
               className={`fa fa-table ${darkMode ? 'text-light' : 'text-dark'}`}
