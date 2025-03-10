@@ -195,10 +195,8 @@ function WBSTasks(props) {
           </ol>
         </nav>
         <div
-          className='mb-2 button-group' // Grouping the buttons
+          className='mb-2 wbs-button-group' // Group the buttons
           style={{
-            // display: 'flex',
-            // justifyContent: 'space-between'
           }}>
           {/* <span> */}
           {canPostTask ? (

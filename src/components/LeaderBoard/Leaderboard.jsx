@@ -17,6 +17,7 @@ import {
   Spinner,
   Input,
 } from 'reactstrap';
+import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -132,7 +133,7 @@ function LeaderBoard({
 
   useEffect(() => {
     if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
-  }, [organizationData]);
+  }, [organizationData, usersSelectedTeam]);
 
   useEffect(() => {
     //  eslint-disable-next-line
@@ -162,7 +163,7 @@ function LeaderBoard({
       },
       // prettier-ignore
       { name: '', totaltime: 0, barprogress: 0, intangibletime: 0,barcolor: '', tangibletime: 0,
-      totalintangibletime_hrs: 0, totaltangibletime_hrs: 0,  totaltime_hrs: 0, 
+      totalintangibletime_hrs: 0, totaltangibletime_hrs: 0,  totaltime_hrs: 0,
       totalweeklycommittedHours: 0, weeklycommittedHours: 0, memberCount: contUsers, _id: 2},
     );
     setStateOrganizationData(newOrganizationData);
@@ -170,7 +171,7 @@ function LeaderBoard({
 
   const renderTeamsList = async team => {
     setIsDisplayAlert(false);
-    if (!team) {
+    if (!team || team === 'Show all') {
       setIsLoadingTeams(true);
       setFilteredUserTeamIds([]);
       setStateOrganizationData(organizationData);
@@ -291,12 +292,19 @@ function LeaderBoard({
       sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
       sortedRequests[0];
 
-    const isCurrentlyOff = moment().isBetween(
-      moment(mostRecentRequest.startingDate),
-      moment(mostRecentRequest.endingDate),
-      null,
-      '[]',
-    );
+    const startOfWeek = moment().startOf('week');
+    const endOfWeek = moment().endOf('week');
+
+    const isCurrentlyOff =
+      moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
+      moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
+
+    // const isCurrentlyOff = moment().isBetween(
+    //   moment(mostRecentRequest.startingDate),
+    //   moment(mostRecentRequest.endingDate),
+    //   null,
+    //   '[]',
+    // );
 
     let additionalWeeks = 0;
     // additional weeks until back
@@ -358,11 +366,11 @@ function LeaderBoard({
     toast.error('Please wait for the users to appear in the Leaderboard table.');
 
   useEffect(() => {
-    setFilteredUsers(teamsUsers);
+    setFilteredUsers(leaderBoardData);
     return () => {
       setSearchInput('');
     };
-  }, [teamsUsers]);
+  }, [leaderBoardData]);
 
   const debouncedFilterUsers = useCallback(
     debounce(query => {
@@ -412,7 +420,7 @@ function LeaderBoard({
 
               {/* prettier-ignore */}
               <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
-              
+
               <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
                 {teams.length === 0 ? (
                   <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
@@ -460,9 +468,9 @@ function LeaderBoard({
                       );
                     })}
                     </div>
-                    
+
                     <h5 className="ml-4 text-center">All users</h5>
-                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`} 
+                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`}
                       onClick={() => TeamSelected('Show all')}>
                     <ul
                       className={`${darkMode ? '  text-light' : ''}`}
@@ -534,10 +542,12 @@ function LeaderBoard({
         >
           <thead className="responsive-font-size">
             <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th>Status</th>
-              <th>
+              <th data-abbr="Stat.">
+                <span>Status</span>
+              </th>
+              <th data-abbr="Name">
                 <div className="d-flex align-items-center">
-                  <span className="mr-2">Name</span>
+                  <span>Name</span>
                   <EditableInfoModal
                     areaName="Leaderboard"
                     areaTitle="Team Members Navigation"
@@ -545,25 +555,26 @@ function LeaderBoard({
                     fontSize={18}
                     isPermissionPage
                     darkMode={darkMode}
-                    className="p-2" // Add Bootstrap padding class to the EditableInfoModal
+                    className="p-2"
                   />
                 </div>
               </th>
-              <th>Days Left</th>
-              <th>Time Off</th>
-              <th>
-                <span className="d-sm-none">Tan. Time</span>
-                <span className="d-none d-sm-block">Tangible Time</span>
+              <th data-abbr="Days Lft.">
+                <span>Days Left</span>
               </th>
-              <th>Progress</th>
-
-              <th style={{ textAlign: 'right' }}>
+              <th data-abbr="Time Off">
+                <span>Time Off</span>
+              </th>
+              <th data-abbr="Tan. Time">
+                <span>Tangible Time</span>
+              </th>
+              <th data-abbr="Prog.">
+                <span>Progress</span>
+              </th>
+              <th data-abbr="Tot. Time" style={{ textAlign: 'right' }}>
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ textAlign: 'left' }}>
-                    <span className="d-sm-none">Tot. Time</span>
-                    <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>
-                      Total Time{' '}
-                    </span>
+                    <span>Total Time</span>
                   </div>
                   {isOwner && (
                     <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
@@ -572,6 +583,7 @@ function LeaderBoard({
               </th>
             </tr>
           </thead>
+
           <tbody className="my-custome-scrollbar responsive-font-size">
             <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
               <td aria-label="Placeholder" />
@@ -745,13 +757,18 @@ function LeaderBoard({
                           fontSize: '15px',
                           justifyItems: 'center',
                         }}
-                        title={
-                          isCurrentlyOff
-                            ? `${additionalWeeks} additional weeks off`
-                            : `${additionalWeeks} weeks until next time off`
-                        }
                       >
                         {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                        <i
+                          className="fa fa-info-circle"
+                          style={{ marginLeft: '5px', cursor: 'pointer' }}
+                          data-tip={
+                            isCurrentlyOff
+                              ? `${additionalWeeks} additional weeks off`
+                              : `${additionalWeeks} weeks until next time off`
+                          }
+                        />
+                        <ReactTooltip place="top" type="dark" effect="solid" />
                       </span>
                     )}
                   </th>
