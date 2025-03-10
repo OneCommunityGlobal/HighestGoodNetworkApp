@@ -40,9 +40,54 @@
 }
 
 .select_input {
+  display: grid;
+  grid-template-columns: auto 1fr auto 1fr auto 1fr;
+  align-items: center;
+  gap: 15px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto 10px auto;
+  overflow: visible;
+}
+
+.select_input label {
+  font-weight: bold;
+  text-align: right;
+  min-width: 100px;
+  white-space: nowrap;
+  margin-bottom: 8px;
+}
+
+.select_input input,
+.select_input select {
+  height: 38px;
+  width: 100%;
+  min-width: 220px;
+  max-width: 240px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  margin-bottom: 8px;
+}
+
+.select_input input[type='text'] {
+  padding: 5px;
+  margin-bottom: 8px;
+}
+.btn-primary {
+  background-color: #468ef9;
+  color: white;
+  border: none;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.buttons-row {
   display: flex;
-  background-color: blanchedalmond;
-  align-items: flex-end;
-  width: 300px;
-  column-gap: 1rem;
+  justify-content: center;
+  gap: 15px;
+  margin-bottom: 15px;
+}
+.btn-primary:hover {
+  background-color: #3b82f6;
 }

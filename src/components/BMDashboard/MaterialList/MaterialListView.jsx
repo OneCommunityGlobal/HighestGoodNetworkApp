@@ -22,11 +22,13 @@ function MaterialListView() {
   const itemType = 'Materials';
 
   const dynamicColumns = [
-    { label: 'Unit', key: 'itemType.unit' },
+    { label: 'PID', key: 'product id' },
+    { label: 'Measurement', key: 'itemType.unit' },
     { label: 'Bought', key: 'stockBought' },
     { label: 'Used', key: 'stockUsed' },
     { label: 'Available', key: 'stockAvailable' },
-    { label: 'Waste', key: 'stockWasted' },
+    { label: 'Wasted', key: 'stockWasted' },
+    { label: 'Hold', key: 'stockHold' },
   ];
 
   return (

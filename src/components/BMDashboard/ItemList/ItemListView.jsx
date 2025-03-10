@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-
+import moment from 'moment';
 import BMError from '../shared/BMError';
 import SelectForm from './SelectForm';
 import SelectItem from './SelectItem';
@@ -12,6 +12,7 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
   const [selectedProject, setSelectedProject] = useState('all');
   const [selectedItem, setSelectedItem] = useState('all');
   const [isError, setIsError] = useState(false);
+  const [selectedTime, setSelectedTime] = useState(moment().format('YYYY-MM-DD HH:mm:ss'));
 
   useEffect(() => {
     if (items) setFilteredItems([...items]);
@@ -53,9 +54,16 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
     <main className="items_list_container">
       <h3>{itemType}</h3>
       <section>
-        <span style={{ display: 'flex', margin: '5px' }}>
+        <span>
           {items && (
-            <>
+            <div className="select_input">
+              <label>Time:</label>
+              <input
+                type="text"
+                value={selectedTime}
+                onChange={e => setSelectedTime(e.target.value)}
+                placeholder="MM-DD-YYYY HH:MM:SS"
+              />
               <SelectForm
                 items={items}
                 setSelectedProject={setSelectedProject}
@@ -67,8 +75,19 @@ export function ItemListView({ itemType, items, errors, UpdateItemModal, dynamic
                 selectedItem={selectedItem}
                 setSelectedItem={setSelectedItem}
               />
-            </>
+            </div>
           )}
+          <div className="buttons-row">
+            <button type="button" className="btn-primary">
+              Add Material
+            </button>
+            <button type="button" className="btn-primary">
+              Edit Name/Measurement
+            </button>
+            <button type="button" className="btn-primary">
+              View Update History
+            </button>
+          </div>
         </span>
         {filteredItems && (
           <ItemsTable
