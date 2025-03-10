@@ -14,6 +14,7 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
+import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -393,6 +394,12 @@ export default (
           path="/bmdashboard/inventorytypes"
           fallback
           component={InventoryTypesList}
+        />
+        <BMProtectedRoute
+          path="/bmdashboard/totalconstructionsummary"
+          fallback
+          exact
+          component={WeeklyProjectSummary}
         />
 
         {/* Community Portal Routes */}

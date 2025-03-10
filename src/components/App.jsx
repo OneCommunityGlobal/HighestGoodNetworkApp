@@ -105,6 +105,7 @@ function UpdateDocumentTitle() {
     { pattern: /^\/bmdashboard\/tools\/[^/]+$/, title: 'Tool Detail' },
     { pattern: /^\/bmdashboard\/lessonform\/[^/]*$/, title: 'Lesson Form' },
     { pattern: /^\/bmdashboard\/inventorytypes$/, title: 'Inventory Types List' },
+    { pattern: /^\/bmdashboard\/totalconstructionsummary$/, title: 'Total Construction Summary' },
     { pattern: /^\/login$/, title: 'Login' },
     { pattern: /^\/forgotpassword$/, title: 'Forgot Password' },
     { pattern: /^\/email-subscribe$/, title: 'Email Subscribe' },
