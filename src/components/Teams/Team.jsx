@@ -1,50 +1,50 @@
-import React from 'react';
 import './Team.css';
-import { DELETE } from '../../languages/en/ui';
-import TeamTable from '../Reports/TeamTable';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
 import { connect, useSelector } from 'react-redux';
+import { DELETE } from '../../languages/en/ui';
 
-export const Team = props => {
+export function Team(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const canDeleteTeam = props.hasPermission('deleteTeam');
   const canPutTeam = props.hasPermission('putTeam');
 
   return (
-    <tr className={`teams__tr`} id={`tr_${props.teamId}`}>
+    <tr className="teams__tr" id={`tr_${props.teamId}`}>
       <th className="teams__order--input" scope="row">
         <div>{props.index + 1}</div>
       </th>
       <td>{props.name}</td>
-      <td
-        className="teams__active--input"
-        onClick={e => {
-          canDeleteTeam || canPutTeam
-            ? props.onStatusClick(props.name, props.teamId, props.active, props.teamCode)
-            : null;
-        }}
-        // style={boxStyle}
-        data-testid='active-marker'
-      >
-        {props.active ? (
-          <div className="isActive">
-            <i className="fa fa-circle" aria-hidden="true" />
-          </div>
-        ) : (
-          <div className="isNotActive">
-            <i className="fa fa-circle" aria-hidden="true" color='#dee2e6'/>
-          </div>
-        )}
+      <td className="teams__active--input">
+        <button
+          data-testid="active-marker"
+          type="button"
+          onClick={() => {
+            if (canDeleteTeam || canPutTeam) {
+              props.onStatusClick(props.name, props.teamId, props.active, props.teamCode);
+            }
+          }}
+          style={{
+            all: 'unset', // Reset default button styles
+            cursor: 'pointer',
+            width: '100%',
+            height: '100%',
+          }}
+          aria-label={`Change status for team ${props.name}`}
+        >
+          {/* Your content or indicator goes here */}
+        </button>
       </td>
       <td className="centered-cell">
-        <button style={darkMode ? {} : boxStyle}
+        <button
+          style={darkMode ? {} : boxStyle}
           type="button"
           className="btn btn-outline-info"
-          onClick={e => {
+          onClick={() => {
             props.onMembersClick(props.teamId, props.name, props.teamCode);
           }}
-          data-testid='members-btn'
+          data-testid="members-btn"
+          aria-label="Users"
         >
           <i className="fa fa-users" aria-hidden="true" />
         </button>
@@ -79,5 +79,5 @@ export const Team = props => {
       )}
     </tr>
   );
-};
+}
 export default connect(null, { hasPermission })(Team);
