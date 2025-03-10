@@ -1,0 +1,147 @@
+.popular-events-container {
+  max-width: 800px;
+  width: 90%;
+  margin: 0 auto;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+  background: white;
+}
+
+.header-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+}
+
+.popular-events-header {
+  font-size: 1.5rem;
+  color: #000000;
+  margin: 0;
+}
+
+.filters {
+  display: flex;
+  gap: 10px;
+}
+
+.filters select {
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.stats {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  padding: 30px;
+}
+
+.stat-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.stat-label {
+  flex: 1;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.stat-bar {
+  flex: 3;
+  background: #f0f0f0;
+  height: 8px;
+  border-radius: 5px;
+  margin: 0 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.bar {
+  height: 100%;
+  border-radius: 5px;
+  transition: width 0.5s ease-in-out;
+}
+
+.bar.green {
+  background-color: #4caf50;
+}
+
+.bar.orange {
+  background-color: #ff9800;
+}
+
+.bar.red {
+  background-color: #f44336;
+}
+
+.stat-value {
+  flex: 1;
+  text-align: right;
+  font-size: 14px;
+  font-weight: bold;
+  color: #333;
+}
+
+.summary {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  max-height: 80px;
+  margin-top: 20px;
+  border-radius: 8px;
+  text-align: center;
+  padding-bottom: 20px;
+}
+
+.summary-item {
+  background: white;
+  padding: 12px;
+  border-radius: 8px;
+  box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  max-height: 90px;
+  min-height: 80px;
+  overflow: hidden;
+  text-align: center;
+}
+
+.summary-title {
+  font-size: 14px;
+  font-weight: bold;
+  text-align: center;
+  white-space: normal;
+  word-wrap: break-word;
+  max-width: 90%;
+  color: #777;
+}
+
+.summary-value {
+  font-size: 14px;
+  font-weight: bold;
+  color: #000;
+  margin-top: 4px;
+}
+
+@media (max-width: 700px) {
+  .summary {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 400px) {
+  .summary {
+    grid-template-columns: 1fr;
+  }
+}
