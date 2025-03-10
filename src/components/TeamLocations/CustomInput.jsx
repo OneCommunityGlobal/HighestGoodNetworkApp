@@ -20,6 +20,7 @@ const CustomInput = React.forwardRef(
 CustomInput.propTypes = {
   label: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  // eslint-disable-next-line react/require-default-props
   error: PropTypes.string,
 };
 

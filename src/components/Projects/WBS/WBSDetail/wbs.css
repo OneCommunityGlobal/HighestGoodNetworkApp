@@ -3,12 +3,6 @@
   width: calc(100% - 40px);
 }
 
-/*
-.container {
-  overflow: auto;
-}
-*/
-
 .level-space-1 {
   margin-left: 0px;
 }
@@ -265,14 +259,24 @@
 }
 
 .tasks-detail-task-name { /* task column height and width changes*/
-  width: 35%;
+  width: 35%; 
   height: auto; 
 }
 .tasks-detail-actions {  /* action column width reduced */
   width: 6%; 
 }
-@media (max-width: 768px) { /* arranging the buttons */
-  .button-group button {
+.wbs-button-group {
+  justify-content: flex-start;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 968px) {
+  .wbs-button-group {
+    align-items: flex-start;
+    margin-bottom: 10px;
+  }
+  .wbs-button-group button {
     margin-bottom: 10px;
   }
 }

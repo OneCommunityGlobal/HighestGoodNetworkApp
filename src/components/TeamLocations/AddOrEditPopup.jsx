@@ -37,8 +37,6 @@ function AddOrEditPopup({
 
   const [locationData, setLocationData] = useState(initialLocationData);
   const [timeZone, setTimeZone] = useState('');
-  const firstNameRef = useRef(null);
-  const [formSubmitted, setFormSubmitted] = useState(false);
   const [errors, setErrors] = useState({
     firstName: null,
     lastName: null,
@@ -161,6 +159,7 @@ function AddOrEditPopup({
         toast.success('A person successfully added to a map!');
         setManuallyUserProfiles(prev => [...prev, { ...res.data, type: 'm_user' }]);
         setLocationData(initialLocationData);
+        // eslint-disable-next-line no-use-before-define
         setFormSubmitted(true);
       } else if (isEdit) {
         const res = await editLocation(newLocationObject);
@@ -203,6 +202,9 @@ function AddOrEditPopup({
       locationValue = `${locationData.location.country}`;
     }
   }
+
+  const firstNameRef = useRef(null);
+  const [formSubmitted, setFormSubmitted] = useState(false);
 
   useEffect(() => {
     if (open) {

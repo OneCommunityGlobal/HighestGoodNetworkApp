@@ -16,6 +16,16 @@ import ListUsersPopUp from './ListUsersPopUp';
 import MarkerPopup from './MarkerPopup';
 import TeamLocationsTable from './TeamLocationsTable';
 
+function getUserName(profile) {
+  let userName = '';
+  if (profile.firstName && profile.lastName) {
+    userName = `${profile.firstName} ${`${profile.lastName[0]}.`}`;
+  } else {
+    userName = profile.firstName || `${profile.lastName ? `${profile.lastName[0]}.` : ''}`;
+  }
+  return userName;
+}
+
 function TeamLocations() {
   const [userProfiles, setUserProfiles] = useState([]);
   const [manuallyAddedProfiles, setManuallyAddedProfiles] = useState([]);
@@ -50,16 +60,6 @@ function TeamLocations() {
       duration: 3.0,
     });
   };
-
-  function getUserName(profile) {
-    let userName = '';
-    if (profile.firstName && profile.lastName) {
-      userName = `${profile.firstName} ${`${profile.lastName[0]}.`}`;
-    } else {
-      userName = profile.firstName || `${profile.lastName ? `${profile.lastName[0]}.` : ''}`;
-    }
-    return userName;
-  }
 
   useEffect(() => {
     async function getUserProfiles() {
@@ -144,6 +144,37 @@ function TeamLocations() {
     }
   };
 
+  useEffect(() => {
+    async function getUserProfiles() {
+      try {
+        const locations = (await axios.get(ENDPOINTS.ALL_MAP_LOCATIONS())).data;
+        const users = locations.users.map(item => ({ ...item, type: 'user' })) || [];
+        const mUsers = locations.mUsers.map(item => ({ ...item, type: 'm_user' })) || [];
+
+        setUserProfiles(users);
+        setManuallyAddedProfiles(mUsers);
+        const allMapMarkers = [...users, ...mUsers];
+        const allMapMarkersOffset = allMapMarkers.map(ele => ({
+          ...ele,
+          location: {
+            ...ele.location,
+            coords: {
+              ...ele.location.coords,
+              lat: randomLocationOffset(ele.location.coords.lat),
+              lng: randomLocationOffset(ele.location.coords.lng),
+            },
+          },
+        }));
+        setMapMarkers(allMapMarkersOffset);
+        setLoading(false); // Set loading to false after data is loaded
+      } catch (error) {
+        toast.error(error.message);
+        setLoading(false); // Set loading to false if there's an error
+      }
+    }
+    getUserProfiles();
+  }, []);
+
   const toggleTableVisibility = () => {
     if (tableVisible) {
       setCurrentUser(null);
@@ -180,6 +211,12 @@ function TeamLocations() {
   if (searchText) {
     dropdown = true;
   }
+  useEffect(() => {
+    const coords = currentUser?.location.coords;
+    if (coords) {
+      handleFlyTo(coords.lat, coords.lng);
+    }
+  }, [currentUser]);
 
   const markerPopups = filteredMapMarkers.map(profile => {
     const userName = getUserName(profile);
@@ -236,7 +273,7 @@ function TeamLocations() {
             id="toggle-table-button"
             disabled={filteredMapMarkers.length === 0}
             onClick={toggleTableVisibility}
-            aria-label="Toggle table visibility"
+            aria-label="Button"
           >
             <i
               className={`fa fa-table ${darkMode ? 'text-light' : 'text-dark'}`}
