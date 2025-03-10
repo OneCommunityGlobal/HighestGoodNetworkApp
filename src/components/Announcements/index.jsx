@@ -22,10 +22,12 @@ function Announcements({ title, email }) {
 
   //  Weekly Progress Update Content States
   const [headerImage, setHeaderImage] = useState(logo2);
+  const [headerImageTag, setHeaderImageTag] = useState('');
   const [headingText, setHeadingText] = useState('');
   const [introText, setIntroText] = useState('');
   const [blogUrl, setBlogUrl] = useState('');
   const [bodyImage, setBodyImage] = useState(null);
+  const [bodyImageTag, setBodyImageTag] = useState('');
   const [bodyText, setBodyText] = useState('');
   const [videoLink, setVideoLink] = useState('');
 
@@ -154,17 +156,57 @@ function Announcements({ title, email }) {
     e.target.value = '';
   };
 
+  useEffect(() => {
+    if (!headerImageTag) {
+      const imageTag = `<div style="text-align: center; margin-bottom: 9px; padding: 9px 18px;">
+        <img src="https://mcusercontent.com/1b1ba36facf96dc45b6697f82/images/931ce505-118d-19f7-c9ea-81d8e5e59613.png" alt="One Community Logo" style="max-width: 100%; height: auto;" />
+      </div>`;
+      setHeaderImageTag(imageTag);
+    }
+  }, []);
+
+  const handleHeaderImageUpload = (file, e) => {
+    // Update the preview image
+    fileToBase64(file, setHeaderImage);
+
+    // Convert the file to a base64 string and create the image tag for the email content
+    convertImageToBase64(file, base64Image => {
+      const imageTag = `<div style="text-align: center; margin-bottom: 9px; padding: 9px 18px;">
+        <img src="${base64Image}" alt="One Community Logo"" style="max-width: 100%; height: auto;" />
+      </div>`;
+
+      setHeaderImageTag(imageTag);
+    });
+
+    // If an event object is available (from a file input), clear its value
+    if (e && e.target) {
+      e.target.value = '';
+    }
+  };
+
+  const handleBodyImageUpload = (file, e) => {
+    // Update the preview image
+    fileToBase64(file, setBodyImage);
+
+    // Convert the file to a base64 string and create the image tag for the email content
+    convertImageToBase64(file, base64Image => {
+      console.log(base64Image);
+      const imageTag = `<div style="text-align: center; margin: 20px 0;">
+        <img src="${base64Image}" alt="Blog Summary Image" style="max-width: 100%; height: auto;" />
+      </div>`;
+      setBodyImageTag(imageTag);
+    });
+
+    // If an event object is available (from a file input), clear its value
+    if (e && e.target) {
+      e.target.value = '';
+    }
+  };
+
   const validateEmail = (email) => {
     /* Add a regex pattern for email validation */
     const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
     return emailPattern.test(email);
-  };
-
-  const handleHeaderImageDrop = (file) => {
-    fileToBase64(file, setHeaderImage);
-  };
-  const handleBodyImageDrop = (file) => {
-    fileToBase64(file, setBodyImage);
   };
 
   // Helper to convert file -> base64 string
@@ -176,14 +218,13 @@ function Announcements({ title, email }) {
     reader.readAsDataURL(file);
   };
 
-  // Helper to convert image url to base64 string
   function urlToBase64(url, callback) {
     fetch(url)
       .then(response => response.blob())
       .then(blob => {
         const reader = new FileReader();
         reader.onloadend = () => {
-          callback(reader.result);
+          callback(reader.result); // reader.result contains the base64 data URI
         };
         reader.readAsDataURL(blob);
       })
@@ -235,16 +276,17 @@ function Announcements({ title, email }) {
     // Start of email container
     let content = `
       <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-        <!-- Default Header (Logo) -->
-        <div style="text-align: center; margin-bottom: 20px;">
-          <img src="${logo2}" alt="One Community Logo" style="max-width: 500px; height: auto;" />
-        </div>
     `;
+
+    // Default Header (Logo)
+    if (headerImageTag) {
+      content += headerImageTag;
+    }
 
     // Heading Text
     if (headingText) {
       content += `
-        <h2 style="text-align: center; margin-bottom: 20px;">
+        <h2 style="text-align: center; margin-bottom: 10px;">
           ${headingText}
         </h2>
       `;
@@ -273,12 +315,8 @@ function Announcements({ title, email }) {
     `;
 
     // Body Image
-    if (bodyImage) {
-      content += `
-        <div style="text-align: center; margin: 20px 0;">
-          <img src="${bodyImage}" alt="Blog Summary Image" style="max-width: 100%; height: auto;" />
-        </div>
-      `;
+    if (bodyImageTag) {
+      content += bodyImageTag;
     }
 
     // Blog Summary Paragraph
@@ -298,14 +336,14 @@ function Announcements({ title, email }) {
     content += `
       <p>
         Love what we're doing and want to help? Click
-        <a href="https://google.com" target="_blank" rel="noopener">here</a>
+        <a href="https://onecommunityglobal.org/contribute-join-partner/" target="_blank" rel="noopener">here</a>
         to learn what we're currently raising money for and to donate. Even $5 dollars helps!
       </p>
     `;
 
     // Social Media Links
     content += `
-      <div style="text-align: center; margin-top: 30px;">
+      <div style="text-align: center; margin-top: 45px;">
         <p style="margin: 0 auto; display: inline-block;">
           <a href="https://onecommunityglobal.org/overview/" target="_blank" rel="noopener" style="margin: 0 14px;">
             <img src="https://cdn-images.mailchimp.com/icons/social-block-v2/color-link-48.png"
@@ -495,7 +533,7 @@ function Announcements({ title, email }) {
             />
           </>
         )}
-        <ImageUploader onFileUpload={handleHeaderImageDrop} />
+        <ImageUploader onFileUpload={handleHeaderImageUpload} />
 
         {/* Heading text */}
         <label>Enter Heading Text:</label>
@@ -542,7 +580,7 @@ function Announcements({ title, email }) {
             alt="Body Preview"
           />
         )}
-        <ImageUploader onFileUpload={handleBodyImageDrop} />
+        <ImageUploader onFileUpload={handleBodyImageUpload} />
         {errors.bodyImage && <div style={{ color: 'red', fontSize: '12px', marginTop: '-10px', marginBottom: '10px' }}>
           {errors.bodyImage}
         </div>}
@@ -584,9 +622,9 @@ function Announcements({ title, email }) {
         <button type="button" className="send-button-green" onClick={handleSendTestEmail} style={darkMode ? boxStyleDark : boxStyle}>
           Send Test Email
         </button>
-        {/* <button type="button" onClick={handlePreview}>
+        <button type="button" onClick={handlePreview}>
           Preview Email
-        </button> */}
+        </button>
 
       </div>
     </div>
