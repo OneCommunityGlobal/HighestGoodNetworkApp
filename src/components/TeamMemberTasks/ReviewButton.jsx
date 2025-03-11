@@ -26,7 +26,6 @@ import hasPermission from 'utils/permissions';
 const ReviewButton = ({ user, task, updateTask }) => {
   const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode);
-  const [linkError, setLinkError] = useState(null);
   const myUserId = useSelector(state => state.auth.user.userid);
   const myRole = useSelector(state => state.auth.user.role);
   const [modal, setModal] = useState(false);
@@ -36,10 +35,13 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const canReview = dispatch(hasPermission('putReviewStatus'));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
-  const [editLinkModal, setEditLinkModal] = useState(false);
-  const [editLink, setEditLink] = useState('');
-  const [isEditingLink, setIsEditingLink] = useState(false);
-  const [editSuccess, setEditSuccess] = useState(false);
+  const [editLinkState, setEditLinkState] = useState({
+    isOpen: false,
+    link: '',
+    isEditing: false,
+    isSuccess: false,
+    error: null,
+  });
   const [invalidDomainModal, setInvalidDomainModal] = useState({
     isOpen: false,
     errorType: null,
@@ -49,7 +51,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const toggleModal = () => {
     setModal(!modal);
     if (!modal) {
-      setLinkError(null);
+      setEditLinkState(prev => ({ ...prev, error: null }));
     }
   };
 
@@ -67,12 +69,15 @@ const ReviewButton = ({ user, task, updateTask }) => {
   };
 
   const toggleEditLinkModal = () => {
-    setEditLinkModal(!editLinkModal);
-    if (!editLinkModal) {
+    setEditLinkState(prev => ({
+      ...prev,
+      isOpen: !prev.isOpen,
+      isEditing: false,
+    }));
+    if (!editLinkState.isOpen) {
       // When opening the modal, find the link associated with this user
       const userLink = task.relatedWorkLinks?.[task.relatedWorkLinks.length - 1] || '';
-      setEditLink(userLink);
-      setLinkError(null);
+      setEditLinkState(prev => ({ ...prev, link: userLink, error: null }));
     }
   };
 
@@ -104,11 +109,14 @@ const ReviewButton = ({ user, task, updateTask }) => {
     const url = e.target.value;
     setLink(url);
     if (!url) {
-      setLinkError('A valid URL is required for review');
+      setEditLinkState(prev => ({ ...prev, error: 'A valid URL is required for review' }));
     } else if (!validURL(url)) {
-      setLinkError("Please enter a valid URL starting with 'https://'.");
+      setEditLinkState(prev => ({
+        ...prev,
+        error: "Please enter a valid URL starting with 'https://'.",
+      }));
     } else {
-      setLinkError(null);
+      setEditLinkState(prev => ({ ...prev, error: null }));
     }
   };
 
@@ -223,7 +231,10 @@ const ReviewButton = ({ user, task, updateTask }) => {
     event.preventDefault();
 
     if (!validURL(link)) {
-      setLinkError('Please enter a valid URL of at least 20 characters');
+      setEditLinkState(prev => ({
+        ...prev,
+        error: 'Please enter a valid URL of at least 20 characters',
+      }));
       return;
     }
 
@@ -252,29 +263,32 @@ const ReviewButton = ({ user, task, updateTask }) => {
   };
 
   const handleEditLink = () => {
-    if (!validURL(editLink)) {
-      setLinkError('Please enter a valid URL of at least 20 characters');
+    if (!validURL(editLinkState.link)) {
+      setEditLinkState(prev => ({
+        ...prev,
+        error: 'Please enter a valid URL of at least 20 characters',
+      }));
       return;
     }
 
-    const validationResult = validateAllowedDomainTypes(editLink);
+    const validationResult = validateAllowedDomainTypes(editLinkState.link);
     if (!validationResult.isValid) {
       toggleInvalidDomainModal(validationResult.errorType);
       return;
     }
 
     // Set loading state
-    setIsEditingLink(true);
+    setEditLinkState(prev => ({ ...prev, isEditing: true }));
 
     // Update the task with the new link
     const updatedTask = { ...task };
 
     // If there are related work links, replace the last one (assuming it's the one for this user)
     if (Array.isArray(updatedTask.relatedWorkLinks) && updatedTask.relatedWorkLinks.length > 0) {
-      updatedTask.relatedWorkLinks[updatedTask.relatedWorkLinks.length - 1] = editLink;
+      updatedTask.relatedWorkLinks[updatedTask.relatedWorkLinks.length - 1] = editLinkState.link;
     } else {
       // If no related work links exist yet, add this one
-      updatedTask.relatedWorkLinks = [editLink];
+      updatedTask.relatedWorkLinks = [editLinkState.link];
     }
 
     // Call the update function from props
@@ -289,18 +303,24 @@ const ReviewButton = ({ user, task, updateTask }) => {
           sendEditLinkNotification();
 
           // Show success indicator
-          setEditSuccess(true);
+          setEditLinkState(prev => ({ ...prev, isSuccess: true }));
           setTimeout(() => {
-            setEditSuccess(false);
-            setEditLinkModal(false);
+            setEditLinkState(prev => ({
+              ...prev,
+              isSuccess: false,
+              isOpen: false,
+            }));
           }, 1500);
         })
         .catch(error => {
           console.error('Error updating link:', error);
-          setLinkError('Failed to update link. Please try again.');
+          setEditLinkState(prev => ({
+            ...prev,
+            error: 'Failed to update link. Please try again.',
+          }));
         })
         .finally(() => {
-          setIsEditingLink(false);
+          setEditLinkState(prev => ({ ...prev, isEditing: false }));
         });
     } else {
       // It's not a Promise
@@ -308,11 +328,14 @@ const ReviewButton = ({ user, task, updateTask }) => {
       sendEditLinkNotification();
 
       // Show success indicator
-      setEditSuccess(true);
+      setEditLinkState(prev => ({ ...prev, isSuccess: true }));
       setTimeout(() => {
-        setIsEditingLink(false);
-        setEditSuccess(false);
-        setEditLinkModal(false);
+        setEditLinkState(prev => ({
+          ...prev,
+          isEditing: false,
+          isSuccess: false,
+          isOpen: false,
+        }));
       }, 1500);
     }
   };
@@ -327,7 +350,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
   };
 
   const handleEditLinkChange = e => {
-    setEditLink(e.target.value);
+    setEditLinkState(prev => ({ ...prev, link: e.target.value }));
   };
 
   const buttonFormat = () => {
@@ -504,14 +527,17 @@ const ReviewButton = ({ user, task, updateTask }) => {
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           Please add link to related work:
           <Input type="text" required value={link} onChange={handleLink} />
-          {linkError && <div className="text-danger">{linkError}</div>}
+          {editLinkState.error && <div className="text-danger">{editLinkState.error}</div>}
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
             onClick={e => {
               e.preventDefault();
               if (!link || !validURL(link)) {
-                setLinkError("Please enter a valid URL starting with 'https://'.");
+                setEditLinkState(prev => ({
+                  ...prev,
+                  error: "Please enter a valid URL starting with 'https://'.",
+                }));
                 return;
               }
 
@@ -541,7 +567,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
 
       {/* Edit Link Modal */}
       <Modal
-        isOpen={editLinkModal}
+        isOpen={editLinkState.isOpen}
         toggle={toggleEditLinkModal}
         className={darkMode ? 'text-light dark-mode' : ''}
       >
@@ -550,8 +576,8 @@ const ReviewButton = ({ user, task, updateTask }) => {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <p>Update the link to your submitted work:</p>
-          <Input type="text" required value={editLink} onChange={handleEditLinkChange} />
-          {linkError && <div className="text-danger">{linkError}</div>}
+          <Input type="text" required value={editLinkState.link} onChange={handleEditLinkChange} />
+          {editLinkState.error && <div className="text-danger">{editLinkState.error}</div>}
         </ModalBody>
         <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
           <Button
@@ -559,13 +585,13 @@ const ReviewButton = ({ user, task, updateTask }) => {
             color="primary"
             className="float-left"
             style={darkMode ? boxStyleDark : boxStyle}
-            disabled={isEditingLink}
+            disabled={editLinkState.isEditing}
           >
-            {isEditingLink ? (
+            {editLinkState.isEditing ? (
               <>
                 <Spinner size="sm" className="mr-2" /> Updating...
               </>
-            ) : editSuccess ? (
+            ) : editLinkState.isSuccess ? (
               <>
                 <FontAwesomeIcon icon={faCheck} className="mr-2" /> Updated!
               </>
@@ -576,7 +602,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
           <Button
             onClick={toggleEditLinkModal}
             style={darkMode ? boxStyleDark : boxStyle}
-            disabled={isEditingLink}
+            disabled={editLinkState.isEditing}
           >
             Cancel
           </Button>
