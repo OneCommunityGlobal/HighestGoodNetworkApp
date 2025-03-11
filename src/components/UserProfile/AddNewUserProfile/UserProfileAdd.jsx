@@ -47,6 +47,7 @@ import { ENDPOINTS } from 'utils/URL';
 
 const patt = RegExp(/^([\w.%+-]+)@([\w-]+\.)+([\w]{2,})$/i);
 const DATE_PICKER_MIN_DATE = '01/01/2010';
+const DEFAULT_PASSWORD = '123Welcome!';
 
 class UserProfileAdd extends Component {
   constructor(props) {
@@ -81,6 +82,7 @@ class UserProfileAdd extends Component {
         createdDate: new Date(),
         actualEmail: '',
         actualPassword: '',
+        defaultPassword: DEFAULT_PASSWORD,
         startDate: new Date(),
         actualConfirmedPassword: '',
       },
@@ -93,6 +95,7 @@ class UserProfileAdd extends Component {
         actualEmail: 'Actual Email is required',
         actualPassword: 'Actual Password is required',
         actualConfirmedPassword: 'Actual Confirmed Password is required',
+        defaultPassword: 'Default Password is required',
         jobTitle: 'Job Title is required',
       },
       timeZoneFilter: '',
@@ -161,6 +164,7 @@ class UserProfileAdd extends Component {
       actualPassword,
       actualConfirmedPassword,
       jobTitle,
+      defaultPassword,
     } = this.state.userProfile;
 
     const darkMode = this.props.darkMode;
@@ -368,6 +372,25 @@ class UserProfileAdd extends Component {
                     </FormGroup>
                   </Col>
                 </Row>
+                <Row className="user-add-row">
+                  <Col md={{ size: 4 }} className="text-md-right my-2">
+                    <Label className={fontColor}>Default Password</Label>
+                  </Col>
+                  <Col md="6">
+                    <FormGroup>
+                      <CommonInput
+                        type="password"
+                        name="defaultPassword"
+                        id="defaultPassword"
+                        value={DEFAULT_PASSWORD}
+                        disabled
+                        readOnly
+                        
+                        className="d-flex justify-start items-start"
+                      />
+                    </FormGroup>
+                  </Col>
+                </Row>
                 {(role === 'Administrator' || role === 'Owner') && (
                   <>
                     <Row className="user-add-row">
@@ -402,7 +425,7 @@ class UserProfileAdd extends Component {
                             value={actualPassword}
                             onChange={(e) => this.handleUserProfile(e)}
                             placeholder="Actual Password"
-                            invalid={!!this.state.formErrors.actualPassword ? this.state.formErrors.actualPassword : ""}
+                            invalid={!!this.state.formErrors.actualPassword}
                             className="d-flex justify-start items-start"
                           />
                         </FormGroup>
@@ -697,12 +720,17 @@ class UserProfileAdd extends Component {
     const firstLength = this.state.userProfile.firstName !== '';
     const lastLength = this.state.userProfile.lastName !== '';
     const phone = this.state.userProfile.phoneNumber;
+    const role = this.state.userProfile.role;
+    const defaultPassword = this.state.userProfile.defaultPassword;
     
     if (phone === null) {
       toast.error('Phone Number is required');
       return false;
     } else if (this.state.teamCode && !this.state.codeValid) {
       toast.error('Team Code is invalid');
+      return false;
+    } else if (role !== 'Administrator' && role !== 'Owner' && !defaultPassword) {
+      toast.error('Default Password is required for non-admin users');
       return false;
     } else if (firstLength && lastLength && phone.length >= 9) {
       return true;
@@ -746,11 +774,11 @@ class UserProfileAdd extends Component {
       actualEmail,
       actualPassword,
       startDate,
-      actualConfirmedPassword
+      actualConfirmedPassword,
     } = that.state.userProfile;
 
     const userData = {
-      password: process.env.REACT_APP_DEF_PWD,
+      password: DEFAULT_PASSWORD,
       role: role,
       firstName: firstName,
       lastName: lastName,
@@ -771,8 +799,8 @@ class UserProfileAdd extends Component {
       allowsDuplicateName: allowsDuplicateName,
       createdDate: createdDate,
       teamCode: this.state.teamCode,
-      actualEmail: actualEmail,
-      actualPassword: actualPassword,
+      actualEmail: role === 'Administrator' || role === 'Owner' ? actualEmail : '',
+      actualPassword: role === 'Administrator' || role === 'Owner' ? actualPassword : '',
       startDate: startDate,
     };
 
@@ -1222,6 +1250,18 @@ class UserProfileAdd extends Component {
           formErrors: {
             ...formErrors,
             actualConfirmedPassword: event.target.value.length > 0 ? '' : 'Actual Confirmed Password is required',
+          },
+        });
+        break;
+      case 'defaultPassword':
+        this.setState({
+          userProfile: {
+            ...userProfile,
+            defaultPassword: event.target.value,
+          },
+          formErrors: {
+            ...formErrors,
+            defaultPassword: event.target.value.length > 0 ? '' : 'Default Password is required',
           },
         });
         break;
