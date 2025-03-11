@@ -107,8 +107,8 @@ const CustomTeamCodeModal = ({
   const [teamMembersLoading, setTeamMembersLoading] = useState(false);
 
   // Member selection options
-  const [memberOptions, setMemberOptions] = useState([]);
   const [usersByTeam, setUsersByTeam] = useState({});
+  const [loadingTeamMembers, setLoadingTeamMembers] = useState({});
 
   useEffect(() => {
     if (isOpen) {
@@ -127,72 +127,97 @@ const CustomTeamCodeModal = ({
 
         // Filter custom teams
         const customTeamsData = teamsData.filter(team => team.teamCode && team.teamCode.length > 0);
+        console.log('Custom teams after filtering:', customTeamsData);
         setCustomTeams(customTeamsData);
 
-        // Create user options for member selection
-        const usersByTeamMap = {};
-        const allMemberOptions = [];
+        // Create team code groups without fetching members
+        const teamCodeGroups = {};
 
-        // First pass to get team details
-        const teamDetailsMap = {};
+        // Group teams by team code for lazy loading
         teamsData.forEach(team => {
-          teamDetailsMap[team._id] = {
-            teamName: team.teamName,
-            teamCode: team.teamCode || 'No Code',
-          };
+          const teamCode = team.teamCode || 'No Code';
+          if (!teamCodeGroups[teamCode]) {
+            teamCodeGroups[teamCode] = [];
+          }
+          teamCodeGroups[teamCode].push(team._id);
         });
 
-        // Second pass to get members with team details
-        const processedUserIds = new Set(); // To avoid duplicates
+        // Initialize empty user lists for each team code
+        const usersByTeamMap = {};
+        Object.keys(teamCodeGroups).forEach(teamCode => {
+          usersByTeamMap[teamCode] = [];
+        });
 
-        for (const team of teamsData) {
-          if (team.members && team.members.length > 0) {
-            // For each team, get detailed member information
-            const members = await getTeamMembers(team._id);
-
-            if (members && members.length > 0) {
-              const teamCode = team.teamCode || 'No Code';
-
-              if (!usersByTeamMap[teamCode]) {
-                usersByTeamMap[teamCode] = [];
-              }
-
-              members.forEach(member => {
-                if (!processedUserIds.has(member._id)) {
-                  processedUserIds.add(member._id);
-
-                  const memberOption = {
-                    value: member._id,
-                    label: `${member.firstName || ''} ${member.lastName || ''}`.trim(),
-                    teamCode: teamCode,
-                    teamName: team.teamName,
-                    role: member.role,
-                  };
-
-                  usersByTeamMap[teamCode].push(memberOption);
-                  allMemberOptions.push(memberOption);
-                }
-              });
-            }
-          }
-        }
-
-        // Sort teams by their code
-        const sortedUsersByTeam = {};
-        Object.keys(usersByTeamMap)
-          .sort()
-          .forEach(key => {
-            sortedUsersByTeam[key] = usersByTeamMap[key];
-          });
-
-        setUsersByTeam(sortedUsersByTeam);
-        setMemberOptions(allMemberOptions);
+        setUsersByTeam(usersByTeamMap);
       }
     } catch (err) {
       setError('Failed to load teams. Please try again.');
       console.error('Error fetching teams:', err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  // Function to load members for a specific team code on demand
+  const loadMembersForTeamCode = async teamCode => {
+    // If already loading or already loaded with members, don't reload
+    if (
+      loadingTeamMembers[teamCode] ||
+      (usersByTeam[teamCode] && usersByTeam[teamCode].length > 0)
+    ) {
+      return;
+    }
+
+    // Set loading state for this team code
+    setLoadingTeamMembers(prev => ({
+      ...prev,
+      [teamCode]: true,
+    }));
+
+    try {
+      // Find all teams with this team code
+      const teamsWithCode = teams.filter(team => (team.teamCode || 'No Code') === teamCode);
+      const teamMembers = [];
+      const processedMemberIds = new Set(); // To avoid duplicates
+
+      // Fetch members for each team with this code
+      for (const team of teamsWithCode) {
+        try {
+          const members = await getTeamMembers(team._id);
+
+          if (members && members.length > 0) {
+            members.forEach(member => {
+              if (!processedMemberIds.has(member._id)) {
+                processedMemberIds.add(member._id);
+
+                teamMembers.push({
+                  value: member._id,
+                  label: `${member.firstName || ''} ${member.lastName || ''}`.trim(),
+                  teamCode: teamCode,
+                  teamName: team.teamName,
+                  role: member.role,
+                });
+              }
+            });
+          }
+        } catch (err) {
+          console.error(`Error fetching members for team ${team._id}:`, err);
+        }
+      }
+
+      // Update the usersByTeam state
+      setUsersByTeam(prev => ({
+        ...prev,
+        [teamCode]: teamMembers,
+      }));
+    } catch (err) {
+      console.error(`Error loading members for team code ${teamCode}:`, err);
+    } finally {
+      // Clear loading state
+      setLoadingTeamMembers(prev => ({
+        ...prev,
+        [teamCode]: false,
+      }));
     }
   };
 
@@ -207,7 +232,9 @@ const CustomTeamCodeModal = ({
   const handleCreateTeam = async e => {
     e.preventDefault();
 
-    // If just updating an existing team's members, use the update function instead
+    console.log('Current auth state:', auth);
+    console.log('Attempting to create team with name:', newTeamName, 'and code:', newTeamCode);
+
     if (selectedTeam) {
       handleUpdateTeam(e);
       return;
@@ -243,53 +270,54 @@ const CustomTeamCodeModal = ({
         return;
       }
 
-      // Create the team
-      const response = await postNewTeam(newTeamName, true);
+      // Create the team with the team code in one step
+      const response = await postNewTeam(newTeamName, true, null, auth.user, newTeamCode);
 
       if (response && response.status === 201 && response.data) {
         const newTeamId = response.data._id;
 
-        // Update the team code
-        const updateResponse = await updateTeam(newTeamName, newTeamId, true, newTeamCode);
+        // Add selected members to the team if any are selected
+        if (selectedMembers.length > 0) {
+          let addedCount = 0;
+          try {
+            for (const member of selectedMembers) {
+              // Extract first name and last name properly
+              const nameParts = member.label.split(' ');
+              const firstName = nameParts[0] || '';
+              const lastName = nameParts.slice(1).join(' ') || '';
 
-        if (updateResponse && updateResponse.status === 200) {
-          // Add selected members to the team if any are selected
-          if (selectedMembers.length > 0) {
-            let addedCount = 0;
-            try {
-              for (const member of selectedMembers) {
-                // Extract first name and last name properly
-                const nameParts = member.label.split(' ');
-                const firstName = nameParts[0] || '';
-                const lastName = nameParts.slice(1).join(' ') || '';
-
-                await addTeamMember(newTeamId, member.value, firstName, lastName);
-                addedCount++;
-              }
-
-              setSuccess(`Custom team created successfully with ${addedCount} members!`);
-            } catch (memberErr) {
-              setSuccess(
-                `Custom team created with ${addedCount} members. Some members could not be added.`,
+              await addTeamMember(
+                newTeamId,
+                member.value,
+                firstName,
+                lastName,
+                null,
+                null,
+                auth.user,
               );
-              console.error('Error adding members:', memberErr);
+              addedCount++;
             }
-          } else {
-            setSuccess('Custom team created successfully!');
+
+            setSuccess(`Custom team created successfully with ${addedCount} members!`);
+          } catch (memberErr) {
+            setSuccess(
+              `Custom team created with ${addedCount} members. Some members could not be added.`,
+            );
+            console.error('Error adding members:', memberErr);
           }
-
-          // Reset form
-          setNewTeamName('');
-          setNewTeamCode('');
-          setSelectedMembers([]);
-
-          // Refresh teams list
-          fetchTeams();
         } else {
-          setError('Failed to set team code. Please try again.');
+          setSuccess('Custom team created successfully!');
         }
+
+        // Reset form
+        setNewTeamName('');
+        setNewTeamCode('');
+        setSelectedMembers([]);
+
+        // Refresh teams list
+        fetchTeams();
       } else {
-        setError('Failed to create team. Please try again.');
+        setError('Failed to create team. ' + (response.data?.error || 'Please try again.'));
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -303,7 +331,8 @@ const CustomTeamCodeModal = ({
     if (window.confirm('Are you sure you want to delete this custom team?')) {
       setLoading(true);
       try {
-        await deleteTeam(teamId);
+        // Pass auth.user as the requestorUser
+        await deleteTeam(teamId, auth.user);
         setSuccess('Team deleted successfully.');
         fetchTeams();
       } catch (err) {
@@ -522,89 +551,113 @@ const CustomTeamCodeModal = ({
         <div className="mb-3">
           <h6>Select Members by Team</h6>
           <div style={{ maxHeight: '400px', overflowY: 'auto' }}>
-            {Object.keys(usersByTeam).map(teamCode => (
-              <div
-                key={teamCode}
-                className="mb-3 p-2"
-                style={{ border: '1px solid #dee2e6', borderRadius: '0.25rem' }}
-              >
-                <div className="d-flex justify-content-between align-items-center mb-2">
-                  <h6 className="mb-0">
-                    {teamCode === 'No Code' ? 'No Team Code' : `Team: ${teamCode}`}
-                    <Badge color="info" className="ml-2">
-                      {usersByTeam[teamCode] ? usersByTeam[teamCode].length : 0}
-                    </Badge>
-                  </h6>
-                  <div>
+            {Object.keys(usersByTeam)
+              .sort()
+              .map(teamCode => (
+                <div
+                  key={teamCode}
+                  className="mb-3 p-2"
+                  style={{ border: '1px solid #dee2e6', borderRadius: '0.25rem' }}
+                >
+                  <div className="d-flex justify-content-between align-items-center mb-2">
+                    <h6 className="mb-0">
+                      {teamCode === 'No Code' ? 'No Team Code' : `Team: ${teamCode}`}
+                      {usersByTeam[teamCode] && usersByTeam[teamCode].length > 0 && (
+                        <Badge color="info" className="ml-2">
+                          {usersByTeam[teamCode].length}
+                        </Badge>
+                      )}
+                    </h6>
                     <Button
                       color="primary"
                       size="sm"
-                      className="mr-1"
-                      onClick={() => {
-                        // Select all from this team
-                        const teamMembers = usersByTeam[teamCode] || [];
-                        const otherTeamMembers = selectedMembers.filter(
-                          member => !teamMembers.some(m => m.value === member.value),
-                        );
-                        setSelectedMembers([...otherTeamMembers, ...teamMembers]);
-                      }}
+                      onClick={() => loadMembersForTeamCode(teamCode)}
+                      disabled={loadingTeamMembers[teamCode]}
                     >
-                      Select All
-                    </Button>
-                    <Button
-                      color="secondary"
-                      size="sm"
-                      onClick={() => {
-                        // Deselect all from this team
-                        setSelectedMembers(
-                          selectedMembers.filter(
-                            member =>
-                              !usersByTeam[teamCode] ||
-                              !usersByTeam[teamCode].some(m => m.value === member.value),
-                          ),
-                        );
-                      }}
-                    >
-                      Clear
+                      {loadingTeamMembers[teamCode] ? (
+                        <>
+                          <Spinner size="sm" /> Loading...
+                        </>
+                      ) : usersByTeam[teamCode] && usersByTeam[teamCode].length > 0 ? (
+                        `${usersByTeam[teamCode].length} Members`
+                      ) : (
+                        'Load Members'
+                      )}
                     </Button>
                   </div>
-                </div>
 
-                <ListGroup>
-                  {usersByTeam[teamCode] &&
-                    usersByTeam[teamCode].map(member => (
-                      <ListGroupItem
-                        key={member.value}
-                        className={`d-flex justify-content-between align-items-center ${
-                          darkMode ? 'bg-dark text-light border-secondary' : ''
-                        }`}
-                      >
-                        <div>
-                          {member.label}
-                          {member.role && (
-                            <small className="d-block text-muted">{member.role}</small>
-                          )}
-                        </div>
-                        <div>
-                          <Input
-                            type="checkbox"
-                            checked={selectedMembers.some(m => m.value === member.value)}
-                            onChange={e => {
-                              if (e.target.checked) {
-                                setSelectedMembers([...selectedMembers, member]);
-                              } else {
-                                setSelectedMembers(
-                                  selectedMembers.filter(m => m.value !== member.value),
-                                );
-                              }
-                            }}
-                          />
-                        </div>
-                      </ListGroupItem>
-                    ))}
-                </ListGroup>
-              </div>
-            ))}
+                  {usersByTeam[teamCode] && usersByTeam[teamCode].length > 0 && (
+                    <>
+                      <div className="d-flex justify-content-end mb-2">
+                        <Button
+                          color="primary"
+                          size="sm"
+                          className="mr-1"
+                          onClick={() => {
+                            // Select all from this team
+                            const teamMembers = usersByTeam[teamCode] || [];
+                            const otherTeamMembers = selectedMembers.filter(
+                              member => !teamMembers.some(m => m.value === member.value),
+                            );
+                            setSelectedMembers([...otherTeamMembers, ...teamMembers]);
+                          }}
+                        >
+                          Select All
+                        </Button>
+                        <Button
+                          color="secondary"
+                          size="sm"
+                          onClick={() => {
+                            // Deselect all from this team
+                            setSelectedMembers(
+                              selectedMembers.filter(
+                                member =>
+                                  !usersByTeam[teamCode] ||
+                                  !usersByTeam[teamCode].some(m => m.value === member.value),
+                              ),
+                            );
+                          }}
+                        >
+                          Clear
+                        </Button>
+                      </div>
+
+                      <ListGroup>
+                        {usersByTeam[teamCode].map(member => (
+                          <ListGroupItem
+                            key={member.value}
+                            className={`d-flex justify-content-between align-items-center ${
+                              darkMode ? 'bg-dark text-light border-secondary' : ''
+                            }`}
+                          >
+                            <div>
+                              {member.label}
+                              {member.role && (
+                                <small className="d-block text-muted">{member.role}</small>
+                              )}
+                            </div>
+                            <div>
+                              <Input
+                                type="checkbox"
+                                checked={selectedMembers.some(m => m.value === member.value)}
+                                onChange={e => {
+                                  if (e.target.checked) {
+                                    setSelectedMembers([...selectedMembers, member]);
+                                  } else {
+                                    setSelectedMembers(
+                                      selectedMembers.filter(m => m.value !== member.value),
+                                    );
+                                  }
+                                }}
+                              />
+                            </div>
+                          </ListGroupItem>
+                        ))}
+                      </ListGroup>
+                    </>
+                  )}
+                </div>
+              ))}
           </div>
         </div>
       </FormGroup>
@@ -635,7 +688,7 @@ const CustomTeamCodeModal = ({
           </>
         ) : (
           <Button color="primary" type="submit" disabled={loading}>
-            {loading ? <Spinner size="sm" /> : 'Create Custom Team'}
+            {loading ? <Spinner size="sm" /> : 'Create Custom Code'}
           </Button>
         )}
       </div>
@@ -655,7 +708,7 @@ const CustomTeamCodeModal = ({
       <Row>
         <Col md={4}>
           <div className="d-flex justify-content-between align-items-center mb-3">
-            <h5>All Teams</h5>
+            <h5>Custom Teams</h5>
             {customTeams.length > 0 && (
               <Badge color="primary" pill>
                 {customTeams.length}
@@ -846,7 +899,7 @@ const CustomTeamCodeModal = ({
               onClick={() => toggleTab('1')}
               style={styles.navLink}
             >
-              View All Teams
+              View Custom Teams
             </NavLink>
           </NavItem>
           <NavItem>
