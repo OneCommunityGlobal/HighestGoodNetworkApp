@@ -10,6 +10,7 @@ import {
   DropdownItem,
   UncontrolledDropdown,
   Input,
+  Spinner,
 } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
 import './style.css';
@@ -37,6 +38,8 @@ const ReviewButton = ({ user, task, updateTask }) => {
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false);
   const [editLinkModal, setEditLinkModal] = useState(false);
   const [editLink, setEditLink] = useState('');
+  const [isEditingLink, setIsEditingLink] = useState(false);
+  const [editSuccess, setEditSuccess] = useState(false);
   const [invalidDomainModal, setInvalidDomainModal] = useState({
     isOpen: false,
     errorType: null,
@@ -260,6 +263,9 @@ const ReviewButton = ({ user, task, updateTask }) => {
       return;
     }
 
+    // Set loading state
+    setIsEditingLink(true);
+
     // Update the task with the new link
     const updatedTask = { ...task };
 
@@ -271,11 +277,44 @@ const ReviewButton = ({ user, task, updateTask }) => {
       updatedTask.relatedWorkLinks = [editLink];
     }
 
-    updateTask(task._id, updatedTask);
-    setEditLinkModal(false);
+    // Call the update function from props
+    const result = updateTask(task._id, updatedTask);
 
-    // Notify that the link has been updated
-    sendEditLinkNotification();
+    // Handle both Promise and non-Promise return types
+    if (result && typeof result.then === 'function') {
+      // It's a Promise
+      result
+        .then(() => {
+          // Notify that the link has been updated
+          sendEditLinkNotification();
+
+          // Show success indicator
+          setEditSuccess(true);
+          setTimeout(() => {
+            setEditSuccess(false);
+            setEditLinkModal(false);
+          }, 1500);
+        })
+        .catch(error => {
+          console.error('Error updating link:', error);
+          setLinkError('Failed to update link. Please try again.');
+        })
+        .finally(() => {
+          setIsEditingLink(false);
+        });
+    } else {
+      // It's not a Promise
+      // Notify that the link has been updated
+      sendEditLinkNotification();
+
+      // Show success indicator
+      setEditSuccess(true);
+      setTimeout(() => {
+        setIsEditingLink(false);
+        setEditSuccess(false);
+        setEditLinkModal(false);
+      }, 1500);
+    }
   };
 
   const sendEditLinkNotification = () => {
@@ -520,10 +559,25 @@ const ReviewButton = ({ user, task, updateTask }) => {
             color="primary"
             className="float-left"
             style={darkMode ? boxStyleDark : boxStyle}
+            disabled={isEditingLink}
           >
-            Update Link
+            {isEditingLink ? (
+              <>
+                <Spinner size="sm" className="mr-2" /> Updating...
+              </>
+            ) : editSuccess ? (
+              <>
+                <FontAwesomeIcon icon={faCheck} className="mr-2" /> Updated!
+              </>
+            ) : (
+              'Update Link'
+            )}
           </Button>
-          <Button onClick={toggleEditLinkModal} style={darkMode ? boxStyleDark : boxStyle}>
+          <Button
+            onClick={toggleEditLinkModal}
+            style={darkMode ? boxStyleDark : boxStyle}
+            disabled={isEditingLink}
+          >
             Cancel
           </Button>
         </ModalFooter>
