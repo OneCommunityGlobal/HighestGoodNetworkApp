@@ -250,22 +250,29 @@ export const deleteTeamMember = (teamId, userId) => {
 export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime, requestorUser) => {
   const requestData = { 
     userId, 
-    operation: 'Assign',
-    requestor: requestorUser // Add the requestor information
+    operation: 'Assign'
   };
   
+  // Add requestor information if available
+  if (requestorUser) {
+    requestData.requestor = requestorUser;
+  }
+  
   console.log(`Adding member ${firstName} ${lastName} to team ${teamId}`, requestData);
+  console.log('addTeamMember requestData:', requestData);
   
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
-    return teamMemberAddPromise.then(res => {
-      console.log("Team member add response:", res);
-      dispatch(teamMemberAddAction(res.data.newMember));
-      return res.data; // Return response data
-    }).catch(error => {
+    try {
+      const response = await teamMemberAddPromise;
+      console.log("Team member add response:", response);
+      dispatch(teamMemberAddAction(response.data.newMember));
+      return response.data;
+    } catch (error) {
       console.error("Error adding team member:", error);
+      console.error("Error response data:", error.response?.data);
       throw error;
-    });
+    }
   };
 };
 
@@ -333,27 +340,5 @@ export const getAllTeamCode = () => {
     //         type: FETCH_ALL_TEAM_CODE_FAILURE,
     //       });
     //     });
-  };
-};
-
-
-/**
- * Get all teams including those with no members
- */
-export const getAllTeamsIncludingEmpty = () => {
-  // Using a different endpoint that returns all teams
-  const allTeamsPromise = axios.get(ENDPOINTS.TEAM_CODE);
-  
-  return async dispatch => {
-    try {
-      const response = await allTeamsPromise;
-      // Still dispatch to the same action for Redux state
-      dispatch(teamMembersFectchACtion(response.data));
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching all teams:", error);
-      dispatch(teamMembersFectchACtion(undefined));
-      throw error;
-    }
   };
 };

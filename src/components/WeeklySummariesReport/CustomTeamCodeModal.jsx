@@ -231,7 +231,7 @@ const CustomTeamCodeModal = ({
 
   const handleCreateTeam = async e => {
     e.preventDefault();
-
+    console.log('Selected members at start of handleCreateTeam:', selectedMembers);
     console.log('Current auth state:', auth);
     console.log('Attempting to create team with name:', newTeamName, 'and code:', newTeamCode);
 
@@ -273,29 +273,36 @@ const CustomTeamCodeModal = ({
       // Create the team with the team code in one step
       const response = await postNewTeam(newTeamName, true, null, auth.user, newTeamCode);
 
-      if (response && response.status === 201 && response.data) {
+      if (response && response.status === 200 && response.data) {
         const newTeamId = response.data._id;
 
         // Add selected members to the team if any are selected
         if (selectedMembers.length > 0) {
           let addedCount = 0;
           try {
+            console.log('About to add members, selectedMembers:', selectedMembers);
             for (const member of selectedMembers) {
               // Extract first name and last name properly
               const nameParts = member.label.split(' ');
               const firstName = nameParts[0] || '';
               const lastName = nameParts.slice(1).join(' ') || '';
+              console.log(`Adding member ${firstName} ${lastName} to team ${newTeamId}`);
 
-              await addTeamMember(
-                newTeamId,
-                member.value,
-                firstName,
-                lastName,
-                null,
-                null,
-                auth.user,
-              );
-              addedCount++;
+              try {
+                const result = await addTeamMember(
+                  newTeamId,
+                  member.value,
+                  firstName,
+                  lastName,
+                  null,
+                  null,
+                  auth.user,
+                );
+                console.log('Member add result:', result);
+                addedCount++;
+              } catch (memberAddErr) {
+                console.error(`Failed to add member ${firstName} ${lastName}:`, memberAddErr);
+              }
             }
 
             setSuccess(`Custom team created successfully with ${addedCount} members!`);
@@ -709,11 +716,6 @@ const CustomTeamCodeModal = ({
         <Col md={4}>
           <div className="d-flex justify-content-between align-items-center mb-3">
             <h5>Custom Teams</h5>
-            {customTeams.length > 0 && (
-              <Badge color="primary" pill>
-                {customTeams.length}
-              </Badge>
-            )}
           </div>
 
           {customTeams.length === 0 ? (
@@ -745,14 +747,7 @@ const CustomTeamCodeModal = ({
                   <div className="d-flex justify-content-between align-items-center">
                     <div>
                       <strong>{team.teamName}</strong>
-                      <div>
-                        <small className="text-muted">Code: </small>
-                        <span className="badge badge-secondary">{team.teamCode}</span>
-                      </div>
                     </div>
-                    <Badge color="info" pill>
-                      {team.members ? team.members.length : 0}
-                    </Badge>
                   </div>
                 </ListGroupItem>
               ))}
@@ -765,25 +760,16 @@ const CustomTeamCodeModal = ({
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <div>
                   <h5 className="mb-0">{selectedTeam.teamName}</h5>
-                  <div>
-                    <Badge color="primary" className="mr-2">
-                      {selectedTeam.teamCode}
-                    </Badge>
-                    <small className="text-muted">
-                      Created: {new Date(selectedTeam.createdDatetime).toLocaleDateString()}
-                    </small>
-                  </div>
                 </div>
-                <Button color="danger" size="sm" onClick={() => handleDeleteTeam(selectedTeam._id)}>
-                  Delete Team
-                </Button>
+                <Button
+                  color="danger"
+                  size="sm"
+                  onClick={() => handleDeleteTeam(selectedTeam._id)}
+                ></Button>
               </div>
 
               <div className="d-flex justify-content-between align-items-center mb-2">
                 <h6>Team Members</h6>
-                {!teamMembersLoading && teamMembers && teamMembers.length > 0 && (
-                  <Badge color="secondary">{teamMembers.length} members</Badge>
-                )}
               </div>
 
               {teamMembersLoading ? (
