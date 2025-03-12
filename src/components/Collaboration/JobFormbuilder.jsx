@@ -303,7 +303,7 @@ function JobFormBuilder() {
               Add Field
             </button>
           </div>
-          <button type="submit" className="submit-button" onClick={handleSubmit}>
+          <button type="submit" className="job-submit-button" onClick={handleSubmit}>
             Proceed to Submit with Details
           </button>
         </div>

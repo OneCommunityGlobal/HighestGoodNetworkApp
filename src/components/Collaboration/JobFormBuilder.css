@@ -195,11 +195,15 @@ textarea {
 }
 
 /* Submit Button */
-.submit-button {
+.job-submit-button {
   display: block;
   width: 100%;
+  /* max-width: 300px; */
   padding: 10px;
+  text-align: center;
   margin-top: 20px;
+  margin-left:auto;
+  margin-right:auto;
   background-color: #4caf50;
   color: white;
   border: none;
@@ -209,6 +213,6 @@ textarea {
   transition: background-color 0.3s;
 }
 
-.submit-button:hover {
+.job-submit-button:hover {
   background-color: #45a049;
 }
