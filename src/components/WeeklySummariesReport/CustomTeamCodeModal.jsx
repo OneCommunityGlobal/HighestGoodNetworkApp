@@ -848,7 +848,7 @@ function CustomTeamCodeModal({
               {/* Add button to add more members to existing team */}
               <div className="text-center mt-4 pt-3 border-top">
                 <Button color="primary" onClick={handleAddMembers} disabled={!selectedTeam}>
-                  <i className="fas fa-user-plus mr-1"></i> Add More Members
+                  <i className="fas fa-user-plus mr-1" /> Add More Members
                 </Button>
               </div>
             </div>
