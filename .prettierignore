@@ -4,19 +4,17 @@ src/actions/**
 src/App.css
 src/config.json
 
-src/index.js
 src/languages/**
 src/reducers/**
 src/registerServiceWorker.js
 src/routes.js
 src/setupTests.js
 src/store.js
-src/styles.js
+src/utils/**
 src/__tests__/**
 
 
-src/components/App.jsx
-src/components/AutoReload/**
+src/components/Header/**
 src/components/Inventory/**
 src/components/Memberships/**
 src/components/Projects/**
@@ -27,4 +25,3 @@ src/components/TeamMemberTasks/**
 src/components/Teams/**
 src/components/UserManagement/**
 src/components/UserProfile/**
-src/components/Announcements/**
