@@ -98,17 +98,6 @@ export class WeeklySummariesReport extends Component {
     };
   }
 
-  toggleCustomTeamCodeModal = () => {
-    this.setState(prevState => ({
-      customTeamCodeModalOpen: !prevState.customTeamCodeModalOpen,
-    }));
-
-    // If we're closing the modal, refresh the teams data
-    if (this.state.customTeamCodeModalOpen) {
-      this.refreshTeamCodes();
-    }
-  };
-
   refreshTeamCodes = async () => {
     const { getAllUserTeams } = this.props;
     try {
@@ -309,6 +298,17 @@ export class WeeklySummariesReport extends Component {
   componentWillUnmount() {
     sessionStorage.removeItem('tabSelection');
   }
+
+  toggleCustomTeamCodeModal = () => {
+    this.setState(prevState => ({
+      customTeamCodeModalOpen: !prevState.customTeamCodeModalOpen,
+    }));
+
+    // If we're closing the modal, refresh the teams data
+    if (this.state.customTeamCodeModalOpen) {
+      this.refreshTeamCodes();
+    }
+  };
 
   onSummaryRecepientsPopupClose = () => {
     this.setState({ summaryRecepientsPopupOpen: false });
@@ -908,7 +908,7 @@ export class WeeklySummariesReport extends Component {
                 onClick={this.toggleCustomTeamCodeModal}
                 style={darkMode ? boxStyleDark : boxStyle}
               >
-                <i className="fas fa-cog mr-1"></i> Manage Custom Team Codes
+                <i className="fas fa-cog mr-1" /> Manage Custom Team Codes
               </Button>
             )}
           </Col>
