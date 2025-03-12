@@ -148,8 +148,15 @@ export const bmInvTypeReducer = (state = defaultState, action) => {
         },
       };
     case GET_INV_BY_TYPE: {
-      state.invTypeList[action.payload.type] = [...action.payload.data];
-      return { ...state };
+      return {
+        ...state,
+        invTypeList: {
+          ...state.invTypeList,
+          [action.payload.type]: Array.isArray(action.payload.data)
+            ? [...action.payload.data]
+            : [action.payload.data],
+        },
+      };
     }
 
     case DELETE_BUILDING_INVENTORY_TYPE:
