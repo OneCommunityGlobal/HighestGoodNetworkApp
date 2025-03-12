@@ -1,3 +1,4 @@
+/* eslint-disable jsx-a11y/control-has-associated-label */
 import { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { Table, Button } from 'reactstrap';
@@ -17,8 +18,18 @@ function EquipmentsTable({ equipment, project }) {
   const [recordType, setRecordType] = useState(null);
   const [modal, setModal] = useState(false);
   const [selectedRow, setSelectedRow] = useState(null);
-  const [sortOrder, setSortOrder] = useState({ project: 'asc', itemType: 'asc' });
-  const [iconToDisplay, setIconToDisplay] = useState({ project: faSortUp, itemType: faSortUp });
+  const [sortOrder, setSortOrder] = useState({
+    project: 'asc',
+    itemType: 'asc',
+    rentedOn: 'asc',
+    rentedDue: 'asc',
+  });
+  const [iconToDisplay, setIconToDisplay] = useState({
+    project: faSortUp,
+    itemType: faSortUp,
+    rentedOn: faSortUp,
+    rentedDue: faSortUp,
+  });
   const [equipmentsViewData, setEquipmentsViewData] = useState(null);
 
   useEffect(() => {
@@ -72,6 +83,32 @@ function EquipmentsTable({ equipment, project }) {
         setEquipmentsViewData(_equipmentsViewData);
         break;
       }
+      case 'rentedOn': {
+        setSortOrder({ ...sortOrder, rentedOn: sortOrder.rentedOn === 'asc' ? 'desc' : 'asc' });
+        setIconToDisplay({
+          ...iconToDisplay,
+          rentedOn: iconToDisplay.rentedOn === faSortUp ? faSortDown : faSortUp,
+        });
+        const factor = sortOrder.rentedOn === 'asc' ? 1 : -1;
+        _equipmentsViewData = [..._equipments].sort((a, b) => {
+          return factor * (new Date(b.rentedOnDate) - new Date(a.rentedOnDate));
+        });
+        setEquipmentsViewData(_equipmentsViewData);
+        break;
+      }
+      case 'rentedDue': {
+        setSortOrder({ ...sortOrder, rentedDue: sortOrder.rentedDue === 'asc' ? 'desc' : 'asc' });
+        setIconToDisplay({
+          ...iconToDisplay,
+          rentedDue: iconToDisplay.rentedDue === faSortUp ? faSortDown : faSortUp,
+        });
+        const factor = sortOrder.rentedDue === 'asc' ? 1 : -1;
+        _equipmentsViewData = [..._equipments].sort((a, b) => {
+          return factor * (new Date(b.rentalDueDate) - new Date(a.rentalDueDate));
+        });
+        setEquipmentsViewData(_equipmentsViewData);
+        break;
+      }
       default: {
         break;
       }
@@ -92,7 +129,6 @@ function EquipmentsTable({ equipment, project }) {
       setEquipmentsViewData([...equipments]);
     }
   }, [project]);
-
   useEffect(() => {
     let _equipments;
     if (project.value === '0' && equipment.value === '0') {
@@ -145,8 +181,26 @@ function EquipmentsTable({ equipment, project }) {
               </th>
               <th>Bought</th>
               <th>Rental</th>
-              <th>Rented On</th>
-              <th>Rental Due</th>
+              <th onClick={() => handleSort('rentedOn')}>
+                <div
+                  data-tip={`Sort Rented On ${sortOrder.rentedOn}`}
+                  className="d-flex align-items-stretch cusorpointer"
+                >
+                  <div>Rented On</div>
+                  <FontAwesomeIcon icon={iconToDisplay.rentedOn} size="lg" />
+                </div>
+                <ReactTooltip />
+              </th>
+              <th onClick={() => handleSort('rentedDue')}>
+                <div
+                  data-tip={`Sort Rental Due ${sortOrder.rentedDue}`}
+                  className="d-flex align-items-stretch cusorpointer"
+                >
+                  <div>Rental Due</div>
+                  <FontAwesomeIcon icon={iconToDisplay.rentedDue} size="lg" />
+                </div>
+                <ReactTooltip />
+              </th>
               <th>Updates</th>
               <th>Purchases</th>
             </tr>
@@ -206,5 +260,4 @@ function EquipmentsTable({ equipment, project }) {
     </div>
   );
 }
-
 export default EquipmentsTable;

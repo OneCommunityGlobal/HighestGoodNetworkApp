@@ -71,12 +71,85 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
   };
 };
 
+export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //Find last week of work in date
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DDTHH:mm:ss');
+  
+  const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
+  return async dispatch => {
+    let loggedOut = false;
+    try {
+      const res = await axios.get(url);
+      if (!res || !res.data) {
+        console.log("Request failed or no data");
+        return "N/A";
+      }
+      const filteredEntries = res.data.filter(entry => {
+        const entryDate = moment(entry.dateOfWork);
+        return entryDate.isBetween(fromDate, toDate, 'day', '[]');
+      });
+      filteredEntries.sort((a, b) => {
+        return moment(b.dateOfWork).valueOf() - moment(a.dateOfWork).valueOf();
+      });
+      const lastEntry = filteredEntries[0];
+      if (!lastEntry) {
+        return "N/A";
+      }
+      const lastEntryDate = lastEntry.createdDateTime;
+      return lastEntryDate;
+    } catch (error) {
+      console.error("Error fetching time entries:", error);
+      if (error.response && error.response.status === 401) {
+        loggedOut = true;
+      }
+      return "N/A"; // Return "N/A" in case of error
+    }
+  };
+};
+
+export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => { // Find first week of work in date
+  toDate = moment(toDate)
+    .endOf('day')
+    .format('YYYY-MM-DDTHH:mm:ss');
+  
+  const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
+  return async dispatch => {
+    let loggedOut = false;
+    try {
+      const res = await axios.get(url);
+      if (!res || !res.data) {
+        console.log("Request failed or no data");
+        return "N/A";
+      }
+      const filteredEntries = res.data.filter(entry => {
+        const entryDate = moment(entry.dateOfWork);
+        return entryDate.isBetween(fromDate, toDate, 'day', '[]');
+      });
+      filteredEntries.sort((a, b) => {
+        return moment(a.dateOfWork).valueOf() - moment(b.dateOfWork).valueOf();
+      });
+      const firstEntry = filteredEntries[0];
+      if (!firstEntry) {
+        return "N/A";
+      }
+      const firstEntryDate = firstEntry.dateOfWork;
+      return firstEntryDate;
+    } catch (error) {
+      console.error("Error fetching time entries:", error);
+      if (error.response && error.response.status === 401) {
+        loggedOut = true;
+      }
+      return "N/A"; // Return "N/A" in case of error
+    }
+  };
+};
 export const postTimeEntry = timeEntry => {
   const url = ENDPOINTS.TIME_ENTRY();
   return async dispatch => {
     try {
       const res = await axios.post(url, timeEntry);
-      if(timeEntry.entryType == 'default'){
+      if (timeEntry.entryType == 'default') {
         dispatch(updateTimeEntries(timeEntry));
       }
       return res.status;

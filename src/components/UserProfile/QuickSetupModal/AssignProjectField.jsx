@@ -3,7 +3,13 @@ import { Dropdown, Input } from 'reactstrap';
 
 
 const AssignProjectField = React.memo(props => {
-  const [searchText, onInputChange] = useState('');
+  const [searchText, onInputChange] = useState(()=>{
+    if(props.editMode){
+      return props.value.projectName
+    }else{
+      return ''
+    }
+  });
   const [isOpen, toggle] = useState(false);
 
   useEffect(() => {
@@ -24,14 +30,15 @@ const AssignProjectField = React.memo(props => {
       <Input
         type="text"
         value={searchText}
-        autoFocus={true}
+        onFocus={() => toggle(true)}
         onChange={e => {
           onInputChange(e.target.value);
           toggle(true);
         }}
+
       />
 
-      {searchText !== '' && props.projectsData && props.projectsData.length > 0 ? (
+      {props.projectsData && props.projectsData.length > 0 ? (
         <div
           tabIndex="-1"
           role="menu"

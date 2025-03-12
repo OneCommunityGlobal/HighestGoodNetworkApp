@@ -1,11 +1,12 @@
-import { useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Row, Col, Container } from 'reactstrap';
-import { connect, useDispatch, useSelector } from 'react-redux';
+import { connect, useSelector } from 'react-redux';
 import Leaderboard from '../LeaderBoard';
 import WeeklySummary from '../WeeklySummary/WeeklySummary';
 import Badge from '../Badge';
 import Timelog from '../Timelog/Timelog';
 import SummaryBar from '../SummaryBar/SummaryBar';
+import './Dashboard.css';
 import '../../App.css';
 import TimeOffRequestDetailModal from './TimeOffRequestDetailModal';
 import { cantUpdateDevAdminDetails } from 'utils/permissions';
@@ -17,27 +18,28 @@ import {
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
+  const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { authUser } = props;
-
+  const {match, authUser} = props;
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
-  const [displayUserId, setDisplayUserId] = useState(
-    viewingUser ? viewingUser.userId : authUser.userid,
-  );
+  const [displayUserId, setDisplayUserId] = useState(match.params.userId || viewingUser?.userId || authUser.userid);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const toggle = () => {
+  const toggle = (forceOpen = null) => {
     if (isNotAllowedToEdit) {
-      if (viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY) {
-        alert(DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY);
-      } else {
-        alert(PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE);
-      }
+      const warningMessage =
+        viewingUser?.email === DEV_ADMIN_ACCOUNT_EMAIL_DEV_ENV_ONLY
+          ? DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY
+          : PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE;
+      alert(warningMessage);
       return;
     }
-    setPopup(!popup);
+
+    const shouldOpen = forceOpen !== null ? forceOpen : !popup;
+    setPopup(shouldOpen);
+
     setTimeout(() => {
       const elem = document.getElementById('weeklySum');
       if (elem) {
@@ -69,9 +71,9 @@ export function Dashboard(props) {
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
 
-      <Row>
-        <Col lg={{ size: 7 }}>&nbsp;</Col>
-        <Col lg={{ size: 5 }}>
+      <Row className="w-100 ml-1">
+        <Col lg={7}></Col>
+        <Col lg={5}>
           <div className="row justify-content-center">
             <div
               role="button"
@@ -93,40 +95,35 @@ export function Dashboard(props) {
           </div>
         </Col>
       </Row>
-      <Row>
-        <Col lg={{ size: 5 }} className="order-sm-12">
+      <Row className="w-100 ml-1">
+        <Col lg={5} className="order-lg-2 order-2">
           <Leaderboard
             displayUserId={displayUserId}
             isNotAllowedToEdit={isNotAllowedToEdit}
             darkMode={darkMode}
+            setFilteredUserTeamIds={setFilteredUserTeamIds}
           />
         </Col>
-        <Col lg={{ size: 7 }} className="left-col-dashboard order-sm-1">
-          {popup ? (
-            <div className="my-2">
-              <div id="weeklySum">
-                <WeeklySummary
-                  displayUserId={displayUserId}
-                  setPopup={setPopup}
-                  userRole={authUser.role}
-                  isNotAllowedToEdit={isNotAllowedToEdit}
-                  darkMode={darkMode}
-                />
-              </div>
+        <Col lg={7} className="left-col-dashboard order-lg-1 order-1">
+          {popup && (
+            <div className="my-2" id="weeklySum">
+              <WeeklySummary
+                displayUserId={displayUserId}
+                setPopup={setPopup}
+                userRole={authUser.role}
+                isNotAllowedToEdit={isNotAllowedToEdit}
+                darkMode={darkMode}
+              />
             </div>
-          ) : null}
+          )}
           <div className="my-2" id="wsummary">
             <Timelog
               isDashboard
               passSummaryBarData={setSummaryBarData}
               isNotAllowedToEdit={isNotAllowedToEdit}
+              filteredUserTeamIds={filteredUserTeamIds}
             />
           </div>
-          <Badge
-            userId={displayUserId}
-            role={authUser.role}
-            isNotAllowedToEdit={isNotAllowedToEdit}
-          />
         </Col>
       </Row>
       <TimeOffRequestDetailModal isNotAllowedToEdit={isNotAllowedToEdit} />

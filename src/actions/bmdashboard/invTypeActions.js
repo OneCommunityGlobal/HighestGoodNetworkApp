@@ -50,10 +50,9 @@ export const fetchEquipmentTypes = () => {
 }
 
 export const fetchReusableTypes = () => {
-  console.log("fetchReusableTypes");
   return async dispatch => {
     axios.get(ENDPOINTS.BM_REUSABLE_TYPES)
-      .then(res => {
+      .then(res => {  
         dispatch(setReusableTypes(res.data))
       })
       .catch(err => {

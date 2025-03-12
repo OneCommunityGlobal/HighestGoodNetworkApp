@@ -3,9 +3,11 @@
  * Stores all variables that display texts on the UI
  ******************************************************************************* */
 export const ACTIVE = 'Active';
+export const TITLE = 'Title'
 export const INACTIVE = 'InActive';
 export const ACTIVE_PROJECTS = 'Active Projects';
 export const BM_DASHBOARD = 'BM Dashboard';
+export const CP_DASHBOARD = 'CP Dashboard';
 export const BM_PROJECT = 'Project';
 export const ADD_MATERIAL = 'Add Material';
 export const LOG_MATERIAL = 'Log Material';
@@ -29,7 +31,9 @@ export const PROJECT_CATEGORY = 'Category';
 export const INVENTORY = 'Inventory';
 export const REPORTS = 'Reports';
 export const WEEKLY_SUMMARIES_REPORT = 'Weekly Summaries Report';
+export const TOTAL_ORG_SUMMARY = 'Total Org Summary';
 export const TEAM_LOCATIONS = 'Team Locations';
+export const TOTAL_CONSTRUCTION_SUMMARY = 'Total Construction Summary';
 export const TEAMS = 'Teams';
 export const PERMISSIONS_MANAGEMENT = 'Permissions Management';
 export const TIMELOG = 'Timelog';
@@ -53,10 +57,12 @@ export const SEARCH = 'Search';
 export const SHOW = 'Show';
 export const PAUSE = 'Pause';
 export const RESUME = 'Resume';
+export const PROCESSING = 'Processing...';
 export const CLOSE = 'Close';
 export const ID = 'Id';
 export const TEAM_NAME = 'Team Names';
-export const TOTAL_TEAMS = 'Teams';
+export const TOTAL_TEAMS = 'Total Teams';
+export const TOTAL_PROJECTS = 'Total Projects';
 export const ACTIVE_TEAMS = 'Active Teams';
 export const ADMIN = 'Admin';
 export const POPUP_MANAGEMENT = 'Popup Management';
