@@ -5,11 +5,11 @@ const userProfilesInitial = {
   fetching: false,
   fetched: false,
   userProfiles: [],
-  editable: { 'first': 1, 'last': 1, 'role': 1, 'jobTitle': 1, 'email': 1, 'weeklycommittedHours': 1 ,'startDate':1,'endDate':1},
-  pagestats: { pageSize: 10, selectedPage: 1 },
+  editable: { 'first': 1, 'last': 1, 'role': 1, 'jobTitle': 1, 'email': 1, 'weeklycommittedHours': 1, 'startDate': 1, 'endDate': 1 },
+  pagestats: { pageSize: 20, selectedPage: 1 },
   status: 100,
-  updating:false,
-  newUserData:[]
+  updating: false,
+  newUserData: []
 };
 
 export const updateObject = (oldObject, updatedProperties) => {
@@ -68,12 +68,14 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
 export const enableUserInfoEditReducer = (userProfile = userProfilesInitial, action) => {
   switch (action.type) {
     case "ENABLE_USER_PROFILE_EDIT":
-      return updateObject(userProfile, {...userProfile, "editable": action.payload })
+      return updateObject(userProfile, { ...userProfile, "editable": action.payload })
     case "DISABLE_USER_PROFILE_EDIT":
       return updateObject(userProfile, { "editable": action.payload })
     case "START_USER_INFO_UPDATE":
-      return ({...userProfile, 
-        newUserData: userProfile.newUserData.concat(action.payload)})
+      return ({
+        ...userProfile,
+        newUserData: userProfile.newUserData.concat(action.payload)
+      })
     default: return userProfile
   }
 }
