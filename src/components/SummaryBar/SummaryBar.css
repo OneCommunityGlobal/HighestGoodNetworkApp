@@ -167,6 +167,47 @@
   opacity: 0.4;
   filter: alpha(opacity=40); /* msie */
 }
+.name-segment {
+  display: block;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 1.2rem;
+  margin-bottom: 2px;
+}
+
+@media (min-width: 992px) {
+  .name-segment {
+    max-width: 21ch; 
+  }
+
+  .name-segment:first-child {
+    max-width: 14ch;
+  }
+
+  .name-segment:nth-child(2) {
+    display: block;
+    max-width: 14ch; 
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .name-segment:nth-child(3) {
+    display: block;
+    max-width: 14ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .name-segment::after {
+    content: '';
+    visibility: hidden;
+  }
+
+  .name-segment:hover::after {
+    visibility: hidden;
+  }
+}
 
 /* XLarge devices (landscape phones, 544px and down) */
 @media (max-width: 1200px) {
