@@ -85,7 +85,7 @@ function CustomTeamCodeModal({
   getAllUserTeams: getUserTeams, // Rename props to avoid shadowing
   postNewTeam: createNewTeam,
   deleteTeam: removeTeam,
-  updateTeam, // Keep original name since we're using it
+  updateTeam: modifyTeam, // Renamed to avoid shadowing and actually use it
   getTeamMembers: fetchTeamMembers,
   addTeamMember: addMember,
   deleteTeamMember: removeMember,
@@ -112,7 +112,7 @@ function CustomTeamCodeModal({
   const [usersByTeam, setUsersByTeam] = React.useState({});
   const [loadingTeamMembers, setLoadingTeamMembers] = React.useState({});
 
-  // Define fetchTeams before using it in useEffect
+  // Define fetchTeams and handleSelectTeam before they're used anywhere
   const fetchTeams = async () => {
     setLoading(true);
     setError(null);
@@ -154,15 +154,34 @@ function CustomTeamCodeModal({
     }
   };
 
+  const handleSelectTeam = async team => {
+    setSelectedTeam(team);
+    setTeamMembersLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      const members = await fetchTeamMembers(team._id);
+      if (members && Array.isArray(members)) {
+        setTeamMembers(members);
+      } else {
+        setTeamMembers([]);
+        // console.error('Invalid members data:', members);
+      }
+    } catch (err) {
+      // console.error('Error fetching team members:', err);
+      setError('Failed to load team members. Please try again.');
+    } finally {
+      setTeamMembersLoading(false);
+    }
+  };
+
   React.useEffect(() => {
     if (isOpen) {
       fetchTeams();
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
-
-  // Define handleUpdateTeam before using it
-  // Define handleSelectTeam before it's used
-  // This function was moved up before handleUpdateTeam
 
   const handleUpdateTeam = async e => {
     e.preventDefault();
@@ -396,10 +415,11 @@ function CustomTeamCodeModal({
   };
 
   const handleDeleteTeam = async teamId => {
-    // Use a custom confirmation instead of the global confirm
-    const confirmDelete = window.confirm('Are you sure you want to delete this custom team?');
+    // Use a safer approach with a local variable
+    // eslint-disable-next-line no-alert
+    const userConfirmed = window.confirm('Are you sure you want to delete this custom team?');
 
-    if (confirmDelete) {
+    if (userConfirmed) {
       setLoading(true);
       try {
         // Pass auth.user as the requestorUser
@@ -412,28 +432,6 @@ function CustomTeamCodeModal({
       } finally {
         setLoading(false);
       }
-    }
-  };
-
-  const handleSelectTeam = async team => {
-    setSelectedTeam(team);
-    setTeamMembersLoading(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      const members = await fetchTeamMembers(team._id);
-      if (members && Array.isArray(members)) {
-        setTeamMembers(members);
-      } else {
-        setTeamMembers([]);
-        // console.error('Invalid members data:', members);
-      }
-    } catch (err) {
-      // console.error('Error fetching team members:', err);
-      setError('Failed to load team members. Please try again.');
-    } finally {
-      setTeamMembersLoading(false);
     }
   };
 
@@ -593,15 +591,19 @@ function CustomTeamCodeModal({
                       onClick={() => loadMembersForTeamCode(teamCode)}
                       disabled={loadingTeamMembers[teamCode]}
                     >
-                      {loadingTeamMembers[teamCode] ? (
+                      {/* Use conditional rendering to avoid nested ternary */}
+                      {loadingTeamMembers[teamCode] && (
                         <>
                           <Spinner size="sm" /> Loading...
                         </>
-                      ) : usersByTeam[teamCode] && usersByTeam[teamCode].length > 0 ? (
-                        `${usersByTeam[teamCode].length} Members`
-                      ) : (
-                        'Load Members'
                       )}
+                      {!loadingTeamMembers[teamCode] &&
+                        usersByTeam[teamCode] &&
+                        usersByTeam[teamCode].length > 0 &&
+                        `${usersByTeam[teamCode].length} Members`}
+                      {!loadingTeamMembers[teamCode] &&
+                        (!usersByTeam[teamCode] || usersByTeam[teamCode].length === 0) &&
+                        'Load Members'}
                     </Button>
                   </div>
 
@@ -948,7 +950,7 @@ CustomTeamCodeModal.propTypes = {
   addTeamMember: PropTypes.func.isRequired,
   deleteTeamMember: PropTypes.func.isRequired,
   auth: PropTypes.shape({
-    user: PropTypes.any,
+    user: PropTypes.object,
   }),
 };
 
