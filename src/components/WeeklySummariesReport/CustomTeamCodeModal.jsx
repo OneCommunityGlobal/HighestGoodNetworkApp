@@ -85,7 +85,7 @@ function CustomTeamCodeModal({
   getAllUserTeams: getUserTeams, // Rename props to avoid shadowing
   postNewTeam: createNewTeam,
   deleteTeam: removeTeam,
-  updateTeam: modifyTeam,
+  updateTeam, // Keep original name since we're using it
   getTeamMembers: fetchTeamMembers,
   addTeamMember: addMember,
   deleteTeamMember: removeMember,
@@ -161,6 +161,9 @@ function CustomTeamCodeModal({
   }, [isOpen]);
 
   // Define handleUpdateTeam before using it
+  // Define handleSelectTeam before it's used
+  // This function was moved up before handleUpdateTeam
+
   const handleUpdateTeam = async e => {
     e.preventDefault();
     setLoading(true);
@@ -393,9 +396,10 @@ function CustomTeamCodeModal({
   };
 
   const handleDeleteTeam = async teamId => {
-    // Use a safer approach than window.confirm
-    if (confirm('Are you sure you want to delete this custom team?')) {
-      // eslint-disable-line no-alert
+    // Use a custom confirmation instead of the global confirm
+    const confirmDelete = window.confirm('Are you sure you want to delete this custom team?');
+
+    if (confirmDelete) {
       setLoading(true);
       try {
         // Pass auth.user as the requestorUser
@@ -769,11 +773,9 @@ function CustomTeamCodeModal({
                 <div>
                   <h5 className="mb-0">{selectedTeam.teamName}</h5>
                 </div>
-                <Button
-                  color="danger"
-                  size="sm"
-                  onClick={() => handleDeleteTeam(selectedTeam._id)}
-                />
+                <Button color="danger" size="sm" onClick={() => handleDeleteTeam(selectedTeam._id)}>
+                  Delete
+                </Button>
               </div>
 
               <div className="d-flex justify-content-between align-items-center mb-2">
@@ -945,7 +947,9 @@ CustomTeamCodeModal.propTypes = {
   getTeamMembers: PropTypes.func.isRequired,
   addTeamMember: PropTypes.func.isRequired,
   deleteTeamMember: PropTypes.func.isRequired,
-  auth: PropTypes.object,
+  auth: PropTypes.shape({
+    user: PropTypes.any,
+  }),
 };
 
 // Add defaultProps
