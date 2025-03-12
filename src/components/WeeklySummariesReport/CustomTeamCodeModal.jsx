@@ -85,7 +85,8 @@ function CustomTeamCodeModal({
   getAllUserTeams: getUserTeams, // Rename props to avoid shadowing
   postNewTeam: createNewTeam,
   deleteTeam: removeTeam,
-  updateTeam: modifyTeam, // Renamed to avoid shadowing and actually use it
+  // eslint-disable-next-line no-unused-vars
+  updateTeam: modifyTeam,
   getTeamMembers: fetchTeamMembers,
   addTeamMember: addMember,
   deleteTeamMember: removeMember,
@@ -154,6 +155,7 @@ function CustomTeamCodeModal({
     }
   };
 
+  // Define handleSelectTeam before it's used (especially in handleUpdateTeam)
   const handleSelectTeam = async team => {
     setSelectedTeam(team);
     setTeamMembersLoading(true);
@@ -804,16 +806,16 @@ function CustomTeamCodeModal({
                                 {member.firstName} {member.lastName}
                               </strong>
                               <div>
-                                <Badge
-                                  color={
-                                    member.role === 'Owner' || member.role === 'Administrator'
-                                      ? 'warning'
-                                      : 'info'
-                                  }
-                                  className="mr-2"
-                                >
-                                  {member.role}
-                                </Badge>
+                                {/* Split ternary into two parts */}
+                                {member.role === 'Owner' || member.role === 'Administrator' ? (
+                                  <Badge color="warning" className="mr-2">
+                                    {member.role}
+                                  </Badge>
+                                ) : (
+                                  <Badge color="info" className="mr-2">
+                                    {member.role}
+                                  </Badge>
+                                )}
                                 {member.teamCode && (
                                   <small className="text-muted">
                                     Original Team: {member.teamCode}
@@ -950,7 +952,10 @@ CustomTeamCodeModal.propTypes = {
   addTeamMember: PropTypes.func.isRequired,
   deleteTeamMember: PropTypes.func.isRequired,
   auth: PropTypes.shape({
-    user: PropTypes.object,
+    // More specific than 'object'
+    user: PropTypes.shape({
+      id: PropTypes.string,
+    }),
   }),
 };
 
