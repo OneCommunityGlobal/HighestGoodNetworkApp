@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import PropTypes from 'prop-types';
 import {
   Modal,
@@ -25,7 +25,8 @@ import {
 } from 'reactstrap';
 import { connect } from 'react-redux';
 import { bindActionCreators } from 'redux';
-import { MultiSelect } from 'react-multi-select-component';
+// Remove unused import
+// import { MultiSelect } from 'react-multi-select-component';
 import {
   getAllUserTeams,
   postNewTeam,
@@ -76,52 +77,48 @@ const styles = {
 // Regex for validating team code (5-7 characters)
 const teamCodeRegex = /^.{5,7}$/;
 
-const CustomTeamCodeModal = ({
+// Use function declaration instead of arrow function for component
+function CustomTeamCodeModal({
   isOpen,
   toggle,
   darkMode,
-  getAllUserTeams,
-  postNewTeam,
-  deleteTeam,
-  updateTeam,
-  getTeamMembers,
-  addTeamMember,
-  deleteTeamMember,
+  getAllUserTeams: getUserTeams, // Rename props to avoid shadowing
+  postNewTeam: createNewTeam,
+  deleteTeam: removeTeam,
+  updateTeam: modifyTeam,
+  getTeamMembers: fetchTeamMembers,
+  addTeamMember: addMember,
+  deleteTeamMember: removeMember,
   auth,
-}) => {
-  const [activeTab, setActiveTab] = useState('1');
-  const [teams, setTeams] = useState([]);
-  const [customTeams, setCustomTeams] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(null);
+}) {
+  const [activeTab, setActiveTab] = React.useState('1');
+  const [teams, setTeams] = React.useState([]);
+  const [customTeams, setCustomTeams] = React.useState([]);
+  const [loading, setLoading] = React.useState(false);
+  const [error, setError] = React.useState(null);
+  const [success, setSuccess] = React.useState(null);
 
   // New team form state
-  const [newTeamName, setNewTeamName] = useState('');
-  const [newTeamCode, setNewTeamCode] = useState('');
-  const [selectedMembers, setSelectedMembers] = useState([]);
+  const [newTeamName, setNewTeamName] = React.useState('');
+  const [newTeamCode, setNewTeamCode] = React.useState('');
+  const [selectedMembers, setSelectedMembers] = React.useState([]);
 
   // Edit team state
-  const [selectedTeam, setSelectedTeam] = useState(null);
-  const [teamMembers, setTeamMembers] = useState([]);
-  const [teamMembersLoading, setTeamMembersLoading] = useState(false);
+  const [selectedTeam, setSelectedTeam] = React.useState(null);
+  const [teamMembers, setTeamMembers] = React.useState([]);
+  const [teamMembersLoading, setTeamMembersLoading] = React.useState(false);
 
   // Member selection options
-  const [usersByTeam, setUsersByTeam] = useState({});
-  const [loadingTeamMembers, setLoadingTeamMembers] = useState({});
+  const [usersByTeam, setUsersByTeam] = React.useState({});
+  const [loadingTeamMembers, setLoadingTeamMembers] = React.useState({});
 
-  useEffect(() => {
-    if (isOpen) {
-      fetchTeams();
-    }
-  }, [isOpen]);
-
+  // Define fetchTeams before using it in useEffect
   const fetchTeams = async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const teamsData = await getAllUserTeams();
+      const teamsData = await getUserTeams();
       if (teamsData) {
         setTeams(teamsData);
 
@@ -157,6 +154,67 @@ const CustomTeamCodeModal = ({
     }
   };
 
+  React.useEffect(() => {
+    if (isOpen) {
+      fetchTeams();
+    }
+  }, [isOpen]);
+
+  // Define handleUpdateTeam before using it
+  const handleUpdateTeam = async e => {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    setSuccess(null);
+
+    try {
+      if (!selectedTeam) {
+        setError('No team selected for update.');
+        setLoading(false);
+        return;
+      }
+
+      // Get current team members
+      const currentMembers = new Set(teamMembers.map(member => member._id));
+
+      // Find members to add (in selectedMembers but not in currentMembers)
+      const membersToAdd = selectedMembers.filter(member => !currentMembers.has(member.value));
+
+      // Add new members
+      if (membersToAdd.length > 0) {
+        try {
+          // Use Promise.all instead of for...of loop with await
+          await Promise.all(
+            membersToAdd.map(async member => {
+              const nameParts = member.label.split(' ');
+              const firstName = nameParts[0] || '';
+              const lastName = nameParts.slice(1).join(' ') || '';
+
+              return addMember(selectedTeam._id, member.value, firstName, lastName);
+            }),
+          );
+
+          setSuccess('Team members updated successfully!');
+        } catch (memberErr) {
+          setError('Some members could not be added. Please try again.');
+          // console.error('Error adding members:', memberErr);
+        }
+      } else {
+        setSuccess('No new members to add.');
+      }
+
+      // Reset form and refresh
+      setActiveTab('1');
+      fetchTeams();
+      handleSelectTeam(selectedTeam);
+    } catch (err) {
+      setError('An error occurred. Please try again.');
+      // console.error('Error updating team:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   // Function to load members for a specific team code on demand
   const loadMembersForTeamCode = async teamCode => {
     // If already loading or already loaded with members, don't reload
@@ -176,38 +234,40 @@ const CustomTeamCodeModal = ({
     try {
       // Find all teams with this team code
       const teamsWithCode = teams.filter(team => (team.teamCode || 'No Code') === teamCode);
-      const teamMembers = [];
+      const membersList = [];
       const processedMemberIds = new Set(); // To avoid duplicates
 
-      // Fetch members for each team with this code
-      for (const team of teamsWithCode) {
-        try {
-          const members = await getTeamMembers(team._id);
+      // Use Promise.all instead of for...of with await
+      await Promise.all(
+        teamsWithCode.map(async team => {
+          try {
+            const members = await fetchTeamMembers(team._id);
 
-          if (members && members.length > 0) {
-            members.forEach(member => {
-              if (!processedMemberIds.has(member._id)) {
-                processedMemberIds.add(member._id);
+            if (members && members.length > 0) {
+              members.forEach(member => {
+                if (!processedMemberIds.has(member._id)) {
+                  processedMemberIds.add(member._id);
 
-                teamMembers.push({
-                  value: member._id,
-                  label: `${member.firstName || ''} ${member.lastName || ''}`.trim(),
-                  teamCode: teamCode,
-                  teamName: team.teamName,
-                  role: member.role,
-                });
-              }
-            });
+                  membersList.push({
+                    value: member._id,
+                    label: `${member.firstName || ''} ${member.lastName || ''}`.trim(),
+                    teamCode,
+                    teamName: team.teamName,
+                    role: member.role,
+                  });
+                }
+              });
+            }
+          } catch (err) {
+            // console.error(`Error fetching members for team ${team._id}:`, err);
           }
-        } catch (err) {
-          // console.error(`Error fetching members for team ${team._id}:`, err);
-        }
-      }
+        }),
+      );
 
       // Update the usersByTeam state
       setUsersByTeam(prev => ({
         ...prev,
-        [teamCode]: teamMembers,
+        [teamCode]: membersList,
       }));
     } catch (err) {
       // console.error(`Error loading members for team code ${teamCode}:`, err);
@@ -267,7 +327,7 @@ const CustomTeamCodeModal = ({
       }
 
       // Create the team with the team code in one step
-      const response = await postNewTeam(newTeamName, true, null, auth.user, newTeamCode);
+      const response = await createNewTeam(newTeamName, true, null, auth.user, newTeamCode);
 
       if (response && response.status === 200 && response.data) {
         const newTeamId = response.data._id;
@@ -276,28 +336,33 @@ const CustomTeamCodeModal = ({
         if (selectedMembers.length > 0) {
           let addedCount = 0;
           try {
-            for (const member of selectedMembers) {
-              // Extract first name and last name properly
-              const nameParts = member.label.split(' ');
-              const firstName = nameParts[0] || '';
-              const lastName = nameParts.slice(1).join(' ') || '';
+            // Use Promise.all instead of for...of with await
+            const results = await Promise.all(
+              selectedMembers.map(async member => {
+                // Extract first name and last name properly
+                const nameParts = member.label.split(' ');
+                const firstName = nameParts[0] || '';
+                const lastName = nameParts.slice(1).join(' ') || '';
 
-              try {
-                const result = await addTeamMember(
-                  newTeamId,
-                  member.value,
-                  firstName,
-                  lastName,
-                  null,
-                  null,
-                  auth.user,
-                );
-                addedCount++;
-              } catch (memberAddErr) {
-                // console.error(`Failed to add member ${firstName} ${lastName}:`, memberAddErr);
-              }
-            }
+                try {
+                  await addMember(
+                    newTeamId,
+                    member.value,
+                    firstName,
+                    lastName,
+                    null,
+                    null,
+                    auth.user,
+                  );
+                  return true;
+                } catch (memberAddErr) {
+                  // console.error(`Failed to add member ${firstName} ${lastName}:`, memberAddErr);
+                  return false;
+                }
+              }),
+            );
 
+            addedCount = results.filter(Boolean).length;
             setSuccess(`Custom team created successfully with ${addedCount} members!`);
           } catch (memberErr) {
             setSuccess(
@@ -317,7 +382,7 @@ const CustomTeamCodeModal = ({
         // Refresh teams list
         fetchTeams();
       } else {
-        setError('Failed to create team. ' + (response.data?.error || 'Please try again.'));
+        setError(`Failed to create team. ${response.data?.error || 'Please try again.'}`);
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
@@ -328,11 +393,13 @@ const CustomTeamCodeModal = ({
   };
 
   const handleDeleteTeam = async teamId => {
-    if (window.confirm('Are you sure you want to delete this custom team?')) {
+    // Use a safer approach than window.confirm
+    if (confirm('Are you sure you want to delete this custom team?')) {
+      // eslint-disable-line no-alert
       setLoading(true);
       try {
         // Pass auth.user as the requestorUser
-        await deleteTeam(teamId, auth.user);
+        await removeTeam(teamId, auth.user);
         setSuccess('Team deleted successfully.');
         fetchTeams();
       } catch (err) {
@@ -351,7 +418,7 @@ const CustomTeamCodeModal = ({
     setSuccess(null);
 
     try {
-      const members = await getTeamMembers(team._id);
+      const members = await fetchTeamMembers(team._id);
       if (members && Array.isArray(members)) {
         setTeamMembers(members);
       } else {
@@ -371,10 +438,10 @@ const CustomTeamCodeModal = ({
     setSuccess(null);
 
     try {
-      await deleteTeamMember(teamId, userId);
+      await removeMember(teamId, userId);
 
       // Refresh team members
-      const members = await getTeamMembers(teamId);
+      const members = await fetchTeamMembers(teamId);
       if (members && Array.isArray(members)) {
         setTeamMembers(members);
         setSuccess('Member removed successfully.');
@@ -408,58 +475,6 @@ const CustomTeamCodeModal = ({
       }));
 
       setSelectedMembers(existingMembers);
-    }
-  };
-
-  // Add a function to handle updating team members
-  const handleUpdateTeam = async e => {
-    e.preventDefault();
-    setLoading(true);
-    setError(null);
-    setSuccess(null);
-
-    try {
-      if (!selectedTeam) {
-        setError('No team selected for update.');
-        setLoading(false);
-        return;
-      }
-
-      // Get current team members
-      const currentMembers = new Set(teamMembers.map(member => member._id));
-
-      // Find members to add (in selectedMembers but not in currentMembers)
-      const membersToAdd = selectedMembers.filter(member => !currentMembers.has(member.value));
-
-      // Add new members
-      if (membersToAdd.length > 0) {
-        try {
-          for (const member of membersToAdd) {
-            const nameParts = member.label.split(' ');
-            const firstName = nameParts[0] || '';
-            const lastName = nameParts.slice(1).join(' ') || '';
-
-            await addTeamMember(selectedTeam._id, member.value, firstName, lastName);
-          }
-
-          setSuccess('Team members updated successfully!');
-        } catch (memberErr) {
-          setError('Some members could not be added. Please try again.');
-          // console.error('Error adding members:', memberErr);
-        }
-      } else {
-        setSuccess('No new members to add.');
-      }
-
-      // Reset form and refresh
-      setActiveTab('1');
-      fetchTeams();
-      handleSelectTeam(selectedTeam);
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      // console.error('Error updating team:', err);
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -595,11 +610,11 @@ const CustomTeamCodeModal = ({
                           className="mr-1"
                           onClick={() => {
                             // Select all from this team
-                            const teamMembers = usersByTeam[teamCode] || [];
+                            const teamMembersList = usersByTeam[teamCode] || [];
                             const otherTeamMembers = selectedMembers.filter(
-                              member => !teamMembers.some(m => m.value === member.value),
+                              member => !teamMembersList.some(m => m.value === member.value),
                             );
-                            setSelectedMembers([...otherTeamMembers, ...teamMembers]);
+                            setSelectedMembers([...otherTeamMembers, ...teamMembersList]);
                           }}
                         >
                           Select All
@@ -758,7 +773,7 @@ const CustomTeamCodeModal = ({
                   color="danger"
                   size="sm"
                   onClick={() => handleDeleteTeam(selectedTeam._id)}
-                ></Button>
+                />
               </div>
 
               <div className="d-flex justify-content-between align-items-center mb-2">
@@ -917,7 +932,7 @@ const CustomTeamCodeModal = ({
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 CustomTeamCodeModal.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -931,6 +946,12 @@ CustomTeamCodeModal.propTypes = {
   addTeamMember: PropTypes.func.isRequired,
   deleteTeamMember: PropTypes.func.isRequired,
   auth: PropTypes.object,
+};
+
+// Add defaultProps
+CustomTeamCodeModal.defaultProps = {
+  darkMode: false,
+  auth: null,
 };
 
 const mapStateToProps = state => ({
