@@ -753,6 +753,7 @@ function CustomTeamCodeModal({
                   active={selectedTeam && selectedTeam._id === team._id}
                   onClick={() => handleSelectTeam(team)}
                   className={`${darkMode ? 'bg-dark text-light border-secondary' : ''} ${
+                    // eslint-disable-next-line no-unused-vars
                     selectedTeam && selectedTeam._id === team._id
                       ? darkMode
                         ? 'selected-dark'

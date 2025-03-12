@@ -98,52 +98,6 @@ export class WeeklySummariesReport extends Component {
     };
   }
 
-  refreshTeamCodes = async () => {
-    const { getAllUserTeams } = this.props;
-    try {
-      const res = await getAllUserTeams();
-      if (res) {
-        // Process the teams data similar to componentDidMount
-        const teamCodeGroup = {};
-        const teamCodes = [];
-
-        res.forEach(team => {
-          const code = team.teamCode || 'noCodeLabel';
-          if (teamCodeGroup[code]) {
-            teamCodeGroup[code].push(team);
-          } else {
-            teamCodeGroup[code] = [team];
-          }
-        });
-
-        Object.keys(teamCodeGroup).forEach(code => {
-          if (code !== 'noCodeLabel') {
-            teamCodes.push({
-              value: code,
-              label: `${code} (${teamCodeGroup[code].length})`,
-              _ids: teamCodeGroup[code]?.map(item => item._id),
-            });
-          }
-        });
-
-        teamCodes
-          .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
-          .push({
-            value: '',
-            label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
-            _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
-          });
-
-        this.setState({
-          teamCodes,
-          tableData: teamCodeGroup,
-        });
-      }
-    } catch (error) {
-      // console.error('Error refreshing team codes:', error);
-    }
-  };
-
   async componentDidMount() {
     const {
       loading,
@@ -307,6 +261,52 @@ export class WeeklySummariesReport extends Component {
     // If we're closing the modal, refresh the teams data
     if (this.state.customTeamCodeModalOpen) {
       this.refreshTeamCodes();
+    }
+  };
+
+  refreshTeamCodes = async () => {
+    const { getAllUserTeams } = this.props;
+    try {
+      const res = await getAllUserTeams();
+      if (res) {
+        // Process the teams data similar to componentDidMount
+        const teamCodeGroup = {};
+        const teamCodes = [];
+
+        res.forEach(team => {
+          const code = team.teamCode || 'noCodeLabel';
+          if (teamCodeGroup[code]) {
+            teamCodeGroup[code].push(team);
+          } else {
+            teamCodeGroup[code] = [team];
+          }
+        });
+
+        Object.keys(teamCodeGroup).forEach(code => {
+          if (code !== 'noCodeLabel') {
+            teamCodes.push({
+              value: code,
+              label: `${code} (${teamCodeGroup[code].length})`,
+              _ids: teamCodeGroup[code]?.map(item => item._id),
+            });
+          }
+        });
+
+        teamCodes
+          .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
+          .push({
+            value: '',
+            label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+            _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
+          });
+
+        this.setState({
+          teamCodes,
+          tableData: teamCodeGroup,
+        });
+      }
+    } catch (error) {
+      // console.error('Error refreshing team codes:', error);
     }
   };
 
