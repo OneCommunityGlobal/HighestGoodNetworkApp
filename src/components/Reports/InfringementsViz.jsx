@@ -33,7 +33,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
 
       const height = 400 - margin.top - margin.bottom;
 
-      const tooltipEl = function(d) {
+      const tooltipEl = function tooltipEl(d) {
         return (
           `${'<div class="tip__container">' +
             '<div class="close">' +
@@ -49,7 +49,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         );
       };
 
-      const legendEl = function() {
+      const legendEl = function legendEl() {
         return (
           '<div class="lengendSubContainer">' +
           '<div class="infLabelsOff">' +
@@ -120,7 +120,7 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         .attr('stroke', '#69b3a2')
         .attr('stroke-width', 3)
         .attr('fill', 'white')
-        .on('click', function(event, d) {
+        .on('click', function handleCircleClick(event, d) {
           const prevTooltip = d3.select(`.inf${d.id}`);
 
           if (prevTooltip.empty()) {
@@ -142,11 +142,11 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
               .style('top', `${event.pageY}px`)
               .style('opacity', 1);
 
-            Tooltip.select('.close').on('click', function() {
+            Tooltip.select('.close').on('click', function handleCloseClick() {
               Tooltip.remove();
             });
 
-            Tooltip.select('.detailsModal').on('click', function() {
+            Tooltip.select('.detailsModal').on('click', function handleDetailsModalClick() {
               handleModalShow(d);
             });
           }
@@ -186,17 +186,17 @@ function InfringementsViz({ infringements, fromDate, toDate, darkMode }) {
         .attr('class', 'legendContainer');
       legend.html(legendEl());
 
-      legend.select('.infLabelsOff').on('click', function() {
+      legend.select('.infLabelsOff').on('click', function handleLabelsOffClick() {
         d3.selectAll('.infCountLabel').style('display', 'none');
         d3.selectAll('.infDateLabel').style('display', 'none');
       });
 
-      legend.select('.infCountLabelsOn').on('click', function() {
+      legend.select('.infCountLabelsOn').on('click', function handleCountLabelsOnClick() {
         d3.selectAll('.infCountLabel').style('display', 'block');
         d3.selectAll('.infDateLabel').style('display', 'none');
       });
 
-      legend.select('.infDateLabelsOn').on('click', function() {
+      legend.select('.infDateLabelsOn').on('click', function handleDateLabelsOnClick() {
         d3.selectAll('.infDateLabel').style('display', 'block');
         d3.selectAll('.infCountLabel').style('display', 'none');
       });

@@ -1,4 +1,4 @@
-import React,{ useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, Button } from 'react-bootstrap';
 import { Container, Row, Col, Modal as NestedModal, ModalBody, ModalFooter } from 'reactstrap';
 import { useDispatch, useSelector } from 'react-redux';
@@ -91,7 +91,7 @@ const ScheduleReasonModal = ({
 
   const handleAddRequestDataChange = e => {
     e.preventDefault();
-    const { name , value} = e.target
+    const { name, value } = e.target;
     if (name === 'numberOfWeeks') {
       if (checkIfUserIsAllowedToscheduleForTheDuration(value)) return;
     }
@@ -108,8 +108,6 @@ const ScheduleReasonModal = ({
     const year = newDateObject.getFullYear();
     return moment(`${month}-${day}-${year}`, 'MM-DD-YYYY').format('YYYY-MM-DD');
   };
-
-  
 
   // checks if date value is not empty
   const validateDateOfLeave = data => {
@@ -154,9 +152,9 @@ const ScheduleReasonModal = ({
 
         if (
           (requestStartingDate.isSameOrAfter(dataStartingDate) &&
-          requestStartingDate.isSameOrBefore(dataEndingDate)) ||
+            requestStartingDate.isSameOrBefore(dataEndingDate)) ||
           (requestEndingDate.isSameOrAfter(dataStartingDate) &&
-          requestEndingDate.isSameOrBefore(dataEndingDate))
+            requestEndingDate.isSameOrBefore(dataEndingDate))
         ) {
           return true;
         }
@@ -272,7 +270,6 @@ const ScheduleReasonModal = ({
     toggleConfirmationModal();
   };
 
-
   const handleDeleteRequest = id => {
     toggleDeleteConfirmationModal();
     setRequestTodelete(id);
@@ -289,7 +286,6 @@ const ScheduleReasonModal = ({
     const momentB = moment(b.startingDate, 'YYYY-MM-DD');
     return momentA - momentB;
   };
-
 
   const durationExplanationText = data => {
     const { numberOfScheduledReasons, blueSquares, durationOfScheduledReasons } = data;
@@ -334,7 +330,7 @@ const ScheduleReasonModal = ({
             <Modal.Body className={darkMode ? 'bg-yinmn-blue' : ''}>
               <Form.Group className="mb-0" controlId="exampleForm.ControlTextarea1">
                 <Form.Label className={`mb-3 ${darkMode ? 'text-light' : ''}`}>
-                 {` Need to take time off for an emergency or vacation? That's no problem. The system
+                  {` Need to take time off for an emergency or vacation? That's no problem. The system
                   will still issue you a blue square but scheduling here will note this reason on it
                   so it's clear you chose to use one (vs receiving one for missing something) and
                   let us know in advance. Blue squares are meant for situations like this and we allow the use and scheduling of 4 a year.`}
@@ -361,13 +357,22 @@ const ScheduleReasonModal = ({
                 <Form.Text className="text-danger pl-1">
                   {requestDataErrors.dateOfLeaveError}
                 </Form.Text>
-                <Form.Label className={darkMode ? 'text-light' : ''}>Enter the duration of your absence (In Weeks):</Form.Label>
+                <Form.Label className={darkMode ? 'text-light' : ''}>
+                  Enter the duration of your absence (In Weeks):
+                </Form.Label>
                 <Form.Control
                   type="number"
                   placeholder="Enter duration in weeks"
                   name="numberOfWeeks"
                   value={requestData.numberOfWeeks}
-                  onChange={e => handleAddRequestDataChange(e)}
+                  min="0"
+                  step="1"
+                  onChange={e => {
+                    const value = e.target.value;
+                    if (value === '' || /^[0-9]+$/.test(value)) {
+                      handleAddRequestDataChange(e);
+                    }
+                  }}
                 />
                 <Form.Text className="text-danger pl-1">
                   {requestDataErrors.numberOfWeeksError}
@@ -391,7 +396,11 @@ const ScheduleReasonModal = ({
               </Form.Group>
             </Modal.Body>
             <Modal.Footer className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <Button variant="secondary" onClick={handleClose} style={darkMode ? boxStyleDark : boxStyle}>
+              <Button
+                variant="secondary"
+                onClick={handleClose}
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
                 Close
               </Button>
               <Button
@@ -403,7 +412,11 @@ const ScheduleReasonModal = ({
               >
                 Save
               </Button>
-              <NestedModal isOpen={confirmationModal} toggle={toggleConfirmationModal} className={darkMode ? 'text-light dark-mode' : ''}>
+              <NestedModal
+                isOpen={confirmationModal}
+                toggle={toggleConfirmationModal}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Container>
                     <Row>
@@ -463,7 +476,11 @@ const ScheduleReasonModal = ({
                   </Button>
                 </ModalFooter>
               </NestedModal>
-              <NestedModal isOpen={allowedDurationModal} toggle={toggleDurationInfoModal} className={darkMode ? 'text-light dark-mode' : ''}>
+              <NestedModal
+                isOpen={allowedDurationModal}
+                toggle={toggleDurationInfoModal}
+                className={darkMode ? 'text-light dark-mode' : ''}
+              >
                 <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <Container>
                     <Row>{durationExplanationText(allowedDurationData)}</Row>

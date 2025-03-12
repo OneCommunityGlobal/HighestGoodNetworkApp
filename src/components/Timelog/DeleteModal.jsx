@@ -1,24 +1,24 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { Modal, ModalBody, ModalFooter, Button } from 'reactstrap';
 import { useDispatch } from 'react-redux';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faTrashAlt } from '@fortawesome/free-regular-svg-icons';
+import { toast } from 'react-toastify';
 import { deleteTimeEntry } from '../../actions/timeEntries';
-import {toast} from 'react-toastify';
 
-const DeleteModal = ({ timeEntry }) => {
+function DeleteModal({ timeEntry }) {
   const [isOpen, setOpen] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const dispatch = useDispatch();
 
-  const toggle = () => setOpen(isOpen => !isOpen);
+  const toggle = () => setOpen(_isOpen => !_isOpen);
 
   const deleteEntry = async () => {
     setIsProcessing(true);
     try {
       await dispatch(deleteTimeEntry(timeEntry));
     } catch (error) {
-      toast.error(`An error occurred while dispatching delete time entry action: ${error.message}`)
+      toast.error(`An error occurred while dispatching delete time entry action: ${error.message}`);
     }
     setIsProcessing(false);
     toggle();
@@ -40,6 +40,6 @@ const DeleteModal = ({ timeEntry }) => {
       </Modal>
     </span>
   );
-};
+}
 
 export default DeleteModal;

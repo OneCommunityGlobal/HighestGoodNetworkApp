@@ -1,6 +1,6 @@
 import React, { useMemo, useState } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, DropdownToggle, DropdownMenu, DropdownItem, UncontrolledDropdown, Input } from 'reactstrap';
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import './style.css';
 import './reviewButton.css';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -9,13 +9,14 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faCheck } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
 import { ApiEndpoint } from 'utils/URL';
+import hasPermission from 'utils/permissions';
 
 const ReviewButton = ({
   user,
   task,
   updateTask,
-  userPermission, 
 }) => {
+  const dispatch = useDispatch();
   const darkMode = useSelector(state => state.theme.darkMode)
   const [linkError, setLinkError] = useState(null);
   const myUserId = useSelector(state => state.auth.user.userid);
@@ -24,6 +25,7 @@ const ReviewButton = ({
   const [link, setLink] = useState("");
   const [verifyModal, setVerifyModal] = useState(false);
   const [selectedAction, setSelectedAction] = useState(null);
+  const canReview = (dispatch(hasPermission('putReviewStatus')));
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [confirmSubmitModal, setConfirmSubmitModal] = useState(false); // New state for the final confirmation modal
 
@@ -143,7 +145,7 @@ const ReviewButton = ({
         Submit for Review
       </Button>;
      } else if (reviewStatus === "Submitted")  {
-      if (myRole === "Owner" ||myRole === "Administrator" || myRole === "Mentor" || myRole === "Manager" || userPermission) {
+      if (myRole == "Owner" ||myRole == "Administrator" || myRole == "Mentor" || myRole == "Manager" || canReview) {
         return (
           <UncontrolledDropdown>
             <DropdownToggle className="btn--dark-sea-green reviewBtn" caret style={darkMode ? boxStyleDark : boxStyle}>
@@ -180,6 +182,41 @@ const ReviewButton = ({
 
   return (
     <>
+      {/* Verification Modal */}
+      <Modal isOpen={verifyModal} toggle={toggleVerify} className={darkMode ? 'text-light dark-mode' : ''}>
+        <ModalHeader toggle={toggleVerify} className={darkMode ? 'bg-space-cadet' : ''}>
+          {selectedAction === 'Complete and Remove' && 'Are you sure you have completed the review?'}
+          {selectedAction === 'More Work Needed' && 'Are you sure?'}
+          </ModalHeader>
+        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button
+              onClick={(e) => {
+                toggleVerify();
+                if (selectedAction === 'More Work Needed') {
+                  updReviewStat("Unsubmitted");
+                  setIsSubmitting(false);
+                } else if (reviewStatus === "Unsubmitted") {
+                  submitReviewRequest(e);
+                } else {
+                  updReviewStat("Reviewed");
+                }
+              }}
+              color="primary"
+              className="float-left"
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              {reviewStatus === "Unsubmitted"
+                ? `Submit`
+                : `Complete`}
+            </Button>
+            <Button
+              onClick={toggleVerify}
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              Cancel
+            </Button>
+        </ModalFooter>
+      </Modal>
       {/* Second Confirmation Modal */}
       <Modal isOpen={confirmSubmitModal} toggle={toggleConfirmSubmitModal} className={darkMode ? 'text-light dark-mode' : ''}>
         <ModalHeader toggle={toggleConfirmSubmitModal} className={darkMode ? 'bg-space-cadet' : ''}>
