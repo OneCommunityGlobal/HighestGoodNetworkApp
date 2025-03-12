@@ -127,7 +127,6 @@ const CustomTeamCodeModal = ({
 
         // Filter custom teams
         const customTeamsData = teamsData.filter(team => team.teamCode && team.teamCode.length > 0);
-        console.log('Custom teams after filtering:', customTeamsData);
         setCustomTeams(customTeamsData);
 
         // Create team code groups without fetching members
@@ -152,7 +151,7 @@ const CustomTeamCodeModal = ({
       }
     } catch (err) {
       setError('Failed to load teams. Please try again.');
-      console.error('Error fetching teams:', err);
+      // console.error('Error fetching teams:', err);
     } finally {
       setLoading(false);
     }
@@ -201,7 +200,7 @@ const CustomTeamCodeModal = ({
             });
           }
         } catch (err) {
-          console.error(`Error fetching members for team ${team._id}:`, err);
+          // console.error(`Error fetching members for team ${team._id}:`, err);
         }
       }
 
@@ -211,7 +210,7 @@ const CustomTeamCodeModal = ({
         [teamCode]: teamMembers,
       }));
     } catch (err) {
-      console.error(`Error loading members for team code ${teamCode}:`, err);
+      // console.error(`Error loading members for team code ${teamCode}:`, err);
     } finally {
       // Clear loading state
       setLoadingTeamMembers(prev => ({
@@ -231,9 +230,6 @@ const CustomTeamCodeModal = ({
 
   const handleCreateTeam = async e => {
     e.preventDefault();
-    console.log('Selected members at start of handleCreateTeam:', selectedMembers);
-    console.log('Current auth state:', auth);
-    console.log('Attempting to create team with name:', newTeamName, 'and code:', newTeamCode);
 
     if (selectedTeam) {
       handleUpdateTeam(e);
@@ -280,13 +276,11 @@ const CustomTeamCodeModal = ({
         if (selectedMembers.length > 0) {
           let addedCount = 0;
           try {
-            console.log('About to add members, selectedMembers:', selectedMembers);
             for (const member of selectedMembers) {
               // Extract first name and last name properly
               const nameParts = member.label.split(' ');
               const firstName = nameParts[0] || '';
               const lastName = nameParts.slice(1).join(' ') || '';
-              console.log(`Adding member ${firstName} ${lastName} to team ${newTeamId}`);
 
               try {
                 const result = await addTeamMember(
@@ -298,10 +292,9 @@ const CustomTeamCodeModal = ({
                   null,
                   auth.user,
                 );
-                console.log('Member add result:', result);
                 addedCount++;
               } catch (memberAddErr) {
-                console.error(`Failed to add member ${firstName} ${lastName}:`, memberAddErr);
+                // console.error(`Failed to add member ${firstName} ${lastName}:`, memberAddErr);
               }
             }
 
@@ -310,7 +303,7 @@ const CustomTeamCodeModal = ({
             setSuccess(
               `Custom team created with ${addedCount} members. Some members could not be added.`,
             );
-            console.error('Error adding members:', memberErr);
+            // console.error('Error adding members:', memberErr);
           }
         } else {
           setSuccess('Custom team created successfully!');
@@ -328,7 +321,7 @@ const CustomTeamCodeModal = ({
       }
     } catch (err) {
       setError('An error occurred. Please try again.');
-      console.error('Error creating team:', err);
+      // console.error('Error creating team:', err);
     } finally {
       setLoading(false);
     }
@@ -344,7 +337,7 @@ const CustomTeamCodeModal = ({
         fetchTeams();
       } catch (err) {
         setError('Failed to delete team. Please try again.');
-        console.error('Error deleting team:', err);
+        // console.error('Error deleting team:', err);
       } finally {
         setLoading(false);
       }
@@ -363,10 +356,10 @@ const CustomTeamCodeModal = ({
         setTeamMembers(members);
       } else {
         setTeamMembers([]);
-        console.error('Invalid members data:', members);
+        // console.error('Invalid members data:', members);
       }
     } catch (err) {
-      console.error('Error fetching team members:', err);
+      // console.error('Error fetching team members:', err);
       setError('Failed to load team members. Please try again.');
     } finally {
       setTeamMembersLoading(false);
@@ -386,7 +379,7 @@ const CustomTeamCodeModal = ({
         setTeamMembers(members);
         setSuccess('Member removed successfully.');
       } else {
-        console.error('Invalid members data after removal:', members);
+        // console.error('Invalid members data after removal:', members);
         setError('Something went wrong. Please refresh the view.');
       }
 
@@ -394,7 +387,7 @@ const CustomTeamCodeModal = ({
       fetchTeams();
     } catch (err) {
       setError('Failed to remove member. Please try again.');
-      console.error('Error removing member:', err);
+      // console.error('Error removing member:', err);
     }
   };
 
@@ -452,7 +445,7 @@ const CustomTeamCodeModal = ({
           setSuccess('Team members updated successfully!');
         } catch (memberErr) {
           setError('Some members could not be added. Please try again.');
-          console.error('Error adding members:', memberErr);
+          // console.error('Error adding members:', memberErr);
         }
       } else {
         setSuccess('No new members to add.');
@@ -464,7 +457,7 @@ const CustomTeamCodeModal = ({
       handleSelectTeam(selectedTeam);
     } catch (err) {
       setError('An error occurred. Please try again.');
-      console.error('Error updating team:', err);
+      // console.error('Error updating team:', err);
     } finally {
       setLoading(false);
     }

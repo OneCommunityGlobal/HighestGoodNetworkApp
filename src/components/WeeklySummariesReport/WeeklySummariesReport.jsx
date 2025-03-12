@@ -151,7 +151,7 @@ export class WeeklySummariesReport extends Component {
         });
       }
     } catch (error) {
-      console.error('Error refreshing team codes:', error);
+      // console.error('Error refreshing team codes:', error);
     }
   };
 
