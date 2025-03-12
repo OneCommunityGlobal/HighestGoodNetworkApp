@@ -726,13 +726,6 @@ function CustomTeamCodeModal({
     return 'Create New Custom Team';
   };
 
-  const getSelectedClass = () => {
-    if (selectedTeam && selectedTeam._id === team._id) {
-      return darkMode ? 'selected-dark' : 'selected';
-    }
-    return '';
-  };
-
   const renderViewTeams = () => (
     <div>
       <Row>
@@ -759,9 +752,14 @@ function CustomTeamCodeModal({
                   action
                   active={selectedTeam && selectedTeam._id === team._id}
                   onClick={() => handleSelectTeam(team)}
-                  className={`${
-                    darkMode ? 'bg-dark text-light border-secondary' : ''
-                  } ${getSelectedClass()}`}
+                  // eslint-disable-next-line no-nested-ternary
+                  className={`${darkMode ? 'bg-dark text-light border-secondary' : ''} ${
+                    selectedTeam && selectedTeam._id === team._id
+                      ? darkMode
+                        ? 'selected-dark'
+                        : 'selected'
+                      : ''
+                  }`}
                 >
                   <div className="d-flex justify-content-between align-items-center">
                     <div>
