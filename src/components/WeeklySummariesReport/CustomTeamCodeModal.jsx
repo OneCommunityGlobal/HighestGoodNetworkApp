@@ -752,14 +752,16 @@ function CustomTeamCodeModal({
                   action
                   active={selectedTeam && selectedTeam._id === team._id}
                   onClick={() => handleSelectTeam(team)}
-                  // eslint-disable-next-line no-nested-ternary
-                  className={`${darkMode ? 'bg-dark text-light border-secondary' : ''} ${
-                    selectedTeam && selectedTeam._id === team._id
-                      ? darkMode
+                  className={`
+                    ${darkMode ? 'bg-dark text-light border-secondary' : ''}
+                    ${selectedTeam && selectedTeam._id === team._id ? '' : ''}
+                    ${
+                      selectedTeam && selectedTeam._id === team._id && darkMode
                         ? 'selected-dark'
-                        : 'selected'
-                      : ''
-                  }`}
+                        : ''
+                    }
+                    ${selectedTeam && selectedTeam._id === team._id && !darkMode ? 'selected' : ''}
+                  `}
                 >
                   <div className="d-flex justify-content-between align-items-center">
                     <div>
