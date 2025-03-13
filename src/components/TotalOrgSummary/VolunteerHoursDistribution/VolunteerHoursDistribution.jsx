@@ -9,7 +9,6 @@ export default function VolunteerHoursDistribution({
   darkMode,
   usersTimeEntries = [],
   usersOverTimeEntries = [],
-  hoursData,
 }) {
   const [userData, setUserData] = useState([]);
 

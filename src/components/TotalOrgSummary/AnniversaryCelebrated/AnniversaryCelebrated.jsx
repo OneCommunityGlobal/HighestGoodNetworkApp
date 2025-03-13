@@ -5,7 +5,7 @@ import Loading from 'components/common/Loading';
 import sixMonthsAward from '../images/sixMonthsAward.svg';
 import oneYearAward from '../images/oneYearAward.svg';
 
-export default function AnniversaryCelebrated({ isLoading, data, darkMode }) {
+export default function AnniversaryCelebrated({ isLoading, data }) {
   const history = useHistory();
   const sixMonthsData = data?.['6Months'] || { comparisonPercentage: 0 };
   const oneYearData = data?.['1Year'] || { comparisonPercentage: 0 };
