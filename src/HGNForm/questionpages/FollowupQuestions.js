@@ -357,7 +357,7 @@ function FollowupQuestions() {
           );
         })}
 
-        <div className="button-container">
+        <div className="final-button-container">
           <button type="button" className="hgn-return-button" onClick={handleBack}>
             Back
           </button>

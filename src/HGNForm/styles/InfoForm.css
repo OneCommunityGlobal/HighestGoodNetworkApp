@@ -59,6 +59,7 @@ button {
   color: #2e5163;
   border-radius: 10px;
   width: 20%;
+  margin-left:0;
 }
 
 .hgn-return-button:hover {
@@ -151,6 +152,11 @@ button {
 .form-inputs-slack {
   display: flex;
   align-items: center;
+  padding: 0;
+}
+
+.form-inputs-slack input{
+  margin-bottom: 0;
 }
 
 .error-message {

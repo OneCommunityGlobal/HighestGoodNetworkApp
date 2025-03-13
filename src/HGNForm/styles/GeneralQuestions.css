@@ -59,6 +59,7 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  width: 100%;
 }
 .hours-radio {
   display: flex;
@@ -75,6 +76,7 @@
 
 .hours-radio input[type="radio"] {
   margin-right: 2px;
+  margin-bottom:0;
 }
 
 .standup{
@@ -82,6 +84,7 @@
   flex-direction: column;
   align-items: flex-start;
 }
+
 .standup-radio {
   display: flex;
   gap: 10px;
@@ -96,6 +99,7 @@
 
 .standup-radio input[type="radio"] {
   margin-right: 2px;
+  margin-bottom:0;
 }
 
 .period{
@@ -107,6 +111,7 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
+  margin:20px;
   margin-left: 32px;
 }
 
@@ -115,8 +120,13 @@
   align-items: center;
 }
 
+.period-radio label {
+  margin: 0;
+}
+
 .period-radio input[type="radio"] {
-  margin-right: 2px;
+  margin-right: 10px;
+  margin-bottom:0;
 }
 
 .question {
@@ -181,6 +191,7 @@
   flex-direction: column;
   gap: 2px;
   margin-top: 10px;
+  margin-bottom:10px;
 }
 
 .preferences-checkbox div {
@@ -191,6 +202,11 @@
 .preferences-checkbox input[type="checkbox"] {
   margin-right: 5px;
   margin-left: 30px;
+  margin-bottom: 0;
+}
+
+.preferences-checkbox label {
+  margin: 0;
 }
 
 .availability-selector {
@@ -224,18 +240,29 @@
   grid-column: span 1;
 }
 
-.edit-question-container {
+.question-container{
+  width:100%;
+}
+
+.edit-question-container {  
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   background-color: #f9f9f9;
   transition: all 0.3s ease-in-out;
   border: 1px solid #5082a7;
   border-radius: 10px;
-  margin: 0 10px;
+  width: 95%;
+  margin-left:auto;
+  margin-right:auto;
+  padding:10px;
 }
 
 .edit-title {
   font-size: 1rem;
   font-weight: bold;
   margin-bottom: 0.5rem;
+  margin-top:0.5rem;
   color: #2f5061;
 }
 
@@ -251,6 +278,9 @@
   border-radius: 6px;
   font-size: 1rem;
   transition: border-color 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  width: 100%;
+  margin: 5px;
+  margin-left:0;
 }
 
 .edit-input:focus {
@@ -265,6 +295,8 @@
   font-size: 1.5rem;
   transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
   margin-right: 20px;
+  margin-top: 0;
+  margin-bottom: 0.5rem;
 }
 
 .save-icon:hover {
@@ -278,6 +310,7 @@
   margin-left: 5px;
   font-size: 1.2rem;
   transition: color 0.2s ease-in-out, transform 0.2s ease-in-out;
+  margin-bottom: 0.2rem;
 }
 
 .edit-icon:hover {
