@@ -40,6 +40,7 @@ export const getTimeEntriesForWeek = (userId, offset) => {
       await dispatch(setTimeEntriesForWeek(filteredEntries, offset));
       // await dispatch(setTimeEntriesForWeek(res.data, offset));
     }
+    return res;
   };
 };
 
@@ -71,19 +72,20 @@ export const getTimeEntriesForPeriod = (userId, fromDate, toDate) => {
   };
 };
 
-export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //Find last week of work in date
+export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => {
+  //Find last week of work in date
   toDate = moment(toDate)
     .endOf('day')
     .format('YYYY-MM-DDTHH:mm:ss');
-  
+
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
     try {
       const res = await axios.get(url);
       if (!res || !res.data) {
-        console.log("Request failed or no data");
-        return "N/A";
+        console.log('Request failed or no data');
+        return 'N/A';
       }
       const filteredEntries = res.data.filter(entry => {
         const entryDate = moment(entry.dateOfWork);
@@ -94,33 +96,34 @@ export const getTimeEndDateEntriesByPeriod = (userId, fromDate, toDate) => { //F
       });
       const lastEntry = filteredEntries[0];
       if (!lastEntry) {
-        return "N/A";
+        return 'N/A';
       }
       const lastEntryDate = lastEntry.createdDateTime;
       return lastEntryDate;
     } catch (error) {
-      console.error("Error fetching time entries:", error);
+      console.error('Error fetching time entries:', error);
       if (error.response && error.response.status === 401) {
         loggedOut = true;
       }
-      return "N/A"; // Return "N/A" in case of error
+      return 'N/A'; // Return "N/A" in case of error
     }
   };
 };
 
-export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => { // Find first week of work in date
+export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => {
+  // Find first week of work in date
   toDate = moment(toDate)
     .endOf('day')
     .format('YYYY-MM-DDTHH:mm:ss');
-  
+
   const url = ENDPOINTS.TIME_ENTRIES_PERIOD(userId, fromDate, toDate);
   return async dispatch => {
     let loggedOut = false;
     try {
       const res = await axios.get(url);
       if (!res || !res.data) {
-        console.log("Request failed or no data");
-        return "N/A";
+        console.log('Request failed or no data');
+        return 'N/A';
       }
       const filteredEntries = res.data.filter(entry => {
         const entryDate = moment(entry.dateOfWork);
@@ -131,16 +134,16 @@ export const getTimeStartDateEntriesByPeriod = (userId, fromDate, toDate) => { /
       });
       const firstEntry = filteredEntries[0];
       if (!firstEntry) {
-        return "N/A";
+        return 'N/A';
       }
       const firstEntryDate = firstEntry.dateOfWork;
       return firstEntryDate;
     } catch (error) {
-      console.error("Error fetching time entries:", error);
+      console.error('Error fetching time entries:', error);
       if (error.response && error.response.status === 401) {
         loggedOut = true;
       }
-      return "N/A"; // Return "N/A" in case of error
+      return 'N/A'; // Return "N/A" in case of error
     }
   };
 };
