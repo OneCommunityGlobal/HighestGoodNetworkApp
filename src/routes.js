@@ -7,7 +7,6 @@ import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 import AutoUpdate from 'components/AutoUpdate';
-import CPHeader from 'components/CommunityPortal/CPHeader/CPHeader';
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from 'utils/routePermissions';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
@@ -27,6 +26,7 @@ import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
+import Header from './components/Header';
 import TeamLocations from './components/TeamLocations';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
@@ -155,18 +155,16 @@ export default (
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
+      <Header />
       {/* Uncomment BMHeader and its import during phase 2 development. */}
 
-      {/* <BMHeader /> */}
-      <CPHeader />
 
+      {/* <BMHeader /> */}
       <AutoUpdate />
       <ToastContainer />
       <Switch>
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
-        <ProtectedRoute path="/cpdashboard" exact component={CPDashboard} />
-        <CPProtectedRoute path="/cpdashboard" exact component={CPDashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
         <ProtectedRoute path="/timelog/:userId" exact render={(props) => {
