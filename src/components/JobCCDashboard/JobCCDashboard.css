@@ -52,11 +52,6 @@
   margin-top: 10px;
 }
 
-.table th {
-  background-color: #007bff;
-  color: #ffffff;
-}
-
 .dark-mode .table th {
   background-color: #0056b3;
 }
