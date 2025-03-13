@@ -19,6 +19,7 @@ export const ENDPOINTS = {
   USERS_UPDATE_PROFILE_FROM_WEBSITE: `${APIEndpoint}/userProfile/profileImage/imagefromwebsite`,
   USER_PROFILE_BASIC_INFO: `${APIEndpoint}/userProfile/basicInfo`,
   USER_AUTOCOMPLETE: searchText => `${APIEndpoint}/userProfile/autocomplete/${searchText}`,
+  TOGGLE_BIO_STATUS: userId => `${APIEndpoint}/userProfile/${userId}/toggleBio`,
 
   INFO_COLLECTIONS: `${APIEndpoint}/informations`,
   INFO_COLLECTION: infoId => `${APIEndpoint}/informations/${infoId}`,
@@ -232,6 +233,14 @@ export const ENDPOINTS = {
   HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
   HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
   HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
+
+  CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
+  UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
+  GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
+  GET_ALL_JOB_FORMS: `${APIEndpoint}/jobforms/all`,
+  GET_FORM_RESPONSES: formID => `${APIEndpoint}/jobforms/${formID}/responses`,
+
+  JOB_NOTIFICATION_LIST: `${APIEndpoint}/job-notification-list/`,
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
