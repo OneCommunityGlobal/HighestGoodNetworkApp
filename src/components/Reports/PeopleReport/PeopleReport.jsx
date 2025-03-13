@@ -504,7 +504,7 @@ class PeopleReport extends Component {
       });
 
       try {
-        await updateUserProfileProperty(userProfile, 'bioPosted', bioStatus);
+        await this.props.updateUserProfileProperty(userProfile, 'bioPosted', bioStatus);
         toast.success('You have changed the bio announcement status of this user.');
       } catch (err) {
         // eslint-disable-next-line no-alert
@@ -566,7 +566,7 @@ class PeopleReport extends Component {
               <p>Total Hours Logged</p>
             </ReportPage.ReportBlock>
           </div>
-          
+
           <PeopleTasksPieChart darkMode={darkMode} />
           <div className="mobile-people-table">
             <ReportPage.ReportBlock darkMode={darkMode}>
