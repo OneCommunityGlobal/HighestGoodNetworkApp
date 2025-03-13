@@ -204,7 +204,7 @@ const UserTeamsTable = props => {
               style={darkMode ? colordark : styleDefault}
               placeholder="X-XXX"
               onFocus={() => !showDropdown && setShowDropdown(true)}
-              disabled={!props.canEditTeamCode}
+              disabled={props.role !== 'Administrator' && props.role !== 'Owner'}
             />
           </Col>
           <div className="row" style={{ display: 'flex', flexDirection: 'column' }}>
