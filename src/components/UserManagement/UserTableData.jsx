@@ -33,6 +33,7 @@ const UserTableData = React.memo(props => {
     lastName: props.user.lastName,
     id: props.user._id,
     role: props.user.role,
+    jobTitle: props.user.jobTitle,
     email: props.user.email,
     weeklycommittedHours: props.user.weeklycommittedHours,
     startDate: formatDate(props.user.startDate),
@@ -77,6 +78,7 @@ const UserTableData = React.memo(props => {
       lastName: props.user.lastName,
       id: props.user._id,
       role: props.user.role,
+      jobTitle: props.user.jobTitle,
       email: props.user.email,
       weeklycommittedHours: props.user.weeklycommittedHours,
       startDate: formatDateYYYYMMDD(props.user.startDate),
@@ -179,7 +181,7 @@ const UserTableData = React.memo(props => {
           />
         )}
       </td>
-      <td>
+      <td id="usermanagement_role">
         {editUser?.role && roles !== undefined ? (
           formData.role
         ) : (
@@ -200,6 +202,38 @@ const UserTableData = React.memo(props => {
           </select>
         )}
       </td>
+
+
+      <td className="title_cell"
+        title={formData.jobTitle}>
+        {editUser?.jobTitle ? (
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", maxWidth: "100%" }}>
+            <span style={{ overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+              {formData.jobTitle}
+            </span>
+            <FontAwesomeIcon
+              className="copy_icon"
+              icon={faCopy}
+              onClick={() => {
+                navigator.clipboard.writeText(formData.jobTitle);
+                toast.success('Title Copied!');
+              }}
+            />
+          </div>
+        ) : (
+          <input
+            type="text"
+            className="edituser_input"
+            value={formData.jobTitle}
+            onChange={e => {
+              updateFormData({ ...formData, jobTitle: e.target.value });
+              addUserInformation('jobTitle', e.target.value, props.user._id);
+            }}
+          />
+        )}
+
+      </td>
+
 
       <td className="email_cell">
         {editUser?.email ? (
@@ -281,9 +315,8 @@ const UserTableData = React.memo(props => {
       <td className="centered-td">
         <button
           type="button"
-          className={`btn btn-outline-primary btn-sm${
-            props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
-          }`}
+          className={`btn btn-outline-primary btn-sm${props.timeOffRequests?.length > 0 ? ` time-off-request-btn-moved` : ''
+            }`}
           onClick={() => props.onLogTimeOffClick(props.user)}
           id="requested-time-off-btn"
           style={darkMode ? { boxShadow: '0 0 0 0', fontWeight: 'bold' } : boxStyle}
