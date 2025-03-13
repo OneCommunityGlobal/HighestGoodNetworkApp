@@ -396,6 +396,12 @@ const ReviewButton = ({ user, task, updateTask }) => {
                   </DropdownItem>
                 ))}
               <DropdownItem
+                onClick={toggleEditLinkModal}
+                className={darkMode ? 'text-light dark-mode-btn' : ''}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+              </DropdownItem>
+              <DropdownItem
                 onClick={() => {
                   setSelectedAction('Complete and Remove');
                   toggleVerify();
