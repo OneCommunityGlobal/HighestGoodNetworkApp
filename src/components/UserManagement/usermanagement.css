@@ -16,7 +16,6 @@ thead {
 #user-management-table {
   width: calc(100vw - 45px);
 }
-
 #usermanagement_order {
   width: 5px;
 }
@@ -388,3 +387,4 @@ td {
 .custom-toast-progress {
   background-color: white;
 }
+
