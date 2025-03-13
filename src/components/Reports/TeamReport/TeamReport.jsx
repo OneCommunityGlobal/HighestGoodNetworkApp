@@ -340,7 +340,7 @@ export function TeamReport({ match }) {
             </div>
 
             {/* Created After Date Picker */}
-            <div className={`d-flex flex-column flex-shrink-0 ${darkMode ? 'dark-mode' : ''}`}>
+            <div className="d-flex flex-column flex-shrink-0">
               <label
                 htmlFor="search-by-startDate"
                 className={`text-left ${darkMode ? 'text-light' : ''}`}
@@ -361,7 +361,7 @@ export function TeamReport({ match }) {
             </div>
 
             {/* Modified After Date Picker */}
-            <div className={`d-flex flex-column flex-shrink-0 ${darkMode ? 'dark-mode' : ''}`}>
+            <div className="d-flex flex-column flex-shrink-0">
               <label
                 htmlFor="search-by-endDate"
                 className={`text-left ${darkMode ? 'text-light' : ''}`}
