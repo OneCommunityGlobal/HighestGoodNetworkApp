@@ -81,16 +81,20 @@ export const calculateAnniversaryDate = (createdDate) => {
     return anniversaryDates;
   }
   
-  export const calculateDurationBetweenDates = (endDate, createdDate) => {
+  export const calculateDurationBetweenDates = (endDate, startDate) => {
   
+    if (!startDate) {
+      return { years: 0, months: 0, days: 0 };
+    }
+
     let endDateObject = new Date(endDate)
-    let createdDateObject = new Date(createdDate)
+    let startDateObject = new Date(startDate)
     let durationSinceStarted = {
       months: 0,
       years: 0
     }
-    if (endDate > createdDate) {
-      var diff = Math.floor(endDateObject.getTime() - createdDateObject.getTime());
+    if (endDate > startDate) {
+      var diff = Math.floor(endDateObject.getTime() - startDateObject.getTime());
       var day = 1000 * 60 * 60 * 24;
   
       var days = (diff / day);
@@ -110,11 +114,14 @@ export const calculateAnniversaryDate = (createdDate) => {
     return durationSinceStarted
   }
   
-  export const showTrophyIcon = (endDate, createdDate) => {
+  export const showTrophyIcon = (endDate, startDate) => {
+    if (!startDate) {
+      return false;
+    }
   
-    const calculateAnniversaryDateResults = calculateAnniversaryDate(createdDate)
+    const calculateAnniversaryDateResults = calculateAnniversaryDate(startDate)
   
-    if (createdDate < endDate) {
+    if (startDate < endDate) {
       switch (true) {
         case calculateAnniversaryDateResults.tenYearAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter10Y.toISOString().split('T')[0] > endDate:
           return true;

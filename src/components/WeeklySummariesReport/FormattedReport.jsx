@@ -662,7 +662,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies }) {
 
   const durationSinceStarted = calculateDurationBetweenDates(
     summarySubmissionDate,
-    summary?.createdDate.split('T')[0],
+    summary?.startDate?.split('T')[0] || null,
   );
 
   const handleIconContent = duration => {
@@ -706,7 +706,7 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies }) {
             />
           )}
           {loadTrophies &&
-            showTrophyIcon(summarySubmissionDate, summary?.createdDate.split('T')[0]) && (
+            showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
               <i className="fa fa-trophy" style={{ marginLeft: '10px', fontSize: '25px' }}>
                 <p style={{ fontSize: '10px', marginLeft: '5px' }}>
                   {handleIconContent(durationSinceStarted)}

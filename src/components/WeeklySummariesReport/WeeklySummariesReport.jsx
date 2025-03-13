@@ -414,7 +414,7 @@ export class WeeklySummariesReport extends Component {
 
       const hasTrophy =
         !selectedTrophies ||
-        showTrophyIcon(summarySubmissionDate, summary?.createdDate?.split('T')[0]);
+        showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0]);
 
       return (
         (selectedCodesArray.length === 0 || selectedCodesArray.includes(summary.teamCode)) &&

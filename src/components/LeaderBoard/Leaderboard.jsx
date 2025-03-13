@@ -94,8 +94,8 @@ function LeaderBoard({
 
   useEffect(() => {
     for (let i = 0; i < leaderBoardData.length; i += 1) {
-      const createDate = leaderBoardData[i].createdDate?.split('T')[0];
-      const showTrophy = showTrophyIcon(todaysDate, createDate);
+      const startDate = leaderBoardData[i].startDate?.split('T')[0];
+      const showTrophy = showTrophyIcon(todaysDate, startDate);
       if (!showTrophy && leaderBoardData[i].trophyFollowedUp) {
         postLeaderboardData(leaderBoardData[i].personId, false);
       }
@@ -457,10 +457,10 @@ function LeaderBoard({
               </td>
             </tr>
             {teamsUsers.map(item => {
-              const createDate = item?.createdDate?.split('T')[0];
-              const durationSinceStarted = calculateDurationBetweenDates(todaysDate, createDate);
+              const startDate = item?.startDate?.split('T')[0];
+              const durationSinceStarted = calculateDurationBetweenDates(todaysDate, startDate);
               const iconContent = handleIconContent(durationSinceStarted, item);
-              const showTrophy = showTrophyIcon(todaysDate, createDate);
+              const showTrophy = showTrophyIcon(todaysDate, startDate);
               return (
                 <tr key={item.personId}>
                   <td className="align-middle">
