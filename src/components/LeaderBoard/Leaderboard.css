@@ -15,6 +15,30 @@
   border-top-style: solid;
   border-top-color: rgb(222, 226, 230);
 }
+.dark-leaderboard-row{
+  background-color:#3a506b;
+  color:white;
+}
+.dark-leaderboard-row th{
+  background-color:#3a506b;
+  color:white;
+}
+.dark-leaderboard-row th:hover{
+  background-color:#111831;
+}
+
+.light-leaderboard-row{
+  background-color : white;
+  color:black;
+}
+.light-leaderboard-row th{
+  background-color : white;
+  color:black;
+}
+
+.light-leaderboard-row:hover{
+  background-color:#f0f8ff;
+}
 
 @media screen and (max-width: 768px) {
   .leaderboard thead th {
@@ -118,7 +142,7 @@
 }
 
 .leaderboard-totals-title {
-  color: #339CFF;
+  /* color: #339CFF; */
   font-weight: bold;
 }
 
