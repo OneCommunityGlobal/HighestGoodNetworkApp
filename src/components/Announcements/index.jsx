@@ -109,6 +109,29 @@ function Announcements({ title, email }) {
     }
   }, [email]);
 
+  const uploadImageToServer = async (file) => {
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(ENDPOINTS.UPLOAD_IMAGE(), {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+      if (data.url) {
+        return data.url;
+      } else {
+        throw new Error('Image upload failed');
+      }
+    } catch (error) {
+      console.error('Error uploading image:', error);
+      toast.error('Failed to upload image. Please try again.');
+      return null;
+    }
+  };
+
   const switchToWeeklyProgress = () => setActiveTab('weeklyProgress');
   const switchToNonFormatted = () => setActiveTab('nonFormatted');
 

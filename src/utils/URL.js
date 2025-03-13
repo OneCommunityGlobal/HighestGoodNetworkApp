@@ -232,6 +232,9 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+
+  // New endpoint for image upload
+  UPLOAD_IMAGE: () => `${APIEndpoint}/upload-image`,
 };
 
 export const ApiEndpoint = APIEndpoint;
