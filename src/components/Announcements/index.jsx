@@ -3,10 +3,12 @@ import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import { postToImgur } from '../../actions/postToImgur';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { SiImgur } from 'react-icons/si';
+import { max, set } from 'lodash';
+import axios from 'axios';
+import { ENDPOINTS } from '../../utils/URL';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -21,6 +23,17 @@ function Announcements({ title, email }) {
 
   const [toggleImgur, setToggleImgur] = useState(false);
   const [ImageFile, setImageFile] = useState(null);
+  const [imgurTitle, setImgurTitle] = useState('');
+  const [imgurDescription, setImgurDescription] = useState('');
+  const [imgurTags, setImgurTags] = useState('');
+  const [imgurFiles, setImgurFiles] = useState([]);
+  const [imgurScheduleTime, setImgurScheduleTime] = useState('');
+  const [imgurLoading, setImgurLoading] = useState(false);
+  const [scheduledPosts, setScheduledPosts] = useState([]);
+  const [imgurError, setImgurError] = useState('');
+
+  const maxScheduleDate = new Date();
+  maxScheduleDate.setMonth(maxScheduleDate.getMonth() + 6);
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
@@ -164,7 +177,6 @@ function Announcements({ title, email }) {
 
 
   const handleBroadcastEmails = () => {
-    toggleImgur && handlePostToImgur(); // only post to imgur if the toggle is true
     const htmlContent = `
     <div style="max-width: 900px; width: 100%; margin: auto;">
       ${emailContent}
@@ -173,17 +185,90 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
-  const handlePostToImgur = async () => {
-    const title = 'Test Title from frontend button';
-    const description = 'Test Description from frontend button';
+  const fetchImgurScheduledPosts = async () => {
+    try {
+      console.log('Fetching scheduled Imgur posts...');
+    } catch (e) {
+      console.error('Error fetching scheduled Imgur posts:', e);
+    }
+  };
 
-    if (!ImageFile) {
-      alert('Please upload an image file first');
-      console.log('Please upload an image file first', ImageFile);
+  const handlePostToImgur = async () => {
+    console.log('Posting to Imgur...');
+    if (imgurFiles.length == 0) {
+      setImgurError('Please upload an image file first');
       return;
     }
-    dispatch(postToImgur(ImageFile, emailContent));
+
+    setImgurLoading(true);
+    setImgurError('');
+
+    const formData = new FormData();
+    formData.append('title', imgurTitle);
+    formData.append('description', imgurDescription);
+    formData.append('tags', imgurTags);
+
+    if (imgurScheduleTime) {
+      formData.append('scheduleTime', new Date(imgurScheduleTime).toISOString());
+    }
+
+    imgurFiles.forEach((file) => {
+      formData.append('image', file);
+    });
+
+    try {
+      const response = await axios.post(
+        ENDPOINTS.POST_IMGUR,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+          maxContentLength: Infinity,
+          maxBodyLength: Infinity
+        }
+      );
+
+      if (response.status === 200) {
+        // reset form after successful post
+        setImgurTitle('');
+        setImgurDescription('');
+        setImgurTags('');
+        setImgurFiles([]);
+        setImgurScheduleTime(null);
+
+        if (imgurScheduleTime) {
+          fetchImgurScheduledPosts();
+        }
+
+        toast.success('Image successfully posted to Imgur', {
+          position: 'top-right',
+          autoClose: 3000,
+        });
+      } else {
+        setImgurError(response.data.message || 'Failed to post to Imgur');
+        throw new Error(response.data.message || 'Failed to post to Imgur');
+      }
+    } catch (e) {
+      console.error('Error posting image to Imgur:', e);
+      setImgurError('Error posting image');
+      toast.error('Error posting image', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } finally {
+      setImgurLoading(false);
+    }
   };
+
+  const handleImgurFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setImgurFiles(prevFiles => [...prevFiles, ...files]);
+  }
+
+  const handleRemoveImgurFile = (index) => {
+    setImgurFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+  }
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
@@ -217,6 +302,128 @@ function Announcements({ title, email }) {
               </button>
             )
           }
+
+          {/* Imgur post section */}
+          {toggleImgur && (
+            <div className={`${darkMode ? 'bg-oxford-blue text-light' : ''}`} style={{ minHeight: "100%" }}>
+              <div className='imgur-post-container'>
+                <h3>Post to Imgur</h3>
+
+                {/* Imgur album title input */}
+                <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                  Post Title*
+                </label>
+                <input
+                  type='text'
+                  value={imgurTitle}
+                  onChange={(e) => setImgurTitle(e.target.value)}
+                  className='input-text-for-announcement'
+                  required
+                />
+
+                {/* Imgur album description input */}
+                <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                  Post Description
+                </label>
+                <input
+                  type='text'
+                  value={imgurDescription}
+                  onChange={(e) => setImgurDescription(e.target.value)}
+                  className='input-text-for-announcement'
+                />
+
+                {/* Imgur album tags input */}
+                <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                  Post Tags
+                </label>
+                <input
+                  type='text'
+                  value={imgurTags}
+                  onChange={(e) => setImgurTags(e.target.value)}
+                  className='input-text-for-announcement'
+                />
+
+                {/* Imgur album image upload */}
+                <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                  Upload Images
+                </label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImgurFileChange}
+                  className='input-file-upload'
+                />
+
+                {/* Imgur album image preview */}
+                {imgurFiles.length > 0 && (
+                  <div>
+                    <h4>Preview:</h4>
+                    <ul>
+                      {imgurFiles.map((file, index) => (
+                        <li key={index}>
+                          {file.name}
+                          <button 
+                            type="button"
+                            onClick={() => handleRemoveImgurFile(index)}
+                            className='remove-imgur-file-button'
+                          >
+                            Remove
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
+                {/* schedule post button */}
+                <div className="mb-4">
+                  <label className={`block mb-2 ${darkMode ? 'text-light' : 'text-dark'}`}>
+                    Schedule Post (Optional)
+                  </label>
+                  <input
+                    type="datetime-local"
+                    value={imgurScheduleTime}
+                    onChange={(e) => setImgurScheduleTime(e.target.value)}
+                    min={new Date().toISOString().slice(0, 16)}
+                    max={maxScheduleDate.toISOString().slice(0, 16)}
+                    className="input-text-for-announcement"
+                  />
+                </div>
+
+                {/* post to imgur button */}
+                <button
+                  type="button"
+                  onClick={handlePostToImgur}
+                  disabled={imgurLoading}
+                  className="send-button"
+                  style={darkMode ? boxStyleDark : boxStyle}
+                >
+                  {imgurLoading ? "Posting..." : imgurScheduleTime ? "Schedule Post" : "Posting to Imgur"}
+                </button>
+
+                {/* display scheduled posts */}
+                {scheduledPosts.length > 0 && (
+                  <div className="mt-4">
+                    <h4 className={`mb-2 ${darkMode ? 'text-light' : ''}`}>Scheduled Imgur Posts</h4>
+                    <div className="space-y-2">
+                      {scheduledPosts.map((post) => (
+                        <div 
+                          key={post.jobId} 
+                          className="p-3 rounded"
+                          style={darkMode ? boxStyleDark : boxStyle}
+                        >
+                          <h5 className={`font-medium ${darkMode ? 'text-light' : ''}`}>{post.title}</h5>
+                          <p className={`text-sm ${darkMode ? 'text-gray-300' : 'text-gray-600'}`}>
+                            Subreddit: r/{post.subreddit}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
 
         </div>
         <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
