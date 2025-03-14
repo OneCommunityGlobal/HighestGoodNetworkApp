@@ -30,6 +30,7 @@ import NumbersVolunteerWorked from './NumbersVolunteerWorked/NumbersVolunteerWor
 import AnniversaryCelebrated from './AnniversaryCelebrated/AnniversaryCelebrated';
 import RoleDistributionPieChart from './VolunteerRolesTeamDynamics/RoleDistributionPieChart';
 import WorkDistributionBarChart from './VolunteerRolesTeamDynamics/WorkDistributionBarChart';
+import VolunteerTrendsLineChart from './VolunteerTrendsLineChart/VolunteerTrendsLineChart';
 
 function calculateFromDate() {
   const currentDate = new Date();
@@ -355,7 +356,7 @@ function TotalOrgSummary(props) {
               <div className="chart-title">
                 <p>Volunteer Trends by Time</p>
               </div>
-              <span className="text-center"> Work in progres...</span>
+              <VolunteerTrendsLineChart darkMode={darkMode} />
             </div>
           </Col>
           <Col lg={{ size: 5 }}>
