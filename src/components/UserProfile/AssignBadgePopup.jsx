@@ -67,8 +67,10 @@ function AssignBadgePopup(props) {
   let filteredBadges = filterBadges(badgeList);
 
   const addExistBadges = () => {
-    if (props.userProfile && props.userProfile.badgeCollection) {
-      const existBadges = props.userProfile.badgeCollection.map(badge => `assign-badge-${badge.badge._id}`);
+    if (props.userProfile?.badgeCollection) {
+      const existBadges = props.userProfile.badgeCollection
+      .filter(badge => badge.badge && badge.badge._id)
+      .map(badge => `assign-badge-${badge.badge._id}`);
       return existBadges;
     }
     return [];
