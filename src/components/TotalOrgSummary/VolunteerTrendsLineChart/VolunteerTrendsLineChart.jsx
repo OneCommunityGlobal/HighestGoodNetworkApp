@@ -6,26 +6,40 @@ import axios from 'axios';
 import Loading from 'components/common/Loading';
 
 const formatChartData = rawData => {
-  const integerToMonths = {
-    1: 'Jan',
-    2: 'Feb',
-    3: 'Mar',
-    4: 'Apr',
-    5: 'May',
-    6: 'Jun',
-    7: 'Jul',
-    8: 'Aug',
-    9: 'Sep',
-    10: 'Oct',
-    11: 'Nov',
-    12: 'Dec',
-  };
+  if (rawData[0]._id.month) {
+    // for monthly intervals
+    const integerToMonths = {
+      1: 'Jan',
+      2: 'Feb',
+      3: 'Mar',
+      4: 'Apr',
+      5: 'May',
+      6: 'Jun',
+      7: 'Jul',
+      8: 'Aug',
+      9: 'Sep',
+      10: 'Oct',
+      11: 'Nov',
+      12: 'Dec',
+    };
 
+    return rawData.map(data => {
+      return {
+        xLabel: integerToMonths[data._id.month],
+        totalHours: data.totalHours,
+        year: data._id.year,
+        interval: 'month',
+      };
+    });
+  }
+
+  // for weekly intervals
   return rawData.map(data => {
     return {
-      xLabel: integerToMonths[data._id.month],
+      xLabel: data._id.week,
       totalHours: data.totalHours,
       year: data._id.year,
+      interval: 'week',
     };
   });
 };
