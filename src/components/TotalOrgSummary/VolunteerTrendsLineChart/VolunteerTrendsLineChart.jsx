@@ -1,18 +1,60 @@
 import { LineChart, Line, CartesianGrid, XAxis, YAxis, Tooltip } from 'recharts';
 import './styles.css';
 import { useEffect, useState } from 'react';
+import { ENDPOINTS } from 'utils/URL';
+import axios from 'axios';
+import Loading from 'components/common/Loading';
 
-const testData = [
-  { xLabel: 'Jan', totalVolunteers: 100 },
-  { xLabel: 'Feb', totalVolunteers: 500 },
-  { xLabel: 'Mar', totalVolunteers: 300 },
-  { xLabel: 'Apr', totalVolunteers: 1000 },
-];
+const formatChartData = rawData => {
+  const integerToMonths = {
+    1: 'Jan',
+    2: 'Feb',
+    3: 'Mar',
+    4: 'Apr',
+    5: 'May',
+    6: 'Jun',
+    7: 'Jul',
+    8: 'Aug',
+    9: 'Sep',
+    10: 'Oct',
+    11: 'Nov',
+    12: 'Dec',
+  };
+
+  return rawData.map(data => {
+    return {
+      xLabel: integerToMonths[data._id.month],
+      totalHours: data.totalHours,
+      year: data._id.year,
+    };
+  });
+};
 
 export default function VolunteerTrendsLineChart(props) {
   const { darkMode } = props;
-  const latestNumberOfVolunteers = testData[testData.length - 1].totalVolunteers;
+  const [isLoading, setIsLoading] = useState(true);
+  const [data, setData] = useState(null);
+  const [fetchError, setFetchError] = useState(false);
+  const latestNumberOfHours = data?.[data.length - 1].totalHours || 0;
   const [chartSize, setChartSize] = useState({ width: null, height: null });
+
+  useEffect(() => {
+    // Gets backend data
+    const getData = async () => {
+      try {
+        const url = ENDPOINTS.VOLUNTEER_TRENDS(5, 'month');
+        // TODO: NEED TO ABSTRACT THIS TO ITS OWN REDUX REDUCER
+        const response = await axios.get(url);
+        const rawData = formatChartData(response.data);
+        setData(rawData);
+      } catch (err) {
+        setFetchError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    getData();
+  }, []);
 
   useEffect(() => {
     // Add event listener to set chart width on window resize
@@ -24,7 +66,7 @@ export default function VolunteerTrendsLineChart(props) {
         // Mobile
         width = 400;
         height = 250;
-      } else if (window.innerWidth < 1100) {
+      } else if (window.innerWidth < 1200) {
         // Tablet
         width = 500;
       }
@@ -44,11 +86,11 @@ export default function VolunteerTrendsLineChart(props) {
 
   const renderCustomDot = ({ cx, cy, index }) => {
     // Highlight and show value of last dot on the line
-    const isLastPoint = index === testData.length - 1;
-    const formattedNumber = formatNumber(latestNumberOfVolunteers);
+    const isLastPoint = index === data.length - 1;
+    const formattedNumber = formatNumber(latestNumberOfHours);
     if (isLastPoint) {
       return (
-        <>
+        <g key={index}>
           <circle cx={cx} cy={cy} r={24} opacity="0.1" fill={darkMode ? 'white' : 'black'} />
           <circle cx={cx} cy={cy} r={6} fill={darkMode ? 'white' : 'black'} />
           <text
@@ -61,7 +103,7 @@ export default function VolunteerTrendsLineChart(props) {
           >
             {formattedNumber}
           </text>
-        </>
+        </g>
       );
     }
     return null;
@@ -78,20 +120,36 @@ export default function VolunteerTrendsLineChart(props) {
             padding: '10px',
           }}
         >
-          <h6 style={{ color: 'black' }}>{label}</h6>
-          <h6 style={{ color: '#328D1B' }}>{payload[0].value} volunteers</h6>
+          <h6 style={{ color: 'black' }}>
+            {label} {payload[0].payload.year}
+          </h6>
+          <h6 style={{ color: '#328D1B' }}>{payload[0].value} hours</h6>
         </div>
       );
     }
     return null;
   };
 
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
+  }
+
+  if (fetchError) {
+    return <div>Error fetching data!</div>;
+  }
+
   return (
     <div className="chart-container">
       <LineChart
         width={chartSize.width}
         height={chartSize.height}
-        data={testData}
+        data={data}
         margin={{ right: 50, top: 50, left: 20 }}
       >
         <CartesianGrid stroke="#ccc" vertical={false} />
@@ -112,12 +170,12 @@ export default function VolunteerTrendsLineChart(props) {
             position: 'insideLeft',
             dy: 20,
             dx: -10,
-            style: { fontSize: 18 },
+            style: { fontSize: 18, fill: darkMode ? '#ccc' : undefined },
           }}
         />
         <Line
           type="linear"
-          dataKey="totalVolunteers"
+          dataKey="totalHours"
           stroke="#328D1B"
           strokeWidth={4}
           dot={renderCustomDot}
