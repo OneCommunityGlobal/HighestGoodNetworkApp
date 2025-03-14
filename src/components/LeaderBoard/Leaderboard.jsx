@@ -114,7 +114,9 @@ function LeaderBoard({
 
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
-
+  const darkModeStyle = darkMode
+    ? { backgroundColor: '#3a506b', color: 'white' }
+    : { backgroundColor: '#f0f8ff', color: 'black' };
   useEffect(() => {
     const fetchInitial = async () => {
       const url = ENDPOINTS.USER_PROFILE(displayUserId);
@@ -446,9 +448,9 @@ function LeaderBoard({
 
                     {teams.map(team => {
                       return (
-                        <div>
+                        <div key={team._id}>
                        { team._id !== 1?
-                       <DropdownItem key={team._id} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                       <DropdownItem key={`dropdown-${team._id}`} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
                         onClick={() => TeamSelected(team)}
                        >
                         <ul
@@ -541,11 +543,11 @@ function LeaderBoard({
           }`}
         >
           <thead className="responsive-font-size">
-            <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th data-abbr="Stat.">
+            <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
+              <th data-abbr="Stat." style={darkModeStyle}>
                 <span>Status</span>
               </th>
-              <th data-abbr="Name">
+              <th data-abbr="Name" style={darkModeStyle}>
                 <div className="d-flex align-items-center">
                   <span>Name</span>
                   <EditableInfoModal
@@ -559,19 +561,26 @@ function LeaderBoard({
                   />
                 </div>
               </th>
-              <th data-abbr="Days Lft.">
+              <th data-abbr="Days Lft." style={darkModeStyle}>
                 <span>Days Left</span>
               </th>
-              <th data-abbr="Time Off">
+              <th data-abbr="Time Off" style={darkModeStyle}>
                 <span>Time Off</span>
               </th>
-              <th data-abbr="Tan. Time">
+              <th data-abbr="Tan. Time" style={darkModeStyle}>
                 <span>Tangible Time</span>
               </th>
-              <th data-abbr="Prog.">
+              <th data-abbr="Prog." style={darkModeStyle}>
                 <span>Progress</span>
               </th>
-              <th data-abbr="Tot. Time" style={{ textAlign: 'right' }}>
+              <th
+                data-abbr="Tot. Time"
+                style={
+                  darkMode
+                    ? { backgroundColor: '#3a506b', color: 'white', textAlign: 'right' }
+                    : { backgroundColor: '#f0f8ff', color: 'black', textAlign: 'right' }
+                }
+              >
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ textAlign: 'left' }}>
                     <span>Total Time</span>
@@ -585,9 +594,9 @@ function LeaderBoard({
           </thead>
 
           <tbody className="my-custome-scrollbar responsive-font-size">
-            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
               <td aria-label="Placeholder" />
-              <th scope="row" className="leaderboard-totals-container">
+              <td className={`leaderboard-totals-container `}>
                 <span>{stateOrganizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
                   <span className="leaderboard-totals-title">
@@ -595,7 +604,7 @@ function LeaderBoard({
                     {filteredUsers.filter(user => user.weeklycommittedHours === 0).length} Members
                   </span>
                 )}
-              </th>
+              </td>
               <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
                 <span title="Tangible time">
@@ -623,6 +632,7 @@ function LeaderBoard({
                   of {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
                 </span>
               </td>
+              <td aria-label="Placeholder" />
             </tr>
             {filteredUsers.map(item => {
               const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
@@ -630,7 +640,10 @@ function LeaderBoard({
               );
 
               return (
-                <tr key={item.personId}>
+                <tr
+                  key={item.personId}
+                  className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
+                >
                   <td className="align-middle">
                     <div>
                       <Modal
@@ -733,7 +746,7 @@ function LeaderBoard({
                     </div>
                     {/* </Link> */}
                   </td>
-                  <th scope="row" className="align-middle">
+                  <td className="align-middle">
                     <Link
                       to={`/userprofile/${item.personId}`}
                       title="View Profile"
@@ -771,7 +784,7 @@ function LeaderBoard({
                         <ReactTooltip place="top" type="dark" effect="solid" />
                       </span>
                     )}
-                  </th>
+                  </td>
                   <td className="align-middle">
                     <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
                       {displayDaysLeft(item.endDate)}

@@ -16,7 +16,6 @@ thead {
 #user-management-table {
   width: calc(100vw - 45px);
 }
-
 #usermanagement_order {
   width: 5px;
 }
@@ -104,9 +103,11 @@ thead {
 
 .email_cell {
   position: relative;
-
 }
 
+.email_cell a:hover{
+  text-decoration: none;
+}
 .title_cell {
   width: 180px;
   min-width: 180px;
@@ -126,6 +127,10 @@ td#usermanagement_role {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+#user_role{
+  max-width: initial;
 }
 
 .copy_icon {
@@ -387,4 +392,21 @@ td {
 
 .custom-toast-progress {
   background-color: white;
+}
+
+
+.dark-usermanagement-data{
+  background-color: #3a506b;
+}
+
+.dark-usermanagement-data:hover{
+  background-color: #111831;
+}
+
+.light-usermanagement-data{
+  background-color: white;
+}
+
+.light-usermanagement-data:hover{
+  background-color: #f0f8ff;
 }
