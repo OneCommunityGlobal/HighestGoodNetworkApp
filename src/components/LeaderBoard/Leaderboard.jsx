@@ -586,9 +586,9 @@ function LeaderBoard({
           </thead>
 
           <tbody className="my-custome-scrollbar responsive-font-size">
-            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
+            <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
               <td aria-label="Placeholder" />
-              <th scope="row" className="leaderboard-totals-container" style={darkMode ? {backgroundColor:"#3a506b", color:"white"}: {backgroundColor:"white", color:"black"}}>
+              <td  className={`leaderboard-totals-container `} >
                 <span>{stateOrganizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
                   <span className="leaderboard-totals-title">
@@ -596,7 +596,7 @@ function LeaderBoard({
                     {filteredUsers.filter(user => user.weeklycommittedHours === 0).length} Members
                   </span>
                 )}
-              </th>
+              </td>
               <td className="align-middle" aria-label="Description" />
               <td className="align-middle">
                 <span title="Tangible time">
@@ -616,7 +616,7 @@ function LeaderBoard({
                   color="primary"
                 />
               </td>
-              <td className="align-middle" style={darkMode ? {backgroundColor:"#3a506b", color:"white"}: {backgroundColor:"white", color:"black"}}>
+              <td className="align-middle">
                 <span title="Tangible + Intangible time = Total time">
                   {filteredUsers
                     .reduce((total, user) => total + parseFloat(user.totaltime), 0)
@@ -624,6 +624,7 @@ function LeaderBoard({
                   of {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
                 </span>
               </td>
+              <td aria-label="Placeholder" />
             </tr>
             {filteredUsers.map(item => {
               const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
