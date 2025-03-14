@@ -134,8 +134,18 @@ export const getAllUserTeams = () => {
 /**
  * posting new team
  */
-export const postNewTeam = (name, status, source) => {
-  const data = { teamName: name, isActive: status };
+export const postNewTeam = (name, status, source, requestorUser, teamCode) => {
+  const data = { 
+    teamName: name, 
+    isActive: status,
+    teamCode: teamCode || "" // Include team code in initial creation
+  };
+
+  if (requestorUser) {
+    data.requestor = requestorUser;
+  }
+
+  console.log('Posting new team with data:', data);
 
   const config = source ? { cancelToken: source.token } : {};
 
@@ -143,10 +153,15 @@ export const postNewTeam = (name, status, source) => {
   return dispatch => {
     return teamCreationPromise
       .then(res => {
+        console.log('Team creation success response:', res);
         dispatch(addNewTeam(res.data, true));
         return res; // return the server response
       })
       .catch(error => {
+        console.error('Team creation error:', error);
+        console.error('Error response data:', error.response?.data);
+        console.error('Error response status:', error.response?.status);
+        
         if (error.response) {
           return error.response; // return the server response
         } else if (error.request) {
@@ -161,15 +176,20 @@ export const postNewTeam = (name, status, source) => {
 /**
  * delete an existing team
  * @param {*} teamId  - the team to be deleted
+ * @param {*} requestorUser - the user making the request
  */
-export const deleteTeam = teamId => {
+export const deleteTeam = (teamId, requestorUser) => {
   const url = ENDPOINTS.TEAM_DATA(teamId);
   return async dispatch => {
     try {
-      const deleteTeamResponse = await axios.delete(url);
+      // For DELETE requests with a body, we need to use axios with a config object
+      const deleteTeamResponse = await axios.delete(url, {
+        data: { requestor: requestorUser }
+      });
       dispatch(teamsDeleteAction(teamId));
       return deleteTeamResponse;
     } catch (error) {
+      console.error('Delete team error:', error);
       return error.response.data.error;
     }
   };
@@ -227,13 +247,32 @@ export const deleteTeamMember = (teamId, userId) => {
 /**
  * Adding an existing user to team
  */
-export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime) => {
-  const requestData = { userId, operation: 'Assign' };
+export const addTeamMember = (teamId, userId, firstName, lastName, role, addDateTime, requestorUser) => {
+  const requestData = { 
+    userId, 
+    operation: 'Assign'
+  };
+  
+  // Add requestor information if available
+  if (requestorUser) {
+    requestData.requestor = requestorUser;
+  }
+  
+  console.log(`Adding member ${firstName} ${lastName} to team ${teamId}`, requestData);
+  console.log('addTeamMember requestData:', requestData);
+  
   const teamMemberAddPromise = axios.post(ENDPOINTS.TEAM_USERS(teamId), requestData);
   return async dispatch => {
-    teamMemberAddPromise.then(res => {
-      dispatch(teamMemberAddAction(res.data.newMember));
-    });
+    try {
+      const response = await teamMemberAddPromise;
+      console.log("Team member add response:", response);
+      dispatch(teamMemberAddAction(response.data.newMember));
+      return response.data;
+    } catch (error) {
+      console.error("Error adding team member:", error);
+      console.error("Error response data:", error.response?.data);
+      throw error;
+    }
   };
 };
 
