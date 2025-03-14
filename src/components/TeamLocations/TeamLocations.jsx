@@ -46,6 +46,59 @@ function TeamLocations() {
   const mapRef = useRef(null);
   const [currentUser, setCurrentUser] = useState(null);
 
+  const randomLocationOffset = c => {
+    const randomOffset = (Math.random() - 0.5) * 2 * 0.05;
+    const newLongitude = Number(c) + randomOffset;
+
+    const modifiedLongitude = Number(newLongitude.toFixed(7));
+    return modifiedLongitude;
+  };
+
+  const handleFlyTo = (latitude, longitude) => {
+    mapRef?.current.flyTo([latitude, longitude], 13, {
+      animate: true,
+      duration: 3.0,
+    });
+  };
+
+  useEffect(() => {
+    async function getUserProfiles() {
+      try {
+        const locations = (await axios.get(ENDPOINTS.ALL_MAP_LOCATIONS())).data;
+        const users = locations.users.map(item => ({ ...item, type: 'user' })) || [];
+        const mUsers = locations.mUsers.map(item => ({ ...item, type: 'm_user' })) || [];
+
+        setUserProfiles(users);
+        setManuallyAddedProfiles(mUsers);
+        const allMapMarkers = [...users, ...mUsers];
+        const allMapMarkersOffset = allMapMarkers.map(ele => ({
+          ...ele,
+          location: {
+            ...ele.location,
+            coords: {
+              ...ele.location.coords,
+              lat: randomLocationOffset(ele.location.coords.lat),
+              lng: randomLocationOffset(ele.location.coords.lng),
+            },
+          },
+        }));
+        setMapMarkers(allMapMarkersOffset);
+        setLoading(false); // Set loading to false after data is loaded
+      } catch (error) {
+        toast.error(error.message);
+        setLoading(false); // Set loading to false if there's an error
+      }
+    }
+    getUserProfiles();
+  }, []);
+
+  useEffect(() => {
+    const coords = currentUser?.location.coords;
+    if (coords) {
+      handleFlyTo(coords.lat, coords.lng);
+    }
+  }, [currentUser]);
+
   // We don't need the back to top button on this page
   useEffect(() => {
     const backToTopButton = document.querySelector('.top');
@@ -89,14 +142,6 @@ function TeamLocations() {
     } else if (addNewIsOpen) {
       setAddNewIsOpen(false);
     }
-  };
-
-  const randomLocationOffset = c => {
-    const randomOffset = (Math.random() - 0.5) * 2 * 0.05;
-    const newLongitude = Number(c) + randomOffset;
-
-    const modifiedLongitude = Number(newLongitude.toFixed(7));
-    return modifiedLongitude;
   };
 
   useEffect(() => {
@@ -166,14 +211,6 @@ function TeamLocations() {
   if (searchText) {
     dropdown = true;
   }
-
-  const handleFlyTo = (latitude, longitude) => {
-    mapRef?.current.flyTo([latitude, longitude], 13, {
-      animate: true,
-      duration: 3.0,
-    });
-  };
-
   useEffect(() => {
     const coords = currentUser?.location.coords;
     if (coords) {
