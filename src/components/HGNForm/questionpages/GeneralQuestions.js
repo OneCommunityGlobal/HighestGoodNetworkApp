@@ -6,7 +6,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { setformData } from 'actions/hgnFormAction';
-import { ENDPOINTS } from '../../utils/URL';
+import { ENDPOINTS } from '../../../utils/URL';
 
 function GeneralQuestions() {
   const navigate = useHistory();

@@ -11,8 +11,7 @@
 .info-form-container label {
   text-align: left;
   color:black;
-  /* margin-right:100%; */
-  /* display: block; */
+  
   margin-right:88%;
   margin-left: 10px;
   margin-top: 20px;
@@ -44,7 +43,7 @@
   margin:10px;
 }
 
-button {
+.button-container button {
   padding: 10px 20px;
   border-radius: 10px;
   cursor: pointer;
@@ -55,8 +54,8 @@ button {
 }
 
 .hgn-return-button {
-  background-color: white;
-  color: #2e5163;
+  color: white;
+  background-color:#2e5163 ;
   border-radius: 10px;
   width: 20%;
   margin-left:0;
@@ -64,33 +63,34 @@ button {
 
 .hgn-return-button:hover {
   background-color:#4e748d;
-  color: white;
+  border-color: #4e748d ;
 }
 
 .next-button {
   background-color: #2e5163;
-  color: white;
   border-radius: 10px;
   width: 20%;
-  
+}
+
+.next-button:hover {
+  background-color: #4e748d;
+  border-color: #4e748d;
 }
 
 .edit-button {
   background-color: #2e5163;
-  color: white;
   margin-left: 10px;
 }
 
 .submit-button {
   background-color: #081437;
-  color: white;
   transition: all 0.3s ease;
   border-radius: 10px;
 }
 
 .submit-button:hover {
   background-color: #21618a;
-  color: white;
+  /* color: white; */
 }
 
 @media (max-width: 768px) {
@@ -102,7 +102,7 @@ button {
     width: 80%;
   }
 
-  button {
+  .button-container button {
     padding: 8px 16px;
     font-size: small;
     width: 40%;
@@ -119,7 +119,7 @@ button {
     width: 90%;
   }
 
-  button {
+  .button-container button {
     padding: 6px 12px;
     font-size: x-small;
     width: 45%;

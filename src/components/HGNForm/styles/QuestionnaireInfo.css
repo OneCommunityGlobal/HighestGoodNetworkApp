@@ -52,7 +52,8 @@
   margin: 30px;
 }
 
-/* Responsive styles */
+
+
 @media (max-width: 768px) {
   .questionnaire-info {
     width: 80%;

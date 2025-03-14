@@ -1,10 +1,10 @@
-.progress-container {
+.progress-hgn-container {
   width: 25%;
   margin: 0 auto;
   text-align: center;
 }
 
-.progress-bar {
+.progress-hgn-bar {
   width: 100%;
   background-color: #363940;
   border-radius: 25px;
@@ -12,7 +12,7 @@
   margin: 10px 0;
 }
 
-.progress {
+.progress-hgn {
   height: 10px;
   background-color: #1c8cc3;
   border-radius: 10px;
