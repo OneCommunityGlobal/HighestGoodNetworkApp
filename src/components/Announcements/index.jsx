@@ -7,6 +7,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { ENDPOINTS } from '../../utils/URL';
+const APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://highestgoodnetwork.netlify.app';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -210,24 +211,21 @@ function Announcements({ title, email }) {
       })
       .catch((error) => {
         console.error("Error loading Facebook SDK:", error);
-      });* */
+      }); */
   }, []);
 
   const handleFacebookLogin = () => {
     window.FB.login(
       response => {
         if (response.authResponse) {
-          // const { accessToken } = response.authResponse;
-          // setAccessToken(accessToken);
           setAccessToken(response.authResponse.accessToken);
-          // console.log('User Access Token:', accessToken);
         } else {
           toast.error('User cancelled the login or did not fully authorize.');
         }
       },
       {
         scope: 'public_profile,email,pages_show_list,pages_manage_posts',
-        redirect_uri: 'https://localhost:3000/auth/facebook/callback',
+        redirect_uri: `${APIEndpoint}/auth/facebook/callback`,
       },
     ); // Adjust permissions as needed
   };
