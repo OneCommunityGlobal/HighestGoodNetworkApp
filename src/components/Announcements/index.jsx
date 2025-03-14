@@ -6,8 +6,6 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-const APIEndpoint =
-  process.env.REACT_APP_APIENDPOINT || 'https://highestgoodnetwork.netlify.app';
 import { ENDPOINTS } from '../../utils/URL';
 
 function Announcements({ title, email }) {
@@ -190,9 +188,9 @@ function Announcements({ title, email }) {
 
 
       script.onload = () => {
-        window.fbAsyncInit = function () {
+        window.fbAsyncInit = function() {
           window.FB.init({
-            appId: '1335318524566163',  // Replace with required Facebook App ID
+            appId: '1335318524566163',// Replace with required Facebook App ID
             cookie: true,
             xfbml: true,
             version: 'v15.0',
@@ -200,7 +198,7 @@ function Announcements({ title, email }) {
           resolve(window.FB);
         };
       };
-      script.onerror = (error) => {
+      script.onerror = error => {
         reject(error);
       };
       document.head.appendChild(script);
@@ -209,22 +207,27 @@ function Announcements({ title, email }) {
 
   useEffect(() => {
     loadFacebookSDK()
-      .then(FB => {
-       // toast.log('Facebook SDK Loaded', FB);
+    /**   .then(FB => {
+        console.log("Facebook SDK Loaded", FB);
       })
-      .catch(error => {
-        toast.error('Error loading Facebook SDK:', error);
-      });
+      .catch((error) => {
+        console.error("Error loading Facebook SDK:", error);
+      });**/
   }, [])
+
   const handleFacebookLogin = () => {
     window.FB.login(response => {
-      if (response.authResponse) {
-        const { accessToken } = response.authResponse;
-        setAccessToken(accessToken);
-      } else {
+        if (response.authResponse) {
+          const { accessToken } = response.authResponse;
+          setAccessToken(accessToken);
+        //console.log('User Access Token:', accessToken);
+        } else {
         toast.error('User cancelled the login or did not fully authorize.');
-      }
-    }, { scope: 'public_profile,email,pages_show_list,pages_manage_posts', redirect_uri: '${APIEndpoint}/auth/facebook/callback' });  // Adjust permissions as needed
+        }
+    }, { 
+      scope: 'public_profile,email,pages_show_list,pages_manage_posts', 
+      redirect_uri: 'https://localhost:3000/auth/facebook/callback' 
+    });  // Adjust permissions as needed
   };
 
   const handleCreateFbPost = async () => {
@@ -336,9 +339,7 @@ function Announcements({ title, email }) {
       </div>
       <div className="social-media-container">
         <div className="social-media">
-          {title ? (
-            <h3>{title}</h3>
-          ) : (
+          {title ? ( <h3>{title}</h3>) : (
             <h3>Social Media Post</h3>
           )}
 
@@ -366,10 +367,8 @@ function Announcements({ title, email }) {
               >
                 Post on Facebook
               </button>
-
             </div>
           )}
-
         </div>
       </div>
     </div>
