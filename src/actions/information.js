@@ -11,7 +11,7 @@ export const getInfoCollections = () => {
       dispatch(fetchInfosSuccess(response.data));
       return response.status;
     } catch (error) {
-      console.error(error);
+      return error.response ? error.response.data.error : 'An unexpected error occurred';
     }
   };
 };
@@ -24,7 +24,7 @@ export const addInfoCollection = newInfo => {
       const response = await axios.post(url, newInfo);
       return response.status;
     } catch (error) {
-      console.error(error);
+      return error.response ? error.response.data.error : 'An unexpected error occurred';
     }
   };
 };
@@ -38,7 +38,7 @@ export const updateInfoCollection = (infoId, updatedInfo) => {
       dispatch(updateInfoSuccess(response.data));
       return response.status;
     } catch (error) {
-      console.error(error);
+      return error.response ? error.response.data.error : 'An unexpected error occurred';
     }
   };
 };
@@ -52,7 +52,7 @@ export const deleteInfoCollectionById = infoId => {
       dispatch(deleteInfoSuccess(infoId));
       return response.status;
     } catch (error) {
-      console.error(error);
+      return error.response ? error.response.data.error : 'An unexpected error occurred';
     }
   };
 };
