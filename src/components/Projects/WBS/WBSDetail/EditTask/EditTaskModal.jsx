@@ -474,7 +474,7 @@ function EditTaskModal(props) {
                         min="0"
                         max="500"
                         value={hoursBest}
-                        onChange={e => setHoursBest(e.target.value)}
+                        onChange={e => setHoursBest(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate()}
                         id="bestCase"
                         className="m-auto"
@@ -500,7 +500,7 @@ function EditTaskModal(props) {
                         min={hoursBest}
                         max="500"
                         value={hoursWorst}
-                        onChange={e => setHoursWorst(e.target.value)}
+                        onChange={e => setHoursWorst(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursWorst')}
                         className="m-auto"
                       />,
@@ -525,7 +525,7 @@ function EditTaskModal(props) {
                         min="0"
                         max="500"
                         value={hoursMost}
-                        onChange={e => setHoursMost(e.target.value)}
+                        onChange={e => setHoursMost(Math.abs(e.target.value))}
                         onBlur={() => calHoursEstimate('hoursMost')}
                         className="m-auto"
                       />,
@@ -550,7 +550,7 @@ function EditTaskModal(props) {
                         min="0"
                         max="500"
                         value={hoursEstimate}
-                        onChange={e => setHoursEstimate(e.target.value)}
+                        onChange={e => setHoursEstimate(Math.abs(e.target.value))}
                         className="m-auto"
                       />,
                       editable,
