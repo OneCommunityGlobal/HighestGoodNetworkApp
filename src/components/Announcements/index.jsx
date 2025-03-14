@@ -202,10 +202,11 @@ function Announcements({ title, email }) {
             title ? (
               <p>Email</p>
             ) : (
-
+              
               <label htmlFor="email-list-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                Email List (comma-separated):
+                Email List (comma-separated){<span className="red-asterisk">* </span>}:
               </label>
+              
             )
           }
           <input type="text" value={emailTo} id="email-list-input" onChange={handleEmailListChange} className='input-text-for-announcement' />

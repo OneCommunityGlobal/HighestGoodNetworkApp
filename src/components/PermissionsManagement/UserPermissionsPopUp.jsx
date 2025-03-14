@@ -136,7 +136,9 @@ function UserPermissionsPopUp({
           className={darkMode ? 'text-space-cadet' : ''}
           style={{ display: 'flex', justifyContent: 'space-between', paddingBottom: '5px' }}
         >
-          <h4 className="user-permissions-pop-up__title">User name:</h4>
+          <h4 className="user-permissions-pop-up__title">
+            User name<span className="red-asterisk">* </span>:
+          </h4>
           <Button
             type="button"
             color="success"

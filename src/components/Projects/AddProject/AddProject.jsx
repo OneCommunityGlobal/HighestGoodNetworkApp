@@ -188,7 +188,8 @@ const AddProject = (props) => {
         </ModalHeader>
         <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
           <div className="form-group">
-            <label htmlFor="projectName" className={darkMode ? "text-light":" "}>Project Name (required)</label>
+            <label htmlFor="projectName" className={darkMode ? "text-light":" "}>Project Name</label>
+            <span className="red-asterisk">* </span>
             <input
               type="text"
               className="form-control"
