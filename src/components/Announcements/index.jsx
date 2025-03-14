@@ -217,8 +217,9 @@ function Announcements({ title, email }) {
     window.FB.login(
       response => {
         if (response.authResponse) {
-          const { accessToken } = response.authResponse;
-          setAccessToken(accessToken);
+          // const { accessToken } = response.authResponse;
+          // setAccessToken(accessToken);
+          setAccessToken(response.authResponse.accessToken);
           // console.log('User Access Token:', accessToken);
         } else {
           toast.error('User cancelled the login or did not fully authorize.');
@@ -237,9 +238,9 @@ function Announcements({ title, email }) {
       return;
     }
     const EmailContent = emailContent;
-    let response;
     try {
-      response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
+      // response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
+      await axios.post(ENDPOINTS.CREATE_FB_POST(), {
         emailContent: EmailContent,
         accessToken,
       });
