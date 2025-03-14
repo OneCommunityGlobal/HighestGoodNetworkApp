@@ -1,3 +1,4 @@
+import axios from 'axios';
 import { useState, useEffect, useRef } from 'react';
 import './Announcements.css';
 import { useDispatch, useSelector } from 'react-redux';
@@ -5,7 +6,8 @@ import { Editor } from '@tinymce/tinymce-react'; // Import Editor from TinyMCE
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
-import axios from 'axios';
+const APIEndpoint =
+  process.env.REACT_APP_APIENDPOINT || 'https://highestgoodnetwork.netlify.app';
 import { ENDPOINTS } from '../../utils/URL';
 
 function Announcements({ title, email }) {
@@ -181,10 +183,10 @@ function Announcements({ title, email }) {
         return;
       }
       const script = document.createElement('script');
-      script.src = "https://connect.facebook.net/en_US/sdk.js";
+      script.src = 'https://connect.facebook.net/en_US/sdk.js';
       script.async = true;
       script.defer = true;
-      script.crossOrigin = "anonymous";
+      script.crossOrigin = 'anonymous';
 
 
       script.onload = () => {
@@ -207,24 +209,22 @@ function Announcements({ title, email }) {
 
   useEffect(() => {
     loadFacebookSDK()
-      .then((FB) => {
-        console.log("Facebook SDK Loaded", FB);
+      .then(FB => {
+       // toast.log('Facebook SDK Loaded', FB);
       })
-      .catch((error) => {
-        console.error("Error loading Facebook SDK:", error);
+      .catch(error => {
+        toast.error('Error loading Facebook SDK:', error);
       });
   }, [])
-
   const handleFacebookLogin = () => {
     window.FB.login(response => {
       if (response.authResponse) {
         const { accessToken } = response.authResponse;
         setAccessToken(accessToken);
-        console.log('User Access Token:', accessToken);
       } else {
-        console.error('User cancelled the login or did not fully authorize.');
+        toast.error('User cancelled the login or did not fully authorize.');
       }
-    }, { scope: 'public_profile,email,pages_show_list,pages_manage_posts', redirect_uri: 'https://localhost:3000/auth/facebook/callback' });  // Adjust permissions as needed
+    }, { scope: 'public_profile,email,pages_show_list,pages_manage_posts', redirect_uri: '${APIEndpoint}/auth/facebook/callback' });  // Adjust permissions as needed
   };
 
   const handleCreateFbPost = async () => {
@@ -238,10 +238,8 @@ function Announcements({ title, email }) {
         emailContent: EmailContent,
         accessToken: accessToken,
       });
-      console.log('response', response.data)
       toast.success('Post successfully created on Facebook!');
     } catch (error) {
-      console.error('Error posting to Facebook:', error);
       toast.error('Failed to create post on Facebook');
     }
   };
