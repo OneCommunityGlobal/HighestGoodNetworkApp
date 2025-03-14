@@ -201,7 +201,7 @@ function BadgeSummaryViz({ authId, userId, badges, dashboard }) {
                             )}
                           </td>
                           // ... rest of the code
-                          <UncontrolledPopover trigger="hover" target={`popover_${value._id}`}>
+                          <UncontrolledPopover trigger="hover" target={`popover_${value.badge._id}`}>
                             <Card className="text-center">
                               <CardImg className="badge_image_lg" src={value?.badge?.imageUrl} />
                               <CardBody>
