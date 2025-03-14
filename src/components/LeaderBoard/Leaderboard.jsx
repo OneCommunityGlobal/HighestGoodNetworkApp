@@ -671,25 +671,80 @@ function LeaderBoard({
                         </ModalFooter>
                       </Modal>
                     </div>
-                  </th>
-                  <th>Days Left</th>
-                  <th>Time Off</th>
-                  <th>
-                    <span className="d-sm-none">Tan. Time</span>
-                    <span className="d-none d-sm-block">Tangible Time</span>
-                  </th>
-                  <th>Progress</th>
-
-                  <th style={{ textAlign: 'right' }}>
-                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                      <div style={{ textAlign: 'left' }}>
-                        <span className="d-sm-none">Tot. Time</span>
-                        <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>
-                          Total Time{' '}
-                        </span>
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: hasSummaryIndicatorPermission
+                          ? 'space-between'
+                          : 'center',
+                      }}
+                    >
+                      {/* <Link to={`/dashboard/${item.personId}`}> */}
+                      <div
+                        role="button"
+                        tabIndex={0}
+                        onClick={() => {
+                          dashboardToggle(item);
+                        }}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter') {
+                            dashboardToggle(item);
+                          }
+                        }}
+                      >
+                        {hasLeaderboardPermissions(item.role) &&
+                        showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                          <i
+                            className="fa fa-star"
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
+                              item.role === 'Core Team' && item.missedHours > 0
+                                ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                : ''
+                            } \n Click to view their Dashboard`}
+                            style={{
+                              color: assignStarDotColors(
+                                item.tangibletime,
+                                item.weeklycommittedHours + item.missedHours,
+                              ),
+                              fontSize: '20px',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                            }}
+                          />
+                        ) : (
+                          <div
+                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
+                              item.role === 'Core Team' && item.missedHours > 0
+                                ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                : ''
+                            } \n Click to view their Dashboard`}
+                            style={{
+                              backgroundColor:
+                                item.tangibletime >=
+                                item.weeklycommittedHours + item.missedHours
+                                  ? '#32CD32'
+                                  : 'red',
+                              width: 15,
+                              height: 15,
+                              borderRadius: 7.5,
+                              margin: 'auto',
+                              verticalAlign: 'middle',
+                            }}
+                          />
+                        )}
                       </div>
-                      {isOwner && (
-                        <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
+                      {hasSummaryIndicatorPermission && item.hasSummary && (
+                        <div
+                          title="Weekly Summary Submitted"
+                          style={{
+                            color: '#32a518',
+                            cursor: 'default',
+                          }}
+                        >
+                          <strong>✓</strong>
+                        </div>
                       )}
                     </div>
                     {/* </Link> */}
@@ -734,270 +789,86 @@ function LeaderBoard({
                     )}
                   </td>
                   <td className="align-middle">
-                    <span title="Tangible time">
-                      {filteredUsers
-                        .reduce((total, user) => total + user.tangibletime, 0)
-                        .toFixed(2)}
+                    <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
+                      {displayDaysLeft(item.endDate)}
                     </span>
                   </td>
-                  <td className="align-middle" aria-label="Description">
-                    <Progress
-                      title={`TangibleEffort: ${filteredUsers
-                        .reduce((total, user) => total + user.tangibletime, 0)
-                        .toFixed(2)} hours`}
-                      value={
-                        (filteredUsers.reduce((total, user) => total + user.tangibletime, 0) /
-                          filteredUsers.reduce(
-                            (total, user) => total + user.weeklycommittedHours,
-                            0,
-                          )) *
-                        100
-                      }
-                      color="primary"
-                    />
+                  <td className="align-middle">
+                    <div
+                      style={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {hasTimeOff && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const data = {
+                              requests: [...allRequests[item.personId]],
+                              name: item.name,
+                              leaderboard: true,
+                            };
+                            handleTimeOffModalOpen(data);
+                          }}
+                          style={{ width: '35px', height: 'auto' }}
+                          aria-label="View Time Off Requests"
+                        >
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="22"
+                            height="19"
+                            viewBox="0 0 448 512"
+                            className="show-time-off-calender-svg"
+                          >
+                            <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
+                          </svg>
+
+                          <i className="show-time-off-icon">
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              width="18"
+                              height="18"
+                              viewBox="0 0 512 512"
+                              className="show-time-off-icon-svg"
+                            >
+                              <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+                            </svg>
+                          </i>
+                        </button>
+                      )}
+                    </div>
+                  </td>
+                  <td className="align-middle" id={`id${item.personId}`}>
+                    <span title="Tangible time">{item.tangibletime}</span>
+                  </td>
+                  <td className="align-middle" aria-label="Description or purpose of the cell">
+                    <Link
+                      to={`/timelog/${item.personId}`}
+                      title={`TangibleEffort: ${item.tangibletime} hours`}
+                    >
+                      <Progress value={item.barprogress} color={item.barcolor} />
+                    </Link>
                   </td>
                   <td className="align-middle">
-                    <span title="Tangible + Intangible time = Total time">
-                      {filteredUsers
-                        .reduce((total, user) => total + parseFloat(user.totaltime), 0)
-                        .toFixed(2)}{' '}
-                      of{' '}
-                      {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
+                    <span
+                      title={mouseoverTextValue}
+                      id="Total time"
+                      className={
+                        item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                      }
+                    >
+                      {item.totaltime}
                     </span>
                   </td>
                 </tr>
-                {filteredUsers.map(item => {
-                  const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
-                    item.personId,
-                  );
-
-                  return (
-                    <tr key={item.personId}>
-                      <td className="align-middle">
-                        <div>
-                          <Modal
-                            isOpen={isDashboardOpen === item.personId}
-                            toggle={dashboardToggle}
-                            className={darkMode ? 'text-light dark-mode' : ''}
-                            style={darkMode ? boxStyleDark : {}}
-                          >
-                            <ModalHeader
-                              toggle={dashboardToggle}
-                              className={darkMode ? 'bg-space-cadet' : ''}
-                            >
-                              Jump to personal Dashboard
-                            </ModalHeader>
-                            <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <p>Are you sure you wish to view this {item.name} dashboard?</p>
-                            </ModalBody>
-                            <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                              <Button variant="primary" onClick={() => showDashboard(item)}>
-                                Ok
-                              </Button>{' '}
-                              <Button variant="secondary" onClick={dashboardToggle}>
-                                Cancel
-                              </Button>
-                            </ModalFooter>
-                          </Modal>
-                        </div>
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: hasSummaryIndicatorPermission
-                              ? 'space-between'
-                              : 'center',
-                          }}
-                        >
-                          {/* <Link to={`/dashboard/${item.personId}`}> */}
-                          <div
-                            role="button"
-                            tabIndex={0}
-                            onClick={() => {
-                              dashboardToggle(item);
-                            }}
-                            onKeyDown={e => {
-                              if (e.key === 'Enter') {
-                                dashboardToggle(item);
-                              }
-                            }}
-                          >
-                            {hasLeaderboardPermissions(item.role) &&
-                            showStar(item.tangibletime, item.weeklycommittedHours) ? (
-                              <i
-                                className="fa fa-star"
-                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                                  item.role === 'Core Team' && item.missedHours > 0
-                                    ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                    : ''
-                                } \n Click to view their Dashboard`}
-                                style={{
-                                  color: assignStarDotColors(
-                                    item.tangibletime,
-                                    item.weeklycommittedHours + item.missedHours,
-                                  ),
-                                  fontSize: '20px',
-                                  display: 'flex',
-                                  alignItems: 'center',
-                                  justifyContent: 'center',
-                                }}
-                              />
-                            ) : (
-                              <div
-                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                                  item.role === 'Core Team' && item.missedHours > 0
-                                    ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                    : ''
-                                } \n Click to view their Dashboard`}
-                                style={{
-                                  backgroundColor:
-                                    item.tangibletime >=
-                                    item.weeklycommittedHours + item.missedHours
-                                      ? '#32CD32'
-                                      : 'red',
-                                  width: 15,
-                                  height: 15,
-                                  borderRadius: 7.5,
-                                  margin: 'auto',
-                                  verticalAlign: 'middle',
-                                }}
-                              />
-                            )}
-                          </div>
-                          {hasSummaryIndicatorPermission && item.hasSummary && (
-                            <div
-                              title="Weekly Summary Submitted"
-                              style={{
-                                color: '#32a518',
-                                cursor: 'default',
-                              }}
-                            >
-                              <strong>✓</strong>
-                            </div>
-                          )}
-                        </div>
-                        {/* </Link> */}
-                      </td>
-                      <th scope="row" className="align-middle">
-                        <Link
-                          to={`/userprofile/${item.personId}`}
-                          title="View Profile"
-                          style={{
-                            color: isCurrentlyOff
-                              ? 'rgba(128, 128, 128, 0.5)' // Gray out the name if on time off
-                              : '#007BFF', // Default color
-                          }}
-                        >
-                          {item.name}
-                        </Link>
-                        &nbsp;&nbsp;&nbsp;
-                        {hasVisibilityIconPermission && !item.isVisible && (
-                          <i className="fa fa-eye-slash" title="User is invisible" />
-                        )}
-                        {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
-                          <span
-                            style={{
-                              marginLeft: '20px',
-                              color: '#17a2b8',
-                              fontSize: '15px',
-                              justifyItems: 'center',
-                            }}
-                          >
-                            {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
-                            <i
-                              className="fa fa-info-circle"
-                              style={{ marginLeft: '5px', cursor: 'pointer' }}
-                              data-tip={
-                                isCurrentlyOff
-                                  ? `${additionalWeeks} additional weeks off`
-                                  : `${additionalWeeks} weeks until next time off`
-                              }
-                            />
-                            <ReactTooltip place="top" type="dark" effect="solid" />
-                          </span>
-                        )}
-                      </th>
-                      <td className="align-middle">
-                        <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
-                          {displayDaysLeft(item.endDate)}
-                        </span>
-                      </td>
-                      <td className="align-middle">
-                        <div
-                          style={{
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                          }}
-                        >
-                          {hasTimeOff && (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                const data = {
-                                  requests: [...allRequests[item.personId]],
-                                  name: item.name,
-                                  leaderboard: true,
-                                };
-                                handleTimeOffModalOpen(data);
-                              }}
-                              style={{ width: '35px', height: 'auto' }}
-                              aria-label="View Time Off Requests"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                width="22"
-                                height="19"
-                                viewBox="0 0 448 512"
-                                className="show-time-off-calender-svg"
-                              >
-                                <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
-                              </svg>
-
-                              <i className="show-time-off-icon">
-                                <svg
-                                  xmlns="http://www.w3.org/2000/svg"
-                                  width="18"
-                                  height="18"
-                                  viewBox="0 0 512 512"
-                                  className="show-time-off-icon-svg"
-                                >
-                                  <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
-                                </svg>
-                              </i>
-                            </button>
-                          )}
-                        </div>
-                      </td>
-                      <td className="align-middle" id={`id${item.personId}`}>
-                        <span title="Tangible time">{item.tangibletime}</span>
-                      </td>
-                      <td className="align-middle" aria-label="Description or purpose of the cell">
-                        <Link
-                          to={`/timelog/${item.personId}`}
-                          title={`TangibleEffort: ${item.tangibletime} hours`}
-                        >
-                          <Progress value={item.barprogress} color={item.barcolor} />
-                        </Link>
-                      </td>
-                      <td className="align-middle">
-                        <span
-                          title={mouseoverTextValue}
-                          id="Total time"
-                          className={
-                            item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
-                          }
-                        >
-                          {item.totaltime}
-                        </span>
-                      </td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </Table>
-          </div>
-        </div>
+              );
+            })}
+          </tbody>
+        </Table>
+      </div>
+    </div>
       ) : (
         <div
           className="d-flex justify-content-center align-items-center"
