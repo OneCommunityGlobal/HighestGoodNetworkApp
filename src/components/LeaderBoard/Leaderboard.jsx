@@ -114,7 +114,9 @@ function LeaderBoard({
 
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
-
+  const darkModeStyle = darkMode
+    ? { backgroundColor: '#3a506b', color: 'white' }
+    : { backgroundColor: '#f0f8ff', color: 'black' };
   useEffect(() => {
     const fetchInitial = async () => {
       const url = ENDPOINTS.USER_PROFILE(displayUserId);
@@ -445,9 +447,9 @@ function LeaderBoard({
 
                     {teams.map(team => {
                       return (
-                        <div>
+                        <div key={team._id}>
                        { team._id !== 1?
-                       <DropdownItem key={team._id} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                       <DropdownItem key={`dropdown-${team._id}`} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
                         onClick={() => TeamSelected(team)}
                        >
                         <ul
@@ -503,58 +505,171 @@ function LeaderBoard({
         ))}
       {leaderBoardData.length !== 0 ? (
         <div>
-          {isDisplayAlert && (
-            <Alert color="danger">
-              This team has no members, please add members to this team by clicking{' '}
-              <Link to="/teams">here</Link>.
-            </Alert>
-          )}
+      {isDisplayAlert && (
+        <Alert color="danger">
+          This team has no members, please add members to this team by clicking{' '}
+          <Link to="/teams">here</Link>.
+        </Alert>
+      )}
 
-          {!isVisible && (
-            <Alert color="warning">
-              <div className="d-flex align-items-center">
-                Note: You are currently invisible to the team(s) you are on.{' '}
-                <EditableInfoModal
-                  areaName="LeaderboardInvisibleInfoPoint"
-                  areaTitle="Leaderboard settings"
-                  role={loggedInUser.role}
-                  fontSize={24}
-                  darkMode={darkMode}
-                  isPermissionPage
+      {!isVisible && (
+        <Alert color="warning">
+          <div className="d-flex align-items-center">
+            Note: You are currently invisible to the team(s) you are on.{' '}
+            <EditableInfoModal
+              areaName="LeaderboardInvisibleInfoPoint"
+              areaTitle="Leaderboard settings"
+              role={loggedInUser.role}
+              fontSize={24}
+              darkMode={darkMode}
+              isPermissionPage
+            />
+          </div>
+        </Alert>
+      )}
+      <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+        <div className="search-container mx-1">
+          <input
+            className="form-control col-12 mb-2"
+            type="text"
+            placeholder="Search users..."
+            value={searchInput}
+            onChange={handleSearch}
+          />
+        </div>
+        <Table
+          className={`leaderboard table-fixed ${
+            darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+          }`}
+        >
+          <thead className="responsive-font-size">
+            <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
+              <th data-abbr="Stat." style={darkModeStyle}>
+                <span>Status</span>
+              </th>
+              <th data-abbr="Name" style={darkModeStyle}>
+                <div className="d-flex align-items-center">
+                  <span>Name</span>
+                  <EditableInfoModal
+                    areaName="Leaderboard"
+                    areaTitle="Team Members Navigation"
+                    role={loggedInUser.role}
+                    fontSize={18}
+                    isPermissionPage
+                    darkMode={darkMode}
+                    className="p-2"
+                  />
+                </div>
+              </th>
+              <th data-abbr="Days Lft." style={darkModeStyle}>
+                <span>Days Left</span>
+              </th>
+              <th data-abbr="Time Off" style={darkModeStyle}>
+                <span>Time Off</span>
+              </th>
+              <th data-abbr="Tan. Time" style={darkModeStyle}>
+                <span>Tangible Time</span>
+              </th>
+              <th data-abbr="Prog." style={darkModeStyle}>
+                <span>Progress</span>
+              </th>
+              <th
+                data-abbr="Tot. Time"
+                style={
+                  darkMode
+                    ? { backgroundColor: '#3a506b', color: 'white', textAlign: 'right' }
+                    : { backgroundColor: '#f0f8ff', color: 'black', textAlign: 'right' }
+                }
+              >
+                <div style={{ display: 'flex', alignItems: 'center' }}>
+                  <div style={{ textAlign: 'left' }}>
+                    <span>Total Time</span>
+                  </div>
+                  {isOwner && (
+                    <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
+                  )}
+                </div>
+              </th>
+            </tr>
+          </thead>
+
+          <tbody className="my-custome-scrollbar responsive-font-size">
+            <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
+              <td aria-label="Placeholder" />
+              <td className={`leaderboard-totals-container `}>
+                <span>{stateOrganizationData.name}</span>
+                {viewZeroHouraMembers(loggedInUser.role) && (
+                  <span className="leaderboard-totals-title">
+                    0 hrs Totals:{' '}
+                    {filteredUsers.filter(user => user.weeklycommittedHours === 0).length} Members
+                  </span>
+                )}
+              </td>
+              <td className="align-middle" aria-label="Description" />
+              <td className="align-middle">
+                <span title="Tangible time">
+                  {filteredUsers.reduce((total, user) => total + user.tangibletime, 0).toFixed(2)}
+                </span>
+              </td>
+              <td className="align-middle" aria-label="Description">
+                <Progress
+                  title={`TangibleEffort: ${filteredUsers
+                    .reduce((total, user) => total + user.tangibletime, 0)
+                    .toFixed(2)} hours`}
+                  value={
+                    (filteredUsers.reduce((total, user) => total + user.tangibletime, 0) /
+                      filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)) *
+                    100
+                  }
+                  color="primary"
                 />
-              </div>
-            </Alert>
-          )}
-          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-            <div className="search-container mx-1">
-              <input
-                className="form-control col-12 mb-2"
-                type="text"
-                placeholder="Search users..."
-                value={searchInput}
-                onChange={handleSearch}
-              />
-            </div>
-            <Table
-              className={`leaderboard table-fixed ${
-                darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
-              }`}
-            >
-              <thead className="responsive-font-size">
-                <tr className={darkMode ? 'bg-space-cadet' : ''}>
-                  <th>Status</th>
-                  <th>
-                    <div className="d-flex align-items-center">
-                      <span className="mr-2">Name</span>
-                      <EditableInfoModal
-                        areaName="Leaderboard"
-                        areaTitle="Team Members Navigation"
-                        role={loggedInUser.role}
-                        fontSize={18}
-                        isPermissionPage
-                        darkMode={darkMode}
-                        className="p-2" // Add Bootstrap padding class to the EditableInfoModal
-                      />
+              </td>
+              <td className="align-middle">
+                <span title="Tangible + Intangible time = Total time">
+                  {filteredUsers
+                    .reduce((total, user) => total + parseFloat(user.totaltime), 0)
+                    .toFixed(2)}{' '}
+                  of {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
+                </span>
+              </td>
+              <td aria-label="Placeholder" />
+            </tr>
+            {filteredUsers.map(item => {
+              const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
+                item.personId,
+              );
+
+              return (
+                <tr
+                  key={item.personId}
+                  className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
+                >
+                  <td className="align-middle">
+                    <div>
+                      <Modal
+                        isOpen={isDashboardOpen === item.personId}
+                        toggle={dashboardToggle}
+                        className={darkMode ? 'text-light dark-mode' : ''}
+                        style={darkMode ? boxStyleDark : {}}
+                      >
+                        <ModalHeader
+                          toggle={dashboardToggle}
+                          className={darkMode ? 'bg-space-cadet' : ''}
+                        >
+                          Jump to personal Dashboard
+                        </ModalHeader>
+                        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                          <p>Are you sure you wish to view this {item.name} dashboard?</p>
+                        </ModalBody>
+                        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                          <Button variant="primary" onClick={() => showDashboard(item)}>
+                            Ok
+                          </Button>{' '}
+                          <Button variant="secondary" onClick={dashboardToggle}>
+                            Cancel
+                          </Button>
+                        </ModalFooter>
+                      </Modal>
                     </div>
                   </th>
                   <th>Days Left</th>
@@ -577,23 +692,47 @@ function LeaderBoard({
                         <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
                       )}
                     </div>
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="my-custome-scrollbar responsive-font-size">
-                <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
-                  <td aria-label="Placeholder" />
-                  <th scope="row" className="leaderboard-totals-container">
-                    <span>{stateOrganizationData.name}</span>
-                    {viewZeroHouraMembers(loggedInUser.role) && (
-                      <span className="leaderboard-totals-title">
-                        0 hrs Totals:{' '}
-                        {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
-                        Members
+                    {/* </Link> */}
+                  </td>
+                  <td className="align-middle">
+                    <Link
+                      to={`/userprofile/${item.personId}`}
+                      title="View Profile"
+                      style={{
+                        color: isCurrentlyOff
+                          ? 'rgba(128, 128, 128, 0.5)' // Gray out the name if on time off
+                          : '#007BFF', // Default color
+                      }}
+                    >
+                      {item.name}
+                    </Link>
+                    &nbsp;&nbsp;&nbsp;
+                    {hasVisibilityIconPermission && !item.isVisible && (
+                      <i className="fa fa-eye-slash" title="User is invisible" />
+                    )}
+                    {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
+                      <span
+                        style={{
+                          marginLeft: '20px',
+                          color: '#17a2b8',
+                          fontSize: '15px',
+                          justifyItems: 'center',
+                        }}
+                      >
+                        {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                        <i
+                          className="fa fa-info-circle"
+                          style={{ marginLeft: '5px', cursor: 'pointer' }}
+                          data-tip={
+                            isCurrentlyOff
+                              ? `${additionalWeeks} additional weeks off`
+                              : `${additionalWeeks} weeks until next time off`
+                          }
+                        />
+                        <ReactTooltip place="top" type="dark" effect="solid" />
                       </span>
                     )}
-                  </th>
-                  <td className="align-middle" aria-label="Description" />
+                  </td>
                   <td className="align-middle">
                     <span title="Tangible time">
                       {filteredUsers
@@ -864,7 +1003,7 @@ function LeaderBoard({
           className="d-flex justify-content-center align-items-center"
           style={{ height: '200px' }}
         >
-          <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
+            <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
         </div>
       )}
     </div>
