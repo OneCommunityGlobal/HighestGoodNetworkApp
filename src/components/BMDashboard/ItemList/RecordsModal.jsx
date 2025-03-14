@@ -31,6 +31,10 @@ export default function RecordsModal({ modal, setModal, record, setRecord, recor
 }
 
 export function Record({ record, recordType, setRecord }) {
+  const handleUndefined = value => {
+    return value !== undefined && value !== null ? value : 'N/A';
+  };
+
   const dispatch = useDispatch();
   // const handleApprove = async (purchaseId, quantity) => {
   //   await dispatch(approvePurchase(purchaseId, quantity));
@@ -103,8 +107,10 @@ export function Record({ record, recordType, setRecord }) {
               return (
                 <tr key={data._id}>
                   <td>{moment.utc(data.date).format('LL')}</td>
-                  <td>{`${data.quantityUsed} ${record.itemType?.unit}` || '-'}</td>
-                  <td>{`${data.quantityWasted} ${record.itemType?.unit}` || '-'}</td>
+                  <td>{`${handleUndefined(data.quantityUsed)} ${record.itemType?.unit || ''}`}</td>
+                  <td>
+                    {`${handleUndefined(data.quantityWasted)} ${record.itemType?.unit || ''}`}
+                  </td>
                   <td>
                     <a href={`/userprofile/${data.createdBy._id}`}>
                       {`${data.createdBy.firstName} ${data.createdBy.lastName}`}
@@ -145,7 +151,7 @@ export function Record({ record, recordType, setRecord }) {
                   <tr key={_id}>
                     <td>{priority}</td>
                     <td>{brandPref}</td>
-                    <td>{quantity || '-'}</td>
+                    <td>{handleUndefined(quantity)}</td>
                     <td>
                       <a href={`/userprofile/${requestedBy._id}`}>
                         {`${requestedBy.firstName} ${requestedBy.lastName}`}
