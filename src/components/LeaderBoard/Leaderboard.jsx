@@ -38,7 +38,6 @@ import { boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
-import { style } from 'd3-selection';
 
 function useDeepEffect(effectFunc, deps) {
   const isFirst = useRef(true);
@@ -115,7 +114,9 @@ function LeaderBoard({
 
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
-  const darkModeStyle = darkMode ? {backgroundColor:"#3a506b", color:"white"}: {backgroundColor:"#f0f8ff", color:"black"};
+  const darkModeStyle = darkMode
+    ? { backgroundColor: '#3a506b', color: 'white' }
+    : { backgroundColor: '#f0f8ff', color: 'black' };
   useEffect(() => {
     const fetchInitial = async () => {
       const url = ENDPOINTS.USER_PROFILE(displayUserId);
@@ -546,7 +547,7 @@ function LeaderBoard({
               <th data-abbr="Stat." style={darkModeStyle}>
                 <span>Status</span>
               </th>
-              <th data-abbr="Name"  style={darkModeStyle}>
+              <th data-abbr="Name" style={darkModeStyle}>
                 <div className="d-flex align-items-center">
                   <span>Name</span>
                   <EditableInfoModal
@@ -572,7 +573,14 @@ function LeaderBoard({
               <th data-abbr="Prog." style={darkModeStyle}>
                 <span>Progress</span>
               </th>
-              <th data-abbr="Tot. Time" style={darkMode ? {backgroundColor:"#3a506b", color:"white", textAlign:"right"}: {backgroundColor:"#f0f8ff", color:"black", textAlign:"right"}} >
+              <th
+                data-abbr="Tot. Time"
+                style={
+                  darkMode
+                    ? { backgroundColor: '#3a506b', color: 'white', textAlign: 'right' }
+                    : { backgroundColor: '#f0f8ff', color: 'black', textAlign: 'right' }
+                }
+              >
                 <div style={{ display: 'flex', alignItems: 'center' }}>
                   <div style={{ textAlign: 'left' }}>
                     <span>Total Time</span>
@@ -588,7 +596,7 @@ function LeaderBoard({
           <tbody className="my-custome-scrollbar responsive-font-size">
             <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
               <td aria-label="Placeholder" />
-              <td  className={`leaderboard-totals-container `} >
+              <td className={`leaderboard-totals-container `}>
                 <span>{stateOrganizationData.name}</span>
                 {viewZeroHouraMembers(loggedInUser.role) && (
                   <span className="leaderboard-totals-title">
@@ -632,7 +640,10 @@ function LeaderBoard({
               );
 
               return (
-                <tr key={item.personId} className={darkMode? "dark-leaderboard-row" : "light-leaderboard-row"}>
+                <tr
+                  key={item.personId}
+                  className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
+                >
                   <td className="align-middle">
                     <div>
                       <Modal
