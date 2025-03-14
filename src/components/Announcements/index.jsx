@@ -185,12 +185,10 @@ function Announcements({ title, email }) {
       script.async = true;
       script.defer = true;
       script.crossOrigin = 'anonymous';
-
-
       script.onload = () => {
         window.fbAsyncInit = function() {
           window.FB.init({
-            appId: '1335318524566163',// Replace with required Facebook App ID
+             appId: '1335318524566163',// Replace with required Facebook App ID
             cookie: true,
             xfbml: true,
             version: 'v15.0',
@@ -206,28 +204,30 @@ function Announcements({ title, email }) {
   };
 
   useEffect(() => {
-    loadFacebookSDK()
+    loadFacebookSDK();
     /**   .then(FB => {
         console.log("Facebook SDK Loaded", FB);
       })
       .catch((error) => {
         console.error("Error loading Facebook SDK:", error);
       });**/
-  }, [])
+  }, []);
 
   const handleFacebookLogin = () => {
-    window.FB.login(response => {
+      window.FB.login(response => {
         if (response.authResponse) {
           const { accessToken } = response.authResponse;
           setAccessToken(accessToken);
-        //console.log('User Access Token:', accessToken);
+          // console.log('User Access Token:', accessToken);
         } else {
-        toast.error('User cancelled the login or did not fully authorize.');
+          toast.error('User cancelled the login or did not fully authorize.');
         }
-    }, { 
-      scope: 'public_profile,email,pages_show_list,pages_manage_posts', 
-      redirect_uri: 'https://localhost:3000/auth/facebook/callback' 
-    });  // Adjust permissions as needed
+      },
+      { 
+        scope: 'public_profile,email,pages_show_list,pages_manage_posts', 
+        redirect_uri: 'https://localhost:3000/auth/facebook/callback' 
+     }
+   );  // Adjust permissions as needed
   };
 
   const handleCreateFbPost = async () => {
@@ -236,8 +236,9 @@ function Announcements({ title, email }) {
       return;
     }
     const EmailContent = emailContent;
+    let response;
     try {
-      const response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
+        response = await axios.post(ENDPOINTS.CREATE_FB_POST(), {
         emailContent: EmailContent,
         accessToken: accessToken,
       });
@@ -339,10 +340,7 @@ function Announcements({ title, email }) {
       </div>
       <div className="social-media-container">
         <div className="social-media">
-          {title ? ( <h3>{title}</h3>) : (
-            <h3>Social Media Post</h3>
-          )}
-
+          {title ? ( <h3>{title}</h3>) : (<h3>Social Media Post</h3>)}
           {title ? null : (
             <label htmlFor="social-media-list" className={darkMode ? 'text-light' : 'text-dark'}>
               Click on below social media to post
