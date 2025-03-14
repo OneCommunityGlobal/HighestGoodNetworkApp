@@ -7,6 +7,7 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { ENDPOINTS } from '../../utils/URL';
+
 const APIEndpoint = process.env.REACT_APP_APIENDPOINT || 'https://highestgoodnetwork.netlify.app';
 
 function Announcements({ title, email }) {
