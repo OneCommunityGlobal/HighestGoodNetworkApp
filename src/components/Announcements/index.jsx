@@ -188,7 +188,7 @@ function Announcements({ title, email }) {
       script.defer = true;
       script.crossOrigin = 'anonymous';
       script.onload = () => {
-        window.fbAsyncInit = function() {
+        window.fbAsyncInit = function fbAsyncInit() {
           window.FB.init({
             appId: '1335318524566163', // Replace with required Facebook App ID
             cookie: true,
