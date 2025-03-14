@@ -106,6 +106,14 @@ export default function VolunteerTrendsLineChart(props) {
           axisLine={false}
           tickLine={false}
           tick={{ fill: darkMode ? '#ccc' : undefined }}
+          label={{
+            value: 'Total Hours',
+            angle: -90,
+            position: 'insideLeft',
+            dy: 20,
+            dx: -10,
+            style: { fontSize: 18 },
+          }}
         />
         <Line
           type="linear"
