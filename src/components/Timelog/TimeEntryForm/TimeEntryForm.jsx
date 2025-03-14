@@ -83,15 +83,17 @@ const TINY_MCE_INIT_OPTIONS = {
 function TimeEntryForm(props) {
   /* ---------------- variables -------------- */
   // props from parent
-  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode } = props;
+  const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile } = props;
   // props from store
-  const { authUser } = props;
+  const { authUser, serverDate } = props;
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
+  const userTimeZone = userProfile?.timeZone || 'America/Los_Angeles';
+  const [actualDate, setActualDate] = useState('');
 
   const initialFormValues = {
     dateOfWork: moment()
-      .tz('America/Los_Angeles')
+      .tz(userTimeZone)
       .format('YYYY-MM-DD'),
     personId: viewingUser.userId ?? authUser.userid,
     projectId: '',
@@ -148,8 +150,8 @@ function TimeEntryForm(props) {
 
   const isForAuthUser = timeEntryUserId === authUser.userid;
   const isSameDayTimeEntry =
-    moment()
-      .tz('America/Los_Angeles')
+    moment(actualDate)
+      .tz(userTimeZone)
       .format('YYYY-MM-DD') === formValues.dateOfWork;
   const isSameDayAuthUserEdit = isForAuthUser && isSameDayTimeEntry;
   const canEditTimeEntryTime = props.hasPermission('editTimeEntryTime');
@@ -522,6 +524,18 @@ function TimeEntryForm(props) {
     }
   };
 
+  const getActualDate = async () => {
+    try {
+      // Try external API first
+      const response = await fetch(`http://worldtimeapi.org/api/timezone/${userTimeZone}`);
+      const dateData = await response.json();
+      setActualDate(`${dateData.utc_datetime.split('+')[0]}Z`);
+    } catch (error) {
+      console.warn('External API failed, trying backend...');
+      setActualDate(serverDate);
+    }
+  };
+
   /* ---------------- useEffects -------------- */
   useEffect(() => {
     if (isAsyncDataLoaded) {
@@ -536,6 +550,23 @@ function TimeEntryForm(props) {
       loadAsyncData(timeEntryUserId);
     }
   }, [isOpen, timeEntryUserId]);
+
+  useEffect(() => {
+    if (isOpen) {
+      getActualDate();
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (actualDate) {
+      setFormValues({
+        ...formValues,
+        dateOfWork: moment(actualDate)
+          .tz(userTimeZone)
+          .format('YYYY-MM-DD'),
+      });
+    }
+  }, [actualDate]);
 
   useEffect(() => {
     setFormValues({ ...formValues, ...data });
@@ -765,6 +796,7 @@ TimeEntryForm.propTypes = {
 const mapStateToProps = state => ({
   authUser: state.auth.user,
   darkMode: state.theme.darkMode,
+  serverDate: state.timer.serverDate,
 });
 
 export default connect(mapStateToProps, {
