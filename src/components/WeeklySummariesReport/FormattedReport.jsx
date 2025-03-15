@@ -14,7 +14,7 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { getWeeklySummariesReport, updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import { postLeaderboardData } from 'actions/leaderBoardData';
 import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
@@ -647,7 +647,7 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
 function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
-  const [trophyFollowedUp, setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
+  const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
   const dispatch = useDispatch();
 
   const [modalOpen, setModalOpen] = useState(false);
