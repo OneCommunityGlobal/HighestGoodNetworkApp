@@ -84,6 +84,11 @@ function FrontendQuestions() {
     }
   };
 
+  const searchQuestion = (page,qno) => {
+    let question= questions.find(question => question.page === page && question.qno === qno);
+    return question.text;
+   }
+
   // Mapping question keys to structured field names
   const fieldNameMap = [
     'frontend_Overall',
@@ -132,7 +137,7 @@ function FrontendQuestions() {
                   </div>
                 ) : (
                   <p className="question">
-                    {question.text}
+                    {searchQuestion(3,index+1)}
                     {isOwner && (
                       <FaEdit
                         className="edit-icon"

@@ -285,6 +285,11 @@ function FollowupQuestions() {
     setNewVolunteer({ ...newVolunteer, [e.target.name]: e.target.value });
   };
 
+  const searchQuestion = (page,qno) => {
+    let question= questions.find(question => question.page === page && question.qno === qno);
+    return question.text;
+  }
+
   if (loading) {
     return <p>Loading Questions...</p>;
   }
@@ -334,7 +339,7 @@ function FollowupQuestions() {
                   </div>
                 ) : (
                   <p className="question">
-                    {question.text}
+                    {searchQuestion(5,index+1)}
                     {isOwner && (
                       <FaEdit
                         className="edit-icon"

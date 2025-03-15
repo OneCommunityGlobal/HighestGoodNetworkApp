@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { setformData } from 'actions/hgnFormAction';
 import { ENDPOINTS } from '../../../utils/URL';
+import { Spinner } from 'reactstrap';
 
 function GeneralQuestions() {
   const navigate = useHistory();
@@ -217,6 +218,11 @@ function GeneralQuestions() {
     }
   };
 
+  const searchQuestion = (page,qno ) => {
+   let question= questions.find(question => question.page === page && question.qno === qno);
+   return question.text;
+  }
+
   const renderEditableQuestion = index => {
     return (
       <div className="question-container">
@@ -239,7 +245,7 @@ function GeneralQuestions() {
           </div>
         ) : (
           <p className="question">
-            {questions[index]?.text}
+            {searchQuestion(2,index+1)}
             {isOwner && (
               <FaEdit className="edit-icon" onClick={() => handleEditClick(index)} title="Edit" />
             )}
@@ -249,7 +255,10 @@ function GeneralQuestions() {
     );
   };
   if (loading) {
-    return <div>Loading Questions...</div>;
+      return (<div>
+        <Spinner color="primary" className="spinner-hgnform"/>;
+      </div>
+      );    
   }
 
   return (

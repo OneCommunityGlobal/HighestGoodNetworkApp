@@ -98,6 +98,11 @@ function BackendQuestions() {
     'backend_AdvancedCoding',
     'backend_AgileDevelopment',
   ];
+  
+  const searchQuestion = (page,qno) => {
+    let question= questions.find(question => question.page === page && question.qno === qno);
+    return question.text;
+   }
 
   if (loading) {
     return <div>Loading Questions...</div>;
@@ -132,7 +137,7 @@ function BackendQuestions() {
                   </div>
                 ) : (
                   <p className="question">
-                    {question.text}
+                    {searchQuestion(4,index+1)}
                     {isOwner && (
                       <FaEdit
                         className="edit-icon"
