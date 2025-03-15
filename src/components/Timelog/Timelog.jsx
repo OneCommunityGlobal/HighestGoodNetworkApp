@@ -128,7 +128,7 @@ function Timelog(props) {
   const [summaryBarData, setSummaryBarData] = useState(null);
   const [timeLogState, setTimeLogState] = useState(initialState);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(displayUserProfile.email, authUser.email);
-
+  const [badges, setBadges] = useState(0);
   const { userId: urlId } = useParams();
   const [userprofileId, setUserProfileId] = useState(urlId || authUser.userid);
 
@@ -495,6 +495,26 @@ function Timelog(props) {
     updateTimeEntryItems();
     makeBarData(uid);
   };
+  // Get badges count from userProfile
+  const getBadges = () => {
+    if (!displayUserProfile || !displayUserProfile.badgeCollection) {
+      return 0;
+    }
+    const startDate = new Date(startOfWeek(1));
+    const lastDate = new Date(endOfWeek(1));
+    let totalBadges = 0;
+    console.log(startDate, lastDate);
+    displayUserProfile.badgeCollection.forEach(badge => {
+      badge.earnedDate.forEach(date => {
+        const dateElement = new Date(date);
+        if (dateElement >= startDate && dateElement <= lastDate) {
+          totalBadges += 1;
+        }
+      });
+    });
+
+    return totalBadges;
+  };
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
@@ -520,7 +540,7 @@ function Timelog(props) {
   }, [userprofileId]);
 
   useEffect(() => {
-    props.getBadgeCount(displayUserId);
+    setBadges(getBadges());
   }, [displayUserId, props]);
 
   useEffect(() => {
@@ -551,7 +571,6 @@ function Timelog(props) {
       window.removeEventListener('storage', handleStorageEvent);
     };
   }, []);
-
   const containerStyle = () => {
     if (darkMode) {
       return props.isDashboard ? {} : { padding: '0 15px 300px 15px' };
@@ -865,7 +884,7 @@ function Timelog(props) {
                       >
                         Badges
                         <span className="badge badge-pill badge-danger ml-2">
-                          {props.badgeCount}
+                          {props.badgeCount || badges}
                         </span>
                       </NavLink>
                     </NavItem>

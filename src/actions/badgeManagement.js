@@ -260,33 +260,69 @@ export const assignBadgesByUserID = (userId, selectedBadges) => {
 
 // Return updated badgeCollection
 export const returnUpdatedBadgesCollection = (badgeCollection, selectedBadgesId) => {
-  const personalMaxBadge = '666b78265bca0bcb94080605'; // backend id for Personal Max badge
+  const personalMaxBadge = '666b78265bca0bcb94080605'; // Backend ID for Personal Max badge
   const badgeMap = new Map(badgeCollection?.map(badge => [badge.badge, badge]));
+  const updatedOrAddedBadges = {}; // Ensure this variable exists
+  let newBadgeCollection = [...badgeCollection]; // Declare newBadgeCollection properly
 
   const currentTs = Date.now();
   const currentDate = formatDate();
+
   selectedBadgesId.forEach(originalBadgeId => {
-    const badgeId = originalBadgeId.replace('assign-badge-', '');
-    if (badgeMap.has(badgeId)) {
-      // Update the existing badge record
-      if (badgeId != personalMaxBadge) {
+    let badgeId = originalBadgeId.replace('assign-badge-', ''); // Remove prefix if present
+
+    if (!updatedOrAddedBadges[badgeId]) {
+      if (badgeMap.has(badgeId)) {
+        // If the badge already exists in the badgeMap, update its properties
         const badge = badgeMap.get(badgeId);
-        badge.count = (badge.count || 0) + 1;
-        badge.lastModified = currentTs;
-        badge.earnedDate.push(currentDate);
+        if (badgeId !== personalMaxBadge) { // Ensure it's not the maximum badge
+          badge.count = (badge.count || 0) + 1; // Increment count
+          badge.lastModified = currentTs; // Update last modified timestamp
+          badge.earnedDate.push(currentDate); // Add the earned date
+          badge.viewed = false; // Mark as unviewed
+        }
+      } else {
+        // If the badge is not in badgeMap, check in newBadgeCollection
+        let included = false;
+        newBadgeCollection.forEach(badgeObj => {
+          if (badgeId === badgeObj.badge && !included) {
+            // If badge exists in newBadgeCollection, update its properties
+            badgeObj.count = badgeObj.count ? badgeObj.count + 1 : 1; // Increment count
+            badgeObj.lastModified = currentTs; // Update last modified timestamp
+            badgeObj.earnedDate.push(currentDate); // Add the earned date
+            badgeObj.viewed = false; // Mark as unviewed
+            included = true; // Mark as processed
+          }
+        });
+
+        // If the badge is not found in newBadgeCollection, add a new entry
+        if (!included) {
+          newBadgeCollection.push({
+            badge: badgeId,
+            count: 1,
+            lastModified: currentTs,
+            earnedDate: [currentDate],
+            viewed: false, // Mark as unviewed
+          });
+        }
       }
-    } else {
-      // Add the new badge record
+
+      updatedOrAddedBadges[badgeId] = true; // Mark badge as processed
+    }
+
+    // Ensure the badge is added to badgeMap if it wasn't updated above
+    if (!badgeMap.has(badgeId)) {
       badgeMap.set(badgeId, {
         badge: badgeId,
         count: 1,
         lastModified: currentTs,
         earnedDate: [currentDate],
+        viewed: false, // Ensure consistency
       });
     }
   });
 
-  return Array.from(badgeMap.values());
+  return Array.from(badgeMap.values()); // Convert Map to array and return
 };
 
 // Make API call to update badgeCollection

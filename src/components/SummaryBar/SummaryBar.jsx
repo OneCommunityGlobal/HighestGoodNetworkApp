@@ -21,21 +21,41 @@ import { ENDPOINTS, ApiEndpoint } from 'utils/URL';
 import axios from 'axios';
 import hasPermission from 'utils/permissions';
 import { toast } from 'react-toastify';
+import moment from 'moment';
+import { useDispatch } from 'react-redux';
+import { getMessage, closeAlert } from '../../actions/badgeManagement';
 import TaskIcon from './task_icon.png';
 import BadgesIcon from './badges_icon.png';
 import BlueScoreIcon from './bluesquare_icon.png';
 import ReportIcon from './report_icon.png';
 import SuggestionsIcon from './suggestions_icon.png';
 import httpService from '../../services/httpService';
-
 import { getProgressColor, getProgressValue } from '../../utils/effortColors';
+// Function to get the start date of the week based on an offset
+const startOfWeek = offset => {
+  return moment()
+    .tz('America/Los_Angeles')
+    .startOf('week')
+    .subtract(offset, 'weeks')
+    .format('YYYY-MM-DD');
+};
 
+// Function to get the end date of the week based on an offset
+const endOfWeek = offset => {
+  return moment()
+    .tz('America/Los_Angeles')
+    .endOf('week')
+    .subtract(offset, 'weeks')
+    .format('YYYY-MM-DD');
+};
+
+// SummaryBar component
 function SummaryBar(props) {
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
   const { authUser, displayUserProfile, displayUserTask, darkMode } = props;
-
+  const dispatch = useDispatch();
   const authId = authUser.userid;
   const isAuthUser = displayUserId === authId;
   const initialInfo = {
@@ -203,26 +223,41 @@ function SummaryBar(props) {
       ? displayUserProfile.infringements.length
       : 0;
   };
+  const viewedBadges = async () => {
+    const newBadgeCollection = displayUserProfile.badgeCollection.map(badge => ({
+      ...badge,
+      viewed: true,
+    }));
 
-  // Get badges count from userProfile
-  const getBadges = () => {
-    if (!displayUserProfile || !displayUserProfile.badgeCollection) {
-      return 0;
+    const url = ENDPOINTS.BADGE_VIEWED(displayUserId);
+    try {
+      await axios.put(url, { badgeCollection: newBadgeCollection });
+    } catch (e) {
+      dispatch(getMessage('Oops, something is wrong!', 'danger'));
+      setTimeout(() => {
+        dispatch(closeAlert());
+      }, 6000);
     }
-    let totalBadges = 0;
-    displayUserProfile.badgeCollection.forEach(badge => {
-      if (badge?.badge?.badgeName === 'Personal Max' || badge?.badge?.type === 'Personal Max') {
-        totalBadges += 1;
-      } else {
-        const badgeCount = badge?.count ? Number(badge.count) : 0;
-        totalBadges += Math.round(badgeCount);
-      }
-    });
-
-    return totalBadges;
   };
 
-  // refactored for rading form values
+  const getBadges = () => {
+    if (!displayUserProfile?.badgeCollection) {
+      return 0;
+    }
+
+    const startDate = new Date(startOfWeek(0));
+    const lastDate = new Date(endOfWeek(0));
+
+    return displayUserProfile.badgeCollection.reduce((totalBadges, badge) => {
+      const hasUnviewedBadge = badge.earnedDate.some(date => {
+        const dateElement = new Date(date);
+        return dateElement >= startDate && dateElement <= lastDate && badge.viewed === false;
+      });
+
+      return hasUnviewedBadge ? totalBadges + 1 : totalBadges;
+    }, 0);
+  };
+
   const readFormData = formid => {
     const form = document.getElementById(formid);
     const formData = new FormData(form);
@@ -366,8 +401,16 @@ function SummaryBar(props) {
     window.location.hash = '#tasks';
   };
 
-  const onBadgeClick = () => {
-    window.location.hash = '#badgesearned';
+  const onBadgeClick = async () => {
+    try {
+      viewedBadges();
+      setBadges(0);
+      window.location.hash = '#badgesearned';
+    } catch (e) {
+      /* eslint-disable no-console */
+      console.log('Debug message');
+      /* eslint-enable no-console */
+    }
   };
 
   const getWeeklySummary = user => {
@@ -638,9 +681,13 @@ function SummaryBar(props) {
             </div>
             &nbsp;&nbsp;
             <div className="image_frame">
-              <div className="redBackgroup">
-                <span>{badges}</span>
-              </div>
+              {badges > 0 ? (
+                <div className="redBackgroup">
+                  <span>{badges}</span>
+                </div>
+              ) : (
+                <span />
+              )}
               {isAuthUser || canEditData() ? (
                 <button
                   onClick={onBadgeClick}
