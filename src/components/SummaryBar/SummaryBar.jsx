@@ -50,9 +50,6 @@ const endOfWeek = (offset) => {
 
 // SummaryBar component
 const SummaryBar = (props) => {
-  // Component logic here
-};
-
   // from parent
   const { displayUserId, summaryBarData } = props;
   // from store
