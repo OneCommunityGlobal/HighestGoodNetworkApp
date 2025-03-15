@@ -122,11 +122,16 @@ thead {
 #usermanagement_role,
 #user_role,
 td#usermanagement_role {
-  width: 100px;
-  max-width: 180px;
+  width: 125px !important; 
+  max-width: 125px !important;
+  min-width:125px !important;
   overflow: hidden;
-  text-overflow: ellipsis;
+  text-align: center;
   white-space: nowrap;
+}
+
+td#usermanagement_role svg {
+  font-size: 14px; /* Ensures icon fits within 20px */
 }
 
 #user_role{
