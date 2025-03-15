@@ -27,6 +27,7 @@ import { fetchTeamMembersTaskSuccess } from './actions';
 
 import { ENDPOINTS } from 'utils/URL';
 import { FaCalendarAlt, FaClock } from 'react-icons/fa'
+import { items } from 'joi/lib/types/array';
 
 const TeamMemberTasks = React.memo(props => {
   // props from redux store
@@ -668,16 +669,24 @@ const TeamMemberTasks = React.memo(props => {
           <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
               <th colSpan={3} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
-                <Table borderless className={`team-member-tasks-subtable ${darkMode ? "text-light" : ""}`}>
+                <Table
+                  borderless
+                  className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
+                  style={{ align: 'center' }}
+                >
                   <thead className={darkMode ? "bg-space-cadet" : ""}>
                     <tr>
-                      <th className={darkMode ? "bg-space-cadet" : ""}>
+                      <th
+                        className={`team-member-tasks-headers ${darkMode ? 'bg-space-cadet' : ''}`}
+                        style={{ width: '30%' }}
+                      >
                         User Status
                       </th>
                       <th
                         className={`team-member-tasks-headers team-member-tasks-user-name ${
                           darkMode ? 'bg-space-cadet' : ''
                         }`}
+                        style={{ width: '40%' }}
                       >
                         Team Member
                       </th>
@@ -685,6 +694,7 @@ const TeamMemberTasks = React.memo(props => {
                         className={`team-member-tasks-headers team-clocks team-clocks-header ${
                           darkMode ? 'bg-space-cadet' : ''
                         }`}
+                         style={{ width: '30%' }}
                       >
                         <FontAwesomeIcon
                           style={{ color: darkMode ? 'lightgray' : '' }}
@@ -714,22 +724,32 @@ const TeamMemberTasks = React.memo(props => {
               >
                 <Table
                   borderless
-                  className={'team-member-tasks-subtable ' + (darkMode ? 'text-light' : '')}
+                  className={`team-member-tasks-subtable ${darkMode ? 'text-light' : ''}`}
                 >
                   <thead className={darkMode ? 'bg-space-cadet' : ''}>
                     <tr>
-                      <th className={darkMode ? 'bg-space-cadet' : ''}>Tasks(s)</th>
-                      <th className={`team-task-progress ${darkMode ? 'bg-space-cadet' : ''}`}>
+                      <th className={darkMode ? 'bg-space-cadet' : ''} style={{ width: '30%' }}>
+                        Tasks(s)
+                      </th>
+                      <th
+                        className={`team-task-progress ${darkMode ? 'bg-space-cadet' : ''}`}
+                        style={{ width: '30%' }}
+                      >
                         Progress
                       </th>
-                      {displayUser.role === 'Administrator' ? <th>Status</th> : null}
+                      {displayUser.role === 'Administrator' ? (
+                        <th style={{ width: '40%' }}>Status</th>
+                      ) : null}
                     </tr>
                   </thead>
                 </Table>
               </th>
             </tr>
           </thead>
-          <tbody className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}>
+          <tbody
+            className={darkMode ? 'bg-yinmn-blue dark-mode' : ''}
+            // style={{ alignContent: 'center' }}
+          >
             {isLoading && usersWithTasks.length === 0 ? (
               <SkeletonLoading template="TeamMemberTasks" />
             ) : (
@@ -780,8 +800,8 @@ const TeamMemberTasks = React.memo(props => {
                           timeEntriesList
                             .filter(timeEntry => timeEntry.personId === user.personId)
                             .map(timeEntry => (
-                              <tr className="table-row" key={timeEntry._id}>
-                                <td colSpan={6} style={{ padding: 0 }}>
+                              <tr className="table-row" key={timeEntry._id} style={{ align: 'center' }} >
+                                <td colSpan={6} style={{ padding: 0, align: 'center' }}>
                                   <TimeEntry
                                     from="TaskTab"
                                     data={timeEntry}
