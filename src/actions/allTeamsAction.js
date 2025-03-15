@@ -1,5 +1,6 @@
 import axios from 'axios';
 import { ENDPOINTS } from '../utils/URL';
+import * as types from '../constants/allTeamsConstants';
 
 import {
   RECEIVE_ALL_USER_TEAMS,
@@ -113,21 +114,134 @@ export const updateVisibilityAction = (visibility, userId, teamId) => ({
 });
 
 
-/**
- * fetching all user teams
- */
 export const getAllUserTeams = () => {
-  const userTeamsPromise = axios.get(ENDPOINTS.TEAM);
-  return async dispatch => {
-    return userTeamsPromise
-      .then(res => {
-        dispatch(teamMembersFectchACtion(res.data));
-        return res.data;
-        // console.log("getAllUserTeams: res:", res.data)
-      })
-      .catch(() => {
-        dispatch(teamMembersFectchACtion(undefined));
+  console.log('Getting all user teams...');
+  return async (dispatch) => {
+    try {
+      const res = await axios.get(ENDPOINTS.TEAM);
+      console.log('Raw API response team codes:', 
+        [...new Set(res.data.map(team => team.teamCode).filter(Boolean))]);
+
+      const processedTeams = processTeamCodeData(res.data);
+       console.log('Team codes after processing:', 
+        processedTeams.teamCodes.map(tc => tc.value));
+      
+      // Dispatch an action to update the teams in the global state
+      dispatch({
+        type: types.RECEIVE_ALL_USER_TEAMS,
+        payload: processedTeams.teams
       });
+
+      dispatch({
+        type: types.UPDATE_TEAM_CODE_DATA,
+        payload: {
+          teamCodeGroup: processedTeams.teamCodeGroup,
+          teamCodes: processedTeams.teamCodes
+        }
+      });
+      
+      return processedTeams;
+    } catch (error) {
+      console.error('Error fetching user teams:', error);
+      dispatch({
+        type: types.FETCH_USER_TEAMS_ERROR
+      });
+      return { teams: [], teamCodeGroup: {}, teamCodes: [] };
+    }
+  };
+};
+
+// action to specifically update teams after modal operations
+export const updateTeamsAfterModalAction = (teams) => {
+  console.log('ACTION 1: updateTeamsAfterModalAction called with teams count:', teams.length);
+  return async (dispatch) => {
+    try {
+      // Look for the new team
+      const teamCodes = teams.map(team => team.teamCode).filter(Boolean);
+      console.log('ACTION 2: Team codes in data:', teamCodes);
+      
+      // Process the data 
+      console.log('ACTION 3: Processing teams data');
+      const processedTeams = processTeamCodeData(teams);
+      console.log('ACTION 4: Processed team data:', {
+        teamCodeCount: Object.keys(processedTeams.teamCodeGroup).length,
+        teamCodes: processedTeams.teamCodes.map(tc => tc.value)
+      });
+      
+      // First update the teams array
+      console.log('ACTION 5: Dispatching RECEIVE_ALL_USER_TEAMS');
+      dispatch({
+        type: types.RECEIVE_ALL_USER_TEAMS,
+        payload: teams
+      });
+      
+      // Then update the processed team code data
+      console.log('ACTION 6: Dispatching UPDATE_TEAM_CODE_DATA');
+      dispatch({
+        type: types.UPDATE_TEAM_CODE_DATA,
+        payload: {
+          teamCodeGroup: processedTeams.teamCodeGroup,
+          teamCodes: processedTeams.teamCodes
+        }
+      });
+      
+      console.log('ACTION 7: updateTeamsAfterModalAction completed');
+      return processedTeams;
+    } catch (error) {
+      console.error('Error in updateTeamsAfterModalAction:', error);
+      return { teams, teamCodeGroup: {}, teamCodes: [] };
+    }
+  };
+};
+
+export const processTeamCodeData = (teams = []) => {
+  console.log('PROCESS 1: Processing teams data, count:', teams.length);
+  
+  // Filter out any undefined or null teams
+  const validTeams = teams.filter(team => team && team._id);
+  console.log('PROCESS 2: Valid teams count after filtering:', validTeams.length);
+  
+  const teamCodeGroup = {};
+  
+  // Group teams by team code
+  validTeams.forEach(team => {
+    const code = (team.teamCode && team.teamCode.trim()) || 'noCodeLabel';
+    if (teamCodeGroup[code]) {
+      teamCodeGroup[code].push(team);
+    } else {
+      teamCodeGroup[code] = [team];
+    }
+  });
+
+  // Log all team codes found
+  console.log('PROCESS 3: Team codes found:', Object.keys(teamCodeGroup));
+  
+  // Create team codes
+  const teamCodes = Object.keys(teamCodeGroup)
+    .filter(code => code !== 'noCodeLabel')
+    .map(code => ({
+      value: code,
+      label: `${code} (${teamCodeGroup[code].length})`,
+      _ids: teamCodeGroup[code]?.map(item => item._id) || [],
+    }))
+    .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+
+  console.log('Team codes after filtering and formatting:', 
+    teamCodes.map(tc => tc.value));
+
+  // Add "No Code" option
+  teamCodes.push({
+    value: '',
+    label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+    _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
+  });
+  
+  console.log('PROCESS 4: Final processed team codes:', teamCodes.map(tc => tc.value));
+
+  return {
+    teams: validTeams,
+    teamCodeGroup,
+    teamCodes
   };
 };
 
@@ -138,38 +252,48 @@ export const postNewTeam = (name, status, source, requestorUser, teamCode) => {
   const data = { 
     teamName: name, 
     isActive: status,
-    teamCode: teamCode || "" // Include team code in initial creation
+    teamCode: teamCode || ""
   };
 
   if (requestorUser) {
     data.requestor = requestorUser;
   }
 
-  console.log('Posting new team with data:', data);
-
   const config = source ? { cancelToken: source.token } : {};
 
-  const teamCreationPromise = axios.post(ENDPOINTS.TEAM, data, config);
-  return dispatch => {
-    return teamCreationPromise
-      .then(res => {
-        console.log('Team creation success response:', res);
-        dispatch(addNewTeam(res.data, true));
-        return res; // return the server response
-      })
-      .catch(error => {
-        console.error('Team creation error:', error);
-        console.error('Error response data:', error.response?.data);
-        console.error('Error response status:', error.response?.status);
-        
-        if (error.response) {
-          return error.response; // return the server response
-        } else if (error.request) {
-          return { status: 500, message: 'No response received from the server' };
-        } else {
-          return { status: 500, message: error.message };
+  return async dispatch => {
+    try {
+      const res = await axios.post(ENDPOINTS.TEAM, data, config);
+      // Update the Redux store with the new team
+      dispatch(addNewTeam(res.data, true));
+      
+      // Fetch all teams to ensure synchronization
+      const teamsData = await axios.get(ENDPOINTS.TEAM);
+      const processedTeams = processTeamCodeData(teamsData.data);
+      
+      // Update teams array
+      dispatch(updateAllTeamsAction(processedTeams.teams));
+      
+      // CRITICAL: Also update teamCodeGroup and teamCodes in Redux
+      dispatch({
+        type: 'UPDATE_TEAM_CODE_DATA',
+        payload: {
+          teamCodeGroup: processedTeams.teamCodeGroup,
+          teamCodes: processedTeams.teamCodes
         }
       });
+      
+      return res;
+    } catch (error) {
+      console.error('Team creation error:', error);
+      if (error.response) {
+        return error.response;
+      } else if (error.request) {
+        return { status: 500, message: 'No response received from the server' };
+      } else {
+        return { status: 500, message: error.message };
+      }
+    }
   };
 };
 
@@ -342,3 +466,9 @@ export const getAllTeamCode = () => {
     //     });
   };
 };
+
+
+export const updateAllTeamsAction = (teams) => ({
+  type: types.UPDATE_ALL_TEAMS,
+  payload: teams,
+});

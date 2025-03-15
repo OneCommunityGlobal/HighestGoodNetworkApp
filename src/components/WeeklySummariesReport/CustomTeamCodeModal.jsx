@@ -35,6 +35,7 @@ import {
   getTeamMembers,
   addTeamMember,
   deleteTeamMember,
+  updateTeamsAfterModalAction,
 } from '../../actions/allTeamsAction';
 
 // Custom CSS for the modal
@@ -85,6 +86,8 @@ function CustomTeamCodeModal({
   getAllUserTeams: getUserTeams, // Rename props to avoid shadowing
   postNewTeam: createNewTeam,
   deleteTeam: removeTeam,
+  updateTeamsAfterModalAction,
+  onTeamCreated,
   // eslint-disable-next-line no-unused-vars
   updateTeam: modifyTeam,
   getTeamMembers: fetchTeamMembers,
@@ -119,37 +122,66 @@ function CustomTeamCodeModal({
     setError(null);
 
     try {
-      const teamsData = await getUserTeams();
-      if (teamsData) {
-        setTeams(teamsData);
+      const teamsData = await getUserTeams(); // Use the prop method directly
+
+      // Ensure teamsData is processed correctly
+      const teams = Array.isArray(teamsData) ? teamsData : teamsData.teams || teamsData || [];
+
+      if (teams.length > 0) {
+        setTeams(teams);
 
         // Filter custom teams
-        const customTeamsData = teamsData.filter(team => team.teamCode && team.teamCode.length > 0);
+        const customTeamsData = teams.filter(team => team.teamCode && team.teamCode.length > 0);
+        console.log('Custom teams after filtering:', customTeamsData);
         setCustomTeams(customTeamsData);
 
-        // Create team code groups without fetching members
-        const teamCodeGroups = {};
-
-        // Group teams by team code for lazy loading
-        teamsData.forEach(team => {
-          const teamCode = team.teamCode || 'No Code';
-          if (!teamCodeGroups[teamCode]) {
-            teamCodeGroups[teamCode] = [];
+        // Create team code groups
+        const teamCodeGroup = {};
+        teams.forEach(team => {
+          const code = team.teamCode || 'noCodeLabel';
+          if (teamCodeGroup[code]) {
+            teamCodeGroup[code].push(team);
+          } else {
+            teamCodeGroup[code] = [team];
           }
-          teamCodeGroups[teamCode].push(team._id);
         });
 
-        // Initialize empty user lists for each team code
+        // Prepare team codes
+        const teamCodes = Object.keys(teamCodeGroup)
+          .filter(code => code !== 'noCodeLabel')
+          .map(code => ({
+            value: code,
+            label: `${code} (${teamCodeGroup[code].length})`,
+            _ids: teamCodeGroup[code]?.map(item => item._id),
+          }))
+          .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+
+        // Add "No Code" option
+        teamCodes.push({
+          value: '',
+          label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+          _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
+        });
+
+        // Initialize users by team
         const usersByTeamMap = {};
-        Object.keys(teamCodeGroups).forEach(teamCode => {
-          usersByTeamMap[teamCode] = [];
+        teamCodes.forEach(teamCode => {
+          usersByTeamMap[teamCode.value] = [];
         });
 
         setUsersByTeam(usersByTeamMap);
+      } else {
+        console.warn('No teams data received');
+        setTeams([]);
+        setCustomTeams([]);
+        setUsersByTeam({});
       }
     } catch (err) {
+      console.error('Error fetching teams:', err);
       setError('Failed to load teams. Please try again.');
-      // console.error('Error fetching teams:', err);
+      setTeams([]);
+      setCustomTeams([]);
+      setUsersByTeam({});
     } finally {
       setLoading(false);
     }
@@ -312,153 +344,102 @@ function CustomTeamCodeModal({
     }
   };
 
+  // In CustomTeamCodeModal.js - handleCreateTeam method
   const handleCreateTeam = async e => {
     e.preventDefault();
-
-    if (selectedTeam) {
-      handleUpdateTeam(e);
-      return;
-    }
-
+    console.log('STEP 1: Starting team creation');
     setLoading(true);
     setError(null);
-    setSuccess(null);
-
-    // Validate inputs
-    if (!newTeamName.trim()) {
-      setError('Team name is required.');
-      setLoading(false);
-      return;
-    }
-
-    // Validate team code
-    if (!teamCodeRegex.test(newTeamCode)) {
-      setError('Team code must be between 5 and 7 characters.');
-      setLoading(false);
-      return;
-    }
 
     try {
-      // Check if team code already exists (excluding the selectedTeam if it exists)
-      const duplicateTeam = teams.find(
-        team => team.teamCode === newTeamCode && (!selectedTeam || team._id !== selectedTeam._id),
-      );
-
-      if (duplicateTeam) {
-        setError('This team code already exists. Please choose a different code.');
-        setLoading(false);
-        return;
-      }
-
-      // Create the team with the team code in one step
+      console.log(`STEP 2: Creating team "${newTeamName}" with code "${newTeamCode}"`);
       const response = await createNewTeam(newTeamName, true, null, auth.user, newTeamCode);
+      console.log('STEP 3: Create team response:', response);
 
       if (response && response.status === 200 && response.data) {
+        console.log('STEP 4: Team creation successful, new team data:', response.data);
         const newTeamId = response.data._id;
+        // Get current teams first
+        try {
+          console.log('STEP 5: Fetching updated teams from server');
+          const teamsData = await getUserTeams();
+          console.log('STEP 6: Updated teams data received, team count:', teamsData.teams.length);
+          const newTeamExists = teamsData.teams.some(
+            team => team._id === response.data._id || team.teamCode === newTeamCode,
+          );
+          console.log(`STEP 7: New team exists in updated data? ${newTeamExists}`);
 
-        // Add selected members to the team if any are selected
-        if (selectedMembers.length > 0) {
-          let addedCount = 0;
-          try {
-            // Use Promise.all instead of for...of with await
-            const results = await Promise.all(
-              selectedMembers.map(async member => {
-                // Extract first name and last name properly
-                const nameParts = member.label.split(' ');
-                const firstName = nameParts[0] || '';
-                const lastName = nameParts.slice(1).join(' ') || '';
+          console.log('STEP 8: Dispatching updateTeamsAfterModalAction');
+          // Ensure the new team is included in the Redux store
+          await updateTeamsAfterModalAction(teamsData.teams);
+          console.log('STEP 9: updateTeamsAfterModalAction completed');
 
-                try {
-                  await addMember(
-                    newTeamId,
-                    member.value,
-                    firstName,
-                    lastName,
-                    null,
-                    null,
-                    auth.user,
-                  );
-                  return true;
-                } catch (memberAddErr) {
-                  // console.error(`Failed to add member ${firstName} ${lastName}:`, memberAddErr);
-                  return false;
-                }
-              }),
+          if (selectedMembers.length > 0) {
+            console.log(`Adding ${selectedMembers.length} members to team ${newTeamId}`);
+
+            // Use Promise.all for parallel processing of member additions
+            await Promise.all(
+              selectedMembers.map(member =>
+                addMember(
+                  newTeamId,
+                  member.value, // Member ID
+                  member.label.split(' ')[0] || '', // First name (simple extraction)
+                  member.label
+                    .split(' ')
+                    .slice(1)
+                    .join(' ') || '', // Last name
+                ),
+              ),
             );
-
-            addedCount = results.filter(Boolean).length;
-            setSuccess(`Custom team created successfully with ${addedCount} members!`);
-          } catch (memberErr) {
-            setSuccess(
-              `Custom team created with ${addedCount} members. Some members could not be added.`,
-            );
-            // console.error('Error adding members:', memberErr);
           }
-        } else {
-          setSuccess('Custom team created successfully!');
+
+          setSuccess('Team created successfully');
+          console.log('STEP 10: Calling fetchTeams to update modal');
+          setNewTeamName('');
+          setNewTeamCode('');
+
+          // Fetch updated teams for the modal
+          await fetchTeams();
+          console.log('STEP 11: fetchTeams completed');
+
+          // Notify parent component
+          if (onTeamCreated) {
+            console.log('STEP 12: Calling onTeamCreated callback');
+            onTeamCreated(response.data);
+          } else {
+            console.log('STEP 12: No onTeamCreated callback provided');
+          }
+        } catch (updateError) {
+          console.error('Error updating teams after creation:', updateError);
+          setError('Team was created but there was an error updating the display');
         }
-
-        // Reset form
-        setNewTeamName('');
-        setNewTeamCode('');
-        setSelectedMembers([]);
-
-        // Refresh teams list
-        fetchTeams();
       } else {
-        setError(`Failed to create team. ${response.data?.error || 'Please try again.'}`);
+        setError('Failed to create team - invalid response');
       }
-    } catch (err) {
-      setError('An error occurred. Please try again.');
-      // console.error('Error creating team:', err);
+    } catch (createError) {
+      console.error('Team creation error:', createError);
+      setError('Failed to create team: ' + (createError.message || 'Unknown error'));
     } finally {
       setLoading(false);
     }
   };
 
   const handleDeleteTeam = async teamId => {
-    // Use a safer approach with a local variable
-    // eslint-disable-next-line no-alert
-    const userConfirmed = window.confirm('Are you sure you want to delete this custom team?');
-
-    if (userConfirmed) {
-      setLoading(true);
+    if (window.confirm('Are you sure you want to delete this custom team?')) {
       try {
-        // Pass auth.user as the requestorUser
         await removeTeam(teamId, auth.user);
-        setSuccess('Team deleted successfully.');
+
+        // Fetch updated teams
+        const updatedTeamsData = await getUserTeams();
+
+        // Dispatch the update
+        await updateTeamsAfterModalAction(updatedTeamsData.teams);
+
+        setSuccess('Team deleted successfully');
         fetchTeams();
-      } catch (err) {
-        setError('Failed to delete team. Please try again.');
-        // console.error('Error deleting team:', err);
-      } finally {
-        setLoading(false);
+      } catch (error) {
+        setError('Failed to delete team');
       }
-    }
-  };
-
-  const handleRemoveMember = async (teamId, userId) => {
-    setError(null);
-    setSuccess(null);
-
-    try {
-      await removeMember(teamId, userId);
-
-      // Refresh team members
-      const members = await fetchTeamMembers(teamId);
-      if (members && Array.isArray(members)) {
-        setTeamMembers(members);
-        setSuccess('Member removed successfully.');
-      } else {
-        // console.error('Invalid members data after removal:', members);
-        setError('Something went wrong. Please refresh the view.');
-      }
-
-      // Also refresh the main teams list to update member counts
-      fetchTeams();
-    } catch (err) {
-      setError('Failed to remove member. Please try again.');
-      // console.error('Error removing member:', err);
     }
   };
 
@@ -954,6 +935,8 @@ CustomTeamCodeModal.propTypes = {
   getTeamMembers: PropTypes.func.isRequired,
   addTeamMember: PropTypes.func.isRequired,
   deleteTeamMember: PropTypes.func.isRequired,
+  updateTeamsAfterModalAction: PropTypes.func.isRequired, // Add this
+  onTeamCreated: PropTypes.func, // Add this
   auth: PropTypes.shape({
     // More specific than 'object'
     user: PropTypes.shape({
@@ -975,13 +958,14 @@ const mapStateToProps = state => ({
 const mapDispatchToProps = dispatch =>
   bindActionCreators(
     {
-      getAllUserTeams,
+      getAllUserTeams: () => getAllUserTeams(),
       postNewTeam,
       deleteTeam,
       updateTeam,
       getTeamMembers,
       addTeamMember,
       deleteTeamMember,
+      updateTeamsAfterModalAction,
     },
     dispatch,
   );

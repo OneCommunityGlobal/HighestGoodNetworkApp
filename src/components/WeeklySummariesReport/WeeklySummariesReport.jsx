@@ -109,143 +109,137 @@ export class WeeklySummariesReport extends Component {
       getInfoCollections,
       hasPermission,
       auth,
+      getAllUserTeams,
     } = this.props;
-    // 1. fetch report
-    const res = await getWeeklySummariesReport();
-    // eslint-disable-next-line react/destructuring-assignment
-    const summaries = res?.data ?? this.props.summaries;
-    const badgeStatusCode = await fetchAllBadges();
-    this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
-    this.bioEditPermission = this.canPutUserProfileImportantInfo;
-    this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
-    this.codeEditPermission =
-      hasPermission('editTeamCode') ||
-      auth.user.role === 'Owner' ||
-      auth.user.role === 'Administrator';
-    this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
 
-    // 2. shallow copy and sort
-    let summariesCopy = [...summaries];
-    summariesCopy = this.alphabetize(summariesCopy);
+    try {
+      // 1. Fetch Weekly Summaries Report
+      const res = await getWeeklySummariesReport();
+      const summaries = res?.data ?? this.props.summaries;
 
-    // 3. add new key of promised hours by week
-    summariesCopy = summariesCopy.map(summary => {
-      // append the promised hours starting from the latest week (this week)
-      const promisedHoursByWeek = this.weekDates.map(weekDate =>
-        this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
-      );
-      return { ...summary, promisedHoursByWeek };
-    });
+      // 2. Fetch Badge Data
+      const badgeStatusCode = await fetchAllBadges();
 
-    /*
-     * refactor logic of commentted codes above
-     */
-    const teamCodeGroup = {};
-    const teamCodes = [];
-    const colorOptionGroup = new Set();
-    const colorOptions = [];
-    const COLORS = [
-      '#e8a71c',
-      '#0088FE',
-      '#43BFC7',
-      '#08b493',
-      '#c861c8',
-      '#FFBB28',
-      '#76916a',
-      '#ac4f7c',
-      '#E2725B',
-      '#6B8E23',
-      '#253342',
-      '#43a5be',
-      '#7698B3',
-      '#F07857',
-      '#87CEEB',
-      '#FF8243',
-      '#4169E1',
-      '#009999',
-      '#9ACD32',
-      '#C8A2C8',
-    ];
+      // 3. Set Permissions
+      this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
+      this.bioEditPermission = this.canPutUserProfileImportantInfo;
+      this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
+      this.codeEditPermission =
+        hasPermission('editTeamCode') ||
+        auth.user.role === 'Owner' ||
+        auth.user.role === 'Administrator';
+      this.canSeeBioHighlight = hasPermission('highlightEligibleBios');
 
-    summariesCopy.forEach(summary => {
-      const code = summary.teamCode || 'noCodeLabel';
-      if (teamCodeGroup[code]) {
-        teamCodeGroup[code].push(summary);
-      } else {
-        teamCodeGroup[code] = [summary];
-      }
+      // 4. Process Summaries
+      let summariesCopy = [...summaries];
+      summariesCopy = this.alphabetize(summariesCopy);
 
-      if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
-    });
+      // 5. Add Promised Hours
+      summariesCopy = summariesCopy.map(summary => ({
+        ...summary,
+        promisedHoursByWeek: this.weekDates.map(weekDate =>
+          this.getPromisedHours(weekDate.toDate, summary.weeklycommittedHoursHistory),
+        ),
+      }));
 
-    Object.keys(teamCodeGroup).forEach(code => {
-      if (code !== 'noCodeLabel') {
-        teamCodes.push({
-          value: code,
-          label: `${code} (${teamCodeGroup[code].length})`,
-          _ids: teamCodeGroup[code]?.map(item => item._id),
+      // 6. Fetch and Process Team Data
+      const teamData = await getAllUserTeams();
+      const teamCodeGroup = teamData.teamCodeGroup || {};
+      const teamCodes = teamData.teamCodes || [];
+
+      // 7. Prepare Color Options
+      const colorOptionGroup = new Set();
+      const colorOptions = [];
+      summariesCopy.forEach(summary => {
+        if (summary.weeklySummaryOption) colorOptionGroup.add(summary.weeklySummaryOption);
+      });
+      colorOptionGroup.forEach(option => {
+        colorOptions.push({
+          value: option,
+          label: option,
+        });
+      });
+      colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
+
+      // 8. Prepare Chart Colors
+      const COLORS = [
+        '#e8a71c',
+        '#0088FE',
+        '#43BFC7',
+        '#08b493',
+        '#c861c8',
+        '#FFBB28',
+        '#76916a',
+        '#ac4f7c',
+        '#E2725B',
+        '#6B8E23',
+        '#253342',
+        '#43a5be',
+        '#7698B3',
+        '#F07857',
+        '#87CEEB',
+        '#FF8243',
+        '#4169E1',
+        '#009999',
+        '#9ACD32',
+        '#C8A2C8',
+      ];
+
+      // 9. Fetch Info Collections
+      await getInfoCollections();
+      const role = authUser?.role;
+      const roleInfoNames = this.getAllRoles(summariesCopy);
+      const allRoleInfo = [];
+
+      if (Array.isArray(infoCollections)) {
+        infoCollections.forEach(info => {
+          if (roleInfoNames?.includes(info.infoName)) {
+            const visible =
+              info.visibility === '0' ||
+              (info.visibility === '1' && (role === 'Owner' || role === 'Administrator')) ||
+              (info.visibility === '2' && role !== 'Volunteer');
+
+            info.CanRead = visible;
+            allRoleInfo.push(info);
+          }
         });
       }
-    });
-    colorOptionGroup.forEach(option => {
-      colorOptions.push({
-        value: option,
-        label: option,
-      });
-    });
 
-    colorOptions.sort((a, b) => `${a.label}`.localeCompare(`${b.label}`));
-    teamCodes
-      .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
-      .push({
-        value: '',
-        label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
-        _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
+      // 10. Set State
+      this.setState({
+        loading,
+        allRoleInfo,
+        summaries: summariesCopy,
+        activeTab: sessionStorage.getItem('tabSelection') || navItems[1],
+        badges: allBadgeData,
+        hasSeeBadgePermission: badgeStatusCode === 200,
+        filteredSummaries: summariesCopy,
+        tableData: teamCodeGroup,
+        chartData: [], // Initialize empty chart data
+        COLORS,
+        colorOptions,
+        teamCodes,
+        auth,
       });
-    const chartData = [];
-    this.setState({
-      loading,
-      allRoleInfo: [],
-      summaries: summariesCopy,
-      activeTab:
-        sessionStorage.getItem('tabSelection') === null
-          ? navItems[1]
-          : sessionStorage.getItem('tabSelection'),
-      badges: allBadgeData,
-      hasSeeBadgePermission: badgeStatusCode === 200,
-      filteredSummaries: summariesCopy,
-      tableData: teamCodeGroup,
-      chartData,
-      COLORS,
-      colorOptions,
-      teamCodes,
-      auth,
-    });
+    } catch (error) {
+      console.error('Error in componentDidMount:', error);
 
-    await getInfoCollections();
-    const role = authUser?.role;
-    const roleInfoNames = this.getAllRoles(summariesCopy);
-    const allRoleInfo = [];
-    if (Array.isArray(infoCollections)) {
-      infoCollections.forEach(info => {
-        if (roleInfoNames?.includes(info.infoName)) {
-          const visible =
-            info.visibility === '0' ||
-            (info.visibility === '1' && (role === 'Owner' || role === 'Administrator')) ||
-            (info.visibility === '2' && role !== 'Volunteer');
-          // eslint-disable-next-line no-param-reassign
-          info.CanRead = visible;
-          allRoleInfo.push(info);
-        }
+      // Optional: Handle error state
+      this.setState({
+        loading: false,
+        error: 'Failed to load data. Please try again.',
       });
     }
-    this.setState({ allRoleInfo });
+    this.checkRawTeamCodes();
   }
 
-  componentDidUpdate(preProps, preState) {
-    const { loading } = this.props;
-    if (loading !== preState.loading) {
-      this.setState({ loading });
+  componentDidUpdate(prevProps, prevState) {
+    // Only log if teamCodes changed to avoid console spam
+    if (prevState.teamCodes !== this.state.teamCodes) {
+      console.log(
+        'teamCodes updated in state:',
+        this.state.teamCodes?.map(tc => tc.value),
+      );
     }
   }
 
@@ -254,59 +248,186 @@ export class WeeklySummariesReport extends Component {
   }
 
   toggleCustomTeamCodeModal = () => {
-    this.setState(prevState => ({
-      customTeamCodeModalOpen: !prevState.customTeamCodeModalOpen,
-    }));
-
-    // If we're closing the modal, refresh the teams data
-    if (this.state.customTeamCodeModalOpen) {
-      this.refreshTeamCodes();
-    }
+    console.log('PARENT 1: CustomTeamCodeModal toggle called');
+    this.setState(
+      prevState => ({
+        customTeamCodeModalOpen: !prevState.customTeamCodeModalOpen,
+      }),
+      () => {
+        console.log('PARENT 2: Modal state updated to:', this.state.customTeamCodeModalOpen);
+        // If modal is closing, refresh teams
+        if (!this.state.customTeamCodeModalOpen) {
+          console.log('PARENT 3: Modal closed, refreshing team codes');
+          this.refreshTeamCodes();
+        }
+      },
+    );
   };
 
   refreshTeamCodes = async () => {
-    const { getAllUserTeams } = this.props;
     try {
-      const res = await getAllUserTeams();
-      if (res) {
-        // Process the teams data similar to componentDidMount
-        const teamCodeGroup = {};
-        const teamCodes = [];
+      console.log('REFRESH 1: Starting refreshTeamCodes');
 
-        res.forEach(team => {
-          const code = team.teamCode || 'noCodeLabel';
-          if (teamCodeGroup[code]) {
-            teamCodeGroup[code].push(team);
-          } else {
-            teamCodeGroup[code] = [team];
-          }
-        });
+      console.log('REFRESH 2: Fetching teams from getAllUserTeams');
+      const teamData = await this.props.getAllUserTeams();
+      console.log('REFRESH 3: Team data received:', {
+        teamsCount: teamData.teams?.length || 0,
+        teamCodesCount: teamData.teamCodes?.length || 0,
+        teamCodeGroupKeys: Object.keys(teamData.teamCodeGroup || {}),
+      });
 
-        Object.keys(teamCodeGroup).forEach(code => {
-          if (code !== 'noCodeLabel') {
-            teamCodes.push({
-              value: code,
-              label: `${code} (${teamCodeGroup[code].length})`,
-              _ids: teamCodeGroup[code]?.map(item => item._id),
-            });
-          }
-        });
-
-        teamCodes
-          .sort((a, b) => `${a.label}`.localeCompare(`${b.label}`))
-          .push({
-            value: '',
-            label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
-            _ids: teamCodeGroup?.noCodeLabel?.map(item => item._id),
-          });
-
-        this.setState({
-          teamCodes,
-          tableData: teamCodeGroup,
-        });
+      if (!teamData || !teamData.teamCodes || !teamData.teamCodeGroup) {
+        console.error('REFRESH 4-ERROR: Incomplete team data returned', teamData);
+        return;
       }
+
+      console.log('REFRESH 4: Setting state with team data');
+      console.log(
+        'REFRESH 5: Team codes before setState:',
+        teamData.teamCodes.map(tc => tc.value),
+      );
+
+      this.setState(
+        {
+          teamCodes: teamData.teamCodes,
+          tableData: teamData.teamCodeGroup,
+        },
+        () => {
+          console.log(
+            'REFRESH 6: State updated, team codes in state:',
+            this.state.teamCodes.map(tc => tc.value),
+          );
+          console.log('REFRESH 7: Calling filterWeeklySummaries');
+          this.filterWeeklySummaries();
+        },
+      );
     } catch (error) {
-      // console.error('Error refreshing team codes:', error);
+      console.error('REFRESH ERROR: Error refreshing team codes:', error);
+    }
+  };
+
+  processTeamCodesManually = teams => {
+    // Group teams by team code
+    const teamCodeGroup = {};
+    teams.forEach(team => {
+      if (!team) return;
+      const code = (team.teamCode && team.teamCode.trim()) || 'noCodeLabel';
+      if (teamCodeGroup[code]) {
+        teamCodeGroup[code].push(team);
+      } else {
+        teamCodeGroup[code] = [team];
+      }
+    });
+
+    // Build team codes for dropdown
+    const teamCodes = Object.keys(teamCodeGroup)
+      .filter(code => code !== 'noCodeLabel')
+      .map(code => ({
+        value: code,
+        label: `${code} (${teamCodeGroup[code].length})`,
+        _ids: teamCodeGroup[code].map(item => item._id),
+      }))
+      .sort((a, b) => a.label.localeCompare(b.label));
+
+    // Add "No Code" option
+    teamCodes.push({
+      value: '',
+      label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+      _ids: teamCodeGroup.noCodeLabel?.map(item => item._id) || [],
+    });
+
+    return { teamCodeGroup, teamCodes };
+  };
+
+  // Add this method to directly fetch team codes from the API
+  checkRawTeamCodes = async () => {
+    try {
+      const response = await axios.get(ENDPOINTS.TEAM);
+      const rawTeamCodes = [...new Set(response.data.map(team => team.teamCode).filter(Boolean))];
+
+      console.log('Direct API check - Raw team codes:', rawTeamCodes);
+      console.log('Direct API check - Team codes count:', rawTeamCodes.length);
+
+      // Compare with what's in state
+      console.log(
+        'State team codes:',
+        this.state.teamCodes?.map(tc => tc.value),
+      );
+      console.log('State team codes count:', this.state.teamCodes?.length || 0);
+
+      // Find missing codes
+      const stateCodes = this.state.teamCodes?.map(tc => tc.value) || [];
+      const missingCodes = rawTeamCodes.filter(code => !stateCodes.includes(code));
+      console.log('Missing team codes in state:', missingCodes);
+    } catch (error) {
+      console.error('Error in direct API check:', error);
+    }
+  };
+
+  refreshTeamCodesDirectly = async () => {
+    try {
+      console.log('Directly refreshing team codes from API...');
+
+      // Direct API call to get fresh data
+      const response = await axios.get(ENDPOINTS.TEAM);
+      console.log(
+        'Direct API response in refreshTeamCodesDirectly:',
+        response.data.length,
+        'teams',
+      );
+
+      // Process the data directly without going through Redux
+      const validTeams = response.data.filter(team => team && team._id);
+
+      // Extract team codes
+      const teamCodeGroup = {};
+      validTeams.forEach(team => {
+        const code = (team.teamCode && team.teamCode.trim()) || 'noCodeLabel';
+        if (teamCodeGroup[code]) {
+          teamCodeGroup[code].push(team);
+        } else {
+          teamCodeGroup[code] = [team];
+        }
+      });
+
+      // Format for dropdown
+      const teamCodes = Object.keys(teamCodeGroup)
+        .filter(code => code !== 'noCodeLabel')
+        .map(code => ({
+          value: code,
+          label: `${code} (${teamCodeGroup[code].length})`,
+          _ids: teamCodeGroup[code].map(item => item._id),
+        }))
+        .sort((a, b) => a.label.localeCompare(b.label));
+
+      // Add "No Code" option
+      teamCodes.push({
+        value: '',
+        label: `Select All With NO Code (${teamCodeGroup.noCodeLabel?.length || 0})`,
+        _ids: teamCodeGroup.noCodeLabel?.map(item => item._id),
+      });
+
+      console.log(
+        'Direct refresh - team codes:',
+        teamCodes.map(tc => tc.value),
+      );
+
+      // Update state with fresh data
+      this.setState(
+        {
+          teamCodes: teamCodes,
+          tableData: teamCodeGroup,
+        },
+        () => {
+          console.log('State updated with direct API data', {
+            teamCodesCount: this.state.teamCodes.length,
+            teamCodesValues: this.state.teamCodes.map(tc => tc.value),
+          });
+          this.filterWeeklySummaries();
+        },
+      );
+    } catch (error) {
+      console.error('Error in direct refresh:', error);
     }
   };
 
@@ -445,6 +566,7 @@ export class WeeklySummariesReport extends Component {
   };
 
   filterWeeklySummaries = () => {
+    console.log('FILTER 1: Starting filterWeeklySummaries');
     const {
       selectedCodes,
       selectedColors,
@@ -455,6 +577,14 @@ export class WeeklySummariesReport extends Component {
       COLORS,
       selectedSpecialColors,
     } = this.state;
+
+    console.log('FILTER 2: Current state:', {
+      selectedCodesCount: selectedCodes.length,
+      selectedCodesValues: selectedCodes.map(c => c.value),
+      teamCodesCount: this.state.teamCodes.length,
+      teamCodesValues: this.state.teamCodes.map(tc => tc.value),
+    });
+
     const chartData = [];
     let temptotal = 0;
     const structuredTeamTableData = [];
@@ -567,6 +697,9 @@ export class WeeklySummariesReport extends Component {
     this.setState({ filteredSummaries: temp });
     this.setState({ chartData });
     this.setState({ structuredTableData: structuredTeamTableData });
+    console.log('FILTER 3: Filtered summaries count:', this.state.filteredSummaries.length);
+    console.log('FILTER 4: Chart data:', chartData);
+    console.log('FILTER 5: filterWeeklySummaries completed');
   };
 
   handleSelectCodeChange = event => {
@@ -762,6 +895,12 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
+  handleDropdownClick = () => {
+    console.log('Dropdown clicked, refreshing team codes...');
+    // Directly fetch from API rather than Redux
+    this.refreshTeamCodesDirectly();
+  };
+
   render() {
     const { role, darkMode } = this.props;
     const {
@@ -888,7 +1027,7 @@ export class WeeklySummariesReport extends Component {
         </Row>
         <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
-            <div className="mb-2">
+            <div onClick={this.handleDropdownClick}>
               <MultiSelect
                 className="multi-select-filter text-dark"
                 options={teamCodes}
@@ -1147,6 +1286,14 @@ export class WeeklySummariesReport extends Component {
             isOpen={this.state.customTeamCodeModalOpen}
             toggle={this.toggleCustomTeamCodeModal}
             darkMode={darkMode}
+            onTeamCreated={newTeam => {
+              console.log('CALLBACK 1: onTeamCreated callback called with new team:', newTeam);
+              // Force refresh the team codes after a slight delay
+              setTimeout(() => {
+                console.log('CALLBACK 2: Executing delayed refreshTeamCodes');
+                this.refreshTeamCodes();
+              }, 300);
+            }}
           />
         )}
       </Container>
@@ -1179,6 +1326,7 @@ const mapDispatchToProps = dispatch => ({
   hasPermission: permission => dispatch(hasPermission(permission)),
   getInfoCollections: () => getInfoCollections(),
   getAllUserTeams: () => dispatch(getAllUserTeams()),
+  updateTeamsAfterModalAction: teams => dispatch(updateTeamsAfterModalAction(teams)),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {
