@@ -200,7 +200,8 @@ function Task(props) {
               className={`taskNum ${props.hasChildren ? 'has_children' : ''}`}
               onClick={openChild}
             >
-              {props.num.replaceAll('.0', '')}
+              
+              {(props.tasks.findIndex(item => item._id === props.taskId) + 1)}
             </td>
             <td className="taskName">
               {
