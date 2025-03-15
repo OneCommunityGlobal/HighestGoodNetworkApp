@@ -31,7 +31,11 @@ import axios from 'axios';
 import { getAllUserTeams, getAllTeamCode } from '../../actions/allTeamsAction';
 import TeamChart from './TeamChart';
 import SkeletonLoading from '../common/SkeletonLoading';
-import { getWeeklySummariesReport } from '../../actions/weeklySummariesReport';
+import {
+  getWeeklySummariesReport,
+  postWeeklySummaryFilters,
+  getUserWeeklySummaryFilters,
+} from '../../actions/weeklySummariesReport';
 import FormattedReport from './FormattedReport';
 import GeneratePdfReport from './GeneratePdfReport';
 import hasPermission from '../../utils/permissions';
@@ -41,6 +45,11 @@ import PasswordInputModal from './PasswordInputModal';
 import WeeklySummaryRecipientsPopup from './WeeklySummaryRecepientsPopup';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
+import {
+  WeeklySummaryFilterActionButtons,
+  WeeklySummaryFilterModal,
+  WeeklySummaryFilterLinksList,
+} from './WeeklySummaryFiltersComp';
 
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
@@ -117,6 +126,7 @@ export class WeeklySummariesReport extends Component {
     // eslint-disable-next-line react/destructuring-assignment
     const summaries = res?.data ?? this.props.summaries;
     const badgeStatusCode = await fetchAllBadges();
+    this.props.getUserWeeklySummaryFilters();
     this.canPutUserProfileImportantInfo = hasPermission('putUserProfileImportantInfo');
     this.canRequestBio = hasPermission('requestBio');
     this.canEditSummaryCount = this.canPutUserProfileImportantInfo;
@@ -225,7 +235,7 @@ export class WeeklySummariesReport extends Component {
       COLORS,
       colorOptions,
       teamCodes,
-      auth,
+      auth
     });
 
     await getInfoCollections();
@@ -733,6 +743,28 @@ export class WeeklySummariesReport extends Component {
     }
   };
 
+  onClickFilterHandler = (index, data) => {
+    const savedFilters = this.props.savedWeeklySummaryFilters?.getFilters?.records || [];
+    for (let i = 0; i < savedFilters.length; i += 1) {
+      if (index === i) {
+        document.querySelector(`.filter-link_${index}`).classList.add('selected');
+      } else {
+        document.querySelector(`.filter-link_${i}`).classList.remove('selected');
+      }
+    }
+    this.setState(
+      {
+        selectedCodes: data.codes,
+        selectedColors: data.colors,
+        selectedBioStatus: data.FilterByBioStatus,
+        selectedOverTime: data.FilterByOverHours,
+        selectedFilterId: data._id,
+        filterNameForSummary: data.filterName,
+      },
+      () => this.filterWeeklySummaries(),
+    );
+  };
+
   render() {
     const { role, darkMode } = this.props;
     const {
@@ -757,7 +789,7 @@ export class WeeklySummariesReport extends Component {
       replaceCodeError,
       replaceCodeLoading,
     } = this.state;
-    const { error } = this.props;
+    const { error, savedWeeklySummaryFilters } = this.props;
     const hasPermissionToFilter = role === 'Owner' || role === 'Administrator';
     const { authEmailWeeklySummaryRecipient } = this.props;
     const authorizedUser1 = 'jae@onecommunityglobal.org';
@@ -833,9 +865,21 @@ export class WeeklySummariesReport extends Component {
           </Row>
         )}
         <Row>
+          <Col lg={{ size: 10, offset: 1 }}>
+            <WeeklySummaryFilterLinksList
+              availableFilters={savedWeeklySummaryFilters?.getFilters?.records || []}
+              onClickHandler={(index, data) => {
+                this.onClickFilterHandler(index, data);
+              }}
+            />
+          </Col>
+        </Row>
+        <Row>
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <div className="filter-container-teamcode">
               <div>Select Team Code</div>
+              
+
               <div className="filter-style">
                 <span>Show Chart</span>
                 <div className="switch-toggle-control">
@@ -898,6 +942,38 @@ export class WeeklySummariesReport extends Component {
         <Row style={{ marginBottom: '10px' }}>
           <Col lg={{ size: 10, offset: 1 }} xs={{ size: 8, offset: 4 }}>
             <div className="filter-container">
+              {hasPermissionToFilter && (
+                <WeeklySummaryFilterActionButtons
+                  selectedFilterId={this.state.selectedFilterId}
+                  selectedCodes={selectedCodes}
+                  onClickActionHandler={flow => {
+                    if (flow === 'update') {
+                      const obj = {
+                        codes: this.state.selectedCodes,
+                        colors: this.state.selectedColors,
+                        filterName: this.state.filterNameForSummary,
+                        FilterByBioStatus: this.state.selectedBioStatus,
+                        FilterByOverHours: this.state.selectedOverTime,
+                      };
+                      const req = {
+                        flow: 'Update',
+                        recordId: this.state.selectedFilterId,
+                        filters: obj,
+                      };
+                      this.props.postWeeklySummaryFilters(req);
+                    } else if (flow === 'Save') {
+                      this.setState({ showFilterModal: true });
+                    } else {
+                      const req = {
+                        flow: 'Delete',
+                        recordId: this.state.selectedFilterId,
+                        filters: {},
+                      };
+                      this.props.postWeeklySummaryFilters(req);
+                    }
+                  }}
+                />
+              )}
               {hasPermissionToFilter && (
                 <div className="filter-style margin-right">
                   <span>Filter by Special</span>
@@ -1096,6 +1172,27 @@ export class WeeklySummariesReport extends Component {
                   </Row>
                 </WeeklySummariesReportTab>
               ))}
+              <WeeklySummaryFilterModal
+                showFilterModal={this.state.showFilterModal}
+                darkMode={darkMode}
+                inputChange={val => this.setState({ filterNameForSummary: val })}
+                modalClose={() => this.setState({ showFilterModal: false })}
+                boxStyleDark={boxStyleDark}
+                boxStyle={boxStyle}
+                onSaveFilter={() => {
+                  const obj = {
+                    codes: this.state.selectedCodes,
+                    colors: this.state.selectedColors,
+                    filterName: this.state.filterNameForSummary,
+                    FilterByBioStatus: this.state.selectedBioStatus,
+                    FilterByOverHours: this.state.selectedOverTime,
+                  };
+                  const req = { flow: 'Save', recordId: '', filters: obj };
+                  this.setState({ showFilterModal: false }, () => {
+                    this.props.postWeeklySummaryFilters(req);
+                  });
+                }}
+              />
             </TabContent>
           </Col>
         </Row>
@@ -1123,6 +1220,8 @@ const mapStateToProps = state => ({
   darkMode: state.theme.darkMode,
   teamCodes: state.teamCodes.teamCodes,
   authEmailWeeklySummaryRecipient: state.auth.user.email, // capturing the user email through Redux store - Sucheta
+  weeklySummaryFiltersSaved: state.weeklySummaries.weeklySummaryFiltersSaved,
+  savedWeeklySummaryFilters: state.weeklySummaries.savedWeeklySummaryFilters, // capturing the user email through Redux store - Sucheta
 });
 
 const mapDispatchToProps = dispatch => ({
@@ -1133,6 +1232,8 @@ const mapDispatchToProps = dispatch => ({
   getAllUserTeams: () => dispatch(getAllUserTeams()),
   getAllTeamCode: () => dispatch(getAllTeamCode()),
   setTeamCodes: teamCodes => dispatch(setTeamCodes(teamCodes)),
+  postWeeklySummaryFilters: request => dispatch(postWeeklySummaryFilters(request)),
+  getUserWeeklySummaryFilters: () => dispatch(getUserWeeklySummaryFilters()),
 });
 
 function WeeklySummariesReportTab({ tabId, hidden, children }) {

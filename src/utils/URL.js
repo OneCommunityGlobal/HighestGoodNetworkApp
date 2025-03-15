@@ -240,6 +240,8 @@ export const ENDPOINTS = {
   // lb dashboard endpoints
   LB_REGISTER: `${APIEndpoint}/lbdashboard/register`,
   LB_LOGIN: `${APIEndpoint}/lbdashboard/login`,
+  POST_WEEKLY_SUMMARIES_REPORT_FILTERS: () => `${APIEndpoint}/reports/weeklysummaries/userfilters`,
+  GET_USER_WEEKLY_SUMMARY_FILTER: () => `${APIEndpoint}/reports/weeklysummaries/getuserfilters`
 };
 
 export const ApiEndpoint = APIEndpoint;
