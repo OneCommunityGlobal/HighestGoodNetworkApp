@@ -36,75 +36,37 @@ export const getAllUserProfiles = () => {
 /**
  * Call API to find a user profile
  */
-// export const findUserProfiles = keyword => {
-//   // Creates an array containing the first and last name and filters out whitespace
-//   const fullName = keyword.split(' ').filter(name => name !== '');
-
-//   return async (dispatch, getState) => {
-//     try {
-//       let response;
-//       if (fullName[0] && fullName[1]) {
-//         response = await axios.get(
-//           ENDPOINTS.USER_PROFILE_BY_FULL_NAME(`${fullName[0]} ${fullName[1]}`),
-//         );
-//       } else {
-//         response = await axios.get(ENDPOINTS.USER_PROFILE_BY_SINGLE_NAME(fullName[0]));
-//         console.log(response);
-//       }
-//       await dispatch(findUsersStart());
-//       if (keyword !== '') {
-//         let users = response.data;
-//         const { members } = getState().projectMembers;
-//         users = users.map(user => {
-//           if (!members.find(member => member._id === user._id)) {
-//             return (user = { ...user, assigned: false });
-//           }
-//           return (user = { ...user, assigned: true });
-//         });
-//         dispatch(foundUsers(users));
-//       } else {
-//         dispatch(foundUsers([]));
-//       }
-//     } catch (error) {
-//       dispatch(foundUsers([]));
-//       dispatch(findUsersError(error));
-//     }
-//   };
-// };
-
-//Done By Mohammad
-
 export const findUserProfiles = keyword => {
   // Creates an array containing the first and last name and filters out whitespace
   const fullNameRegex = keyword.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'); // Escape special characters
 
-    return async (dispatch, getState) => {
-        try {
-            const response = await axios.get(
-                ENDPOINTS.USER_PROFILE_BY_FULL_NAME(fullNameRegex),
-            );
+  return async (dispatch, getState) => {
+    try {
+      // Dispatch loading action immediately
+      dispatch(findUsersStart());
+      const response = await axios.get(ENDPOINTS.USER_PROFILE_BY_FULL_NAME(fullNameRegex));
 
-            await dispatch(findUsersStart());
-            if (keyword !== '') {
-                let users = response.data;
-                const { members } = getState().projectMembers;
-                users = users.map(user => {
-                    if (!members.find(member => member._id === user._id)) {
-                        return (user = { ...user, assigned: false });
-                    }
-                    return (user = { ...user, assigned: true });
-                });
-                dispatch(foundUsers(users));
-            } else {
-                dispatch(foundUsers([]));
-            }
-        } catch (error) {
-            dispatch(foundUsers([]));
-            dispatch(findUsersError(error));
-        }
-    };
+      // await dispatch(findUsersStart());
+
+      if (keyword !== '') {
+        let users = response.data;
+        const { members } = getState().projectMembers;
+        // set for insatnt lookups
+        const memberIds = new Set(members.map(member => member._id));
+        users = users.map(user => ({
+          ...user,
+          assigned: memberIds.has(user._id),
+        }));
+        dispatch(foundUsers(users));
+      } else {
+        dispatch(foundUsers([]));
+      }
+    } catch (error) {
+      dispatch(foundUsers([]));
+      dispatch(findUsersError(error));
+    }
+  };
 };
-
 
 /**
  * Call API to get all members
@@ -180,6 +142,33 @@ export const assignProject = (projectId, userId, operation, firstName, lastName)
         // console.log("Error", err);
         dispatch(addNewMemberError(err));
       });
+  };
+};
+
+/**
+ * Call API to find project members
+ */
+export const findProjectMembers = (projectId, query) => {
+  // Escape special characters in the query
+  const queryRegex = query.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
+
+  return async (dispatch, getState) => {
+    try {
+      // Dispatch loading action immediately
+      dispatch(findProjectMembersStart());
+      const response = await axios.get(ENDPOINTS.PROJECT_MEMBER_SEARCH(projectId, queryRegex));
+
+      if (query !== '') {
+        const members = response.data;
+
+        dispatch(foundProjectMembers(members));
+      } else {
+        dispatch(foundProjectMembers([]));
+      }
+    } catch (error) {
+      dispatch(foundProjectMembers([]));
+      dispatch(findProjectMembersError(error));
+    }
   };
 };
 
@@ -289,6 +278,37 @@ export const removeFoundUser = userId => {
 export const addNewMemberError = err => {
   return {
     type: types.ADD_NEW_MEMBER_ERROR,
+    err,
+  };
+};
+
+/**
+ * Set a flag that finding project members
+ */
+export const findProjectMembersStart = () => {
+  return {
+    type: types.FIND_PROJECT_MEMBERS_START,
+  };
+};
+
+/**
+ * Set project members in store
+ * @param payload : Project members []
+ */
+export const foundProjectMembers = members => {
+  return {
+    type: types.FOUND_PROJECT_MEMBERS,
+    members,
+  };
+};
+
+/**
+ * Error when finding project members
+ * @param payload : error status code
+ */
+export const findProjectMembersError = err => {
+  return {
+    type: types.FIND_PROJECT_MEMBERS_ERROR,
     err,
   };
 };
