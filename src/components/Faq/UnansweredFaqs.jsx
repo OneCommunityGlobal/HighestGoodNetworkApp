@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Button } from 'reactstrap';
 import { getUnansweredFAQs, deleteUnansweredFAQ } from './api';
 
 function UnansweredFaqs() {
@@ -31,32 +32,36 @@ function UnansweredFaqs() {
   };
 
   return (
-    <div>
+    <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', textAlign: 'center' }}>
       <h2>Unanswered FAQs</h2>
       {loading ? (
-        <p>Loading unanswered FAQs...</p>
+        <p style={{ textAlign: 'center', color: '#666' }}>Loading unanswered FAQs...</p>
       ) : unansweredFaqs.length === 0 ? (
-        <p>No unanswered FAQs found.</p>
+        <p style={{ textAlign: 'center', color: '#888' }}>No unanswered FAQs found.</p>
       ) : (
-        <ul>
+        <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>
           {unansweredFaqs.map(faq => (
-            <li key={faq._id} style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
-              <div>
-                <strong>{faq.question}</strong>
-                <p>Logged on: {new Date(faq.createdAt).toLocaleString()}</p>
+            <li
+              key={faq._id}
+              style={{
+                marginBottom: '15px',
+                padding: '10px',
+                border: '1px solid #ddd',
+                borderRadius: '5px',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+              }}
+            >
+              <div style={{ flex: 1 }}>
+                <strong style={{ color: '#333', fontSize: '16px' }}>{faq.question}</strong>
+                <p style={{ fontSize: '12px', color: '#777', marginTop: '4px' }}>
+                  Logged on: {new Date(faq.createdAt).toLocaleString()}
+                </p>
               </div>
-              <button
-                onClick={() => handleMarkAsLogged(faq._id)}
-                style={{
-                  color: 'white',
-                  backgroundColor: 'green',
-                  border: 'none',
-                  padding: '5px 10px',
-                  cursor: 'pointer',
-                }}
-              >
+              <Button color="success" onClick={() => handleMarkAsLogged(faq._id)}>
                 Mark as Logged
-              </button>
+              </Button>
             </li>
           ))}
         </ul>
