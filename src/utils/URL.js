@@ -155,6 +155,8 @@ export const ENDPOINTS = {
 
   // Imgur endpoint
   POST_IMGUR: `${APIEndpoint}/postToImgur`,
+  SCHEDULED_POSTS: `${APIEndpoint}/scheduledPosts`,
+  // DELETE_SCHEDULED_POST: `${APIEndpoint}/deleteScheduledPost`,
 
   // reasons endpoints
   CREATEREASON: () => {

@@ -122,3 +122,93 @@ button.send-button:hover {
   justify-content: center;
   padding-top: 10px;
 }
+
+.imgur-preview-cards-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.imgur-preview-card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  width: 300px;
+  text-align: center;
+}
+
+.imgur-preview-image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.imgur-preview-description {
+  width: 100%;
+  margin-top: 10px;
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  box-sizing: border-box;
+  word-wrap: break-word; /* Ensures long words break and wrap to the next line */
+  white-space: normal; /* Allows text to wrap to the next line */
+  text-overflow: ellipsis;
+}
+
+.imgur-preview-remove-button {
+  margin-top: 10px; /* Increase margin-top */
+  background-color: red;
+  color: white;
+  border: none;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.scheduled-posts-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.scheduled-post-card {
+  border: 1px solid #ccc;
+  padding: 20px;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 400px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.scheduled-post-card h5 {
+  margin-top: 0;
+}
+
+.scheduled-post-files {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.scheduled-post-file {
+  border: 1px solid #ccc;
+  padding: 10px;
+  border-radius: 5px;
+  width: calc(50% - 10px); /* Two items per row with a gap of 10px */
+  box-sizing: border-box;
+  background-color: #f9f9f9;
+}
+
+.scheduled-post-file p {
+  margin: 5px 0;
+}
+
+.scheduled-post-image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 10px;
+}
+
+.delete-button:hover {
+  background-color: #ff1a1a;
+}
