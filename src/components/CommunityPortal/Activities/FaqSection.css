@@ -1,0 +1,95 @@
+.faq-container {
+  width: 80%;
+  margin: 0 auto;
+  text-align: center;
+  padding: 2rem 0;
+}
+
+.faq-title {
+  font-size: 1.8rem;
+  font-weight: bold;
+}
+
+.faq-subtitle {
+  font-size: 0.9rem;
+  color: gray;
+  margin-bottom: 1rem;
+}
+
+.faq-search {
+  width: 60%;
+  padding: 0.5rem;
+  margin-bottom: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  text-align: center;
+}
+
+.faq-buttons {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.faq-category {
+  padding: 0.6rem 1.2rem;
+  border-radius: 20px;
+  border: none;
+  background-color: #f0f0f0;
+  cursor: pointer;
+}
+
+.faq-category:hover {
+  background-color: black;
+  color: white;
+}
+
+.faq-list {
+  text-align: left;
+  margin: 0 auto;
+  width: 60%;
+}
+
+.faq-item {
+  margin-bottom: 1rem;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.5rem;
+}
+
+.faq-question {
+  font-weight: bold;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.faq-arrow {
+  transition: transform 0.3s ease;
+}
+
+.faq-arrow.open {
+  transform: rotate(180deg);
+}
+
+.faq-answer {
+  margin-top: 0.5rem;
+  font-size: 0.9rem;
+  color: #333;
+}
+
+.faq-contact {
+  font-size: 0.9rem;
+  margin-top: 2rem;
+}
+
+.contact-link {
+  color: blue;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+.contact-link:hover {
+  color: darkblue;
+}
