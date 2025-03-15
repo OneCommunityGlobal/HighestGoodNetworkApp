@@ -298,3 +298,74 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* ---------------- STATUS CARD ---------------- */
+.status-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border-radius: 25px;
+  width: 284px;
+  height: 190px;
+  text-align: center;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  padding: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+/* ---------------- RESPONSIVE GRID LAYOUT ---------------- */
+.project-status-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 20px;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 1600px;
+  margin: auto;
+}
+
+/* ---------------- OVAL STATUS BUTTON ---------------- */
+.weekly-status-button {
+  width: 130px;
+  height: 65px;
+  border-radius: 50px / 32px; 
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.15);
+  margin: 12px 0; 
+}
+
+/* ---------------- RESPONSIVE BREAKPOINTS ---------------- */
+@media (min-width: 1600px) {
+  .project-status-grid {
+    grid-template-columns: repeat(6, 1fr); 
+  }
+}
+
+@media (max-width: 1400px) {
+  .project-status-grid {
+    grid-template-columns: repeat(4, 1fr); 
+  }
+}
+
+@media (max-width: 1024px) { 
+  .project-status-grid {
+    grid-template-columns: repeat(3, 1fr); 
+  }
+}
+
+@media (max-width: 768px) { 
+  .project-status-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 576px) { 
+  .project-status-grid {
+    grid-template-columns: repeat(1, 1fr); 
+  }
+}
