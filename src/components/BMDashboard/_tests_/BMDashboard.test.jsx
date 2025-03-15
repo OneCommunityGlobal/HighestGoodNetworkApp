@@ -93,13 +93,14 @@ describe('BMDashboard Tests', () => {
       </Provider>,
     );
 
-    const dropdown = screen.getByRole('combobox');
+    const dropdown = screen.getByLabelText(/select/i); // Use the label associated with the dropdown
     userEvent.click(dropdown);
 
     expect(screen.getByText('Project 1')).toBeInTheDocument();
     expect(screen.getByText('Project 2')).toBeInTheDocument();
     expect(screen.queryByText('Project 3')).toBeNull();
   });
+
   //Test Case 3:
   it('Shows an error message if no project is selected and the button is clicked', async () => {
     render(
@@ -157,7 +158,7 @@ describe('BMDashboard Tests', () => {
       </Provider>,
     );
 
-    const selectDropdown = screen.getByRole('combobox');
+    const selectDropdown = screen.getByLabelText(/select/i); // Use the label here as well
     userEvent.selectOptions(selectDropdown, '1');
 
     const goToDashboardButton = screen.getByRole('button', { name: /go to project dashboard/i });

@@ -1,0 +1,118 @@
+.container,
+.job-landing .header img {
+  width: 60%;
+  max-width: 1000px;
+  display: flex;
+}
+.headings,
+.job-ad {
+  text-align: center;
+}
+.container {
+  margin: 0 auto 50px;
+  flex-direction: column;
+  align-items: center;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+}
+.job-landing .header img {
+  height: auto;
+  margin: 0 auto;
+  flex-direction: column;
+}
+.navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  background-color: #9c0;
+  padding: 10px;
+  flex-flow: row nowrap;
+}
+.navbar-left input,
+.navbar-left select {
+  display: flex;
+  padding: 8px;
+  margin-right: 10px;
+  align-items: center;
+}
+.navbar-left,
+.navbar-right,
+.search-form {
+  display: flex;
+  align-items: center;
+}
+.search-form input {
+  margin-right: 10px;
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.pagination button,
+.search {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+select {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+.job-list {
+  display: grid;
+  grid-template-columns: repeat(6, 1fr);
+  gap: 20px;
+  width: 100%;
+}
+.job-ad {
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  background: linear-gradient(135deg, #fff, #f9f9f9);
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.job-ad img {
+  max-width: 100%;
+  height: auto;
+  border-bottom: 1px solid #ddd;
+}
+.job-ad h3 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #333;
+  margin: 10px 0;
+  transition: color 0.3s;
+}
+.job-ad a {
+  text-decoration: none;
+  color: inherit;
+}
+.job-ad a:hover h3 {
+  color: #007acc;
+}
+.job-ad:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.2);
+}
+.pagination {
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+.pagination button {
+  margin: 0 5px;
+}
+.pagination button:disabled {
+  background-color: #ccc;
+  cursor: default;
+}
+.headings {
+  margin-bottom: 10px;
+}
+.search {
+  background-color: #fff;
+  border: 1px solid #fff;
+  border-radius: 5px;
+}

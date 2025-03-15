@@ -6,7 +6,7 @@ import { Modal, ModalBody, ModalHeader, ModalFooter, Button } from 'reactstrap';
  * @param {Boolean} props.visible
  * @param {Func} props.setVisible
  */
-const AboutModal = props => {
+function AboutModal(props) {
   return (
     <Modal isOpen={props.visible} className={props.darkMode ? 'text-light' : ''}>
       <ModalHeader className={props.darkMode ? 'bg-space-cadet' : ''}>Info</ModalHeader>
@@ -72,6 +72,6 @@ const AboutModal = props => {
       </ModalFooter>
     </Modal>
   );
-};
+}
 
 export default AboutModal;

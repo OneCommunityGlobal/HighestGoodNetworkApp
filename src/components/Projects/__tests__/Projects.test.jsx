@@ -129,7 +129,7 @@ describe("Projects component",()=>{
     });
 
     render(<Provider store={store}><Projects /></Provider>)
-    expect(screen.queryByText('Add new project')).not.toBeInTheDocument()
+    expect(screen.queryByText('Add New Project')).not.toBeInTheDocument()
   })
   it('check if AddProject gets displayed when postProject permission is added',()=>{
     axios.get.mockResolvedValue({
@@ -158,7 +158,8 @@ describe("Projects component",()=>{
     })
 
     render(<Provider store={testStore}><Projects /></Provider>)
-    expect(screen.queryByText('Add new project')).toBeInTheDocument()
+    // expect(screen.queryByText('Add new project')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: /add new project/i })).toBeInTheDocument();
   })
   it('check if modal title is set to error when the modal is not open',()=>{
     axios.get.mockResolvedValue({
@@ -200,15 +201,16 @@ describe("Projects component",()=>{
     const ascendingButton=container.querySelector('[id="Ascending"]')
     fireEvent.click(ascendingButton)
 
-    const archiveButton=screen.getAllByText('Archive')[1]
-    fireEvent.click(archiveButton)
+    // Code related to "Archive" functionality is refactored into Project component and will be tested in Project.test.js 
+  //   const archiveButton=screen.getAllByText('Archive')[1]
+  //   fireEvent.click(archiveButton)
     
-    expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
-    expect(screen.getByText(`Do you want to archive ${projects[0].projectName}?`)).toBeInTheDocument();
+  //   expect(screen.getByText('Confirm Archive')).toBeInTheDocument();
+  //   expect(screen.getByText(`Do you want to archive ${projects[0].projectName}?`)).toBeInTheDocument();
 
-    const closeButton=screen.getByText('Close')
-    fireEvent.click(closeButton)
-    expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
+  //   const closeButton=screen.getByText('Close')
+  //   fireEvent.click(closeButton)
+  //   expect(screen.queryByText('Confirm Archive')).not.toBeInTheDocument();
   })
   
 })

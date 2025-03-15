@@ -17,3 +17,6 @@
   background-color: #faf7fc;
   margin: 0;
 }
+.pie-chart-checkbox {
+  margin-right: 8px; /* Space between checkbox and label */
+}

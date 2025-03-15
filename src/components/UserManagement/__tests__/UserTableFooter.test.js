@@ -1,11 +1,11 @@
-import React from 'react';
+// import React from 'react';
 import { screen, render, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UserTableFooter from '../UserTableFooter';
 
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
-}
+// function sleep(ms) {
+//   return new Promise((resolve) => setTimeout(resolve, ms));
+// }
 describe('user table footer', () => {
   let onSelectPageSize;
   let onPageSelect;
@@ -34,10 +34,10 @@ describe('user table footer', () => {
     const selectedPage = 1;
     const datacount = 60;
     it('should render a page summary info', () => {
-      let right_num = pageSize * selectedPage;
-      let left_num = 1 + (selectedPage-1) * pageSize;
-      let page_summ = `Showing ${left_num} - ${right_num} of ${datacount}`;
-      expect(screen.getByText(page_summ)).toBeInTheDocument();
+      const rightNum = pageSize * selectedPage;
+      const leftNum = 1 + (selectedPage - 1) * pageSize;
+      const pageSumm = `Showing ${leftNum} - ${rightNum} of ${datacount}`;
+      expect(screen.getByText(pageSumm)).toBeInTheDocument();
     });
     it('should render a dropdown', () => {
       expect(screen.getByRole('combobox')).toBeInTheDocument();
@@ -79,7 +79,7 @@ describe('user table footer', () => {
           pageSize={10}
           selectedPage={11}
           datacount={100}
-          isSelected={true}
+          isSelected
           pageNo={10}
         />,
       );
@@ -96,7 +96,7 @@ describe('user table footer', () => {
           pageSize={10}
           selectedPage={2}
           datacount={100}
-          isSelected={true}
+          isSelected
           pageNo={2}
         />,
       );
@@ -135,18 +135,18 @@ describe('user table footer tests', () => {
     const selectedPage = 4;
     const datacount = 60;
     it('should render a page summary info', () => {
-      let right_num = pageSize * selectedPage;
-      let left_num = 1 + (selectedPage-1) * pageSize;
-      let page_summ = `Showing ${left_num} - ${right_num} of ${datacount}`;
-      expect(screen.getByText(page_summ)).toBeInTheDocument();
+      const rightNum = pageSize * selectedPage;
+      const leftNum = 1 + (selectedPage - 1) * pageSize;
+      const pageSumm = `Showing ${leftNum} - ${rightNum} of ${datacount}`;
+      expect(screen.getByText(pageSumm)).toBeInTheDocument();
     });
     it('should display correct summary info', async () => {
       userEvent.click(screen.getByRole('button', { name: /4/i }));
       expect(onPageSelect).toHaveBeenCalledWith(4);
-      let right_num = pageSize * selectedPage;
-      let left_num = 1 + (selectedPage-1) * pageSize;
-      let page_summ = `Showing ${left_num} - ${right_num} of ${datacount}`;
-      expect(screen.getByText(page_summ)).toBeInTheDocument();
+      const rightNum = pageSize * selectedPage;
+      const leftNum = 1 + (selectedPage - 1) * pageSize;
+      const pageSumm = `Showing ${leftNum} - ${rightNum} of ${datacount}`;
+      expect(screen.getByText(pageSumm)).toBeInTheDocument();
     });
   });
 });

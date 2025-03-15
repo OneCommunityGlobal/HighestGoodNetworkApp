@@ -6,12 +6,9 @@ import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
-import Loading from '../../common/Loading';
-import { set } from 'lodash';
 
 function TotalProjectReport(props) {
   const { startDate, endDate, userProfiles, projects, darkMode } = props;
-
   const [totalProjectReportDataLoading, setTotalProjectReportDataLoading] = useState(true);
   const [totalProjectReportDataReady, setTotalProjectReportDataReady] = useState(false);
   const [showTotalProjectTable, setShowTotalProjectTable] = useState(false);
@@ -28,31 +25,27 @@ function TotalProjectReport(props) {
   const projectList = useMemo(() => projects.map(proj => proj._id), [projects]);
 
   const loadTimeEntriesForPeriod = useCallback(async () => {
-    try {
-      const url = ENDPOINTS.TIME_ENTRIES_REPORTS;
-      const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
-        projectId: entry.projectId,
-        projectName: entry.projectName,
-        hours: entry.hours,
-        minutes: entry.minutes,
-        isTangible: entry.isTangible,
-        date: entry.dateOfWork,
-      })));
+    const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT;
+    const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
+      projectId: entry.projectId,
+      projectName: entry.projectName,
+      hours: entry.hours,
+      minutes: entry.minutes,
+      isTangible: entry.isTangible,
+      date: entry.dateOfWork,
+    })));
 
-      const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
-      const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }).then(res => res.data.map(entry => ({
-        projectId: entry.projectId,
-        projectName: entry.projectName,
-        hours: entry.hours,
-        minutes: entry.minutes,
-        isTangible: entry.isTangible,
-        date: entry.dateOfWork,
-      })));
+    const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+    const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }).then(res => res.data.map(entry => ({
+      projectId: entry.projectId,
+      projectName: entry.projectName,
+      hours: entry.hours,
+      minutes: entry.minutes,
+      isTangible: entry.isTangible,
+      date: entry.dateOfWork,
+    })));
 
-      setAllTimeEntries([...timeEntries, ...projTimeEntries]);
-    } catch (err) {
-      console.error("API error:", err.message);
-    }
+    setAllTimeEntries([...timeEntries, ...projTimeEntries]);
   }, [fromDate, toDate, userList, projectList]);
 
   const sumByProject = useCallback((objectArray, property) => {
@@ -120,7 +113,8 @@ function TotalProjectReport(props) {
         sumData[0].months = 12 - startMonth;
         sumData[sumData.length - 1].months = endMonth + 1;
       }
-      return sumData;
+      const filteredData = sumData.filter(data => data.value > 0);
+      return filteredData;
     }
     return groupedDate.map(range => ({
       label: range.timeRange,
@@ -164,16 +158,16 @@ function TotalProjectReport(props) {
 
   const totalProjectTable = totalProject => (
     <table className="table table-bordered table-responsive-sm">
-      <thead>
+      <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{pointerEvents: 'none' }}>
         <tr>
           <th scope="col" id="projects__order">#</th>
           <th scope="col">Project Name</th>
           <th scope="col">Total Logged Time (Hrs)</th>
         </tr>
       </thead>
-      <tbody>
+      <tbody className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
         {totalProject.sort((a, b) => a.projectName.localeCompare(b.projectName)).map((project, index) => (
-          <tr className="teams__tr" id={`tr_${project.projectId}`} key={project.projectId}>
+          <tr className={darkMode ? 'teams__tr hover-effect-reports-page-dark-mode text-light' : 'teams__tr'} id={`tr_${project.projectId}`} key={project.projectId}>
             <th className="teams__order--input" scope="row">
               <div>{index + 1}</div>
             </th>
@@ -244,7 +238,22 @@ function TotalProjectReport(props) {
   return (
     <div>
       {!totalProjectReportDataReady ? (
-        <Loading align="center" darkMode={darkMode}/>
+        <div style={{ textAlign: 'center' }}>
+          &quot;&quot;
+          <div
+            style={{
+              width: '50%',
+              height: '2px',
+              backgroundColor: 'gray',
+              margin: '10px auto',
+            }}
+          />
+          <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'gray' }}>
+            🚀 Data is on a secret mission! 📊 Report is being generated. ✨
+            <br />
+            Please hang tight while we work our magic! 🧙‍♂️🔮
+          </div>
+        </div>
       ) : (
         <div>
           <div>{totalProjectInfo(allProject)}</div>

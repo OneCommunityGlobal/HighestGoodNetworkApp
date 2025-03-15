@@ -100,7 +100,7 @@ describe('WBSTasks component', () => {
         </Router>,
       );
     });
-    expect(screen.queryByText('wbs name 1')).toBeInTheDocument();
+    expect(screen.queryByText('WBS Name: wbs name 1')).toBeInTheDocument();
   });
   it('check link to the projectId', async () => {
     axios.get.mockResolvedValue({

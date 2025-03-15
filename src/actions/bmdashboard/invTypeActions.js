@@ -10,7 +10,7 @@ import GET_MATERIAL_TYPES, { POST_BUILDING_MATERIAL_INVENTORY_TYPE,
                              POST_ERROR_BUILDING_TOOL_INVENTORY_TYPE, 
                              RESET_POST_BUILDING_TOOL_INVENTORY_TYPE,
                              GET_INV_BY_TYPE, GET_TOOL_TYPES ,
-                             GET_CONSUMABLE_TYPES  } from "constants/bmdashboard/inventoryTypeConstants";
+                             GET_CONSUMABLE_TYPES, GET_REUSABLE_TYPES } from "constants/bmdashboard/inventoryTypeConstants";
 import { POST_TOOLS_LOG, POST_ERROR_TOOLS_LOG, RESET_POST_TOOLS_LOG } from 'constants/bmdashboard/toolsConstants';
 import { GET_ERRORS } from "constants/errors";
 
@@ -39,10 +39,9 @@ export const fetchEquipmentTypes = () => {
 }
 
 export const fetchReusableTypes = () => {
-  console.log("fetchReusableTypes");
   return async dispatch => {
     axios.get(ENDPOINTS.BM_REUSABLE_TYPES)
-      .then(res => {
+      .then(res => {  
         dispatch(setReusableTypes(res.data))
       })
       .catch(err => {

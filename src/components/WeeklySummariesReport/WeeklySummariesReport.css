@@ -71,6 +71,7 @@
   cursor: pointer;
   border-radius: 10px;
   border: 1px solid #bbb;
+  margin-bottom: 0.5rem;
 }
 
 .switch-toggle-inner {
@@ -164,6 +165,31 @@
 }
 .hours-not-fulfilled {
   color: red;
+}
+
+/* Colored knobs for each toggle */
+#purple-toggle + .switch-toggle-label .switch-toggle-switch {
+  background-color: purple;
+}
+
+#green-toggle + .switch-toggle-label .switch-toggle-switch {
+  background-color: green;
+}
+
+#navy-toggle + .switch-toggle-label .switch-toggle-switch {
+  background-color: navy;
+}
+
+#purple-toggle:checked + .switch-toggle-label .switch-toggle-inner:before {
+  background-color: rgba(223, 57, 231);
+}
+
+#green-toggle:checked + .switch-toggle-label .switch-toggle-inner:before {
+  background-color: rgba(55, 223, 55); 
+}
+
+#navy-toggle:checked + .switch-toggle-label .switch-toggle-inner:before {
+  background-color: rgb(83, 83, 223);
 }
 
 @media screen and (max-width: 544px) {

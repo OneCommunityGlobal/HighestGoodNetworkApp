@@ -139,6 +139,22 @@ const BlueSquareLayout = ({
                   </div>
                 </div>
               )}
+              {hasBlueSquareEmailBCCRolePermission && (
+                <div className="Job-Email-CC-div">
+                  <Button
+                    variant="primary"
+                    onClick={() => {window.open("/job-notification-dashboard")}}
+                    className="mt-3 w-100 Job-Email-CC-button"
+                    size="md"
+                    style={darkMode ? boxStyleDark : boxStyle}
+                  >
+                    Edit Job Application Email CC
+                  </Button>
+                  <div className={`Job-Email-CC-tooltip ${darkMode ? 'bg-space-cadet text-light' : ''}`}>
+                    This designates who gets an email for specific job applications.
+                  </div>
+                </div>
+              )}
             </>
           )}
         </div>

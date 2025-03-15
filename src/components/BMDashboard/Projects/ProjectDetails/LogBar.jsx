@@ -8,15 +8,27 @@ const buttonStyles = {
   team: 'indigo',
 };
 
-//  button labels for each section
-const buttonLabels = {
-  dailyLogging: ['Time', 'Material', 'Tool/Equipment'],
-  newItem: ['Team', 'Material', 'Tool/Equipment', 'Lessons'],
-  team: ['Create New Team', 'Edit Existing Team', 'Log Issue'],
-};
-
 function LogBar(props) {
   const { projectId } = props;
+  const buttonLabels = {
+    dailyLogging: {
+      name: ['Time', 'Material', 'Tool/Equipment'],
+      url: ['/bmdashboard/timelog', '/bmdashboard/materials/add', '/bmdashboard/tools/log'],
+    },
+    newItem: {
+      name: ['Team', 'Material', 'Tool/Equipment', 'Lessons'],
+      url: [
+        '/teams',
+        '/bmdashboard/materials/add',
+        '/bmdashboard/tools/add',
+        `/bmdashboard/lessonform/${projectId}`,
+      ],
+    },
+    team: {
+      name: ['Create New Team', 'Edit Existing Team', 'Log Issue'],
+      url: ['/teams', '/teams', '/bmdashboard/issues/add'],
+    },
+  };
 
   return (
     <div className="log-bar">
@@ -35,25 +47,20 @@ function LogBar(props) {
             })()}
           </h2>
           <ul className="log-bar__btn-group">
-            {buttonLabels[section].map(label => (
+            {buttonLabels[section].name.map((label, index) => (
               <li key={uuidv4()}>
-                {label === 'Lessons' ? ( // Check if it's the "Lessons" button
-                  <Link to={`/bmdashboard/lessonform/${projectId}`}>
+                {label !== 'Log Issue' ? (
+                  <Link to={buttonLabels[section].url[index]}>
                     <Button type="button" className={`button button--${buttonStyles[section]}`}>
                       {label}
                     </Button>
                   </Link>
                 ) : (
-                  <Button
-                    type="button"
-                    className={
-                      label === 'Log Issue'
-                        ? `button button--maroon`
-                        : `button button--${buttonStyles[section]}`
-                    }
-                  >
-                    {label}
-                  </Button>
+                  <Link to="/bmdashboard/issues/add">
+                    <Button type="button" className="button button--maroon">
+                      Log Issue
+                    </Button>
+                  </Link>
                 )}
               </li>
             ))}

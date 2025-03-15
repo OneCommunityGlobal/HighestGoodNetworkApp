@@ -1,33 +1,31 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, FormGroup, Label, Input, Form, Row, Col } from 'reactstrap';
-import { boxStyle, boxStyleDark } from 'styles';
+import { getFontColor, getBoxStyling } from 'styles';
 import { connect, useDispatch } from 'react-redux';
 import { getUserProfile } from 'actions/userProfile';
-import AddProjectsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddProjectsAutoComplete';
-import MemberAutoComplete from 'components/Teams/MembersAutoComplete';
-import AddTeamsAutoComplete from 'components/UserProfile/TeamsAndProjects/AddTeamsAutoComplete';
 import moment from 'moment';
 import { isEmpty } from 'lodash';
 import { deleteTimeEntry, editTimeEntry } from 'actions/timeEntries';
-import { ENDPOINTS } from 'utils/URL';
-import axios from 'axios';
 import './EditHistoryModal.css';
+import '../../Header/DarkMode.css'
 
-const EditHistoryModal = props => {
-  const darkMode = props.darkMode;
+function EditHistoryModal(props) {
+  const {darkMode} = props;
+  const fontColor = getFontColor(darkMode);
+  const boxStyling = getBoxStyling(darkMode);
 
   const initialForm = {
-    projectId: props.entryType == 'project'? props.dataId: undefined,
-    personId: props.entryType == 'person'? props.dataId: undefined,
-    teamId: props.entryType == 'team'? props.dataId: undefined,
+    projectId: props.entryType === 'project'? props.dataId: undefined,
+    personId: props.entryType === 'person'? props.dataId: undefined,
+    teamId: props.entryType === 'team'? props.dataId: undefined,
     dateOfWork: props.dateOfWork,
     hours: props.hours,
     minutes: props.minutes,
     isTangible: props.isTangible,
   };
 
-  const initialData = props.allData.find(data => data._id == props.dataId);
-  const initialName = props.entryType == 'person'? initialData.firstName + " " + initialData.lastName: '';
+  const initialData = props.allData.find(data => data._id === props.dataId);
+  const initialName = props.entryType === 'person'? `${initialData.firstName  } ${  initialData.lastName}`: '';
 
   const dispatch = useDispatch();
 
@@ -35,7 +33,7 @@ const EditHistoryModal = props => {
   const [inputs, setInputs] = useState(initialForm);
   
   const [searchText, setSearchText] = useState(initialName);
-  const [selectedData, setSelectedData] = useState(initialData);
+  const [selectedData] = useState(initialData);
 
   const [errors, setErrors] = useState({});
   const [editModal, setEditModal] = useState(false);
@@ -55,77 +53,46 @@ const EditHistoryModal = props => {
     setDeleteModal(!deleteModal)
   };
 
-  const selectData = data => {
-    if(props.entryType == 'project') {
-      setInputs(inputs => ({
-        ...inputs,
-        projectId: data._id,
-        personId: undefined,
-        teamId: undefined,
-      }));
-      setSelectedData(data);
-    } else if (props.entryType == 'person') {
-      if(data){
-        setInputs(inputs => ({
-          ...inputs,
-          projectId: undefined,
-          personId: data._id,
-          teamId: undefined,
-        }));
-      }
-    } else if (props.entryType == 'team') {
-      setInputs(inputs => ({
-        ...inputs,
-        projectId: undefined,
-        personId: undefined,
-        teamId: data._id,
-      }));
-      setSelectedData(data);
-    }
-  }
-
   const handleFormContent = () => {
-    if (props.entryType == 'project') {
+    if (props.entryType === 'project') {
       return (
         <FormGroup>
-          <Label>Project Name</Label>
+          <Label className={fontColor}>Project Name</Label>
           <Input
             defaultValue={selectedData.projectName}
             disabled
           />
         </FormGroup>
       )
-    } else if (props.entryType == 'person') {
+    } if (props.entryType === 'person') {
       return (
-        <>
-          <FormGroup>
-            <Label>Name</Label>
+        <FormGroup>
+            <Label className={fontColor}>Name</Label>
             <Input
               defaultValue={searchText}
               disabled
             />
           </FormGroup>
-        </>
       )
-    } else if (props.entryType == 'team') {
+    } if (props.entryType === 'team') {
       return (
         <FormGroup>
-          <Label>Team Name</Label>
+          <Label className={fontColor}>Team Name</Label>
           <Input
             defaultValue={selectedData.teamName}
             disabled
           />
         </FormGroup>
       )
-    } else {
-      return (<></>)
-    }
+    } 
+      return null;
+    
   };
 
   const handleInputChange = event => {
     event.persist();
-    setInputs(inputs => ({
-      ...inputs,
+    setInputs(prevInputs => ({
+      ...prevInputs,
       [event.target.name]: event.target.value,
     }));
   };
@@ -135,7 +102,7 @@ const EditHistoryModal = props => {
     setSearchText('');
     setErrors({});
   }
-  const handleCancel = closed => {
+  const handleCancel = () => {
     resetForm();
     toggleEdit();
   };
@@ -170,68 +137,18 @@ const EditHistoryModal = props => {
       }
     }
 
-    if (props.entryType == 'project' && inputs.projectId == undefined) {
+    if (props.entryType === 'project' && inputs.projectId === undefined) {
       result.projectId = 'Project is required';
     }
-    if (props.entryType == 'person' && inputs.personId == undefined) {
+    if (props.entryType === 'person' && inputs.personId === undefined) {
       result.personId = 'Person is required';
     }
-    if (props.entryType == 'team' && inputs.teamId == undefined) {
+    if (props.entryType === 'team' && inputs.teamId === undefined) {
       result.teamId = 'Team is required';
     }
 
     setErrors(result);
     return isEmpty(result);
-  };
-
-  const updateHours = async (userProfile, timeEntry, hours, minutes) => {
-    const { hoursByCategory } = userProfile;
-    const { isTangible, personId } = timeEntry;
-
-    const oldEntryTime = parseFloat(initialForm.hours) + parseFloat(initialForm.minutes) / 60;
-    const currEntryTime = parseFloat(hours) + parseFloat(minutes) / 60;
-    const timeDifference = currEntryTime - oldEntryTime;
-
-    if (initialForm.isTangible && isTangible) {
-      hoursByCategory['unassigned'] += timeDifference;
-    } else if (!initialForm.isTangible && !isTangible) {
-      userProfile.totalIntangibleHrs += timeDifference;
-    } else if (initialForm.isTangible && !isTangible) {
-      hoursByCategory['unassigned'] -= oldEntryTime;
-      userProfile.totalIntangibleHrs += currEntryTime;
-    } else {
-      userProfile.totalIntangibleHrs -= oldEntryTime;
-      hoursByCategory['unassigned'] += currEntryTime;
-    }
-
-    try {
-      const url = ENDPOINTS.USER_PROFILE_PROPERTY(personId);
-      await axios.patch(url, { key: 'hoursByCategory', value: hoursByCategory });
-      await axios.patch(url, { key: 'totalIntangibleHrs', value: userProfile.totalIntangibleHrs });
-    } catch (error) {
-      console.log(error);
-    }
-  };
-
-  const deleteHours = async (userProfile, timeEntry) => {
-    const { hoursByCategory } = userProfile;
-    const { isTangible, personId } = timeEntry;
-
-    const entryTime = parseFloat(initialForm.hours) + parseFloat(initialForm.minutes) / 60;
-    
-    if (isTangible) {
-      hoursByCategory['unassigned'] -= entryTime;
-    } else {
-      userProfile.totalIntangibleHrs -= entryTime;
-    }
-
-    try {
-      const url = ENDPOINTS.USER_PROFILE_PROPERTY(personId);
-      await axios.patch(url, { key: 'hoursByCategory', value: hoursByCategory });
-      await axios.patch(url, { key: 'totalIntangibleHrs', value: userProfile.totalIntangibleHrs });
-    } catch (error) {
-      console.log(error);
-    }
   };
 
   const handleSubmit = async event => {
@@ -241,7 +158,7 @@ const EditHistoryModal = props => {
     if (!validateInputs()) return;
 
     let isIdEqual = false;
-    if (props.entryType == 'person') {
+    if (props.entryType === 'person') {
       isIdEqual =  initialForm.personId === inputs.personId;
     } else if (props.entryType === 'project') {
       isIdEqual = initialForm.projectId === inputs.projectId;
@@ -265,20 +182,16 @@ const EditHistoryModal = props => {
       dateOfWork: inputs.dateOfWork,
       isTangible: inputs.isTangible,
       entryType: props.entryType,
-      hours: parseInt(inputs.hours),
-      minutes: parseInt(inputs.minutes),
+      hours: parseInt(inputs.hours, 10),
+      minutes: parseInt(inputs.minutes, 10),
     };
 
     setSubmitting(true);
-    let timeEntryStatus;
-    timeEntryStatus = await dispatch(editTimeEntry(props._id, timeEntry, initialForm.dateOfWork));
+    const timeEntryStatus = await dispatch(editTimeEntry(props._id, timeEntry, initialForm.dateOfWork));
     setSubmitting(false);
 
     if (timeEntryStatus !== 200) {
       toggleEdit();
-      alert(
-        `An error occurred while attempting to update your time entry. Error code: ${timeEntryStatus}`,
-      );
       return;
     }
 
@@ -300,16 +213,13 @@ const EditHistoryModal = props => {
       dateOfWork: inputs.dateOfWork,
       isTangible: inputs.isTangible,
       entryType: props.entryType,
-      hours: parseInt(inputs.hours),
-      minutes: parseInt(inputs.minutes),
+      hours: parseInt(inputs.hours, 10),
+      minutes: parseInt(inputs.minutes, 10),
     };
 
     const timeEntryStatus = await dispatch(deleteTimeEntry(timeEntry));
     if (timeEntryStatus !== 200) {
       toggleDelete();
-      alert(
-        `An error occurred while attempting to delete your time entry. Error code: ${timeEntryStatus}`,
-      );
       return;
     }
     if (deleteModal) toggleDelete();
@@ -318,16 +228,16 @@ const EditHistoryModal = props => {
 
   return(
     <>
-    <Modal isOpen={editModal} toggle={toggleEdit}>
-      <ModalHeader toggle={toggleEdit}>
+    <Modal isOpen={editModal} toggle={toggleEdit} className={darkMode ? 'text-light dark-mode' : ''}>
+      <ModalHeader toggle={toggleEdit} className={darkMode ? 'bg-space-cadet text-light' : ''}>
         Edit Lost Time
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Form>
           <>
             {handleFormContent()}
             <FormGroup>
-              <Label for="dateOfWork">Date</Label>
+              <Label for="dateOfWork" className={fontColor}>Date</Label>
               <Input
                 type="date"
                 name="dateOfWork"
@@ -342,7 +252,7 @@ const EditHistoryModal = props => {
               )}
             </FormGroup>
             <FormGroup>
-              <Label for="timeSpent">Time (HH:MM)</Label>
+              <Label for="timeSpent" className={fontColor}>Time (HH:MM)</Label>
               <Row form>
                 <Col>
                   <Input
@@ -376,15 +286,15 @@ const EditHistoryModal = props => {
               )}
             </FormGroup>
             <FormGroup check>
-              <Label check>
+              <Label check className={fontColor}>
                 <Input
                   type="checkbox"
                   name="isTangible"
                   checked={inputs.isTangible}
                   onChange={e => {
                     e.persist();
-                    setInputs(inputs => ({
-                      ...inputs,
+                    setInputs(prevInputs => ({
+                      ...prevInputs,
                       [e.target.name]: e.target.checked,
                     }));
                   }}
@@ -395,46 +305,47 @@ const EditHistoryModal = props => {
           </>
         </Form>
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={handleCancel} color="danger" style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+        <Button onClick={handleCancel} color="danger" style={boxStyling}>
           Cancel
         </Button>
-        <Button onClick={handleSubmit} color="primary" style={boxStyle}>
+        <Button onClick={handleSubmit} color="primary" style={boxStyling}>
           Update
         </Button>
       </ModalFooter>
     </Modal>
-    <Modal isOpen={deleteModal} toggle={toggleDelete}>
-      <ModalHeader toggle={toggleDelete}>
+    <Modal isOpen={deleteModal} toggle={toggleDelete} className={darkMode ? 'dark-mode text-light' : ''}>
+      <ModalHeader toggle={toggleDelete} className={darkMode ? 'bg-space-cadet text-light' : ''}>
         Delete Lost Time
       </ModalHeader>
-      <ModalBody>
+      <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         Are you sure you want to delete this?
       </ModalBody>
-      <ModalFooter>
-        <Button onClick={toggleDelete} color="primary" style={boxStyle}>
+      <ModalFooter className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
+        <Button onClick={toggleDelete} color="primary" style={boxStyling}>
           Close
         </Button>
-        <Button onClick={handleDelete} color="danger" style={boxStyle}>
+        <Button onClick={handleDelete} color="danger" style={boxStyling}>
           Confirm
         </Button>
       </ModalFooter>
     </Modal>
     <div className='history-btn-div'>
-      <Button className='history-btn' color="primary" onClick={toggleEdit} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button className='history-btn' color="primary" onClick={toggleEdit} style={boxStyling}>
         Edit
       </Button>
-      <Button className='history-btn' color="danger" onClick={toggleDelete} style={darkMode ? boxStyleDark : boxStyle}>
+      <Button className='history-btn' color="danger" onClick={toggleDelete} style={boxStyling}>
         Delete
       </Button>
     </div>
     </>
   );
-};
+}
 
 const mapStateToProps = state => ({
   userProfile: state.userProfile,
   auth: state.auth,
+  darkMode: state.theme.darkMode,
 });
 
 const mapDispatchToProps = dispatch => ({

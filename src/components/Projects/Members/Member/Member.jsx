@@ -8,13 +8,15 @@ import { connect } from 'react-redux';
 import { assignProject } from './../../../../actions/projectMembers';
 import hasPermission from 'utils/permissions';
 import { boxStyle } from 'styles';
-import PropTypes from 'prop-types'; 
+import PropTypes from 'prop-types';
+
 
 const Member = props => {
-  const {darkMode} = props;
+  const { darkMode } = props;
   const canGetProjectMembers = props.hasPermission('getProjectMembers');
   const canUnassignUserInProject = props.hasPermission('unassignUserInProject');
- 
+
+
   return (
     <React.Fragment>
       <tr className={`members__tr`}>
@@ -28,26 +30,24 @@ const Member = props => {
             props.fullName
           )}
         </td>
-        {canUnassignUserInProject ? (
-          <td className="members__assign">
-            <button
-              className="btn btn-outline-danger btn-sm"
-              type="button"
-              onClick={e =>
-                props.assignProject(
-                  props.projectId,
-                  props.uid,
-                  'unAssign',
-                  props.firstName,
-                  props.lastName,
-                )
-              }
-              style={darkMode ? {} : boxStyle}
-            >
-              <i className="fa fa-minus" aria-hidden="true"></i>
-            </button>
-          </td>
-        ) : null}
+        <td className="members__unassign">
+          <button
+            className="btn btn-outline-danger btn-sm"
+            type="button"
+            onClick={e =>
+              props.assignProject(
+                props.projectId,
+                props.uid,
+                'unAssign',
+                props.firstName,
+                props.lastName,
+              )
+            }
+            style={darkMode ? {} : boxStyle}
+          >
+            <i className="fa fa-minus" aria-hidden="true"></i>
+          </button>
+        </td>
       </tr>
     </React.Fragment>
   );

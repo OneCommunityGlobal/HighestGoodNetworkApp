@@ -1,6 +1,7 @@
 import axios from 'axios';
 import * as actions from '../constants/weeklySummariesReport';
 import { ENDPOINTS } from '../utils/URL';
+import { toast } from 'react-toastify';
 
 /**
  * Action to set the 'loading' flag to true.
@@ -77,4 +78,30 @@ export const updateOneSummaryReport = (userId, updatedField) => {
       throw err;
     }
   }
+};
+
+/**
+ * Toggle the user's bio status (posted, requested, default).
+ */
+export const toggleUserBio = (userId, bioPosted) => {
+  const url = ENDPOINTS.TOGGLE_BIO_STATUS(userId);
+  return async dispatch => {
+    try {
+      const res = await axios.patch(url, { bioPosted });
+
+      if (res.status === 200) {
+        const updatedField = { bioPosted };
+
+        // Dispatch an action to update the store
+        dispatch(updateSummaryReport({ _id: userId, updatedField }));
+
+        toast.success(`Bio status updated to "${bioPosted}"`);
+      }
+
+      return res;
+    } catch (error) {
+      toast.error("An error occurred while updating bio status.");
+      throw error;
+    }
+  };
 };

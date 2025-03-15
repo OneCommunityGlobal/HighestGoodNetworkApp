@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
+import { connect, useSelector } from 'react-redux';
 import { UserDeleteType } from '../../utils/enums';
 import {
   USER_DELETE_CONFIRMATION_FIRST_LINE,
@@ -9,13 +10,12 @@ import {
   USER_DELETE_DATA_ARCHIVE,
   USER_DELETE_OPTION_HEADING,
   USER_DELETE_CONFIRMATION_USER_NAME,
-  USER_DELETE_CONFIRMATION_FIRST_LINE_CONT
+  USER_DELETE_CONFIRMATION_FIRST_LINE_CONT,
 } from '../../languages/en/messages';
+import hasPermission from '../../utils/permissions';
 import { CLOSE } from '../../languages/en/ui';
-import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
-import { connect, useSelector } from 'react-redux';
-import hasPermission from 'utils/permissions';
+import { boxStyle, boxStyleDark } from '../../styles';
+import '../Header/DarkMode.css';
 
 /**
  * Modal popup to delete the user profile
@@ -23,14 +23,20 @@ import hasPermission from 'utils/permissions';
 const DeleteUserPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const closePopup = e => {
+  const closePopup = () => {
     props.onClose();
   };
   const canDeleteUser = props.hasPermission('deleteUserProfile');
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'text-light dark-mode' : ''}>
-      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>{USER_DELETE_OPTION_HEADING}</ModalHeader>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      className={darkMode ? 'text-light dark-mode' : ''}
+    >
+      <ModalHeader className={darkMode ? 'bg-space-cadet' : ''} toggle={closePopup}>
+        {USER_DELETE_OPTION_HEADING}
+      </ModalHeader>
       <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
         <p>
           {USER_DELETE_CONFIRMATION_FIRST_LINE}
@@ -39,7 +45,7 @@ const DeleteUserPopup = React.memo(props => {
         </p>
         <p>{USER_DELETE_CONFIRMATION_SECOND_LINE}</p>
         <div style={{ textAlign: 'center', paddingTop: '10px' }}>
-          {(canDeleteUser) && (
+          {canDeleteUser && (
             <>
               <Button
                 color="primary btn-danger"
@@ -72,11 +78,7 @@ const DeleteUserPopup = React.memo(props => {
               </Button>
             </>
           )}
-          {!(canDeleteUser) && (
-            <>
-              Unauthorized Action
-            </>
-          )}
+          {!canDeleteUser && <>Unauthorized Action</>}
         </div>
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
@@ -89,7 +91,7 @@ const DeleteUserPopup = React.memo(props => {
 });
 
 const DivSpacer = React.memo(() => {
-  return <div style={{ padding: '5px' }}></div>;
+  return <div style={{ padding: '5px' }} />;
 });
 
 export default connect(null, { hasPermission })(DeleteUserPopup);

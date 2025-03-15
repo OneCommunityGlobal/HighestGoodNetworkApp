@@ -1,10 +1,10 @@
-import React from 'react';
-import { screen, render, fireEvent } from '@testing-library/react';
+// import React from 'react';
+import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import ResetPasswordPopup from '../ResetPasswordPopup';
 import { Provider } from 'react-redux';
 import configureStore from 'redux-mock-store';
-import { themeMock } from '__tests__/mockStates';
+import ResetPasswordPopup from '../ResetPasswordPopup';
+import { themeMock } from '../../../__tests__/mockStates';
 
 const initialState = {
   theme: themeMock,
@@ -22,7 +22,7 @@ describe('reset password popup', () => {
     render(
       <Provider store={store}>
         <ResetPasswordPopup open onReset={onReset} onClose={onClose} />
-      </Provider>
+      </Provider>,
     );
   });
   describe('Structure', () => {
@@ -47,9 +47,7 @@ describe('reset password popup', () => {
       expect(screen.getByLabelText(/new password/i)).toHaveValue('test');
     });
     it('should fire onClose() once the user clicks the close buttons', () => {
-      screen
-        .getAllByRole('button', { name: /close/i })
-        .forEach((button) => userEvent.click(button));
+      screen.getAllByRole('button', { name: /close/i }).forEach(button => userEvent.click(button));
       expect(onClose).toHaveBeenCalledTimes(2);
     });
     it('should popup error when the password length does not meet the requirement', async () => {

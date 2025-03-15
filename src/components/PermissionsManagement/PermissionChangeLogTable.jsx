@@ -22,6 +22,13 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
     }
   };
 
+  const formatName = name => {
+    if (name.startsWith('INDIVIDUAL:')) {
+      return name.replace('INDIVIDUAL:', '').trim();
+    }
+    return name;
+  };
+
   const renderPageNumbers = () => {
     const pageNumbers = [];
     const maxPageNumbersToShow = 5;
@@ -65,6 +72,24 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
     }));
   };
 
+  const renderPermissions = (permissions, rowId) => {
+    // Filter out empty or falsy values before joining the permissions
+    const filteredPermissions = permissions.filter(permission => permission);
+
+    return (
+      <div className="permissions-cell">
+        {expandedRows[rowId]
+          ? filteredPermissions.join(', ') // Show all filtered permissions if expanded
+          : filteredPermissions.slice(0, 5).join(', ') +
+            (filteredPermissions.length > 5 ? ', ...' : '')}
+        {filteredPermissions.length > 5 && (
+          <button className="toggle-button" onClick={() => toggleExpandRow(rowId)} type="button">
+            {expandedRows[rowId] ? <FiChevronUp /> : <FiChevronDown />}
+          </button>
+        )}
+      </div>
+    );
+  };
   return (
     <>
       <div className="table-responsive">
@@ -77,7 +102,7 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
               <th className={`permission-change-log-table--header${addDark}`}>
                 Log Date and Time (PST)
               </th>
-              <th className={`permission-change-log-table--header${addDark}`}>Role Name</th>
+              <th className={`permission-change-log-table--header${addDark}`}>Name</th>
               <th className={`permission-change-log-table--header${addDark}`}>Permissions</th>
               <th className={`permission-change-log-table--header${addDark}`}>Permissions Added</th>
               <th className={`permission-change-log-table--header${addDark}`}>
@@ -93,31 +118,22 @@ function PermissionChangeLogTable({ changeLogs, darkMode }) {
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>{`${formatDate(
                   log.logDateTime,
                 )} ${formattedAmPmTime(log.logDateTime)}`}</td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
-                  {log.roleName}
+                <td
+                  className={`permission-change-log-table--cell ${bgYinmnBlue}`}
+                  style={{
+                    fontWeight: log.name.startsWith('INDIVIDUAL:') ? 'bold' : 'normal',
+                  }}
+                >
+                  {formatName(log.name)}
                 </td>
                 <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
-                  <div className="permissions-cell">
-                    {expandedRows[log._id]
-                      ? log.permissions.join(', ')
-                      : log.permissions.slice(0, 5).join(', ') +
-                        (log.permissions.length > 5 ? ', ...' : '')}
-                    {log.permissions.length > 5 && (
-                      <button
-                        className="toggle-button"
-                        onClick={() => toggleExpandRow(log._id)}
-                        type="button"
-                      >
-                        {expandedRows[log._id] ? <FiChevronUp /> : <FiChevronDown />}
-                      </button>
-                    )}
-                  </div>
+                  {renderPermissions(log.permissions, log._id)}
                 </td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
-                  {log.permissionsAdded.join(', ')}
+                <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
+                  {renderPermissions(log.permissionsAdded, `${log._id}_added`)}
                 </td>
-                <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
-                  {log.permissionsRemoved.join(', ')}
+                <td className={`permission-change-log-table--cell permissions ${bgYinmnBlue}`}>
+                  {renderPermissions(log.permissionsRemoved, `${log._id}_removed`)}
                 </td>
                 <td className={`permission-change-log-table--cell ${bgYinmnBlue}`}>
                   {log.requestorRole}

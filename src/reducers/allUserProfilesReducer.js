@@ -1,10 +1,15 @@
+import { update } from 'lodash';
 import * as types from '../constants/userManagement';
 
 const userProfilesInitial = {
   fetching: false,
   fetched: false,
   userProfiles: [],
-  status: 404,
+  editable: { 'first': 1, 'last': 1, 'role': 1, 'jobTitle': 1, 'email': 1, 'weeklycommittedHours': 1 ,'startDate':1,'endDate':1},
+  pagestats: { pageSize: 10, selectedPage: 1 },
+  status: 100,
+  updating:false,
+  newUserData:[]
 };
 
 export const updateObject = (oldObject, updatedProperties) => {
@@ -58,3 +63,26 @@ export const allUserProfilesReducer = (userProfiles = userProfilesInitial, actio
       return userProfiles;
   }
 };
+
+
+export const enableUserInfoEditReducer = (userProfile = userProfilesInitial, action) => {
+  switch (action.type) {
+    case "ENABLE_USER_PROFILE_EDIT":
+      return updateObject(userProfile, {...userProfile, "editable": action.payload })
+    case "DISABLE_USER_PROFILE_EDIT":
+      return updateObject(userProfile, { "editable": action.payload })
+    case "START_USER_INFO_UPDATE":
+      return ({...userProfile, 
+        newUserData: userProfile.newUserData.concat(action.payload)})
+    default: return userProfile
+  }
+}
+
+export const changeUserPageStatusReducer = (userProfile = userProfilesInitial, action) => {
+  switch (action.type) {
+    case "CHANGE_USER_PROFILE_PAGE":
+
+      return updateObject(userProfile.pagestats, action.payload)
+    default: return userProfile
+  }
+}

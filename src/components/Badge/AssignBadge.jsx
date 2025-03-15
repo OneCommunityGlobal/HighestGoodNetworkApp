@@ -114,6 +114,7 @@ function AssignBadge(props) {
     <Form
       className={`container-fluid ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
       style={{ padding: 20 }}
+      onSubmit={(e) => e.preventDefault()}
     >
       <div className="row align-items-center mb-3">
         <Label
