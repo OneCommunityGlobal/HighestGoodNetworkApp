@@ -11,9 +11,11 @@ import './WeeklySummariesReport.css';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
+import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
-import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import { getWeeklySummariesReport, updateOneSummaryReport } from 'actions/weeklySummariesReport';
+import { postLeaderboardData } from 'actions/leaderBoardData';
 import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
@@ -645,6 +647,25 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
 function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies }) {
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+  const [trophyFollowedUp, setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
+  const dispatch = useDispatch();
+
+  const [modalOpen, setModalOpen] = useState(false);
+
+  const trophyIconToggle = () => {
+    if (auth?.user?.role === 'Owner' || auth?.user?.role === 'Administrator') {
+      setModalOpen(prevState => (prevState ? false : summary._id));
+    }
+  };
+
+  const handleChangingTrophyIcon = async newTrophyStatus => {
+    setModalOpen(false);
+    await dispatch(postLeaderboardData(summary._id, newTrophyStatus));
+
+    setTrophyFollowedUp(newTrophyStatus);
+
+    toast.success('Trophy status updated successfully');
+  };
 
   const googleDocLink = summary.adminLinks?.reduce((targetLink, currentElement) => {
     if (currentElement.Name === 'Google Doc') {
@@ -707,12 +728,40 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies }) {
           )}
           {loadTrophies &&
             showTrophyIcon(summarySubmissionDate, summary?.startDate?.split('T')[0] || null) && (
-              <i className="fa fa-trophy" style={{ marginLeft: '10px', fontSize: '25px' }}>
+              <i
+                className="fa fa-trophy"
+                style={{
+                  marginLeft: '10px',
+                  fontSize: '25px',
+                  cursor: 'pointer',
+                  color: summary?.trophyFollowedUp === true ? '#ffbb00' : '#FF0800',
+                }}
+                onClick={trophyIconToggle}
+              >
                 <p style={{ fontSize: '10px', marginLeft: '5px' }}>
                   {handleIconContent(durationSinceStarted)}
                 </p>
               </i>
             )}
+          <Modal isOpen={modalOpen === summary._id} toggle={trophyIconToggle}>
+            <ModalHeader toggle={trophyIconToggle}>Followed Up?</ModalHeader>
+            <ModalBody>
+              <p>Are you sure you have followed up this icon?</p>
+            </ModalBody>
+            <ModalFooter>
+              <Button variant="secondary" onClick={trophyIconToggle}>
+                Cancel
+              </Button>{' '}
+              <Button
+                color="primary"
+                onClick={() => {
+                  handleChangingTrophyIcon(true);
+                }}
+              >
+                Confirm
+              </Button>
+            </ModalFooter>
+          </Modal>
         </div>
       </div>
 
