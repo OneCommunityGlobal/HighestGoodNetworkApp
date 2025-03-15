@@ -146,6 +146,11 @@ export const permissionLabels = [
         key: 'changeUserRehireableStatus',
         description: 'Gives the user permission to change the user status of rehireable or not.',
       },
+      {
+        label: 'Set Final Day',
+        key: 'setFinalDay',
+        description: 'Gives the user permission to set the final working day.',
+      },
     ],
   },
   {
