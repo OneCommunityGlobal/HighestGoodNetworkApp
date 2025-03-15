@@ -495,29 +495,26 @@ function Timelog(props) {
     updateTimeEntryItems();
     makeBarData(uid);
   };
-   //Get badges count from userProfile
-   const getBadges = () => {
+  // Get badges count from userProfile
+  const getBadges = () => {
     if (!displayUserProfile || !displayUserProfile.badgeCollection) {
       return 0;
     }
-    const startDate= new Date(startOfWeek(1));
-    const lastDate= new Date(endOfWeek(1))
+    const startDate = new Date(startOfWeek(1));
+    const lastDate = new Date(endOfWeek(1));
     let totalBadges = 0;
-    console.log(startDate,lastDate)
+    console.log(startDate, lastDate);
     displayUserProfile.badgeCollection.forEach(badge => {
-
-      for(let date of badge.earnedDate){
-          let dateElement= new Date(date)
-          if(  dateElement >= startDate && dateElement <= lastDate){
-            totalBadges++
-          }
-      }
+      badge.earnedDate.forEach(date => {
+        const dateElement = new Date(date);
+        if (dateElement >= startDate && dateElement <= lastDate) {
+          totalBadges += 1;
+        }
+      });
     });
+
     return totalBadges;
   };
-  const handleUpdateTask = useCallback(() => {
-    setShouldFetchData(true);
-  }, []);
 
   const handleStorageEvent = () => {
     const sessionStorageData = checkSessionStorage();
