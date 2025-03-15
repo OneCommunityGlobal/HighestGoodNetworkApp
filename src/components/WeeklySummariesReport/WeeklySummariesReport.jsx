@@ -235,7 +235,7 @@ export class WeeklySummariesReport extends Component {
       COLORS,
       colorOptions,
       teamCodes,
-      auth
+      auth,
     });
 
     await getInfoCollections();
@@ -878,7 +878,6 @@ export class WeeklySummariesReport extends Component {
           <Col lg={{ size: 5, offset: 1 }} md={{ size: 6 }} xs={{ size: 6 }}>
             <div className="filter-container-teamcode">
               <div>Select Team Code</div>
-              
 
               <div className="filter-style">
                 <span>Show Chart</span>
