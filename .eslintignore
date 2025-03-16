@@ -6,26 +6,20 @@ src/actions/**
 src/App.css
 src/config.json
 
-src/index.js
-src/reducers/**
-src/styles.js
 src/__tests__/**
 
 /public/
 /build/
 /node_modules/
-src/components/App.jsx
-src/components/AutoReload/**
 src/components/Badge/**
 src/components/common/**
 src/components/Projects/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
-src/components/Teams/**
 src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
-src/components/Announcements/**
 src/components/EmailSubscribeForm/**
 src/components/Dashboard/**
+src/components/Teams/TeamMembersPopup.jsx

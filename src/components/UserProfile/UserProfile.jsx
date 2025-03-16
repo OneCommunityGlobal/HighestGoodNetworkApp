@@ -928,7 +928,7 @@ function UserProfile(props) {
             
             <div className="profile-img">
               <Image
-                src={profilePic !== undefined && profilePic!==null? profilePic : '/pfp-default.png'}
+                src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
                 alt="Profile Picture"
                 roundedCircle
                 className="profilePicture bg-white"
