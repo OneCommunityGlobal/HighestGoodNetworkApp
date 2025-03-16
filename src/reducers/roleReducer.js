@@ -1,35 +1,44 @@
-import * as types from "../constants/role";
+import * as types from '../constants/role';
 
 const initialState = {
   roles: [],
 };
 
+// eslint-disable-next-line default-param-last
 export const roleReducer = (state = initialState, action) => {
   switch (action.type) {
-    case types.RECEIVE_ROLES:
-      const rolesSortByPermission = action.roles.sort(
+    case types.RECEIVE_ROLES: {
+      // Wrap in braces to fix lexical declaration issue
+      const rolesSortByPermission = [...action.roles].sort(
         (a, b) => b.permissions.length - a.permissions.length,
       );
       return { ...state, roles: rolesSortByPermission };
+    }
 
-    case types.ADD_NEW_ROLE:
-      const toAdd = state.roles;
-      toAdd.push(action.payload);
-      return { ...state, roles: toAdd };
+    case types.ADD_NEW_ROLE: {
+      // Wrap in braces to fix lexical declaration issue
+      return { ...state, roles: [...state.roles, action.payload] };
+    }
 
-    case types.UPDATE_ROLE:
+    case types.UPDATE_ROLE: {
+      // Wrap in braces to fix lexical declaration issue
       const roleUpdated = action.payload;
-      const indexRoleUpdated = state.roles.findIndex(role => role._id === roleUpdated.roleId);
-      const rolesCopy = state.roles;
-
-      if (roleUpdated.roleName !== rolesCopy[indexRoleUpdated].roleName) {
-        rolesCopy[indexRoleUpdated].roleName = roleUpdated.roleName;
-      }
-
-      rolesCopy[indexRoleUpdated].permissions = roleUpdated.permissions;
-      return { ...state, roles: rolesCopy };
+      const updatedRoles = state.roles.map(role => {
+        if (role._id === roleUpdated.roleId) {
+          return {
+            ...role,
+            roleName: roleUpdated.roleName || role.roleName,
+            permissions: roleUpdated.permissions,
+          };
+        }
+        return role;
+      });
+      return { ...state, roles: updatedRoles };
+    }
 
     default:
       return state;
   }
 };
+
+export default roleReducer;

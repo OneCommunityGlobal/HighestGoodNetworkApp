@@ -6,8 +6,6 @@ src/actions/**
 src/App.css
 src/config.json
 
-src/reducers/**
-src/utils/**
 src/__tests__/**
 
 /public/
