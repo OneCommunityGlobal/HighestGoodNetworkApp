@@ -8,6 +8,7 @@ import {
   setWBS,
   removeWBS,
   postNewWBS,
+  setWBSError,
 } from '../wbs';
 
 jest.mock('axios');
@@ -91,6 +92,19 @@ describe('WBS Action Creators', () => {
         wbsId: 'test-wbs-id',
       });
     });
+
+    it('should dispatch setWBSError on axios.delete failure', async () => {
+      const mockDispatch = jest.fn();
+      const mockError = new Error('Delete Error');
+      axios.post.mockResolvedValueOnce({});
+      axios.delete.mockRejectedValueOnce(mockError);
+
+      const thunk = deleteWbs('test-wbs-id');
+      await thunk(mockDispatch);
+
+      await new Promise(process.nextTick);
+      expect(mockDispatch).toHaveBeenCalledWith(setWBSError(mockError));
+    });
   });
 
   describe('fetchAllWBS', () => {
@@ -115,6 +129,20 @@ describe('WBS Action Creators', () => {
       await thunk(mockDispatch);
 
       expect(mockDispatch).toHaveBeenCalledWith({ type: types.FETCH_WBS_START });
+    });
+
+    it('should dispatch setWBSError when axios.get promise fails', async () => {
+      const mockDispatch = jest.fn();
+      const mockError = new Error('Fetch Error');
+
+      axios.get.mockReturnValueOnce(Promise.reject(mockError));
+
+      const thunk = fetchAllWBS('test-project-id');
+      await thunk(mockDispatch);
+      await new Promise(process.nextTick);
+
+      expect(mockDispatch).toHaveBeenCalledWith(setWBSStart());
+      expect(mockDispatch).toHaveBeenCalledWith(setWBSError(mockError));
     });
   });
 });
