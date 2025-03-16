@@ -220,8 +220,8 @@ function EquipmentsTable({ equipment, project }) {
                     <td className="materials_cell">
                       <button
                         type="button"
+                        aria-label="Edit Updates"
                         onClick={() => handleOpenModal(rec, 'UpdatesEdit')}
-                        aria-label="button"
                       >
                         <BiPencil />
                       </button>
