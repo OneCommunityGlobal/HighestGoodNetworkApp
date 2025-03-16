@@ -19,8 +19,10 @@ src/components/Projects/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
-src/components/Teams/**
+src/components/TeamLocations/**
+src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/EmailSubscribeForm/**
 src/components/Dashboard/**
+src/components/Teams/TeamMembersPopup.jsx
