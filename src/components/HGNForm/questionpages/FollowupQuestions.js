@@ -7,6 +7,7 @@ import { ENDPOINTS } from 'utils/URL';
 import { toast } from 'react-toastify';
 import { useSelector, useDispatch } from 'react-redux';
 import { setformData } from 'actions/hgnFormAction';
+import { Spinner } from 'reactstrap';
 
 function FollowupQuestions() {
   const navigate = useHistory();
@@ -69,67 +70,6 @@ function FollowupQuestions() {
     }
   };
 
-  // const formatAvailability = availability => {
-  //   const result = {};
-  //   const weekdaysOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'];
-
-  //   for (const [day, times] of Object.entries(availability)) {
-  //     // If the user has selected "N/A" for this day, skip it
-  //     if (Object.keys(times).length === 1 && times['N/A']) {
-  //       continue;
-  //     }
-
-  //     // Filter selected times
-  //     const selectedTimes = Object.keys(times)
-  //       .filter(time => times[time])
-  //       .map(time => time.replace(/\s+/g, '')); // Remove spaces from time strings
-
-  //     if (selectedTimes.length === 0) {
-  //       result[day] = 'N/A';
-  //       continue;
-  //     }
-
-  //     // Sort times in ascending order
-  //     selectedTimes.sort((a, b) => {
-  //       const [aStart] = a.split('-');
-  //       const [bStart] = b.split('-');
-  //       return parseInt(aStart, 10) - parseInt(bStart, 10);
-  //     });
-
-  //     // Group consecutive times
-  //     const groupedTimes = [];
-  //     let rangeStart = selectedTimes[0];
-  //     let previousTime = rangeStart;
-
-  //     for (let i = 1; i <= selectedTimes.length; i += 1) {
-  //       const currentTime = selectedTimes[i];
-  //       const [prevEnd] = previousTime.split('-');
-  //       const [currStart] = currentTime ? currentTime.split('-') : [null];
-
-  //       // Check if current time is consecutive to the previous time
-  //       if (currentTime && parseInt(prevEnd) === parseInt(currStart) - 1) {
-  //         previousTime = currentTime;
-  //       } else {
-  //         const formattedRange = `${rangeStart.split('-')[0]}-${previousTime.split('-')[1]}`;
-  //         groupedTimes.push(formattedRange);
-  //         rangeStart = currentTime;
-  //         previousTime = currentTime;
-  //       }
-  //     }
-
-  //     result[day] = groupedTimes.join(', ');
-  //   }
-
-  //   // Sort result by weekdays order
-  //   const sortedResult = weekdaysOrder.reduce((acc, day) => {
-  //     if (result[day]) {
-  //       acc[day] = result[day];
-  //     }
-  //     return acc;
-  //   }, {});
-
-  //   return sortedResult;
-  // };
   const processTimes = sortedTimes => {
     return sortedTimes.reduce((groupedTimes, time) => {
       const [prevStart, prevEnd] = groupedTimes.length
@@ -211,7 +151,6 @@ function FollowupQuestions() {
         location: finalData.location,
         manager: finalData.manager,
         combined_frontend_backend: finalData.combined_frontend_backend,
-        combined_skills: finalData.combined_skills,
         mern_skills: finalData.mern_skills,
         leadership_skills: finalData.leadership_skills,
         leadership_experience: finalData.leadership_experience,
@@ -274,10 +213,12 @@ function FollowupQuestions() {
   };
 
   const handleBack = () => {
+    dispatch(setformData(newVolunteer));
     navigate.goBack('/hgnform/page4');
   };
 
   const handleEdit = () => {
+    dispatch(setformData(newVolunteer));
     navigate.push('/hgnform');
   };
 
@@ -285,13 +226,17 @@ function FollowupQuestions() {
     setNewVolunteer({ ...newVolunteer, [e.target.name]: e.target.value });
   };
 
-  const searchQuestion = (page,qno) => {
-    let question= questions.find(question => question.page === page && question.qno === qno);
-    return question.text;
-  }
+  const searchQuestion = (page, qno) => {
+    const questiontext = questions.find(question => question.page === page && question.qno === qno);
+    return questiontext.text;
+  };
 
   if (loading) {
-    return <p>Loading Questions...</p>;
+    return (
+      <div>
+        <Spinner color="primary" className="spinner-hgnform" />;
+      </div>
+    );
   }
 
   return (
@@ -339,7 +284,7 @@ function FollowupQuestions() {
                   </div>
                 ) : (
                   <p className="question">
-                    {searchQuestion(5,index+1)}
+                    {searchQuestion(5, index + 1)}
                     {isOwner && (
                       <FaEdit
                         className="edit-icon"

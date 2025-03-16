@@ -6,8 +6,8 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { setformData } from 'actions/hgnFormAction';
-import { ENDPOINTS } from '../../../utils/URL';
 import { Spinner } from 'reactstrap';
+import { ENDPOINTS } from '../../../utils/URL';
 
 function GeneralQuestions() {
   const navigate = useHistory();
@@ -218,10 +218,10 @@ function GeneralQuestions() {
     }
   };
 
-  const searchQuestion = (page,qno ) => {
-   let question= questions.find(question => question.page === page && question.qno === qno);
-   return question.text;
-  }
+  const searchQuestion = (page, qno) => {
+    const questiontext = questions.find(question => question.page === page && question.qno === qno);
+    return questiontext.text;
+  };
 
   const renderEditableQuestion = index => {
     return (
@@ -245,7 +245,7 @@ function GeneralQuestions() {
           </div>
         ) : (
           <p className="question">
-            {searchQuestion(2,index+1)}
+            {searchQuestion(2, index + 1)}
             {isOwner && (
               <FaEdit className="edit-icon" onClick={() => handleEditClick(index)} title="Edit" />
             )}
@@ -255,10 +255,11 @@ function GeneralQuestions() {
     );
   };
   if (loading) {
-      return (<div>
-        <Spinner color="primary" className="spinner-hgnform"/>;
+    return (
+      <div>
+        <Spinner color="primary" className="spinner-hgnform" />;
       </div>
-      );    
+    );
   }
 
   return (
@@ -467,7 +468,7 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="combined_skills">
+        {/* <div className="combined_skills">
           {renderEditableQuestion(6)}
           <div className="radio-rating">
             {Array.from({ length: 10 }, (_, i) => (
@@ -485,10 +486,10 @@ function GeneralQuestions() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="mern_skills">
-          {renderEditableQuestion(7)}
+          {renderEditableQuestion(6)}
           <div className="radio-rating">
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
@@ -508,7 +509,7 @@ function GeneralQuestions() {
         </div>
 
         <div className="leadership_skills">
-          {renderEditableQuestion(8)}
+          {renderEditableQuestion(7)}
           <div className="radio-rating">
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
@@ -528,7 +529,7 @@ function GeneralQuestions() {
         </div>
 
         <div className="leadership_experience">
-          {renderEditableQuestion(9)}
+          {renderEditableQuestion(8)}
           <div className="radio-rating">
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
@@ -548,7 +549,7 @@ function GeneralQuestions() {
         </div>
 
         <div className="preferences">
-          {renderEditableQuestion(10)}
+          {renderEditableQuestion(9)}
           <div className="preferences-checkbox">
             {[
               'frontend',
@@ -577,7 +578,7 @@ function GeneralQuestions() {
         </div>
 
         <div className="availability">
-          {renderEditableQuestion(11)}
+          {renderEditableQuestion(10)}
           <div className="availability-selector">
             <div className="availability-grid">
               <div className="corner-cell" />

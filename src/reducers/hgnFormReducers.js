@@ -14,7 +14,6 @@ const formState = {
     location: "",
     manager: "",
     combined_frontend_backend: "",
-    combined_skills: "",
     mern_skills: "",
     leadership_skills: "",
     leadership_experience: "",
