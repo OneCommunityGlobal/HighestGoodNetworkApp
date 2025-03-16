@@ -70,7 +70,6 @@ function FollowupQuestions() {
     }
   };
 
-  
   const processTimes = sortedTimes => {
     return sortedTimes.reduce((groupedTimes, time) => {
       const [prevStart, prevEnd] = groupedTimes.length
@@ -227,16 +226,17 @@ function FollowupQuestions() {
     setNewVolunteer({ ...newVolunteer, [e.target.name]: e.target.value });
   };
 
-  const searchQuestion = (page,qno) => {
-    let question= questions.find(question => question.page === page && question.qno === qno);
-    return question.text;
-  }
+  const searchQuestion = (page, qno) => {
+    const questiontext = questions.find(question => question.page === page && question.qno === qno);
+    return questiontext.text;
+  };
 
   if (loading) {
-    return (<div>
-      <Spinner color="primary" className="spinner-hgnform"/>;
-    </div>
-    );  
+    return (
+      <div>
+        <Spinner color="primary" className="spinner-hgnform" />;
+      </div>
+    );
   }
 
   return (
@@ -284,7 +284,7 @@ function FollowupQuestions() {
                   </div>
                 ) : (
                   <p className="question">
-                    {searchQuestion(5,index+1)}
+                    {searchQuestion(5, index + 1)}
                     {isOwner && (
                       <FaEdit
                         className="edit-icon"

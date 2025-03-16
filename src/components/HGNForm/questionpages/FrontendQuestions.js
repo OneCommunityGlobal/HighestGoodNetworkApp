@@ -85,10 +85,10 @@ function FrontendQuestions() {
     }
   };
 
-  const searchQuestion = (page,qno) => {
-    let question= questions.find(question => question.page === page && question.qno === qno);
-    return question.text;
-   }
+  const searchQuestion = (page, qno) => {
+    const questiontext = questions.find(question => question.page === page && question.qno === qno);
+    return questiontext.text;
+  };
 
   // Mapping question keys to structured field names
   const fieldNameMap = [
@@ -106,10 +106,11 @@ function FrontendQuestions() {
   ];
 
   if (loading) {
-    return (<div>
-      <Spinner color="primary" className="spinner-hgnform"/>;
-    </div>
-    );  
+    return (
+      <div>
+        <Spinner color="primary" className="spinner-hgnform" />;
+      </div>
+    );
   }
 
   return (
@@ -141,7 +142,7 @@ function FrontendQuestions() {
                   </div>
                 ) : (
                   <p className="question">
-                    {searchQuestion(3,index+1)}
+                    {searchQuestion(3, index + 1)}
                     {isOwner && (
                       <FaEdit
                         className="edit-icon"

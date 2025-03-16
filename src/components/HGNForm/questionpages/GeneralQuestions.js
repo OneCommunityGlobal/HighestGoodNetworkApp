@@ -6,8 +6,8 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'react-toastify';
 import { setformData } from 'actions/hgnFormAction';
-import { ENDPOINTS } from '../../../utils/URL';
 import { Spinner } from 'reactstrap';
+import { ENDPOINTS } from '../../../utils/URL';
 
 function GeneralQuestions() {
   const navigate = useHistory();
@@ -218,10 +218,10 @@ function GeneralQuestions() {
     }
   };
 
-  const searchQuestion = (page,qno ) => {
-   let question= questions.find(question => question.page === page && question.qno === qno);
-   return question.text;
-  }
+  const searchQuestion = (page, qno) => {
+    const questiontext = questions.find(question => question.page === page && question.qno === qno);
+    return questiontext.text;
+  };
 
   const renderEditableQuestion = index => {
     return (
@@ -245,7 +245,7 @@ function GeneralQuestions() {
           </div>
         ) : (
           <p className="question">
-            {searchQuestion(2,index+1)}
+            {searchQuestion(2, index + 1)}
             {isOwner && (
               <FaEdit className="edit-icon" onClick={() => handleEditClick(index)} title="Edit" />
             )}
@@ -255,10 +255,11 @@ function GeneralQuestions() {
     );
   };
   if (loading) {
-      return (<div>
-        <Spinner color="primary" className="spinner-hgnform"/>;
+    return (
+      <div>
+        <Spinner color="primary" className="spinner-hgnform" />;
       </div>
-      );    
+    );
   }
 
   return (

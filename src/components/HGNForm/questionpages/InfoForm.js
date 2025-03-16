@@ -16,7 +16,7 @@ function InfoForm() {
     ...formData,
     github: formData?.github || '',
     slack: formData?.slack || '',
-  });  
+  });
   const [loading, setLoading] = useState(true);
   const updateFormData = data => {
     dispatch(setformData(data));
@@ -41,7 +41,7 @@ function InfoForm() {
   }, [newVolunteer.name, newVolunteer.slack]);
 
   useEffect(() => {
-    if(user && userProfile && formData) {
+    if (user && userProfile && formData) {
       setNewVolunteer(prevState => ({
         ...formData,
         ...prevState, // This preserves any user input
@@ -251,9 +251,11 @@ function InfoForm() {
         </div>
       </form>
     </div>
-  ) : <div>
-      <Spinner color="primary" className="spinner-hgnform" style={{top : "80%"}}/>;
-  </div>;
+  ) : (
+    <div>
+      <Spinner color="primary" className="spinner-hgnform" style={{ top: '80%' }} />;
+    </div>
+  );
 }
 
 export default InfoForm;
