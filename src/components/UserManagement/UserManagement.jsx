@@ -55,6 +55,7 @@ class UserManagement extends React.PureComponent {
       firstNameSearchText: '',
       lastNameSearchText: '',
       roleSearchText: '',
+      titleSearchText: '',
       weeklyHrsSearchText: '',
       emailSearchText: '',
       wildCardSearchText: '',
@@ -101,30 +102,35 @@ class UserManagement extends React.PureComponent {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-    const searchState =
-      prevState.firstNameSearchText !== this.state.firstNameSearchText ||
-      prevState.lastNameSearchText !== this.state.lastNameSearchText ||
-      prevState.roleSearchText !== this.state.roleSearchText ||
-      prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText ||
-      prevState.emailSearchText !== this.state.emailSearchText;
-    const pageSizeValue = prevState.pageSize !== this.state.pageSize;
-    if (
-      prevState.selectedPage !== this.state.selectedPage ||
-      prevState.wildCardSearchText !== this.state.wildCardSearchText ||
-      searchState ||
-      pageSizeValue
-    ) {
-      const { darkMode } = this.props.state.theme;
-      const { userProfiles } = this.props.state.allUserProfiles;
-      const { roles: rolesPermissions } = this.props.state.role;
-      const { requests: timeOffRequests } = this.props.state.timeOffRequests;
-      this.getFilteredData(
-        userProfiles,
-        rolesPermissions,
-        timeOffRequests,
-        darkMode,
-        this.state.editable,
-      );
+    
+    if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
+      const darkMode = this.props.state.theme.darkMode;
+      let { userProfiles, fetching } = this.props.state.allUserProfiles;
+      let { roles: rolesPermissions } = this.props.state.role;
+      let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      
+      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
+    }
+    
+    const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || 
+                               (prevState.lastNameSearchText !== this.state.lastNameSearchText) || 
+                               (prevState.roleSearchText !== this.state.roleSearchText) || 
+                               prevState.titleSearchText !== this.state.titleSearchText ||
+                               (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || 
+                               (prevState.emailSearchText !== this.state.emailSearchText);
+  
+    const pageSizeChanged = prevState.pageSize !== this.state.pageSize;
+    const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
+    
+    if ((prevState.selectedPage !== this.state.selectedPage) || 
+        (prevState.wildCardSearchText !== this.state.wildCardSearchText) || 
+        searchStateChanged || pageSizeChanged || userProfilesChanged ) {
+  
+      let darkMode = this.props.state.theme.darkMode;
+      let { userProfiles, fetching } = this.props.state.allUserProfiles;
+      let { roles: rolesPermissions } = this.props.state.role;
+      let { requests: timeOffRequests } = this.props.state.timeOffRequests;
+      this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
     }
   }
 
@@ -165,8 +171,8 @@ class UserManagement extends React.PureComponent {
               : ''
           }
           open={this.state.activeInactivePopupOpen}
-          setActiveInactive={this.setActiveInactive}
           onClose={this.activeInactivePopupClose}
+          setActiveInactive={this.setActiveInactive}
         />
         <SetUpFinalDayPopUp
           open={this.state.finalDayDateOpen}
@@ -237,6 +243,7 @@ class UserManagement extends React.PureComponent {
               onResetClick={that.onResetClick}
               authEmail={this.props.state.userProfile.email}
               user={user}
+              jobTitle={this.props.state.userProfile.jobTitle}
               role={this.props.state.auth.user.role}
               roles={rolesPermissions}
               timeOffRequests={timeOffRequests[user._id] || []}
@@ -251,61 +258,75 @@ class UserManagement extends React.PureComponent {
 
   getFilteredData = (userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser) => {
     this.setState({
-      userTableItems: this.userTableElements(
-        userProfiles,
-        rolesPermissions,
-        timeOffRequests,
-        darkMode,
-        editUser,
-      ),
-    });
-  };
 
+      userTableItems: this.userTableElements(userProfiles, rolesPermissions, timeOffRequests, darkMode, editUser)
+    })
+  }
+  
   filteredUserList = userProfiles => {
+    const wildCardSearch = this.state.wildCardSearchText.trim().toLowerCase();
+    
     return userProfiles.filter(user => {
-      // Applying the search filters before creating each table data element
-      // const search = result => {
-      //   if (typeof result === 'string') {
-      //     return result
-      //       .toLowerCase()
-      //       .trim()
-      //       .replace(/\s+/g, '');
-      //   }
-      //   const numberToString = String(result)
-      //     .trim()
-      //     .replace(/\s+/g, '');
-      //   const stringToNumber = Number(numberToString);
-      //   return stringToNumber;
-      // };
+      const firstNameSearch = this.state.firstNameSearchText || '';
+      const lastNameSearch = this.state.lastNameSearchText || '';
+  
+      const firstName = user.firstName.toLowerCase();
+      const lastName = user.lastName.toLowerCase();
+      const email = user.email ? user.email.toLowerCase() : '';
+  
+      const trimmedFirstNameSearch = firstNameSearch.trim();
+      const trimmedLastNameSearch = lastNameSearch.trim();
+  
+      const isFirstNameExactMatch = firstNameSearch.endsWith(' ') && trimmedFirstNameSearch.length > 0;
+      const isLastNameExactMatch = lastNameSearch.endsWith(' ') && trimmedLastNameSearch.length > 0;
+  
+     
+      const firstNameMatches = trimmedFirstNameSearch
+        ? (isFirstNameExactMatch
+            ? firstName === trimmedFirstNameSearch.toLowerCase() 
+            : firstName.includes(trimmedFirstNameSearch.toLowerCase())) 
+        : true;
+  
+    
+      const lastNameMatches = trimmedLastNameSearch
+        ? (isLastNameExactMatch
+            ? lastName === trimmedLastNameSearch.toLowerCase() 
+            : lastName.includes(trimmedLastNameSearch.toLowerCase()))
+        : true;
 
+
+      const wildcardMatches = wildCardSearch
+      ? wildCardSearch.includes(" ") 
+        ? (firstName + " " + lastName).startsWith(wildCardSearch.trim()) ||
+          (firstName + " " + lastName) === wildCardSearch.trim() ||
+          email === wildCardSearch.trim()
+        : firstName.startsWith(wildCardSearch) || 
+          lastName.startsWith(wildCardSearch) || 
+          firstName.includes(wildCardSearch) ||   
+          lastName.includes(wildCardSearch)||
+          email.includes(wildCardSearch)
+      : true;
+
+      const nameMatches = firstNameMatches && lastNameMatches&& wildcardMatches;
+  
       return (
-        // Check if the user matches the search criteria
-
-        // Regular search criteria
-        user.firstName.toLowerCase().indexOf(this.state.firstNameSearchText.toLowerCase()) > -1 &&
-        user.lastName.toLowerCase().indexOf(this.state.lastNameSearchText.toLowerCase()) > -1 &&
-        user.role.toLowerCase().indexOf(this.state.roleSearchText.toLowerCase()) > -1 &&
-        user.email.toLowerCase().indexOf(this.state.emailSearchText.toLowerCase()) > -1 &&
+        nameMatches &&
+        user.role.toLowerCase().includes(this.state.roleSearchText.toLowerCase()) &&
+        user.jobTitle.toLowerCase().includes(this.state.titleSearchText.toLowerCase()) &&
+        user.email.toLowerCase().includes(this.state.emailSearchText.toLowerCase()) &&
         (this.state.weeklyHrsSearchText === '' ||
           user.weeklycommittedHours === Number(this.state.weeklyHrsSearchText)) &&
-        // Check the isActive state only if 'all' is not selected
         ((this.state.allSelected && true) ||
-          this.state.isActive === undefined ||
-          user.isActive === this.state.isActive) &&
-        // Check the isPaused state only if 'all' is not selected
+          (this.state.isActive === undefined || user.isActive === this.state.isActive)) &&
         ((this.state.allSelected && true) ||
-          this.state.isPaused === false ||
-          (user.reactivationDate && new Date(user.reactivationDate) > new Date())) &&
-        (searchWithAccent(user.firstName, this.state.wildCardSearchText) ||
-          searchWithAccent(user.lastName, this.state.wildCardSearchText) ||
-          user.role.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-          user.email.toLowerCase().indexOf(this.state.wildCardSearchText.toLowerCase()) > -1 ||
-          user.weeklycommittedHours === Number(this.state.wildCardSearchText))
+          (this.state.isPaused === false ||
+            (user.reactivationDate && new Date(user.reactivationDate) > new Date())))
       );
     });
   };
 
   /**
+   * 
    * reload user list and close user creation popup
    */
   userCreated = () => {
@@ -457,16 +478,20 @@ class UserManagement extends React.PureComponent {
   /**
    * Callback to trigger the status change on confirmation ok click.
    */
-  setActiveInactive = isActive => {
-    this.props.updateUserStatus(
-      this.state.selectedUser,
-      isActive ? UserStatus.Active : UserStatus.InActive,
-      undefined,
-    );
-    this.setState({
-      activeInactivePopupOpen: false,
-      selectedUser: undefined,
-    });
+  setActiveInactive = isActive => {    
+    this.setState(
+      {      
+        activeInactivePopupOpen: false,      
+        selectedUser: undefined,      
+        isUpdating: true    
+      });    
+    
+      this.props.updateUserStatus(      
+        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive,      
+        undefined,    
+      ).finally(() => {      
+        this.setState({ isUpdating: false });    
+      });
   };
 
   /**
@@ -492,15 +517,28 @@ class UserManagement extends React.PureComponent {
    * Call back to trigger the delete based on the type chosen from the popup.
    */
   onDeleteUser = deleteType => {
-    if (deleteType === UserDeleteType.Inactive) {
-      this.props.updateUserStatus(this.state.selectedUser, UserStatus.InActive, undefined);
-    } else {
-      this.props.deleteUser(this.state.selectedUser, deleteType);
-    }
     this.setState({
       deletePopupOpen: false,
       selectedUser: undefined,
+      isUpdating: true
     });
+
+    if (deleteType === UserDeleteType.Inactive) {
+      this.props.updateUserStatus(
+        this.state.selectedUser, 
+        UserStatus.InActive, 
+        undefined
+      ).finally(() => {      
+        this.setState({ isUpdating: false });    
+      });
+    } else {
+      this.props.deleteUser(
+        this.state.selectedUser, 
+        deleteType
+      ).finally(() => {      
+        this.setState({ isUpdating: false });    
+      });
+    }
   };
 
   /**
@@ -517,7 +555,7 @@ class UserManagement extends React.PureComponent {
    */
   onFirstNameSearch = searchText => {
     this.setState({
-      firstNameSearchText: searchText.trim(),
+      firstNameSearchText: searchText,
       selectedPage: 1,
     });
   };
@@ -527,7 +565,7 @@ class UserManagement extends React.PureComponent {
    */
   onLastNameSearch = searchText => {
     this.setState({
-      lastNameSearchText: searchText.trim(),
+      lastNameSearchText: searchText,
       selectedPage: 1,
     });
   };
@@ -538,6 +576,16 @@ class UserManagement extends React.PureComponent {
   onRoleSearch = searchText => {
     this.setState({
       roleSearchText: searchText,
+      selectedPage: 1,
+    });
+  };
+
+  /**
+   * Call back for search filter - Job Title
+   */
+  onTitleSearch = searchText => {
+    this.setState({
+      titleSearchText: searchText.trim(),
       selectedPage: 1,
     });
   };
@@ -585,10 +633,20 @@ class UserManagement extends React.PureComponent {
    * callback for search
    */
   onWildCardSearch = searchText => {
-    this.setState({
-      wildCardSearchText: searchText,
-      selectedPage: 1,
-    });
+    this.setState(
+      {
+        wildCardSearchText: searchText,
+        selectedPage: 1,
+      },
+      () => {
+        const { userProfiles } = this.props.state.allUserProfiles;
+        const { roles: rolesPermissions } = this.props.state.role;
+        const { requests: timeOffRequests } = this.props.state.timeOffRequests;
+        const darkMode = this.props.state.theme.darkMode;
+  
+        this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode);
+      }
+    );
   };
 
   /**
@@ -724,6 +782,7 @@ class UserManagement extends React.PureComponent {
                   onFirstNameSearch={this.onFirstNameSearch}
                   onLastNameSearch={this.onLastNameSearch}
                   onRoleSearch={this.onRoleSearch}
+                  onTitleSearch={this.onTitleSearch}
                   onEmailSearch={this.onEmailSearch}
                   onWeeklyHrsSearch={this.onWeeklyHrsSearch}
                   roles={roles}

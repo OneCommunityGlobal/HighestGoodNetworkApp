@@ -580,7 +580,7 @@ function SummaryBar(props) {
             >
               <div className="align-items-center" id="timelogweeklychart">
                 <div className="align-items-center med_text_summary">
-                  Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours}
+                  Current Week : {totalEffort.toFixed(2)} / {weeklyCommittedHours.toFixed(2)}
                   <Progress
                     value={getProgressValue(totalEffort, weeklyCommittedHours)}
                     color={getProgressColor(totalEffort, weeklyCommittedHours)}

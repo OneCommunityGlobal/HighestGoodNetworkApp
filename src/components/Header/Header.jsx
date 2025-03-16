@@ -49,6 +49,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
+  TOTAL_CONSTRUCTION_SUMMARY,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import './Header.css';
@@ -148,6 +149,8 @@ export function Header(props) {
   const unreadNotifications = props.notification?.unreadNotifications; // List of unread notifications
   const dispatch = useDispatch();
   const history = useHistory();
+
+  const [showProjectDropdown, setShowProjectDropdown] = useState(false);
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -291,6 +294,10 @@ export function Header(props) {
     }
   }, [lastDismissed, userId, userDashboardProfile]);
 
+  useEffect(() => {
+    setShowProjectDropdown(location.pathname.startsWith('/bmdashboard/projects/'));
+  }, [location.pathname]);
+
   const fontColor = darkMode ? 'text-white dropdown-item-hover' : '';
 
   if (location.pathname === '/login') return null;
@@ -337,6 +344,59 @@ export function Header(props) {
                     <span className="dashboard-text-link">{TIMELOG}</span>
                   </NavLink>
                 </NavItem>
+
+                {showProjectDropdown && (
+                  <UncontrolledDropdown nav inNavbar className="responsive-spacing">
+                    <DropdownToggle nav caret>
+                      <span className="dashboard-text-link">{PROJECTS}</span>
+                    </DropdownToggle>
+                    <DropdownMenu className={darkMode ? 'bg-yinmn-blue' : ''}>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/materials/add"
+                        className={fontColor}
+                      >
+                        Add Material
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/logMaterial" className={fontColor}>
+                        Log Material
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/materials" className={fontColor}>
+                        Material List
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/add"
+                        className={fontColor}
+                      >
+                        Add Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/equipment/:equipmentId"
+                        className={fontColor}
+                      >
+                        Log Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/tools/:equipmentId/update"
+                        className={fontColor}
+                      >
+                        Update Equipment/Tool
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/equipment" className={fontColor}>
+                        Equipment/Tool List
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/Issue" className={fontColor}>
+                        Issue
+                      </DropdownItem>
+                      <DropdownItem tag={Link} to="/bmdashboard/lessonform/" className={fontColor}>
+                        Lesson
+                      </DropdownItem>
+                    </DropdownMenu>
+                  </UncontrolledDropdown>
+                )}
               </div>
               <div className="d-flex align-items-center justify-content-center">
                 {canGetReports || canGetWeeklySummaries || canGetWeeklyVolunteerSummary ? (
@@ -363,12 +423,19 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/totalconstructionsummary"
+                        className={fontColor}
+                      >
+                        {TOTAL_CONSTRUCTION_SUMMARY}
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
                   <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/teamlocations">
-                      {TEAM_LOCATIONS}
+                      <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
                     </NavLink>
                   </NavItem>
                 )}
@@ -528,6 +595,7 @@ export function Header(props) {
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}
+      <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
     </div>
   );
 }
