@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import '../styles/InfoForm.css';
 import { useDispatch, useSelector } from 'react-redux';
 import { setformData } from 'actions/hgnFormAction';
+import { Spinner } from 'reactstrap';
 
 function InfoForm() {
   const formData = useSelector(state => state.hgnForm);
@@ -11,8 +12,12 @@ function InfoForm() {
   const isOwner = user.role === 'Owner';
   const { userProfilesBasicInfo } = useSelector(state => state.allUserProfilesBasicInfo);
   const userProfile = userProfilesBasicInfo.find(profile => profile._id === user.userid);
-  const [newVolunteer, setNewVolunteer] = useState(formData);
-
+  const [newVolunteer, setNewVolunteer] = useState({
+    ...formData,
+    github: formData?.github || '',
+    slack: formData?.slack || '',
+  });  
+  const [loading, setLoading] = useState(true);
   const updateFormData = data => {
     dispatch(setformData(data));
   };
@@ -36,12 +41,18 @@ function InfoForm() {
   }, [newVolunteer.name, newVolunteer.slack]);
 
   useEffect(() => {
-    setNewVolunteer({
-      ...formData,
-      name: `${userProfile?.firstName} ${userProfile?.lastName}`,
-      email: user.email,
-    });
-  }, [userProfile]);
+    if(user && userProfile && formData) {
+      setNewVolunteer(prevState => ({
+        ...formData,
+        ...prevState, // This preserves any user input
+        name: `${userProfile?.firstName} ${userProfile?.lastName}`,
+        email: user.email,
+        github: prevState.github || formData.github || '', // Preserve GitHub value
+        slack: prevState.slack || formData.slack || '', // Preserve
+      }));
+      setLoading(false);
+    }
+  }, [userProfile, user, formData]);
 
   const handleSlackChange = e => {
     const { checked } = e.target;
@@ -90,7 +101,7 @@ function InfoForm() {
       location: '',
       manager: '',
       combined_frontend_backend: '',
-      combined_skills: '',
+      // combined_skills: '',
       mern_skills: '',
       leadership_skills: '',
       leadership_experience: '',
@@ -133,7 +144,7 @@ function InfoForm() {
     });
   };
 
-  return newVolunteer !== undefined && userProfile !== undefined ? (
+  return !loading ? (
     <div className="info-form-container">
       <form onSubmit={handleNext}>
         <div className="form-inputs">
@@ -185,6 +196,7 @@ function InfoForm() {
             onChange={e => setNewVolunteer({ ...newVolunteer, github: e.target.value })}
             required
             placeholder="Your GitHub"
+            disabled={loading}
           />
         </div>
         <div className="form-inputs">
@@ -199,6 +211,7 @@ function InfoForm() {
             onChange={e => setNewVolunteer({ ...newVolunteer, slack: e.target.value })}
             required
             placeholder="Your Slack"
+            disabled={loading}
           />
         </div>
         {isSlackNameWarning && (
@@ -238,7 +251,9 @@ function InfoForm() {
         </div>
       </form>
     </div>
-  ) : null;
+  ) : <div>
+      <Spinner color="primary" className="spinner-hgnform" style={{top : "80%"}}/>;
+  </div>;
 }
 
 export default InfoForm;

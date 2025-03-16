@@ -467,7 +467,7 @@ function GeneralQuestions() {
           </div>
         </div>
 
-        <div className="combined_skills">
+        {/* <div className="combined_skills">
           {renderEditableQuestion(6)}
           <div className="radio-rating">
             {Array.from({ length: 10 }, (_, i) => (
@@ -485,10 +485,10 @@ function GeneralQuestions() {
               </div>
             ))}
           </div>
-        </div>
+        </div> */}
 
         <div className="mern_skills">
-          {renderEditableQuestion(7)}
+          {renderEditableQuestion(6)}
           <div className="radio-rating">
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
@@ -508,7 +508,7 @@ function GeneralQuestions() {
         </div>
 
         <div className="leadership_skills">
-          {renderEditableQuestion(8)}
+          {renderEditableQuestion(7)}
           <div className="radio-rating">
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
@@ -528,7 +528,7 @@ function GeneralQuestions() {
         </div>
 
         <div className="leadership_experience">
-          {renderEditableQuestion(9)}
+          {renderEditableQuestion(8)}
           <div className="radio-rating">
             {Array.from({ length: 10 }, (_, i) => (
               <div key={i}>
@@ -548,7 +548,7 @@ function GeneralQuestions() {
         </div>
 
         <div className="preferences">
-          {renderEditableQuestion(10)}
+          {renderEditableQuestion(9)}
           <div className="preferences-checkbox">
             {[
               'frontend',
@@ -577,7 +577,7 @@ function GeneralQuestions() {
         </div>
 
         <div className="availability">
-          {renderEditableQuestion(11)}
+          {renderEditableQuestion(10)}
           <div className="availability-selector">
             <div className="availability-grid">
               <div className="corner-cell" />

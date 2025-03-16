@@ -7,6 +7,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { ENDPOINTS } from 'utils/URL';
 import { toast } from 'react-toastify';
 import { setformData } from 'actions/hgnFormAction';
+import { Spinner } from 'reactstrap';
 
 function FrontendQuestions() {
   const navigate = useHistory();
@@ -105,7 +106,10 @@ function FrontendQuestions() {
   ];
 
   if (loading) {
-    return <div>Loading Questions...</div>;
+    return (<div>
+      <Spinner color="primary" className="spinner-hgnform"/>;
+    </div>
+    );  
   }
 
   return (
