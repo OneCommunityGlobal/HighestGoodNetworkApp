@@ -49,6 +49,7 @@ import {
   PERMISSIONS_MANAGEMENT,
   SEND_EMAILS,
   TOTAL_ORG_SUMMARY,
+  TOTAL_CONSTRUCTION_SUMMARY,
 } from '../../languages/en/ui';
 import Logout from '../Logout/Logout';
 import './Header.css';
@@ -422,12 +423,19 @@ export function Header(props) {
                       <DropdownItem tag={Link} to="/teamlocations" className={fontColor}>
                         {TEAM_LOCATIONS}
                       </DropdownItem>
+                      <DropdownItem
+                        tag={Link}
+                        to="/bmdashboard/totalconstructionsummary"
+                        className={fontColor}
+                      >
+                        {TOTAL_CONSTRUCTION_SUMMARY}
+                      </DropdownItem>
                     </DropdownMenu>
                   </UncontrolledDropdown>
                 ) : (
                   <NavItem className="responsive-spacing">
                     <NavLink tag={Link} to="/teamlocations">
-                      {TEAM_LOCATIONS}
+                      <span className="dashboard-text-link">{TEAM_LOCATIONS}</span>
                     </NavLink>
                   </NavItem>
                 )}
@@ -587,6 +595,7 @@ export function Header(props) {
       {props.auth.isAuthenticated && unreadNotifications?.length > 0 ? (
         <NotificationCard notification={unreadNotifications[0]} />
       ) : null}
+      <div className={darkMode ? 'header-margin' : 'header-margin-light'} />
     </div>
   );
 }

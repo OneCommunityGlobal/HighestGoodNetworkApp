@@ -76,6 +76,12 @@ const TeamMemberTask = React.memo(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
 
+   const completedTasks = user.tasks.filter(
+    task =>
+      task.resources?.some(
+        resource => resource.userID === user.personId && resource.completedTask,
+      ),
+  );
     const thisWeekHours = user.totaltangibletime_hrs;
 
     // these need to be changed to actual permissions...
@@ -87,6 +93,7 @@ const TeamMemberTask = React.memo(
     // ^^^
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
+    const canSeeReports = rolesAllowedToResolveTasks.includes(userRole)||dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
@@ -162,6 +169,7 @@ const TeamMemberTask = React.memo(
               </div>
             )}
             <Table className="no-bottom-margin">
+              <tbody>
               <tr className="remove-child-borders">
                 {/* green if member has met committed hours for the week, red if not */}
                 <td colSpan={1} className={`${darkMode ? 'bg-yinmn-blue' : ''}`}>
@@ -226,7 +234,28 @@ const TeamMemberTask = React.memo(
                           )}
 
                           {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
-
+                           
+                           {
+                            canSeeReports &&
+                            <Link
+                              className='team-member-tasks-user-report-link'
+                              to= {`/peoplereport/${user?.personId}`}
+                            >
+                               <img 
+                                  src ="/report_icon.png"
+                                  alt='reportsicon'
+                                  className='team-member-tasks-user-report-link-image'
+                               />
+                            </Link>
+                            }
+                            {
+                              canSeeReports &&
+                              <Link
+                                to= {`/peoplereport/${user?.personId}`}
+                               >
+                                <span className="team-member-tasks-number">{completedTasks.length}</span>
+                              </Link>
+                            }
                           <Warning
                             username={user.name}
                             userName={user}
@@ -440,6 +469,7 @@ const TeamMemberTask = React.memo(
                   </div>
                 </td>
               </tr>
+              </tbody>
             </Table>
           </div>
         </td>
