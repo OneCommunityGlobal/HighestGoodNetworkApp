@@ -158,7 +158,7 @@ export const permissionLabels = [
         description: 'Allows user to view an overview of tracking activities for all users.',
       },
       {
-        label: 'Issue a Tracking Warnings',
+        label: 'Issue Tracking Warnings',
         key: 'issueTrackingWarnings',
         description: 'Allows the user to issue warnings for violations of tracking activities.',
       },

@@ -50,7 +50,7 @@ const TeamMemberTasks = React.memo(props => {
   const [clickedToShowModal, setClickedToShowModal] = useState(false);
   const [teamList, setTeamList] = useState([]);
   const [timeEntriesList, setTimeEntriesList] = useState([]);
-  const [selectedPeriod, setSelectedPeriod] = useState(null);
+  const [selectedPeriod, setSelectedPeriod] = useState('');
   const [isTimeFilterActive, setIsTimeFilterActive] = useState(false);
   const [finishLoading, setFinishLoading] = useState(false);
   const [taskModalOption, setTaskModalOption] = useState('');
@@ -557,7 +557,7 @@ const TeamMemberTasks = React.memo(props => {
                   darkMode ? 'box-shadow-dark' : ''
                 }`}
                 onChange={e => selectPeriod(e.target.value)}
-                value={selectedPeriod}
+                value={selectedPeriod || ''}
                 title={`Timelogs submitted in the past ${selectedPeriod} days`}
                 style={{
                   color: isTimeFilterActive ? 'white' : hrsFilterBtnColorMap[selectedPeriod],
@@ -664,7 +664,7 @@ const TeamMemberTasks = React.memo(props => {
         </Row>
       )}
       <div className="task_table-container">
-      <Table className='task-table'>
+      <Table className={`task-table ${darkMode ? 'dark-teammember-row' : 'light-teammember-row'}`}>
           <thead className={`pc-component ${darkMode ? "bg-space-cadet" : ""}`} style={{ position: 'sticky', top: 0 }}>
             <tr>
               <th colSpan={3} className={`team-member-tasks-headers ${darkMode ? "bg-space-cadet" : ""}`}>
