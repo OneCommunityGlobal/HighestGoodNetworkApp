@@ -6,6 +6,8 @@ import './TotalReport.css';
 import { Button } from 'reactstrap';
 import ReactTooltip from 'react-tooltip';
 import TotalReportBarGraph from './TotalReportBarGraph';
+import Loading from '../../common/Loading';
+import { set } from 'lodash';
 
 function TotalProjectReport(props) {
   const { startDate, endDate, userProfiles, projects, darkMode } = props;
@@ -19,33 +21,43 @@ function TotalProjectReport(props) {
   const [showMonthly, setShowMonthly] = useState(false);
   const [showYearly, setShowYearly] = useState(false);
 
-  const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
-  const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
-  const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
-  const projectList = useMemo(() => projects.map(proj => proj._id), [projects]);
+  // const fromDate = useMemo(() => startDate.toLocaleDateString('en-CA'), [startDate]);
+  // const toDate = useMemo(() => endDate.toLocaleDateString('en-CA'), [endDate]);
+  const fromDate = useMemo(() => startDate ? startDate.toLocaleDateString('en-CA') : '', [startDate]);
+  const toDate = useMemo(() => endDate ? endDate.toLocaleDateString('en-CA') : '', [endDate]);
+  const userList = useMemo(() => (userProfiles?.length ? userProfiles.map(user => user._id) : []), [userProfiles]);
+  const projectList = useMemo(() => (projects?.length ? projects.map(proj => proj._id) : []), [projects]);
+
+
+  // const userList = useMemo(() => userProfiles.map(user => user._id), [userProfiles]);
+  // const projectList = useMemo(() => projects.map(proj => proj._id), [projects]);
 
   const loadTimeEntriesForPeriod = useCallback(async () => {
-    const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT;
-    const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
-      projectId: entry.projectId,
-      projectName: entry.projectName,
-      hours: entry.hours,
-      minutes: entry.minutes,
-      isTangible: entry.isTangible,
-      date: entry.dateOfWork,
-    })));
+    try {
+      const url = ENDPOINTS.TIME_ENTRIES_REPORTS_TOTAL_PROJECT_REPORT;
+      const timeEntries = await axios.post(url, { users: userList, fromDate, toDate }).then(res => res.data.map(entry => ({
+        projectId: entry.projectId,
+        projectName: entry.projectName,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      })));
 
-    const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
-    const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }).then(res => res.data.map(entry => ({
-      projectId: entry.projectId,
-      projectName: entry.projectName,
-      hours: entry.hours,
-      minutes: entry.minutes,
-      isTangible: entry.isTangible,
-      date: entry.dateOfWork,
-    })));
+      const projUrl = ENDPOINTS.TIME_ENTRIES_LOST_PROJ_LIST;
+      const projTimeEntries = await axios.post(projUrl, { projects: projectList, fromDate, toDate }).then(res => res.data.map(entry => ({
+        projectId: entry.projectId,
+        projectName: entry.projectName,
+        hours: entry.hours,
+        minutes: entry.minutes,
+        isTangible: entry.isTangible,
+        date: entry.dateOfWork,
+      })));
 
-    setAllTimeEntries([...timeEntries, ...projTimeEntries]);
+      setAllTimeEntries([...timeEntries, ...projTimeEntries]);
+    } catch (err) {
+      console.error("API error:", err.message);
+    }
   }, [fromDate, toDate, userList, projectList]);
 
   const sumByProject = useCallback((objectArray, property) => {
@@ -134,15 +146,37 @@ function TotalProjectReport(props) {
   }, [endDate, startDate, generateBarData, summaryOfTimeRange]);
 
 
+  // useEffect(() => {
+  //   setTotalProjectReportDataReady(false);
+  //   const controller = new AbortController();
+  //   loadTimeEntriesForPeriod(controller).then(() => {
+  //     setTotalProjectReportDataLoading(false);
+  //     setTotalProjectReportDataReady(true);
+  //   });
+  //   return () => controller.abort();
+  // }, [loadTimeEntriesForPeriod, startDate, endDate]);
+
   useEffect(() => {
     setTotalProjectReportDataReady(false);
+    setTotalProjectReportDataLoading(true);
     const controller = new AbortController();
-    loadTimeEntriesForPeriod(controller).then(() => {
-      setTotalProjectReportDataLoading(false);
-      setTotalProjectReportDataReady(true);
-    });
+
+    loadTimeEntriesForPeriod(controller)
+      .then(() => {
+        setTotalProjectReportDataLoading(false);
+        setTotalProjectReportDataReady(true);
+      })
+      .catch((error) => {
+        console.error("Failed to load data:", error);
+        setTotalProjectReportDataLoading(false);
+        setTotalProjectReportDataReady(false);
+      });
+
     return () => controller.abort();
   }, [loadTimeEntriesForPeriod, startDate, endDate]);
+
+
+
 
   useEffect(() => {
     if (!totalProjectReportDataLoading && totalProjectReportDataReady) {
@@ -152,13 +186,13 @@ function TotalProjectReport(props) {
       setAllProject(filterOneHourProject(groupedProjects));
       checkPeriodForSummary();
     }
-  }, [totalProjectReportDataLoading,totalProjectReportDataReady,sumByProject, filterOneHourProject, allTimeEntries, checkPeriodForSummary]);
+  }, [totalProjectReportDataLoading, totalProjectReportDataReady, sumByProject, filterOneHourProject, allTimeEntries, checkPeriodForSummary]);
 
   const onClickTotalProjectDetail = () => setShowTotalProjectTable(prevState => !prevState);
 
   const totalProjectTable = totalProject => (
     <table className="table table-bordered table-responsive-sm">
-      <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{pointerEvents: 'none' }}>
+      <thead className={darkMode ? 'bg-space-cadet text-light' : ''} style={{ pointerEvents: 'none' }}>
         <tr>
           <th scope="col" id="projects__order">#</th>
           <th scope="col">Project Name</th>
@@ -193,7 +227,7 @@ function TotalProjectReport(props) {
       <div className={`total-container ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
         <div className={`total-title ${darkMode ? 'text-azure' : ''}`}>Total Project Report</div>
         <div className="total-period">
-        In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
+          In the period from {startDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })} to {endDate.toLocaleDateString('en-US', { month: '2-digit', day: '2-digit', year: 'numeric' })}:
         </div>
         <div className="total-item">
           <div className="total-number">{allProject.length}</div>
@@ -235,24 +269,52 @@ function TotalProjectReport(props) {
     );
   };
 
+  // return (
+  // <div>
+  //   {!totalProjectReportDataReady ? (
+  //     <div style={{ textAlign: 'center' }}>
+  //       <Loading align="center" darkMode={darkMode}/>
+  //       <div
+  //         style={{
+  //           width: '50%',
+  //           height: '2px',
+  //           backgroundColor: 'gray',
+  //           margin: '10px auto',
+  //         }}
+  //       />
+  //       <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'gray' }}>
+  //         🚀 Data is on a secret mission! 📊 Report is being generated. ✨
+  //         <br />
+  //         Please hang tight while we work our magic! 🧙‍♂️🔮
+  //       </div>
+  //     </div>
+  //   ) : (
+  //     <div>
+  //       <div>{totalProjectInfo(allProject)}</div>
+  //       <div>{showTotalProjectTable ? totalProjectTable(allProject) : null}</div>
+  //     </div>
+  //   )}
+  // </div>
+  //   );
+  // }
   return (
     <div>
       {!totalProjectReportDataReady ? (
         <div style={{ textAlign: 'center' }}>
-          &quot;&quot;
-          <div
-            style={{
-              width: '50%',
-              height: '2px',
-              backgroundColor: 'gray',
-              margin: '10px auto',
-            }}
-          />
-          <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'gray' }}>
-            🚀 Data is on a secret mission! 📊 Report is being generated. ✨
-            <br />
-            Please hang tight while we work our magic! 🧙‍♂️🔮
-          </div>
+          {totalProjectReportDataLoading ? (
+            <>
+              <Loading align="center" darkMode={darkMode} />
+              <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'gray' }}>
+                🚀 Data is on a secret mission! 📊 Report is being generated. ✨
+                <br />
+                Please hang tight while we work our magic! 🧙‍♂️🔮
+              </div>
+            </>
+          ) : (
+            <div style={{ marginTop: '10px', fontStyle: 'italic', color: 'red' }}>
+              ❌ Failed to load the report. Please try again later.
+            </div>
+          )}
         </div>
       ) : (
         <div>
