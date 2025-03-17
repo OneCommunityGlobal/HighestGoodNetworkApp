@@ -75,9 +75,27 @@
   padding: 10px 0;
 }
 
-.map img{
+.image-wrapper {
+  position: relative;
+  min-width: 400px;
+  display: inline-block;
+}
+
+.image-wrapper img{
   width: 100%;
-  height: 100%;
+  height: auto;
+  display: block;
+  min-width: 400px;
+}
+
+.village-marker{
+  background-color: aqua;
+  border-radius: 50%;
+  position: absolute;
+  cursor: pointer;
+  width: 10px;  
+  height: 10px;
+  z-index: 10;
 }
 
 .route {

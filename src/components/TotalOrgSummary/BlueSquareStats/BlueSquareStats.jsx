@@ -1,10 +1,17 @@
 import { BLUE_SQUARE_STATS_COLORS } from 'constants/totalOrgSummary';
 import './BlueSquareStats.css';
+import Loading from 'components/common/Loading';
 import DonutChart from '../DonutChart/DonutChart';
 
-function BlueSquareStats({ blueSquareStats }) {
-  if (!blueSquareStats) {
-    return <div>Blue Square Stats data is not available</div>;
+function BlueSquareStats({ isLoading, blueSquareStats }) {
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   const {
@@ -26,7 +33,6 @@ function BlueSquareStats({ blueSquareStats }) {
 
   return (
     <section className="blue-square-stats">
-      <h2 className="blue-square-stats-title">Blue Square Stats</h2>
       <div className="blue-square-stats-pie-chart">
         <DonutChart
           title="TOTAL BLUE SQUARES"

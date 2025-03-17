@@ -7,7 +7,6 @@ import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
 import { ToastContainer } from 'react-toastify';
 import AutoUpdate from 'components/AutoUpdate';
-import CPHeader from 'components/CommunityPortal/CPHeader/CPHeader';
 import { TaskEditSuggestions } from 'components/TaskEditSuggestions/TaskEditSuggestions';
 import RoutePermissions from 'utils/routePermissions';
 import EditableInfoModal from 'components/UserProfile/EditableModal/EditableInfoModal';
@@ -15,6 +14,7 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
+import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
 import Timelog from './components/Timelog';
@@ -26,6 +26,7 @@ import Login from './components/Login';
 import ForcePasswordUpdate from './components/ForcePasswordUpdate';
 import ProtectedRoute from './components/common/ProtectedRoute';
 import UpdatePassword from './components/UpdatePassword';
+import Header from './components/Header';
 import TeamLocations from './components/TeamLocations';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserRole } from './utils/enums';
@@ -41,6 +42,7 @@ import Collaboration from './components/Collaboration';
 import LBRegister from './components/LBDashboard/Auth/Register';
 import LBLogin from './components/LBDashboard/Auth/Login';
 import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
+import ListOverview from './components/LBDashboard/ListOverview/ListOverview';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -151,6 +153,16 @@ export default (
       )}
     />
     <Route
+      path="/lbdashboard/listoverview"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <ListOverview />
+        </>
+      )}
+    />
+    <Route
       path="/lbdashboard/masterplan"
       render={() => (
         <>
@@ -165,18 +177,16 @@ export default (
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
+      <Header />
       {/* Uncomment BMHeader and its import during phase 2 development. */}
 
-      {/* <BMHeader /> */}
-      <CPHeader />
 
+      {/* <BMHeader /> */}
       <AutoUpdate />
       <ToastContainer />
       <Switch>
         <ProtectedRoute path="/dashboard" exact component={Dashboard} />
         <ProtectedRoute path="/dashboard/:userId" exact component={Dashboard} />
-        <ProtectedRoute path="/cpdashboard" exact component={CPDashboard} />
-        <CPProtectedRoute path="/cpdashboard" exact component={CPDashboard} />
         <ProtectedRoute path="/project/members/:projectId" fallback component={Members} />
         <ProtectedRoute path="/timelog/" exact render={() => <Timelog userId={null} />} />
         <ProtectedRoute path="/timelog/:userId" exact render={(props) => {
@@ -439,6 +449,7 @@ export default (
         <Route path="/email-subscribe" component={EmailSubscribeForm} />
         <Route path="/email-unsubscribe" component={UnsubscribeForm} />
         <Route path="/collaboration" component={Collaboration} />
+        <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />

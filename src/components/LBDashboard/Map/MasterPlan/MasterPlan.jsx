@@ -10,6 +10,7 @@ const villages = [
     short: 'CC',
     url:
       'https://onecommunityglobal.org/wp-content/uploads/2018/02/Duplicable-City-Center-PlanRender_640x335.jpg',
+    position: { top: '40.5%', left: '50.40%' },
   },
   {
     id: 1,
@@ -17,6 +18,7 @@ const villages = [
     short: 'Earthbag',
     url:
       'https://onecommunityglobal.org/wp-content/uploads/2018/10/Earthbag-Village-640x335-render.jpg',
+    position: { top: '38%', left: '41.8%' },
   },
   {
     id: 2,
@@ -24,6 +26,7 @@ const villages = [
     short: 'Straw',
     url:
       'https://onecommunityglobal.org/wp-content/uploads/2011/09/Straw-Bale-Village-PlanRender_640x335-1.png',
+    position: { top: '63.6%', left: '68.6%' },
   },
   {
     id: 3,
@@ -31,12 +34,14 @@ const villages = [
     short: 'Cob',
     url:
       'https://onecommunityglobal.org/wp-content/uploads/2011/09/Cob-Village-PlanRender_640x335.png',
+    position: { top: '83%', left: '9.5%' },
   },
   {
     id: 4,
     name: 'Earth Block Village',
     short: 'Block',
     url: 'https://onecommunityglobal.org/wp-content/uploads/2015/02/P4-Plan-Render_640x335.jpg',
+    position: { top: '93.5%', left: '75.5%' },
   },
   {
     id: 5,
@@ -44,6 +49,7 @@ const villages = [
     short: 'Container',
     url:
       'https://onecommunityglobal.org/wp-content/uploads/2011/09/Shipping-Container-Village-PlanRender_640x335.jpg',
+    position: { top: '89.5%', left: '54.4%' },
   },
   {
     id: 6,
@@ -51,6 +57,7 @@ const villages = [
     short: 'Recycle',
     url:
       'https://onecommunityglobal.org/wp-content/uploads/2018/06/Recycled-Materials-Village-PlanRender_640x335-updated.jpg',
+    position: { top: '42.5%', left: '67.2%' },
   },
   {
     id: 7,
@@ -58,10 +65,16 @@ const villages = [
     short: 'Treehouse',
     url:
       'https://onecommunityglobal.org/wp-content/uploads/2014/01/Tree-House-Village-PlanRender_640x335.jpg',
+    position: { top: '57%', left: '93.5%' },
   },
 ];
-
 function MasterPlan() {
+  // const [selectedVillage, setSelectedVillage] = useState(null);
+
+  // const handleVillageClick = (village) => {
+  //     setSelectedVillage(village);
+  // }
+
   return (
     <div className="main-container">
       <div className="logo-container">
@@ -73,7 +86,22 @@ function MasterPlan() {
           <div className="container-map">
             <div className="map-details">
               <div className="map">
-                <img src={mastermap} alt="Master Map" />
+                <div className="image-wrapper">
+                  <img src={mastermap} alt="Master Map" />
+                  {villages.map(v => (
+                    <button
+                      key={v.id}
+                      style={{
+                        top: v.position.top,
+                        left: v.position.left,
+                      }}
+                      className="village-marker"
+                      type="button"
+                      aria-label={`Marker for ${v.name}`}
+                      // onClick={() => handleVillageClick(v)}
+                    />
+                  ))}
+                </div>
               </div>
               <div className="route">
                 <img src={mapRouter} alt="Route Marker" />
@@ -81,9 +109,14 @@ function MasterPlan() {
             </div>
             <div className="villages">
               {villages.map(v => (
-                <div key={v.id} className="village-name">
-                  {v.name}
-                  <img src={v.url} alt={v.short} />
+                <div
+                  key={v.id}
+                  style={{ cursor: 'pointer', margin: '0 10px', textAlign: 'center' }}
+                >
+                  <div>
+                    {v.name}
+                    <img src={v.url} alt={v.name} />
+                  </div>
                 </div>
               ))}
             </div>
