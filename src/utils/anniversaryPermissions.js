@@ -146,7 +146,7 @@ export const calculateAnniversaryDate = (createdDate) => {
         case calculateAnniversaryDateResults.sixMonthAnniversary.toISOString().split('T')[0] <= endDate && calculateAnniversaryDateResults.oneWeekAfter6M.toISOString().split('T')[0] > endDate:
           return true;
         default:
-          false
+          return false;
       }
     }
     return false;
