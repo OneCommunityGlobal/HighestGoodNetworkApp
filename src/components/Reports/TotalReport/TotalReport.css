@@ -51,6 +51,21 @@
 .team_table{
     border-collapse: collapse;
 }
+.total-report-container, .lost-time-container {
+    display: flex;
+    justify-content: center; /* Center align buttons */
+    flex-wrap: wrap; /* Ensure responsiveness on smaller screens */
+    gap: 10px; /* Space between buttons */
+    margin-bottom: 20px; /* Space below the button section */
+  }
+  button {
+    width: 100%; /* Make all buttons equal width */
+    padding: 12px 16px; /* Adjust padding for consistency */
+    font-size: 16px; /* Ensure text is readable */
+    text-align: center; /* Center text inside button */
+    border-radius: 8px; /* Add rounded corners */
+    white-space: nowrap; /* Prevent text from breaking */
+  }
 
 @media screen and (max-width: 550px) {
     .total-container{
