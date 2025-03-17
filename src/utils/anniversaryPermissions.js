@@ -43,7 +43,7 @@ export const calculateAnniversaryDate = (createdDate) => {
     const tenYearAnniversary = dt.setFullYear(dt.getFullYear() + 10)
     const oneWeekAfter10Y = new Date(tenYearAnniversary).getTime() + 7 * 24 * 60 * 60 * 1000 + 1
   
-    let anniversaryDates = {
+    const anniversaryDates = {
       sixMonthAnniversary: new Date(sixMonthAnniversary),
       oneWeekAfter6M: new Date(oneWeekAfter6M),
   
@@ -87,21 +87,21 @@ export const calculateAnniversaryDate = (createdDate) => {
       return { years: 0, months: 0, days: 0 };
     }
 
-    let endDateObject = new Date(endDate)
-    let startDateObject = new Date(startDate)
+    const endDateObject = new Date(endDate)
+    const startDateObject = new Date(startDate)
     let durationSinceStarted = {
       months: 0,
       years: 0
     }
     if (endDate > startDate) {
-      var diff = Math.floor(endDateObject.getTime() - startDateObject.getTime());
-      var day = 1000 * 60 * 60 * 24;
+      const diff = Math.floor(endDateObject.getTime() - startDateObject.getTime());
+      const day = 1000 * 60 * 60 * 24;
   
-      var days = (diff / day);
-      var months = (days / 31);
-      var yearsSinceStarted = (months / 12);
+      const days = (diff / day);
+      const months = (days / 31);
+      const yearsSinceStarted = (months / 12);
       durationSinceStarted = {
-        months: months,
+        months,
         years: yearsSinceStarted
       }
     }

@@ -90,7 +90,6 @@ function LeaderBoard({
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
   const isOwner = ['Owner'].includes(loggedInUser.role);
-  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
   const todaysDate = moment()
     .tz('America/Los_Angeles')
     .endOf('week')
@@ -105,7 +104,6 @@ function LeaderBoard({
       }
     }
   }, []);
-
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();

@@ -44,7 +44,6 @@ import { showTrophyIcon } from '../../utils/anniversaryPermissions';
 import SelectTeamPieChart from './SelectTeamPieChart';
 import { setTeamCodes } from '../../actions/teamCodes';
 
-
 const navItems = ['This Week', 'Last Week', 'Week Before Last', 'Three Weeks Ago'];
 const fullCodeRegex = /^.{5,7}$/;
 export class WeeklySummariesReport extends Component {
@@ -574,7 +573,6 @@ export class WeeklySummariesReport extends Component {
     );
   };
 
-
   handleTrophyToggleChange = () => {
     this.setState(
       prevState => ({
@@ -585,7 +583,6 @@ export class WeeklySummariesReport extends Component {
       },
     );
   };
-
 
   handleSpecialColorToggleChange = event => {
     const { id, checked } = event.target;
@@ -614,7 +611,6 @@ export class WeeklySummariesReport extends Component {
       return { summaries: updatedSummaries };
     }, this.filterWeeklySummaries);
   };
-
 
   handleTeamCodeChange = (oldTeamCode, newTeamCode, userIdObj) => {
     try {

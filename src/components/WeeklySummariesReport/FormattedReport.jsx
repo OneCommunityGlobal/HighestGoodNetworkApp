@@ -15,7 +15,6 @@ import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
 
-import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import { postLeaderboardData } from 'actions/leaderBoardData';
 import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
 import { toggleUserBio } from 'actions/weeklySummariesReport';
