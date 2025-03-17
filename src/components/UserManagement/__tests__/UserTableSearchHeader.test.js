@@ -1,17 +1,20 @@
-import React from 'react';
+// import React from 'react';
 import { screen, render } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import UserTableSearchHeader from '../UserTableSearchHeader';
+
 describe('user table search header row', () => {
   let onFirstNameSearch;
   let onLastNameSearch;
   let onRoleSearch;
+  let onTitleSearch;
   let onEmailSearch;
   let onWeeklyHrsSearch;
   beforeEach(() => {
     onFirstNameSearch = jest.fn();
     onLastNameSearch = jest.fn();
     onRoleSearch = jest.fn();
+    onTitleSearch = jest.fn();
     onEmailSearch = jest.fn();
     onWeeklyHrsSearch = jest.fn();
     render(
@@ -21,9 +24,10 @@ describe('user table search header row', () => {
             onFirstNameSearch={onFirstNameSearch}
             onLastNameSearch={onLastNameSearch}
             onRoleSearch={onRoleSearch}
+            onTitleSearch={onTitleSearch}
             onEmailSearch={onEmailSearch}
             onWeeklyHrsSearch={onWeeklyHrsSearch}
-            roles={['1', '2', '3', '4','Volunteer','Owner','Manager']}
+            roles={['1', '2', '3', '4', 'Volunteer', 'Owner', 'Manager']}
           />
         </tbody>
       </table>,
@@ -34,7 +38,7 @@ describe('user table search header row', () => {
       expect(screen.getByRole('row')).toBeInTheDocument();
     });
     it('should render 4 text field', () => {
-      expect(screen.getAllByRole('textbox')).toHaveLength(4);
+      expect(screen.getAllByRole('textbox')).toHaveLength(5);
     });
     it('should render one dropdown box', () => {
       expect(screen.getByRole('combobox')).toBeInTheDocument();
@@ -69,20 +73,26 @@ describe('user table search header row', () => {
       expect(onRoleSearch).toHaveBeenCalled();
       expect(onRoleSearch).toHaveBeenCalledWith('Manager');
     });
-    it('should fire Email search once the user type something in the email search box', async () => {
+    it('should fire Title search once the user type something in the title search box', async () => {
       await userEvent.type(screen.getAllByRole('textbox')[2], 'test', { allAtOnce: false });
+      expect(onTitleSearch).toHaveBeenCalledTimes(4);
+    });
+    it('should fire Email search once the user type something in the email search box', async () => {
+      await userEvent.type(screen.getAllByRole('textbox')[3], 'test', { allAtOnce: false });
       expect(onEmailSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire Email search once the user type something in the email search box', async () => {
-      await userEvent.type(screen.getAllByRole('textbox')[2], 'Jhon.wick@email.com', { allAtOnce: true });
+      await userEvent.type(screen.getAllByRole('textbox')[3], 'Jhon.wick@email.com', {
+        allAtOnce: true,
+      });
       expect(onEmailSearch).toHaveBeenCalled();
     });
     it('should fire onWeeklyHrsSearch once the user type something in the weeklycommitted hrs search box', async () => {
-      await userEvent.type(screen.getAllByRole('textbox')[3], 'test', { allAtOnce: false });
+      await userEvent.type(screen.getAllByRole('textbox')[4], 'test', { allAtOnce: false });
       expect(onWeeklyHrsSearch).toHaveBeenCalledTimes(4);
     });
     it('should fire onWeeklyHrsSearch once the user type something in the weeklycommitted hrs search box', async () => {
-      await userEvent.type(screen.getAllByRole('textbox')[3], '15', { allAtOnce: true });
+      await userEvent.type(screen.getAllByRole('textbox')[4], '15', { allAtOnce: true });
       expect(onWeeklyHrsSearch).toHaveBeenCalled();
     });
   });

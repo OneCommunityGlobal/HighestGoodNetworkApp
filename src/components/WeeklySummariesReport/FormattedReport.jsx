@@ -14,9 +14,12 @@ import { faCopy } from '@fortawesome/free-solid-svg-icons';
 import { Modal, ModalHeader, ModalBody, ModalFooter, Button } from 'reactstrap';
 
 import { assignStarDotColors, showStar } from 'utils/leaderboardPermissions';
+
 import { updateOneSummaryReport } from 'actions/weeklySummariesReport';
 import { postLeaderboardData } from 'actions/leaderBoardData';
 import { calculateDurationBetweenDates, showTrophyIcon } from 'utils/anniversaryPermissions';
+import { toggleUserBio } from 'actions/weeklySummariesReport';
+
 import RoleInfoModal from 'components/UserProfile/EditableModal/RoleInfoModal';
 import {
   Input,
@@ -72,6 +75,7 @@ function FormattedReport({
   canSeeBioHighlight,
   darkMode,
   handleTeamCodeChange,
+  handleSpecialColorDotClick,
 }) {
   const loggedInUserEmail = auth?.user?.email ? auth.user.email : '';
 
@@ -98,6 +102,7 @@ function FormattedReport({
             darkMode={darkMode}
             handleTeamCodeChange={handleTeamCodeChange}
             auth={auth}
+            handleSpecialColorDotClick={handleSpecialColorDotClick}
           />
         ))}
       </ListGroup>
@@ -213,6 +218,7 @@ function ReportDetails({
   darkMode,
   handleTeamCodeChange,
   auth,
+  handleSpecialColorDotClick,
 }) {
   const [filteredBadges, setFilteredBadges] = useState([]);
   const ref = useRef(null);
@@ -239,6 +245,8 @@ function ReportDetails({
             allRoleInfo={allRoleInfo}
             auth={auth}
             loadTrophies={loadTrophies}
+            handleSpecialColorDotClick={handleSpecialColorDotClick}
+
           />
         </ListGroupItem>
         <Row className="flex-nowrap">
@@ -527,7 +535,7 @@ function BioSwitch({ userId, bioPosted, summary }) {
 
   // eslint-disable-next-line no-shadow
   const handleChangeBioPosted = async (userId, bioStatus) => {
-    const res = await dispatch(updateOneSummaryReport(userId, { bioPosted: bioStatus }));
+    const res = await dispatch(toggleUserBio(userId, bioStatus));
     if (res.status === 200) {
       toast.success('You have changed the bio announcement status of this user.');
     }
@@ -644,7 +652,11 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies }) {
+
+function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpecialColorDotClick }) {
+  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
+  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+  const colors = ['purple', 'green', 'navy'];
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');
   const [setTrophyFollowedUp] = useState(summary?.trophyFollowedUp);
@@ -763,6 +775,25 @@ function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies }) {
             </ModalFooter>
           </Modal>
         </div>
+      </div>
+
+      <div style={{ display: 'inline-block', marginLeft: '10px' }}>
+        {colors.map(color => (
+          <span
+            key={color}
+            onClick={() => handleSpecialColorDotClick(summary._id, color)}
+            style={{
+              display: 'inline-block',
+              width: '15px',
+              height: '15px',
+              margin: '0 5px',
+              borderRadius: '50%',
+              backgroundColor: summary.filterColor === color ? color : 'transparent',
+              border: `3px solid ${color}`,
+              cursor: 'pointer',
+            }}
+          />
+        ))}
       </div>
 
       {showStar(hoursLogged, summary.promisedHoursByWeek[weekIndex]) && (

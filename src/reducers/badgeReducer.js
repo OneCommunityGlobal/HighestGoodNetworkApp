@@ -10,7 +10,8 @@ import {
   GET_MESSAGE,
   CLOSE_ALERT,
   GET_BADGE_COUNT,
-  RESET_BADGE_COUNT
+  RESET_BADGE_COUNT,
+  SET_ACTIVE_TAB,
 } from '../constants/badge';
 
 const badgeInitial = {
@@ -23,20 +24,24 @@ const badgeInitial = {
   color: null,
   alertVisible: false,
   badgeCount: 0,
+  activeTab: '1',
 };
 
+// eslint-disable-next-line default-param-last
 export const badgeReducer = (state = badgeInitial, action) => {
   switch (action.type) {
     case GET_ALL_BADGE_DATA:
       return { ...state, allBadgeData: action.allBadges };
     case ADD_SELECT_BADGE:
-      const toAdd = state.selectedBadges;
-      toAdd.push(action.badgeId);
-      return { ...state, selectedBadges: toAdd };
+      return {
+        ...state,
+        selectedBadges: [...state.selectedBadges, action.badgeId],
+      };
     case REMOVE_SELECT_BADGE:
-      const toRemove = state.selectedBadges;
-      toRemove.splice(toRemove.indexOf(action.badgeId), 1);
-      return { ...state, selectedBadges: toRemove };
+      return {
+        ...state,
+        selectedBadges: state.selectedBadges.filter(id => id !== action.badgeId),
+      };
     case GET_BADGE_COUNT:
       return {
         ...state,
@@ -62,7 +67,11 @@ export const badgeReducer = (state = badgeInitial, action) => {
       return { ...state, message: action.message, alertVisible: true, color: action.color };
     case CLOSE_ALERT:
       return { ...state, alertVisible: false };
+    case SET_ACTIVE_TAB:
+      return { ...state, activeTab: action.payload };
     default:
       return state;
   }
 };
+
+export default badgeReducer;

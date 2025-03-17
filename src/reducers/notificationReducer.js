@@ -8,93 +8,106 @@ const initialState = {
   error: null,
 };
 
+// eslint-disable-next-line default-param-last
 const notificationReducer = (state = initialState, action) => {
-  
   switch (action.type) {
+    // Handle request actions
     case actionTypes.FETCH_USER_NOTIFICATIONS_REQUEST:
     case actionTypes.FETCH_UNREAD_USER_NOTIFICATIONS_REQUEST:
     case actionTypes.FETCH_SENT_NOTIFICATIONS_REQUEST:
     case actionTypes.CREATE_NOTIFICATION_REQUEST:
     case actionTypes.DELETE_NOTIFICATION_REQUEST:
-    case actionTypes.MARK_NOTIFICATION_AS_READ_REQUEST:
+    case actionTypes.MARK_NOTIFICATION_AS_READ_REQUEST: {
       return {
         ...state,
         loading: true,
         error: null,
       };
+    }
 
-    // Handle success and failure cases
-
+    // Handle failure actions
     case actionTypes.FETCH_USER_NOTIFICATIONS_FAILURE:
     case actionTypes.FETCH_UNREAD_USER_NOTIFICATIONS_FAILURE:
     case actionTypes.FETCH_SENT_NOTIFICATIONS_FAILURE:
     case actionTypes.CREATE_NOTIFICATION_FAILURE:
     case actionTypes.DELETE_NOTIFICATION_FAILURE:
-    case actionTypes.MARK_NOTIFICATION_AS_READ_FAILURE:
+    case actionTypes.MARK_NOTIFICATION_AS_READ_FAILURE: {
       return {
         ...state,
         loading: false,
         error: action.payload,
-    };
+      };
+    }
 
-    case actionTypes.RESET_ERROR:
+    // Reset error state
+    case actionTypes.RESET_ERROR: {
       return {
         ...state,
         error: null,
       };
+    }
 
-    case actionTypes.FETCH_USER_NOTIFICATIONS_SUCCESS:
+    // Handle success actions
+    case actionTypes.FETCH_USER_NOTIFICATIONS_SUCCESS: {
       return {
         ...state,
         notifications: action.payload,
         loading: false,
         error: null,
       };
+    }
 
-    case actionTypes.FETCH_UNREAD_USER_NOTIFICATIONS_SUCCESS:
+    case actionTypes.FETCH_UNREAD_USER_NOTIFICATIONS_SUCCESS: {
       return {
         ...state,
         unreadNotifications: action.payload,
         loading: false,
         error: null,
       };
+    }
 
-    // case actionTypes.FETCH_SENT_NOTIFICATIONS_SUCCESS:
-    //   return {
-    //     ...state,
-    //     sentNotifications: action.payload,
-    //     loading: false,
-    //     error: null,
-    //   };
-
-    // case actionTypes.CREATE_NOTIFICATION_SUCCESS:
-    //   return {
-    //     ...state,
-    //     notifications: [...state.notifications, action.payload],
-    //     loading: false,
-    //     error: null,
-    //   };
-
-    // case actionTypes.DELETE_NOTIFICATION_SUCCESS:
-    //   return {
-    //     ...state,
-    //     notifications: state.notifications.filter((notification) => notification.id !== action.payload),
-    //     loading: false,
-    //     error: null,
-    //   };
-
-    case actionTypes.MARK_NOTIFICATION_AS_READ_SUCCESS:
-      const { unreadNotifications } = state;
-      const updatedUnreadNotifications = unreadNotifications.filter((notification) => notification._id !== action.payload);
+    case actionTypes.FETCH_SENT_NOTIFICATIONS_SUCCESS: {
       return {
         ...state,
-        // remove the notification from unreadNotifications
+        sentNotifications: action.payload,
+        loading: false,
+        error: null,
+      };
+    }
+
+    case actionTypes.CREATE_NOTIFICATION_SUCCESS: {
+      return {
+        ...state,
+        notifications: [...state.notifications, action.payload],
+        loading: false,
+        error: null,
+      };
+    }
+
+    case actionTypes.DELETE_NOTIFICATION_SUCCESS: {
+      return {
+        ...state,
+        notifications: state.notifications.filter(
+          notification => notification.id !== action.payload,
+        ),
+        loading: false,
+        error: null,
+      };
+    }
+
+    case actionTypes.MARK_NOTIFICATION_AS_READ_SUCCESS: {
+      const updatedUnreadNotifications = state.unreadNotifications.filter(
+        notification => notification._id !== action.payload,
+      );
+      return {
+        ...state,
         unreadNotifications: updatedUnreadNotifications,
         loading: false,
         error: null,
       };
+    }
 
-    
+    // Default case
     default:
       return state;
   }

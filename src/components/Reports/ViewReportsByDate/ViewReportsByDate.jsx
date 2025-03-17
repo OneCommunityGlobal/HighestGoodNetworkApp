@@ -1,6 +1,7 @@
-import React, { Component } from 'react';
+import { Component } from 'react';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
+import '../../Header/DarkMode.css'
 
 class ViewReportByDate extends Component {
   constructor(props) {
@@ -29,10 +30,10 @@ class ViewReportByDate extends Component {
   }
 
   render() {
-    const { minDate, maxDate, textColor } = this.props;
+    const { minDate, maxDate, textColor, darkMode } = this.props;
 
     return (
-      <div className="date-picker-container">
+      <div className={`date-picker-container ${darkMode ? 'dark-mode' : ''}`}>
         <div id="task_startDate" className="date-picker-item">
           <label htmlFor="task_startDate" className={`date-picker-label ${textColor}`}>
             Start Date
