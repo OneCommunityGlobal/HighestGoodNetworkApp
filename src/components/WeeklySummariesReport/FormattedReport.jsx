@@ -246,7 +246,6 @@ function ReportDetails({
             auth={auth}
             loadTrophies={loadTrophies}
             handleSpecialColorDotClick={handleSpecialColorDotClick}
-
           />
         </ListGroupItem>
         <Row className="flex-nowrap">
@@ -652,10 +651,14 @@ function WeeklyBadge({ summary, weekIndex, badges }) {
   );
 }
 
-
-function Index({ summary, weekIndex, allRoleInfo, auth, loadTrophies, handleSpecialColorDotClick }) {
-  const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
-  const currentDate = moment.tz('America/Los_Angeles').startOf('day');
+function Index({
+  summary,
+  weekIndex,
+  allRoleInfo,
+  auth,
+  loadTrophies,
+  handleSpecialColorDotClick,
+}) {
   const colors = ['purple', 'green', 'navy'];
   const hoursLogged = (summary.totalSeconds[weekIndex] || 0) / 3600;
   const currentDate = moment.tz('America/Los_Angeles').startOf('day');

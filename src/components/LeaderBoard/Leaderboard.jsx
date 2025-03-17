@@ -323,6 +323,7 @@ function LeaderBoard({
       return `${Math.round(durationSinceStarted.years)}Y`;
     }
     return 'N/A';
+  };
 
   const getTimeOffStatus = personId => {
     if (!allRequests || !allRequests[personId] || allRequests[personId].length === 0) {
