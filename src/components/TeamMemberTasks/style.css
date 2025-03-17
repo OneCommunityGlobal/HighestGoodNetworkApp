@@ -75,6 +75,15 @@
   border-bottom: none;
 }
 
+.dark-teammember-row th{
+  background-color: #3a506b;
+  color: white;
+}
+.light-teammember-row th{
+  background-color: #f0f8ff;
+  color: black;
+}
+
 .task-align {
   text-align: left;
   display: flex;

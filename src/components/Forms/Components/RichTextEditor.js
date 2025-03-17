@@ -22,7 +22,6 @@ export default function RichTextEditor({ data }) {
       className="col"
       tinymceScriptSrc="/tinymce/tinymce.min.js"
       licenseKey="gpl"
-      // apiKey="rpfrv9z58kbaoauzv9dncv73jeqv7c5lo73gqlk9rx5p726p"
       onEditorChange={onEditorChange}
       value={content}
       // eslint-disable-next-line no-return-assign
