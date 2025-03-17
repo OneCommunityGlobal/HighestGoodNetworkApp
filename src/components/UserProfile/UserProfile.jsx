@@ -332,7 +332,7 @@ function UserProfile(props) {
       const startDate = await dispatch(
         getTimeStartDateEntriesByPeriod(userId, newUserProfile.createdDate, newUserProfile.toDate),
       );
-  
+
       if (startDate !== 'N/A') {
         newUserProfile.startDate = startDate.split('T')[0];
       }
@@ -805,7 +805,7 @@ function UserProfile(props) {
 
   if ((showLoading && !props.isAddNewUser) || userProfile === undefined) {
     return (
-      <Container fluid>
+      <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
         <Row className="text-center" data-test="loading">
           <SkeletonLoading template="UserProfile" />
         </Row>
@@ -921,44 +921,44 @@ function UserProfile(props) {
         className={`py-5 ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}
         id='containerProfile'
       >
-          {/* <div className='containerProfile' > */}
+        {/* <div className='containerProfile' > */}
 
 
-          <div className='left-top' >
-            
-            <div className="profile-img">
-              <Image
-                src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
-                alt="Profile Picture"
-                roundedCircle
-                className="profilePicture bg-white"
-                // this line below should fix the image formatting issue
-                style={profilePic ? {} : { width: '240px', height: '240px' }}
-              />
-              {canEdit ? (
-                <div
-                  className="image-button file btn btn-lg btn-primary"
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Change Photo
-                  <Input
-                    style={{ width: '100%', height: '100%', zIndex: '2', cursor: 'pointer' }}
-                    type="file"
-                    name="newProfilePic"
-                    id="newProfilePic"
-                    onChange={handleImageUpload}
-                    accept="image/png,image/jpeg, image/jpg"
-                  />
-                </div>
-              ) : null}
+        <div className='left-top' >
 
-            </div>
-            <div
-              style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
-              {(userProfile?.profilePic !== undefined) ?
-                <Button color="danger" onClick={toggleRemoveModal} className="remove-button">
-                  Remove Image</Button> : <></>}
-              {/*                   
+          <div className="profile-img">
+            <Image
+              src={profilePic && profilePic.trim().length > 0 ? profilePic : '/pfp-default.png'}
+              alt="Profile Picture"
+              roundedCircle
+              className="profilePicture bg-white"
+              // this line below should fix the image formatting issue
+              style={profilePic ? {} : { width: '240px', height: '240px' }}
+            />
+            {canEdit ? (
+              <div
+                className="image-button file btn btn-lg btn-primary"
+                style={darkMode ? boxStyleDark : boxStyle}
+              >
+                Change Photo
+                <Input
+                  style={{ width: '100%', height: '100%', zIndex: '2', cursor: 'pointer' }}
+                  type="file"
+                  name="newProfilePic"
+                  id="newProfilePic"
+                  onChange={handleImageUpload}
+                  accept="image/png,image/jpeg, image/jpg"
+                />
+              </div>
+            ) : null}
+
+          </div>
+          <div
+            style={{ display: 'flex', justifyContent: 'center', gap: '10px', marginTop: '20px' }}>
+            {(userProfile?.profilePic !== undefined) ?
+              <Button color="danger" onClick={toggleRemoveModal} className="remove-button">
+                Remove Image</Button> : <></>}
+            {/*                   
               {((userProfile?.profilePic==undefined || 
                 userProfile?.profilePic==null || 
                 userProfile?.profilePic=="")&& 
@@ -968,187 +968,187 @@ function UserProfile(props) {
                 ))?
                 <Button color="primary" onClick={toggleModal}>Suggested Profile Image</Button>
                 :null} */}
-            </div>
-
-            {/* {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>} */}
-            <ConfirmRemoveModal
-              isOpen={isRemoveModalOpen}
-              toggleModal={toggleRemoveModal}
-              confirmRemove={confirmRemoveImage}
-            />
-
-            <QuickSetupModal
-              setSaved={setSaved}
-              handleSubmit={handleSubmit}
-              setUserProfile={setUserProfile}
-              userProfile={userProfile}
-              userTeams={teams || []}
-              teamsData={props?.allTeams?.allTeamsData || []}
-              projectsData={props?.allProjects?.projects || []}
-            />
-
           </div>
-          
-          <div className='right-column'>
-            {!isProfileEqual ||
-              !isTasksEqual ||
-              !isProjectsEqual ? (
-              <Alert color="warning">
-                Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
-              </Alert>
-            ) : null}
-            {!codeValid ? (
-              <Alert color="danger">
-                NOT SAVED! The code must be between 5 and 7 characters long
-              </Alert>
-            ) : null}
-            <div className="profile-head">
-              <h5
-                className={`mr-2 ${darkMode ? 'text-light' : ''}`}
-              >{`${firstName} ${lastName}`}</h5>
-              <div style={{ marginTop: '6px' }}>
-                <EditableInfoModal
-                  areaName="UserProfileInfoModal"
-                  areaTitle="User Profile"
-                  fontSize={24}
-                  isPermissionPage
-                  role={requestorRole} // Pass the 'role' prop to EditableInfoModal
-                  darkMode={darkMode}
-                />
-              </div>
+
+          {/* {userProfile!==undefined && userProfile.suggestedProfilePics!==undefined?<ProfileImageModal isOpen={isModalOpen} toggleModal={toggleModal} userProfile={userProfile}/>:<></>} */}
+          <ConfirmRemoveModal
+            isOpen={isRemoveModalOpen}
+            toggleModal={toggleRemoveModal}
+            confirmRemove={confirmRemoveImage}
+          />
+
+          <QuickSetupModal
+            setSaved={setSaved}
+            handleSubmit={handleSubmit}
+            setUserProfile={setUserProfile}
+            userProfile={userProfile}
+            userTeams={teams || []}
+            teamsData={props?.allTeams?.allTeamsData || []}
+            projectsData={props?.allProjects?.projects || []}
+          />
+
+        </div>
+
+        <div className='right-column'>
+          {!isProfileEqual ||
+            !isTasksEqual ||
+            !isProjectsEqual ? (
+            <Alert color="warning">
+              Please click on &quot;Save changes&quot; to save the changes you have made.{' '}
+            </Alert>
+          ) : null}
+          {!codeValid ? (
+            <Alert color="danger">
+              NOT SAVED! The code must be between 5 and 7 characters long
+            </Alert>
+          ) : null}
+          <div className="profile-head">
+            <h5
+              className={`mr-2 ${darkMode ? 'text-light' : ''}`}
+            >{`${firstName} ${lastName}`}</h5>
+            <div style={{ marginTop: '6px' }}>
+              <EditableInfoModal
+                areaName="UserProfileInfoModal"
+                areaTitle="User Profile"
+                fontSize={24}
+                isPermissionPage
+                role={requestorRole} // Pass the 'role' prop to EditableInfoModal
+                darkMode={darkMode}
+              />
+            </div>
+            <span className="mr-2">
+              <ActiveCell
+                isActive={userProfile.isActive}
+                user={userProfile}
+                canChange={canChangeUserStatus}
+                onClick={() => {
+                  if (cantDeactivateOwner(userProfile, requestorRole)) {
+                    // Owner user cannot be deactivated by another user that is not an Owner.
+                    alert('You are not authorized to deactivate an owner.');
+                    return;
+                  }
+                  setActiveInactivePopupOpen(true);
+                }}
+              />
+            </span>
+            {canEdit && (
               <span className="mr-2">
-                <ActiveCell
-                  isActive={userProfile.isActive}
-                  user={userProfile}
-                  canChange={canChangeUserStatus}
-                  onClick={() => {
-                    if (cantDeactivateOwner(userProfile, requestorRole)) {
-                      // Owner user cannot be deactivated by another user that is not an Owner.
-                      alert('You are not authorized to deactivate an owner.');
-                      return;
+                <i
+                  data-toggle="tooltip"
+                  className="fa fa-clock-o"
+                  aria-hidden="true"
+                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                  title="Click to see user's timelog"
+                  onClick={e => {
+                    if (e.metaKey || e.ctrlKey) {
+                      window.open(`/timelog/${targetUserId}`, '_blank');
+                    } else {
+                      e.preventDefault();
+                      props.history.push(`/timelog/${targetUserId}`);
+                      setActiveInactivePopupOpen(true);
                     }
-                    setActiveInactivePopupOpen(true);
                   }}
                 />
               </span>
-              {canEdit && (
-                <span className="mr-2">
-                  <i
-                    data-toggle="tooltip"
-                    className="fa fa-clock-o"
-                    aria-hidden="true"
-                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                    title="Click to see user's timelog"
-                    onClick={e => {
-                      if (e.metaKey || e.ctrlKey) {
-                        window.open(`/timelog/${targetUserId}`, '_blank');
-                      } else {
-                        e.preventDefault();
-                        props.history.push(`/timelog/${targetUserId}`);
-                        setActiveInactivePopupOpen(true);
-                      }
-                    }}
-                  />
-                </span>
-              )}
-              {canChangeRehireableStatus && (
-                <span className="mr-2">
-                  <i
-                    className={isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'}
-                    aria-hidden="true"
-                    style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
-                    title="Click to change rehirable status"
-                    onClick={handleRehireableChange}
-                  />
-                </span>
-              )}
+            )}
+            {canChangeRehireableStatus && (
+              <span className="mr-2">
+                <i
+                  className={isRehireable ? 'fa fa-check-square-o' : 'fa fa-square-o'}
+                  aria-hidden="true"
+                  style={{ fontSize: 24, cursor: 'pointer', marginTop: '6px' }}
+                  title="Click to change rehirable status"
+                  onClick={handleRehireableChange}
+                />
+              </span>
+            )}
+            <Button
+              onClick={() => {
+                setShowSelect(!showSelect);
+                setSummarySelected(null);
+                setSummaryName(null);
+              }}
+              color="primary"
+              size="sm"
+              style={darkMode ? boxStyleDark : boxStyle}
+            >
+              {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
+            </Button>
+            {(canGetProjectMembers && teams.length !== 0) || ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
               <Button
                 onClick={() => {
-                  setShowSelect(!showSelect);
-                  setSummarySelected(null);
-                  setSummaryName(null);
+                  navigator.clipboard.writeText(summaryIntro);
+                  toast.success('Summary Intro Copied!');
                 }}
                 color="primary"
                 size="sm"
+                title="Generates the summary intro for your team and copies it to your clipboard for easy use."
                 style={darkMode ? boxStyleDark : boxStyle}
               >
-                {showSelect ? 'Hide Team Weekly Summaries' : 'Show Team Weekly Summaries'}
+                Generate Summary Intro
               </Button>
-              {(canGetProjectMembers && teams.length !== 0) || ['Owner', 'Administrator', 'Manager'].includes(requestorRole) ? (
-                <Button
-                  onClick={() => {
-                    navigator.clipboard.writeText(summaryIntro);
-                    toast.success('Summary Intro Copied!');
-                  }}
-                  color="primary"
-                  size="sm"
-                  title="Generates the summary intro for your team and copies it to your clipboard for easy use."
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  Generate Summary Intro
-                </Button>
-              ) : (
-                ''
-              )}
-            </div>
-            <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
-            <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
-              {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
-              From :{' '}
-              <span className={darkMode ? 'text-light' : ''}>
-                {formatDateLocal(userProfile.startDate)}
-              </span>
-              {'   '}
-              To:{' '}
-              <span className={darkMode ? 'text-light' : ''}>
-                {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
-              </span>
-            </p>
-            {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
-            {showSelect && summaries !== undefined ? (
-              <div>
-                <Select
-                  className={darkMode ? 'text-azure' : ''}
-                  options={summaries}
-                  styles={customStyles}
-                  onChange={e => {
-                    setSummaryName(e.value[0]);
-                    getWeeklySummary(e.value[1]);
-                  }}
-                />
-              </div>
             ) : (
-              <div />
+              ''
             )}
-            {summarySelected &&
-              showSelect &&
-              showSummary &&
-              summarySelected.map((data, i) => {
-                return (
-                  <TeamWeeklySummaries
-                    key={data._id}
-                    i={i}
-                    name={summaryName}
-                    data={data}
-                    darkMode={darkMode}
-                  />
-                );
-              })}
-            <Badges
-              isUserSelf={isUserSelf}
-              userProfile={userProfile}
-              setUserProfile={setUserProfile}
-              setOriginalUserProfile={setOriginalUserProfile}
-              role={requestorRole}
-              canEdit={canEdit}
-              handleSubmit={handleBadgeSubmit}
-              isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable}
-              darkMode={darkMode}
-            />
-          
+          </div>
+          <h6 className={darkMode ? 'text-light' : 'text-azure'}>{jobTitle}</h6>
+          <p className={`proile-rating ${darkMode ? 'text-light' : ''}`}>
+            {/* use converted date without tz otherwise the record's will updated with timezoned ts for start date.  */}
+            From :{' '}
+            <span className={darkMode ? 'text-light' : ''}>
+              {formatDateLocal(userProfile.startDate)}
+            </span>
+            {'   '}
+            To:{' '}
+            <span className={darkMode ? 'text-light' : ''}>
+              {userProfile.endDate ? formatDateLocal(userProfile.endDate) : 'N/A'}
+            </span>
+          </p>
+          {showSelect && summaries === undefined ? <div>Loading</div> : <div />}
+          {showSelect && summaries !== undefined ? (
+            <div>
+              <Select
+                className={darkMode ? 'bg-darkmode-liblack text-azure' : ''}
+                options={summaries}
+                styles={customStyles}
+                onChange={e => {
+                  setSummaryName(e.value[0]);
+                  getWeeklySummary(e.value[1]);
+                }}
+              />
+            </div>
+          ) : (
+            <div />
+          )}
+          {summarySelected &&
+            showSelect &&
+            showSummary &&
+            summarySelected.map((data, i) => {
+              return (
+                <TeamWeeklySummaries
+                  key={data._id}
+                  i={i}
+                  name={summaryName}
+                  data={data}
+                  darkMode={darkMode}
+                />
+              );
+            })}
+          <Badges
+            isUserSelf={isUserSelf}
+            userProfile={userProfile}
+            setUserProfile={setUserProfile}
+            setOriginalUserProfile={setOriginalUserProfile}
+            role={requestorRole}
+            canEdit={canEdit}
+            handleSubmit={handleBadgeSubmit}
+            isRecordBelongsToJaeAndUneditable={targetIsDevAdminUneditable}
+            darkMode={darkMode}
+          />
 
-  
-          <div  className="profile-functions-desktop">
+
+
+          <div className="profile-functions-desktop">
             <div className="profile-tabs">
               <Nav tabs>
                 <NavItem>
@@ -1393,8 +1393,8 @@ function UserProfile(props) {
                 </>
               )}
             </div>
-         </div>
-          <div  className="profile-functions-tablet">
+          </div>
+          <div className="profile-functions-tablet">
             <List className="profile-functions-list">
               <Button
                 className="list-button"
@@ -1861,38 +1861,38 @@ function UserProfile(props) {
             </List>
           </div>
 
+        </div>
+
+        <div className='left-bottom'>
+          <div className="profile-work">
+            <UserLinkLayout
+              isUserSelf={isUserSelf}
+              userProfile={userProfile}
+              updateLink={updateLink}
+              handleLinkModel={props.handleLinkModel}
+              handleSubmit={handleSubmit}
+              role={requestorRole}
+              canEdit={canEdit || canManageAdminLinks}
+              darkMode={darkMode}
+            />
+            <BlueSquareLayout
+              userProfile={userProfile}
+              handleUserProfile={handleUserProfile}
+              handleSaveError={props.handleSaveError}
+              handleBlueSquare={handleBlueSquare}
+              user={props.auth.user}
+              isUserSelf={isUserSelf}
+              canEdit={canEdit}
+              darkMode={darkMode}
+            />
           </div>
 
-            <div className='left-bottom'>
-              <div className="profile-work">
-              <UserLinkLayout
-                isUserSelf={isUserSelf}
-                userProfile={userProfile}
-                updateLink={updateLink}
-                handleLinkModel={props.handleLinkModel}
-                handleSubmit={handleSubmit}
-                role={requestorRole}
-                canEdit={canEdit || canManageAdminLinks}
-                darkMode={darkMode}
-              />
-              <BlueSquareLayout
-                userProfile={userProfile}
-                handleUserProfile={handleUserProfile}
-                handleSaveError={props.handleSaveError}
-                handleBlueSquare={handleBlueSquare}
-                user={props.auth.user}
-                isUserSelf={isUserSelf}
-                canEdit={canEdit}
-                darkMode={darkMode}
-              />
-            </div>
 
-            
-            </div>
-         <div className='left-dummy'></div>
-         
-         
-          {/* </div> */}
+        </div>
+        <div className='left-dummy'></div>
+
+
+        {/* </div> */}
       </Container>
     </div>
   );

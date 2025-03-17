@@ -285,16 +285,16 @@ function TeamLocations() {
           <div className="d-flex align-center">
             <div className="d-flex align-center pr-5 flex-column flex-md-row  position-relative">
               <div className="input-group-prepend">
-                <span className="input-group-text">{SEARCH}</span>
+                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
               </div>
               <div>
                 <input
                   type="text"
-                  className="form-control"
                   aria-label="Search"
                   placeholder="Search by Location"
                   value={searchText}
                   onChange={searchHandler}
+                  className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
                 />
               </div>
               {dropdown && (

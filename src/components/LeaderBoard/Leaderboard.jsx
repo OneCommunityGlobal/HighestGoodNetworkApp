@@ -150,23 +150,25 @@ function LeaderBoard({
   const updateOrganizationData = (usersTaks, contUsers) => {
     // prettier-ignore
     const newOrganizationData = usersTaks.reduce((accumulator, item) => {
-        accumulator.name = `Totals of ${contUsers}  team members`;
-        accumulator.tangibletime += item.tangibletime;
-        accumulator.totalintangibletime_hrs += item.totalintangibletime_hrs;
-        accumulator.totaltangibletime_hrs += item.totaltangibletime_hrs;
-        accumulator.totaltime += item.totaltime;
-        accumulator.totaltime_hrs += item.totaltime_hrs;
-        accumulator.barprogress += item.barprogress;
-        accumulator.intangibletime += item.intangibletime;
-        accumulator.barcolor = organizationData.barcolor;
-        accumulator.totalweeklycommittedHours += item.weeklycommittedHours;
-        accumulator.weeklycommittedHours += item.weeklycommittedHours;
-        return accumulator;
-      },
+      accumulator.name = `Totals of ${contUsers}  team members`;
+      accumulator.tangibletime += item.tangibletime;
+      accumulator.totalintangibletime_hrs += item.totalintangibletime_hrs;
+      accumulator.totaltangibletime_hrs += item.totaltangibletime_hrs;
+      accumulator.totaltime += item.totaltime;
+      accumulator.totaltime_hrs += item.totaltime_hrs;
+      accumulator.barprogress += item.barprogress;
+      accumulator.intangibletime += item.intangibletime;
+      accumulator.barcolor = organizationData.barcolor;
+      accumulator.totalweeklycommittedHours += item.weeklycommittedHours;
+      accumulator.weeklycommittedHours += item.weeklycommittedHours;
+      return accumulator;
+    },
       // prettier-ignore
-      { name: '', totaltime: 0, barprogress: 0, intangibletime: 0,barcolor: '', tangibletime: 0,
-      totalintangibletime_hrs: 0, totaltangibletime_hrs: 0,  totaltime_hrs: 0,
-      totalweeklycommittedHours: 0, weeklycommittedHours: 0, memberCount: contUsers, _id: 2},
+      {
+        name: '', totaltime: 0, barprogress: 0, intangibletime: 0, barcolor: '', tangibletime: 0,
+        totalintangibletime_hrs: 0, totaltangibletime_hrs: 0, totaltime_hrs: 0,
+        totalweeklycommittedHours: 0, weeklycommittedHours: 0, memberCount: contUsers, _id: 2
+      },
     );
     setStateOrganizationData(newOrganizationData);
   };
@@ -191,9 +193,9 @@ function LeaderBoard({
         // eslint-disable-next-line no-unused-expressions
         usersTaks.length === 0
           ? // eslint-disable-next-line no-unused-expressions
-            (setIsDisplayAlert(true), setIsLoadingTeams(false), null)
+          (setIsDisplayAlert(true), setIsLoadingTeams(false), null)
           : // eslint-disable-next-line no-unused-expressions
-            (setTeamsUsers(usersTaks),
+          (setTeamsUsers(usersTaks),
             setIsLoadingTeams(false),
             setFilteredUserTeamIds(idUsers),
             updateOrganizationData(usersTaks, usersTaks.length));
@@ -206,8 +208,8 @@ function LeaderBoard({
 
   const handleToggleButtonClick = () => {
     // prettier-ignore
-    if (usersSelectedTeam === 'Show all') {renderTeamsList(null)}
-     else if (usersSelectedTeam.length === 0) {
+    if (usersSelectedTeam === 'Show all') { renderTeamsList(null) }
+    else if (usersSelectedTeam.length === 0) {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
     } else renderTeamsList(usersSelectedTeam);
   };
@@ -351,7 +353,7 @@ function LeaderBoard({
   const handleInputSearchTeams = e => {
     refInput.current = e.target.value;
     // prettier-ignore
-    const obj = {_id: 1, teamName: `This team is not found: ${e.target.value}`,}
+    const obj = { _id: 1, teamName: `This team is not found: ${e.target.value}`, }
 
     const searchTeam = formatSearchInput(e.target.value);
     if (searchTeam === '') setTeams(refTeam.current);
@@ -420,69 +422,69 @@ function LeaderBoard({
               <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
 
               {/* prettier-ignore */}
-              <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
+              <DropdownMenu style={{ width: '27rem' }} className={darkMode ? 'bg-dark' : ''}>
 
-              <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
-                {teams.length === 0 ? (
-                  <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
-                    Please, create a team to use the filter.
-                  </p>
-                ) : (
-                  <>
+                <div className={`${darkMode ? 'text-white' : ''}`} style={{ width: '100%' }}>
+                  {teams.length === 0 ? (
+                    <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
+                      Please, create a team to use the filter.
+                    </p>
+                  ) : (
+                    <>
 
-                  <div className='align-items-center d-flex flex-column'>
-                    <Input
-                      onChange={e => handleInputSearchTeams(e)}
-                      style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
-                      placeholder="Search teams"
-                      autoFocus
-                      value={refInput.current}
-                    />
-                  </div>
+                      <div className='align-items-center d-flex flex-column'>
+                        <Input
+                          onChange={e => handleInputSearchTeams(e)}
+                          style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode ? '#e0e0e0' : 'white' }}
+                          placeholder="Search teams"
+                          autoFocus
+                          value={refInput.current}
+                        />
+                      </div>
 
-                    <div className='overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle'
-                     style={{ height: teams.length > 8? '30rem' : 'auto', width: '100%' }}
-                     >
-                    <h5 className="text-center">My Teams</h5>
+                      <div className='overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle'
+                        style={{ height: teams.length > 8 ? '30rem' : 'auto', width: '100%' }}
+                      >
+                        <h5 className="text-center">My Teams</h5>
 
-                    {teams.map(team => {
-                      return (
-                        <div key={team._id}>
-                       { team._id !== 1?
-                       <DropdownItem key={`dropdown-${team._id}`} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
-                        onClick={() => TeamSelected(team)}
-                       >
+                        {teams.map(team => {
+                          return (
+                            <div>
+                              {team._id !== 1 ?
+                                <DropdownItem key={team._id} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                                  onClick={() => TeamSelected(team)}
+                                >
+                                  <ul
+                                    className={`${darkMode ? '  text-light' : ''}`}
+                                  >
+                                    <li>{dropdownName(team.teamName, team.teamName.length)}</li>
+                                  </ul>
+                                </DropdownItem>
+                                :
+                                <div className='align-items-center d-flex flex-column'>
+                                  <Alert color="danger" style={{ width: '90%' }} >
+                                    {dropdownName(team.teamName, team.teamName.length)}
+                                  </Alert>
+                                </div>
+                              }
+                            </div>
+                          );
+                        })}
+                      </div>
+
+                      <h5 className="ml-4 text-center">All users</h5>
+                      <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                        onClick={() => TeamSelected('Show all')}>
                         <ul
                           className={`${darkMode ? '  text-light' : ''}`}
                         >
-                           <li>{dropdownName(team.teamName, team.teamName.length)}</li>
+                          <li>Show all</li>
                         </ul>
-                        </DropdownItem>
-                        :
-                        <div className='align-items-center d-flex flex-column'>
-                        <Alert color="danger"style={{ width: '90%' }} >
-                          {dropdownName(team.teamName, team.teamName.length)}
-                         </Alert>
-                        </div>
-                        }
-                        </div>
-                      );
-                    })}
-                    </div>
-
-                    <h5 className="ml-4 text-center">All users</h5>
-                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`}
-                      onClick={() => TeamSelected('Show all')}>
-                    <ul
-                      className={`${darkMode ? '  text-light' : ''}`}
-                    >
-                        <li>Show all</li>
-                    </ul>
-                    </DropdownItem>
-                  </>
-                )}
-              </div>
-            </DropdownMenu>
+                      </DropdownItem>
+                    </>
+                  )}
+                </div>
+              </DropdownMenu>
             </UncontrolledDropdown>
 
             {teams.length === 0 ? (
@@ -530,7 +532,8 @@ function LeaderBoard({
           <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
             <div className="search-container mx-1">
               <input
-                className="form-control col-12 mb-2"
+                className={`form-control col-12 mb-2 ${darkMode ? 'text-light bg-darkmode-liblack' : ''
+                  }`}
                 type="text"
                 placeholder="Search users..."
                 value={searchInput}
@@ -538,18 +541,15 @@ function LeaderBoard({
               />
             </div>
             <Table
-              className={`leaderboard table-fixed ${
-                darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
-              }`}
+              className={`leaderboard table-fixed ${darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+                }`}
             >
               <thead className="responsive-font-size">
-                <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
-                  <th data-abbr="Stat." style={darkModeStyle}>
-                    <span>Status</span>
-                  </th>
-                  <th data-abbr="Name" style={darkModeStyle}>
+                <tr className={darkMode ? 'bg-space-cadet' : ''}>
+                  <th>Status</th>
+                  <th>
                     <div className="d-flex align-items-center">
-                      <span>Name</span>
+                      <span className="mr-2">Name</span>
                       <EditableInfoModal
                         areaName="Leaderboard"
                         areaTitle="Team Members Navigation"
@@ -557,33 +557,25 @@ function LeaderBoard({
                         fontSize={18}
                         isPermissionPage
                         darkMode={darkMode}
-                        className="p-2"
+                        className="p-2" // Add Bootstrap padding class to the EditableInfoModal
                       />
                     </div>
                   </th>
-                  <th data-abbr="Days Lft." style={darkModeStyle}>
-                    <span>Days Left</span>
+                  <th>Days Left</th>
+                  <th>Time Off</th>
+                  <th>
+                    <span className="d-sm-none">Tan. Time</span>
+                    <span className="d-none d-sm-block">Tangible Time</span>
                   </th>
-                  <th data-abbr="Time Off" style={darkModeStyle}>
-                    <span>Time Off</span>
-                  </th>
-                  <th data-abbr="Tan. Time" style={darkModeStyle}>
-                    <span>Tangible Time</span>
-                  </th>
-                  <th data-abbr="Prog." style={darkModeStyle}>
-                    <span>Progress</span>
-                  </th>
-                  <th
-                    data-abbr="Tot. Time"
-                    style={
-                      darkMode
-                        ? { backgroundColor: '#3a506b', color: 'white', textAlign: 'right' }
-                        : { backgroundColor: '#f0f8ff', color: 'black', textAlign: 'right' }
-                    }
-                  >
+                  <th>Progress</th>
+
+                  <th style={{ textAlign: 'right' }}>
                     <div style={{ display: 'flex', alignItems: 'center' }}>
                       <div style={{ textAlign: 'left' }}>
-                        <span>Total Time</span>
+                        <span className="d-sm-none">Tot. Time</span>
+                        <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>
+                          Total Time{' '}
+                        </span>
                       </div>
                       {isOwner && (
                         <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
@@ -592,26 +584,22 @@ function LeaderBoard({
                   </th>
                 </tr>
               </thead>
-
               <tbody className="my-custome-scrollbar responsive-font-size">
-                <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
+                <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
                   <td aria-label="Placeholder" />
-                  <td className={`leaderboard-totals-container `}>
+                  <th scope="row" className="leaderboard-totals-container">
                     <span>{stateOrganizationData.name}</span>
                     {viewZeroHouraMembers(loggedInUser.role) && (
                       <span className="leaderboard-totals-title">
                         0 hrs Totals:{' '}
-                        {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
-                        Members
+                        {filteredUsers.filter(user => user.weeklycommittedHours === 0).length} Members
                       </span>
                     )}
-                  </td>
+                  </th>
                   <td className="align-middle" aria-label="Description" />
                   <td className="align-middle">
                     <span title="Tangible time">
-                      {filteredUsers
-                        .reduce((total, user) => total + user.tangibletime, 0)
-                        .toFixed(2)}
+                      {filteredUsers.reduce((total, user) => total + user.tangibletime, 0).toFixed(2)}
                     </span>
                   </td>
                   <td className="align-middle" aria-label="Description">
@@ -621,10 +609,7 @@ function LeaderBoard({
                         .toFixed(2)} hours`}
                       value={
                         (filteredUsers.reduce((total, user) => total + user.tangibletime, 0) /
-                          filteredUsers.reduce(
-                            (total, user) => total + user.weeklycommittedHours,
-                            0,
-                          )) *
+                          filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)) *
                         100
                       }
                       color="primary"
@@ -635,11 +620,9 @@ function LeaderBoard({
                       {filteredUsers
                         .reduce((total, user) => total + parseFloat(user.totaltime), 0)
                         .toFixed(2)}{' '}
-                      of{' '}
-                      {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
+                      of {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
                     </span>
                   </td>
-                  <td aria-label="Placeholder" />
                 </tr>
                 {filteredUsers.map(item => {
                   const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
@@ -701,14 +684,13 @@ function LeaderBoard({
                             }}
                           >
                             {hasLeaderboardPermissions(item.role) &&
-                            showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                              showStar(item.tangibletime, item.weeklycommittedHours) ? (
                               <i
                                 className="fa fa-star"
-                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                                  item.role === 'Core Team' && item.missedHours > 0
-                                    ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                    : ''
-                                } \n Click to view their Dashboard`}
+                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${item.role === 'Core Team' && item.missedHours > 0
+                                  ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                  : ''
+                                  } \n Click to view their Dashboard`}
                                 style={{
                                   color: assignStarDotColors(
                                     item.tangibletime,
@@ -722,15 +704,14 @@ function LeaderBoard({
                               />
                             ) : (
                               <div
-                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                                  item.role === 'Core Team' && item.missedHours > 0
-                                    ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                    : ''
-                                } \n Click to view their Dashboard`}
+                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${item.role === 'Core Team' && item.missedHours > 0
+                                  ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                  : ''
+                                  } \n Click to view their Dashboard`}
                                 style={{
                                   backgroundColor:
                                     item.tangibletime >=
-                                    item.weeklycommittedHours + item.missedHours
+                                      item.weeklycommittedHours + item.missedHours
                                       ? '#32CD32'
                                       : 'red',
                                   width: 15,

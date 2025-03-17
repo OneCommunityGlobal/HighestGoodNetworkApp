@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import './DarkMode.css';
 import { Tooltip } from 'reactstrap';
@@ -8,11 +8,38 @@ import nightIcon from './images/nightIcon.png';
 function DarkModeButton() {
   const darkMode = useSelector(state => state.theme.darkMode);
   const [tooltipOpen, setTooltipOpen] = useState(false);
+  const [updatingTheme, setUpdatingTheme] = useState(false);
   const dispatch = useDispatch();
 
   const toggleDarkMode = () => {
     dispatch({ type: 'TOGGLE_THEME' });
   };
+
+  // Listen for localStorage changes from other tabs
+  useEffect(() => {
+    const handleStorageChange = event => {
+      if (event.key === 'darkMode' && !updatingTheme) {
+        const isDarkMode = event.newValue === 'true';
+        if (isDarkMode !== darkMode) {
+          dispatch({ type: 'SET_THEME', payload: isDarkMode });
+        }
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, [darkMode, dispatch]);
+
+  useEffect(() => {
+    setUpdatingTheme(true);
+    localStorage.setItem('darkMode', darkMode);
+    // Reset the flag after a small delay (to ensure the storage event won't fire in the same tab)
+    setTimeout(() => {
+      setUpdatingTheme(false);
+    }, 100);
+  }, [darkMode]);
 
   const toggleTooltip = () => {
     setTooltipOpen(!tooltipOpen);

@@ -53,6 +53,7 @@ function TeamTable({ allTeams, auth, darkMode }) {
                 }}
                 placeholder="X-XXX"
                 invalid={hasError}
+                className={darkMode ? "bg-darkmode-liblack text-light border-0" : ''}
               />
               <FormFeedback>
                  NOT SAVED! The code must be between 5 and 7 characters long

@@ -7,11 +7,19 @@ import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import { ENDPOINTS } from '../../../utils/URL.js';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { Provider } from 'react-redux';
+import configureStore from 'redux-mock-store';
 import routes from '../../../routes.js';
 import { ForcePasswordUpdate } from '../ForcePasswordUpdate.jsx';
 import { forcePasswordUpdate as fPU } from '../../../actions/updatePassword.js';
 import { clearErrors } from '../../../actions/errorsActions.js';
 import { shallow } from 'enzyme';
+
+const mockStore = configureStore([]);
+const initialState = {
+  theme: { darkMode: false },
+};
+const store = mockStore(initialState);
 
 describe('Force Password Update page structure', () => {
   let mountedFPUpdate, props;
@@ -270,7 +278,11 @@ describe('Force Password Update page structure', () => {
       clearErrors: clearErrors,
       forcePasswordUpdate: fPU,
     };
-    const { asFragment } = render(<ForcePasswordUpdate {...props} />);
+    const { asFragment } = render(
+      <Provider store={store}>
+        <ForcePasswordUpdate {...props} />
+      </Provider>,
+    );
     expect(asFragment()).toMatchSnapshot();
   });
 });
