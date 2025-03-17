@@ -130,8 +130,6 @@ const UserTableData = React.memo(props => {
           index={props.index}
           onClick={() => props.onActiveInactiveClick(props.user)}
         />
-      </td>
-      <td className="usermanagement__report">
         {!canSeeReports ? (
           <Tooltip
             placement="bottom"
@@ -151,7 +149,7 @@ const UserTableData = React.memo(props => {
             style={{
               fontSize: 24,
               marginTop: '6px',
-              marginLeft: '8px',
+              marginLeft: '15px',
               opacity: canSeeReports ? 1 : 0.7,
               background: 'none',
               border: 'none',

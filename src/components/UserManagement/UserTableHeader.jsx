@@ -22,7 +22,6 @@ import {
   USER_START_DATE,
   USER_END_DATE,
   REQUESTED_TIME_OFF,
-  REPORTS,
 } from '../../languages/en/ui';
 
 /**
@@ -66,9 +65,6 @@ const UserTableHeader = React.memo(
       <tr className={darkMode ? 'bg-space-cadet' : ''}>
         <th scope="col" id="usermanagement_active">
           {ACTIVE}
-        </th>
-        <th scope="col" id="usermanagement_report">
-          {REPORTS}
         </th>
         <th scope="col" id="usermanagement_first" className="p-auto">
           <div className="text-center flex">

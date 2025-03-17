@@ -36,7 +36,6 @@ const UserTableSearchHeader = React.memo(props => {
   return (
     <tr className={darkMode ? 'bg-yinmn-blue text-light' : ''}>
       <td id="user_active" />
-      <td id="user_report" />
       <td id="user_first">
         <TextSearchBox
           id="firts_name_search"
