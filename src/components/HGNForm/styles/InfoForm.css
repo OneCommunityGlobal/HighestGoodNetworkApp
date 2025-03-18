@@ -139,7 +139,8 @@
   color: #ff0000;
   font-size: 0.875rem;
   margin-top: 4px;
-  margin-left: 10px;
+  padding:10px;
+  /* margin-left: 10px; */
   display: block;
   width: 50%;
 }
