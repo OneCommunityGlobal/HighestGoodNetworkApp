@@ -18,7 +18,7 @@ import './reviewButton.css';
 import { boxStyle, boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faCheck, faPencilAlt } from '@fortawesome/free-solid-svg-icons';
+import { faCheck, faPencilAlt, faExternalLinkAlt } from '@fortawesome/free-solid-svg-icons';
 import httpService from '../../services/httpService';
 import { ApiEndpoint } from 'utils/URL';
 import hasPermission from 'utils/permissions';
@@ -392,7 +392,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
                     target="_blank"
                     className={darkMode ? 'text-light dark-mode-btn' : ''}
                   >
-                    View Link
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
                   </DropdownItem>
                 ))}
               <DropdownItem
@@ -442,7 +442,7 @@ const ReviewButton = ({ user, task, updateTask }) => {
                     target="_blank"
                     className={darkMode ? 'text-light dark-mode-btn' : ''}
                   >
-                    View Link
+                    <FontAwesomeIcon icon={faExternalLinkAlt} /> View Link
                   </DropdownItem>
                 ))}
               <DropdownItem
