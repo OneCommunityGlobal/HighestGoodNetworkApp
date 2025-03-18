@@ -79,8 +79,10 @@ import ProfileImageModal from './UserProfileModal/suggestedProfileModal';
 import ConfirmRemoveModal from './UserProfileModal/confirmRemoveModal';
 import { formatDateYYYYMMDD, CREATED_DATE_CRITERIA } from 'utils/formatDate.js';
 import { use } from 'react';
+import { useHistory } from 'react-router-dom';
 
 function UserProfile(props) {
+  const history = useHistory();
   const darkMode = useSelector(state => state.theme.darkMode);
   /* Constant values */
   const initialFormValid = {
@@ -380,6 +382,7 @@ function UserProfile(props) {
       checkIsProjectsEqual();
       setShowLoading(false);
     } catch (err) {
+      err.response.status === 404 && history.push('/notFoundPage');
       setShowLoading(false);
       console.log(err);
     }
