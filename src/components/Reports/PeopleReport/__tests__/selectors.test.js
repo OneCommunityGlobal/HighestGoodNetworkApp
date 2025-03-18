@@ -4,11 +4,11 @@ describe('peopleTasksPieChartViewData', () => {
   it('should return the correct pie chart data', () => {
     const state = {
       userTask: [
-        { _id: '1', taskName: 'Task 1', projectId: '1' },
-        { _id: '2', taskName: 'Task 2', projectId: '2' },
-        { _id: '3', taskName: 'Task 3', projectId: '1' },
-        { _id: '4', taskName: 'Task 4', projectId: '3' },
-        { _id: '5', taskName: 'Task 5', projectId: '3' },
+        { _id: '1', taskName: 'Task 1', projectId: '1', projectName: 'Project 1' },
+        { _id: '2', taskName: 'Task 2', projectId: '2', projectName: 'Project 2' },
+        { _id: '3', taskName: 'Task 3', projectId: '1', projectName: 'Project 1' },
+        { _id: '4', taskName: 'Task 4', projectId: '3', projectName: 'Project 3' },
+        { _id: '5', taskName: 'Task 5', projectId: '3', projectName: 'Project 3' },
       ],
       allProjects: {
         projects: [
@@ -17,20 +17,17 @@ describe('peopleTasksPieChartViewData', () => {
           { _id: '3', projectName: 'Project 3' },
         ],
       },
-      // This is where hours now come from:
       timeEntries: {
         period: [
-          { taskId: '1', projectId: '1', hours: 5 },
-          { taskId: '2', projectId: '2', hours: 3 },
-          { taskId: '3', projectId: '1', hours: 2 },
-          { taskId: '4', projectId: '3', hours: 1 },
-          { taskId: '5', projectId: '3', hours: 0.5 },
+          { taskId: '1', projectId: '1', hours: 5, minutes: 0, isTangible: true },
+          { taskId: '2', projectId: '2', hours: 3, minutes: 0, isTangible: true },
+          { taskId: '3', projectId: '1', hours: 2, minutes: 0, isTangible: true },
+          { taskId: '4', projectId: '3', hours: 1, minutes: 0, isTangible: true },
+          { taskId: '5', projectId: '3', hours: 0, minutes: 30, isTangible: true },
         ],
       },
     };
 
-    // Because we've placed the hours in `timeEntries.period`,
-    // here's what the code under test will calculate:
     const expectedData = {
       tasksWithLoggedHoursById: {
         '1': 5,
@@ -40,9 +37,9 @@ describe('peopleTasksPieChartViewData', () => {
         '5': 0.5,
       },
       projectsWithLoggedHoursById: {
-                '1': 7,
-                '2': 3,
-                '3': 1.5,
+        'combined_Project_1': 7,
+        'combined_Project_2': 3,
+        'combined_Project_3': 1.5,
       },
       tasksLegend: {
         '1': ['Task 1', 5],
@@ -52,13 +49,12 @@ describe('peopleTasksPieChartViewData', () => {
         '5': ['Task 5', 0.5],
       },
       projectsWithLoggedHoursLegend: {
-        '1': ['Project 1', 7],
-        '2': ['Project 2', 3],
-        '3': ['Project 3', 1.5],
+        'combined_Project_1': ['Project 1', 7],
+        'combined_Project_2': ['Project 2', 3],
+        'combined_Project_3': ['Project 3', 1.5],
       },
       showTasksPieChart: true,
       showProjectsPieChart: true,
-      // Because we have exactly 5 tasks, we show them all:
       displayedTasksWithLoggedHoursById: {
         '1': 5,
         '2': 3,
@@ -82,11 +78,11 @@ describe('peopleTasksPieChartViewData', () => {
   it('should handle edge case where number of tasks is exactly 5', () => {
         const state = {
       userTask: [
-        { _id: '1', taskName: 'Task 1', projectId: '1' },
-        { _id: '2', taskName: 'Task 2', projectId: '2' },
-        { _id: '3', taskName: 'Task 3', projectId: '1' },
-        { _id: '4', taskName: 'Task 4', projectId: '3' },
-        { _id: '5', taskName: 'Task 5', projectId: '3' },
+        { _id: '1', taskName: 'Task 1', projectId: '1', projectName: 'Project 1' },
+        { _id: '2', taskName: 'Task 2', projectId: '2', projectName: 'Project 2' },
+        { _id: '3', taskName: 'Task 3', projectId: '1', projectName: 'Project 1' },
+        { _id: '4', taskName: 'Task 4', projectId: '3', projectName: 'Project 3' },
+        { _id: '5', taskName: 'Task 5', projectId: '3', projectName: 'Project 3' },
       ],
       allProjects: {
         projects: [
@@ -97,11 +93,11 @@ describe('peopleTasksPieChartViewData', () => {
       },
       timeEntries: {
         period: [
-          { taskId: '1', projectId: '1', hours: 5 },
-          { taskId: '2', projectId: '2', hours: 3 },
-          { taskId: '3', projectId: '1', hours: 2 },
-          { taskId: '4', projectId: '3', hours: 1 },
-          { taskId: '5', projectId: '3', hours: 0.5 },
+          { taskId: '1', projectId: '1', hours: 5, minutes: 0, isTangible: true },
+          { taskId: '2', projectId: '2', hours: 3, minutes: 0, isTangible: true },
+          { taskId: '3', projectId: '1', hours: 2, minutes: 0, isTangible: true },
+          { taskId: '4', projectId: '3', hours: 1, minutes: 0, isTangible: true },
+          { taskId: '5', projectId: '3', hours: 0, minutes: 30, isTangible: true },
         ],
       },
     };
@@ -115,9 +111,9 @@ describe('peopleTasksPieChartViewData', () => {
         '5': 0.5,
       },
       projectsWithLoggedHoursById: {
-        '1': 7,
-        '2': 3,
-        '3': 1.5,
+        'combined_Project_1': 7,
+        'combined_Project_2': 3,
+        'combined_Project_3': 1.5,
       },
       tasksLegend: {
         '1': ['Task 1', 5],
@@ -127,9 +123,9 @@ describe('peopleTasksPieChartViewData', () => {
         '5': ['Task 5', 0.5],
       },
       projectsWithLoggedHoursLegend: {
-        '1': ['Project 1', 7],
-        '2': ['Project 2', 3],
-        '3': ['Project 3', 1.5],
+        'combined_Project_1': ['Project 1', 7],
+        'combined_Project_2': ['Project 2', 3],
+        'combined_Project_3': ['Project 3', 1.5],
       },
       showTasksPieChart: true,
       showProjectsPieChart: true,
@@ -156,12 +152,12 @@ describe('peopleTasksPieChartViewData', () => {
   it('should handle case where number of tasks is greater than 5', () => {
     const state = {
       userTask: [
-        { _id: '1', taskName: 'Task 1', projectId: '1' },
-        { _id: '2', taskName: 'Task 2', projectId: '2' },
-        { _id: '3', taskName: 'Task 3', projectId: '1' },
-        { _id: '4', taskName: 'Task 4', projectId: '3' },
-        { _id: '5', taskName: 'Task 5', projectId: '3' },
-        { _id: '6', taskName: 'Task 6', projectId: '3' },
+        { _id: '1', taskName: 'Task 1', projectId: '1', projectName: 'Project 1' },
+        { _id: '2', taskName: 'Task 2', projectId: '2', projectName: 'Project 2' },
+        { _id: '3', taskName: 'Task 3', projectId: '1', projectName: 'Project 1' },
+        { _id: '4', taskName: 'Task 4', projectId: '3', projectName: 'Project 3' },
+        { _id: '5', taskName: 'Task 5', projectId: '3', projectName: 'Project 3' },
+        { _id: '6', taskName: 'Task 6', projectId: '3', projectName: 'Project 3' },
       ],
       allProjects: {
         projects: [
@@ -172,18 +168,16 @@ describe('peopleTasksPieChartViewData', () => {
       },
       timeEntries: {
         period: [
-          { taskId: '1', projectId: '1', hours: 5 },
-          { taskId: '2', projectId: '2', hours: 3 },
-          { taskId: '3', projectId: '1', hours: 2 },
-          { taskId: '4', projectId: '3', hours: 1 },
-          { taskId: '5', projectId: '3', hours: 0.5 },
-          { taskId: '6', projectId: '3', hours: 0.25 },
+          { taskId: '1', projectId: '1', hours: 5, minutes: 0, isTangible: true },
+          { taskId: '2', projectId: '2', hours: 3, minutes: 0, isTangible: true },
+          { taskId: '3', projectId: '1', hours: 2, minutes: 0, isTangible: true },
+          { taskId: '4', projectId: '3', hours: 1, minutes: 0, isTangible: true },
+          { taskId: '5', projectId: '3', hours: 0, minutes: 30, isTangible: true },
+          { taskId: '6', projectId: '3', hours: 0, minutes: 15, isTangible: true },
         ],
       },
     };
 
-    // Observe that tasks 5 and 6 together will be grouped into "Other Tasks"
-    // if we only display the top 4 tasks by total hours.
     const expectedData = {
       tasksWithLoggedHoursById: {
         '1': 5,
@@ -194,9 +188,9 @@ describe('peopleTasksPieChartViewData', () => {
         '6': 0.25,
       },
       projectsWithLoggedHoursById: {
-        '1': 7,
-        '2': 3,
-        '3': 1.75,
+        'combined_Project_1': 7,
+        'combined_Project_2': 3,
+        'combined_Project_3': 1.75,
       },
       tasksLegend: {
         '1': ['Task 1', 5],
@@ -207,9 +201,9 @@ describe('peopleTasksPieChartViewData', () => {
         '6': ['Task 6', 0.25],
       },
       projectsWithLoggedHoursLegend: {
-        '1': ['Project 1', 7],
-        '2': ['Project 2', 3],
-        '3': ['Project 3', 1.75],
+        'combined_Project_1': ['Project 1', 7],
+        'combined_Project_2': ['Project 2', 3],
+        'combined_Project_3': ['Project 3', 1.75],
       },
       showTasksPieChart: true,
       showProjectsPieChart: true,
@@ -218,7 +212,6 @@ describe('peopleTasksPieChartViewData', () => {
         '2': 3,
         '3': 2,
         '4': 1,
-        // The "other tasks" grouping: tasks 5 and 6 => 0.5 + 0.25 = 0.75
         otherTasksTotalHours: 0.75,
       },
       displayedTasksLegend: {
@@ -239,10 +232,18 @@ describe('getPeopleReportData', () => {
   it('should return the correct data from state', () => {
     const state = {
       auth: { isAuthenticated: true },
-      userProfile: { name: 'John Doe', tangibleHoursReportedThisWeek: '10.5', infringements: [] },
+      userProfile: { 
+        name: 'John Doe', 
+        tangibleHoursReportedThisWeek: '10.5', 
+        infringements: [] 
+      },
       userTask: [{ id: 1, name: 'Task 1' }],
       user: { id: 1, name: 'John Doe' },
-      timeEntries: [{ id: 1, hours: 5 }],
+      timeEntries: {
+        period: [
+          { id: 1, hours: 5, minutes: 0, isTangible: true }
+        ]
+      },
       userProjects: [{ id: 1, name: 'Project 1' }],
       allProjects: { projects: [{ id: 1, name: 'Project 1' }] },
       isAssigned: true,
@@ -266,6 +267,7 @@ describe('getPeopleReportData', () => {
       infringements: state.userProfile.infringements,
       user: state.user,
       timeEntries: state.timeEntries,
+      totalTangibleHours: 5,
       userProjects: state.userProjects,
       allProjects: state.allProjects,
       allTeams: state,

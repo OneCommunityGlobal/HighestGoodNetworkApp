@@ -33,7 +33,6 @@ function TeamStatsBarChart({ data, yAxisLabel }) {
 
   return (
     <div className="team-stats-bar-chart">
-      <h2 className="team-stats-title">Team Stats</h2>
       <ResponsiveContainer width="100%" height={300}>
         <BarChart
           layout="vertical"
