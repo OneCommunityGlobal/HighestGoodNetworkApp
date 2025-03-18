@@ -47,8 +47,6 @@ const TeamMemberTask = React.memo(
   }) => {
     const darkMode = useSelector(state => state.theme.darkMode);
     const taskCounts = useSelector(state => state.dashboard?.taskCounts ?? {});
-    // console.log('Task counts:', taskCounts);
-    // console.log('Task IDs:', Object.keys(taskCounts));
     const ref = useRef(null);
     const currentDate = moment.tz('America/Los_Angeles').startOf('day');
     const dispatch = useDispatch();
@@ -76,13 +74,9 @@ const TeamMemberTask = React.memo(
       showWhoHasTimeOff && (onTimeOff || goingOnTimeOff),
     );
 
-   const completedTasks = user.tasks.filter(
-    task =>
-      task.resources?.some(
-        resource => resource.userID === user.personId && resource.completedTask,
-      ),
-  );
-  console.log(completedTasks,"completedtasks");
+    const completedTasks = user.tasks.filter(task =>
+      task.resources?.some(resource => resource.userID === user.personId && resource.completedTask),
+    );
     const thisWeekHours = user.totaltangibletime_hrs;
 
     // these need to be changed to actual permissions...
@@ -94,7 +88,8 @@ const TeamMemberTask = React.memo(
     // ^^^
 
     const canGetWeeklySummaries = dispatch(hasPermission('getWeeklySummaries'));
-    const canSeeReports = rolesAllowedToResolveTasks.includes(userRole)||dispatch(hasPermission('getReports'));
+    const canSeeReports =
+      rolesAllowedToResolveTasks.includes(userRole) || dispatch(hasPermission('getReports'));
     const canUpdateTask = dispatch(hasPermission('updateTask'));
     const canRemoveUserFromTask = dispatch(hasPermission('removeUserFromTask'));
     const numTasksToShow = isTruncated ? NUM_TASKS_SHOW_TRUNCATE : activeTasks.length;
@@ -234,28 +229,26 @@ const TeamMemberTask = React.memo(
                           )}
 
                           {canGetWeeklySummaries && <GoogleDocIcon link={userGoogleDocLink} />}
-                           
-                           {
-                            canSeeReports &&
+
+                          {canSeeReports && (
                             <Link
-                              className='team-member-tasks-user-report-link'
-                              to= {`/peoplereport/${user?.personId}`}
+                              className="team-member-tasks-user-report-link"
+                              to={`/peoplereport/${user?.personId}`}
                             >
-                               <img 
-                                  src ="/report_icon.png"
-                                  alt='reportsicon'
-                                  className='team-member-tasks-user-report-link-image'
-                               />
+                              <img
+                                src="/report_icon.png"
+                                alt="reportsicon"
+                                className="team-member-tasks-user-report-link-image"
+                              />
                             </Link>
-                            }
-                            {
-                              canSeeReports &&
-                              <Link
-                                to= {`/peoplereport/${user?.personId}`}
-                               >
-                                <span class="team-member-tasks-number">{completedTasks.length}</span>
-                              </Link>
-                            }
+                          )}
+                          {canSeeReports && (
+                            <Link to={`/peoplereport/${user?.personId}`}>
+                              <span className="team-member-tasks-number">
+                                {completedTasks.length}
+                              </span>
+                            </Link>
+                          )}
                           <Warning
                             username={user.name}
                             userName={user}
