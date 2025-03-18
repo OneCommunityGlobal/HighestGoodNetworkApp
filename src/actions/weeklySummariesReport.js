@@ -104,4 +104,59 @@ export const toggleUserBio = (userId, bioPosted) => {
       throw error;
     }
   };
+}
+ /* Get Weekly summary reports filters api only visible for admin and owner
+ */
+
+export const postWeeklySummaryFilters = (req) => {
+  return async (dispatch) => {
+    const postWeeklySummaryApi = ENDPOINTS.POST_WEEKLY_SUMMARIES_REPORT_FILTERS();
+    console.log(postWeeklySummaryApi)
+    try {
+      const resp = await axios.post(postWeeklySummaryApi, req);
+      debugger;
+      if (resp.status === 200) {
+        dispatch({
+          type: actions.POST_WEEKLY_SUMMARY_FILTERS,
+          data: resp.data,
+        });
+        dispatch(getUserWeeklySummaryFilters());
+        
+      } else {
+        dispatch({
+          type: actions.POST_WEEKLY_SUMMARY_FILTERS, // Use a separate error type
+          data: "Unexpected response status",
+        });
+      }
+    } catch (error) {
+      dispatch({
+        type: actions.POST_WEEKLY_SUMMARY_FILTERS,
+        data: error.message || "Something went wrong",
+      });
+    }
+  };
+};
+
+export const getUserWeeklySummaryFilters = () => {
+  const url = ENDPOINTS.GET_USER_WEEKLY_SUMMARY_FILTER();
+  return async dispatch => {
+    try {
+      const resp = await axios.get(url);
+      
+      if (resp.status === 200) {
+        dispatch({
+          type: actions.GET_USER_WEEKLY_SUMMARY_FILTER,
+          data: resp.data,
+        });
+        console.log("repeeeeee", resp)
+      } else {
+        throw new Error(`An error occurred while attempting to save the changes to the profile.`)
+      }
+    } catch (err) {
+      dispatch({
+        type: actions.GET_USER_WEEKLY_SUMMARY_FILTER,
+        data: [],
+      });
+    }
+  }
 };
