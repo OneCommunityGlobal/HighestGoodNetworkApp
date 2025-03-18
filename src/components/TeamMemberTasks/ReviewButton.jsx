@@ -425,19 +425,34 @@ const ReviewButton = ({ user, task, updateTask }) => {
         );
       } else if (user.personId === myUserId) {
         return (
-          <div className="d-flex">
-            <Button className="reviewBtn mr-2" color="info" disabled>
-              Work Submitted and Awaiting Review
-            </Button>
-            <Button
-              className="edit-link-btn"
-              color="secondary"
-              onClick={toggleEditLinkModal}
-              title="Edit submitted link"
+          <UncontrolledDropdown>
+            <DropdownToggle
+              className="btn--dark-sea-green reviewBtn"
+              caret
+              style={darkMode ? boxStyleDark : boxStyle}
             >
-              <FontAwesomeIcon icon={faPencilAlt} />
-            </Button>
-          </div>
+              Work Submitted and Awaiting Review
+            </DropdownToggle>
+            <DropdownMenu className={darkMode ? 'bg-space-cadet' : ''}>
+              {task.relatedWorkLinks &&
+                task.relatedWorkLinks.map((link, index) => (
+                  <DropdownItem
+                    key={index}
+                    href={link}
+                    target="_blank"
+                    className={darkMode ? 'text-light dark-mode-btn' : ''}
+                  >
+                    View Link
+                  </DropdownItem>
+                ))}
+              <DropdownItem
+                onClick={toggleEditLinkModal}
+                className={darkMode ? 'text-light dark-mode-btn' : ''}
+              >
+                <FontAwesomeIcon icon={faPencilAlt} /> Edit Link
+              </DropdownItem>
+            </DropdownMenu>
+          </UncontrolledDropdown>
         );
       } else {
         return (
