@@ -99,6 +99,7 @@
   ],
   "devDependencies": {
     "@babel/helper-validator-identifier": "^7.12.11",
+    "@babel/plugin-proposal-optional-chaining": "^7.21.0",
     "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@jest/globals": "^29.7.0",
     "@testing-library/jest-dom": "^5.17.0",
