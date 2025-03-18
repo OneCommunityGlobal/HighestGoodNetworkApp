@@ -5,12 +5,9 @@
   padding: 0 1rem;
 }
 .close-button {
-  position: absolute;
-  top: 0;
-  left: 0;
-  padding: 12px; /* Add some padding for easier clicking */
+  height : 2vh;
+  width : 99%;
 }
-
 /* Timer Message Section */
 .timer-message-section {
   display: flex;
@@ -19,8 +16,23 @@
   flex-wrap: wrap;
   width: 100%;
   gap: 1rem;
-  
 }
+
+.card-content {
+  padding: 5px; /* Add padding around the card content */
+  padding-left: 40px;
+  padding-right: 40px;
+  white-space: pre-line;
+  color: white;
+  font-size: medium;
+}
+
+.navbar {
+  /* z-index: 100; */
+  white-space: nowrap;
+  /* margin-bottom: 20px; */
+}
+
 
 .owner-message {
   margin-right: 1rem;
@@ -51,6 +63,14 @@
   background-color: #2f4157 !important;
 }
 
+@media (max-width: 1400px) {
+  .nav-links {
+    flex-direction: column !important;
+  }
+}
+
+
+
 /* Media Queries for Responsiveness */
 @media (max-width: 1400px) {
   .nav-links {
@@ -75,14 +95,12 @@
     text-align: center;
     width: 100%;
   }
-
-  .nav-links {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 0.5rem;
-    overflow: visible;
-    flex-wrap: wrap;
-  }
+.nav-links {
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+  overflow: visible;
+  flex-wrap: wrap;
 }
 
 @media screen and (max-width: 768px) {
@@ -96,4 +114,26 @@
     overflow: visible;
     flex-wrap: wrap;
   }
+}
+
+@media screen and (min-width: 1400px) and (max-width: 1700px) {
+  /* .owner-message {
+    display: none;
+  } */
+}
+
+@media screen and (max-width: 769px) {
+  .responsive-spacing {
+    margin-right: 5px;
+  }
+}
+
+.header-margin {
+  height: 20px;
+  background-color: #1B2A41;
+}
+
+.header-margin-light {
+  height: 20px;
+  background-color: #fff;
 }
