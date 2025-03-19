@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import './WeeklySummariesReport.css';
+import styles from './WeeklySummariesReport.module.scss';
 import axios from 'axios';
 import { Input } from 'reactstrap';
 import { ENDPOINTS } from '../../utils/URL';
@@ -34,7 +34,7 @@ function TotalValidSummaries(props) {
   };
 
   return (
-    <div className="total-valid-wrapper">
+    <div className={styles.totalValidWrapper}>
       {weeklySummariesCount === 8 ? (
         <div className="total-valid-text" style={style}>
           <b>Total Valid Weekly Summaries:</b>{' '}
