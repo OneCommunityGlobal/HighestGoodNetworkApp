@@ -1,0 +1,15 @@
+.dueSection {
+  border: solid 2px #225163;
+  color: #2c2c2c;
+  border-radius: 6px;
+  width: 260px;
+}
+
+.dueSection__date {
+  background-color: #225163;
+  padding: 14px;
+}
+
+.dueSection__time {
+  padding: 7px;
+}
