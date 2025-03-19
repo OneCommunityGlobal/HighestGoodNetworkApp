@@ -15,21 +15,15 @@ import {
   DEV_ADMIN_ACCOUNT_CUSTOM_WARNING_MESSAGE_DEV_ENV_ONLY,
   PROTECTED_ACCOUNT_MODIFICATION_WARNING_MESSAGE,
 } from 'utils/constants';
-import { ENDPOINTS } from 'utils/URL';
-import axios from 'axios';
-import { getUserProfile, updateUserProfile } from 'actions/userProfile';
 
 export function Dashboard(props) {
   const [popup, setPopup] = useState(false);
   const [filteredUserTeamIds, setFilteredUserTeamIds] = useState([]);
   const [summaryBarData, setSummaryBarData] = useState(null);
-  const { match, authUser, displayUserProfile } = props;
-  const { permissions, _id: userId } = displayUserProfile || {};
+  const {match, authUser} = props;
   const checkSessionStorage = () => JSON.parse(sessionStorage.getItem('viewingUser')) ?? false;
   const [viewingUser, setViewingUser] = useState(checkSessionStorage);
-  const [displayUserId, setDisplayUserId] = useState(
-    match.params.userId || viewingUser?.userId || authUser.userid,
-  );
+  const [displayUserId, setDisplayUserId] = useState(match.params.userId || viewingUser?.userId || authUser.userid);
   const isNotAllowedToEdit = cantUpdateDevAdminDetails(viewingUser?.email, authUser.email);
   const darkMode = useSelector(state => state.theme.darkMode);
 
@@ -67,20 +61,6 @@ export function Dashboard(props) {
     };
   }, []);
 
-  const updateAcknow = async () => {
-    try {
-      const res = await axios.put(ENDPOINTS.USER_PROFILE(userId), {
-        _id: userId,
-        isAcknowledged: true,
-      });
-      // console.log('response', res);
-      if (res.status == 200) {
-        props.getUserProfile(userId);
-      }
-    } catch (e) {
-      console.log('update ack', e);
-    }
-  };
   return (
     <Container fluid className={darkMode ? 'bg-oxford-blue' : ''}>
       <SummaryBar
@@ -90,11 +70,7 @@ export function Dashboard(props) {
         summaryBarData={summaryBarData}
         isNotAllowedToEdit={isNotAllowedToEdit}
       />
-      {!permissions?.isAcknowledged ? (
-        <button style={{ padding: '15px' }} onClick={updateAcknow}>
-          check
-        </button>
-      ) : null}
+
       <Row className="w-100 ml-1">
         <Col lg={7}></Col>
         <Col lg={5}>
@@ -160,11 +136,4 @@ const mapStateToProps = state => ({
   displayUserProfile: state.userProfile,
 });
 
-const mapDispatchToProps = dispatch => {
-  return {
-    updateUserProfile: data => updateUserProfile(data)(dispatch),
-    getUserProfile: userId => getUserProfile(userId)(dispatch),
-  };
-};
-
-export default connect(mapStateToProps, mapDispatchToProps)(Dashboard);
+export default connect(mapStateToProps)(Dashboard);
