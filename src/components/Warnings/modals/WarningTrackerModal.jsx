@@ -138,7 +138,6 @@ function WarningTrackerModal({
     });
   };
   const handleDeleteWarningDescription = warningId => {
-    console.log('handl delete wanring called');
     dispatch(deleteWarningDescription(warningId)).then(res => {
       if (res.error) {
         setError(res.error);
