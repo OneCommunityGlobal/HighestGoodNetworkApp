@@ -126,6 +126,7 @@
     "node-fetch": "^3.1.1",
     "node-sass": "^8.0.0",
     "prettier": "^1.19.1",
+    "react-error-overlay": "^6.0.9",
     "redux-mock-store": "^1.5.4",
     "sinon": "^7.3.2",
     "surge": "^0.21.6"
