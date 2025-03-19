@@ -25,7 +25,7 @@ const SlideToggle = ({ color = 'default', onChange, className }) => {
 
 SlideToggle.defaultProps = {
   color: 'default',
-  className: ''
+  className: '',
 };
 
 SlideToggle.propTypes = {

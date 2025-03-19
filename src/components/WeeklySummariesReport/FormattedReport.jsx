@@ -7,7 +7,6 @@ import moment from 'moment';
 import 'moment-timezone';
 import ReactHtmlParser from 'react-html-parser';
 import { Link } from 'react-router-dom';
-import styles from './WeeklySummariesReport.module.scss';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import { faCopy } from '@fortawesome/free-solid-svg-icons';
@@ -33,6 +32,7 @@ import {
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faMailBulk } from '@fortawesome/free-solid-svg-icons';
 import CopyToClipboard from 'components/common/Clipboard/CopyToClipboard';
+import styles from './WeeklySummariesReport.module.scss';
 import hasPermission from '../../utils/permissions';
 import { ENDPOINTS } from '../../utils/URL';
 import ToggleSwitch from '../UserProfile/UserProfileEdit/ToggleSwitch';
@@ -518,7 +518,6 @@ function Bio({ bioCanEdit, ...props }) {
 }
 
 function BioSwitch({ userId, bioPosted, summary }) {
-
   const [bioStatus, setBioStatus] = useState(bioPosted);
   const dispatch = useDispatch();
   const style = { color: textColors[summary?.weeklySummaryOption] || textColors.Default };
