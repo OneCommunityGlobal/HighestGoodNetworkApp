@@ -60,6 +60,7 @@ import {
 } from '../../actions/notificationAction';
 import NotificationCard from '../Notification/notificationCard';
 import DarkModeButton from './DarkModeButton';
+import { getUserProfile } from '../../actions/userProfile';
 
 export function Header(props) {
   const location = useLocation();
@@ -218,11 +219,16 @@ export function Header(props) {
   const handlePermissionChangeAck = async() => {
     // handle setting the ack true
     try {
+      const {firstName: name, lastName, personalLinks, adminLinks} = props.userProfile
       const res = await axios.put(ENDPOINTS.USER_PROFILE(userId), {
-        _id: userId,
+        // req fields for updation
+        firstName: name, 
+        lastName, 
+        personalLinks,
+        adminLinks,
+        
         isAcknowledged: true,
       });
-      // console.log('response', res);
       if (res.status === 200) {
         props.getUserProfile(userId);
       }
@@ -582,10 +588,10 @@ export function Header(props) {
           onClickClose={() => setPopup(prevPopup => !prevPopup)}
           />
       )}
-      {props.auth.isAuthenticated && !props.userProfile?.permissions?.isAcknowledged && (
+      {props.auth.isAuthenticated && props.userProfile?.permissions?.isAcknowledged===false && (
         <PopUpBar
           message="Heads Up, there were permission changes made to this account"
-          onClickClose={() => handlePermissionChangeAck}
+          onClickClose={handlePermissionChangeAck}
         />
       )}
       <div>
@@ -637,4 +643,5 @@ export default connect(mapStateToProps, {
   getAllRoles,
   hasPermission,
   getWeeklySummaries,
+  getUserProfile
 })(Header);
