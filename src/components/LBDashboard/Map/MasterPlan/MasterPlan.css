@@ -43,8 +43,8 @@
   background-color: #e0e0e0;
   display: flex;
   flex-direction: column;
-  margin: 20px 40px 30px 40px;
-  padding: 20px 20px 50px 20px;
+  margin: 20px 40px 30px 40px !important;
+  padding: 20px 20px 50px 20px !important;
   width: auto;
   min-height: 560px;
   height: 100%;
@@ -65,38 +65,47 @@
   height: 75%;
   display: flex;
 }
+.pin-point {
+  position: absolute;
+  width: 5.5% !important;
+  height: 6% !important;
+  z-index: 10;
+  top: calc(var(--top) * 580 / 700 - 3%);
+  left: calc(var(--left) - 1%); 
+}
+
 
 .map {
   width: 65%;
-  height: 100%;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 10px 0;
+  padding: 0;
 }
 
 .image-wrapper {
   position: relative;
-  min-width: 400px;
+  height: 100%;
   display: inline-block;
 }
 
-.image-wrapper img{
+.image-wrapper img {
+  height: 100%;
   width: 100%;
-  height: auto;
-  display: block;
-  min-width: 400px;
+  max-width: none;
 }
 
-.village-marker{
-  background-color: aqua;
+.village-marker {
   border-radius: 50%;
   position: absolute;
   cursor: pointer;
-  width: 10px;  
-  height: 10px;
+  width: 3.5%;
+  height: 4%;
   z-index: 10;
+  top: calc(var(--top) * 580 / 700);
+  left: calc(var(--left)); 
 }
+
 
 .route {
   width: 35%;
@@ -108,19 +117,41 @@
   border-left: solid 1px #e0e0e0;
 }
 
-.route img{
+.route img {
   width: 100%;
   height: 100%;
-} 
+}
 
 .villages {
   width: 100%;
   height: 25%;
   display: flex;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: center;
   overflow-x: scroll;
 }
+
+.village {
+  display: flex;
+  height: 100%;
+  padding: 5px;
+  align-items: center;
+}
+
+.village:hover {
+  background-color: #768b43;
+}
+
+.village img {
+  width: auto;
+  height: 75%;
+  cursor: pointer;
+}
+
+.selected {
+  background-color: #768b43;
+}
+
 
 @media (max-width: 990px) {
   .main-container {
@@ -130,10 +161,41 @@
     flex-direction: column;
     align-items: center;
   }
+  .map-details {
+    flex-direction: column;
+    height: 100%;
+  }
+  .map {
+    width: 100%;
+  }
+
+  .image-wrapper {
+    position: relative;
+    min-height: 100%;
+    display: inline-block;
+  }
+  .image-wrapper img {
+    width: 100%;
+    height: auto;
+    max-width: none;
+  }
+  .route {
+    width: 100%;
+    border-left: none;
+    border-top: solid 1px #e0e0e0;
+  }
+  .villages{
+    height: auto;
+  }
+  
 }
+
+
 @media (max-width: 580px) {
   .container-main {
     padding: 10px;
     margin: 10px;
   }
+
 }
+
