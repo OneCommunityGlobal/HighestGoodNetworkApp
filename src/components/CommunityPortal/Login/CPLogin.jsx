@@ -93,6 +93,7 @@ function CPLogin(props) {
         <FormText>
           Enter your current user credentials to access the Community Portal Dashboard
         </FormText>
+        <p> Note: You must use your Production/Main credentials for this login.</p>
         <FormGroup>
           <Label for="email">Email</Label>
           <Input
