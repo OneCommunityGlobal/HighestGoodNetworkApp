@@ -9,16 +9,23 @@ const hasPermission = (action, viewingUser = false) => {
     const state = getState();
     const rolePermissions = state.role.roles;
     const userRole = viewingUser ? state.userProfile.role : state.auth.user.role;
+
     const userPermissions = viewingUser
       ? state.userProfile.permissions?.frontPermissions
       : state.auth.user.permissions?.frontPermissions;
+
+    const removedDefaultPermissions = viewingUser
+      ? state.userProfile.permissions?.removedDefaultPermissions
+      : state.auth.user.permissions?.removedDefaultPermissions || [];
+
     if (userRole && rolePermissions && rolePermissions.length !== 0) {
       const roleIndex = rolePermissions?.findIndex(({ roleName }) => roleName === userRole);
       let permissions = [];
       if (roleIndex !== -1) {
         permissions = rolePermissions[roleIndex].permissions;
       }
-      return userPermissions?.includes(action) || permissions?.includes(action);
+      const rolePerms = permissions.filter(perm => !removedDefaultPermissions.includes(perm));
+      return userPermissions?.includes(action) || rolePerms?.includes(action);
     }
     return false;
   };
