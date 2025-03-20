@@ -72,9 +72,9 @@ function FaqHistory() {
       <h4 style={{ borderBottom: '2px', paddingBottom: '5px' }}>Change History:</h4>
       {faq.changeHistory && faq.changeHistory.length > 0 ? (
         <ul style={{ listStyle: 'none', padding: 0 }}>
-          {faq.changeHistory.map((change, index) => (
+          {faq.changeHistory.map(change => (
             <li
-              key={index}
+              key={`${change.updatedBy}-${change.updatedAt}`}
               style={{
                 marginBottom: '15px',
                 padding: '15px',

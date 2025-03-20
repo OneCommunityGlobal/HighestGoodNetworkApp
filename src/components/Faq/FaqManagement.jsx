@@ -1,7 +1,11 @@
 import { useState, useEffect } from 'react';
 import { Button } from 'reactstrap';
 import { Link } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { addFAQ, editFAQ, getAllFAQs, deleteFAQ } from './api';
+
+toast.configure();
 
 function FaqManagement({ editMode = false, faqToEdit = {} }) {
   const [question, setQuestion] = useState(editMode ? faqToEdit.question : '');
@@ -39,7 +43,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
   const handleAddFAQ = async () => {
     try {
       await addFAQ(question, answer);
-      alert('FAQ added successfully!');
+      toast.success('FAQ added successfully!');
       setQuestion('');
       setAnswer('');
 
@@ -60,7 +64,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
 
     try {
       await editFAQ(editingFAQ._id, question, answer);
-      alert('FAQ updated successfully!');
+      toast.success('FAQ updated successfully!');
 
       setEditingFAQ(null);
       setQuestion('');
@@ -77,7 +81,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
   const handleDeleteFAQ = async faqId => {
     try {
       await deleteFAQ(faqId);
-      alert('FAQ deleted successfully!');
+      toast.success('FAQ deleted successfully!');
 
       const updatedFAQs = await getAllFAQs();
       setFaqs(Array.isArray(updatedFAQs.data) ? updatedFAQs.data : []);
@@ -97,6 +101,44 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
     window.open(`/faqs/${faqId}/history`, '_blank');
   };
 
+  let content;
+  if (loading) {
+    content = <p>Loading FAQs...</p>;
+  } else if (!faqs || faqs.length === 0) {
+    content = <p>No FAQs available at the moment. Please add new FAQs.</p>;
+  } else {
+    content = (
+      <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>
+        {faqs.map(faq => (
+          <li
+            key={faq._id}
+            style={{
+              marginBottom: '15px',
+              padding: '10px',
+              border: '1px solid #ddd',
+              borderRadius: '5px',
+            }}
+          >
+            <span
+              onClick={() => openFaqDetailInNewTab(faq._id)}
+              style={{ color: '#007bff', textDecoration: 'underline', cursor: 'pointer' }}
+            >
+              {faq.question}
+            </span>
+            <p>{faq.answer}</p>
+            <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
+              <Button color="primary" onClick={() => handleEditClick(faq)}>
+                Edit FAQ
+              </Button>
+              <Button color="danger" onClick={() => handleDeleteFAQ(faq._id)}>
+                Delete FAQ
+              </Button>
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
   return (
     <div style={{ maxWidth: '800px', margin: '0 auto', padding: '20px', textAlign: 'center' }}>
       <h2>{editingFAQ ? 'Edit FAQ' : 'Add FAQ'}</h2>
@@ -143,45 +185,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
       </Link>
 
       <h4>All FAQs</h4>
-      {loading ? (
-        <p>Loading FAQs...</p>
-      ) : Array.isArray(faqs) && faqs.length === 0 ? (
-        <p>No FAQs available at the moment. Please add new FAQs.</p>
-      ) : (
-        <ul style={{ listStyle: 'none', padding: 0, textAlign: 'left' }}>
-          {Array.isArray(faqs) ? (
-            faqs.map(faq => (
-              <li
-                key={faq._id}
-                style={{
-                  marginBottom: '15px',
-                  padding: '10px',
-                  border: '1px solid #ddd',
-                  borderRadius: '5px',
-                }}
-              >
-                <span
-                  onClick={() => openFaqDetailInNewTab(faq._id)}
-                  style={{ color: '#007bff', textDecoration: 'underline', cursor: 'pointer' }}
-                >
-                  {faq.question}
-                </span>
-                <p>{faq.answer}</p>
-                <div style={{ display: 'flex', gap: '10px', marginTop: '5px' }}>
-                  <Button color="primary" onClick={() => handleEditClick(faq)}>
-                    Edit FAQ
-                  </Button>
-                  <Button color="danger" onClick={() => handleDeleteFAQ(faq._id)}>
-                    Delete FAQ
-                  </Button>
-                </div>
-              </li>
-            ))
-          ) : (
-            <p>Error: FAQs data is not in the correct format.</p>
-          )}
-        </ul>
-      )}
+      {content}
     </div>
   );
 }
