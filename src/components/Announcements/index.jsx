@@ -38,6 +38,9 @@ function Announcements({ title, email }) {
   // Predefined email addresses for sending test emails
   const testEmailAddresses = [
     'lambomichael7@gmail.com',
+    'jae@onecommunityglobal.org',
+    'onecommunityglobal@gmail.com',
+    'onecommunityhospitality@gmail.com'
   ];
 
   useEffect(() => {
@@ -450,20 +453,6 @@ function Announcements({ title, email }) {
     return content;
   };
 
-  const handlePreview = () => {
-    const content = constructEmailContent();
-
-    const htmlDoc = `<!DOCTYPE html>
-    <html>
-      <head><title>Email Preview</title></head>
-      <body>${content}</body>
-    </html>`;
-
-    const blob = new Blob([htmlDoc], { type: 'text/html' });
-    const url = URL.createObjectURL(blob);
-    window.open(url, '_blank');
-  };
-
   const handleSendEmails = () => {
     if (activeTab === 'weeklyProgress' && !validateFields()) { // Do not send emails if any field in 'Weekly Progress' tab is invalid
       toast.error('Error: Please fill in all required fields before sending a test email.');
@@ -648,10 +637,6 @@ function Announcements({ title, email }) {
         <button type="button" className="send-button-green" onClick={handleSendTestEmail} style={darkMode ? boxStyleDark : boxStyle}>
           Send Test Email
         </button>
-        <button type="button" onClick={handlePreview}>
-          Preview Email
-        </button>
-
       </div>
     </div>
   );
