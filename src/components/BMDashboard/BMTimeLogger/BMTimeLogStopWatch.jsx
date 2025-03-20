@@ -1,5 +1,5 @@
 import { Button, CardBody, Row, Col, Container } from 'reactstrap';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import moment from 'moment';
 import './BMTimeLogCard.css';
 
@@ -10,108 +10,74 @@ function BMTimeLogStopWatch() {
     hr: 0,
   });
 
-  const [currentTime, setCurrentTime] = useState();
-  const [intervalId, setIntervalId] = useState();
+  const [currentTime, setCurrentTime] = useState('');
+  const [intervalId, setIntervalId] = useState(null);
   const [startButtonText, setStartButtonText] = useState('START');
   const [isStarted, setIsStarted] = useState(false);
 
-  const updateTimer = () => {
-    setTime(prev => {
-      const newTime = { ...prev };
-      // update sec and see if we need to increase min
-      if (newTime.sec < 59) newTime.sec += 1;
-      else {
-        newTime.min += 1;
-        newTime.sec = 0;
-      }
-      // min has increased in *newTime* by now if it was updated, see if it has crossed 59
-      if (newTime.min === 60) {
-        newTime.min = 0;
-        newTime.hr += 1;
-      }
+  // eslint-disable-next-line consistent-return
+  useEffect(() => {
+    if (isStarted) {
+      const id = setInterval(() => {
+        setTime(prev => {
+          let sec = prev.sec + 1;
+          let { min } = prev;
+          let { hr } = prev;
 
-      return newTime;
-    });
-  };
+          if (sec === 60) {
+            sec = 0;
+            min += 1;
+          }
+          if (min === 60) {
+            min = 0;
+            hr += 1;
+          }
 
-  // const start = () => {
-  //   if (!intervalId) {
-  //     const id = setInterval(updateTimer, 1000);
-  //     setIntervalId(id);
+          return { sec, min, hr };
+        });
+      }, 1000);
 
-  //     if (!currentTime) {
-  //       const date = moment();
-  //       const hour = date.hours();
-  //       const min = date.minutes();
-  //       const sec = date.seconds();
-  //       const ampm = hour >= 12 ? 'PM' : 'AM';
-  //       const hour12 = hour >= 12 ? hour - 12 : hour;
-  //       const ctime = `${hour12 < 10 ? 0 : ''}${hour12} : ${min < 10 ? 0 : ''}${min} : ${
-  //         sec < 10 ? 0 : ''
-  //       }${sec} ${ampm}`;
-  //       setCurrentTime(ctime);
-  //     }
-
-  //     setStartButtonText('PAUSE');
-  //     setIsStarted(true);
-  //   }
-  // };
+      setIntervalId(id);
+      return () => clearInterval(id);
+    }
+    clearInterval(intervalId);
+    setIntervalId(null);
+  }, [isStarted]);
 
   const startStop = () => {
-    if (isStarted === true) {
-      // pause state
-      clearInterval(intervalId);
-      setIntervalId('');
-
+    if (isStarted) {
       setStartButtonText('START');
-      setIsStarted(false);
-    } else if (!intervalId) {
-      const id = setInterval(updateTimer, 1000);
-      setIntervalId(id);
-
-      if (!currentTime) {
-        const date = moment();
-        const hour = date.hours();
-        const min = date.minutes();
-        const sec = date.seconds();
-        const ampm = hour >= 12 ? 'PM' : 'AM';
-        const hour12 = hour >= 12 ? hour - 12 : hour;
-        const ctime = `${hour12 < 10 ? 0 : ''}${hour12} : ${min < 10 ? 0 : ''}${min} : ${
-          sec < 10 ? 0 : ''
-        }${sec} ${ampm}`;
-        setCurrentTime(ctime);
-      }
-
+    } else {
+      if (!currentTime) setCurrentTime(moment().format('hh:mm:ss A'));
       setStartButtonText('PAUSE');
-      setIsStarted(true);
     }
+    setIsStarted(!isStarted);
   };
 
   const stop = () => {
     clearInterval(intervalId);
-    setIntervalId('');
   };
 
   const clear = () => {
-    clearInterval(intervalId);
-    setIntervalId('');
-    setTime({
-      sec: 0,
-      min: 0,
-      hr: 0,
-    });
+    stop();
+    setTime({ sec: 0, min: 0, hr: 0 });
     setCurrentTime('');
+    setStartButtonText('START');
+    setIsStarted(false);
   };
 
   return (
     <CardBody style={{ width: '90%' }}>
       <Container>
-        <Row>
-          <Button className="member-stopwatch mb-2 px-5 ">
-            {`${time.hr < 10 ? 0 : ''}${time.hr} : ${time.min < 10 ? 0 : ''}${time.min} : ${
-              time.sec < 10 ? 0 : ''
-            }${time.sec}`}
-          </Button>
+        <Row className="justify-content-center">
+          <Col xs="auto" className="text-center d-flex justify-content-center">
+            <Button className="member-stopwatch mb-2 px-4">
+              {`${String(time.hr).padStart(2, '0')} : ${String(time.min).padStart(
+                2,
+                '0',
+              )} : ${String(time.sec).padStart(2, '0')}`}
+            </Button>
+          </Col>
         </Row>
 
         <Row className="justify-content-between mb-1">

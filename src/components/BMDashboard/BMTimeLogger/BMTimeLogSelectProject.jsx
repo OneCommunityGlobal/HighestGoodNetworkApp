@@ -10,17 +10,14 @@ function BMTimeLogSelectProject({ selectedProject, setSelectedProject }) {
 
   const [error, setError] = useState(false);
 
-  const selectOptions = projects.map(project => {
-    return (
-      <option key={project._id} value={project._id}>
-        {project.name}
-      </option>
-    );
-  });
-
   const handleOptionChange = event => {
+    const selectedValue = event.target.value;
+    if (!selectedValue) {
+      setError(true);
+      return;
+    }
     setError(false);
-    setSelectedProject(event.target.value);
+    setSelectedProject(selectedValue);
   };
 
   return (
@@ -36,13 +33,17 @@ function BMTimeLogSelectProject({ selectedProject, setSelectedProject }) {
             id="projectSelect"
             name="select"
             type="select"
-            value={selectedProject}
+            value={selectedProject || ''}
             onChange={handleOptionChange}
           >
             <option value="" default>
               Select a project
             </option>
-            filter={selectOptions}
+            {projects.map(project => (
+              <option key={project._id} value={project._id}>
+                {project.name}
+              </option>
+            ))}
           </Input>
         </Col>
         <ErrorAlert error={error} message="Please select a project" />

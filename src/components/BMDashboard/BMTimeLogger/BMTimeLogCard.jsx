@@ -11,37 +11,37 @@ function BMTimeLogCard(props) {
   // const state = useSelector();
 
   const [isError, setIsError] = useState(false);
-  const [memberList, setMemberList] = useState(false);
+  const [memberList, setMemberList] = useState([]);
   const [isMemberFetched, setIsMemberFetched] = useState(false);
 
   const dispatch = useDispatch();
   const errors = useSelector(state => state.errors);
+  const projectInfo = useSelector(state => state.bmProjectMembers);
 
   useEffect(() => {
     dispatch(fetchBMProjectMembers(props.selectedProject));
-  }, [props.selectedProject]);
-
-  useEffect(() => {}, [memberList]);
+  }, [props.selectedProject, dispatch]);
 
   useEffect(() => {
-    if (memberList) {
+    if (projectInfo && projectInfo.members) {
+      setMemberList(projectInfo.members);
       setIsMemberFetched(true);
     }
-  }, [memberList]);
+  }, [projectInfo]);
 
   // trigger an error state if there is an errors object
   useEffect(() => {
-    if (Object.entries(errors).length) {
+    if (Object.entries(errors).length > 0) {
       setIsError(true);
     }
   }, [errors]);
 
   return (
     <Container fluid>
-      <BMTimeLogMemberInfo setMemberList={setMemberList} />
+      <BMTimeLogMemberInfo members={memberList} />
 
-      {isMemberFetched ? <BMTimeLogMembers membersList={memberList} /> : null}
-      {isError ? <BMError errors={errors} /> : null}
+      {isMemberFetched && <BMTimeLogMembers membersList={memberList} />}
+      {isError && <BMError errors={errors} />}
     </Container>
   );
 }

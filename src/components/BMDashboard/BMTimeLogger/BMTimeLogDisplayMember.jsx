@@ -4,25 +4,17 @@ import './BMTimeLogCard.css';
 
 // function BMTimeLogCard({ selectedProject }) {
 function BMTimeLogDisplayMember({ firstName, lastName, role }) {
-  let cardColor = '#78bdda'; // default = volunteer
+  const roleColors = {
+    volunteer: '#78bdda', // light blue
+    core: '#ecb16c', // light orange
+    manager: '#6cc3b2', // light green
+    mentor: '#6cc3b2', // light green
+    owner: '#c36c6c', // light red
+  };
 
-  if (role.includes('Volunteer') || role.includes('volunteer')) {
-    cardColor = '#78bdda'; // light blue
-  } else if (role.includes('Core') || role.includes('core')) {
-    cardColor = '#ecb16c'; // light orange
-  } else if (
-    role.includes('Manager') ||
-    role.includes('manager') ||
-    role.includes('Mentor') ||
-    role.includes('mentor')
-  ) {
-    cardColor = '#6cc3b2'; // light green
-  } else if (role.includes('Owner') || role.includes('owner')) {
-    cardColor = '#c36c6c'; // light red
-  }
-
-  let borderProperty = '2px solid ';
-  borderProperty += cardColor;
+  const roleKey = role.toLowerCase();
+  const cardColor = roleColors[roleKey] || '#78bdda';
+  const borderProperty = `2px solid ${cardColor}`;
 
   return (
     <div>

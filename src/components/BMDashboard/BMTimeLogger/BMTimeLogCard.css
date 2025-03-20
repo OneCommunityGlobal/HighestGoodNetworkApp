@@ -40,9 +40,15 @@
 .member-stopwatch {
   background-color: #4b5055 !important;
   border-radius: 15px !important;
-  width: 100%;
+  min-width: 120px;
   height: 4rem;
-  font-size: 2rem !important;
+  font-size: 2vw !important;
+  text-align: center;
+  white-space: nowrap; 
+  overflow: hidden; 
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .font-color-gray {  

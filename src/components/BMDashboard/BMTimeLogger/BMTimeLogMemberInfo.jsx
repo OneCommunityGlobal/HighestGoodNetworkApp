@@ -1,10 +1,5 @@
-import { useSelector } from 'react-redux';
-
-function BMTimeLogMemberInfo({ setMemberList }) {
-  const projectInfo = useSelector(state => state.bmProjectMembers);
-
-  setMemberList(projectInfo.members);
-
+// eslint-disable-next-line no-unused-vars
+function BMTimeLogMemberInfo({ members }) {
   return <div />;
 }
 
