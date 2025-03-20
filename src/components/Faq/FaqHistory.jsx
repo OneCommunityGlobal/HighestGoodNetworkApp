@@ -10,18 +10,25 @@ function FaqHistory() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchFAQHistory = async () => {
       try {
         const response = await getFAQHistory(id);
-        setFaq(response.data);
+        if (isMounted) setFaq(response.data);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching FAQ History:', error);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
+
     fetchFAQHistory();
+
+    return () => {
+      isMounted = false;
+    };
   }, [id]);
 
   if (loading) return <p>Loading FAQ...</p>;

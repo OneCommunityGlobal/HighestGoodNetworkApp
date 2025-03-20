@@ -17,11 +17,15 @@ function FaqSearch() {
   const [expandedFAQ, setExpandedFAQ] = useState(null);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchFAQs = async () => {
       try {
         const response = await getAllFAQs();
-        setAllFAQs(response.data);
-        setSuggestions(response.data);
+        if (isMounted) {
+          setAllFAQs(response.data);
+          setSuggestions(response.data);
+        }
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching FAQs:', error);
@@ -29,6 +33,10 @@ function FaqSearch() {
     };
 
     fetchFAQs();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const fetchSuggestions = debounce(async query => {

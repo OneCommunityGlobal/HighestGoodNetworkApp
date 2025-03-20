@@ -7,20 +7,26 @@ function UnansweredFaqs() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let isMounted = true;
+
     const fetchUnansweredFAQs = async () => {
       try {
         const response = await getUnansweredFAQs();
-        setUnansweredFaqs(response.data || []);
+        if (isMounted) setUnansweredFaqs(response.data || []);
       } catch (error) {
         // eslint-disable-next-line no-console
         console.error('Error fetching unanswered FAQs:', error);
-        setUnansweredFaqs([]);
+        if (isMounted) setUnansweredFaqs([]);
       } finally {
-        setLoading(false);
+        if (isMounted) setLoading(false);
       }
     };
 
     fetchUnansweredFAQs();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   const handleMarkAsLogged = async faqId => {
