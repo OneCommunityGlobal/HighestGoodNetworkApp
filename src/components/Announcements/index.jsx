@@ -7,6 +7,8 @@ import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import logo2 from '../../assets/images/logo2.png';
 import ImageUploader from './ImageUploader';
+import { tokenKey } from '../../config.json';
+import { ENDPOINTS } from '../../utils/URL.js';
 
 function Announcements({ title, email }) {
   const darkMode = useSelector(state => state.theme.darkMode);
@@ -109,28 +111,35 @@ function Announcements({ title, email }) {
     }
   }, [email]);
 
-  const uploadImageToServer = async (file) => {
-    try {
-      const formData = new FormData();
-      formData.append('file', file);
+  async function uploadImageToServer(file) {
+    const token = localStorage.getItem(tokenKey);
+    if (!token) {
+      throw new Error('No authentication token found. Please log in.');
+    }
 
+    const formData = new FormData();
+    formData.append('image', file);
+
+    try {
       const response = await fetch(ENDPOINTS.UPLOAD_IMAGE(), {
         method: 'POST',
+        headers: {
+          Authorization: `${token}`,
+        },
         body: formData,
       });
 
-      const data = await response.json();
-      if (data.url) {
-        return data.url;
-      } else {
+      if (!response.ok) {
         throw new Error('Image upload failed');
       }
+
+      const data = await response.json();
+      return data.url;
     } catch (error) {
       console.error('Error uploading image:', error);
       toast.error('Failed to upload image. Please try again.');
-      return null;
     }
-  };
+  }
 
   const switchToWeeklyProgress = () => setActiveTab('weeklyProgress');
   const switchToNonFormatted = () => setActiveTab('nonFormatted');
@@ -188,42 +197,36 @@ function Announcements({ title, email }) {
     }
   }, []);
 
-  const handleHeaderImageUpload = (file, e) => {
+  const handleHeaderImageUpload = async (file, e) => {
     // Update the preview image
     fileToBase64(file, setHeaderImage);
 
-    // Convert the file to a base64 string and create the image tag for the email content
-    convertImageToBase64(file, base64Image => {
+    // Upload to Azure and get URL
+    const url = await uploadImageToServer(file);
+    if (url) {
       const imageTag = `<div style="text-align: center; margin-bottom: 9px; padding: 9px 18px;">
-        <img src="${base64Image}" alt="One Community Logo"" style="max-width: 100%; height: auto;" />
+        <img src="${url}" alt="One Community Logo" style="max-width: 100%; height: auto;" />
       </div>`;
-
       setHeaderImageTag(imageTag);
-    });
-
-    // If an event object is available (from a file input), clear its value
-    if (e && e.target) {
-      e.target.value = '';
     }
+
+    if (e && e.target) e.target.value = '';
   };
 
-  const handleBodyImageUpload = (file, e) => {
+  const handleBodyImageUpload = async (file, e) => {
     // Update the preview image
     fileToBase64(file, setBodyImage);
 
-    // Convert the file to a base64 string and create the image tag for the email content
-    convertImageToBase64(file, base64Image => {
-      console.log(base64Image);
+    // Upload to Azure and get URL
+    const url = await uploadImageToServer(file);
+    if (url) {
       const imageTag = `<div style="text-align: center; margin: 20px 0;">
-        <img src="${base64Image}" alt="Blog Summary Image" style="max-width: 100%; height: auto;" />
+        <img src="${url}" alt="Blog Summary Image" style="max-width: 100%; height: auto;" />
       </div>`;
       setBodyImageTag(imageTag);
-    });
-
-    // If an event object is available (from a file input), clear its value
-    if (e && e.target) {
-      e.target.value = '';
     }
+
+    if (e && e.target) e.target.value = '';
   };
 
   const validateEmail = (email) => {
