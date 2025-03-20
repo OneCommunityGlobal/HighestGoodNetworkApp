@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
+import '../Header/DarkMode.css';
 import { connect, useSelector } from 'react-redux';
 import hasPermission from 'utils/permissions';
 
@@ -15,8 +15,14 @@ export const DeleteTeamPopup = React.memo(props => {
   const canPutTeam = props.hasPermission('putTeam');
 
   return (
-    <Modal isOpen={props.open} toggle={closePopup} className={darkMode ? 'dark-mode text-light' : ''}>
-      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>Delete</ModalHeader>
+    <Modal
+      isOpen={props.open}
+      toggle={closePopup}
+      className={darkMode ? 'dark-mode text-light' : ''}
+    >
+      <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>
+        Delete
+      </ModalHeader>
       <ModalBody style={{ textAlign: 'center' }} className={darkMode ? 'bg-yinmn-blue' : ''}>
         <span>
           {`Are you sure you want to delete the team with name "${props.selectedTeamName}"?
@@ -27,18 +33,23 @@ export const DeleteTeamPopup = React.memo(props => {
         {(canDeleteTeam || canPutTeam) && (
           <>
             <Button
-            color="danger"
-            onClick={async () => {
-              await props.onDeleteClick(props.selectedTeamId);
-            }}
-            style={darkMode ? boxStyleDark : boxStyle}
+              color="danger"
+              onClick={async () => {
+                await props.onDeleteClick(props.selectedTeamId);
+              }}
+              style={darkMode ? boxStyleDark : boxStyle}
             >
               Confirm
             </Button>
             <Button
               color="warning"
               onClick={async () => {
-                await props.onSetInactiveClick(props.selectedTeamName, props.selectedTeamId, false, props.selectedTeamCode);
+                await props.onSetInactiveClick(
+                  props.selectedTeamName,
+                  props.selectedTeamId,
+                  false,
+                  props.selectedTeamCode,
+                );
               }}
               style={darkMode ? boxStyleDark : boxStyle}
             >
@@ -46,11 +57,7 @@ export const DeleteTeamPopup = React.memo(props => {
             </Button>
           </>
         )}
-        {!(canDeleteTeam || canPutTeam) && (
-          <>
-            Unauthorized Action
-          </>
-        )}
+        {!(canDeleteTeam || canPutTeam) && <>Unauthorized Action</>}
         <Button color="primary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>

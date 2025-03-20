@@ -64,8 +64,8 @@ export const fetchTotalOrgSummaryDataError = fetchingError => ({
   payload: { fetchingError },
 });
 
-export const getTotalOrgSummary = (startDate, endDate) => {
-  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate);
+export const getTotalOrgSummary = (startDate, endDate, comparisonStartDate, comparisonEndDate) => {
+  const url = ENDPOINTS.TOTAL_ORG_SUMMARY(startDate, endDate, comparisonStartDate, comparisonEndDate);
   return async dispatch => {
     dispatch(fetchTotalOrgSummaryReportBegin());
     try {
