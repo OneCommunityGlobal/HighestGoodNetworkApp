@@ -968,7 +968,9 @@ export class WeeklySummariesReport extends Component {
                         recordId: this.state.selectedFilterId,
                         filters: {},
                       };
-                      this.props.postWeeklySummaryFilters(req);
+                      this.setState({ selectedCodes: [] }, () => {
+                        this.props.postWeeklySummaryFilters(req);
+                      });
                     }
                   }}
                 />
@@ -1186,7 +1188,7 @@ export class WeeklySummariesReport extends Component {
                     FilterByBioStatus: this.state.selectedBioStatus,
                     FilterByOverHours: this.state.selectedOverTime,
                   };
-                  const req = { flow: 'Save', recordId: '', filters: obj };
+                  const req = { flow: 'Save', recordId: null, filters: obj };
                   this.setState({ showFilterModal: false }, () => {
                     this.props.postWeeklySummaryFilters(req);
                   });
