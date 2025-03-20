@@ -16,7 +16,7 @@ describe('ReportHeader component', () => {
 
   it('renders with default avatar when avatar prop is not provided', () => {
     const { container } = render(
-      <ReportHeader name="John Doe"/>
+      <ReportHeader name="John Doe" />
     );
     const defaultAvatarElement = container.querySelector('img[src="/pfp-default.png"]');
 
