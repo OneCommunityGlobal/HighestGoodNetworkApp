@@ -163,11 +163,11 @@ function Issue() {
     }
     await axios
       .post(`${ENDPOINTS.BM_ISSUE_FORM}`, currentFormData)
-      .then(res => {
+      .then(() => {
         toast.success('Issue Form Submitted Successfully');
         return true;
       })
-      .catch(err => {
+      .catch(() => {
         toast.error('Issue Form Submission Failed');
         return false;
       });
