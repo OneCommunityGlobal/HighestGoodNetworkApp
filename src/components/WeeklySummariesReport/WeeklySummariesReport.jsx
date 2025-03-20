@@ -587,11 +587,8 @@ export class WeeklySummariesReport extends Component {
       },
     );
   };
-
-  handleSpecialColorToggleChange = event => {
-    const { id, checked } = event.target;
-    const color = id.split('-')[0];
-    
+  
+  handleColorToggleChange = (color, state) => {
     this.setState(
       prevState => ({
         selectedSpecialColors: {
@@ -602,7 +599,7 @@ export class WeeklySummariesReport extends Component {
       this.filterWeeklySummaries,
     );
   };
-
+  
   handleSpecialColorDotClick = (userId, color) => {
     this.setState(prevState => {
       const updatedSummaries = prevState.summaries.map(summary => {
@@ -949,19 +946,12 @@ export class WeeklySummariesReport extends Component {
                 </div>
               )}
               {hasPermissionToFilter && (
-                <div className="filter-style margin-right">
+                <div className={styles.filterStyle}>
                   <span>Filter by Trophies</span>
-                  <div className="custom-control custom-switch custom-control-smaller">
-                    <input
-                      type="checkbox"
-                      className="custom-control-input"
-                      id="trophy-toggle"
-                      onChange={this.handleTrophyToggleChange}
-                    />
-                    <label className="custom-control-label" htmlFor="trophy-toggle">
-                      {}
-                    </label>
-                  </div>
+                  <SlideToggle
+                    className={styles.slideToggle}
+                    onChange={this.handleTrophyToggleChange}
+                  />
                 </div>
               )}
               {hasPermissionToFilter && (
