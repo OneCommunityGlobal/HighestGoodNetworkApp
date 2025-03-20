@@ -13,7 +13,7 @@
     "@fortawesome/react-fontawesome": "^0.1.19",
     "@sentry/browser": "^4.6.6",
     "@tinymce/tinymce-react": "^3.14.0",
-    "axios": "^0.21.2",
+    "axios": "^1.8.2",
     "axios-mock-adapter": "^1.22.0",
     "bootstrap": "^4.5.3",
     "chart.js": "^3.9.1",
