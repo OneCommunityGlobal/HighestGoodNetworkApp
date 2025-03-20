@@ -16,12 +16,12 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
     const fetchFAQs = async () => {
       try {
         const allFAQs = await getAllFAQs();
-        console.log('Fetched FAQs:', allFAQs);
 
         if (isMounted) {
           setFaqs(Array.isArray(allFAQs.data) ? allFAQs.data : []);
         }
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error fetching FAQs:', error);
         if (isMounted) setFaqs([]);
       } finally {
@@ -46,12 +46,14 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
       const updatedFAQs = await getAllFAQs();
       setFaqs(Array.isArray(updatedFAQs.data) ? updatedFAQs.data : []);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error adding FAQ:', error);
     }
   };
 
   const handleEditFAQ = async () => {
     if (!editingFAQ || !editingFAQ._id) {
+      // eslint-disable-next-line no-console
       console.error('No FAQ selected for editing.');
       return;
     }
@@ -67,6 +69,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
       const updatedFAQs = await getAllFAQs();
       setFaqs(Array.isArray(updatedFAQs.data) ? updatedFAQs.data : []);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error updating FAQ:', error);
     }
   };
@@ -79,6 +82,7 @@ function FaqManagement({ editMode = false, faqToEdit = {} }) {
       const updatedFAQs = await getAllFAQs();
       setFaqs(Array.isArray(updatedFAQs.data) ? updatedFAQs.data : []);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error deleting FAQ:', error);
     }
   };

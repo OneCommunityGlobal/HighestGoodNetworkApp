@@ -14,8 +14,8 @@ function FaqHistory() {
       try {
         const response = await getFAQHistory(id);
         setFaq(response.data);
-        console.log('FAQ History:', response.data);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error fetching FAQ History:', error);
       } finally {
         setLoading(false);

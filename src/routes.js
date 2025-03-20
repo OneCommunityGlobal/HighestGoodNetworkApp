@@ -17,6 +17,8 @@ import Announcements from 'components/Announcements';
 import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
 import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
 import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
+import FaqSearch from 'components/Faq/FaqSearch';
+import FaqManagement from 'components/Faq/FaqManagement';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -42,8 +44,6 @@ import Collaboration from './components/Collaboration';
 import LBRegister from './components/LBDashboard/Auth/Register';
 import LBLogin from './components/LBDashboard/Auth/Login';
 import ListOverview from './components/LBDashboard/ListOverview/ListOverview';
-import FaqSearch from 'components/Faq/FaqSearch';
-import FaqManagement from 'components/Faq/FaqManagement';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';

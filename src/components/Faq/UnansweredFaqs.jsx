@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import { Button } from 'reactstrap';
 import { getUnansweredFAQs, deleteUnansweredFAQ } from './api';
 
@@ -12,6 +12,7 @@ function UnansweredFaqs() {
         const response = await getUnansweredFAQs();
         setUnansweredFaqs(response.data || []);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error fetching unanswered FAQs:', error);
         setUnansweredFaqs([]);
       } finally {
@@ -27,6 +28,7 @@ function UnansweredFaqs() {
       await deleteUnansweredFAQ(faqId);
       setUnansweredFaqs(prevFaqs => prevFaqs.filter(faq => faq._id !== faqId));
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error deleting unanswered FAQ:', error);
     }
   };

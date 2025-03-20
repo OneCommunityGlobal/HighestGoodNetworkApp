@@ -19,6 +19,7 @@ function FaqSearch() {
         setAllFAQs(response.data);
         setSuggestions(response.data);
       } catch (error) {
+        // eslint-disable-next-line no-console
         console.error('Error fetching FAQs:', error);
       }
     };
@@ -32,6 +33,7 @@ function FaqSearch() {
       setSuggestions(response.data);
       setNotFound(response.data.length === 0);
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error fetching FAQ suggestions:', error);
     }
   }, 300);
@@ -60,6 +62,7 @@ function FaqSearch() {
       const response = await logUnansweredQuestion(searchQuery);
       alert(response.data.message || 'Your question has been recorded.');
     } catch (error) {
+      // eslint-disable-next-line no-console
       console.error('Error logging unanswered question:', error);
       alert('Failed to log question. It may already exist.');
     } finally {
