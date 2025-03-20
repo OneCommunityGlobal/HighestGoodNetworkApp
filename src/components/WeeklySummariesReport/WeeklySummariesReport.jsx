@@ -587,7 +587,7 @@ export class WeeklySummariesReport extends Component {
       },
     );
   };
-  
+
   handleColorToggleChange = (color, state) => {
     this.setState(
       prevState => ({
@@ -599,7 +599,7 @@ export class WeeklySummariesReport extends Component {
       this.filterWeeklySummaries,
     );
   };
-  
+
   handleSpecialColorDotClick = (userId, color) => {
     this.setState(prevState => {
       const updatedSummaries = prevState.summaries.map(summary => {
