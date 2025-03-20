@@ -6,6 +6,7 @@ import { sendEmail, broadcastEmailsToAll } from '../../actions/sendEmails';
 import { boxStyle, boxStyleDark } from 'styles';
 import { toast } from 'react-toastify';
 import { SiImgur } from 'react-icons/si';
+import { ReactComponent as ImgurIcon } from '../../assets/images/SocialMediaIcons/ImgurIcon.svg';
 import { 
   handlePostToImgur, 
   fetchImgurScheduledPosts, 
@@ -50,6 +51,15 @@ function Announcements({ title, email }) {
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
+
+  useEffect(() => {
+    const rootElement = document.documentElement;
+    if (toggleImgur) {
+      rootElement.classList.remove('toggle-off')
+    } else {
+      rootElement.classList.add('toggle-off')
+    }
+  }, [toggleImgur]);
 
   const editorInit = {
     license_key: 'gpl',
@@ -195,45 +205,41 @@ function Announcements({ title, email }) {
     dispatch(broadcastEmailsToAll('Weekly Update', htmlContent));
   };
 
-// const fetchImgurScheduledPosts = async (setScheduledPosts, setImgurError) => {
-//   try {
-//     console.log('Fetching scheduled Imgur posts...');
-//     const response = await axios.get(ENDPOINTS.SCHEDULED_POSTS);
-//     const posts = response.data.scheduledPosts;
-//     if (response.status === 200) {
-//       setScheduledPosts(posts);
-//       console.log('Scheduled Imgur posts:', posts);
-//       // return response.data.scheduledPosts;
-//     } else {
-//       setImgurError(response.data.message || 'Failed to fetch scheduled Imgur posts');
-//       throw new Error(response.data.message || 'Failed to fetch scheduled Imgur posts');
-//       // return [];
-//     }
-//   } catch (e) {
-//     console.error('Error fetching scheduled Imgur posts:', e);
-//     setImgurError('Error fetching scheduled Imgur posts');
-//   }
-// };
-
+  const startOfToday = new Date();
+  startOfToday.setHours(0, 0, 0, 0);
 
   return (
     <div className={darkMode ? 'bg-oxford-blue text-light' : ''} style={{ minHeight: "100%" }}>
       <div className="email-update-container">
         <div className="editor">
           {title ? (
-            <h3> {title} </h3>
+            <div className='title-container'>
+              <h3>{title}</h3>
+              <button className="imgur-button" onClick={() => {
+                setToggleImgur(!toggleImgur);
+                fetchImgurScheduledPosts(setScheduledPosts, setImgurError);
+                }}>
+                <ImgurIcon width="3em" height="3em" />
+              </button>
+            </div>
           )
-            : (<h3>Weekly Progress Editor</h3>)
+            : (
+              <div className='title-container'>
+                <h3>Weekly Progress Editor</h3>
+                <button className="imgur-button" onClick={() => {
+                  setToggleImgur(!toggleImgur);
+                  fetchImgurScheduledPosts(setScheduledPosts, setImgurError);
+                  }}>
+                  <ImgurIcon width="3em" height="3em" />
+                </button>
+              </div>
+              
+            )
           }
-          <button className="imgur-button" onClick={() => {
-            setToggleImgur(!toggleImgur);
-            fetchImgurScheduledPosts(setScheduledPosts, setImgurError);
-            }}>
-            <SiImgur color={toggleImgur ? "green" : "gray"} opacity={toggleImgur ? 1 : 0.5} size="2em"/>
-          </button>
+          
           <br />
           
-          {showEditor && <Editor
+          {showEditor && !toggleImgur && <Editor
             tinymceScriptSrc="/tinymce/tinymce.min.js"
             id="email-editor"
             initialValue="<p>This is the initial content of the editor</p>"
@@ -243,7 +249,7 @@ function Announcements({ title, email }) {
             }}
           />}
           {
-            title ? (
+            toggleImgur || title ? (
               ""
             ) : (
               <button type="button" className="send-button" onClick={handleBroadcastEmails} style={darkMode ? boxStyleDark : boxStyle}>
@@ -255,183 +261,201 @@ function Announcements({ title, email }) {
           {/* Imgur post section */}
           {toggleImgur && (
             <div className={`${darkMode ? 'bg-oxford-blue text-light' : ''}`} style={{ minHeight: "100%" }}>
+              <h3>Post to Imgur</h3>
               <div className='imgur-post-container'>
-                <h3>Post to Imgur</h3>
+                
 
-                {/* Imgur album title input */}
-                <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                  Post Title*
-                </label>
-                <input
-                  type='text'
-                  value={imgurTitle}
-                  onChange={(e) => setImgurTitle(e.target.value)}
-                  className='input-text-for-announcement'
-                  required
-                />
+                
+                <div className="imgur-post-details">
+                  {/* Imgur album title input */}
+                  <div className="imgur-post-title">
+                    <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                      Post Title*
+                    </label>
+                    <input
+                      type='text'
+                      value={imgurTitle}
+                      onChange={(e) => setImgurTitle(e.target.value)}
+                      className='input-text-for-announcement'
+                      required
+                    />
+                  </div>
 
-                {/* Imgur gallery topic input */}
-                <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                  Post Topic*
-                </label>
-                <input
-                  type='text'
-                  value={imgurTopic}
-                  onChange={(e) => setImgurTopic(e.target.value)}
-                  className='input-text-for-announcement'
-                  required
-                />
+                  {/* Imgur gallery topic input */}
+                  <div className="imgur-post-topic">
+                    <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                      Post Topic*
+                    </label>
+                    <input
+                      type='text'
+                      value={imgurTopic}
+                      onChange={(e) => setImgurTopic(e.target.value)}
+                      className='input-text-for-announcement'
+                      required
+                    />
+                  </div>
 
-                {/* Imgur album tags input */}
-                <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                  Post Tags
-                </label>
-                <input
-                  type='text'
-                  value={imgurTags}
-                  onChange={(e) => setImgurTags(e.target.value)}
-                  className='input-text-for-announcement'
-                />
+                  {/* Imgur album tags input */}
+                  <div className="imgur-post-tags">
+                    <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                      Post Tags
+                    </label>
+                    <input
+                      type='text'
+                      value={imgurTags}
+                      onChange={(e) => setImgurTags(e.target.value)}
+                      className='input-text-for-announcement'
+                    />
+                  </div>
 
-                {/* Imgur album image upload */}
-                <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
-                  Upload Images
-                </label>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => handleImgurFileChange(e, setImgurFiles, setImgurFileDescriptions)}
-                  className='input-file-upload'
-                />
+                  {/* Imgur album image upload */}
+                  <div className="imgur-post-upload">
+                    <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
+                      Upload Images
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImgurFileChange(e, setImgurFiles, setImgurFileDescriptions)}
+                      className='input-file-upload'
+                    />
+                  </div>
 
-                {/* Imgur album image preview */}
-                {imgurFiles.length > 0 && (
-                  <div>
-                    <h4>Preview:</h4>
-                    <div className='imgur-preview-cards-container'>
-                      {imgurFiles.map((file, index) => (
-                        <div key={index} className='imgur-preview-card'>
-                          <img src={URL.createObjectURL(file)} alt={`Preview ${index}`} className='imgur-preview-image' />
-                          <Editor
-                            tinymceScriptSrc="/tinymce/tinymce.min.js"
-                            id={`imgur-description-editor-${index}`}
-                            initialValue="description"
-                            init={{
-                              height: 100,
-                              menubar: false,
-                              branding: false,
-                              toolbar: false,
-                              skin: darkMode ? 'oxide-dark' : 'oxide',
-                              content_css: darkMode ? 'dark' : 'default',
-                            }}
-                            onEditorChange={(content) => {
-                              const newDescriptions = [...imgurFileDescriptions];
-                              newDescriptions[index] = content;
-                              setImgurFileDescriptions(newDescriptions);
-                            }}
-                          />
-                          <button
+                  {/* Imgur album image preview */}
+                  <div className="imgur-preview">
+                    {imgurFiles.length > 0 && (
+                      <div>
+                        <h4>Preview:</h4>
+                        <div className='imgur-preview-cards-container'>
+                          {imgurFiles.map((file, index) => (
+                            <div key={index} className='imgur-preview-card'>
+                              <img src={URL.createObjectURL(file)} alt={`Preview ${index}`} className='imgur-preview-image' />
+                              <Editor
+                                tinymceScriptSrc="/tinymce/tinymce.min.js"
+                                id={`imgur-description-editor-${index}`}
+                                initialValue="description"
+                                init={{
+                                  height: 100,
+                                  menubar: false,
+                                  branding: false,
+                                  toolbar: false,
+                                  skin: darkMode ? 'oxide-dark' : 'oxide',
+                                  content_css: darkMode ? 'dark' : 'default',
+                                }}
+                                onEditorChange={(content) => {
+                                  const newDescriptions = [...imgurFileDescriptions];
+                                  newDescriptions[index] = content;
+                                  setImgurFileDescriptions(newDescriptions);
+                                }}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => handleRemoveImgurFile(index, setImgurFiles, setImgurFileDescriptions)}
+                                className='imgur-preview-remove-button'
+                              >
+                                Remove
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Imgur error message */}
+                  {imgurError && <div className="alert alert-danger m-2">{imgurError}</div>}
+
+                  {/* schedule post button */}
+                  <div className='imgur-schedule'>
+                    <label className={`block mb-2 ${darkMode ? 'text-light' : 'text-dark'}`}>
+                      Schedule Post (Optional)
+                    </label>
+                    <input
+                      type="datetime-local"
+                      value={imgurScheduleTime}
+                      onChange={(e) => {
+                        console.log(e.target.value);
+                        setImgurScheduleTime(e.target.value)
+                      }}
+                      min={startOfToday.toISOString().slice(0, 16)}
+                      max={maxScheduleDate.toISOString().slice(0, 16)}
+                      className="input-text-for-announcement"
+                    />
+                  </div>
+
+                  {/* post to imgur button */}
+                  <div className="imgur-post-button">
+                    <button
+                      type="button"
+                      onClick={async () => {                    
+                        await handlePostToImgur({
+                          imgurTitle,
+                          imgurTags,
+                          imgurFiles,
+                          imgurScheduleTime,
+                          imgurFileDescriptions,
+                          imgurTopic,
+                          setImgurLoading,
+                          setImgurError,
+                          setImgurTitle,
+                          setImgurTags,
+                          setImgurFiles,
+                          setImgurTopic,
+                          setImgurScheduleTime,
+                          setImgurFileDescriptions,
+                        });
+                      fetchImgurScheduledPosts(setScheduledPosts, setImgurError);
+                      }}
+                      disabled={imgurLoading}
+                      className="send-button"
+                      style={darkMode ? boxStyleDark : boxStyle}
+                    >
+                      {imgurLoading ? "Posting..." : imgurScheduleTime ? "Schedule Post" : "Posting to Imgur"}
+                    </button>
+                  </div>
+                </div>
+                    
+                {/* display scheduled posts */}
+                <div className="scheduled-posts">
+                  <h4>Scheduled Posts:</h4>
+                  {scheduledPosts.length === 0 && <p>No scheduled posts</p>}
+                  {scheduledPosts.length > 0 && (
+                    <div className="scheduled-posts-container">
+                      {scheduledPosts.map((post, index) => (
+                        <div key={index} className="scheduled-post-card">
+                        <h5>{post.title}</h5>
+                        <p>Scheduled Time: {new Date(post.scheduleTime).toLocaleString()}</p>
+                        <div className="scheduled-post-files">
+                          {post.files.map((file, fileIndex) => (
+                            <div key={fileIndex} className="scheduled-post-file">
+                              <p>File: {file.originalname}</p>
+                              {/* <img
+                                src={`data:${file.mimetype};base64,${Buffer.from(file.buffer.data).toString('base64')}`}
+                                alt={`Preview ${fileIndex}`}
+                                className="scheduled-post-image"
+                              /> */}
+                              {/* <div dangerouslySetInnerHTML={{ __html: post.description[fileIndex] }} /> */}
+                            </div>
+                          ))}
+                        </div>
+                          {/* <button
                             type="button"
-                            onClick={() => handleRemoveImgurFile(index, setImgurFiles, setImgurFileDescriptions)}
-                            className='imgur-preview-remove-button'
+                            onClick={() => deleteScheduledPost(post.jobId, setScheduledPosts, setImgurError)}
+                            className="delete-button"
                           >
-                            Remove
-                          </button>
+                            Delete
+                          </button> */}
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {/* Imgur error message */}
-                {imgurError && <div className="alert alert-danger m-2">{imgurError}</div>}
-
-                {/* schedule post button */}
-                <div className="mb-4">
-                  <label className={`block mb-2 ${darkMode ? 'text-light' : 'text-dark'}`}>
-                    Schedule Post (Optional)
-                  </label>
-                  <input
-                    type="datetime-local"
-                    value={imgurScheduleTime}
-                    onChange={(e) => {
-                      console.log(e.target.value);
-                      setImgurScheduleTime(e.target.value)
-                    }}
-                    min={new Date().toISOString().slice(0, 16)}
-                    max={maxScheduleDate.toISOString().slice(0, 16)}
-                    className="input-text-for-announcement"
-                  />
+                  )}
                 </div>
-
-                {/* post to imgur button */}
-                <button
-                  type="button"
-                  onClick={async () => {                    
-                    await handlePostToImgur({
-                      imgurTitle,
-                      imgurTags,
-                      imgurFiles,
-                      imgurScheduleTime,
-                      imgurFileDescriptions,
-                      imgurTopic,
-                      setImgurLoading,
-                      setImgurError,
-                      setImgurTitle,
-                      setImgurTags,
-                      setImgurFiles,
-                      setImgurTopic,
-                      setImgurScheduleTime,
-                      setImgurFileDescriptions,
-                    });
-                  fetchImgurScheduledPosts(setScheduledPosts, setImgurError);
-                  }}
-                  disabled={imgurLoading}
-                  className="send-button"
-                  style={darkMode ? boxStyleDark : boxStyle}
-                >
-                  {imgurLoading ? "Posting..." : imgurScheduleTime ? "Schedule Post" : "Posting to Imgur"}
-                </button>
-
-                {/* display scheduled posts */}
-                <h4>Scheduled Posts:</h4>
-                {scheduledPosts.length === 0 && <p>No scheduled posts</p>}
-                {scheduledPosts.length > 0 && (
-                  <div className="scheduled-posts-container">
-                    {scheduledPosts.map((post, index) => (
-                      <div key={index} className="scheduled-post-card">
-                      <h5>{post.title}</h5>
-                      <p>Scheduled Time: {new Date(post.scheduleTime).toLocaleString()}</p>
-                      <div className="scheduled-post-files">
-                        {post.files.map((file, fileIndex) => (
-                          <div key={fileIndex} className="scheduled-post-file">
-                            <p>File: {file.originalname}</p>
-                            {/* <img
-                              src={`data:${file.mimetype};base64,${Buffer.from(file.buffer.data).toString('base64')}`}
-                              alt={`Preview ${fileIndex}`}
-                              className="scheduled-post-image"
-                            /> */}
-                            {/* <div dangerouslySetInnerHTML={{ __html: post.description[fileIndex] }} /> */}
-                          </div>
-                        ))}
-                      </div>
-                        {/* <button
-                          type="button"
-                          onClick={() => deleteScheduledPost(post.jobId, setScheduledPosts, setImgurError)}
-                          className="delete-button"
-                        >
-                          Delete
-                        </button> */}
-                      </div>
-                    ))}
-                  </div>
-                )}
               </div>
             </div>
           )}
 
         </div>
-        <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
+        {!toggleImgur && <div className={`emails ${darkMode ? 'bg-yinmn-blue' : ''}`} style={darkMode ? boxStyleDark : boxStyle}>
           {
             title ? (
               <p>Email</p>
@@ -479,7 +503,7 @@ function Announcements({ title, email }) {
             className="input-file-upload"
           />
 
-        </div>
+        </div>}
       </div>
     </div>
 

@@ -101,31 +101,6 @@ export const handleRemoveImgurFile = (index, setImgurFiles, setImgurFileDescript
   setImgurFileDescriptions(prevDescriptions => prevDescriptions.filter((_, i) => i !== index));
 };
 
-// export const deleteScheduledPost = async (jobId, setScheduledPosts, setImgurError) => {
-//   try {
-//     console.log(`Deleting scheduled Imgur post with jobId: ${jobId}`);
-//     const response = await axios.delete(`${ENDPOINTS.DELETE_SCHEDULED_POST}/${jobId}`);
-//     if (response.status === 200) {
-//       // Fetch the updated list of scheduled posts
-//       fetchImgurScheduledPosts(setScheduledPosts, setImgurError);
-//       toast.success('Scheduled post deleted successfully', {
-//         position: 'top-right',
-//         autoClose: 3000,
-//       });
-//     } else {
-//       setImgurError(response.data.message || 'Failed to delete scheduled post');
-//       throw new Error(response.data.message || 'Failed to delete scheduled post');
-//     }
-//   } catch (e) {
-//     console.error('Error deleting scheduled Imgur post:', e);
-//     setImgurError('Error deleting scheduled Imgur post');
-//     toast.error('Error deleting scheduled post', {
-//       position: 'top-right',
-//       autoClose: 3000,
-//     });
-//   }
-// };
-
 export const fetchImgurScheduledPosts = async (setScheduledPosts, setImgurError) => {
   try {
     console.log('Fetching scheduled Imgur posts...');

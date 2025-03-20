@@ -66,6 +66,14 @@ button.send-button:hover {
   /* Add some spacing between editor and email inputs */
 }
 
+.title-container{
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 10px;
+}
+
 .editor h2 {
   margin-top: 0;
   /* Remove top margin for the heading */
@@ -114,13 +122,41 @@ button.send-button:hover {
 }
 
 .imgur-button{
-  background-color: white;
-  border: none;
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
   padding-top: 10px;
+}
+
+:root {
+  --imgur-icon-primary: #33c481;
+  --imgur-icon-secondary: #21a366;
+  --imgur-icon-tertiary: #124787;
+}
+
+.toggle-off {
+  --imgur-icon-primary: #ccc;
+  --imgur-icon-secondary: #999;
+  --imgur-icon-tertiary: #666;
+}
+
+.imgur-icon{
+  width: 100%;
+  height: 100%;
+}
+
+.imgur-post-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 10vw;
+}
+
+.imgur-post-details {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 .imgur-preview-cards-container {
@@ -150,13 +186,13 @@ button.send-button:hover {
   border: 1px solid #ccc;
   border-radius: 4px;
   box-sizing: border-box;
-  word-wrap: break-word; /* Ensures long words break and wrap to the next line */
-  white-space: normal; /* Allows text to wrap to the next line */
+  word-wrap: break-word; 
+  white-space: normal; 
   text-overflow: ellipsis;
 }
 
 .imgur-preview-remove-button {
-  margin-top: 10px; /* Increase margin-top */
+  margin-top: 10px; 
   background-color: red;
   color: white;
   border: none;
