@@ -69,7 +69,7 @@
   position: absolute;
   width: 5.5% !important;
   height: 6% !important;
-  z-index: 10;
+  z-index: 9;
   top: calc(var(--top) * 580 / 700 - 3%);
   left: calc(var(--left) - 1%); 
 }
@@ -111,10 +111,20 @@
   width: 35%;
   height: 100%;
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   padding: 10px 0;
   border-left: solid 1px #e0e0e0;
+}
+
+.route p {
+  font-size: 0.5em;
+  margin-top: 0;
+  margin-bottom: 0;
+  font-weight: 600;
+  text-align: center;
+  color: #e0e0e0;
 }
 
 .route img {
@@ -190,11 +200,38 @@
   
 }
 
+.village-details{
+  display: flex;
+  flex-direction: column;
+  padding-left: 20px;
+  width: 100%;
+  height: 100%;
+}
+
+.village-details h3{
+  margin: 0;
+  padding: 0;
+  font-size: 1.5em;
+  font-weight: 600;
+  color:#839a4a;
+}
+
+.village-details p{
+  margin: 0;
+  padding: 0;
+  font-size: 1em;
+  font-weight: 400;
+  color:#839a4a;
+}
+
 
 @media (max-width: 580px) {
   .container-main {
     padding: 10px;
     margin: 10px;
+  }
+  .village-details{
+    padding-left: 0;
   }
 
 }
