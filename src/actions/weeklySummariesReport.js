@@ -114,7 +114,6 @@ export const postWeeklySummaryFilters = (req) => {
     console.log(postWeeklySummaryApi)
     try {
       const resp = await axios.post(postWeeklySummaryApi, req);
-      debugger;
       if (resp.status === 200) {
         dispatch({
           type: actions.POST_WEEKLY_SUMMARY_FILTERS,

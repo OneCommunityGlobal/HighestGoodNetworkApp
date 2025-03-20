@@ -30,8 +30,6 @@ export const weeklySummariesReducer = (state = initialState, action) => {
       };
 
       case actions.POST_WEEKLY_SUMMARY_FILTERS:
-        console.log("reducer file data", action)
-        debugger;
         return {
           ...state,
           loading: false,
@@ -39,8 +37,6 @@ export const weeklySummariesReducer = (state = initialState, action) => {
         };
 
         case actions.GET_USER_WEEKLY_SUMMARY_FILTER:
-          console.log("reducer file data", action)
-        debugger;
           return {
             ...state,
             loading: false,
