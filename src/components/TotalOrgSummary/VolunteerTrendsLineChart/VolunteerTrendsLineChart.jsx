@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
 import Loading from 'components/common/Loading';
+import DatePicker from 'react-datepicker';
+import 'react-datepicker/dist/react-datepicker.css';
 
 const formatChartData = rawData => {
   if (rawData[0]._id.month) {
@@ -44,6 +46,10 @@ const formatChartData = rawData => {
   });
 };
 
+const dateToYYYYMMDD = date => {
+  return date.toISOString().split('T')[0];
+};
+
 export default function VolunteerTrendsLineChart(props) {
   const { darkMode } = props;
   const [isLoading, setIsLoading] = useState(true);
@@ -51,13 +57,19 @@ export default function VolunteerTrendsLineChart(props) {
   const [fetchError, setFetchError] = useState(false);
   const latestNumberOfHours = data?.[data.length - 1].totalHours || 0;
   const [chartSize, setChartSize] = useState({ width: null, height: null });
+  const [requestTimeFrame, setRequestTimeFrame] = useState(1);
+  const [requestOffset, setRequestOffset] = useState('week');
+  const [showDatePicker, setShowDatePicker] = useState(false);
+
+  const [customDateRange, setCustomDateRange] = useState([null, null]);
+  const [startDate = new Date(), endDate = new Date()] = customDateRange;
 
   useEffect(() => {
     // Gets backend data
     const getData = async () => {
       try {
-        const url = ENDPOINTS.VOLUNTEER_TRENDS(5, 'month');
         // TODO: NEED TO ABSTRACT THIS TO ITS OWN REDUX REDUCER
+        const url = ENDPOINTS.VOLUNTEER_TRENDS(requestTimeFrame, requestOffset);
         const response = await axios.get(url);
         const rawData = formatChartData(response.data);
         setData(rawData);
@@ -68,7 +80,31 @@ export default function VolunteerTrendsLineChart(props) {
       }
     };
     getData();
-  }, []);
+  }, [requestTimeFrame, requestOffset]);
+
+  useEffect(() => {
+    // Gets backend data using custom date ranges
+    const getData = async () => {
+      try {
+        // TODO: NEED TO ABSTRACT THIS TO ITS OWN REDUX REDUCER
+        const formattedDateRange = customDateRange.map(date => dateToYYYYMMDD(date));
+        const url = ENDPOINTS.VOLUNTEER_TRENDS(
+          requestTimeFrame,
+          requestOffset,
+          formattedDateRange[0],
+          formattedDateRange[1],
+        );
+        const response = await axios.get(url);
+        const rawData = formatChartData(response.data);
+        setData(rawData);
+      } catch (err) {
+        setFetchError(err);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    if (customDateRange.every(date => date)) getData();
+  }, [customDateRange]);
 
   useEffect(() => {
     // Add event listener to set chart width on window resize
@@ -125,6 +161,7 @@ export default function VolunteerTrendsLineChart(props) {
 
   const renderCustomTooltip = ({ active, payload, label }) => {
     if (active && payload && payload.length) {
+      const { year, interval } = payload[0].payload;
       return (
         <div
           style={{
@@ -135,7 +172,8 @@ export default function VolunteerTrendsLineChart(props) {
           }}
         >
           <h6 style={{ color: 'black' }}>
-            {label} {payload[0].payload.year}
+            {interval === 'week' ? 'Week ' : ''}
+            {label}, {year}
           </h6>
           <h6 style={{ color: '#328D1B' }}>{payload[0].value} hours</h6>
         </div>
@@ -144,15 +182,29 @@ export default function VolunteerTrendsLineChart(props) {
     return null;
   };
 
-  if (isLoading) {
-    return (
-      <div className="d-flex justify-content-center align-items-center">
-        <div className="w-100vh">
-          <Loading />
-        </div>
-      </div>
-    );
-  }
+  const setDateFilter = e => {
+    if (e.target.value === 'custom-date') {
+      return setShowDatePicker(true);
+    }
+
+    setCustomDateRange([null, null]);
+    setShowDatePicker(false);
+    const [years, offset] = e.target.value.split('-');
+    const numberOfYears = years.substring(5);
+    setIsLoading(true);
+    setRequestTimeFrame(numberOfYears);
+    setRequestOffset(offset);
+    return undefined;
+  };
+
+  const handleCustomDateRange = updatedDateRange => {
+    console.log(updatedDateRange);
+    setCustomDateRange(updatedDateRange);
+    if (updatedDateRange[1]) {
+      setShowDatePicker(false);
+      setIsLoading(true);
+    }
+  };
 
   if (fetchError) {
     return <div>Error fetching data!</div>;
@@ -160,43 +212,88 @@ export default function VolunteerTrendsLineChart(props) {
 
   return (
     <div className="chart-container">
-      <LineChart
-        width={chartSize.width}
-        height={chartSize.height}
-        data={data}
-        margin={{ right: 50, top: 50, left: 20 }}
-      >
-        <CartesianGrid stroke="#ccc" vertical={false} />
-        <XAxis
-          dataKey="xLabel"
-          axisLine={false}
-          tickLine={false}
-          tick={{ fill: darkMode ? '#ccc' : undefined }}
-        />
-        <YAxis
-          tickFormatter={formatNumber}
-          axisLine={false}
-          tickLine={false}
-          tick={{ fill: darkMode ? '#ccc' : undefined }}
-          label={{
-            value: 'Total Hours',
-            angle: -90,
-            position: 'insideLeft',
-            dy: 20,
-            dx: -10,
-            style: { fontSize: 18, fill: darkMode ? '#ccc' : undefined },
-          }}
-        />
-        <Line
-          type="linear"
-          dataKey="totalHours"
-          stroke="#328D1B"
-          strokeWidth={4}
-          dot={renderCustomDot}
-          strokeLinecap="round"
-        />
-        <Tooltip content={renderCustomTooltip} />
-      </LineChart>
+      {/* DATE FILTER */}
+      <select name="date-filter" id="date-filter" onChange={setDateFilter}>
+        <option value="years1-week">This year by week</option>
+        <option value="years1-month">This year by month</option>
+        <option value="years2-month">Last 2 years by month</option>
+        <option value="years3-month">Last 3 years by month</option>
+        <option value="years5-month">Last 5 years by month</option>
+        <option value="years10-month">Last 10 years by month</option>
+        <option value="years0-month">All-time</option>
+        <option value="custom-date">Choose Date Range</option>
+      </select>
+
+      {/* DATE PICKER */}
+      <div className="date-picker-container">
+        {showDatePicker && (
+          <DatePicker
+            selected={startDate}
+            onChange={handleCustomDateRange}
+            startDate={startDate}
+            endDate={endDate}
+            selectsRange
+            inline
+            dateFormat="MM-dd-yyyy"
+            className="date-picker"
+          />
+        )}
+      </div>
+
+      {/* CUSTOM DATE RANGE */}
+      {customDateRange.every(date => date) && (
+        <div className="custom-date-range">
+          <span>{dateToYYYYMMDD(customDateRange[0])}</span> to{' '}
+          <span>{dateToYYYYMMDD(customDateRange[1])}</span>
+        </div>
+      )}
+
+      {/* LINE CHART */}
+      {isLoading ? (
+        <div className="d-flex justify-content-center align-items-center">
+          <div className="w-100vh">
+            <Loading />
+          </div>
+        </div>
+      ) : (
+        <LineChart
+          width={chartSize.width}
+          height={chartSize.height}
+          data={data}
+          margin={{ right: 50, top: 50, left: 20 }}
+        >
+          <CartesianGrid stroke="#ccc" vertical={false} />
+          <XAxis
+            dataKey="xLabel"
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: darkMode ? '#ccc' : undefined }}
+          />
+          <YAxis
+            tickFormatter={formatNumber}
+            axisLine={false}
+            tickLine={false}
+            tick={{ fill: darkMode ? '#ccc' : undefined }}
+            label={{
+              value: 'Total Hours',
+              angle: -90,
+              position: 'insideLeft',
+              dy: 20,
+              dx: -15,
+              style: { fontSize: 18, fill: darkMode ? '#ccc' : undefined },
+            }}
+          />
+          <Line
+            type="linear"
+            dataKey="totalHours"
+            stroke="#328D1B"
+            strokeWidth={4}
+            dot={renderCustomDot}
+            strokeLinecap="round"
+          />
+          <Tooltip content={renderCustomTooltip} />
+        </LineChart>
+      )}
     </div>
   );
 }
