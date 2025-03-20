@@ -43,12 +43,14 @@ describe('BadgeReport Component', () => {
     const badgeHeaders = screen.getAllByText('Badge');
     const nameHeaders = screen.getAllByText('Name');
     const modifiedHeaders = screen.getAllByText('Modified');
+    const earnedDatesHeaders = screen.getAllByText('Earned Dates'); // Fix for multiple matches
     expect(badgeHeaders).toHaveLength(2);
     expect(nameHeaders).toHaveLength(2);
     expect(modifiedHeaders).toHaveLength(2);
+    expect(earnedDatesHeaders).toHaveLength(2); // One for desktop, one for tablet
 
     //headers only in desktop view
-    expect(screen.getByText('Earned Dates')).toBeInTheDocument();
+  //  expect(screen.getByText('Earned Dates')).toBeInTheDocument();
     expect(screen.getByText('Count')).toBeInTheDocument();
     expect(screen.getByText('Featured')).toBeInTheDocument();
   });

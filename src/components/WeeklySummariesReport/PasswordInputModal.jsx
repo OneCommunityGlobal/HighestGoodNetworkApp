@@ -22,7 +22,7 @@ import {
   authorizeWeeklySummaries,
   authorizeWeeklySummariesReportError,
 } from '../../actions/weeklySummariesReportRecepients';
-import { weeklySummaryRecipientsReducer } from '../../reducers/weeklySummaryRecipientsReducer';
+import weeklySummaryRecipientsReducer from '../../reducers/weeklySummaryRecipientsReducer';
 
 export default function PasswordInputModal({
   onClose,
@@ -109,6 +109,7 @@ export default function PasswordInputModal({
               id="passwordField"
               value={passwordField}
               onChange={onChangeFunc}
+              data-testid="password-input"
             />
             {showPassword ? (
               <FontAwesomeIcon

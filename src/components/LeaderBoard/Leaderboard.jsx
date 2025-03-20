@@ -10,12 +10,14 @@ import {
   ModalFooter,
   ModalHeader,
   Button,
-  Dropdown,
+  UncontrolledDropdown,
   DropdownToggle,
   DropdownMenu,
   DropdownItem,
   Spinner,
+  Input,
 } from 'reactstrap';
+import ReactTooltip from 'react-tooltip';
 import Alert from 'reactstrap/lib/Alert';
 import {
   hasLeaderboardPermissions,
@@ -34,6 +36,7 @@ import { getUserProfile } from 'actions/userProfile';
 import { useDispatch } from 'react-redux';
 import { boxStyleDark } from 'styles';
 import '../Header/DarkMode.css';
+import '../UserProfile/TeamsAndProjects/autoComplete.css';
 import { ENDPOINTS } from '../../utils/URL';
 
 function useDeepEffect(effectFunc, deps) {
@@ -79,12 +82,12 @@ function LeaderBoard({
   showTimeOffRequestModal,
   darkMode,
   getWeeklySummaries,
+  setFilteredUserTeamIds,
 }) {
   const userId = displayUserId;
   const hasSummaryIndicatorPermission = hasPermission('seeSummaryIndicator'); // ??? this permission doesn't exist?
   const hasVisibilityIconPermission = hasPermission('seeVisibilityIcon'); // ??? this permission doesn't exist?
-  // const isOwner = ['Owner'].includes(loggedInUser.role);
-  const isOwner = loggedInUser && loggedInUser.role && ['Owner'].includes(loggedInUser.role);
+  const isOwner = ['Owner'].includes(loggedInUser.role);
 
   const [mouseoverTextValue, setMouseoverTextValue] = useState(totalTimeMouseoverText);
   const dispatch = useDispatch();
@@ -94,23 +97,32 @@ function LeaderBoard({
     setMouseoverTextValue(totalTimeMouseoverText);
   }, [totalTimeMouseoverText]);
   const [teams, setTeams] = useState([]);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [selectedTeamName, setSelectedTeamName] = useState('Select a Team');
-  const [textButton, setTextButton] = useState('My Team');
-  const [usersSelectedTeam, setUsersSelectedTeam] = useState([]);
+  const [selectedTeamName, setSelectedTeamName] = useState('Show all');
+  const [usersSelectedTeam, setUsersSelectedTeam] = useState('Show all');
   const [isLoadingTeams, setIsLoadingTeams] = useState(false);
   const [userRole, setUserRole] = useState();
-  const [teamsUsers, setTeamsUsers] = useState(leaderBoardData);
+  const [teamsUsers, setTeamsUsers] = useState([]);
   const [innerWidth, setInnerWidth] = useState();
+
+  const [isDisplayAlert, setIsDisplayAlert] = useState(false);
+  const [stateOrganizationData, setStateOrganizationData] = useState(organizationData);
+
+  const refTeam = useRef([]);
+  const refInput = useRef('');
+
   const hasTimeOffIndicatorPermission = hasLeaderboardPermissions(loggedInUser.role);
+
   const [searchInput, setSearchInput] = useState('');
   const [filteredUsers, setFilteredUsers] = useState(teamsUsers);
-
+  const darkModeStyle = darkMode
+    ? { backgroundColor: '#3a506b', color: 'white' }
+    : { backgroundColor: '#f0f8ff', color: 'black' };
   useEffect(() => {
     const fetchInitial = async () => {
       const url = ENDPOINTS.USER_PROFILE(displayUserId);
       try {
         const response = await axios.get(url);
+        refTeam.current = response.data.teams;
         setTeams(response.data.teams);
         setUserRole(response.data.role);
       } catch (error) {
@@ -122,26 +134,53 @@ function LeaderBoard({
   }, []);
 
   useEffect(() => {
-    if (!isEqual(leaderBoardData, teamsUsers)) {
-      if (selectedTeamName === 'Select a Team') {
-        setTeamsUsers(leaderBoardData);
-      }
-    }
+    if (usersSelectedTeam === 'Show all') setStateOrganizationData(organizationData);
+  }, [organizationData, usersSelectedTeam]);
+
+  useEffect(() => {
+    //  eslint-disable-next-line
+    leaderBoardData.length > 0 && teamsUsers.length === 0 && setTeamsUsers(leaderBoardData);
   }, [leaderBoardData]);
+  // prettier-ignore
 
   useEffect(() => {
     setInnerWidth(window.innerWidth);
   }, [window.innerWidth]);
 
-  const toggleDropdown = () => setDropdownOpen(prevState => !prevState);
+  const updateOrganizationData = (usersTaks, contUsers) => {
+    // prettier-ignore
+    const newOrganizationData = usersTaks.reduce((accumulator, item) => {
+        accumulator.name = `Totals of ${contUsers}  team members`;
+        accumulator.tangibletime += item.tangibletime;
+        accumulator.totalintangibletime_hrs += item.totalintangibletime_hrs;
+        accumulator.totaltangibletime_hrs += item.totaltangibletime_hrs;
+        accumulator.totaltime += item.totaltime;
+        accumulator.totaltime_hrs += item.totaltime_hrs;
+        accumulator.barprogress += item.barprogress;
+        accumulator.intangibletime += item.intangibletime;
+        accumulator.barcolor = organizationData.barcolor;
+        accumulator.totalweeklycommittedHours += item.weeklycommittedHours;
+        accumulator.weeklycommittedHours += item.weeklycommittedHours;
+        return accumulator;
+      },
+      // prettier-ignore
+      { name: '', totaltime: 0, barprogress: 0, intangibletime: 0,barcolor: '', tangibletime: 0,
+      totalintangibletime_hrs: 0, totaltangibletime_hrs: 0,  totaltime_hrs: 0,
+      totalweeklycommittedHours: 0, weeklycommittedHours: 0, memberCount: contUsers, _id: 2},
+    );
+    setStateOrganizationData(newOrganizationData);
+  };
 
   const renderTeamsList = async team => {
-    if (!team) {
+    setIsDisplayAlert(false);
+    if (!team || team === 'Show all') {
       setIsLoadingTeams(true);
+      setFilteredUserTeamIds([]);
+      setStateOrganizationData(organizationData);
 
       setTimeout(() => {
-        setIsLoadingTeams(false);
         setTeamsUsers(leaderBoardData);
+        setIsLoadingTeams(false);
       }, 1000);
     } else {
       try {
@@ -149,25 +188,28 @@ function LeaderBoard({
         const response = await axios.get(ENDPOINTS.TEAM_MEMBERS(team._id));
         const idUsers = response.data.map(item => item._id);
         const usersTaks = leaderBoardData.filter(item => idUsers.includes(item.personId));
-        setTeamsUsers(usersTaks);
-        setIsLoadingTeams(false);
+        // eslint-disable-next-line no-unused-expressions
+        usersTaks.length === 0
+          ? // eslint-disable-next-line no-unused-expressions
+            (setIsDisplayAlert(true), setIsLoadingTeams(false), null)
+          : // eslint-disable-next-line no-unused-expressions
+            (setTeamsUsers(usersTaks),
+            setIsLoadingTeams(false),
+            setFilteredUserTeamIds(idUsers),
+            updateOrganizationData(usersTaks, usersTaks.length));
       } catch (error) {
-        toast.error('Error fetching team members:', error);
+        toast.error('Error fetching team members');
         setIsLoadingTeams(false);
       }
     }
   };
 
   const handleToggleButtonClick = () => {
-    if (textButton === 'View All') {
-      setTextButton('My Team');
-      renderTeamsList(null);
-    } else if (usersSelectedTeam.length === 0) {
+    // prettier-ignore
+    if (usersSelectedTeam === 'Show all') {renderTeamsList(null)}
+     else if (usersSelectedTeam.length === 0) {
       toast.error(`You have not selected a team or the selected team does not have any members.`);
-    } else {
-      setTextButton('View All');
-      renderTeamsList(usersSelectedTeam);
-    }
+    } else renderTeamsList(usersSelectedTeam);
   };
 
   const handleMouseoverTextUpdate = text => {
@@ -197,7 +239,6 @@ function LeaderBoard({
   }, [leaderBoardData]);
 
   const [isLoading, setIsLoading] = useState(false);
-
   // add state hook for the popup the personal's dashboard from leaderboard
   const [isDashboardOpen, setIsDashboardOpen] = useState(false);
   const dashboardToggle = item => setIsDashboardOpen(item.personId);
@@ -229,7 +270,6 @@ function LeaderBoard({
     } else {
       await getLeaderboardData(userId);
       renderTeamsList(usersSelectedTeam);
-      setTextButton('View All');
     }
     setIsLoading(false);
     toast.success('Successfuly updated leaderboard');
@@ -253,12 +293,19 @@ function LeaderBoard({
       sortedRequests.find(request => moment().isBefore(moment(request.endingDate), 'day')) ||
       sortedRequests[0];
 
-    const isCurrentlyOff = moment().isBetween(
-      moment(mostRecentRequest.startingDate),
-      moment(mostRecentRequest.endingDate),
-      null,
-      '[]',
-    );
+    const startOfWeek = moment().startOf('week');
+    const endOfWeek = moment().endOf('week');
+
+    const isCurrentlyOff =
+      moment(mostRecentRequest.startingDate).isBefore(endOfWeek) &&
+      moment(mostRecentRequest.endingDate).isSameOrAfter(startOfWeek);
+
+    // const isCurrentlyOff = moment().isBetween(
+    //   moment(mostRecentRequest.startingDate),
+    //   moment(mostRecentRequest.endingDate),
+    //   null,
+    //   '[]',
+    // );
 
     let additionalWeeks = 0;
     // additional weeks until back
@@ -285,19 +332,46 @@ function LeaderBoard({
   };
 
   const TeamSelected = team => {
-    if (team.teamName.length !== undefined) {
-      teamName(team.teamName, team.teamName.length);
-    }
+    setTeams(refTeam.current);
+    refInput.current = '';
+    if (team === 'Show all') {
+      setUsersSelectedTeam(team);
+      teamName('Show all', 7);
+    } else if (team.teamName.length !== undefined) teamName(team.teamName, team.teamName.length);
     setUsersSelectedTeam(team);
-    setTextButton('My Team');
   };
 
+  const formatSearchInput = result => {
+    return result
+      .toLowerCase()
+      .trim()
+      .replace(/\s+/g, '');
+  };
+
+  const handleInputSearchTeams = e => {
+    refInput.current = e.target.value;
+    // prettier-ignore
+    const obj = {_id: 1, teamName: `This team is not found: ${e.target.value}`,}
+
+    const searchTeam = formatSearchInput(e.target.value);
+    if (searchTeam === '') setTeams(refTeam.current);
+    else {
+      // prettier-ignore
+      const filteredTeams = refTeam.current.filter(item => formatSearchInput(item.teamName).includes(searchTeam));
+      // prettier-ignore
+      (() => filteredTeams.length === 0 ? setTeams([obj]) : setTeams(filteredTeams))();
+    }
+  };
+
+  const toastError = () =>
+    toast.error('Please wait for the users to appear in the Leaderboard table.');
+
   useEffect(() => {
-    setFilteredUsers(teamsUsers);
+    setFilteredUsers(leaderBoardData);
     return () => {
       setSearchInput('');
     };
-  }, [teamsUsers]);
+  }, [leaderBoardData]);
 
   const debouncedFilterUsers = useCallback(
     debounce(query => {
@@ -338,380 +412,478 @@ function LeaderBoard({
           />
         </div>
       </h3>
-      {userRole === 'Administrator' || userRole === 'Owner' ? (
-        <section className="d-flex flex-row flex-wrap mb-3">
-          <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown} className=" mr-3">
-            <DropdownToggle caret>
-              {selectedTeamName} {/* Display selected team or default text */}
-            </DropdownToggle>
-            <DropdownMenu>
-              {teams.length === 0 ? (
-                <DropdownItem
-                  onClick={() => toast.warning('Please, create a team to use the filter.')}
-                >
-                  Please, create a team to use the filter.
-                </DropdownItem>
-              ) : (
-                teams.map(team => (
-                  <DropdownItem key={team._id} onClick={() => TeamSelected(team)}>
-                    {dropdownName(team.teamName, team.teamName.length)}
-                  </DropdownItem>
-                ))
-              )}
-            </DropdownMenu>
-          </Dropdown>
+      {userRole === 'Administrator' ||
+        (userRole === 'Owner' && (
+          <section className="d-flex flex-row flex-wrap mb-3">
+            <UncontrolledDropdown className=" mr-3">
+              {/* Display selected team or default text */}
+              <DropdownToggle caret>{selectedTeamName} </DropdownToggle>
 
-          {teams.length === 0 ? (
-            <Link to="/teams">
-              <Button color="success" className="fw-bold" boxstyle={boxStyle}>
-                Create Team
-              </Button>
-            </Link>
-          ) : (
-            <Button
-              color="primary"
-              onClick={handleToggleButtonClick}
-              disabled={isLoadingTeams}
-              boxstyle={boxStyle}
-            >
-              {isLoadingTeams ? <Spinner animation="border" size="sm" /> : textButton}
-            </Button>
-          )}
-        </section>
-      ) : null}
-      {!isVisible && (
-        <Alert color="warning">
-          <div className="d-flex align-items-center">
-            Note: You are currently invisible to the team(s) you are on.{' '}
-            <EditableInfoModal
-              areaName="LeaderboardInvisibleInfoPoint"
-              areaTitle="Leaderboard settings"
-              role={loggedInUser.role}
-              fontSize={24}
-              darkMode={darkMode}
-              isPermissionPage
-            />
-          </div>
-        </Alert>
-      )}
-      <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
-        <div className="search-container mx-1">
-          <input
-            className="form-control col-12 mb-2"
-            type="text"
-            placeholder="Search users..."
-            value={searchInput}
-            onChange={handleSearch}
-          />
-        </div>
-        <Table
-          className={`leaderboard table-fixed ${
-            darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
-          }`}
-        >
-          <thead className="responsive-font-size">
-            <tr className={darkMode ? 'bg-space-cadet' : ''}>
-              <th>Status</th>
-              <th>
-                <div className="d-flex align-items-center">
-                  <span className="mr-2">Name</span>
-                  <EditableInfoModal
-                    areaName="Leaderboard"
-                    areaTitle="Team Members Navigation"
-                    role={loggedInUser.role}
-                    fontSize={18}
-                    isPermissionPage
-                    darkMode={darkMode}
-                    className="p-2" // Add Bootstrap padding class to the EditableInfoModal
-                  />
-                </div>
-              </th>
-              <th>Days Left</th>
-              <th>Time Off</th>
-              <th>
-                <span className="d-sm-none">Tan. Time</span>
-                <span className="d-none d-sm-block">Tangible Time</span>
-              </th>
-              <th>Progress</th>
+              {/* prettier-ignore */}
+              <DropdownMenu  style={{   width: '27rem'}} className={darkMode ? 'bg-dark' : ''}>
 
-              <th style={{ textAlign: 'right' }}>
-                <div style={{ display: 'flex', alignItems: 'center' }}>
-                  <div style={{ textAlign: 'left' }}>
-                    <span className="d-sm-none">Tot. Time</span>
-                    <span className="d-none d-sm-inline-block" title={mouseoverTextValue}>
-                      Total Time{' '}
-                    </span>
+              <div className={`${darkMode ? 'text-white' : ''}`} style={{width: '100%' }}>
+                {teams.length === 0 ? (
+                  <p className={`${darkMode ? 'text-white' : ''}  text-center`}>
+                    Please, create a team to use the filter.
+                  </p>
+                ) : (
+                  <>
+
+                  <div className='align-items-center d-flex flex-column'>
+                    <Input
+                      onChange={e => handleInputSearchTeams(e)}
+                      style={{ width: '90%', marginBottom: '1rem', backgroundColor: darkMode? '#e0e0e0' : 'white' }}
+                      placeholder="Search teams"
+                      autoFocus
+                      value={refInput.current}
+                    />
                   </div>
-                  {isOwner && (
-                    <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
-                  )}
-                </div>
-              </th>
-            </tr>
-          </thead>
-          <tbody className="my-custome-scrollbar responsive-font-size">
-            <tr className={darkMode ? 'bg-yinmn-blue' : ''}>
-              <td aria-label="Placeholder" />
-              <th scope="row" className="leaderboard-totals-container">
-                <span>{organizationData.name}</span>
-                {viewZeroHouraMembers(loggedInUser.role) && (
-                  <span className="leaderboard-totals-title">
-                    0 hrs Totals:{' '}
-                    {filteredUsers.filter(user => user.weeklycommittedHours === 0).length} Members
-                  </span>
-                )}
-              </th>
-              <td className="align-middle" aria-label="Description" />
-              <td className="align-middle">
-                <span title="Tangible time">
-                  {filteredUsers.reduce((total, user) => total + user.tangibletime, 0).toFixed(2)}
-                </span>
-              </td>
-              <td className="align-middle" aria-label="Description">
-                <Progress
-                  title={`TangibleEffort: ${filteredUsers
-                    .reduce((total, user) => total + user.tangibletime, 0)
-                    .toFixed(2)} hours`}
-                  value={
-                    (filteredUsers.reduce((total, user) => total + user.tangibletime, 0) /
-                      filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)) *
-                    100
-                  }
-                  color="primary"
-                />
-              </td>
-              <td className="align-middle">
-                <span title="Tangible + Intangible time = Total time">
-                  {filteredUsers
-                    .reduce((total, user) => total + parseFloat(user.totaltime), 0)
-                    .toFixed(2)}{' '}
-                  of {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
-                </span>
-              </td>
-            </tr>
-            {filteredUsers.map(item => {
-              const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
-                item.personId,
-              );
 
-              return (
-                <tr key={item.personId}>
-                  <td className="align-middle">
-                    <div>
-                      <Modal
-                        isOpen={isDashboardOpen === item.personId}
-                        toggle={dashboardToggle}
-                        className={darkMode ? 'text-light dark-mode' : ''}
-                        style={darkMode ? boxStyleDark : {}}
-                      >
-                        <ModalHeader
-                          toggle={dashboardToggle}
-                          className={darkMode ? 'bg-space-cadet' : ''}
+                    <div className='overflow-auto scrollAutoComplete border-bottom border-top border-light-subtle'
+                     style={{ height: teams.length > 8? '30rem' : 'auto', width: '100%' }}
+                     >
+                    <h5 className="text-center">My Teams</h5>
+
+                    {teams.map(team => {
+                      return (
+                        <div key={team._id}>
+                       { team._id !== 1?
+                       <DropdownItem key={`dropdown-${team._id}`} className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                        onClick={() => TeamSelected(team)}
+                       >
+                        <ul
+                          className={`${darkMode ? '  text-light' : ''}`}
                         >
-                          Jump to personal Dashboard
-                        </ModalHeader>
-                        <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
-                          <p>Are you sure you wish to view this {item.name} dashboard?</p>
-                        </ModalBody>
-                        <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
-                          <Button variant="primary" onClick={() => showDashboard(item)}>
-                            Ok
-                          </Button>{' '}
-                          <Button variant="secondary" onClick={dashboardToggle}>
-                            Cancel
-                          </Button>
-                        </ModalFooter>
-                      </Modal>
-                    </div>
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: hasSummaryIndicatorPermission ? 'space-between' : 'center',
-                      }}
-                    >
-                      {/* <Link to={`/dashboard/${item.personId}`}> */}
-                      <div
-                        role="button"
-                        tabIndex={0}
-                        onClick={() => {
-                          dashboardToggle(item);
-                        }}
-                        onKeyDown={e => {
-                          if (e.key === 'Enter') {
-                            dashboardToggle(item);
-                          }
-                        }}
-                      >
-                        {hasLeaderboardPermissions(item.role) &&
-                        showStar(item.tangibletime, item.weeklycommittedHours) ? (
-                          <i
-                            className="fa fa-star"
-                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                              item.role === 'Core Team' && item.missedHours > 0
-                                ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                : ''
-                            } \n Click to view their Dashboard`}
-                            style={{
-                              color: assignStarDotColors(
-                                item.tangibletime,
-                                item.weeklycommittedHours + item.missedHours,
-                              ),
-                              fontSize: '20px',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                            }}
-                          />
-                        ) : (
-                          <div
-                            title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
-                              item.role === 'Core Team' && item.missedHours > 0
-                                ? `\n Additional make-up hours this week: ${item.missedHours}`
-                                : ''
-                            } \n Click to view their Dashboard`}
-                            style={{
-                              backgroundColor:
-                                item.tangibletime >= item.weeklycommittedHours + item.missedHours
-                                  ? '#32CD32'
-                                  : 'red',
-                              width: 15,
-                              height: 15,
-                              borderRadius: 7.5,
-                              margin: 'auto',
-                              verticalAlign: 'middle',
-                            }}
-                          />
-                        )}
-                      </div>
-                      {hasSummaryIndicatorPermission && item.hasSummary && (
-                        <div
-                          title="Weekly Summary Submitted"
-                          style={{
-                            color: '#32a518',
-                            cursor: 'default',
-                          }}
-                        >
-                          <strong>✓</strong>
+                           <li>{dropdownName(team.teamName, team.teamName.length)}</li>
+                        </ul>
+                        </DropdownItem>
+                        :
+                        <div className='align-items-center d-flex flex-column'>
+                        <Alert color="danger"style={{ width: '90%' }} >
+                          {dropdownName(team.teamName, team.teamName.length)}
+                         </Alert>
                         </div>
+                        }
+                        </div>
+                      );
+                    })}
+                    </div>
+
+                    <h5 className="ml-4 text-center">All users</h5>
+                    <DropdownItem className={`${darkMode ? ' dropdown-item-hover' : ''}`}
+                      onClick={() => TeamSelected('Show all')}>
+                    <ul
+                      className={`${darkMode ? '  text-light' : ''}`}
+                    >
+                        <li>Show all</li>
+                    </ul>
+                    </DropdownItem>
+                  </>
+                )}
+              </div>
+            </DropdownMenu>
+            </UncontrolledDropdown>
+
+            {teams.length === 0 ? (
+              <Link to="/teams">
+                <Button color="success" className="fw-bold" boxstyle={boxStyle}>
+                  Create Team
+                </Button>
+              </Link>
+            ) : (
+              <Button
+                color="primary"
+                onClick={filteredUsers.length > 0 ? handleToggleButtonClick : toastError}
+                disabled={isLoadingTeams}
+                boxstyle={boxStyle}
+              >
+                {isLoadingTeams ? <Spinner animation="border" size="sm" /> : 'My Team'}
+              </Button>
+            )}
+          </section>
+        ))}
+      {leaderBoardData.length !== 0 ? (
+        <div>
+          {isDisplayAlert && (
+            <Alert color="danger">
+              This team has no members, please add members to this team by clicking{' '}
+              <Link to="/teams">here</Link>.
+            </Alert>
+          )}
+
+          {!isVisible && (
+            <Alert color="warning">
+              <div className="d-flex align-items-center">
+                Note: You are currently invisible to the team(s) you are on.{' '}
+                <EditableInfoModal
+                  areaName="LeaderboardInvisibleInfoPoint"
+                  areaTitle="Leaderboard settings"
+                  role={loggedInUser.role}
+                  fontSize={24}
+                  darkMode={darkMode}
+                  isPermissionPage
+                />
+              </div>
+            </Alert>
+          )}
+          <div id="leaderboard" className="my-custom-scrollbar table-wrapper-scroll-y">
+            <div className="search-container mx-1">
+              <input
+                className="form-control col-12 mb-2"
+                type="text"
+                placeholder="Search users..."
+                value={searchInput}
+                onChange={handleSearch}
+              />
+            </div>
+            <Table
+              className={`leaderboard table-fixed ${
+                darkMode ? 'text-light dark-mode bg-yinmn-blue' : ''
+              }`}
+            >
+              <thead className="responsive-font-size">
+                <tr className={darkMode ? 'bg-space-cadet' : ''} style={darkModeStyle}>
+                  <th data-abbr="Stat." style={darkModeStyle}>
+                    <span>Status</span>
+                  </th>
+                  <th data-abbr="Name" style={darkModeStyle}>
+                    <div className="d-flex align-items-center">
+                      <span>Name</span>
+                      <EditableInfoModal
+                        areaName="Leaderboard"
+                        areaTitle="Team Members Navigation"
+                        role={loggedInUser.role}
+                        fontSize={18}
+                        isPermissionPage
+                        darkMode={darkMode}
+                        className="p-2"
+                      />
+                    </div>
+                  </th>
+                  <th data-abbr="Days Lft." style={darkModeStyle}>
+                    <span>Days Left</span>
+                  </th>
+                  <th data-abbr="Time Off" style={darkModeStyle}>
+                    <span>Time Off</span>
+                  </th>
+                  <th data-abbr="Tan. Time" style={darkModeStyle}>
+                    <span>Tangible Time</span>
+                  </th>
+                  <th data-abbr="Prog." style={darkModeStyle}>
+                    <span>Progress</span>
+                  </th>
+                  <th
+                    data-abbr="Tot. Time"
+                    style={
+                      darkMode
+                        ? { backgroundColor: '#3a506b', color: 'white', textAlign: 'right' }
+                        : { backgroundColor: '#f0f8ff', color: 'black', textAlign: 'right' }
+                    }
+                  >
+                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                      <div style={{ textAlign: 'left' }}>
+                        <span>Total Time</span>
+                      </div>
+                      {isOwner && (
+                        <MouseoverTextTotalTimeEditButton onUpdate={handleMouseoverTextUpdate} />
                       )}
                     </div>
-                    {/* </Link> */}
-                  </td>
-                  <th scope="row" className="align-middle">
-                    <Link
-                      to={`/userprofile/${item.personId}`}
-                      title="View Profile"
-                      style={{
-                        color: isCurrentlyOff
-                          ? 'rgba(128, 128, 128, 0.5)' // Gray out the name if on time off
-                          : '#007BFF', // Default color
-                      }}
-                    >
-                      {item.name}
-                    </Link>
-                    &nbsp;&nbsp;&nbsp;
-                    {hasVisibilityIconPermission && !item.isVisible && (
-                      <i className="fa fa-eye-slash" title="User is invisible" />
-                    )}
-                    {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
-                      <span
-                        style={{
-                          marginLeft: '20px',
-                          color: '#17a2b8',
-                          fontSize: '15px',
-                          justifyItems: 'center',
-                        }}
-                        title={
-                          isCurrentlyOff
-                            ? `${additionalWeeks} additional weeks off`
-                            : `${additionalWeeks} weeks until next time off`
-                        }
-                      >
-                        {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                  </th>
+                </tr>
+              </thead>
+
+              <tbody className="my-custome-scrollbar responsive-font-size">
+                <tr className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}>
+                  <td aria-label="Placeholder" />
+                  <td className={`leaderboard-totals-container `}>
+                    <span>{stateOrganizationData.name}</span>
+                    {viewZeroHouraMembers(loggedInUser.role) && (
+                      <span className="leaderboard-totals-title">
+                        0 hrs Totals:{' '}
+                        {filteredUsers.filter(user => user.weeklycommittedHours === 0).length}{' '}
+                        Members
                       </span>
                     )}
-                  </th>
+                  </td>
+                  <td className="align-middle" aria-label="Description" />
                   <td className="align-middle">
-                    <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
-                      {displayDaysLeft(item.endDate)}
+                    <span title="Tangible time">
+                      {filteredUsers
+                        .reduce((total, user) => total + user.tangibletime, 0)
+                        .toFixed(2)}
                     </span>
                   </td>
-                  <td className="align-middle">
-                    <div
-                      style={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {hasTimeOff && (
-                        <button
-                          type="button"
-                          onClick={() => {
-                            const data = {
-                              requests: [...allRequests[item.personId]],
-                              name: item.name,
-                              leaderboard: true,
-                            };
-                            handleTimeOffModalOpen(data);
-                          }}
-                          style={{ width: '35px', height: 'auto' }}
-                          aria-label="View Time Off Requests"
-                        >
-                          <svg
-                            xmlns="http://www.w3.org/2000/svg"
-                            width="22"
-                            height="19"
-                            viewBox="0 0 448 512"
-                            className="show-time-off-calender-svg"
-                          >
-                            <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
-                          </svg>
-
-                          <i className="show-time-off-icon">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="18"
-                              height="18"
-                              viewBox="0 0 512 512"
-                              className="show-time-off-icon-svg"
-                            >
-                              <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
-                            </svg>
-                          </i>
-                        </button>
-                      )}
-                    </div>
-                  </td>
-                  <td className="align-middle" id={`id${item.personId}`}>
-                    <span title="Tangible time">{item.tangibletime}</span>
-                  </td>
-                  <td className="align-middle" aria-label="Description or purpose of the cell">
-                    <Link
-                      to={`/timelog/${item.personId}`}
-                      title={`TangibleEffort: ${item.tangibletime} hours`}
-                    >
-                      <Progress value={item.barprogress} color={item.barcolor} />
-                    </Link>
-                  </td>
-                  <td className="align-middle">
-                    <span
-                      title={mouseoverTextValue}
-                      id="Total time"
-                      className={
-                        item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                  <td className="align-middle" aria-label="Description">
+                    <Progress
+                      title={`TangibleEffort: ${filteredUsers
+                        .reduce((total, user) => total + user.tangibletime, 0)
+                        .toFixed(2)} hours`}
+                      value={
+                        (filteredUsers.reduce((total, user) => total + user.tangibletime, 0) /
+                          filteredUsers.reduce(
+                            (total, user) => total + user.weeklycommittedHours,
+                            0,
+                          )) *
+                        100
                       }
-                    >
-                      {item.totaltime}
+                      color="primary"
+                    />
+                  </td>
+                  <td className="align-middle">
+                    <span title="Tangible + Intangible time = Total time">
+                      {filteredUsers
+                        .reduce((total, user) => total + parseFloat(user.totaltime), 0)
+                        .toFixed(2)}{' '}
+                      of{' '}
+                      {filteredUsers.reduce((total, user) => total + user.weeklycommittedHours, 0)}
                     </span>
                   </td>
+                  <td aria-label="Placeholder" />
                 </tr>
-              );
-            })}
-          </tbody>
-        </Table>
-      </div>
+                {filteredUsers.map(item => {
+                  const { hasTimeOff, isCurrentlyOff, additionalWeeks } = getTimeOffStatus(
+                    item.personId,
+                  );
+
+                  return (
+                    <tr
+                      key={item.personId}
+                      className={darkMode ? 'dark-leaderboard-row' : 'light-leaderboard-row'}
+                    >
+                      <td className="align-middle">
+                        <div>
+                          <Modal
+                            isOpen={isDashboardOpen === item.personId}
+                            toggle={dashboardToggle}
+                            className={darkMode ? 'text-light dark-mode' : ''}
+                            style={darkMode ? boxStyleDark : {}}
+                          >
+                            <ModalHeader
+                              toggle={dashboardToggle}
+                              className={darkMode ? 'bg-space-cadet' : ''}
+                            >
+                              Jump to personal Dashboard
+                            </ModalHeader>
+                            <ModalBody className={darkMode ? 'bg-yinmn-blue' : ''}>
+                              <p>Are you sure you wish to view this {item.name} dashboard?</p>
+                            </ModalBody>
+                            <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
+                              <Button variant="primary" onClick={() => showDashboard(item)}>
+                                Ok
+                              </Button>{' '}
+                              <Button variant="secondary" onClick={dashboardToggle}>
+                                Cancel
+                              </Button>
+                            </ModalFooter>
+                          </Modal>
+                        </div>
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: hasSummaryIndicatorPermission
+                              ? 'space-between'
+                              : 'center',
+                          }}
+                        >
+                          {/* <Link to={`/dashboard/${item.personId}`}> */}
+                          <div
+                            role="button"
+                            tabIndex={0}
+                            onClick={() => {
+                              dashboardToggle(item);
+                            }}
+                            onKeyDown={e => {
+                              if (e.key === 'Enter') {
+                                dashboardToggle(item);
+                              }
+                            }}
+                          >
+                            {hasLeaderboardPermissions(item.role) &&
+                            showStar(item.tangibletime, item.weeklycommittedHours) ? (
+                              <i
+                                className="fa fa-star"
+                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
+                                  item.role === 'Core Team' && item.missedHours > 0
+                                    ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                    : ''
+                                } \n Click to view their Dashboard`}
+                                style={{
+                                  color: assignStarDotColors(
+                                    item.tangibletime,
+                                    item.weeklycommittedHours + item.missedHours,
+                                  ),
+                                  fontSize: '20px',
+                                  display: 'flex',
+                                  alignItems: 'center',
+                                  justifyContent: 'center',
+                                }}
+                              />
+                            ) : (
+                              <div
+                                title={`Weekly Committed: ${item.weeklycommittedHours} hours ${
+                                  item.role === 'Core Team' && item.missedHours > 0
+                                    ? `\n Additional make-up hours this week: ${item.missedHours}`
+                                    : ''
+                                } \n Click to view their Dashboard`}
+                                style={{
+                                  backgroundColor:
+                                    item.tangibletime >=
+                                    item.weeklycommittedHours + item.missedHours
+                                      ? '#32CD32'
+                                      : 'red',
+                                  width: 15,
+                                  height: 15,
+                                  borderRadius: 7.5,
+                                  margin: 'auto',
+                                  verticalAlign: 'middle',
+                                }}
+                              />
+                            )}
+                          </div>
+                          {hasSummaryIndicatorPermission && item.hasSummary && (
+                            <div
+                              title="Weekly Summary Submitted"
+                              style={{
+                                color: '#32a518',
+                                cursor: 'default',
+                              }}
+                            >
+                              <strong>✓</strong>
+                            </div>
+                          )}
+                        </div>
+                        {/* </Link> */}
+                      </td>
+                      <td className="align-middle">
+                        <Link
+                          to={`/userprofile/${item.personId}`}
+                          title="View Profile"
+                          style={{
+                            color: isCurrentlyOff
+                              ? 'rgba(128, 128, 128, 0.5)' // Gray out the name if on time off
+                              : '#007BFF', // Default color
+                          }}
+                        >
+                          {item.name}
+                        </Link>
+                        &nbsp;&nbsp;&nbsp;
+                        {hasVisibilityIconPermission && !item.isVisible && (
+                          <i className="fa fa-eye-slash" title="User is invisible" />
+                        )}
+                        {hasTimeOffIndicatorPermission && additionalWeeks > 0 && (
+                          <span
+                            style={{
+                              marginLeft: '20px',
+                              color: '#17a2b8',
+                              fontSize: '15px',
+                              justifyItems: 'center',
+                            }}
+                          >
+                            {isCurrentlyOff ? `+${additionalWeeks}` : additionalWeeks}
+                            <i
+                              className="fa fa-info-circle"
+                              style={{ marginLeft: '5px', cursor: 'pointer' }}
+                              data-tip={
+                                isCurrentlyOff
+                                  ? `${additionalWeeks} additional weeks off`
+                                  : `${additionalWeeks} weeks until next time off`
+                              }
+                            />
+                            <ReactTooltip place="top" type="dark" effect="solid" />
+                          </span>
+                        )}
+                      </td>
+                      <td className="align-middle">
+                        <span title={mouseoverTextValue} id="Days left" style={{ color: 'red' }}>
+                          {displayDaysLeft(item.endDate)}
+                        </span>
+                      </td>
+                      <td className="align-middle">
+                        <div
+                          style={{
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                          }}
+                        >
+                          {hasTimeOff && (
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const data = {
+                                  requests: [...allRequests[item.personId]],
+                                  name: item.name,
+                                  leaderboard: true,
+                                };
+                                handleTimeOffModalOpen(data);
+                              }}
+                              style={{ width: '35px', height: 'auto' }}
+                              aria-label="View Time Off Requests"
+                            >
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="22"
+                                height="19"
+                                viewBox="0 0 448 512"
+                                className="show-time-off-calender-svg"
+                              >
+                                <path d="M128 0c17.7 0 32 14.3 32 32V64H288V32c0-17.7 14.3-32 32-32s32 14.3 32 32V64h48c26.5 0 48 21.5 48 48v48H0V112C0 85.5 21.5 64 48 64H96V32c0-17.7 14.3-32 32-32zM0 192H448V464c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V192zm64 80v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm128 0v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H208c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V272c0-8.8-7.2-16-16-16H336zM64 400v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H80c-8.8 0-16 7.2-16 16zm144-16c-8.8 0-16 7.2-16 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H208zm112 16v32c0 8.8 7.2 16 16 16h32c8.8 0 16-7.2 16-16V400c0-8.8-7.2-16-16-16H336c-8.8 0-16 7.2-16 16z" />
+                              </svg>
+
+                              <i className="show-time-off-icon">
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  width="18"
+                                  height="18"
+                                  viewBox="0 0 512 512"
+                                  className="show-time-off-icon-svg"
+                                >
+                                  <path d="M464 256A208 208 0 1 1 48 256a208 208 0 1 1 416 0zM0 256a256 256 0 1 0 512 0A256 256 0 1 0 0 256zM232 120V256c0 8 4 15.5 10.7 20l96 64c11 7.4 25.9 4.4 33.3-6.7s4.4-25.9-6.7-33.3L280 243.2V120c0-13.3-10.7-24-24-24s-24 10.7-24 24z" />
+                                </svg>
+                              </i>
+                            </button>
+                          )}
+                        </div>
+                      </td>
+                      <td className="align-middle" id={`id${item.personId}`}>
+                        <span title="Tangible time">{item.tangibletime}</span>
+                      </td>
+                      <td className="align-middle" aria-label="Description or purpose of the cell">
+                        <Link
+                          to={`/timelog/${item.personId}`}
+                          title={`TangibleEffort: ${item.tangibletime} hours`}
+                        >
+                          <Progress value={item.barprogress} color={item.barcolor} />
+                        </Link>
+                      </td>
+                      <td className="align-middle">
+                        <span
+                          title={mouseoverTextValue}
+                          id="Total time"
+                          className={
+                            item.totalintangibletime_hrs > 0 ? 'leaderboard-totals-title' : null
+                          }
+                        >
+                          {item.totaltime}
+                        </span>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </Table>
+          </div>
+        </div>
+      ) : (
+        <div
+          className="d-flex justify-content-center align-items-center"
+          style={{ height: '200px' }}
+        >
+          <Spinner color="primary" style={{ width: '3rem', height: '3rem' }} />
+        </div>
+      )}
     </div>
   );
 }
