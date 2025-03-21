@@ -1,8 +1,11 @@
 import { Component } from 'react';
-import './Collaboration.module.css';
+import './Collaboration.css';
 import { toast } from 'react-toastify';
 import { ApiEndpoint } from 'utils/URL';
 import OneCommunityImage from './One-Community-Horizontal-Homepage-Header-980x140px-2.png';
+import { boxStyle, boxStyleDark } from 'styles';
+
+import 'leaflet/dist/leaflet.css';
 
 class Collaboration extends Component {
   constructor(props) {
@@ -14,6 +17,7 @@ class Collaboration extends Component {
       jobAds: [],
       totalPages: 0,
       categories: [],
+      summaries: '', // Add this line
     };
   }
 
@@ -51,7 +55,6 @@ class Collaboration extends Component {
   fetchCategories = async () => {
     try {
       const response = await fetch(`${ApiEndpoint}/jobs/categories`, { method: 'GET' });
-
       if (!response.ok) {
         throw new Error(`Failed to fetch categories: ${response.statusText}`);
       }
@@ -70,7 +73,7 @@ class Collaboration extends Component {
 
   handleSubmit = event => {
     event.preventDefault();
-    this.setState({ currentPage: 1 }, this.fetchJobAds);
+    this.setState({ summaries: null, currentPage: 1 }, this.fetchJobAds);
   };
 
   handleCategoryChange = event => {
@@ -81,11 +84,58 @@ class Collaboration extends Component {
     );
   };
 
+  handleResetFilters = async () => {
+    try {
+      const response = await fetch(`${ApiEndpoint}/jobs/reset-filters`, {
+        method: 'GET',
+      });
+
+      if (!response.ok) {
+        throw new Error(`Failed to reset filters: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      this.setState({
+        searchTerm: '',
+        selectedCategory: '',
+        currentPage: 1,
+        jobAds: data.jobs,
+        totalPages: data.pagination.totalPages,
+        summaries: null,
+      });
+    } catch (error) {
+      toast.error('Error resetting filters');
+    }
+  };
+
   setPage = pageNumber => {
     this.setState({ currentPage: pageNumber }, this.fetchJobAds);
   };
 
+  handleShowSummaries = async () => {
+    const { searchTerm, selectedCategory } = this.state;
+    try {
+      const response = await fetch(
+        `${ApiEndpoint}/jobs/summaries?search=${searchTerm}&category=${selectedCategory}`,
+        {
+          method: 'GET',
+        }, 
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to fetch summaries: ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      this.setState({ summaries: data }); 
+       
+    } catch (error) {
+      toast.error('Error fetching summaries');
+    }
+  };
+
   render() {
+    const { role, darkMode } = this.props;
     const {
       searchTerm,
       selectedCategory,
@@ -93,7 +143,82 @@ class Collaboration extends Component {
       jobAds,
       totalPages,
       categories,
+      summaries, 
     } = this.state;
+
+    if (summaries) {
+      return (
+        <div className="job-landing">
+          <div className="header">
+            <a
+              href="https://www.onecommunityglobal.org/collaboration/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              <img src={OneCommunityImage} alt="One Community Logo" />
+            </a>
+          </div>
+          <div className="container">
+            <nav className="navbar">
+              <div className="navbar-left">
+                <form className="search-form">
+                  <input
+                    type="text"
+                    placeholder="Search by title..."
+                    value={searchTerm}
+                    onChange={this.handleSearch}
+                  />
+                  <button className="search-button" type="submit" onClick={this.handleSubmit}>
+                    Go
+                  </button>
+                  <button type="button" onClick={this.handleResetFilters}>
+                    Reset
+                  </button>
+                  <button
+                    className="show-summaries"
+                    type="button"
+                    onClick={this.handleShowSummaries}
+                  >
+                    Show Summaries
+                  </button>
+                </form>
+              </div>
+
+              <div className="navbar-right">
+                <select
+                  value={selectedCategory}
+                  onChange={event => this.handleCategoryChange(event)}
+                >
+                  <option value="">Select from Categories</option>
+                  {categories.map(category => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </nav>
+
+            <div className="summaries-list">
+              <h1>Summaries</h1>
+              {summaries && summaries.jobs && summaries.jobs.length > 0 ? (
+                summaries.jobs.map(summary => (
+                  <div key={summary._id} className="summary-item">
+                    <h3>
+                      <a href={summary.jobDetailsLink}>{summary.title}</a>
+                    </h3>
+                    <p>{summary.description}</p>
+                    <p>Date Posted: {new Date(summary.datePosted).toLocaleDateString()}</p>
+                  </div>
+                ))
+              ) : (
+                <p>No summaries found.</p>
+              )}
+            </div>
+          </div>
+        </div>
+      );
+    }
 
     return (
       <div className="job-landing">
@@ -116,8 +241,14 @@ class Collaboration extends Component {
                   value={searchTerm}
                   onChange={this.handleSearch}
                 />
-                <button className="search" type="submit" onClick={this.handleSubmit}>
+                <button className="search-button" type="submit" onClick={this.handleSubmit}>
                   Go
+                </button>
+                <button type="button" onClick={this.handleResetFilters}>
+                  Reset
+                </button>
+                <button className="show-summaries" type="button" onClick={this.handleShowSummaries}>
+                  Show Summaries
                 </button>
               </form>
             </div>
