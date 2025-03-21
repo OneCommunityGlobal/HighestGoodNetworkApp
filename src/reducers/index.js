@@ -7,7 +7,6 @@ import {
   allUserProfilesReducer,
   changeUserPageStatusReducer,
   enableUserInfoEditReducer,
-  updateUserInfoReducer,
 } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import weeklySummariesReducer from './weeklySummariesReducer';
@@ -34,11 +33,10 @@ import warningsByUserIdReducer from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
 import mouseoverTextReducer from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
-import { weeklySummaryRecipientsReducer } from './weeklySummaryRecipientsReducer';
+import  weeklySummaryRecipientsReducer  from './weeklySummaryRecipientsReducer';
 import { followUpReducer } from './followUpReducer';
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
-import formReducer from './formReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
 

@@ -7,7 +7,7 @@
   user-select: none;
   -moz-user-select: none;
 }
-.btnDiv{ border: none;}
+.btnDiv{ border: none;padding: 0;}
 
 .previewContainer {
   display: flex;

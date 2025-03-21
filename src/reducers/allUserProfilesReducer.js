@@ -10,6 +10,7 @@ const userProfilesInitial = {
     first: 1,
     last: 1,
     role: 1,
+    jobTitle:1,
     email: 1,
     weeklycommittedHours: 1,
     startDate: 1,
