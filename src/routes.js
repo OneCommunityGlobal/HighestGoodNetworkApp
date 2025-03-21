@@ -61,6 +61,7 @@ import CheckTypes from './components/BMDashboard/shared/CheckTypes';
 import Toolslist from './components/BMDashboard/Tools/ToolsList';
 import AddTool from './components/BMDashboard/Tools/AddTool';
 import AddTeamMember from './components/BMDashboard/AddTeamMember/AddTeamMember';
+import BMTimeLogger from './components/BMDashboard/BMTimeLogger/BMTimeLogger';
 
 // Community Portal
 import CPProtectedRoute from './components/common/CPDashboard/CPProtectedRoute';
@@ -92,8 +93,12 @@ const PurchaseReusables = lazy(() =>
 // const PurchaseEquipment = lazy(() =>
 //   import('./components/BMDashboard/PurchaseRequests/EquipmentPurchaseRequest'),
 // );
+const BMTimeLogCard = lazy(() => import('./components/BMDashboard/BMTimeLogger/BMTimeLogCard'));
 const ProjectDetails = lazy(() =>
   import('./components/BMDashboard/Projects/ProjectDetails/ProjectDetails'),
+);
+const BMTimeLogProjectDetails = lazy(() =>
+  import('./components/BMDashboard/BMTimeLogger/BMTimeLogProjectDetails'),
 );
 const UpdateMaterialsBulk = lazy(() =>
   import('./components/BMDashboard/UpdateMaterials/UpdateMaterialsBulk/UpdateMaterialsBulk'),
@@ -420,6 +425,18 @@ export default (
           fallback
           exact
           component={WeeklyProjectSummary}
+        />
+        <BMProtectedRoute path="/bmdashboard/timelog/" component={BMTimeLogger} />
+
+        <BMProtectedRoute
+          path="/bmdashboard/timelog/:projectId"
+          fallback
+          component={BMTimeLogCard}
+        />
+        <BMProtectedRoute
+          path="/bmdashboard/timelogger/:projectId"
+          fallback
+          component={BMTimeLogProjectDetails}
         />
 
         {/* Community Portal Routes */}
