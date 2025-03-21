@@ -9,7 +9,9 @@ function EffortBar({ activeTab, projectsSelected }) {
     const filteredData = d.filter(
       entry =>
         entry.isTangible === isTangible &&
-        (projectsSelected.includes('all') || projectsSelected.includes(entry.projectId)),
+        (projectsSelected.includes('all') ||
+          projectsSelected.includes(entry.projectId) ||
+          projectsSelected.includes(entry.taskId)),
     );
 
     const reducer = (total, entry) => total + Number(entry.hours) + Number(entry.minutes) / 60;
