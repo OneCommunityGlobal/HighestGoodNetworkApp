@@ -41,6 +41,7 @@ import Collaboration from './components/Collaboration';
 // LB Dashboard
 import LBRegister from './components/LBDashboard/Auth/Register';
 import LBLogin from './components/LBDashboard/Auth/Login';
+import MasterPlan from './components/LBDashboard/Map/MasterPlan/MasterPlan';
 import ListOverview from './components/LBDashboard/ListOverview/ListOverview';
 
 // BM Dashboard
@@ -158,6 +159,16 @@ export default (
           <AutoUpdate />
           <ToastContainer />
           <ListOverview />
+        </>
+      )}
+    />
+    <Route
+      path="/lbdashboard/masterplan"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <MasterPlan />
         </>
       )}
     />
