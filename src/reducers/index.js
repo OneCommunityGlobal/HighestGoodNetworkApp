@@ -38,7 +38,6 @@ import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
 import  formReducer  from './formReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
-import timerReducer from './logTimeReducer'
 
 // bm dashboard
 import { materialsReducer } from './bmdashboard/materialsReducer';
@@ -90,7 +89,6 @@ const localReducers = {
   allUsersTimeEntries: allUsersTimeEntriesReducer,
   allUserProfilesBasicInfo: allUserProfilesBasicInfoReducer,
   projectById: projectByIdReducer,
-  timer: timerReducer,
 
   // bmdashboard
   materials: materialsReducer,

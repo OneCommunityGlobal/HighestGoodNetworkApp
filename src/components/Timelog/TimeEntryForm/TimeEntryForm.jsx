@@ -85,7 +85,7 @@ function TimeEntryForm(props) {
   // props from parent
   const { from, sendStop, edit, data, toggle, isOpen, tab, darkMode, userProfile } = props;
   // props from store
-  const { authUser, serverDate } = props;
+  const { authUser } = props;
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
   const userTimeZone = userProfile?.timeZone || 'America/Los_Angeles';
@@ -526,15 +526,19 @@ function TimeEntryForm(props) {
 
   const getActualDate = async () => {
     try {
-      // Try external API first
-      const response = await fetch(`http://worldtimeapi.org/api/timezone/${userTimeZone}`);
-      const dateData = await response.json();
-      setActualDate(`${dateData.utc_datetime.split('+')[0]}Z`);
+        const actualDate = await Promise.any([
+            fetch(`http://worldtimeapi.org/api/timezone/${userTimeZone}`).then((res) => res.json()),
+            fetch(`https://timeapi.io/api/Time/current/zone?timeZone=${userTimeZone}`).then((res) => res.json()),
+        ]);
+        
+        setActualDate(actualDate.utc_datetime || actualDate.dateTime);
     } catch (error) {
-      console.warn('External API failed, trying backend...');
-      setActualDate(serverDate);
+        console.warn("All APIs failed. Prompting user to retry.");
+        setActualDate(null);  // Clear previous date
+        toast.error("Failed to fetch the actual date. Please refresh and try logging time again ");
+      
     }
-  };
+};
 
   /* ---------------- useEffects -------------- */
   useEffect(() => {
@@ -742,7 +746,7 @@ function TimeEntryForm(props) {
             color="primary"
             onClick={handleSubmit}
             style={darkMode ? boxStyleDark : boxStyle}
-            disabled={submitting}
+            disabled={!actualDate || submitting}
           >
             {(() => {
               if (edit) {
@@ -795,8 +799,7 @@ TimeEntryForm.propTypes = {
 
 const mapStateToProps = state => ({
   authUser: state.auth.user,
-  darkMode: state.theme.darkMode,
-  serverDate: state.timer.serverDate,
+  darkMode: state.theme.darkMode
 });
 
 export default connect(mapStateToProps, {

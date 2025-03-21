@@ -14,7 +14,7 @@ import {
 } from 'react-icons/fa';
 import { toast } from 'react-toastify';
 import cs from 'classnames';
-import { connect, useDispatch } from 'react-redux';
+import { connect } from 'react-redux';
 import css from './Timer.module.css';
 import '../Header/DarkMode.css';
 import { ENDPOINTS } from '../../utils/URL';
@@ -22,7 +22,6 @@ import config from '../../config.json';
 import TimeEntryForm from '../Timelog/TimeEntryForm';
 import Countdown from './Countdown';
 import TimerStatus from './TimerStatus';
-import { setServerDate } from '../../reducers/logTimeReducer';
 
 function Timer({ authUser, darkMode }) {
   /**
@@ -72,7 +71,6 @@ function Timer({ authUser, darkMode }) {
     ACK_FORCED: 'ACK_FORCED',
     START_CHIME: 'START_CHIME',
     HEARTBEAT: 'ping',
-    GET_DATE: 'GET_DATE',
   };
 
   const defaultMessage = {
@@ -112,7 +110,6 @@ function Timer({ authUser, darkMode }) {
   const logMinutes = timeToLog.minutes();
 
   const sendJsonMessageNoQueue = useCallback(msg => sendJsonMessage(msg, false), [sendMessage]);
-  const dispatch = useDispatch();
 
   useEffect(() => {
     const handleStorageEvent = () => {
@@ -162,7 +159,6 @@ function Timer({ authUser, darkMode }) {
         sendRemoveGoal: duration =>
           sendJsonMessageNoQueue({ action: action.REMOVE_GOAL, value: duration }),
         sendHeartbeat: () => sendJsonMessageNoQueue({ action: action.HEARTBEAT }),
-        getServerDate: () => sendJsonMessageNoQueue({ action: action.GET_DATE }),
       };
     }
     return {
@@ -195,8 +191,6 @@ function Timer({ authUser, darkMode }) {
         }),
       sendHeartbeat: () =>
         sendJsonMessageNoQueue({ action: action.HEARTBEAT, userId: viewingUserId }),
-      getServerDate: () =>
-        sendJsonMessageNoQueue({ action: action.GET_DATE, userId: viewingUserId }),
     };
   }, [sendJsonMessageNoQueue, viewingUserId]);
 
@@ -211,7 +205,6 @@ function Timer({ authUser, darkMode }) {
     sendAddGoal,
     sendRemoveGoal,
     sendHeartbeat,
-    getServerDate,
   } = wsJsonMessageHandler;
 
   const toggleLogTimeModal = () => {
@@ -317,10 +310,6 @@ function Timer({ authUser, darkMode }) {
       isWSOpenRef.current = 0;
       return;
     }
-    if (lastJsonMessage && lastJsonMessage.date) {
-      dispatch(setServerDate(lastJsonMessage.date));
-      return;
-    }
 
     const {
       paused: pausedLJM,
@@ -406,7 +395,6 @@ function Timer({ authUser, darkMode }) {
     if (!isInitialJsonMessageReceived) return;
 
     sendGetTimer();
-    getServerDate();
   }, [isInitialJsonMessageReceived, viewingUserId]);
 
   const fontColor = darkMode ? 'text-light' : '';
