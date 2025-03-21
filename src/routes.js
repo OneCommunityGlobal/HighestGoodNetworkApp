@@ -1,3 +1,7 @@
+// Delete these two lines:
+import FormEditor from 'components/Forms/FormEditor';
+import FormViewer from 'components/Forms/FormViewer';
+
 import { lazy } from 'react';
 import { Route, Switch } from 'react-router-dom';
 import SetupProfile from 'components/SetupProfile/SetupProfile';
@@ -10,6 +14,9 @@ import RoleInfoCollections from 'components/UserProfile/EditableModal/RoleInfoMo
 import LessonList from 'components/BMDashboard/LessonList/LessonListForm';
 import AddEquipmentType from 'components/BMDashboard/Equipment/Add/AddEquipmentType';
 import Announcements from 'components/Announcements';
+import JobFormBuilder from 'components/Collaboration/JobFormbuilder';
+import JobCCDashboard from 'components/JobCCDashboard/JobCCDashboard';
+import WeeklyProjectSummary from 'components/BMDashboard/WeeklyProjectSummary/WeeklyProjectSummary';
 import Timelog from './components/Timelog';
 import LessonForm from './components/BMDashboard/Lesson/LessonForm';
 import UserProfileEdit from './components/UserProfile/UserProfileEdit';
@@ -34,6 +41,7 @@ import Collaboration from './components/Collaboration';
 // LB Dashboard
 import LBRegister from './components/LBDashboard/Auth/Register';
 import LBLogin from './components/LBDashboard/Auth/Login';
+import ListOverview from './components/LBDashboard/ListOverview/ListOverview';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -118,6 +126,7 @@ const PermissionsManagement = lazy(() =>
 const UserRoleTab = lazy(() => import('./components/PermissionsManagement/UserRoleTab'));
 const Teams = lazy(() => import('./components/Teams/Teams'));
 
+
 export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
@@ -142,6 +151,18 @@ export default (
         </>
       )}
     />
+    <Route
+      path="/lbdashboard/listoverview"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <ListOverview />
+        </>
+      )}
+    />
+    <Route path="/form" component={FormEditor} />
+    <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
@@ -313,6 +334,7 @@ export default (
           // setting permission as Weeklysummariesreport for now. Later it will be changed to weeklyVolunteerSummary. - H
           routePermissions={RoutePermissions.weeklySummariesReport}
         />
+        <ProtectedRoute path="/job-notification-dashboard" exact component={JobCCDashboard} fallback allowedRoles={[UserRole.Owner]}/>
 
         {/* ----- BEGIN BM Dashboard Routing ----- */}
         <BMProtectedRoute path="/bmdashboard" exact component={BMDashboard} />
@@ -387,6 +409,12 @@ export default (
           fallback
           component={InventoryTypesList}
         />
+        <BMProtectedRoute
+          path="/bmdashboard/totalconstructionsummary"
+          fallback
+          exact
+          component={WeeklyProjectSummary}
+        />
 
         {/* Community Portal Routes */}
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
@@ -410,6 +438,7 @@ export default (
         <Route path="/email-subscribe" component={EmailSubscribeForm} />
         <Route path="/email-unsubscribe" component={UnsubscribeForm} />
         <Route path="/collaboration" component={Collaboration} />
+        <ProtectedRoute path="/jobformbuilder" fallback component={JobFormBuilder} />
         <ProtectedRoute path="/infoCollections" component={EditableInfoModal} />
         <ProtectedRoute path="/infoCollections" component={RoleInfoCollections} />
         <ProtectedRoute path="/userprofile/:userId" fallback component={UserProfile} />
