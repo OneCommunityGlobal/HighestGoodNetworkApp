@@ -4,7 +4,12 @@ import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reduc
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
 import { authReducer } from './authReducer';
 import { allUserProfilesBasicInfoReducer } from './allUserProfilesBasicInfoReducer';
-import { allUserProfilesReducer, changeUserPageStatusReducer, enableUserInfoEditReducer, updateUserInfoReducer } from './allUserProfilesReducer';
+import {
+  allUserProfilesReducer,
+  changeUserPageStatusReducer,
+  enableUserInfoEditReducer,
+  updateUserInfoReducer,
+} from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
 import { weeklySummariesReducer } from './weeklySummariesReducer';
 import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
@@ -31,11 +36,11 @@ import { infoCollectionsReducer } from './informationReducer';
 import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
 import { mouseoverTextReducer } from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
-import { weeklySummaryRecipientsReducer } from "./weeklySummaryRecipientsReducer";
-import { followUpReducer } from "./followUpReducer";
+import { weeklySummaryRecipientsReducer } from './weeklySummaryRecipientsReducer';
+import { followUpReducer } from './followUpReducer';
 import { BlueSquareEmailAssignment } from './blueSquareEmailBcc';
 import { userProjectsByUserNameReducer } from './userProjectsByUserNameReducer';
-import  formReducer  from './formReducer';
+import formReducer from './formReducer';
 import teamCodesReducer from './teamCodesReducer';
 import { projectByIdReducer } from './projectByIdReducer';
 
@@ -51,11 +56,10 @@ import { consumablesReducer } from './bmdashboard/consumablesReducer';
 import { toolReducer } from './bmdashboard/toolReducer';
 import { equipmentReducer } from './bmdashboard/equipmentReducer';
 import dashboardReducer from '../reducers/dashboardReducer';
-import { timeOffRequestsReducer } from "./timeOffRequestReducer";
+import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 import HGNFormReducer from './hgnFormReducers';
-
 
 const localReducers = {
   auth: authReducer,
@@ -104,13 +108,13 @@ const localReducers = {
   bmInvUnits: bmInvUnitReducer,
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
-  dashboard: dashboardReducer
+  dashboard: dashboardReducer,
 };
 
 const sessionReducers = {
-  hgnForm:HGNFormReducer,
-  userPagination:changeUserPageStatusReducer,
-  userProfileEdit:enableUserInfoEditReducer,
+  hgnForm: HGNFormReducer,
+  userPagination: changeUserPageStatusReducer,
+  userProfileEdit: enableUserInfoEditReducer,
   userProfile: userProfileByIdReducer,
   userTask: userTaskByIdReducer,
   leaderBoardData: leaderboardDataReducer,
