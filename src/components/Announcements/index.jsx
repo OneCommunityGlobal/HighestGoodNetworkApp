@@ -30,6 +30,7 @@ function Announcements({ title, email }) {
   const [blogUrl, setBlogUrl] = useState('');
   const [bodyImage, setBodyImage] = useState(null);
   const [bodyImageTag, setBodyImageTag] = useState('');
+  const [bodyImageUrl, setBodyImageUrl] = useState('');
   const [bodyText, setBodyText] = useState('');
   const [videoLink, setVideoLink] = useState('');
 
@@ -38,16 +39,31 @@ function Announcements({ title, email }) {
   // Predefined email addresses for sending test emails
   const testEmailAddresses = [
     'lambomichael7@gmail.com',
-    'jae@onecommunityglobal.org',
-    'onecommunityglobal@gmail.com',
-    'onecommunityhospitality@gmail.com'
   ];
+
+  // 'jae@onecommunityglobal.org',
+  // 'onecommunityglobal@gmail.com',
+  // 'onecommunityhospitality@gmail.com'
 
   useEffect(() => {
     // Toggle the showEditor state to force re-render when dark mode changes
     setShowEditor(false);
     setTimeout(() => setShowEditor(true), 0);
   }, [darkMode]);
+
+  // Update bodyImageTag whenever videoLink or bodyImageUrl changes
+  useEffect(() => {
+    if (bodyImageUrl) {
+      const imageTag = `<div style="text-align: center; margin: 20px 0;">
+        <a href="${videoLink}" target="_blank" rel="noopener">
+          <img src="${bodyImageUrl}" alt="Blog Summary Image" style="max-width: 100%; height: auto;" />
+        </a>
+      </div>`;
+      setBodyImageTag(imageTag);
+    } else {
+      setBodyImageTag(''); // Clear the tag if there's no image URL
+    }
+  }, [bodyImageUrl, videoLink]);
 
   const editorInit = {
     license_key: 'gpl',
@@ -194,7 +210,7 @@ function Announcements({ title, email }) {
   useEffect(() => {
     if (!headerImageTag) {
       const imageTag = `<div style="text-align: center; margin-bottom: 9px; padding: 9px 18px;">
-        <img src="https://mcusercontent.com/1b1ba36facf96dc45b6697f82/images/931ce505-118d-19f7-c9ea-81d8e5e59613.png" alt="One Community Logo" style="max-width: 100%; height: auto;" />
+        <img src="https://mcusercontent.com/1b1ba36facf96dc45b6697f82/images/931ce505-118d-19f7-c9ea-81d8e5e59613.png" alt="One Community Logo" style="max-width: 100%; height: auto; pointer-events: none;" />
       </div>`;
       setHeaderImageTag(imageTag);
     }
@@ -208,7 +224,7 @@ function Announcements({ title, email }) {
     const url = await uploadImageToServer(file);
     if (url) {
       const imageTag = `<div style="text-align: center; margin-bottom: 9px; padding: 9px 18px;">
-        <img src="${url}" alt="One Community Logo" style="max-width: 100%; height: auto;" />
+        <img src="${url}" alt="One Community Logo" style="max-width: 100%; height: auto; pointer-events: none;" />
       </div>`;
       setHeaderImageTag(imageTag);
     }
@@ -223,10 +239,7 @@ function Announcements({ title, email }) {
     // Upload to Azure and get URL
     const url = await uploadImageToServer(file);
     if (url) {
-      const imageTag = `<div style="text-align: center; margin: 20px 0;">
-        <img src="${url}" alt="Blog Summary Image" style="max-width: 100%; height: auto;" />
-      </div>`;
-      setBodyImageTag(imageTag);
+      setBodyImageUrl(url);
     }
 
     if (e && e.target) e.target.value = '';
@@ -246,22 +259,6 @@ function Announcements({ title, email }) {
     };
     reader.readAsDataURL(file);
   };
-
-  function urlToBase64(url, callback) {
-    fetch(url)
-      .then(response => response.blob())
-      .then(blob => {
-        const reader = new FileReader();
-        reader.onloadend = () => {
-          callback(reader.result); // reader.result contains the base64 data URI
-        };
-        reader.readAsDataURL(blob);
-      })
-      .catch(error => {
-        console.error('Error fetching image:', error);
-        callback(null);
-      });
-  }
 
   // Validate required fields for Weekly Progress Update
   const validateFields = () => {
@@ -304,7 +301,7 @@ function Announcements({ title, email }) {
   const constructEmailContent = () => {
     // Start of email container
     let content = `
-      <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+      <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; font-size: 14px;">
     `;
 
     // Default Header (Logo)
@@ -315,7 +312,7 @@ function Announcements({ title, email }) {
     // Heading Text
     if (headingText) {
       content += `
-        <h2 style="text-align: center; margin-bottom: 10px;">
+        <h2 style="text-align: center; margin-bottom: 10px; font-size: 24px; color: #222 !important">
           ${headingText}
         </h2>
       `;
@@ -323,7 +320,7 @@ function Announcements({ title, email }) {
 
     // Intro Text
     if (introText) {
-      content += `<p>${introText}</p>`;
+      content += `<p style="color: #222 !important">${introText}</p>`;
     }
 
     // Blog URL
@@ -338,7 +335,7 @@ function Announcements({ title, email }) {
     }
 
     content += `
-      <p style="text-align: left; margin: 10px 0;">
+      <p style="text-align: left; margin: 10px 0; color: #222 !important">
         This Week's Video Topic:
       </p>
     `;
@@ -350,7 +347,7 @@ function Announcements({ title, email }) {
 
     // Blog Summary Paragraph
     if (bodyText) {
-      content += `<p>${bodyText}</p>`;
+      content += `<p style="color: #222 !important">${bodyText}</p>`;
     }
 
     content += `
@@ -363,7 +360,7 @@ function Announcements({ title, email }) {
     `;
 
     content += `
-      <p>
+      <p style="color: #222 !important">
         Love what we're doing and want to help? Click
         <a href="https://onecommunityglobal.org/contribute-join-partner/" target="_blank" rel="noopener">here</a>
         to learn what we're currently raising money for and to donate. Even $5 dollars helps!
@@ -413,7 +410,7 @@ function Announcements({ title, email }) {
     // Footer
     content += `
       <hr style="margin: 30px 0; border: none; border-top: 1px solid #ccc;" />
-      <div style="font-size: 12px; color: #666;  font-style: italic; text-align: center; margin: 0 auto; max-width: 500px;">
+      <div style="font-size: 12px; color: #666 !important;  font-style: italic; text-align: center; margin: 0 auto; max-width: 500px;">
         <p style="font-style: italic; margin: 0;">
           "In order to change an existing paradigm you do not struggle to try and change the problematic model. 
           You create a new model and make the old one obsolete. That, in essence, is the higher service to which 
@@ -424,27 +421,21 @@ function Announcements({ title, email }) {
         </p>
       </div>
       <br />
-      <p style="font-size: 12px; color: #666; text-align: center; margin-block: 0;">
+      <p style="font-size: 12px; color: #666 !important; text-align: center; margin-block: 0;">
         <strong>Our mailing address is:</strong> <br />
         One Community Inc.<br />
         8954 Camino real<br />
         San Gabriel, CA 91775-1932<br />
         <br />
-        Add us to your address book
-      </p>
-      <br />
-
-      <p style="font-size: 12px; color: #666; text-align: center; margin-block: 0;">
-        Want to change how you receive these emails?<br /> 
-        You can 
-        <a href="https://onecommunityglobal.us1.list-manage.com/profile?u=1b1ba36facf96dc45b6697f82&id=0b0702fa07&e=dfcc422eb9&c=6b96ac6858" target="_blank" rel="noopener" style="color: #666;">
-          update your preferences
-        </a>
-        or 
-        <a href="https://onecommunityglobal.us1.list-manage.com/unsubscribe?u=1b1ba36facf96dc45b6697f82&id=0b0702fa07&t=b&e=dfcc422eb9&c=6b96ac6858" target="_blank" rel="noopener" style="color: #666;">
-          unsubscribe from this list
-        </a>.
-        <br />
+        <span style="display: inline-block;">
+          <a href="https://onecommunityglobal.us1.list-manage.com/vcard?u=1b1ba36facf96dc45b6697f82&amp;id=0b0702fa07" style="color: #666;">
+            Add us to your address book 
+          </a>
+          <span style="margin: 0 2px;">|</span>
+          <a href="https://onecommunityglobal.us1.list-manage.com/unsubscribe?u=1b1ba36facf96dc45b6697f82&id=0b0702fa07&t=b&e=dfcc422eb9&c=6b96ac6858" target="_blank" rel="noopener" style="color: #666;">
+            Unsubscribe from this list
+          </a>
+        </span>
       </p>
     `;
 
