@@ -1,3 +1,5 @@
+import { FETCH_FORM_DATA, SET_FORM_DATA, SUBMIT_FORM_DATA } from "constants/hgnFormConstants";
+
 const formState = {
     loading: false, // Add loading state
 
@@ -56,18 +58,21 @@ const formState = {
     isSlackSameAsName: "",
 };
 
-export const HGNFormReducer = (state = formState, action) => {
+/* eslint-disable-next-line default-param-last */
+const HGNFormReducer = (state = formState, action) => {
     switch (action.type) {
-        case "FETCH_FORM_DATA":
+        case FETCH_FORM_DATA:
             return { ...state, loading: true };
 
-        case "SET_FORM_DATA":
+        case SET_FORM_DATA:
             return { ...state, ...action.payload }; // Merge payload into state
 
-        case "SUBMIT_FORM_DATA":
+        case SUBMIT_FORM_DATA:
             return { ...state, loading: true, data: action.payload };
 
         default:
             return state;
     }
 };
+
+export default HGNFormReducer;

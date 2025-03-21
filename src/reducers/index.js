@@ -54,7 +54,7 @@ import dashboardReducer from '../reducers/dashboardReducer';
 import { timeOffRequestsReducer } from "./timeOffRequestReducer";
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
-import { HGNFormReducer } from './hgnFormReducers';
+import HGNFormReducer from './hgnFormReducers';
 
 
 const localReducers = {
