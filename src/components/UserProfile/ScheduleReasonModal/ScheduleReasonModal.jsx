@@ -380,6 +380,7 @@ const ScheduleReasonModal = ({
                 <Form.Label className={`mt-1 ${darkMode ? 'text-light' : ''}`}>
                   What is your reason for requesting this time off?
                 </Form.Label>
+                <span className="red-asterisk">* </span>
                 <Form.Control
                   as="textarea"
                   rows={2}
