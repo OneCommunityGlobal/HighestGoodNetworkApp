@@ -129,6 +129,11 @@
   height: 40px; /* Matches the height of the table rows */
 }
 
+#edit-modal-td {
+  text-align: left;
+  vertical-align: top;
+}
+
 
 
 .taskNum {
@@ -193,6 +198,7 @@
   flex-direction: row;
   margin-right: 10px;
   min-width: 100px;
+  padding-left: 8mm
 }
 
 @media (max-width: 250px) {
