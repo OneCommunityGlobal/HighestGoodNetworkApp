@@ -56,7 +56,7 @@ import { timeOffRequestsReducer } from './timeOffRequestReducer';
 import { totalOrgSummaryReducer } from './totalOrgSummaryReducer';
 import { allUsersTimeEntriesReducer } from './allUsersTimeEntriesReducer';
 
-//community portal
+// community portal
 import noShowVizReducer from './communityPortal/noShowVizReducer';
 
 const localReducers = {

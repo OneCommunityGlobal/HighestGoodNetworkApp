@@ -20,6 +20,7 @@ const initialState = {
   error: null,
 };
 
+// eslint-disable-next-line default-param-last
 export const noShowVizReducer = (state = initialState, action) => {
   switch (action.type) {
     case GET_NO_SHOWS_DATA:
