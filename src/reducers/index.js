@@ -1,4 +1,3 @@
-import { combineReducers } from 'redux';
 import { teamMemberTasksReducer } from 'components/TeamMemberTasks/reducer';
 import { taskEditSuggestionsReducer } from 'components/TaskEditSuggestions/reducer';
 import { userProfileByIdReducer, userTaskByIdReducer } from './userProfileByIdReducer';
@@ -11,17 +10,17 @@ import {
   updateUserInfoReducer,
 } from './allUserProfilesReducer';
 import { leaderboardDataReducer, orgDataReducer } from './leaderboardDataReducer';
-import { weeklySummariesReducer } from './weeklySummariesReducer';
-import { weeklySummariesReportReducer } from './weeklySummariesReportReducer';
+import weeklySummariesReducer from './weeklySummariesReducer';
+import weeklySummariesReportReducer from './weeklySummariesReportReducer';
 import { allProjectsReducer } from './allProjectsReducer';
 import { projectReportReducer } from './projectReportReducer';
-import { userProjectsReducer } from './userProjectsReducer';
+import userProjectsReducer from './userProjectsReducer';
 import { projectMembershipReducer } from './projectMembershipReducer';
 import { allUserTeamsReducer } from './allTeamsReducer';
 import { teamByIdReducer } from './teamByIdReducer';
 import { errorsReducer } from './errorsReducer';
 import { timeEntriesReducer } from './timeEntriesReducer';
-import { wbsReducer } from './wbsReducer';
+import wbsReducer from './wbsReducer';
 import { taskReducer } from './allTasksReducer';
 import { managingTeamsReducer } from './managingTeamsReducer';
 import { teamUsersReducer } from './teamsTeamMembersReducer';
@@ -31,10 +30,9 @@ import { popupEditorReducer } from './popupEditorReducer';
 import { roleReducer } from './roleReducer';
 import { rolePresetReducer } from './rolePresetReducer';
 import { ownerMessageReducer } from './ownerMessageReducer';
-import { warningsByUserIdReducer } from './warningsReducer';
+import warningsByUserIdReducer from './warningsReducer';
 import { infoCollectionsReducer } from './informationReducer';
-import { weeklySummariesAIPromptReducer } from './weeklySummariesAIPromptReducer';
-import { mouseoverTextReducer } from './mouseoverTextReducer';
+import mouseoverTextReducer from './mouseoverTextReducer';
 import notificationReducer from './notificationReducer';
 import { weeklySummaryRecipientsReducer } from './weeklySummaryRecipientsReducer';
 import { followUpReducer } from './followUpReducer';
@@ -87,7 +85,7 @@ const localReducers = {
   weeklySummaryRecipients: weeklySummaryRecipientsReducer,
   notification: notificationReducer,
   userFollowUp: followUpReducer,
-  userProjectsByUserNameReducer: userProjectsByUserNameReducer,
+  userProjectsByUserNameReducer,
   teamCodes: teamCodesReducer,
   blueSquareEmailAssignment: BlueSquareEmailAssignment,
   totalOrgSummary: totalOrgSummaryReducer,

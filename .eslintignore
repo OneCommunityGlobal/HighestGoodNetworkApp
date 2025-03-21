@@ -6,8 +6,6 @@ src/actions/**
 src/App.css
 src/config.json
 
-src/reducers/**
-src/utils/**
 src/__tests__/**
 
 /public/
@@ -19,8 +17,9 @@ src/components/Projects/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
-src/components/Teams/**
+src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
 src/components/EmailSubscribeForm/**
 src/components/Dashboard/**
+src/components/Teams/TeamMembersPopup.jsx

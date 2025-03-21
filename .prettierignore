@@ -5,7 +5,6 @@ src/App.css
 src/config.json
 
 src/languages/**
-src/reducers/**
 src/registerServiceWorker.js
 src/routes.js
 src/setupTests.js
@@ -22,6 +21,6 @@ src/components/Reports/**
 src/components/SummaryManagement/**
 src/components/TaskEditSuggestions/**
 src/components/TeamMemberTasks/**
-src/components/Teams/**
+src/components/Timelog/**
 src/components/UserManagement/**
 src/components/UserProfile/**
