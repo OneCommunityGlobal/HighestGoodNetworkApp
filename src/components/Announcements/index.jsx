@@ -41,6 +41,7 @@ function Announcements({ title, email }) {
   const [imgurLoading, setImgurLoading] = useState(false);
   const [scheduledPosts, setScheduledPosts] = useState([]);
   const [imgurError, setImgurError] = useState('');
+  const [fillingPost, setFillingPost] = useState(false);
   
 
   const maxScheduleDate = new Date();
@@ -60,6 +61,14 @@ function Announcements({ title, email }) {
       rootElement.classList.add('toggle-off')
     }
   }, [toggleImgur]);
+
+  useEffect(() => {
+    if (imgurTitle || imgurTopic || imgurTags || imgurFiles.length > 0) {
+      setFillingPost(true);
+    } else {
+      setFillingPost(false);
+    }
+  }, [imgurTitle, imgurTopic, imgurTags, imgurFiles]);
 
   const editorInit = {
     license_key: 'gpl',
@@ -195,6 +204,16 @@ function Announcements({ title, email }) {
     dispatch(sendEmail(emailList.join(','), title ? 'Anniversary congrats' : 'Weekly update', htmlContent));
   };
 
+  const generateRandomGradient = () => {
+    const colors = [
+      '#1a237e', '#0d47a1', '#b71c1c', '#880e4f', '#4a148c', '#311b92',
+      '#1b5e20', '#004d40', '#bf360c', '#3e2723', '#263238', '#212121'
+    ];
+    const randomColor1 = colors[Math.floor(Math.random() * colors.length)];
+    const randomColor2 = colors[Math.floor(Math.random() * colors.length)];
+    return `linear-gradient(45deg, ${randomColor1}, ${randomColor2})`;
+  };
+
 
   const handleBroadcastEmails = () => {
     const htmlContent = `
@@ -264,9 +283,7 @@ function Announcements({ title, email }) {
               <h3>Post to Imgur</h3>
               <div className='imgur-post-container'>
                 
-
-                
-                <div className="imgur-post-details">
+                <div className="imgur-post-details-container">
                   {/* Imgur album title input */}
                   <div className="imgur-post-title">
                     <label htmlFor="imgur-content-input" className={darkMode ? 'text-light' : 'text-dark'}>
@@ -321,47 +338,6 @@ function Announcements({ title, email }) {
                     />
                   </div>
 
-                  {/* Imgur album image preview */}
-                  <div className="imgur-preview">
-                    {imgurFiles.length > 0 && (
-                      <div>
-                        <h4>Preview:</h4>
-                        <div className='imgur-preview-cards-container'>
-                          {imgurFiles.map((file, index) => (
-                            <div key={index} className='imgur-preview-card'>
-                              <img src={URL.createObjectURL(file)} alt={`Preview ${index}`} className='imgur-preview-image' />
-                              <Editor
-                                tinymceScriptSrc="/tinymce/tinymce.min.js"
-                                id={`imgur-description-editor-${index}`}
-                                initialValue="description"
-                                init={{
-                                  height: 100,
-                                  menubar: false,
-                                  branding: false,
-                                  toolbar: false,
-                                  skin: darkMode ? 'oxide-dark' : 'oxide',
-                                  content_css: darkMode ? 'dark' : 'default',
-                                }}
-                                onEditorChange={(content) => {
-                                  const newDescriptions = [...imgurFileDescriptions];
-                                  newDescriptions[index] = content;
-                                  setImgurFileDescriptions(newDescriptions);
-                                }}
-                              />
-                              <button
-                                type="button"
-                                onClick={() => handleRemoveImgurFile(index, setImgurFiles, setImgurFileDescriptions)}
-                                className='imgur-preview-remove-button'
-                              >
-                                Remove
-                              </button>
-                            </div>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-
                   {/* Imgur error message */}
                   {imgurError && <div className="alert alert-danger m-2">{imgurError}</div>}
 
@@ -404,7 +380,8 @@ function Announcements({ title, email }) {
                           setImgurScheduleTime,
                           setImgurFileDescriptions,
                         });
-                      fetchImgurScheduledPosts(setScheduledPosts, setImgurError);
+                        setFillingPost(false);
+                        fetchImgurScheduledPosts(setScheduledPosts, setImgurError);
                       }}
                       disabled={imgurLoading}
                       className="send-button"
@@ -414,42 +391,123 @@ function Announcements({ title, email }) {
                     </button>
                   </div>
                 </div>
-                    
-                {/* display scheduled posts */}
-                <div className="scheduled-posts">
-                  <h4>Scheduled Posts:</h4>
-                  {scheduledPosts.length === 0 && <p>No scheduled posts</p>}
-                  {scheduledPosts.length > 0 && (
-                    <div className="scheduled-posts-container">
-                      {scheduledPosts.map((post, index) => (
-                        <div key={index} className="scheduled-post-card">
-                        <h5>{post.title}</h5>
-                        <p>Scheduled Time: {new Date(post.scheduleTime).toLocaleString()}</p>
-                        <div className="scheduled-post-files">
-                          {post.files.map((file, fileIndex) => (
-                            <div key={fileIndex} className="scheduled-post-file">
-                              <p>File: {file.originalname}</p>
-                              {/* <img
-                                src={`data:${file.mimetype};base64,${Buffer.from(file.buffer.data).toString('base64')}`}
-                                alt={`Preview ${fileIndex}`}
-                                className="scheduled-post-image"
-                              /> */}
-                              {/* <div dangerouslySetInnerHTML={{ __html: post.description[fileIndex] }} /> */}
+
+                {/* display preview of current post */}
+                <div className='imgur-preview-container'>
+                  {fillingPost ? (
+                    <div>
+                      <h3>Post Preview:</h3>
+                      <div className='imgur-preview-card'>
+                        {/* title */}
+                        <h4>{imgurTitle ? imgurTitle : (
+                          <span className='imgur-preview-warning'>*Title Missing*</span>
+                        )}</h4>
+
+                        {/* files */}
+                        <div className='imgur-preview-images-container'>
+                          {imgurFiles.length > 0 ? (
+                            imgurFiles.map((file, index) => (
+                              <div className='imgur-preview-image-card'>
+                                <div key={`${file.name}-${index}`} className='imgur-preview-image-background'>
+                                  <img src={URL.createObjectURL(file)} alt={`Preview ${index}`} className='imgur-preview-image' />
+                                </div>
+                                <input 
+                                  key={`${file.name}-desc-${index}`}
+                                  className='imgur-preview-description'
+                                  type='text'
+                                  placeholder='Input description for image'
+                                  value={imgurFileDescriptions[index]}
+                                  onChange={(e) => {
+                                    const newDescriptions = [...imgurFileDescriptions];
+                                    newDescriptions[index] = e.target.value;
+                                    setImgurFileDescriptions(newDescriptions);
+                                  }}
+                                />
+                            </div>
+                            ))
+                          ) : (
+                            <div className='imgur-preview-warning'>*No images uploaded*</div>
+                          )}
+                          
+                        </div>
+
+                        {/* tags */}
+                        <div>
+                          {imgurTags ? imgurTags.split(',').filter(tag => tag.trim() !== '').map((tag, index) => (
+                            <span 
+                              key={index} 
+                              className="imgur-preview-container-tags" 
+                              style={{ background: generateRandomGradient() }}
+                            >
+                              {tag.trim()}
+                            </span>
+                          )) : ""}
+                        </div>
+                      </div>
+                    </div>
+                    ) : (
+                      <div className="imgur-scheduled-posts-container">
+                      <h3>Scheduled Posts:</h3>
+                      {scheduledPosts.length === 0 && <p>No scheduled posts</p>}
+                      {scheduledPosts.length > 0 && (
+                        <div className="imgur-scheduled-posts-details">
+                          {scheduledPosts.map((post, index) => (
+                            <div key={index} className="imgur-scheduled-post-card">
+                            <h5>{post.title}</h5>
+                            <p>Scheduled Time: {new Date(post.scheduleTime).toLocaleString()}</p>
+                            <div className="imgur-scheduled-post-files">
+                              {post.files.map((file, fileIndex) => (
+                                <div key={fileIndex} className="imgur-scheduled-post-file">
+                                  <p>File: {file.originalname}</p>
+                                  {/* <img
+                                    src={`data:${file.mimetype};base64,${Buffer.from(file.buffer.data).toString('base64')}`}
+                                    alt={`Preview ${fileIndex}`}
+                                    className="scheduled-post-image"
+                                  /> */}
+                                  {/* <div dangerouslySetInnerHTML={{ __html: post.description[fileIndex] }} /> */}
+                                </div>
+                              ))}
+                            </div>
+                              {/* <button
+                                type="button"
+                                onClick={() => deleteScheduledPost(post.jobId, setScheduledPosts, setImgurError)}
+                                className="delete-button"
+                              >
+                                Delete
+                              </button> */}
                             </div>
                           ))}
                         </div>
-                          {/* <button
-                            type="button"
-                            onClick={() => deleteScheduledPost(post.jobId, setScheduledPosts, setImgurError)}
-                            className="delete-button"
-                          >
-                            Delete
-                          </button> */}
-                        </div>
-                      ))}
+                      )}
                     </div>
                   )}
+                    
                 </div>
+                    
+                {/* display scheduled posts */}
+                {fillingPost &&
+                  <div className="imgur-scheduled-posts-container">
+                    <h3>Scheduled Posts:</h3>
+                    {scheduledPosts.length === 0 && <p>No scheduled posts</p>}
+                    {scheduledPosts.length > 0 && (
+                      <div className="imgur-scheduled-posts-details">
+                        {scheduledPosts.map((post, index) => (
+                          <div key={index} className="imgur-scheduled-post-card">
+                          <h5>{post.title}</h5>
+                          <p>Scheduled Time: {new Date(post.scheduleTime).toLocaleString()}</p>
+                          <div className="imgur-scheduled-post-files">
+                            {post.files.map((file, fileIndex) => (
+                              <div key={fileIndex} className="imgur-scheduled-post-file">
+                                <p>File: {file.originalname}</p>
+                              </div>
+                            ))}
+                          </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                }
               </div>
             </div>
           )}
