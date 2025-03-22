@@ -5,7 +5,7 @@ import {
   Cell,
   Tooltip,
   ResponsiveContainer,
-} from 'recharts'; // ✅ removed Label import
+} from 'recharts';
 import './WeeklyProjectSummary.css';
 
 const COLORS = {
@@ -23,31 +23,6 @@ const rawData = [
 const total = rawData.reduce((sum, d) => sum + d.value, 0);
 const RADIAN = Math.PI / 180;
 
-// const renderCustomizedLabel = ({
-//   cx, cy, midAngle, outerRadius, percent, width,
-// }) => {
-//   const isSmall = width < 400;
-//   const radius = outerRadius + (isSmall ? 10 : 20);
-//   let x = cx + radius * Math.cos(-midAngle * RADIAN);
-//   const y = cy + radius * Math.sin(-midAngle * RADIAN);
-
-//   const minX = 10;
-//   const maxX = width - 10;
-//   x = Math.max(minX, Math.min(x, maxX));
-
-//   return (
-//     <text
-//       x={x}
-//       y={y}
-//       fill="#000"
-//       textAnchor="middle"
-//       dominantBaseline="central"
-//       fontSize={12}
-//     >
-//       {(percent * 100).toFixed(1)}%
-//     </text>
-//   );
-// };
 const renderCustomizedLabel = ({
   cx, cy, midAngle, outerRadius, percent, width,
 }) => {
@@ -140,8 +115,6 @@ export default function ToolStatusDonutChart() {
               <Cell key={entry.name} fill={COLORS[entry.name]} />
             ))}
           </Pie>
-
-          {/* ✅ Show total in center manually */}
           <text
             x="50%"
             y="50%"
