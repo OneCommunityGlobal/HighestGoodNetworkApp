@@ -9,14 +9,7 @@ export const handlePostToImgur = async ({
   imgurScheduleTime,
   imgurFileDescriptions,
   imgurTopic,
-  setImgurLoading,
   setImgurError,
-  setImgurTitle,
-  setImgurTags,
-  setImgurFiles,
-  setImgurTopic,
-  setImgurScheduleTime,
-  setImgurFileDescriptions,
 }) => {
   console.log('Posting to Imgur...');
   console.log('Title:', imgurTitle);
@@ -28,7 +21,7 @@ export const handlePostToImgur = async ({
     return;
   }
 
-  setImgurLoading(true);
+  // setImgurLoading(true);
   setImgurError('');
 
    // create form data
@@ -63,12 +56,7 @@ export const handlePostToImgur = async ({
 
     if (response.status === 200) {
       // reset form after successful post
-      setImgurTitle('');
-      setImgurTags('');
-      setImgurFiles([]);
-      setImgurFileDescriptions([]);
-      setImgurScheduleTime('');
-      setImgurTopic('');
+      
 
       toast.success('Image successfully posted to Imgur', {
         position: 'top-right',
@@ -85,9 +73,7 @@ export const handlePostToImgur = async ({
       position: 'top-right',
       autoClose: 3000,
     });
-  } finally {
-    setImgurLoading(false);
-  }
+  } 
 };
 
 export const handleImgurFileChange = (e, setImgurFiles, setImgurFileDescriptions) => {
@@ -100,6 +86,31 @@ export const handleRemoveImgurFile = (index, setImgurFiles, setImgurFileDescript
   setImgurFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
   setImgurFileDescriptions(prevDescriptions => prevDescriptions.filter((_, i) => i !== index));
 };
+
+export const handleRemoveScheduledPost = async (postId, setScheduledPosts, setImgurError) => {
+  console.log('Removing scheduled post:', postId);
+  try {
+    const response = await axios.delete(`${ENDPOINTS.SCHEDULED_POSTS}/${postId}`);
+    if (response.status === 200) {
+      // const posts = response.data.scheduledPosts;
+      // setScheduledPosts(posts);
+      toast.success('Scheduled post successfully removed', {
+        position: 'top-right',
+        autoClose: 3000,
+      });
+    } else {
+      setImgurError(response.data.message || 'Failed to remove scheduled post');
+      throw new Error(response.data.message || 'Failed to remove scheduled post');
+    }
+  } catch (e) {
+    console.error('Error removing scheduled post:', e);
+    setImgurError('Error removing scheduled post');
+    toast.error('Error removing scheduled post', {
+      position: 'top-right',
+      autoClose: 3000,
+    });
+  }
+}
 
 export const fetchImgurScheduledPosts = async (setScheduledPosts, setImgurError) => {
   try {
