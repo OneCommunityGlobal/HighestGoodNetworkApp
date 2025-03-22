@@ -298,3 +298,138 @@
     grid-template-columns: 1fr;
   }
 }
+
+/* Proportion of Tools & Equipment */
+.tools-tracking-layout {
+  display: flex;
+  flex-direction: row;
+  gap: 1rem;
+  justify-content: space-between;
+  align-items: stretch;
+  padding: 1rem;
+}
+
+.tools-donut-wrap {
+  flex: 0 0 60%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.tools-card-wrap {
+  flex: 0 0 40%;
+  background: #f9f9f9;
+  border-radius: 8px;
+  padding: 1rem;
+  font-size: 1rem;
+  font-weight: 500;
+  color: #333;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 768px) {
+  .tools-tracking-layout {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .tools-donut-wrap,
+  .tools-card-wrap {
+    flex: 1 1 100%;
+    max-width: 100%;
+  }
+}
+
+.tool-donut-wrapper {
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.tool-donut-title {
+  text-align: center;
+  font-weight: 600;
+  margin-bottom: 1.2rem;
+  font-size: 1.1rem;
+  color: #000000;
+}
+
+.tool-donut-filters {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 3rem;
+  margin-bottom: 1.5rem;
+}
+
+.filter-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  font-size: 14px;
+  text-align: center;
+}
+
+.filter-label {
+  font-weight: 600;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #000; 
+}
+
+.filter-value {
+  font-size: 14px;
+  color: #888; 
+  margin-top: 2px;
+  font-weight: 500;
+}
+
+.tool-donut-legend {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-top: 1rem;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.tool-donut-legend-item {
+  color: #ffffff;
+  padding: 6px 16px;
+  border-radius: 0;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 140px;
+  text-align: center;
+}
+
+.weekly-project-summary-dashboard-category-title {
+  cursor: pointer;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+}
+
+.weekly-project-summary-dropdown-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.weekly-project-summary-title-text {
+  font-size: 15px;
+}
+
+.weekly-project-summary-dropdown-icon {
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.dropdown-arrow {
+  font-size: 16px;
+  color: #888;
+  font-weight: normal;
+}
