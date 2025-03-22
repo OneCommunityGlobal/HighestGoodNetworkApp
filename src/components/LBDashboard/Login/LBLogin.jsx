@@ -82,6 +82,7 @@ function LBLogin(props) {
         <div className="form-main">
           <h2>Log In To Listing and Biding Portal</h2>
           <p>Enter your credentials to access the Listing and Biding Portal Dashboard</p>
+          <p>Note: You must use your Production/Main credentials for this login.</p>
           <div className="form-content">
             <Form onSubmit={handleSubmit}>
               <FormGroup>
