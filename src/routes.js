@@ -43,6 +43,9 @@ import UnsubscribeForm from './components/EmailSubscribeForm/Unsubscribe';
 import NotFoundPage from './components/NotFound/NotFoundPage';
 import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
+import EventRegistration from './components/EventRegistration/EventRegistration';
+import TestEventRegistration from './components/EventRegistration/TestEventRegistration';
+
 
 // LB Dashboard
 import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
@@ -140,6 +143,8 @@ export default (
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
+    <Route path="/EventRegistration" component={EventRegistration} />
+    <Route path="/TestEventReg" component={TestEventRegistration} />
     <>
       {/* Comment out the Header component and its import during phase 2 development. */}
       <Header />
