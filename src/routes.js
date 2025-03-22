@@ -45,9 +45,9 @@ import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
 // LB Dashboard
-import LBRegister from './components/LBDashboard/Auth/Register';
-import LBLogin from './components/LBDashboard/Auth/Login';
-import ListOverview from './components/LBDashboard/ListOverview/ListOverview';
+import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
+import LBLogin from './components/LBDashboard/Login';
+import LBDashboard from './components/LBDashboard';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -137,36 +137,6 @@ export default (
   <Switch>
     {/* ----- LB Dashboard Routing ----- */}
     {/* If it's possible incorporate this route with others without the header, please do */}
-    <Route
-      path="/lbdashboard/register"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <LBRegister />
-        </>
-      )}
-    />
-    <Route
-      path="/lbdashboard/login"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <LBLogin />
-        </>
-      )}
-    />
-    <Route
-      path="/lbdashboard/listoverview"
-      render={() => (
-        <>
-          <AutoUpdate />
-          <ToastContainer />
-          <ListOverview />
-        </>
-      )}
-    />
     <Route path="/form" component={FormEditor} />
     <Route path="/formviewer" component={FormViewer} />
     <Route path="/ProfileInitialSetup/:token" component={SetupProfile} />
@@ -426,6 +396,12 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+
+
+        {/* Listing and Bidding Routes */}
+        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+        <Route path="/lbdashboard/login" component={LBLogin} />
+  
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />

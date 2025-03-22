@@ -1,0 +1,110 @@
+.auth-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background-color: #e0e0e0;
+  width: 100%;
+  min-height: 100vh;
+  padding: 20px;
+  overflow: hidden;
+}
+
+.logo-container {
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.logo-container img {
+  max-width: 30%;
+  height: auto;
+  min-width: 250px;
+}
+
+.form-container {
+  background-color: white;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  width: 66%;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.form-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  height: 60px;
+  background-color: #9dd425;
+}
+
+.form-main {
+  background-color: #e0e0e0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 20px 40px 30px 40px;
+  padding: 20px 0px 20px 0px;
+  width: auto;
+  min-height: 560px;
+}
+
+.form-main h2 {
+  font-size: 28px;
+  text-align: center;
+  margin-bottom: 30px;
+  color: #202020;
+}
+
+.form-main > p {
+  font-weight: 500;
+  font-size: 14px;
+  text-align: left;
+  color: #202020;
+  margin: 0 10% 40px 10%;
+}
+
+.form-content {
+  width: 40%;
+  min-width: 140px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+form input {
+  margin-bottom: 15px;
+  padding: 5px 10px 5px 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+form button {
+  margin-top: 10px;
+  margin-left: auto;
+  width: 40%;
+  max-width: 180px;
+  min-width: 140px;
+  background-color: #28a745;
+  color: white;
+  border: #202020 solid 1px;
+  padding: 10px;
+  border-radius: 10px;
+  font-size: 16px;
+  cursor: pointer;
+}
+
+form button:hover {
+  background-color: #218838;
+}
+
+form .error-message {
+  color: red;
+  font-size: 12px;
+  margin-top: -10px;
+  margin-bottom: 10px;
+  width: 100%;
+}

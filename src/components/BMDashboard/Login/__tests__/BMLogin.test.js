@@ -91,6 +91,12 @@ describe('BMLogin component', () => {
       ),
     ).toBeInTheDocument();
   });
+  it('check if Note: You must use your Production/Main credentials for this login. header displays as expected', () => {
+    renderComponent(store);
+    expect(
+      screen.getByText('Note: You must use your Production/Main credentials for this login.'),
+    ).toBeInTheDocument();
+  });
   it('check if email label is displaying as expected', () => {
     renderComponent(store);
     expect(screen.getByText('Email')).toBeInTheDocument();
