@@ -224,6 +224,7 @@ const UserTableData = React.memo(props => {
           <input
             type="text"
             className="edituser_input"
+            style={{ maxWidth: "100%" }}
             value={formData.jobTitle}
             onChange={e => {
               updateFormData({ ...formData, jobTitle: e.target.value });

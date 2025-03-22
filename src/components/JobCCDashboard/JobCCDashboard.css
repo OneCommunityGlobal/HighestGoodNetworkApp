@@ -3,7 +3,7 @@
   font-family: 'Arial', sans-serif;
 }
 
-.dark-mode {
+.dark-mode-job-cc-dashboard {
   background-color: #2c2f33;
   color: #ffffff;
 }
@@ -22,7 +22,7 @@
   margin-bottom: 30px;
 }
 
-.dark-mode .form-container {
+.dark-mode-job-cc-dashboard .form-container {
   background-color: #3c3f44;
   color: #ffffff;
 }
@@ -44,27 +44,27 @@
   box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.dark-mode .cc-list-container {
+.dark-mode-job-cc-dashboard .cc-list-container {
   background-color: #3c3f44;
 }
 
-.table {
+.job-cc-dashboard-table {
   margin-top: 10px;
 }
 
-.table th {
+.job-cc-dashboard-table th {
   background-color: #007bff;
   color: #ffffff;
 }
 
-.dark-mode .table th {
+.dark-mode-job-cc-dashboard .job-cc-dashboard-table th {
   background-color: #0056b3;
 }
 
-.table td {
+.job-cc-dashboard-table td {
   vertical-align: middle;
 }
 
-.table button {
+.job-cc-dashboard-table button {
   font-size: 0.85rem;
 }
