@@ -26,8 +26,8 @@ const badgeInitial = {
   alertVisible: false,
   badgeCount: 0,
   activeTab: '1',
-  loading:false,
-  error:null,
+  loading: false,
+  error: null,
 };
 
 // eslint-disable-next-line default-param-last
@@ -40,18 +40,18 @@ export const badgeReducer = (state = badgeInitial, action) => {
         ...state,
         selectedBadges: [...state.selectedBadges, action.badgeId],
       };
-      case FETCH_ALL_BADGES:
-        return {
-          ...state,
-          allBadgeData: action.payload,
-          loading: false,
-        };
-      case FETCH_BADGES_FAILURE:
-        return {
-          ...state,
-          error: action.payload,
-          loading: false,
-        };
+    case FETCH_ALL_BADGES:
+      return {
+        ...state,
+        allBadgeData: action.payload,
+        loading: false,
+      };
+    case FETCH_BADGES_FAILURE:
+      return {
+        ...state,
+        error: action.payload,
+        loading: false,
+      };
     case REMOVE_SELECT_BADGE:
       return {
         ...state,
