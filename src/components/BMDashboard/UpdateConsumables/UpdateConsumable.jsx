@@ -225,7 +225,9 @@ function UpdateConsumable({ record, setModal }) {
                   onKeyDown={e => {
                     if (e.key === '+' || e.key === '-') e.preventDefault();
                   }}
-                  onInput={e => (e.target.value = e.target.value.replace(/[^\d.]/g, ''))}
+                  onInput={e => {
+                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
+                  }}
                 />
               </Col>
               <Col sm={{ size: 4 }} className="consumableFormValue">
@@ -268,7 +270,9 @@ function UpdateConsumable({ record, setModal }) {
                   onKeyDown={e => {
                     if (e.key === '+' || e.key === '-') e.preventDefault();
                   }}
-                  onInput={e => (e.target.value = e.target.value.replace(/[^\d.]/g, ''))}
+                  onInput={e => {
+                    e.target.value = e.target.value.replace(/[^\d.]/g, '');
+                  }}
                 />
               </Col>
               <Col sm={{ size: 4 }} className="consumableFormValue">
