@@ -84,56 +84,62 @@ function BadgeReport(props) {
     };
   }
 
-  const FormatReportForPdf = (badges, callback) => {
+  const FormatReportForPdf = async (badges, callback) => {
     const bgReport = [];
     bgReport[0] = `<h3>Badge Report (Page 1 of ${Math.ceil(badges.length / 4)})</h3>
-  <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
       props.lastName
     }</h4></div>
-  <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
-
-    for (let i = 0; i < badges.length; i += 1) {
-      imageToUri(badges[i].badge.imageUrl, function(uri) {
-        bgReport[i + 1] = `
-      <table>
-        <thead>
-          <tr>
-            <th>Badge Image</th>
-            <th>Badge Name, Count Awarded & Badge Description</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr>
-            <td style="width:160px">
-              <div><img height="150" width="150" src=${uri}/></div>
-            </td>
-            <td style="width:500px">
-              <div><b>Name:</b> <span class="name">${badges[i].badge.badgeName}</span></div>
-              <div><b>Count:</b> ${badges[i].count}</div>
-              <div><b>Description:</b> ${badges[i].badge.description}</div>
-            </td>
-          </tr>
-        </tbody>
-      </table>
-      ${
-        (i + 1) % 4 === 0 && i + 1 !== badges.length
-          ? `</br></br></br>
-      <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(badges.length / 4)})</h3>
-    <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
-              props.lastName
-            }</h4></div>
-    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
-      `
-          : ''
-      }`;
-        if (i === badges.length - 1) {
-          setTimeout(() => {
-            callback(bgReport.join('\n'));
-          }, 100);
-        }
+    <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>`;
+  
+    // Use Promise.all to handle asynchronous imageToUri calls
+    const badgePromises = badges.map((badge, i) => {
+      return new Promise((resolve) => {
+        imageToUri(badge.badge.imageUrl, (uri) => {
+          bgReport[i + 1] = `
+          <table>
+            <thead>
+              <tr>
+                <th>Badge Image</th>
+                <th>Badge Name, Count Awarded & Badge Description</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td style="width:160px">
+                  <div><img height="150" width="150" src=${uri}/></div>
+                </td>
+                <td style="width:500px">
+                  <div><b>Name:</b> <span class="name">${badge.badge.badgeName}</span></div>
+                  <div><b>Count:</b> ${badge.count}</div>
+                  <div><b>Description:</b> ${badge.badge.description}</div>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+          ${
+            (i + 1) % 4 === 0 && i + 1 !== badges.length
+              ? `</br></br></br>
+          <h3>Badge Report (Page ${1 + Math.ceil((i + 1) / 4)} of ${Math.ceil(badges.length / 4)})</h3>
+          <div style="margin-bottom: 20px; color: orange;"><h4>For ${props.firstName} ${
+                  props.lastName
+                }</h4></div>
+          <div style="color:#DEE2E6; margin:10px 0px 20px 0px; text-align:center;">_______________________________________________________________________________________________</div>
+          `
+              : ''
+          }`;
+          resolve();
+        });
       });
-    }
+    });
+  
+    // Wait for all imageToUri calls to complete
+    await Promise.all(badgePromises);
+  
+    // Invoke the callback with the complete report
+    callback(bgReport.join('\n'));
   };
+  
 
   const pdfDocGenerator = async () => {
     let CurrentDate = moment().format('MM-DD-YYYY-HH-mm-ss');
