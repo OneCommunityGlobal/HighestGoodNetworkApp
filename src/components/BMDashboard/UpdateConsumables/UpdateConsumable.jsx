@@ -222,6 +222,10 @@ function UpdateConsumable({ record, setModal }) {
                   value={updateRecord.quantityUsed}
                   onChange={e => changeRecordHandler(e)}
                   min={0}
+                  onKeyDown={e => {
+                    if (e.key === '+' || e.key === '-') e.preventDefault();
+                  }}
+                  onInput={e => (e.target.value = e.target.value.replace(/[^\d.]/g, ''))}
                 />
               </Col>
               <Col sm={{ size: 4 }} className="consumableFormValue">
@@ -261,6 +265,10 @@ function UpdateConsumable({ record, setModal }) {
                   value={updateRecord.quantityWasted}
                   onChange={e => changeRecordHandler(e)}
                   min={0}
+                  onKeyDown={e => {
+                    if (e.key === '+' || e.key === '-') e.preventDefault();
+                  }}
+                  onInput={e => (e.target.value = e.target.value.replace(/[^\d.]/g, ''))}
                 />
               </Col>
               <Col sm={{ size: 4 }} className="consumableFormValue">
