@@ -79,9 +79,6 @@ export default function EquipmentUpdateForm() {
   const handleSubmit = e => {
     e.preventDefault();
 
-    // Log formData including name and id for each field
-    console.log('Form Data Submitted:', formData);
-
     if (!isFormValid) {
       toast.error('Please complete all fields before updating.');
       return;
