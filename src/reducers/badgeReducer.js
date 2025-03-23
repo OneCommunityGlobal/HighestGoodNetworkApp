@@ -30,6 +30,7 @@ const badgeInitial = {
   error:null,
 };
 
+// eslint-disable-next-line default-param-last
 export const badgeReducer = (state = badgeInitial, action) => {
   switch (action.type) {
     case GET_ALL_BADGE_DATA:
@@ -87,3 +88,5 @@ export const badgeReducer = (state = badgeInitial, action) => {
       return state;
   }
 };
+
+export default badgeReducer;
