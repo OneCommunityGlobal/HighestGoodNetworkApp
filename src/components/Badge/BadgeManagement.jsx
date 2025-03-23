@@ -12,6 +12,7 @@ import {
   DropdownItem,
   Input,
   Label,
+  Button,
 } from 'reactstrap';
 import classnames from 'classnames';
 import { boxStyle, boxStyleDark } from 'styles';
@@ -129,7 +130,7 @@ function BadgeManagement(props) {
             hoverBackgroundColor: CHART_COLORS.map(color => `${color}CC`),
             borderWidth: 2,
             borderColor: darkMode ? '#1F2937' : '#fff',
-            hoverOffset: 20,
+            hoverOffset: 40,
           },
         ],
       });
@@ -147,7 +148,7 @@ function BadgeManagement(props) {
   };
 
   const dropdownItems = useMemo(() => {
-    return allBadgeData?.map(badge => (
+    return allBadgeData?.slice(0, 40).map(badge => (
       <DropdownItem key={badge._id} toggle={false}>
         <Input
           type="checkbox"
@@ -163,6 +164,10 @@ function BadgeManagement(props) {
   const toggleDropdown = debounce(() => {
     setDropdownOpen(prevState => !prevState);
   }, 300);
+
+  const clearSelectedBadges = () => {
+    setSelectedBadges([]);
+  };
 
   if (loading) {
     return <div>Loading...</div>;
@@ -203,21 +208,45 @@ function BadgeManagement(props) {
         </NavItem>
       </Nav>
 
-      <div className="mt-4 mb-3">
-        <Label>Select Badges</Label>
+      <div className="mt-4 mb-3 d-flex align-items-center">
+        <Label className="mr-2">Select Badges</Label>
+
         <Dropdown isOpen={dropdownOpen} toggle={toggleDropdown}>
-          <DropdownToggle caret>
+          <DropdownToggle caret disabled={selectedBadges.length >= 10}>
             {selectedBadges.length > 0
               ? `${selectedBadges.length} Badge${selectedBadges.length > 1 ? 's' : ''} Selected`
               : 'Select Badges'}
           </DropdownToggle>
           <DropdownMenu style={{ maxHeight: '300px', overflowY: 'auto' }}>
-            {dropdownItems}
+            {allBadgeData.map(badge => (
+              <DropdownItem key={badge._id} toggle={false}>
+                <Input
+                  type="checkbox"
+                  checked={selectedBadges.includes(badge._id)}
+                  onChange={() => handleBadgeSelect(badge._id)}
+                  className="mr-2"
+                  disabled={!selectedBadges.includes(badge._id) && selectedBadges.length >= 10} // Disable if 10 are already selected
+                />
+                {badge.badgeName}
+              </DropdownItem>
+            ))}
           </DropdownMenu>
         </Dropdown>
+
+        <Button
+          color="primary"
+          onClick={clearSelectedBadges}
+          className="ml-3"
+          style={{ height: '38px', padding: '0 15px' }}
+        >
+          Clear Selected
+        </Button>
       </div>
 
-      <div className="d-flex justify-content-between mt-4" style={{ gap: '2rem' }}>
+      <div
+        className="d-flex justify-content-between mt-4"
+        style={{ gap: '2rem', flexWrap: 'wrap' }}
+      >
         {chartData ? (
           <div
             style={{
@@ -227,6 +256,9 @@ function BadgeManagement(props) {
               borderRadius: '12px',
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
               border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
             }}
           >
             <h4
@@ -236,11 +268,20 @@ function BadgeManagement(props) {
                 textAlign: 'center',
                 fontSize: '1.25rem',
                 fontWeight: 600,
+                whiteSpace: 'nowrap',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
               }}
             >
               Badge Assignment Distribution
             </h4>
-            <div style={{ height: '400px', position: 'relative' }}>
+            <div
+              style={{
+                height: '400px',
+                position: 'relative',
+                overflowY: 'auto',
+              }}
+            >
               <Pie ref={chartRef} data={chartData} options={chartOptions} />
             </div>
           </div>
@@ -259,7 +300,8 @@ function BadgeManagement(props) {
               background: darkMode ? '#1F2937' : '#fff',
               borderRadius: '12px',
               boxShadow: '0 4px 6px rgba(0,0,0,0.1)',
-              border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+              overflow: 'auto',
+              maxHeight: '500px',
             }}
           >
             <h4
@@ -273,6 +315,25 @@ function BadgeManagement(props) {
             >
               Assigned Users
             </h4>
+
+            {/* Warning Message */}
+            {selectedBadges.length >= 10 && (
+              <div
+                style={{
+                  padding: '10px',
+                  marginTop: '10px',
+                  backgroundColor: '#FFEBEB',
+                  color: '#D9534F',
+                  textAlign: 'center',
+                  fontWeight: 600,
+                  borderRadius: '8px',
+                  border: '1px solid #D9534F',
+                }}
+              >
+                ⚠️ You can only select up to 10 badges. Deselect one or more to continue.
+              </div>
+            )}
+
             {selectedBadges.map(badgeId => {
               const badge = allBadgeData.find(b => b._id === badgeId);
               return (
@@ -290,6 +351,9 @@ function BadgeManagement(props) {
                       color: darkMode ? '#fff' : '#1E293B',
                       marginBottom: '1rem',
                       fontSize: '1.1rem',
+                      whiteSpace: 'nowrap',
+                      overflow: 'hidden',
+                      textOverflow: 'ellipsis',
                     }}
                   >
                     {badge?.badgeName || 'Unknown Badge'}
@@ -347,6 +411,7 @@ function BadgeManagement(props) {
           </div>
         )}
       </div>
+
       <TabContent activeTab={activeTab}>
         <TabPane tabId="1">
           <AssignBadge allBadgeData={props.allBadgeData} />
@@ -368,9 +433,9 @@ const mapStateToProps = state => ({
   loading: state.badge.loading,
 });
 
-const mapDispatchToProps = dispatch => ({
-  fetchAllBadges: () => dispatch(fetchAllBadges()),
-  setActiveTab: tab => dispatch(setActiveTab(tab)),
-});
+const mapDispatchToProps = {
+  fetchAllBadges,
+  setActiveTab,
+};
 
 export default connect(mapStateToProps, mapDispatchToProps)(BadgeManagement);
