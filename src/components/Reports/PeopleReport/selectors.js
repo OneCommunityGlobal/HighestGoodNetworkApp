@@ -1,5 +1,20 @@
 import _ from 'lodash';
 
+export const calculateTotalTangibleHours = (timeEntries) => {
+  if (!Array.isArray(timeEntries.period)) {
+    return 0;
+  }
+
+  return timeEntries.period.reduce((total, entry) => {
+    if (!entry.isTangible) {
+      return total;
+    }
+    const hours = Number(entry.hours) || 0;
+    const minutes = Number(entry.minutes) || 0;
+    return total + hours + (minutes / 60);
+  }, 0);
+};
+
 export const getPeopleReportData = state => ({
   auth: state.auth,
   userProfile: state.userProfile,
@@ -7,6 +22,7 @@ export const getPeopleReportData = state => ({
   infringements: state.userProfile.infringements,
   user: _.get(state, 'user', {}),
   timeEntries: state.timeEntries,
+  totalTangibleHours: calculateTotalTangibleHours(state.timeEntries),
   userProjects: state.userProjects,
   allProjects: _.get(state, 'allProjects'),
   allTeams: state,
@@ -29,81 +45,183 @@ const getRounded = number => {
   return Math.round(number * 100) / 100;
 };
 
-export const peopleTasksPieChartViewData = ({ userTask, allProjects }) => {
+export const peopleTasksPieChartViewData = ({
+  userTask = [],
+  allProjects = {},
+  timeEntries = {},
+}) => {
   const tasksWithLoggedHoursById = {};
-  const displayedTasksWithLoggedHoursById = {};
   const projectsWithLoggedHoursById = {};
+  const projectNameMapping = {};
   const tasksLegend = {};
-  const displayedTasksLegend = {};
   const projectsWithLoggedHoursLegend = {};
-  const tasksWithLoggedHours = userTask?.filter(({ hoursLogged }) => hoursLogged);
 
-  tasksWithLoggedHours
-    .sort((a,b)=>b.hoursLogged - a.hoursLogged)
-    .forEach(({ _id: taskId, hoursLogged, taskName }) => {
-      tasksWithLoggedHoursById[taskId] = hoursLogged;
-      tasksLegend[taskId] = [taskName, getRounded(hoursLogged)];
-
-      const currentTask = userTask?.find(task => task._id === taskId); 
-      if (currentTask) {
-        const currentProjectName = allProjects?.projects?.find(
-          ({ _id }) => _id === currentTask.projectId,
-        )?.projectName;
-        const savedProjectWithLoggedHours = projectsWithLoggedHoursById[currentTask.projectId];
-
-      projectsWithLoggedHoursById[currentTask.projectId] = savedProjectWithLoggedHours
-        ? savedProjectWithLoggedHours + hoursLogged
-        : hoursLogged;
-
-      if (projectsWithLoggedHoursLegend[currentTask.projectId]) {
-        projectsWithLoggedHoursLegend[currentTask.projectId][1] += getRounded(hoursLogged);
-      } else {
-        projectsWithLoggedHoursLegend[currentTask.projectId] = [
-          currentProjectName,
-          getRounded(hoursLogged),
-        ];
-      }
+  // Create a mapping of task IDs to task names
+  const taskNameMapping = {};
+  userTask.forEach(task => {
+    taskNameMapping[task._id] = task.taskName;
+    if (task.projectId && task.projectName) {
+      projectNameMapping[task.projectId] = task.projectName;
     }
   });
 
-  const displayedTasksCount = Math.max(4, Object.keys(projectsWithLoggedHoursById).length);
+  // Only count tangible hours for the pie chart
+  if (Array.isArray(timeEntries.period)) {
+    timeEntries.period.forEach((entry) => {
+      // Skip non-tangible entries or entries without a project
+      if (!entry.isTangible || !entry.projectId) {
+        return;
+      }
 
-    // create minimized chart
-    tasksWithLoggedHours
-      .slice(0, displayedTasksCount)
-      .forEach(({ _id, hoursLogged, taskName }) => {
+      const { taskId, projectId, hours = 0, minutes = 0, projectName, taskName } = entry;
+      
+      // Convert hours and minutes to total hours
+      const totalHours = Number(hours) + (Number(minutes) / 60);
+      
+      const taskKey = (() => {
+        if (!taskId) return null;
+        return typeof taskId === 'object' ? taskId._id : taskId;
+      })();
+
+      const projectKey = (() => {
+        if (!projectId) return null;
+        return typeof projectId === 'object' ? projectId._id : projectId;
+      })();
+
+      // Only accumulate hours for tasks that have a valid project
+      if (taskKey && projectKey) {
+        tasksWithLoggedHoursById[taskKey] = 
+          (tasksWithLoggedHoursById[taskKey] || 0) + totalHours;
+        
+        // Store task name if available
+        if (taskName) {
+          taskNameMapping[taskKey] = taskName;
+        }
+      }
+
+      // Store project name if available
+      if (projectKey && projectName) {
+        projectNameMapping[projectKey] = projectName;
+      }
+      
+      // Accumulate tangible project hours 
+      if (projectKey) {
+        projectsWithLoggedHoursById[projectKey] = 
+          (projectsWithLoggedHoursById[projectKey] || 0) + totalHours;
+      }
+    });
+  }
+
+  // Build the projects legend with proper names
+  Object.entries(projectsWithLoggedHoursById).forEach(
+    ([projectId, totalHours]) => {
+      // Try to get project name from multiple sources
+      const projectName = 
+        projectNameMapping[projectId] || // From our mapping
+        allProjects?.projects?.find(p => p._id === projectId)?.projectName || // From allProjects
+        'Untitled Project'; 
+
+      projectsWithLoggedHoursLegend[projectId] = [
+        projectName,
+        getRounded(totalHours),
+      ];
+    },
+  );
+
+  // Combine projects with the same name (handle duplicates)
+  const combinedProjects = {};
+  Object.entries(projectsWithLoggedHoursLegend).forEach(([, [name, hours]]) => {
+    if (!combinedProjects[name]) {
+      combinedProjects[name] = hours;
+    } else {
+      combinedProjects[name] += hours;
+    }
+  });
+
+  // Rebuild projectsWithLoggedHoursById and legend with combined values
+  const newProjectsWithLoggedHoursById = {};
+  const newProjectsWithLoggedHoursLegend = {};
+  
+  Object.entries(combinedProjects).forEach(([name, hours]) => {
+    const id = `combined_${name.replace(/\s+/g, '_')}`;
+    newProjectsWithLoggedHoursById[id] = hours;
+    newProjectsWithLoggedHoursLegend[id] = [name, getRounded(hours)];
+  });
+
+  // Build a consistent array of tasks (with total hours) we can sort, slice, etc.
+  const tasksWithLoggedHours = Object.entries(tasksWithLoggedHoursById).map(
+    ([taskId, totalHours]) => {
+      // Look up task name from our mapping or userTask array
+      const taskName = taskNameMapping[taskId] || 
+                      userTask.find(t => t._id === taskId)?.taskName || 
+                      'Untitled Task';
+      
+      return {
+        _id: taskId,
+        hoursLogged: totalHours,
+        taskName,
+        projectId: userTask.find(t => t._id === taskId)?.projectId,
+      };
+    },
+  );
+
+  // Sort descending by hours
+  tasksWithLoggedHours.sort((a, b) => b.hoursLogged - a.hoursLogged);
+
+  // Build tasks legend from tasksWithLoggedHours
+  tasksWithLoggedHours.forEach(({ _id, hoursLogged, taskName }) => {
+    tasksLegend[_id] = [taskName, getRounded(hoursLogged)];
+  });
+
+  // Decide how many tasks we want to display before grouping them as "Other Tasks"
+  const displayedTasksCount = Math.max(
+    4,
+    Object.keys(newProjectsWithLoggedHoursById).length,
+  );
+
+  // Minimal chart data
+  const displayedTasksWithLoggedHoursById = {};
+  const displayedTasksLegend = {};
+
+  // Take the top (displayedTasksCount) tasks
+  tasksWithLoggedHours.slice(0, displayedTasksCount).forEach(task => {
+    displayedTasksWithLoggedHoursById[task._id] = task.hoursLogged;
+    displayedTasksLegend[task._id] = [
+      task.taskName,
+      getRounded(task.hoursLogged),
+    ];
+  });
+
+  // If there are more tasks than displayedTasksCount, handle "other tasks" logic
+  if (tasksWithLoggedHours.length > displayedTasksCount) {
+    if (tasksWithLoggedHours.length === displayedTasksCount + 1) {
+      const remainder = tasksWithLoggedHours.slice(displayedTasksCount);
+      remainder.forEach(({ _id, hoursLogged, taskName }) => {
         displayedTasksWithLoggedHoursById[_id] = hoursLogged;
         displayedTasksLegend[_id] = [taskName, getRounded(hoursLogged)];
       });
-
-      
-if(tasksWithLoggedHours.length > displayedTasksCount){
-  // if the number of tasks with hours logged is greater than 4, these tasks should still be accounted for in the total hours calculation on the minized chart
-  if(tasksWithLoggedHours.length === displayedTasksCount + 1){
-    // edge case for when the number of tasks is exactly 5. The fifth task should be added to the chart and the legend
-    const remainder = tasksWithLoggedHours.slice(displayedTasksCount)
-    remainder.forEach(({ _id, hoursLogged, taskName }) => {
-      displayedTasksWithLoggedHoursById[_id] = hoursLogged;
-      displayedTasksLegend[_id] = [taskName, getRounded(hoursLogged)];
-    });
-  }else{
-    // when the number of tasks is greater than 5, the hours get summed up and added to the chart as "Other Tasks"
-    const totalOtherHours = tasksWithLoggedHours.slice(displayedTasksCount).reduce((acc, val)=> acc + val.hoursLogged, 0)  
-    const numberOtherTasks = tasksWithLoggedHours.length - displayedTasksCount; 
-    displayedTasksWithLoggedHoursById.otherTasksTotalHours = totalOtherHours;
-    displayedTasksLegend.otherTasksTotalHours = [`${numberOtherTasks} other tasks`, totalOtherHours]
+    } else {
+      const remainder = tasksWithLoggedHours.slice(displayedTasksCount);
+      const totalOtherHours = remainder.reduce(
+        (acc, val) => acc + val.hoursLogged,
+        0,
+      );
+      const numberOtherTasks = remainder.length;
+      displayedTasksWithLoggedHoursById.otherTasksTotalHours = totalOtherHours;
+      displayedTasksLegend.otherTasksTotalHours = [
+        `${numberOtherTasks} other tasks`,
+        getRounded(totalOtherHours),
+      ];
+    }
   }
-  }
-  
-
 
   return {
     tasksWithLoggedHoursById,
-    projectsWithLoggedHoursById,
+    projectsWithLoggedHoursById: newProjectsWithLoggedHoursById,
     tasksLegend,
-    projectsWithLoggedHoursLegend,
+    projectsWithLoggedHoursLegend: newProjectsWithLoggedHoursLegend,
     showTasksPieChart: Object.keys(tasksWithLoggedHoursById).length > 0,
-    showProjectsPieChart: Object.keys(projectsWithLoggedHoursById).length > 0,
+    showProjectsPieChart: Object.keys(newProjectsWithLoggedHoursById).length > 0,
     displayedTasksWithLoggedHoursById,
     displayedTasksLegend,
     showViewAllTasksButton:

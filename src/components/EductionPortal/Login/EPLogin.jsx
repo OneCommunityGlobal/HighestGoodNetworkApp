@@ -91,6 +91,7 @@ function EPLogin(props) {
       <h2>Log In To Good Education Portal</h2>
       <Form onSubmit={handleSubmit}>
         <FormText>Enter your current user credentials to access the Good Education Portal</FormText>
+        <p>Note: You must use your Production/Main credentials for this login.</p>
         <FormGroup>
           <Label for="email">Email</Label>
           <Input

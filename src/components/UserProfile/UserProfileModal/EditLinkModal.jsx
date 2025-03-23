@@ -167,6 +167,24 @@ const EditLinkModal = props => {
     isDifferentMediaUrl();
   }, [mediaFolderLink.Link, userProfile.mediaUrl]);
 
+  useEffect(() => {
+    if (userProfile.adminLinks) {
+      setGoogleLink(
+        userProfile.adminLinks.find(link => link.Name === 'Google Doc')
+        || initialAdminLinkState[0],
+      );
+      setMediaFolderLink(
+        userProfile.adminLinks.find(link => link.Name === 'Media Folder')
+        || initialAdminLinkState[1],
+      );
+      setAdminLinks(
+        userProfile.adminLinks
+          .filter(link => link.Name !== 'Google Doc')
+          .filter(link => link.Name !== 'Media Folder'),
+      );
+    }
+  }, [userProfile.adminLinks]);
+
   return (
     <React.Fragment>
       <Modal isOpen={isOpen} toggle={closeModal} className={darkMode ? 'text-light dark-mode' : ''}>

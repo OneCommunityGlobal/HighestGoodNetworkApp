@@ -52,17 +52,12 @@ function QuickSetupModal(props) {
     }
   };
 
-  useEffect(()=>{
-    let teamCodes = [];
-    if(stateTeamCodes.length) {
-      teamCodes = [...stateTeamCodes];
-    }else if (props.teamsData?.allTeams) {
-      if( props.teamsData?.allTeamCode?.distinctTeamCodes ) {
-        teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
-      }
+  useEffect(() => {
+    if (props.teamsData && props.teamsData.allTeamCode) {
+      const teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+      setQSTTeamCodes(teamCodes);
     }
-    setQSTTeamCodes(teamCodes);
-  },[stateTeamCodes.length])
+  }, [stateTeamCodes, props.teamsData]);
 
   return (
     <div>

@@ -1,18 +1,19 @@
 import { useState, useEffect } from 'react';
 import { ENDPOINTS } from 'utils/URL';
 import axios from 'axios';
+import Loading from 'components/common/Loading';
 import TeamStatsBarChart from './TeamStatsBarChart';
 import './TeamStats.css';
 
-const endDate = '2023-12-02';
 const activeMembersMinimumDropDownOptions = [2, 3, 4, 5, 6, 7, 8, 9, 10, 15, 20, 25, 30];
 
-function TeamStats({ usersInTeamStats }) {
+function TeamStats({ isLoading, usersInTeamStats, endDate }) {
   const [activeMembersMinimum, setActiveMembersMinimum] = useState(
     activeMembersMinimumDropDownOptions[0],
   );
   const [teamsWithActiveMembers, setTeamsWithActiveMembers] = useState(null);
   const [teamsStatsFetchingError, setTeamsStatsFetchingError] = useState(null);
+
   useEffect(() => {
     const fetchTeamsData = async () => {
       try {
@@ -25,12 +26,17 @@ function TeamStats({ usersInTeamStats }) {
         setTeamsStatsFetchingError(error);
       }
     };
-
     fetchTeamsData();
   }, [activeMembersMinimum]);
 
-  if (!usersInTeamStats) {
-    return <div>Team stats data is not available</div>;
+  if (isLoading) {
+    return (
+      <div className="d-flex justify-content-center align-items-center">
+        <div className="w-100vh">
+          <Loading />
+        </div>
+      </div>
+    );
   }
 
   if (teamsStatsFetchingError) {
@@ -57,7 +63,6 @@ function TeamStats({ usersInTeamStats }) {
   function handleActiveMembersMinimumChange(event) {
     const selectedActiveMembersMinimum = event.target.value;
     if (!selectedActiveMembersMinimum) return;
-
     setActiveMembersMinimum(selectedActiveMembersMinimum);
   }
 
