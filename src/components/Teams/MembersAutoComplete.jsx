@@ -1,18 +1,17 @@
 import { useState } from 'react';
 import { Dropdown, Input } from 'reactstrap';
-import { searchWithAccent } from 'utils/search';
 import { useSelector } from 'react-redux';
 
 export function MemberAutoComplete(props) {
   const [isOpen, toggle] = useState(false);
   const darkMode = useSelector(state => state.theme.darkMode);
 
-  const dropdownStyle = {
-    marginTop: '0px',
-    width: '100%',
-    maxHeight: '350px', // Adjust this value as needed
-    overflowY: 'auto',
-  };
+  // const dropdownStyle = {
+  //   marginTop: '0px',
+  //   width: '100%',
+  //   maxHeight: '350px', // Adjust this value as needed
+  //   overflowY: 'auto',
+  // };
 
   const validation = props.userProfileData?.userProfiles || props.userProfileData;
 

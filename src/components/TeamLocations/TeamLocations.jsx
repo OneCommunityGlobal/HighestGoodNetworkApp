@@ -285,7 +285,9 @@ function TeamLocations() {
           <div className="d-flex align-center">
             <div className="d-flex align-center pr-5 flex-column flex-md-row  position-relative">
               <div className="input-group-prepend">
-                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>{SEARCH}</span>
+                <span className={`input-group-text ${darkMode ? 'bg-yinmn-blue text-light' : ''}`}>
+                  {SEARCH}
+                </span>
               </div>
               <div>
                 <input
