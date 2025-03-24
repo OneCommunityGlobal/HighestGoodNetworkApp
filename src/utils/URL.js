@@ -1,5 +1,5 @@
 const APIEndpoint =
-  process.env.REACT_APP_APIENDPOINT || 'https://hgn-rest-beta.azurewebsites.net/api';
+  process.env.REACT_APP_APIENDPOINT || 'https://backend.highestgood.com/api';
 
 export const ENDPOINTS = {
   APIEndpoint: () => APIEndpoint,
