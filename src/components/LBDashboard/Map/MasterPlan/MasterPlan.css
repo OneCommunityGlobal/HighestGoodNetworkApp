@@ -99,6 +99,7 @@
   border-radius: 50%;
   position: absolute;
   cursor: pointer;
+  opacity: 0;
   width: 3.5%;
   height: 4%;
   z-index: 10;
