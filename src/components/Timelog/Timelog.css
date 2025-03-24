@@ -258,3 +258,24 @@
     margin-left: 5px;
   }
 }
+
+/* Ensure the button content (text + icon) is aligned horizontally */
+.followup-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  /* Maintain spacing between text and icon */
+}
+
+/* Adjust the icon position to ensure it stays on the right */
+.followup-tooltip-button {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Keep the icon aligned within the button */
+.fa-info-circle {
+  font-size: 14px;
+  margin-left: 5px;
+  /* Add spacing between text and icon */
+}

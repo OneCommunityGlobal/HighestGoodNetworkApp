@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { Button, Modal, ModalHeader, ModalBody, ModalFooter, Input, Alert } from 'reactstrap';
 import { boxStyle, boxStyleDark } from 'styles';
-import '../Header/DarkMode.css'
+import '../Header/DarkMode.css';
 
 export const CreateNewTeamPopup = React.memo(props => {
   const darkMode = useSelector(state => state.theme.darkMode);
   const allTeams = useSelector(state => state.allTeamsData.allTeams);
-  
+
   const [newTeam, setNewName] = useState('');
 
   const closePopup = () => {
@@ -23,7 +23,7 @@ export const CreateNewTeamPopup = React.memo(props => {
     setTeamExists(false);
   }, [props.open, props.teamName]);
 
-  const handleTeamNameChange = (e) => {
+  const handleTeamNameChange = e => {
     const teamName = e.target.value;
     setNewName(teamName);
     onValidation(true);
@@ -41,9 +41,14 @@ export const CreateNewTeamPopup = React.memo(props => {
       onValidation(false);
     }
   };
-  
+
   return (
-    <Modal autoFocus={false} isOpen={props.open} toggle={closePopup} className={darkMode ? 'dark-mode text-light' : ''}>
+    <Modal
+      autoFocus={false}
+      isOpen={props.open}
+      toggle={closePopup}
+      className={darkMode ? 'dark-mode text-light' : ''}
+    >
       <ModalHeader toggle={closePopup} className={darkMode ? 'bg-space-cadet' : ''}>
         {props.isEdit ? 'Update Team Name' : 'Create New Team'}
       </ModalHeader>
@@ -59,17 +64,18 @@ export const CreateNewTeamPopup = React.memo(props => {
           required
         />
         {!isValidTeam && <Alert color="danger">Please enter a team name.</Alert>}
-        {teamExists && !props.isEdit && <Alert color="warning">That’s a great team name! So great that someone else already created that team. Please choose a new name or use the existing team.</Alert>}
+        {teamExists && !props.isEdit && (
+          <Alert color="warning">
+            That’s a great team name! So great that someone else already created that team. Please
+            choose a new name or use the existing team.
+          </Alert>
+        )}
       </ModalBody>
       <ModalFooter className={darkMode ? 'bg-yinmn-blue' : ''}>
         <Button color="secondary" onClick={closePopup} style={darkMode ? boxStyleDark : boxStyle}>
           Close
         </Button>
-        <Button
-          color="primary"
-          onClick={handleSubmit}
-          style={darkMode ? boxStyleDark : boxStyle}
-        >
+        <Button color="primary" onClick={handleSubmit} style={darkMode ? boxStyleDark : boxStyle}>
           OK
         </Button>
       </ModalFooter>

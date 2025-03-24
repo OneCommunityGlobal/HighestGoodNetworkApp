@@ -70,26 +70,6 @@ function TimeEntryForm(props) {
 
   const viewingUser = JSON.parse(sessionStorage.getItem('viewingUser') ?? '{}');
 
-  const TINY_MCE_INIT_OPTIONS = {
-    license_key: 'gpl',
-    menubar: false,
-    placeholder: 'Description (10-word minimum) and reference link',
-    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
-    toolbar:
-      // eslint-disable-next-line no-multi-str
-      'bold italic underline link removeformat | bullist numlist outdent indent |\
-                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
-                      subscript superscript charmap  | help',
-    branding: false,
-    min_height: 180,
-    max_height: 300,
-    autoresize_bottom_margin: 1,
-    content_style: 'body { cursor: text !important; }',
-    images_upload_handler: customImageUploadHandler,
-    skin: darkMode ? 'oxide-dark' : 'oxide',
-    content_css: darkMode ? 'dark' : 'default',
-  };
-
   const initialFormValues = {
     dateOfWork: moment()
       .tz('America/Los_Angeles')
@@ -104,6 +84,27 @@ function TimeEntryForm(props) {
     isTangible: from === 'Timer',
     entryType: 'default',
     ...data,
+  };
+
+  const TINY_MCE_INIT_OPTIONS = {
+    license_key: 'gpl',
+    menubar: false,
+    placeholder: 'Description (10-word minimum) and reference link',
+    plugins: 'advlist autolink autoresize lists link charmap table paste help wordcount',
+    toolbar:
+      // eslint-disable-next-line no-multi-str
+      'bold italic underline link removeformat | bullist numlist outdent indent |\
+                      styleselect fontsizeselect | table| strikethrough forecolor backcolor |\
+                      subscript superscript charmap  | help',
+    branding: false,
+    toolbar_mode: 'sliding',
+    min_height: 180,
+    max_height: 300,
+    autoresize_bottom_margin: 1,
+    content_style: 'body { cursor: text !important; }',
+    images_upload_handler: customImageUploadHandler,
+    skin: darkMode ? 'oxide-dark' : 'oxide',
+    content_css: darkMode ? 'dark' : 'default',
   };
 
   const timeEntryUserId = from === 'Timer' ? viewingUser.userId ?? authUser.userid : data.personId;

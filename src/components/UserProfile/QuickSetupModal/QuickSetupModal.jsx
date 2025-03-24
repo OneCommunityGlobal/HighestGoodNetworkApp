@@ -12,7 +12,6 @@ import { getAllTitle } from '../../../actions/title';
 import './QuickSetupModal.css';
 import '../../Header/DarkMode.css';
 
-
 function QuickSetupModal(props) {
   const darkMode = useSelector(state => state.theme.darkMode);
   const canEditTitle = props.hasPermission('editTitle');
@@ -29,6 +28,9 @@ function QuickSetupModal(props) {
   const [adminLinks, setAdminLinks] = useState([]);
   const [editModal, showEditModal] = useState(false);
   const [refreshTrigger, setRefreshTrigger] = useState(0);
+  const [QSTTeamCodes, setQSTTeamCodes] = useState([])
+
+  const stateTeamCodes = useSelector(state => state.teamCodes?.teamCodes || []);
 
   useEffect(() => {
     getAllTitle()
@@ -49,7 +51,14 @@ function QuickSetupModal(props) {
       console.error(err);
     }
   };
-  
+
+  useEffect(() => {
+    if (props.teamsData && props.teamsData.allTeamCode) {
+      const teamCodes = props.teamsData.allTeamCode.distinctTeamCodes.map(value => ({ value }));
+      setQSTTeamCodes(teamCodes);
+    }
+  }, [stateTeamCodes, props.teamsData]);
+
   return (
     <div className={`container pt-3 ${darkMode ? 'bg-yinmn-blue text-light border-0' : ''}`}>
       {canAssignTitle || canEditTitle || canAddTitle ? (
@@ -63,6 +72,7 @@ function QuickSetupModal(props) {
           editMode={editMode}
           assignMode={canAssignTitle}
           setShowAddTitle={setShowAddTitle}
+          teamCodes={QSTTeamCodes}
         />
       ) : (
         ''
@@ -116,26 +126,13 @@ function QuickSetupModal(props) {
         ) : (
           ''
         )}
-        <EditTitlesModal 
+        <EditTitlesModal
           isOpen={editModal}
           toggle={() => showEditModal(false)}
           titles={titles}
           refreshModalTitles={refreshModalTitles}
           darkMode={darkMode}
         />
-      </div>
-      <div className="col text-center mt-3">
-        {canAssignTitle ? (
-          <SaveButton
-            handleSubmit={props.handleSubmit}
-            userProfile={props.userProfile}
-            disabled={titleOnSet}
-            setSaved={() => props.setSaved(true)}
-            darkMode={darkMode}
-          />
-        ) : (
-          ''
-        )}
       </div>
       {showAddTitle || editMode ? (
         <AddNewTitleModal
@@ -148,6 +145,7 @@ function QuickSetupModal(props) {
           setShowMessage={setShowMessage}
           editMode={editMode}
           title={curtitle}
+          QSTTeamCodes={QSTTeamCodes}
         />
       ) : (
         ''

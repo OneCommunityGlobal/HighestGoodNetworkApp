@@ -1,22 +1,28 @@
-import React from 'react';
-import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 import hasPermission from 'utils/permissions';
 import { boxStyle, boxStyleDark } from 'styles';
 import { connect } from 'react-redux';
+import { useEffect } from 'react';
+import { useRef } from 'react';
+import { SEARCH, CREATE_NEW_TEAM } from '../../languages/en/ui';
 
 /**
  * The search panel stateless component for  Teams grid
  */
-export const TeamTablesearchPanel = props => {
-  const {darkMode} = props;
+export function TeamTablesearchPanel(props) {
+  const { darkMode } = props;
   const canPostTeam = props.hasPermission('postTeam');
+  const inputRef = useRef(null);
+
+  useEffect(() => {
+    inputRef.current.focus(); // Programmatically focus the input
+  }, []);
   return (
     <div className="input-group" id="new_team">
       {canPostTeam && (
         <button
           type="button"
           className="btn btn-info"
-          onClick={e => {
+          onClick={() => {
             props.onCreateNewTeamClick();
           }}
           style={darkMode ? boxStyleDark : boxStyle}
@@ -29,7 +35,7 @@ export const TeamTablesearchPanel = props => {
       </div>
 
       <input
-        autoFocus
+        ref={inputRef}
         type="text"
         className={`form-control ${darkMode ? 'bg-darkmode-liblack text-light' : ''}`}
         aria-label="Search"
@@ -41,6 +47,6 @@ export const TeamTablesearchPanel = props => {
       />
     </div>
   );
-};
+}
 
 export default connect(null, { hasPermission })(TeamTablesearchPanel);

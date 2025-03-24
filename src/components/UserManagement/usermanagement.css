@@ -16,7 +16,6 @@ thead {
 #user-management-table {
   width: calc(100vw - 45px);
 }
-
 #usermanagement_order {
   width: 5px;
 }
@@ -35,6 +34,24 @@ thead {
 
 .usermanagement__tr {
   text-align: center;
+}
+
+#usermanagement_title>div {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#user_title>div {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .usermanagement_overview--top {
@@ -86,17 +103,34 @@ thead {
 
 .email_cell {
   position: relative;
-
 }
 
-#usermanagement_role, 
-#user_role, 
+.email_cell a:hover{
+  text-decoration: none;
+}
+.title_cell {
+  width: 180px;
+  min-width: 180px;
+  max-width: 180px;
+}
+
+.fixed-width-container input {
+  width: 100%;
+  max-width: 180px;
+}
+
+#usermanagement_role,
+#user_role,
 td#usermanagement_role {
   width: 100px;
-  max-width: 180px; 
+  max-width: 180px;
   overflow: hidden;
-  text-overflow: ellipsis; 
-  white-space: nowrap; 
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+#user_role{
+  max-width: initial;
 }
 
 .copy_icon {
@@ -346,7 +380,7 @@ tr:hover {
   margin: auto;
 }
 
-td{
+td {
   text-align: center;
 }
 
@@ -358,4 +392,21 @@ td{
 
 .custom-toast-progress {
   background-color: white;
+}
+
+
+.dark-usermanagement-data{
+  background-color: #3a506b;
+}
+
+.dark-usermanagement-data:hover{
+  background-color: #111831;
+}
+
+.light-usermanagement-data{
+  background-color: white;
+}
+
+.light-usermanagement-data:hover{
+  background-color: #f0f8ff;
 }
