@@ -301,7 +301,7 @@ function Announcements({ title, email }) {
   const constructEmailContent = () => {
     // Start of email container
     let content = `
-      <div style="max-width: 600px; margin: auto; font-family: Arial, sans-serif; line-height: 1.6; font-size: 14px;">
+      <div style="max-width: 600px; width: 100%; margin: 0 auto; font-family: Arial, sans-serif; line-height: 1.6; font-size: 14px;">
     `;
 
     // Default Header (Logo)
