@@ -902,7 +902,7 @@ function Timelog(props) {
                             From
                           </Label>
                           <Input
-                            className="responsive-font-size"
+                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
                             type="date"
                             name="fromDate"
                             id="fromDate"
@@ -918,7 +918,7 @@ function Timelog(props) {
                             To
                           </Label>
                           <Input
-                            className="responsive-font-size"
+                            className={`responsive-font-size ${darkMode ? "bg-darkmode-liblack text-light border-0 calendar-icon-dark" : ''}`}
                             type="date"
                             name="toDate"
                             id="toDate"
