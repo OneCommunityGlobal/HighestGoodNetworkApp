@@ -88,9 +88,14 @@ export const ENDPOINTS = {
   DELETE_WARNINGS_BY_USER_ID: userId => `${APIEndpoint}/warnings/${userId}`,
   AUTHORIZE_WEEKLY_SUMMARY_REPORTS: () =>
     `${APIEndpoint}/userProfile/authorizeUser/weeeklySummaries`,
-  TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) =>
-    `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`,
-  HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
+    TOTAL_ORG_SUMMARY: (startDate, endDate, comparisonStartDate, comparisonEndDate) => {
+      let url = `${APIEndpoint}/reports/volunteerstats?startDate=${startDate}&endDate=${endDate}`;
+      if (comparisonStartDate && comparisonEndDate) {
+        url += `&comparisonStartDate=${comparisonStartDate}&comparisonEndDate=${comparisonEndDate}`;
+      }
+      return url;
+    },
+    HOURS_TOTAL_ORG_SUMMARY: (startDate, endDate) =>
     `${APIEndpoint}/reports/overviewsummaries/taskandprojectstats?startDate=${startDate}&endDate=${endDate}`,
   VOLUNTEER_ROLES_TEAM_STATS: (endDate, activeMembersMinimum) =>
     `${APIEndpoint}/reports/teams?endDate=${endDate}&activeMembersMinimum=${activeMembersMinimum}`,

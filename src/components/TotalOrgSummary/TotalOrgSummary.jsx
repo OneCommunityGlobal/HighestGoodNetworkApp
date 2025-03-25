@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react';
 import { Alert, Col, Container, Row } from 'reactstrap';
 import 'moment-timezone';
 
+
 import hasPermission from 'utils/permissions';
+import GlobalVolunteerMap from '../GlobalVolunteerMap';
 
 // actions
 import { getTotalOrgSummary } from 'actions/totalOrgSummary';
@@ -17,6 +19,7 @@ import '../Header/DarkMode.css';
 import './TotalOrgSummary.css';
 
 // components
+
 import VolunteerHoursDistribution from './VolunteerHoursDistribution/VolunteerHoursDistribution';
 import AccordianWrapper from './AccordianWrapper/AccordianWrapper';
 import VolunteerStatus from './VolunteerStatus/VolunteerStatus';
@@ -281,7 +284,7 @@ function TotalOrgSummary(props) {
               <div className="chart-title">
                 <p>Global Volunteer Network: Uniting Communities Worldwide</p>
               </div>
-              In progress...
+              <GlobalVolunteerMap locations={volunteerStats?.userLocations || []} />
             </div>
           </Col>
           <Col lg={{ size: 6 }}>
