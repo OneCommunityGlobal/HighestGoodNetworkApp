@@ -237,10 +237,6 @@ export const ENDPOINTS = {
   BLUE_SQUARE_EMAIL_BCC: () => `${APIEndpoint}/AssignBlueSquareEmail`,
   DELETE_BLUE_SQUARE_EMAIL_BCC: id => `${APIEndpoint}/AssignBlueSquareEmail/${id}`,
 
-  HGN_FORM_GET_QUESTION: `${APIEndpoint}/questions`,
-  HGN_FORM_UPDATE_QUESTION: id => `${APIEndpoint}/questions/${id}`,
-  HGN_FORM_SUBMIT: `${APIEndpoint}/hgnform`,
-
   CREATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   UPDATE_JOB_FORM: `${APIEndpoint}/jobforms`,
   GET_JOB_FORM: formId => `${APIEndpoint}/jobforms/${formId}`,
