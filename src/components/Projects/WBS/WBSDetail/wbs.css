@@ -222,6 +222,18 @@
   }
 }
 
+@media (max-width: 400px) {
+  .add_new_task_form-input_area .row {
+    flex-direction: column;
+  }
+
+  .add_new_task_form-input_area .col-6 {
+    width: 100%;
+    padding-left: 0;
+    margin-bottom: 10px;
+  }
+}
+
 
 .add_new_task_form-group{
   width: 100%;
