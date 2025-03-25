@@ -42,6 +42,8 @@ import Collaboration from './components/Collaboration';
 import LBRegister from './components/LBDashboard/Auth/Register';
 import LBLogin from './components/LBDashboard/Auth/Login';
 import ListOverview from './components/LBDashboard/ListOverview/ListOverview';
+import WishList from './components/LBDashboard/WishList/WishList';
+import WishListItem from './components/LBDashboard/WishList/ItemOverview';
 
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
@@ -158,6 +160,28 @@ export default (
           <AutoUpdate />
           <ToastContainer />
           <ListOverview />
+        </>
+      )}
+    /> 
+    <Route
+      exact
+      path="/lbdashboard/wishlists"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <WishList />
+        </>
+      )}
+    />
+    <Route
+      exact
+      path="/lbdashboard/wishlist/:id"
+      render={() => (
+        <>
+          <AutoUpdate />
+          <ToastContainer />
+          <WishListItem />
         </>
       )}
     />
