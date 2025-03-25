@@ -51,6 +51,11 @@ import NotFoundPage from './components/NotFound/NotFoundPage';
 import { EmailSender } from './components/common/EmailSender/EmailSender';
 import Collaboration from './components/Collaboration';
 
+// LB Dashboard
+import LBProtectedRoute from './components/common/LBDashboard/LBProtectedRoute';
+import LBLogin from './components/LBDashboard/Login';
+import LBDashboard from './components/LBDashboard';
+
 // BM Dashboard
 import BMProtectedRoute from './components/common/BMDashboard/BMProtectedRoute';
 import BMDashboard from './components/BMDashboard';
@@ -434,6 +439,12 @@ export default (
         <CPProtectedRoute path="/communityportal" exact component={CPDashboard} />
         <Route path="/communityportal/login" component={CPLogin} />
         <CPProtectedRoute path="/communityportal/Activities" exact component={ActivityList} />
+
+
+        {/* Listing and Bidding Routes */}
+        <LBProtectedRoute path="/lbdashboard" exact component={LBDashboard} />
+        <Route path="/lbdashboard/login" component={LBLogin} />
+  
 
         {/* Good Education  Portal Routes */}
         <EPProtectedRoute path="/educationportal" exact component={EPDashboard} />
