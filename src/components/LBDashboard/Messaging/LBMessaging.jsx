@@ -7,8 +7,11 @@ import { getUserProfileBasicInfo } from 'actions/userManagement';
 import { useEffect } from 'react';
 import { fetchMessages, sendMessage } from 'actions/lbdashboard/messagingActions';
 import { faPaperPlane } from '@fortawesome/free-solid-svg-icons';
+import { initSocket, getSocket } from "../../../utils/socket";
+import config from '../../../config.json';
 
 import React from 'react';
+import { useRef } from 'react';
 
 export default function LBMessaging() {
 
@@ -19,6 +22,35 @@ export default function LBMessaging() {
   const users=useSelector(state=>state.allUserProfilesBasicInfo)
   const auth=useSelector(state=>state.auth.user);
   const {messages}=useSelector(state=>state.lbmessaging);
+  const messageEndRef = useRef(null);
+
+  const scrollToBottom = () => {
+    messageEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const { tokenKey } = config;
+    const token = localStorage.getItem(tokenKey); // your login JWT
+    const socket = initSocket(token);
+
+    socket.onmessage = (event) => {
+      const data = JSON.parse(event.data);
+      if (data.action === "RECEIVE_MESSAGE") {
+        dispatch({ type: "SEND_MESSAGE_END", payload: data.payload });
+      }
+    };
+
+    socket.onclose = (event) => {
+      dispatch(fetchMessages(auth.userid)); // fallback
+      scrollToBottom()
+    };
+
+    return () => {
+      socket.close();
+      // dispatch(fetchMessages(auth.userid));
+      // scrollToBottom()
+    };
+  }, []);
 
   useEffect(()=>{
     if(users.userProfilesBasicInfo.length===0){
@@ -30,11 +62,21 @@ export default function LBMessaging() {
     if(auth && auth.userid && messages.length===0){
       dispatch(fetchMessages(auth.userid));   
     }
-  },[dispatch,messages]);
+  },[dispatch,auth.userid]);
+
   const updateSelection = (user) =>{
     updateSelectedUser(user)
   }
   
+  function toggleContacts() {
+    const contacts = document.querySelector('.lb-messaging-contacts');
+    if (contacts.style.display === 'block') {
+      contacts.style.display = 'none';
+    } else {
+      contacts.style.display = 'block';
+    }
+  }
+
   const getUniqueUsersFromMessages = (messages, loggedInUserId) => {
     const uniqueUsersMap = new Map();
     messages.forEach((msg) => {
@@ -99,13 +141,22 @@ export default function LBMessaging() {
     // Now get the input inside that footer
     const input = footer.getElementsByTagName('input')[0]; // or use querySelector('input')
     const message = input.value.trim();
-    const data={
-      "sender":auth.userid,
-      "receiver":selectedUser.id,
-      "content":message
-    }
+    // const data={
+    //   "sender":auth.userid,
+    //   "receiver":selectedUser.id,
+    //   "content":message
+    // }
     if(selectedUser.id && auth.userid && message){
-      dispatch(sendMessage(data))
+      const socket = getSocket();
+      if (!socket || socket.readyState !== 1) return;
+
+      const messageData = {
+        action: "SEND_MESSAGE",
+        receiver: selectedUser.id,
+        content: message,
+      };
+      socket.send(JSON.stringify(messageData));
+      input.value="";
     }
   }
 
@@ -113,7 +164,7 @@ export default function LBMessaging() {
     let lastDate = null;
   
     return (
-      <div className="message-list">
+      <div className="message-list" >
         {conversation.map((msg, idx) => {
           const isSender = msg.sender._id === loggedInUserId || msg.sender === loggedInUserId;
           const msgDate = new Date(msg.timestamp).toDateString();
@@ -127,7 +178,7 @@ export default function LBMessaging() {
                   {formatDateLabel(msg.timestamp)}
                 </div>
               )}
-              <div className={`chat-bubble ${isSender ? 'sent' : 'received'}`}>
+              <div className={`chat-bubble ${isSender ? 'sent' : 'received'}`} >
                 <div className="chat-content">{msg.content}</div>
                 <div className="chat-meta">
                   <span className="timestamp">{formatTime(msg.timestamp)}</span>
@@ -141,6 +192,7 @@ export default function LBMessaging() {
             </React.Fragment>
           );
         })}
+        {/* <div ref={messageEndRef} /> */}
       </div>
     );
   };
@@ -148,11 +200,14 @@ export default function LBMessaging() {
   
   return (
     users.userProfilesBasicInfo.length!==0 && messages.length!==0?<div className="lb-messaging-container">
-      <div className='lb-messaging-body'>
         <div className='lb-messaging-header'>
+        {/* <div className="hamburger-icon" onClick={toggleContacts}>☰</div> */}
           <img src="/big-sign.png" alt="onecommunity-logo" />
         </div>
-        <div className='lb-messaging-navbar'></div>
+      <div className='lb-messaging-body'>
+        <div className='lb-messaging-navbar'>
+        <div className="hamburger-icon" onClick={toggleContacts}>☰</div>
+        </div>
         <div className='lb-messaging-content'>
           <div className='lb-messaging-contacts'>
             <div className='lb-messaging-contacts-header'>
@@ -163,7 +218,8 @@ export default function LBMessaging() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 />
-              {users.userProfilesBasicInfo?.length!==0?<FontAwesomeIcon icon={faUserCircle} size="2x" onClick={()=>updateSelectContact(prev=>!prev)}/>:<span></span>}
+              {users.userProfilesBasicInfo?.length!==0?<FontAwesomeIcon className={selectContact?'lb-messaging-contact-icon-select':'lb-messaging-contact-icon'} icon={faUserCircle} size="2x" onClick={()=>updateSelectContact(prev=>!prev)}/>:<span></span>}
+              <span className="contacts-close-button" onClick={toggleContacts}>✖</span>
             </div>
             <div className='lb-messaging-contacts-body'>
             {
@@ -201,11 +257,12 @@ export default function LBMessaging() {
               <img src={Object.keys(selectedUser).length==0? "":'/pfp-default-header.png'} alt=""/>
               {Object.keys(selectedUser).length==0? "": `${selectedUser.firstName} ${selectedUser.lastName}`}
             </div>
-            <div className='lb-messaging-message-window-body'>
-              {renderChatMessages(getMessagesBetweenUsers(messages,auth.userid,selectedUser.id), auth.userid)}
+            <div className='lb-messaging-message-window-body' >
+              {Object.keys(selectedUser).length==0?<span id="lb-messaging-window-nochat">Select a chat to get started</span>
+              :renderChatMessages(getMessagesBetweenUsers(messages,auth.userid,selectedUser.id), auth.userid)}
             </div>
             <div className='lb-messaing-message-window-footer'>
-              <input type="text" placeholder='Enter Message' />
+              <input type="text" placeholder='Type a message here .....' disabled={Object.keys(selectedUser).length==0? true:false}/>
               <FontAwesomeIcon icon={faPaperPlane} className='send-button' size='2x' onClick={sendMessageData}/>
             </div>
           </div>
