@@ -1,0 +1,259 @@
+/* Chart Title */
+.quantity-of-materials-used-chart-title {
+  font-size: medium;
+  font-weight: bold;
+  text-align: center;
+  color: var(--text-color);
+  margin-bottom: 5px;
+}
+
+/* Chart Container */
+.quantity-of-materials-used-chart-container {
+  width: 100%;
+  min-height: 250px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Dropdown Container - Stay in a row but stack when needed */
+div.weekly-project-summary-card.normal-card .dropdown-container {
+  display: flex !important;
+  justify-content: center !important;
+  align-items: center !important;
+  gap: 2px !important;
+  flex-wrap: nowrap !important;
+  width: 100% !important;
+  min-height: 15px !important;
+  font-size: 10px;
+  overflow: visible !important;
+  position: relative !important;
+  background-color: var(--card-bg);
+}
+
+/* Dropdown Item - Shrink as much as possible before stacking */
+div.weekly-project-summary-card.normal-card .dropdown-item {
+  flex: 1 1 auto !important;
+  min-width: 50px !important;
+  max-width: 120px !important;
+  font-size: 12px !important;
+  padding: 1px !important;
+  white-space: nowrap !important;
+  display: inline-block !important;
+  text-overflow: ellipsis !important;
+  position: relative !important;
+  z-index: 2 !important;
+}
+
+/* Ensure dropdowns are the same height */
+.quantity-of-materials-used-card .custom-select__control {
+  min-height: 25px !important;
+  font-size: 10px !important;
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+}
+/* Ensure selected dropdown option is highlighted */
+.quantity-of-materials-used-card .custom-select__option--is-selected {
+  background-color: var(--button-hover) !important;
+  color: var(--card-bg) !important;
+  font-weight: bold !important;
+}
+
+/* Restrict text display area inside dropdown so input stays visible */
+.quantity-of-materials-used-card .custom-select__value-container {
+  padding: 2px 15px 2px 5px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  overflow-x: auto !important; /* Enable horizontal scroll if text overflows */
+  flex-wrap: nowrap;
+  scrollbar-width: thin;
+  -ms-overflow-style: none;
+  position: relative;
+}
+
+.quantity-of-materials-used-card .multi-select .custom-select__value-container {
+  max-width: 75%;
+}
+
+/* Multi-Value (Tags) */
+.quantity-of-materials-used-card .custom-select__multi-value {
+  background-color: #e6f7ff;
+  border-radius: 2px;
+  margin: 1px 3px 1px 0;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  max-width: none;
+}
+
+/* Multi-Value Label */
+.quantity-of-materials-used-card .custom-select__multi-value__label {
+  font-size: 8px;
+  padding: 0 4px;
+  color: #0066cc;
+}
+
+/* Multi-Value Remove Button */
+.quantity-of-materials-used-card .custom-select__multi-value__remove {
+  padding: 0 3px;
+  font-size: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Dropdown Indicators */
+.quantity-of-materials-used-card .custom-select__indicators,
+.quantity-of-materials-used-card .custom-select__dropdown-indicator,
+.quantity-of-materials-used-card .custom-select__clear-indicator {
+  height: 15px;
+  width: 15px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px;
+  position: absolute;
+  right: 4px;
+  top: 50%;
+  transform: translateY(-50%);
+  background-color: white;
+  z-index: 3;
+  z-index: 5;
+}
+
+.quantity-of-material-used-date-picker-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 3px;
+  gap: 3px;
+  flex-wrap: wrap;
+}
+
+.quantity-of-material-used-custom-date-picker {
+  height: 25px;
+  font-size: 10px;
+  width: 125px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  text-align: center;
+  padding: 2px 6px;
+  background-color: white;
+  background-color: var(--card-bg);
+  color: var(--text-color);
+  transition: border-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+.quantity-of-materials-used-card .custom-select__single-value {
+  color: var(--text-color) !important;
+}
+
+/* Dropdown Menu (background and text color) */
+.quantity-of-materials-used-card .custom-select__menu {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  border: 1px solid #ccc;
+}
+
+/* Dropdown Options (List items) */
+.quantity-of-materials-used-card .custom-select__option {
+  background-color: var(--card-bg) !important;
+  color: var(--text-color) !important;
+  height: 25px !important;
+  line-height: 25px !important;
+  display: flex;
+  align-items: center;
+}
+
+/* Hover effect on dropdown options */
+.quantity-of-materials-used-card .custom-select__option--is-focused {
+  background-color: var(--button-hover) !important;
+  color: var(--card-bg) !important;
+}
+
+/* Placeholder text inside dropdown */
+.quantity-of-materials-used-card .custom-select__placeholder {
+  color: var(--text-color) !important;
+}
+
+/* Input text inside the dropdown */
+.quantity-of-materials-used-card .custom-select__input {
+  color: var(--text-color) !important;
+}
+
+.custom-legend-container {
+  display: flex;
+  justify-content: center; /* Center horizontally */
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 3px; /* Space from the x-axis */
+  font-size: 8px;
+  color: #555;
+  width: 100%;
+  text-align: center;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin: 0 3px; /* Avoids spacing issues */
+}
+
+.legend-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+/* Adjust Drop downs on medium size screens */
+@media (max-width: 900px) {
+  div.weekly-project-summary-card.normal-card .dropdown-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    gap: 5px !important;
+  }
+
+  div.weekly-project-summary-card.normal-card .dropdown-item {
+    width: 90% !important;
+    max-width: none !important;
+    font-size: 11px !important;
+  }
+}
+
+@media (max-width: 768px) {
+  div.weekly-project-summary-card.normal-card .dropdown-container {
+    gap: 1px !important;
+    flex-wrap: nowrap !important;
+  }
+
+  div.weekly-project-summary-card.normal-card .dropdown-item {
+    min-width: 50px !important;
+    max-width: 100px !important;
+    font-size: 11px !important;
+  }
+}
+
+/* Mobile screens - Stack dropdowns */
+@media (max-width: 480px) {
+  div.weekly-project-summary-card.normal-card .dropdown-container {
+    flex-direction: column !important;
+    align-items: center !important;
+    width: 100% !important;
+  }
+
+  div.weekly-project-summary-card.normal-card .dropdown-item {
+    width: 90% !important;
+    max-width: none !important;
+    font-size: 10px !important;
+  }
+
+  .quantity-of-materials-used-card .custom-select__menu {
+    max-width: 100% !important;
+    width: 90% !important;
+  }
+}
