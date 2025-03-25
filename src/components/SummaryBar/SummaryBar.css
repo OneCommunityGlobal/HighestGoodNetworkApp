@@ -168,6 +168,13 @@
   filter: alpha(opacity=40); /* msie */
 }
 
+/* Custom media query for screen widths between 1200px and 1330px */
+@media (min-width: 1200px) and (max-width: 1330px) {
+  .med_text_summary {
+    font-size: 0.8rem;
+  }
+}
+
 /* XLarge devices (landscape phones, 544px and down) */
 @media (max-width: 1200px) {
   .med_text_summary {
