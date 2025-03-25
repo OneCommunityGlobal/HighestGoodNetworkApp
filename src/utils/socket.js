@@ -12,8 +12,8 @@ export const initSocket = (token) => {
     // console.log("❌ WebSocket disconnected");
   };
 
-  socket.onerror = (err) => {
-    console.error("WebSocket error:", err);
+  socket.onerror = () => {
+    // console.error("WebSocket error:", err);
   };
 
   return socket;

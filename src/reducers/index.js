@@ -106,8 +106,8 @@ const localReducers = {
   bmConsumables: consumablesReducer,
   bmReusables: reusablesReducer,
   dashboard: dashboardReducer,
-  //lbdashboard
-  lbmessaging:messageReducer
+  // lbdashboard
+  lbmessaging: messageReducer,
 };
 
 const sessionReducers = {
