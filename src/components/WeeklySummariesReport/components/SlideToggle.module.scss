@@ -1,0 +1,75 @@
+.default {
+  --checked-bg-color: #2ba6ed;
+  --slider-color: #007bff;
+  --slider-checked-color: #FFFFFF;
+}
+
+// Following colors must match that in JS code filter in WeeklySummariesReport.jsx
+.purple {
+  --checked-bg-color: #df39e7;
+  --slider-color: #800080;
+  --slider-checked-color: #FFFFFF;
+}
+
+.green {
+  --checked-bg-color: #37df37;
+  --slider-color: #008000;
+  --slider-checked-color: #FFFFFF;
+}
+
+.navy {
+  --checked-bg-color: #5353df;
+  --slider-color: #000080;
+  --slider-checked-color: #FFFFFF;
+}
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 2rem;
+  height: 1rem;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+
+  .slider {
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transition: 0.4s;
+    border-radius: 34px;
+    border: 1px solid #bbb;
+  }
+
+  .slider:before {
+    position: absolute;
+    content: "";
+    height: 0.5rem;
+    width: 0.5rem;
+    left: 0.25rem;
+    bottom: 0.15rem;
+    background-color: var(--slider-color);
+    transition: 0.4s;
+    border-radius: 50%;
+  }
+}
+
+// Slide color when checked (has some overhead)
+input:checked + .slider:before {
+  background-color: var(--slider-checked-color, var(--slider-color));
+}
+
+// Background color when checked
+input:checked + .slider {
+  background-color: var(--checked-bg-color);
+}
+
+input:checked + .slider:before {
+  transform: translateX(1rem);
+}

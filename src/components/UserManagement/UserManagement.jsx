@@ -102,8 +102,7 @@ class UserManagement extends React.PureComponent {
   }
 
   async componentDidUpdate(prevProps, prevState) {
-
-
+    
     if (prevProps.state.theme.darkMode !== this.props.state.theme.darkMode) {
       const darkMode = this.props.state.theme.darkMode;
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
@@ -112,15 +111,14 @@ class UserManagement extends React.PureComponent {
 
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
     }
-
-
-    const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) ||
-      (prevState.lastNameSearchText !== this.state.lastNameSearchText) ||
-      (prevState.roleSearchText !== this.state.roleSearchText) ||
-      prevState.titleSearchText !== this.state.titleSearchText ||
-      (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) ||
-      (prevState.emailSearchText !== this.state.emailSearchText);
-
+    
+    const searchStateChanged = (prevState.firstNameSearchText !== this.state.firstNameSearchText) || 
+                               (prevState.lastNameSearchText !== this.state.lastNameSearchText) || 
+                               (prevState.roleSearchText !== this.state.roleSearchText) || 
+                               prevState.titleSearchText !== this.state.titleSearchText ||
+                               (prevState.weeklyHrsSearchText !== this.state.weeklyHrsSearchText) || 
+                               (prevState.emailSearchText !== this.state.emailSearchText);
+  
     const pageSizeChanged = prevState.pageSize !== this.state.pageSize;
     const userProfilesChanged = prevProps.state.allUserProfiles.userProfiles !== this.props.state.allUserProfiles.userProfiles;
 
@@ -132,13 +130,9 @@ class UserManagement extends React.PureComponent {
       let { userProfiles, fetching } = this.props.state.allUserProfiles;
       let { roles: rolesPermissions } = this.props.state.role;
       let { requests: timeOffRequests } = this.props.state.timeOffRequests;
-
-
       this.getFilteredData(userProfiles, rolesPermissions, timeOffRequests, darkMode, this.state.editable);
-
     }
   }
-
 
   /**
    * Returns the differenet popup components to render
@@ -177,8 +171,8 @@ class UserManagement extends React.PureComponent {
               : ''
           }
           open={this.state.activeInactivePopupOpen}
-          setActiveInactive={this.setActiveInactive}
           onClose={this.activeInactivePopupClose}
+          setActiveInactive={this.setActiveInactive}
         />
         <SetUpFinalDayPopUp
           open={this.state.finalDayDateOpen}
@@ -484,16 +478,20 @@ class UserManagement extends React.PureComponent {
   /**
    * Callback to trigger the status change on confirmation ok click.
    */
-  setActiveInactive = isActive => {
-    this.props.updateUserStatus(
-      this.state.selectedUser,
-      isActive ? UserStatus.Active : UserStatus.InActive,
-      undefined,
-    );
-    this.setState({
-      activeInactivePopupOpen: false,
-      selectedUser: undefined,
-    });
+  setActiveInactive = isActive => {    
+    this.setState(
+      {      
+        activeInactivePopupOpen: false,      
+        selectedUser: undefined,      
+        isUpdating: true    
+      });    
+    
+      this.props.updateUserStatus(      
+        this.state.selectedUser, isActive ? UserStatus.Active : UserStatus.InActive,      
+        undefined,    
+      ).finally(() => {      
+        this.setState({ isUpdating: false });    
+      });
   };
 
   /**
@@ -634,7 +632,6 @@ class UserManagement extends React.PureComponent {
   /**
    * callback for search
    */
-
   onWildCardSearch = searchText => {
     this.setState(
       {
@@ -651,9 +648,6 @@ class UserManagement extends React.PureComponent {
       }
     );
   };
-
-
-
 
   /**
    * call back for active/inactive search filter

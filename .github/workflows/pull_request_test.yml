@@ -3,7 +3,6 @@ name: Pull Request Unit Test
 on:
   pull_request:
     branches:
-      - main
       - development
 jobs:
   test:
@@ -18,3 +17,5 @@ jobs:
       run: npm ci
     - name: Run Unit Tests
       run: npm test
+    - name: Run Lint
+      run: npm run lint
